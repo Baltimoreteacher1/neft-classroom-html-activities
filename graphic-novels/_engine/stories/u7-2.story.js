@@ -13,6 +13,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Detective Case Files: The Equation Mysteries",
     standard: "6.EE.7",
+    readingStandard: "RL.6.1",
     assessment:
       "Graphic Novel U7 #2: Detective Case Files: The Equation Mysteries",
     artBase: "../_art/unit7/",
@@ -79,6 +80,11 @@ window.GN_STORY = {
               ],
             },
             {
+              who: "log",
+              caption: true,
+              en: "The hardest part of cold cases is the wording. The exact phrase &mdash; 'half of,' 'more than,' 'twice' &mdash; decides every operation and the order it belongs in.",
+            },
+            {
               who: "gumshoe",
               misconception: true,
               en: "Half were taken, so the rest is 2b, then subtract the 8: 2b + 8 = 30, right?",
@@ -114,6 +120,63 @@ window.GN_STORY = {
             who: "detective",
             en: "First clue modeled. Now a lab note &mdash; 'three more than four times.' Order matters here: I multiply before I add.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "The Detective says, &ldquo;Words are just equations in disguise.&rdquo; What does the word <b>variable</b> mean in this case file?",
+          },
+          hint: {
+            en: "Notice how the Detective names an unknown like b or f before writing any math.",
+          },
+          choices: [
+            {
+              en: "A symbol that stands for an unknown or changing quantity.",
+              correct: true,
+            },
+            {
+              en: "The final code that opens a locked evidence box.",
+              correct: false,
+            },
+            {
+              en: "A phrase in a clue that tells you to multiply.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "In the vault clue, what happened to the bills <b>after</b> the thief took half of them?",
+          },
+          choices: [
+            {
+              en: "A guard recovered 8, leaving 30 in the vault.",
+              correct: true,
+            },
+            {
+              en: "The thief returned all of them the next night.",
+              correct: false,
+            },
+            {
+              en: "Another 8 bills were stolen, leaving 30.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -154,6 +217,33 @@ window.GN_STORY = {
             caption: true,
             en: "Optional: a coded confession surfaces, with the unknown on BOTH sides of the equals sign. Worth a look, Detective?",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.1b",
+          ask: {
+            who: "log",
+            en: "Tap the line that proves the lab note describes <b>multiplying before adding</b> (so the equation is 4f + 3, not 4(f + 3)).",
+          },
+          choices: [
+            {
+              en: "“Three more than four times the number of usable fingerprints (f) equals 23.”",
+              correct: true,
+            },
+            {
+              en: "“The thief took half of them, then a guard recovered 8.”",
+              correct: false,
+            },
+            {
+              en: "“Words are just equations in disguise.”",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -220,9 +310,41 @@ window.GN_STORY = {
               ],
             },
             {
+              who: "log",
+              caption: true,
+              en: "Every lock in this room is honest: whatever you do to one side of the equation, you must do to the other, or the code never lands.",
+            },
+            {
               who: "gumshoe",
               misconception: true,
               en: "x / 6 = 9? I'll just add 6 to the x side: x = 15. Lock's open, surely!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "What is the Detective's main goal in the evidence room?",
+          },
+          choices: [
+            {
+              en: "Use inverse operations to isolate each variable and verify the code that opens a locked box.",
+              correct: true,
+            },
+            {
+              en: "Translate the very first paper clue into an equation.",
+              correct: false,
+            },
+            {
+              en: "Count how many evidence boxes are stacked in the room.",
+              correct: false,
             },
           ],
         },
@@ -329,6 +451,33 @@ window.GN_STORY = {
             en: "File verified. Both boxes open &mdash; the Vault Mystery is next.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 3,
+          interaction: "sequence",
+          passageRef: "act2.2b",
+          ask: {
+            who: "log",
+            en: "Put the Detective's steps for solving the two-step lock 3n + 5 = 26 in the correct order.",
+          },
+          items: [
+            {
+              en: "Subtract the constant 5 from both sides to get 3n = 21.",
+              order: 1,
+            },
+            {
+              en: "Divide both sides by the coefficient 3 to get n = 7.",
+              order: 2,
+            },
+            {
+              en: "Substitute n = 7 back in to verify: 3×7 + 5 = 26.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -360,6 +509,11 @@ window.GN_STORY = {
                   en: "Substituting your solution back into the original equation to confirm it is true before trusting it.",
                 },
               ],
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "The vault gives no second guesses. A code is accepted only when the equation is written, solved, AND verified &mdash; all three, in order.",
             },
             {
               who: "gumshoe",
@@ -430,6 +584,63 @@ window.GN_STORY = {
             who: "detective",
             en: "Inner safe cracked. The precinct's coldest case is officially closed.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "Across every case, GUMSHOE balances only ONE side and lands the wrong code. What can you infer about why GUMSHOE keeps failing?",
+          },
+          hint: {
+            en: "Recall the rule the Case File repeats about both sides of the equals sign.",
+          },
+          choices: [
+            {
+              en: "Changing only one side breaks the balance, so the equation is no longer equal and the code is wrong.",
+              correct: true,
+            },
+            {
+              en: "GUMSHOE secretly wants the vault to stay locked.",
+              correct: false,
+            },
+            {
+              en: "The clues are written in a code no one can translate.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The vault is open and the cold case is closed. What will the Detective most likely do with the next file that lands on the desk?",
+          },
+          choices: [
+            {
+              en: "Translate its clues into an equation, solve it, and verify the answer &mdash; the same airtight method.",
+              correct: true,
+            },
+            {
+              en: "Re-lock the inner safe and walk away from the precinct.",
+              correct: false,
+            },
+            {
+              en: "Let GUMSHOE balance only one side from now on.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

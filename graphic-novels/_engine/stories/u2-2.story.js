@@ -12,6 +12,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Master Chef Kitchen: The Recipe Rescue",
     standard: "6.NS.1",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U2 #2: Master Chef Kitchen: The Recipe Rescue",
     artBase: "../_art/unit2/",
     home: "../index.html",
@@ -67,6 +68,16 @@ window.GN_STORY = {
               en: "Kai, we are buried in tickets and the pantry just locked itself. It only releases for exact fraction work — no rounding, no guesses.",
             },
             {
+              who: "chef_log",
+              caption: true,
+              en: "A food critic is dining incognito at table nine. One sloppy portion tonight and Aurora loses the star it has held for years.",
+            },
+            {
+              who: "chef_log",
+              caption: true,
+              en: "The ticket rail is already three deep, and the lock won't budge until the numbers come out exact. Steady hands, Kai.",
+            },
+            {
               who: "chef",
               en: "Then I model every ticket precisely. Dividing by a fraction means counting how many portions fit. Patch me into the lock.",
               vocab: [
@@ -83,6 +94,37 @@ window.GN_STORY = {
               en: "Decoded it: 5 ÷ 1/3 is just 5 ÷ 3, so it splits 5 cups into 3 equal portions. Sending the key!",
             },
           ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "chef_log",
+            en: "According to the Head Chef, under what condition will the pantry release?",
+          },
+          choices: [
+            {
+              en: "Only for exact fraction work — no rounding and no guesses.",
+              correct: true,
+            },
+            {
+              en: "Only after PIP transmits the first key it decodes.",
+              correct: false,
+            },
+            {
+              en: "Only once the critic at table nine finishes dinner.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Correct — the lock demands exact fraction work, with no rounding and no guessing.",
+          badEn:
+            "❌ Reread the Head Chef: the pantry opens only for exact fraction work — no rounding, no guesses.",
         },
         {
           type: "challenge",
@@ -113,6 +155,37 @@ window.GN_STORY = {
             who: "chef",
             en: "Interpretation locked in. Now the cipher wants the exact quotient as a mixed number. Keep, flip, multiply.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "chef_log",
+            en: "When Kai vows to <b>model</b> every ticket precisely, <b>model</b> most nearly means to —",
+          },
+          choices: [
+            {
+              en: "represent the problem mathematically — here, set up the division of fractions it describes.",
+              correct: true,
+            },
+            {
+              en: "pose for a photo beside the finished dish.",
+              correct: false,
+            },
+            {
+              en: "copy another chef's plating exactly.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Precisely. To <i>model</i> a ticket is to capture it in math — here, the exact fraction division it asks for.",
+          badEn:
+            "❌ In this context, <i>model</i> means to represent the ticket mathematically, not to pose or copy.",
         },
         {
           type: "challenge",
@@ -146,6 +219,37 @@ window.GN_STORY = {
             who: "chef",
             en: "Pantry open. PIP, the captain's tasting menu hides a bonus — want to try it?",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "chef_log",
+            en: "Tap the line that proves the pantry will <b>not</b> accept rounded or guessed answers.",
+          },
+          choices: [
+            {
+              en: "“It only releases for exact fraction work — no rounding, no guesses.”",
+              correct: true,
+            },
+            {
+              en: "“A food critic is dining incognito at table nine.”",
+              correct: false,
+            },
+            {
+              en: "“Pantry open. PIP, the captain's tasting menu hides a bonus.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly. That line states the lock demands exact fraction work — no rounding, no guesses.",
+          badEn:
+            "❌ Look for the line that names the lock's rule: exact fraction work, no rounding, no guesses.",
         },
         {
           type: "challenge",
@@ -202,6 +306,11 @@ window.GN_STORY = {
               en: "Pantry's clear. Now a banquet party of dozens just walked in. We portion the pot and scale the sauces — flawlessly.",
             },
             {
+              who: "chef_log",
+              caption: true,
+              en: "Every plate leaves this pass identical, or the table notices. Same recipe, more mouths — the math has to scale clean.",
+            },
+            {
               who: "chef",
               en: "Whole cups over a fraction, then a fraction over a fraction. Multiply by the reciprocal and I count exact servings.",
               vocab: [
@@ -218,6 +327,37 @@ window.GN_STORY = {
               en: "9 ÷ 3/4 is just 9 ÷ 3 = 3 plates! Firing it!",
             },
           ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "chef_log",
+            en: "What is the central idea of this chapter?",
+          },
+          choices: [
+            {
+              en: "Kai must divide and scale the recipes so every banquet plate comes out an exact, equal portion.",
+              correct: true,
+            },
+            {
+              en: "Kai is teaching PIP to greet the banquet party at the door.",
+              correct: false,
+            },
+            {
+              en: "The banquet party is unhappy with the restaurant's décor.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right. The chapter is about portioning and scaling the recipes so every plate is exact.",
+          badEn:
+            "❌ The other ideas are minor details. The main work here is dividing and scaling for exact, equal portions.",
         },
         {
           type: "challenge",
@@ -310,6 +450,37 @@ window.GN_STORY = {
             en: "Bonus star earned. Straight to the Final Dish.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 3,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "chef_log",
+            en: "Reconstruct the order of events in this chapter.",
+          },
+          items: [
+            {
+              en: "PIP misfires, claiming 9 ÷ 3/4 is just 9 ÷ 3 = 3 plates.",
+              order: 1,
+            },
+            {
+              en: "Kai divides 9 cups of risotto into 3/4-cup plates and sends 12 entrées.",
+              order: 2,
+            },
+            {
+              en: "Kai scales the cream sauce into 1/6-cup tasting portions for the judges.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Correct sequence — PIP's misfire, then the risotto plates, then the scaled tasting portions.",
+          badEn:
+            "❌ Reorder it: PIP's wrong guess comes first, then the risotto plates, then the tasting portions.",
+        },
       ],
     },
 
@@ -331,6 +502,11 @@ window.GN_STORY = {
               who: "chef_log",
               caption: true,
               en: "Master ticket, Kai — the banquet's signature course. One line, two portion problems, zero mistakes. Show me.",
+            },
+            {
+              who: "chef_log",
+              caption: true,
+              en: "The whole dining room is watching the pass now, the critic included. This is the plate they'll remember. Make it count.",
             },
             {
               who: "chef",
@@ -381,6 +557,37 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "chef_log",
+            en: "Across every act, PIP keeps simplifying “÷ 1/n” into “÷ n.” What can you conclude about why PIP's portions come out wrong?",
+          },
+          choices: [
+            {
+              en: "PIP treats the divisor as a whole number, so it never multiplies by the reciprocal and misses the true quotient.",
+              correct: true,
+            },
+            {
+              en: "PIP is deliberately sabotaging the kitchen so Aurora loses its star.",
+              correct: false,
+            },
+            {
+              en: "PIP cannot read the order tickets because the print is too small.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Sharp inference. PIP drops the “flip” step, dividing by the whole number instead of the fraction's reciprocal.",
+          badEn:
+            "❌ Reread PIP's guesses: it keeps using “÷ n” instead of multiplying by the reciprocal, so the quotient is off.",
+        },
+        {
           type: "challenge",
           id: "BF",
           optional: true,
@@ -411,6 +618,37 @@ window.GN_STORY = {
             who: "chef",
             en: "Leftovers reallocated, nothing wasted. Service is saved.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "chef_log",
+            en: "The signature course is fired and verified. What is most likely to happen next at Aurora?",
+          },
+          choices: [
+            {
+              en: "The plates go out to the dining room and the critic finally tastes Kai's exact portions.",
+              correct: true,
+            },
+            {
+              en: "Kai relocks the pantry from Act 1 and restarts the dinner rush.",
+              correct: false,
+            },
+            {
+              en: "The kitchen abandons reciprocals and starts rounding every portion.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Likely. With the course verified, the plates leave the pass and the critic tastes Kai's precise work.",
+          badEn:
+            "❌ Think about the moment: the course is verified, so the next step is sending those exact plates out to the room.",
         },
       ],
     },

@@ -12,6 +12,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Aquarium Architect 🐠🌊",
     standard: "6.G.2",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U10 #2: Aquarium Architect",
     artBase: "../_art/unit10/",
     home: "../index.html",
@@ -65,6 +66,11 @@ window.GN_STORY = {
               who: "log",
               caption: true,
               en: "Maya, the commission is yours. No exhibit goes live until you certify its volume to the cubic foot — fractional edges and all.",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "The city inspectors are strict: a tank that is even slightly off on its water volume fails certification and cannot open to the public.",
             },
             {
               who: "architect",
@@ -184,6 +190,90 @@ window.GN_STORY = {
             en: "Donor tank designed. On to the glass.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "According to the City Liaison, what happens to a tank that is even slightly off on its volume?",
+          },
+          choices: [
+            {
+              en: "It fails certification and cannot open to the public.",
+              correct: true,
+            },
+            {
+              en: "It is automatically rounded up to the next size.",
+              correct: false,
+            },
+            {
+              en: "It is sold to a different aquarium.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "In this story, what is a <b>fractional edge</b>?",
+          },
+          hint: {
+            en: "Think about why Maya refused to round 3½ up to 4.",
+          },
+          choices: [
+            {
+              en: "An edge measured by a fraction or mixed number that you multiply exactly, without rounding.",
+              correct: true,
+            },
+            {
+              en: "An edge you are allowed to round to the nearest whole number.",
+              correct: false,
+            },
+            {
+              en: "The total amount of glass a tank needs.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows Maya refuses to <b>round</b> a fractional edge.",
+          },
+          choices: [
+            {
+              en: "“Volume is length × width × height — and a fractional edge is no excuse to round.”",
+              correct: true,
+            },
+            {
+              en: "“The mangrove pool is 3½, 2, and 4 — that's awkward, so I'll round 3½ up to 4.”",
+              correct: false,
+            },
+            {
+              en: "“On to the glass.”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -205,6 +295,11 @@ window.GN_STORY = {
               who: "log",
               caption: true,
               en: "Volumes signed off. Now the glaziers need exact glass. Unfold each tank into its net and total every face.",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "Glass is the costliest line in the budget, so an over-order wastes city funds while an under-order leaves a leaking gap. The total must be precise.",
             },
             {
               who: "architect",
@@ -327,6 +422,60 @@ window.GN_STORY = {
             en: "Touch pool fused and glazed. The Grand Ocean Hall awaits.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "What is the main idea of this chapter?",
+          },
+          choices: [
+            {
+              en: "To order the right glass, Maya unfolds each tank into a net and sums the areas of all six faces.",
+              correct: true,
+            },
+            {
+              en: "Maya fills every tank with water down to the cubic foot.",
+              correct: false,
+            },
+            {
+              en: "Maya reverses the volume formula to find missing heights.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 3,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Order the steps Maya uses to find a tank's surface area.",
+          },
+          items: [
+            {
+              en: "Unfold the prism into a flat net.",
+              order: 1,
+            },
+            {
+              en: "Find the area of each of the six faces.",
+              order: 2,
+            },
+            {
+              en: "Add the matching pairs: SA = 2(lw + lh + wh).",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -348,6 +497,11 @@ window.GN_STORY = {
               who: "log",
               caption: true,
               en: "The Grand Ocean Hall awaits final certification — one line stating both the water volume AND the glass surface area.",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "This is the landmark exhibit the whole commission is built around. The mayor will read your single certification line aloud at the ribbon-cutting, so it must be flawless.",
             },
             {
               who: "architect",
@@ -421,6 +575,63 @@ window.GN_STORY = {
             who: "architect",
             en: "Reservoir designed. The aquarium is ready for its grand opening.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "Across the whole commission, CORAL keeps swapping volume and surface area. What can you infer about CORAL's mistake?",
+          },
+          hint: {
+            en: "Notice that CORAL never checks whether a number should be in cubic units (ft³) or square units (ft²).",
+          },
+          choices: [
+            {
+              en: "CORAL does not track that volume is measured in cubic units (ft³) while surface area is in square units (ft²), so it treats them as interchangeable.",
+              correct: true,
+            },
+            {
+              en: "CORAL is deliberately sabotaging the aquarium so it never opens.",
+              correct: false,
+            },
+            {
+              en: "CORAL cannot multiply or add at all.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The Grand Ocean Hall is certified. What will most likely happen next?",
+          },
+          choices: [
+            {
+              en: "The aquarium holds its grand opening and the Ocean Hall is named in Maya's honor.",
+              correct: true,
+            },
+            {
+              en: "Maya re-rounds every fractional edge to a whole number.",
+              correct: false,
+            },
+            {
+              en: "The city cancels the entire commission.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

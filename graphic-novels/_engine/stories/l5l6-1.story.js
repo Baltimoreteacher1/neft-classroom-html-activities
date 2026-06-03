@@ -16,6 +16,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Decimal Docking Bay",
     standard: "6.NS.3",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #1: Decimal Docking Bay",
     artBase: "../../_art/unit1/",
     home: "../../index.html",
@@ -95,6 +96,43 @@ window.GN_STORY = {
               en: "Easy — I'll just add the digits: 3.4 + 2.75 = 6.9 liters. Entering it!",
               es: "Fácil: sumo los dígitos, 3.4 + 2.75 = 6.9 litros. ¡Lo ingreso!",
             },
+            {
+              who: "log",
+              caption: true,
+              en: "The supply ship is low on fuel and cannot dock until the total is exactly right. One wrong digit and it drifts past the bay.",
+              es: "La nave de carga tiene poco combustible y no puede acoplar hasta que el total sea exacto. Un dígito mal y se aleja de la bahía.",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "How many liters of fuel does Tank A hold?",
+            es: "¿Cuántos litros de combustible tiene el tanque A?",
+          },
+          choices: [
+            {
+              en: "3.4 liters.",
+              es: "3.4 litros.",
+              correct: true,
+            },
+            {
+              en: "2.75 liters.",
+              es: "2.75 litros.",
+              correct: false,
+            },
+            {
+              en: "6.9 liters.",
+              es: "6.9 litros.",
+              correct: false,
+            },
           ],
         },
         {
@@ -144,6 +182,37 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "The Cadet says she can <b>annex a zero</b> to write 3.4 as 3.40. In this story, what does <b>annex a zero</b> mean?",
+            es: "La cadete dice que puede <b>agregar un cero</b> para escribir 3.4 como 3.40. En la historia, ¿qué significa <b>agregar un cero</b>?",
+          },
+          choices: [
+            {
+              en: "Add a zero at the end so the decimals line up evenly.",
+              es: "Agregar un cero al final para que los decimales se alineen.",
+              correct: true,
+            },
+            {
+              en: "Erase the decimal point from the number.",
+              es: "Borrar el punto decimal del número.",
+              correct: false,
+            },
+            {
+              en: "Make the number ten times bigger.",
+              es: "Hacer el número diez veces más grande.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           ask: {
@@ -187,6 +256,44 @@ window.GN_STORY = {
             en: "Fuel total confirmed and the leak accounted for. The ship can dock!",
             es: "Total de combustible confirmado y la fuga contada. ¡La nave puede acoplar!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows the supply ship <b>cannot dock</b> until the fuel total is exactly right.",
+            es: "Toca la línea que muestra que la nave <b>no puede acoplar</b> hasta que el total sea exacto.",
+          },
+          choices: [
+            {
+              en: "“The supply ship is low on fuel and cannot dock until the total is exactly right.”",
+              es: "“La nave de carga tiene poco combustible y no puede acoplar hasta que el total sea exacto.”",
+              correct: true,
+            },
+            {
+              en: "“To add decimals I line up the decimal points first.”",
+              es: "“Para sumar decimales alineo los puntos primero.”",
+              correct: false,
+            },
+            {
+              en: "“Now a leak — I must subtract what we lost.”",
+              es: "“Ahora hay una fuga: debo restar lo que perdimos.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Strong evidence — that line states the ship can only dock once the total is exactly right.",
+          goodEs: "¡Buena prueba! Esa línea dice que el total debe ser exacto.",
+          badEn:
+            "❌ That line is about a math step, not the docking rule. Find the line about the ship needing an exact total.",
+          badEs:
+            "❌ Esa línea es sobre un paso, no la regla de acople. Busca la del total exacto.",
         },
       ],
     },
@@ -325,6 +432,84 @@ window.GN_STORY = {
             es: "Reactor cargado y ajustado. Ahora el código final de lanzamiento.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "What is this chapter mainly about?",
+            es: "¿De qué trata principalmente este capítulo?",
+          },
+          choices: [
+            {
+              en: "Multiplying decimals and placing the decimal point to set the reactor power.",
+              es: "Multiplicar decimales y colocar el punto para ajustar la potencia del reactor.",
+              correct: true,
+            },
+            {
+              en: "Lining up decimal points to add fuel from two tanks.",
+              es: "Alinear los puntos para sumar el combustible de dos tanques.",
+              correct: false,
+            },
+            {
+              en: "Subtracting to find how much fuel a leak drained away.",
+              es: "Restar para hallar cuánto combustible drenó una fuga.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right — the whole chapter is about multiplying decimals and counting places to set the power.",
+          goodEs:
+            "✅ Correcto: el capítulo trata de multiplicar decimales y contar lugares.",
+          badEn:
+            "❌ That happened in another chapter. This one is about multiplying decimals for the reactor.",
+          badEs:
+            "❌ Eso fue en otro capítulo. Este trata de multiplicar decimales.",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the steps for multiplying decimals in the right order.",
+            es: "Ordena los pasos para multiplicar decimales.",
+          },
+          items: [
+            {
+              en: "Multiply the numbers as if they were whole numbers.",
+              es: "Multiplica los números como si fueran enteros.",
+              order: 1,
+            },
+            {
+              en: "Count the total number of decimal places in both factors.",
+              es: "Cuenta el total de lugares decimales en ambos factores.",
+              order: 2,
+            },
+            {
+              en: "Place the decimal point so the product has that many places.",
+              es: "Coloca el punto para que el producto tenga esos lugares.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Multiply first, count the places, then place the point — that's the decimal-multiplication procedure.",
+          goodEs:
+            "✅ Multiplica, cuenta los lugares y coloca el punto: ese es el procedimiento.",
+          badEn:
+            "❌ Not quite. Multiply like whole numbers first, then count places, and only then place the point.",
+          badEs:
+            "❌ Casi. Primero multiplica como enteros, luego cuenta los lugares y coloca el punto.",
+        },
       ],
     },
 
@@ -406,6 +591,88 @@ window.GN_STORY = {
             en: "Launch code accepted — the supply ship is away! Great teamwork, AXIS.",
             es: "¡Código aceptado, la nave despega! Buen trabajo en equipo, AXIS.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "AXIS keeps getting decimal answers like 6.9, 2.4, and 30. Why does AXIS keep making the same kind of mistake?",
+            es: "AXIS sigue dando respuestas como 6.9, 2.4 y 30. ¿Por qué comete el mismo tipo de error?",
+          },
+          hint: {
+            en: "Look back: AXIS skips lining up the points or miscounts the decimal places.",
+            es: "Mira atrás: AXIS no alinea los puntos o cuenta mal los lugares decimales.",
+          },
+          choices: [
+            {
+              en: "AXIS does not line up or place the decimal point carefully, so the point lands in the wrong spot.",
+              es: "AXIS no alinea ni coloca el punto con cuidado, así que queda en el lugar equivocado.",
+              correct: true,
+            },
+            {
+              en: "AXIS does not know how to multiply whole numbers at all.",
+              es: "AXIS no sabe multiplicar números enteros para nada.",
+              correct: false,
+            },
+            {
+              en: "The fuel gauges on the station are broken and show fake numbers.",
+              es: "Los medidores de combustible están dañados y muestran números falsos.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Good thinking — every AXIS error comes from misplacing the decimal point, not from the multiplying itself.",
+          goodEs:
+            "✅ Bien pensado: todos los errores de AXIS vienen de colocar mal el punto decimal.",
+          badEn:
+            "❌ Look again at the answers. AXIS multiplies fine — the problem is where the decimal point lands.",
+          badEs:
+            "❌ Mira otra vez. AXIS multiplica bien; el problema es dónde queda el punto.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The launch code worked and the supply ship is away. What will most likely happen next?",
+            es: "El código funcionó y la nave despegó. ¿Qué pasará probablemente después?",
+          },
+          choices: [
+            {
+              en: "The crew gets their supplies and the station stays fueled and safe.",
+              es: "La tripulación recibe sus provisiones y la estación queda con combustible y segura.",
+              correct: true,
+            },
+            {
+              en: "The supply ship turns around and re-locks the docking bay.",
+              es: "La nave regresa y vuelve a cerrar la bahía de acople.",
+              correct: false,
+            },
+            {
+              en: "The Cadet stops using decimals for the rest of the mission.",
+              es: "La cadete deja de usar decimales por el resto de la misión.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Most likely — a successful launch means the supplies arrive and the station stays safe.",
+          goodEs:
+            "✅ Lo más probable: un lanzamiento exitoso lleva las provisiones y mantiene segura la estación.",
+          badEn:
+            "❌ Think about what a successful launch leads to: the crew gets supplied, not re-locked.",
+          badEs:
+            "❌ Piensa qué sigue tras un lanzamiento exitoso: llegan las provisiones.",
         },
       ],
     },

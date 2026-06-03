@@ -12,6 +12,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Court Vision: The Data Analyst",
     standard: "6.SP.1",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U8 #1: Court Vision: The Data Analyst",
     artBase: "../_art/unit8/",
     home: "../index.html",
@@ -69,6 +70,12 @@ window.GN_STORY = {
               es: "¡Analista! Gran partido hoy. Necesito que estudies los datos y me ayudes a decidir.",
             },
             {
+              who: "coach",
+              caption: true,
+              en: "The whole team is counting on these numbers. If we read the data wrong, we lose the game.",
+              es: "Todo el equipo cuenta con estos números. Si leemos mal los datos, perdemos el partido.",
+            },
+            {
               who: "analyst",
               en: "On it, Coach! First I need a STATISTICAL question — one with many answers I can collect as data.",
               es: "¡Voy! Primero necesito una pregunta estadística: una con muchas respuestas que pueda recolectar.",
@@ -85,6 +92,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Easy — just ask how many points Jordan scored last night. One number, one answer. Done!",
               es: "Fácil: solo pregunta cuántos puntos anotó Jordan anoche. Un número, una respuesta. ¡Listo!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "coach",
+            en: "Why does Coach need the Analyst to study the data tonight?",
+            es: "¿Por qué necesita Coach que la Analista estudie los datos esta noche?",
+          },
+          choices: [
+            {
+              en: "To help the team make smart calls and win the big game.",
+              es: "Para ayudar al equipo a tomar buenas decisiones y ganar el gran partido.",
+              correct: true,
+            },
+            {
+              en: "To clean the holographic desk in the data room.",
+              es: "Para limpiar el escritorio holográfico de la sala de datos.",
+              correct: false,
+            },
+            {
+              en: "To teach STATS how to play basketball.",
+              es: "Para enseñarle a STATS a jugar baloncesto.",
+              correct: false,
             },
           ],
         },
@@ -135,6 +173,41 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "coach",
+            en: "In the story, what makes a question a <b>statistical</b> question?",
+            es: "En la historia, ¿qué hace que una pregunta sea <b>estadística</b>?",
+          },
+          hint: {
+            en: "Think about why “points each game” worked but “points last night” did not.",
+            es: "Piensa por qué “puntos cada juego” sirvió pero “puntos anoche” no.",
+          },
+          choices: [
+            {
+              en: "It has many different answers you collect as data.",
+              es: "Tiene muchas respuestas diferentes que recolectas como datos.",
+              correct: true,
+            },
+            {
+              en: "It always has exactly one correct answer.",
+              es: "Siempre tiene exactamente una respuesta correcta.",
+              correct: false,
+            },
+            {
+              en: "It is the hardest question on the data table.",
+              es: "Es la pregunta más difícil de la tabla de datos.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           art: "data-room.png",
@@ -178,6 +251,37 @@ window.GN_STORY = {
             es: "Datos leídos y listos. ¡Hora de llevar estos números al Coach!",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "coach",
+            en: "Tap the line that shows STATS reaching for the <b>wrong</b> kind of question.",
+            es: "Toca la línea que muestra a STATS eligiendo el tipo de pregunta <b>equivocado</b>.",
+          },
+          choices: [
+            {
+              en: "“Just ask how many points Jordan scored last night. One number, one answer.”",
+              es: "“Solo pregunta cuántos puntos anotó Jordan anoche. Un número, una respuesta.”",
+              correct: true,
+            },
+            {
+              en: "“First I need a STATISTICAL question — one with many answers.”",
+              es: "“Primero necesito una pregunta estadística: una con muchas respuestas.”",
+              correct: false,
+            },
+            {
+              en: "“Time to bring these numbers to Coach!”",
+              es: "“¡Hora de llevar estos números al Coach!”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -202,6 +306,12 @@ window.GN_STORY = {
               es: "¡Buenos datos! Ahora encuentra el centro. Empieza con la media: el promedio.",
             },
             {
+              who: "coach",
+              caption: true,
+              en: "One number can sum up five games — that's what the center does. It tells us a player's typical score.",
+              es: "Un solo número puede resumir cinco juegos: eso hace el centro. Nos dice el puntaje típico de un jugador.",
+            },
+            {
               who: "analyst",
               en: "Mean, median, and mode all describe the center. I'll compute each one step by step.",
               es: "La media, la mediana y la moda describen el centro. Calcularé cada una paso a paso.",
@@ -218,6 +328,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Why bother with median or mode? The mean is the only center anyone needs. Just average it!",
               es: "¿Para qué la mediana o la moda? La media es el único centro que se necesita. ¡Solo promédialo!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "coach",
+            en: "What is this chapter mainly about?",
+            es: "¿De qué trata principalmente este capítulo?",
+          },
+          choices: [
+            {
+              en: "Finding the center of the data using the mean, median, and mode.",
+              es: "Encontrar el centro de los datos usando la media, la mediana y la moda.",
+              correct: true,
+            },
+            {
+              en: "Choosing which player gets the newest jersey.",
+              es: "Elegir qué jugador recibe la camiseta más nueva.",
+              correct: false,
+            },
+            {
+              en: "Writing a statistical question for the first time.",
+              es: "Escribir una pregunta estadística por primera vez.",
+              correct: false,
             },
           ],
         },
@@ -371,6 +512,37 @@ window.GN_STORY = {
             es: "Media, mediana y moda reportadas. ¡Ahora la jugada que gana el partido!",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "coach",
+            en: "Put the steps the Analyst followed to describe the center in order.",
+            es: "Ordena los pasos que siguió la Analista para describir el centro.",
+          },
+          items: [
+            {
+              en: "Add up the scores and divide to find the mean.",
+              es: "Suma los puntajes y divide para hallar la media.",
+              order: 1,
+            },
+            {
+              en: "Put the scores in order and find the middle one — the median.",
+              es: "Ordena los puntajes y halla el del medio: la mediana.",
+              order: 2,
+            },
+            {
+              en: "Count which value appears most often — the mode.",
+              es: "Cuenta qué valor aparece más veces: la moda.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -393,6 +565,12 @@ window.GN_STORY = {
               caption: true,
               en: "It's the final play. I need our most RELIABLE scorer. Use the stats to decide!",
               es: "Es la jugada final. Necesito al anotador más confiable. ¡Usa las estadísticas!",
+            },
+            {
+              who: "coach",
+              caption: true,
+              en: "There's only one shot left on the clock. Pick the wrong player and the season ends right here.",
+              es: "Solo queda un tiro en el reloj. Si eliges al jugador equivocado, la temporada termina aquí.",
             },
             {
               who: "analyst",
@@ -452,6 +630,72 @@ window.GN_STORY = {
             en: "That's the call, Coach! The data says Maya — give her the ball!",
             es: "¡Esa es la jugada, Coach! Los datos dicen Maya: ¡denle el balón!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "coach",
+            en: "STATS keeps reaching for the mean and ignoring the median and mode. What can you tell about how STATS works?",
+            es: "STATS siempre busca la media e ignora la mediana y la moda. ¿Qué puedes deducir sobre cómo trabaja STATS?",
+          },
+          hint: {
+            en: "Look back: every time, STATS jumps to the average instead of checking the other centers.",
+            es: "Mira atrás: cada vez, STATS salta al promedio en lugar de revisar los otros centros.",
+          },
+          choices: [
+            {
+              en: "STATS trusts only the mean, so it misses what the median and mode reveal.",
+              es: "STATS confía solo en la media, así que se pierde lo que muestran la mediana y la moda.",
+              correct: true,
+            },
+            {
+              en: "STATS does not know how to add numbers at all.",
+              es: "STATS no sabe sumar números en absoluto.",
+              correct: false,
+            },
+            {
+              en: "STATS wants the team to lose the game on purpose.",
+              es: "STATS quiere que el equipo pierda el partido a propósito.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "coach",
+            en: "The call is made and Maya gets the ball. What will most likely happen next?",
+            es: "La jugada está hecha y Maya recibe el balón. ¿Qué pasará probablemente después?",
+          },
+          choices: [
+            {
+              en: "Maya takes the reliable shot the data pointed to, finishing the game.",
+              es: "Maya hace el tiro confiable que indicaron los datos y termina el partido.",
+              correct: true,
+            },
+            {
+              en: "The Analyst starts the data report over from the beginning.",
+              es: "La Analista empieza el reporte de datos otra vez desde el principio.",
+              correct: false,
+            },
+            {
+              en: "Coach throws away all of tonight's statistics.",
+              es: "Coach tira a la basura todas las estadísticas de esta noche.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

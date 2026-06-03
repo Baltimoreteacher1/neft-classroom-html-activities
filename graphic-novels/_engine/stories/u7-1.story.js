@@ -13,6 +13,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Detective Case Files: The Equation Mysteries",
     standard: "6.EE.7",
+    readingStandard: "RL.6.1",
     assessment:
       "Graphic Novel U7 #1: Detective Case Files: The Equation Mysteries",
     artBase: "../_art/unit7/",
@@ -83,6 +84,12 @@ window.GN_STORY = {
               ],
             },
             {
+              who: "log",
+              caption: true,
+              en: "A good detective reads every word twice. The exact words of a clue decide whether you add or subtract.",
+              es: "Un buen detective lee cada palabra dos veces. Las palabras exactas de una pista deciden si sumas o restas.",
+            },
+            {
               who: "gumshoe",
               misconception: true,
               en: "Coins were added back, right? I'll write c + 7 = 12 — easy!",
@@ -146,6 +153,72 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "In the story, what does the word <b>variable</b> mean?",
+            es: "En la historia, &iquest;qu&eacute; significa la palabra <b>variable</b>?",
+          },
+          hint: {
+            en: "Think about why the Detective uses the letter c for the coins.",
+            es: "Piensa por qu&eacute; el Detective usa la letra c para las monedas.",
+          },
+          choices: [
+            {
+              en: "A letter that stands for an unknown number.",
+              es: "Una letra que representa un n&uacute;mero desconocido.",
+              correct: true,
+            },
+            {
+              en: "The answer after you solve the equation.",
+              es: "La respuesta despu&eacute;s de resolver la ecuaci&oacute;n.",
+              correct: false,
+            },
+            {
+              en: "A clue written on a paper note.",
+              es: "Una pista escrita en una nota de papel.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "According to Clue #1, how many coins did the thief take from the jar?",
+            es: "Seg&uacute;n la Pista #1, &iquest;cu&aacute;ntas monedas tom&oacute; el ladr&oacute;n del frasco?",
+          },
+          choices: [
+            {
+              en: "7 coins.",
+              es: "7 monedas.",
+              correct: true,
+            },
+            {
+              en: "12 coins.",
+              es: "12 monedas.",
+              correct: false,
+            },
+            {
+              en: "19 coins.",
+              es: "19 monedas.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           ask: {
@@ -201,6 +274,37 @@ window.GN_STORY = {
             es: "Ambas pistas archivadas. Ahora, a la sala de evidencias: siguen las cajas cerradas.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows coins were <b>taken away</b> (so the Detective must subtract).",
+            es: "Toca la l&iacute;nea que muestra que se <b>quitaron</b> monedas (por eso el Detective debe restar).",
+          },
+          choices: [
+            {
+              en: "“The thief took 7 coins from the jar.”",
+              es: "“El ladr&oacute;n se llev&oacute; 7 monedas del frasco.”",
+              correct: true,
+            },
+            {
+              en: "“3 equal bags of gems hold 24 gems in all.”",
+              es: "“3 bolsas iguales tienen 24 gemas en total.”",
+              correct: false,
+            },
+            {
+              en: "“Both clues filed.”",
+              es: "“Ambas pistas archivadas.”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -237,10 +341,47 @@ window.GN_STORY = {
               ],
             },
             {
+              who: "log",
+              caption: true,
+              en: "Whatever you do to one side, you must do to the OTHER side too — that keeps the equation fair and balanced.",
+              es: "Lo que haces a un lado, debes hacerlo al OTRO lado tambi&eacute;n: as&iacute; la ecuaci&oacute;n queda justa y balanceada.",
+            },
+            {
               who: "gumshoe",
               misconception: true,
               en: "x + 8 = 21? I'll just add 8 to the x side and call it x = 29. Done!",
               es: "&iquest;x + 8 = 21? Le sumo 8 al lado de la x: x = 29.",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "What is the Detective mainly trying to do in this chapter?",
+            es: "&iquest;Qu&eacute; intenta hacer principalmente el Detective en este cap&iacute;tulo?",
+          },
+          choices: [
+            {
+              en: "Solve each equation to find the code that opens a locked box.",
+              es: "Resolver cada ecuaci&oacute;n para hallar el c&oacute;digo que abre una caja cerrada.",
+              correct: true,
+            },
+            {
+              en: "Write the very first equation from a paper clue.",
+              es: "Escribir la primera ecuaci&oacute;n a partir de una pista de papel.",
+              correct: false,
+            },
+            {
+              en: "Count how many bags of gems are missing.",
+              es: "Contar cu&aacute;ntas bolsas de gemas faltan.",
+              correct: false,
             },
           ],
         },
@@ -343,6 +484,37 @@ window.GN_STORY = {
             es: "Ambas cajas abiertas. Sigue la B&oacute;veda; vamos a resolverla.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the steps the Detective followed to open the boxes in order.",
+            es: "Ordena los pasos que sigui&oacute; el Detective para abrir las cajas.",
+          },
+          items: [
+            {
+              en: "GUMSHOE guesses x = 29 by changing only one side.",
+              es: "GUMSHOE adivina x = 29 cambiando solo un lado.",
+              order: 1,
+            },
+            {
+              en: "The Detective subtracts 8 from both sides and gets x = 13.",
+              es: "El Detective resta 8 de ambos lados y obtiene x = 13.",
+              order: 2,
+            },
+            {
+              en: "The Detective divides by 5 to solve 5n = 45 and gets n = 9.",
+              es: "El Detective divide entre 5 para resolver 5n = 45 y obtiene n = 9.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -370,6 +542,12 @@ window.GN_STORY = {
               who: "detective",
               en: "Write the equation from the clue, then solve it. I'm ready. Let's crack this vault!",
               es: "Escribir la ecuaci&oacute;n y resolverla. Estoy listo. &iexcl;Vamos a abrir la b&oacute;veda!",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "This is the real test, Detective: first WRITE the equation from the clue, then SOLVE it. Two steps, one chance.",
+              es: "Esta es la prueba de verdad, Detective: primero ESCRIBE la ecuaci&oacute;n de la pista, luego RESU&Eacute;LVELA. Dos pasos, una oportunidad.",
             },
             {
               who: "gumshoe",
@@ -425,6 +603,72 @@ window.GN_STORY = {
             en: "The vault swings open! Case solved — thanks for the help, GUMSHOE, even the one-sided guesses.",
             es: "&iexcl;La b&oacute;veda se abre! Caso resuelto. Gracias, GUMSHOE.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "GUMSHOE keeps changing only ONE side of each equation. Why does GUMSHOE keep getting the wrong code?",
+            es: "GUMSHOE sigue cambiando solo UN lado de cada ecuaci&oacute;n. &iquest;Por qu&eacute; GUMSHOE sigue obteniendo el c&oacute;digo incorrecto?",
+          },
+          hint: {
+            en: "Look back: the Case File says whatever you do to one side you must do to the OTHER side too.",
+            es: "Mira atr&aacute;s: el Archivo dice que lo que haces a un lado debes hacerlo al OTRO lado tambi&eacute;n.",
+          },
+          choices: [
+            {
+              en: "GUMSHOE only changes one side, so the equation is no longer balanced and fair.",
+              es: "GUMSHOE solo cambia un lado, as&iacute; que la ecuaci&oacute;n deja de estar balanceada y justa.",
+              correct: true,
+            },
+            {
+              en: "GUMSHOE does not want the case to be solved.",
+              es: "GUMSHOE no quiere que se resuelva el caso.",
+              correct: false,
+            },
+            {
+              en: "The clues on the notes show the wrong numbers.",
+              es: "Las pistas en las notas muestran n&uacute;meros equivocados.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The vault is open and the case is solved. What will the Detective most likely do next?",
+            es: "La b&oacute;veda est&aacute; abierta y el caso resuelto. &iquest;Qu&eacute; har&aacute; probablemente el Detective despu&eacute;s?",
+          },
+          choices: [
+            {
+              en: "Recover the missing coins and gems and close the case file.",
+              es: "Recuperar las monedas y gemas que faltaban y cerrar el archivo del caso.",
+              correct: true,
+            },
+            {
+              en: "Lock the very first evidence box from Act 2 again.",
+              es: "Cerrar otra vez la primera caja de evidencia del Acto 2.",
+              correct: false,
+            },
+            {
+              en: "Stop writing equations from clues for good.",
+              es: "Dejar de escribir ecuaciones a partir de pistas para siempre.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

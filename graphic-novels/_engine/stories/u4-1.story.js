@@ -11,6 +11,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Shopping Mall Mogul &#128717;&#65039;",
     standard: "6.RP.2",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U4 #1: Shopping Mall Mogul",
     artBase: "../_art/unit4/",
     home: "../index.html",
@@ -75,6 +76,12 @@ window.GN_STORY = {
               ],
             },
             {
+              who: "helper",
+              caption: true,
+              en: "Two shops are waiting to open: the Game Shop and the Smoothie Bar. The bigger box is NOT always the better deal &mdash; only the price for ONE item tells the truth.",
+              es: "Dos tiendas esperan abrir: la de juegos y la barra de batidos. La caja m&aacute;s grande NO siempre es la mejor oferta; solo el precio de UN art&iacute;culo dice la verdad.",
+            },
+            {
               who: "mogul",
               en: "Got it. Price divided by how many. The smaller price per item is the better deal. Let me check the Game Shop.",
               es: "Entendido. Precio dividido por la cantidad. El menor precio por art&iacute;culo es mejor. Voy a revisar.",
@@ -125,6 +132,41 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "helper",
+            en: "In the story, what does <b>unit rate</b> mean?",
+            es: "En la historia, &iquest;qu&eacute; significa <b>tasa unitaria</b>?",
+          },
+          hint: {
+            en: "Think about why the Mogul divides the price by how many items.",
+            es: "Piensa por qu&eacute; el Mogul divide el precio entre la cantidad.",
+          },
+          choices: [
+            {
+              en: "The price for just ONE item, found by price &divide; quantity.",
+              es: "El precio de solo UN art&iacute;culo, hallado con precio &divide; cantidad.",
+              correct: true,
+            },
+            {
+              en: "The biggest package on the shelf.",
+              es: "El paquete m&aacute;s grande del estante.",
+              correct: false,
+            },
+            {
+              en: "The total price you pay for the whole pack.",
+              es: "El precio total que pagas por todo el paquete.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           ask: {
@@ -164,6 +206,68 @@ window.GN_STORY = {
             es: "&iexcl;La tienda se abre! Las mejores compras están listas. Ahora la gran venta.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.1b",
+          ask: {
+            who: "helper",
+            en: "How much does the Smoothie Bar charge for a 12 oz cup?",
+            es: "&iquest;Cu&aacute;nto cobra la barra de batidos por un vaso de 12 oz?",
+          },
+          choices: [
+            {
+              en: "$3 for a 12 oz cup.",
+              es: "$3 por un vaso de 12 oz.",
+              correct: true,
+            },
+            {
+              en: "$8 for a 12 oz cup.",
+              es: "$8 por un vaso de 12 oz.",
+              correct: false,
+            },
+            {
+              en: "$0.25 for a 12 oz cup.",
+              es: "$0.25 por un vaso de 12 oz.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "helper",
+            en: "Tap the line that shows PENNY made a <b>mistake</b> about the best buy.",
+            es: "Toca la l&iacute;nea que muestra que PENNY se <b>equivoc&oacute;</b> sobre la mejor compra.",
+          },
+          choices: [
+            {
+              en: "&ldquo;The 5-app pack is way bigger, so that's the cheaper one.&rdquo;",
+              es: "&ldquo;El paquete de 5 apps es m&aacute;s grande, as&iacute; que ese es el m&aacute;s barato.&rdquo;",
+              correct: true,
+            },
+            {
+              en: "&ldquo;Compare the price of ONE item &mdash; the unit rate.&rdquo;",
+              es: "&ldquo;Compara el precio de UN art&iacute;culo: la tasa unitaria.&rdquo;",
+              correct: false,
+            },
+            {
+              en: "&ldquo;Now the Smoothie Bar wants a price PER OUNCE.&rdquo;",
+              es: "&ldquo;Ahora la barra de batidos quiere el precio POR ONZA.&rdquo;",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -193,6 +297,12 @@ window.GN_STORY = {
                   es: "Dinero que se quita del precio en una oferta. 25% de descuento de $40 = $10 menos.",
                 },
               ],
+            },
+            {
+              who: "helper",
+              caption: true,
+              en: "A bigger percent means a bigger discount. Your job today is to figure out the REAL savings so shoppers trust your signs.",
+              es: "Un porcentaje m&aacute;s grande significa un descuento m&aacute;s grande. Tu trabajo hoy es calcular el ahorro REAL para que los clientes conf&iacute;en en tus carteles.",
             },
             {
               who: "mogul",
@@ -246,6 +356,37 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "helper",
+            en: "What is the Mogul mainly trying to do in this chapter?",
+            es: "&iquest;Qu&eacute; intenta hacer el Mogul principalmente en este cap&iacute;tulo?",
+          },
+          choices: [
+            {
+              en: "Find the real savings from a percent discount so the sale is a great deal.",
+              es: "Hallar el ahorro real de un descuento en porcentaje para que la venta sea una gran oferta.",
+              correct: true,
+            },
+            {
+              en: "Find the price for one ounce of smoothie.",
+              es: "Hallar el precio de una onza de batido.",
+              correct: false,
+            },
+            {
+              en: "Buy the biggest package just because it looks bigger.",
+              es: "Comprar el paquete m&aacute;s grande solo porque se ve m&aacute;s grande.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "2b",
           ask: {
@@ -283,6 +424,37 @@ window.GN_STORY = {
             es: "¡La venta está activa y el centro comercial está lleno! Hora de la gran apertura.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "helper",
+            en: "Put the steps to find a 25% discount on a $40 jacket in order.",
+            es: "Ordena los pasos para hallar un descuento del 25% en una chaqueta de $40.",
+          },
+          items: [
+            {
+              en: "Change 25% to the decimal 0.25.",
+              es: "Cambia 25% al decimal 0.25.",
+              order: 1,
+            },
+            {
+              en: "Multiply $40 &times; 0.25 to get $10 off.",
+              es: "Multiplica $40 &times; 0.25 para obtener $10 de descuento.",
+              order: 2,
+            },
+            {
+              en: "Subtract: $40 &minus; $10 = $30 sale price.",
+              es: "Resta: $40 &minus; $10 = $30 de precio de oferta.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -305,6 +477,12 @@ window.GN_STORY = {
               caption: true,
               en: "It's the GRAND OPENING! The headline deal needs BOTH skills: a unit rate AND a percent discount.",
               es: "&iexcl;Es la GRAN APERTURA! La oferta necesita AMBAS destrezas: tasa unitaria Y descuento.",
+            },
+            {
+              who: "helper",
+              caption: true,
+              en: "This is the deal on every billboard in the city. If the math is right, the mall opens to a huge crowd &mdash; so do it carefully, in the right order.",
+              es: "Esta es la oferta en cada cartel de la ciudad. Si las cuentas est&aacute;n bien, el centro comercial abre con mucha gente; as&iacute; que hazlo con cuidado y en el orden correcto.",
             },
             {
               who: "mogul",
@@ -360,6 +538,72 @@ window.GN_STORY = {
             en: "Best deal in the mall! The doors are open and the crowd pours in. We did it, PENNY!",
             es: "¡La mejor oferta del centro comercial! Las puertas están abiertas. ¡Lo logramos, PENNY!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "helper",
+            en: "PENNY keeps grabbing the bigger package and skipping steps. Why does PENNY keep getting the deals wrong?",
+            es: "PENNY sigue tomando el paquete m&aacute;s grande y se salta pasos. &iquest;Por qu&eacute; PENNY se equivoca con las ofertas?",
+          },
+          hint: {
+            en: "Look back: PENNY guesses by size instead of finding the price for ONE.",
+            es: "Mira atr&aacute;s: PENNY adivina por el tama&ntilde;o en vez de hallar el precio de UNO.",
+          },
+          choices: [
+            {
+              en: "PENNY guesses by package size and skips the unit-rate math, so it misses the real best deal.",
+              es: "PENNY adivina por el tama&ntilde;o del paquete y se salta la tasa unitaria, as&iacute; que no halla la mejor oferta real.",
+              correct: true,
+            },
+            {
+              en: "PENNY does not want the mall to open.",
+              es: "PENNY no quiere que el centro comercial abra.",
+              correct: false,
+            },
+            {
+              en: "The price tags in the mall are all wrong.",
+              es: "Las etiquetas de precio del centro comercial est&aacute;n todas mal.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "helper",
+            en: "The mall is open and packed. What will the Mogul most likely need to do next?",
+            es: "El centro comercial est&aacute; abierto y lleno. &iquest;Qu&eacute; necesitar&aacute; hacer el Mogul probablemente despu&eacute;s?",
+          },
+          choices: [
+            {
+              en: "Keep using unit rates and discounts to find more best deals for shoppers.",
+              es: "Seguir usando tasas unitarias y descuentos para hallar m&aacute;s ofertas para los clientes.",
+              correct: true,
+            },
+            {
+              en: "Close the shops that just opened in Act 1.",
+              es: "Cerrar las tiendas que reci&eacute;n abrieron en el Acto 1.",
+              correct: false,
+            },
+            {
+              en: "Stop comparing prices for good.",
+              es: "Dejar de comparar precios para siempre.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

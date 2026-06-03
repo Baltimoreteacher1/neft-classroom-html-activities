@@ -17,6 +17,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Decimal Docking Bay: Deep Space",
     standard: "6.NS.3",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #2: Decimal Docking Bay: Deep Space",
     artBase: "../../_art/unit1/",
     home: "../../index.html",
@@ -89,6 +90,12 @@ window.GN_STORY = {
                   es: "Agregar ceros al final de un decimal para que se alineen.",
                 },
               ],
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "Be exact, Commander. The cargo hold is rated for only 6 kg — an overcount could leave a crate behind on the dock.",
+              es: "Sé exacta, Comandante. La bodega solo soporta 6 kg; un cálculo de más podría dejar una caja en el muelle.",
             },
             {
               who: "axis",
@@ -186,6 +193,84 @@ window.GN_STORY = {
             es: "Manifiesto firmado con capacidad de sobra. Sigamos con los propulsores.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "The Cadet says she will <b>annex zeros</b> so every value has two decimal places. In this story, to <b>annex zeros</b> means to —",
+            es: "La cadete dice que va a <b>agregar ceros</b> para que cada valor tenga dos decimales. En la historia, <b>agregar ceros</b> significa —",
+          },
+          choices: [
+            {
+              en: "add zeros at the end of a decimal so the place values line up evenly.",
+              es: "agregar ceros al final de un decimal para que los valores posicionales se alineen.",
+              correct: true,
+            },
+            {
+              en: "remove the decimal point and treat the numbers as whole numbers.",
+              es: "quitar el punto decimal y tratar los números como enteros.",
+              correct: false,
+            },
+            {
+              en: "multiply each value by ten to make it larger.",
+              es: "multiplicar cada valor por diez para hacerlo más grande.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly — annexing zeros adds them at the end so every value lines up to the same place value, without changing its size.",
+          goodEs:
+            "✅ Exacto: agregar ceros los pone al final para alinear los lugares sin cambiar el valor.",
+          badEn:
+            "❌ Annexing a zero does not change a number's value — it just adds a place so the decimals line up.",
+          badEs:
+            "❌ Agregar un cero no cambia el valor; solo añade un lugar para alinear los decimales.",
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "Claim: <b>an exact total matters because the hold has a strict limit.</b> Tap the line that best proves this claim.",
+            es: "Afirmación: <b>el total exacto importa porque la bodega tiene un límite estricto.</b> Toca la línea que mejor lo prueba.",
+          },
+          choices: [
+            {
+              en: "“The cargo hold is rated for only 6 kg — an overcount could leave a crate behind on the dock.”",
+              es: "“La bodega solo soporta 6 kg; un cálculo de más podría dejar una caja en el muelle.”",
+              correct: true,
+            },
+            {
+              en: "“I'll annex zeros so every value has two decimal places.”",
+              es: "“Agregaré ceros para que todos tengan dos decimales.”",
+              correct: false,
+            },
+            {
+              en: "“Manifest confirmed. Now find the difference from our 6 kg limit.”",
+              es: "“Manifiesto confirmado. Ahora halla la diferencia con el límite de 6 kg.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Strong evidence — that line names the strict 6 kg limit and the cost of an overcount.",
+          goodEs:
+            "✅ Buena prueba: esa línea nombra el límite de 6 kg y el costo de pasarse.",
+          badEn:
+            "❌ That line describes a method or a next step, not why the exact total matters. Find the line about the strict limit.",
+          badEs:
+            "❌ Esa línea describe un método o un paso, no por qué importa el total exacto.",
+        },
       ],
     },
 
@@ -220,6 +305,12 @@ window.GN_STORY = {
                   es: "Cuántos dígitos vienen después del punto decimal.",
                 },
               ],
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "Calibrate precisely. Too much plasma and the thrusters overheat; too little and the ship cannot break orbit.",
+              es: "Calibra con precisión. Con demasiado plasma los propulsores se sobrecalientan; con muy poco, la nave no sale de órbita.",
             },
             {
               who: "axis",
@@ -316,6 +407,122 @@ window.GN_STORY = {
             es: "Todo el arreglo calibrado y equilibrado. Hora del código de lanzamiento de la flota.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "What is this chapter mainly about?",
+            es: "¿De qué trata principalmente este capítulo?",
+          },
+          choices: [
+            {
+              en: "Multiplying decimals to calibrate one thruster, then scaling that result up to the whole array.",
+              es: "Multiplicar decimales para calibrar un propulsor y luego escalar ese resultado a todo el arreglo.",
+              correct: true,
+            },
+            {
+              en: "Adding three crate masses to confirm the cargo manifest.",
+              es: "Sumar la masa de tres cajas para confirmar el manifiesto.",
+              correct: false,
+            },
+            {
+              en: "Subtracting to find how much room is left under the cargo limit.",
+              es: "Restar para hallar cuánto espacio queda bajo el límite.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right — the chapter calibrates one thruster with decimal multiplication, then scales it to the array.",
+          goodEs:
+            "✅ Correcto: el capítulo calibra un propulsor y luego escala al arreglo.",
+          badEn:
+            "❌ That belongs to the manifest chapter. This one is about multiplying decimals to calibrate the thrusters.",
+          badEs:
+            "❌ Eso es del capítulo del manifiesto. Este trata de calibrar los propulsores.",
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "How much plasma does each single thruster use?",
+            es: "¿Cuánto plasma usa cada propulsor por sí solo?",
+          },
+          choices: [
+            {
+              en: "0.25 units of plasma.",
+              es: "0.25 unidades de plasma.",
+              correct: true,
+            },
+            {
+              en: "1.2 units of plasma.",
+              es: "1.2 unidades de plasma.",
+              correct: false,
+            },
+            {
+              en: "4 units of plasma.",
+              es: "4 unidades de plasma.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Correct — the log states each thruster uses 0.25 units of plasma.",
+          goodEs:
+            "✅ Correcto: el registro dice que cada propulsor usa 0.25 unidades.",
+          badEn:
+            "❌ Reread the opening: each thruster uses 0.25 units. The other numbers are firing time or thruster count.",
+          badEs: "❌ Relee el inicio: cada propulsor usa 0.25 unidades.",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Order the steps the Cadet followed to calibrate the whole thruster array.",
+            es: "Ordena los pasos que siguió la cadete para calibrar todo el arreglo de propulsores.",
+          },
+          items: [
+            {
+              en: "Multiply 1.2 × 0.25 to find the plasma one thruster uses.",
+              es: "Multiplica 1.2 × 0.25 para el plasma de un propulsor.",
+              order: 1,
+            },
+            {
+              en: "Place the decimal point by counting the total decimal places.",
+              es: "Coloca el punto contando el total de lugares decimales.",
+              order: 2,
+            },
+            {
+              en: "Multiply that result by 4 thrusters to scale up the array.",
+              es: "Multiplica ese resultado por 4 propulsores para escalar el arreglo.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Find one thruster's plasma, place the point, then scale by 4 — that's how the array was calibrated.",
+          goodEs:
+            "✅ Halla el plasma de uno, coloca el punto y escala por 4: así se calibró el arreglo.",
+          badEn:
+            "❌ Not quite. Calibrate one thruster first (including placing the point), and only then scale up to all four.",
+          badEs:
+            "❌ Casi. Calibra un propulsor primero y luego escala a los cuatro.",
+        },
       ],
     },
 
@@ -343,6 +550,12 @@ window.GN_STORY = {
               who: "cadet",
               en: "Add 3.25 + 0.75 first, then multiply that sum by 0.5.",
               es: "Sumo 3.25 + 0.75 primero, luego multiplico por 0.5.",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "The whole fleet waits on this single code, Commander. Every ship launches together — or not at all.",
+              es: "Toda la flota espera este único código, Comandante. Cada nave despega junta, o ninguna lo hace.",
             },
             {
               who: "axis",
@@ -397,6 +610,88 @@ window.GN_STORY = {
             en: "Fleet launch code accepted — every ship is away! Command rank earned.",
             es: "¡Código de la flota aceptado, todas las naves despegan! Rango de mando ganado.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "Across the mission AXIS lands on 5.28, 3.0, and 20 instead of the right answers. What can you infer about AXIS's mistakes?",
+            es: "Durante la misión AXIS llega a 5.28, 3.0 y 20 en vez de las respuestas correctas. ¿Qué puedes inferir sobre sus errores?",
+          },
+          hint: {
+            en: "Look at where each wrong answer's decimal point sits compared to the correct one.",
+            es: "Mira dónde queda el punto decimal de cada respuesta equivocada frente a la correcta.",
+          },
+          choices: [
+            {
+              en: "AXIS handles the digits but keeps misplacing the decimal point or skipping place-value alignment.",
+              es: "AXIS maneja los dígitos pero coloca mal el punto decimal u omite alinear el valor posicional.",
+              correct: true,
+            },
+            {
+              en: "AXIS cannot do arithmetic with whole numbers at all.",
+              es: "AXIS no puede hacer aritmética con números enteros para nada.",
+              correct: false,
+            },
+            {
+              en: "AXIS is reporting numbers from a different mission by accident.",
+              es: "AXIS reporta números de otra misión por accidente.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Sound inference — AXIS's digits are right, but the decimal point keeps landing in the wrong place.",
+          goodEs:
+            "✅ Buena inferencia: los dígitos de AXIS están bien, pero el punto queda mal colocado.",
+          badEn:
+            "❌ Look again — AXIS computes the digits correctly. The pattern is a misplaced decimal point.",
+          badEs:
+            "❌ Mira otra vez: AXIS calcula bien los dígitos. El patrón es un punto decimal mal colocado.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The fleet has launched successfully. On the next mission, what will the Cadet most likely keep doing?",
+            es: "La flota despegó con éxito. En la próxima misión, ¿qué seguirá haciendo la cadete probablemente?",
+          },
+          choices: [
+            {
+              en: "Carefully line up and place the decimal point before trusting any total.",
+              es: "Alinear y colocar el punto decimal con cuidado antes de confiar en un total.",
+              correct: true,
+            },
+            {
+              en: "Let AXIS enter the codes alone without checking them.",
+              es: "Dejar que AXIS ingrese los códigos solo sin revisarlos.",
+              correct: false,
+            },
+            {
+              en: "Stop using decimals and only work with whole numbers.",
+              es: "Dejar de usar decimales y trabajar solo con enteros.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Most likely — the Cadet's success came from careful decimal-point placement, so she'll keep doing it.",
+          goodEs:
+            "✅ Lo más probable: su éxito vino de colocar bien el punto, así que lo seguirá haciendo.",
+          badEn:
+            "❌ The Cadet succeeded by checking the decimal point, not by skipping it. She'll keep that habit.",
+          badEs:
+            "❌ La cadete tuvo éxito revisando el punto, no omitiéndolo. Mantendrá ese hábito.",
         },
       ],
     },

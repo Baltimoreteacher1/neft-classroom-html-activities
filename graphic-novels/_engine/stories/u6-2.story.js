@@ -11,6 +11,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Festival Producer: Power Up the Show 🎤",
     standard: "6.EE.2c",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U6 #2: Festival Producer: Power Up the Show",
     artBase: "../_art/unit6/",
     home: "../index.html",
@@ -80,6 +81,10 @@ window.GN_STORY = {
               misconception: true,
               en: "I've got the amplifier: 4³ is just 4 × 3 = 12. Sending 12 to the array!",
             },
+            {
+              who: "producer",
+              en: "Cut the signal, ECHO. An exponent counts FACTORS, not a second number to multiply by. 4³ means three 4s multiplied — 4×4×4 — or the whole stack browns out. Let me evaluate it right.",
+            },
           ],
         },
         {
@@ -113,6 +118,37 @@ window.GN_STORY = {
             who: "producer",
             en: "Amplifiers live. The lighting truss cipher hides a power inside an expression — exponent first, then multiply. On it.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "The Producer says an <b>exponent</b> tells you how many <b>factors</b> to use. As used here, a <b>factor</b> is —",
+          },
+          choices: [
+            {
+              en: "one of the equal numbers being multiplied together to form the power.",
+              correct: true,
+            },
+            {
+              en: "the small raised number written above the base.",
+              correct: false,
+            },
+            {
+              en: "the final answer after the power is evaluated.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly. In 4³, each 4 is a <i>factor</i>; the exponent 3 tells you to multiply three of those factors.",
+          badEn:
+            "❌ In this context a <i>factor</i> is one of the equal numbers being multiplied (each 4), not the raised exponent or the final value.",
         },
         {
           type: "challenge",
@@ -149,6 +185,37 @@ window.GN_STORY = {
             who: "producer",
             en: "Speaker grid online. There's an encore battery I could charge with a sum of two powers — optional, but I'm curious.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.1b",
+          ask: {
+            who: "log",
+            en: "Claim: <b>in 2⁴ × 3, only the base 2 is raised to the power — not the whole product.</b> Tap the line that <b>best proves</b> this claim.",
+          },
+          choices: [
+            {
+              en: "“2⁴ = 16 first, then 16×3 = 48. Only the 2 is raised, not the whole product.”",
+              correct: true,
+            },
+            {
+              en: "“The lighting truss draws 2⁴ × 3 amps.”",
+              correct: false,
+            },
+            {
+              en: "“Speaker grid online.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Strong evidence — that line states the exact rule: raise only the 2, then multiply by 3.",
+          badEn:
+            "❌ That line just names the expression or reacts afterward. Find the line that states which part actually gets the exponent.",
         },
         {
           type: "challenge",
@@ -222,6 +289,10 @@ window.GN_STORY = {
               misconception: true,
               en: "I'll just go left to right: 4 + 3 = 7, then 7 × (6−2)² … that's 112. Logging 112!",
             },
+            {
+              who: "producer",
+              en: "Reading order isn't the SAME as operation order, ECHO. Grouping and exponents always jump ahead of the plus sign — that's why we never add first. Let me run it the right way before the budget locks.",
+            },
           ],
         },
         {
@@ -256,6 +327,37 @@ window.GN_STORY = {
             who: "producer",
             en: "Build cost locked in. Now I translate the lighting order into an algebraic expression — per-light cost, a flat fee, doubled for two stages.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.2a",
+          ask: {
+            who: "log",
+            en: "In the main-stage build cost <b>4 + 3 × (6 − 2)²</b>, which operation must be performed <b>first</b>?",
+          },
+          choices: [
+            {
+              en: "The subtraction inside the parentheses, (6 − 2).",
+              correct: true,
+            },
+            {
+              en: "The addition of 4 + 3 on the far left.",
+              correct: false,
+            },
+            {
+              en: "The multiplication by 3.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right — grouping comes first, so (6 − 2) = 4 is evaluated before the exponent, the multiplication, or the addition.",
+          badEn:
+            "❌ The order of operations does grouping FIRST: evaluate (6 − 2) before squaring, multiplying, or adding.",
         },
         {
           type: "challenge",
@@ -295,6 +397,68 @@ window.GN_STORY = {
             who: "producer",
             en: "Lighting order placed. There's an optional crew manifest puzzle if I want it.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Which statement best captures the <b>central idea</b> of this chapter?",
+          },
+          choices: [
+            {
+              en: "Getting the festival math right means following the agreed order of operations and grouping costs correctly into an expression.",
+              correct: true,
+            },
+            {
+              en: "The mixing console glows with colorful holographic blocks.",
+              correct: false,
+            },
+            {
+              en: "ECHO is faster than the Producer at reading numbers aloud.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ That's the heart of it — the chapter is about honoring the order of operations and grouping the per-stage cost correctly.",
+          badEn:
+            "❌ That's a minor or invented detail. The central idea is using correct order and grouping to model the festival's costs.",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2.2a",
+          ask: {
+            who: "log",
+            en: "Order the steps the Producer used to evaluate <b>4 + 3 × (6 − 2)²</b>.",
+          },
+          items: [
+            {
+              en: "Evaluate the grouping: (6 − 2) = 4.",
+              order: 1,
+            },
+            {
+              en: "Apply the exponent: 4² = 16.",
+              order: 2,
+            },
+            {
+              en: "Multiply, then add: 3 × 16 = 48, then 4 + 48 = 52.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Grouping, then the exponent, then multiply and add — the order of operations in action.",
+          badEn:
+            "❌ Not quite. Do the parentheses first, then the exponent, and only then multiply and add.",
         },
         {
           type: "challenge",
@@ -362,6 +526,10 @@ window.GN_STORY = {
               misconception: true,
               en: "I'll start the override: 3³ is just 3 × 3 = 9, so 9 + 2 × (8−3) … I make it 47. Entering 47!",
             },
+            {
+              who: "producer",
+              en: "Two slips in one breath, ECHO — 3³ is three 3s, not two, and the multiply still beats the plus. One clean pass: power, grouping, multiply, add. The headliner doesn't get a second take.",
+            },
           ],
         },
         {
@@ -396,6 +564,68 @@ window.GN_STORY = {
             who: "producer",
             en: "Override accepted. There's one last optional cipher — the VIP revenue model.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.beats",
+          ask: {
+            who: "log",
+            en: "ECHO keeps turning 3³ into 3 × 3 and adding before multiplying. What does this repeated pattern <b>reveal</b> about how ECHO processes the math?",
+          },
+          choices: [
+            {
+              en: "It reads the symbols straight across, left to right, instead of obeying powers and operation priority.",
+              correct: true,
+            },
+            {
+              en: "It is deliberately stalling so the show starts late.",
+              correct: false,
+            },
+            {
+              en: "It has never been given any of the numbers to work with.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Sharp inference — ECHO processes left-to-right like reading text, so it skips the power and ignores operation priority.",
+          badEn:
+            "❌ The text shows ECHO reading straight across rather than by priority — not stalling, and it does have the numbers.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.F",
+          ask: {
+            who: "log",
+            en: "Given that the headliner override allows one clean pass, what should the Producer do <b>next</b> before entering any combined value?",
+          },
+          choices: [
+            {
+              en: "Re-check the order — power, then grouping, then multiply, then add — before committing the one-shot code.",
+              correct: true,
+            },
+            {
+              en: "Accept ECHO's 47 to save time on the single attempt.",
+              correct: false,
+            },
+            {
+              en: "Add every number left to right to keep it simple.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Wise prediction — with one attempt, the Producer must verify each step of the order before entering the code.",
+          badEn:
+            "❌ With one attempt and ECHO's left-to-right habit, the Producer must re-check the order, not trust 47 or add straight across.",
         },
         {
           type: "challenge",

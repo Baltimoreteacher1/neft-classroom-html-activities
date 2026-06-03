@@ -15,6 +15,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Treasure Map Navigator",
     standard: "6.NS.7",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U9 #2: Treasure Map Navigator",
     artBase: "../_art/unit9/",
     home: "../index.html",
@@ -79,6 +80,11 @@ window.GN_STORY = {
                   es: "",
                 },
               ],
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "Take your time — a single misread sign sends the whole expedition to the wrong island. The chart rewards precision, not speed.",
             },
           ],
         },
@@ -146,6 +152,71 @@ window.GN_STORY = {
             who: "navigator",
             en: "Leg measured. There's an optional puzzle etched in the chart margin if you want extra glory.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "When the Navigator says the chart <b>mirrors</b> beacons across the axes, the word <b>mirror</b> most nearly means to —",
+          },
+          hint: {
+            en: "Think about what happened when (−6, 4) became (−6, −4) across the x-axis.",
+          },
+          choices: [
+            {
+              en: "flip a point to the matching position on the opposite side of an axis.",
+              correct: true,
+            },
+            {
+              en: "make an exact copy at the very same coordinates.",
+              correct: false,
+            },
+            {
+              en: "shrink the distance between two beacons by half.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right. To mirror — or reflect — a point is to flip it to the matching spot on the other side of an axis, like (−6, 4) → (−6, −4).",
+          badEn:
+            "❌ In this chart, to mirror means to reflect a point across an axis, flipping it to the opposite side, not to copy or shrink it.",
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "According to the chart, where is the origin of this coordinate plane located?",
+          },
+          choices: [
+            {
+              en: "At the old harbor.",
+              correct: true,
+            },
+            {
+              en: "At the lighthouse landmark.",
+              correct: false,
+            },
+            {
+              en: "At the wreck on the reef shelf.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Correct. The log states the origin sits at the old harbor, with the four quadrants spanning the archipelago.",
+          badEn:
+            "❌ Reread the opening log: the origin is set at the old harbor.",
         },
         {
           type: "beats",
@@ -220,6 +291,10 @@ window.GN_STORY = {
               who: "log",
               caption: true,
               en: "Order them, then judge true distance from the surface with absolute value. A deep number can be far from zero even while being 'less'.",
+            },
+            {
+              who: "navigator",
+              en: "So 'least' and 'farthest from zero' aren't the same thing down here — a wreck at −23 is the lowest value yet the farthest dive. I'll keep those two ideas separate.",
             },
             {
               who: "marlow",
@@ -354,6 +429,95 @@ window.GN_STORY = {
             en: "Riddle solved. On to the final fix.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "Claim: <b>MARLOW ranks negatives by their digits instead of their position on the number line.</b> Tap the line that <b>best proves</b> this claim.",
+          },
+          choices: [
+            {
+              en: "“I'll rank them by their digits: −9 is less than −23 since 9 is smaller than 23.”",
+              correct: true,
+            },
+            {
+              en: "“Above the waves is positive elevation; below is negative depth.”",
+              correct: false,
+            },
+            {
+              en: "“Order them, then judge true distance from the surface with absolute value.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly. That line shows MARLOW comparing only the digits 9 and 23, ignoring that −23 is deeper and therefore less.",
+          badEn:
+            "❌ Look for the line where MARLOW actually compares the digits 9 and 23 to rank the negatives.",
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "What is the main idea the Navigator proves in this chapter about elevations and depths?",
+          },
+          choices: [
+            {
+              en: "The least integer and the value farthest from zero are not always the same — ordering uses position, but distance uses absolute value.",
+              correct: true,
+            },
+            {
+              en: "Every depth below sea level is impossible to measure.",
+              correct: false,
+            },
+            {
+              en: "Reflecting a point across an axis changes how deep it is buried.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ That's the heart of it: order by position on the number line, but measure true distance with absolute value — the diver at −25 is farthest even though it isn't the greatest value.",
+          badEn:
+            "❌ Reread the chapter: it separates ordering integers (position) from measuring distance (absolute value).",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the events of this chapter in order.",
+          },
+          items: [
+            {
+              en: "MARLOW ranks the depths by their digits: −9, −23, 0, 5, 14.",
+              order: 1,
+            },
+            {
+              en: "The Navigator reorders them correctly: −23, −9, 0, 5, 14.",
+              order: 2,
+            },
+            {
+              en: "The Navigator compares |−25| and |18| to prove the diver is farther from the surface.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -379,6 +543,11 @@ window.GN_STORY = {
             {
               who: "navigator",
               en: "One line, no errors. Plot, reflect, measure. Standing by to dig.",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "The tide is already climbing the rocks. This bearing has to be right the first time — there will be no second cast of the line.",
             },
             {
               who: "marlow",
@@ -454,6 +623,71 @@ window.GN_STORY = {
             who: "navigator",
             en: "Span measured. Time to claim the treasure.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.beat1",
+          ask: {
+            who: "log",
+            en: "MARLOW claims a cache buried at −12 m has a depth distance of −12. What does this reveal about MARLOW's thinking?",
+          },
+          hint: {
+            en: "Recall what absolute value measures — and whether a distance can ever be negative.",
+          },
+          choices: [
+            {
+              en: "MARLOW confuses the signed elevation with the distance, forgetting that absolute value (distance) is never negative.",
+              correct: true,
+            },
+            {
+              en: "MARLOW believes the cache is actually above the surface.",
+              correct: false,
+            },
+            {
+              en: "MARLOW has correctly measured the depth as a distance.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right. MARLOW treats the negative elevation as if it were the distance, but |−12| = 12 — a distance is never negative.",
+          badEn:
+            "❌ A depth distance is an absolute value, so it can't be −12. MARLOW is confusing signed position with distance.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The final fix is confirmed and the cache is unearthed. What is the Navigator most likely to do next?",
+          },
+          choices: [
+            {
+              en: "Secure the recovered cache and chart a safe route back before the rising tide cuts off the spot.",
+              correct: true,
+            },
+            {
+              en: "Reflect the cache marker across the y-axis one more time for fun.",
+              correct: false,
+            },
+            {
+              en: "Abandon the treasure and re-survey the empty harbor.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Sensible. With the tide climbing, the Navigator would secure the cache and head back along a safe bearing.",
+          badEn:
+            "❌ The log warns the tide is rising, so the most likely next step is to secure the cache and get clear.",
         },
       ],
     },

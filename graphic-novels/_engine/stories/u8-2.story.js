@@ -13,6 +13,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Court Vision: The Data Analyst",
     standard: "6.SP.1",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U8 #2: Court Vision: The Data Analyst",
     artBase: "../_art/unit8/",
     home: "../index.html",
@@ -68,6 +69,11 @@ window.GN_STORY = {
               en: "Analyst, the playoff window is open and the data is a mess. Tell me what's worth measuring.",
             },
             {
+              who: "gm",
+              caption: true,
+              en: "One bad read of these numbers and we draft the wrong player. The whole season hinges on what you measure.",
+            },
+            {
               who: "analyst",
               en: "First principle: a statistical question expects variability. If every answer is identical, it isn't statistical — it's a fact.",
               vocab: [
@@ -81,6 +87,33 @@ window.GN_STORY = {
               who: "stats",
               misconception: true,
               en: "Just ask the final score of last night's game. One fixed value — that's all the data you need.",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "gm",
+            en: "According to the GM, why does it matter what the Analyst chooses to measure?",
+          },
+          choices: [
+            {
+              en: "A bad read of the numbers could draft the wrong player and cost the season.",
+              correct: true,
+            },
+            {
+              en: "The data room is running low on holographic storage.",
+              correct: false,
+            },
+            {
+              en: "STATS refuses to work until the Analyst measures something.",
+              correct: false,
             },
           ],
         },
@@ -113,6 +146,36 @@ window.GN_STORY = {
             who: "analyst",
             en: "Question locked. Now I read the set itself — range, gaps, and any value that looks out of place.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "gm",
+            en: "In this report, what does it mean to say a statistical question <b>anticipates variability</b>?",
+          },
+          hint: {
+            en: "Think about why the minutes-per-player question counted but the final-score question did not.",
+          },
+          choices: [
+            {
+              en: "It expects the answers to differ from one case to the next.",
+              correct: true,
+            },
+            {
+              en: "It guarantees every answer will be exactly the same.",
+              correct: false,
+            },
+            {
+              en: "It can only be answered with a single yes-or-no value.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -151,6 +214,33 @@ window.GN_STORY = {
             who: "analyst",
             en: "Set interrogated. The extremes are clear — time to submit the report.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "gm",
+            en: "Tap the line that shows STATS reaching for a <b>non-statistical</b> question.",
+          },
+          choices: [
+            {
+              en: "“Just ask the final score of last night's game. One fixed value — that's all the data you need.”",
+              correct: true,
+            },
+            {
+              en: "“A statistical question expects variability. If every answer is identical, it isn't statistical.”",
+              correct: false,
+            },
+            {
+              en: "“Now I read the set itself — range, gaps, and any value that looks out of place.”",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -207,6 +297,11 @@ window.GN_STORY = {
               en: "Numbers are in. But one offer sheet looks distorted. Find the center that tells the truth, then quantify the spread.",
             },
             {
+              who: "gm",
+              caption: true,
+              en: "A single inflated value can fool a careless reader. I need a center that doesn't flinch when the data gets messy.",
+            },
+            {
               who: "analyst",
               en: "Center isn't one number — mean, median, and mode each tell a story. And the MAD tells me how tightly the data hugs the center.",
               vocab: [
@@ -220,6 +315,33 @@ window.GN_STORY = {
               who: "stats",
               misconception: true,
               en: "The salary offers are 10, 11, 12, 13, 54. The mean is 20 — that's the typical offer. Use the mean, always.",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "gm",
+            en: "What is this chapter mainly about?",
+          },
+          choices: [
+            {
+              en: "Choosing a center that survives outliers, then measuring spread with the MAD.",
+              correct: true,
+            },
+            {
+              en: "Deciding which player should wear the captain's armband.",
+              correct: false,
+            },
+            {
+              en: "Drawing a pie chart of every game's final score.",
+              correct: false,
             },
           ],
         },
@@ -357,6 +479,33 @@ window.GN_STORY = {
             en: "Duel settled. Spread report delivered.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "gm",
+            en: "Put the steps of the Analyst's spread report in the order they happened.",
+          },
+          items: [
+            {
+              en: "Choose the median over the mean because an outlier skewed the data.",
+              order: 1,
+            },
+            {
+              en: "Compute the mean absolute deviation to measure the spread.",
+              order: 2,
+            },
+            {
+              en: "Compare two players' MADs to decide who is more consistent.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -378,6 +527,11 @@ window.GN_STORY = {
               who: "gm",
               caption: true,
               en: "Game 7, final possession. I need a complete profile on our closer — center and spread — before I make the call.",
+            },
+            {
+              who: "gm",
+              caption: true,
+              en: "Two players can post the same average and still be worlds apart under pressure. Show me which one truly holds steady.",
             },
             {
               who: "analyst",
@@ -451,6 +605,63 @@ window.GN_STORY = {
             who: "analyst",
             en: "Tie-breaker settled by the spread. That's the playoff call.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.beat1",
+          ask: {
+            who: "gm",
+            en: "STATS claims that when the mean and median match, the spread doesn't matter. What does this reveal about STATS's thinking?",
+          },
+          hint: {
+            en: "Look back: two players can share the same center yet differ wildly in MAD.",
+          },
+          choices: [
+            {
+              en: "STATS overlooks how spread separates a steady player from a streaky one.",
+              correct: true,
+            },
+            {
+              en: "STATS has finally learned to weigh consistency above all else.",
+              correct: false,
+            },
+            {
+              en: "STATS believes the median is always wrong.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "gm",
+            en: "With the full profile verified, what will the Analyst most likely do next?",
+          },
+          choices: [
+            {
+              en: "Recommend the closer with the smaller MAD for the final possession.",
+              correct: true,
+            },
+            {
+              en: "Ignore the spread and pick whichever name STATS shouts first.",
+              correct: false,
+            },
+            {
+              en: "Delete the report and start a brand-new statistical question.",
+              correct: false,
+            },
+          ],
         },
       ],
     },
