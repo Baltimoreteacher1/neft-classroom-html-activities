@@ -97,6 +97,106 @@ function phaseHeader(el, icon, iconClass, title, desc) {
   el.append(h);
 }
 
+// ── Inline data visuals (opt-in via config) ─────────────────────────────────
+// Draw a real, accessible SVG histogram from authored interval/frequency data.
+// Opt-in only: a lesson supplies `{ bars:[{label,value}], xLabel, yLabel,
+// highlightIndex, title, caption }`. Lessons without this field are unaffected.
+// Bars touch (no gaps) to match the definition of a histogram, the tallest (or
+// highlighted) bar is tinted, and each bar shows its frequency on top.
+function histogramSVG(cfg) {
+  const bars = Array.isArray(cfg?.bars) ? cfg.bars : [];
+  if (!bars.length) return "";
+  const W = 520,
+    H = 280,
+    padL = 44,
+    padR = 16,
+    padT = 28,
+    padB = 56;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
+  const bw = plotW / bars.length;
+  const baseY = padT + plotH;
+  let hi = Number.isInteger(cfg.highlightIndex) ? cfg.highlightIndex : -1;
+  if (hi < 0) {
+    // Default highlight = tallest bar so "the tallest bar" discourse lands.
+    let m = -1;
+    bars.forEach((b, i) => {
+      if ((Number(b.value) || 0) > m) {
+        m = Number(b.value) || 0;
+        hi = i;
+      }
+    });
+  }
+  // Horizontal gridlines + y-axis ticks (one per unit up to a sane cap).
+  const step = maxV <= 10 ? 1 : Math.ceil(maxV / 8);
+  let grid = "";
+  for (let v = 0; v <= maxV; v += step) {
+    const y = baseY - (v / maxV) * plotH;
+    grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${(W - padR).toFixed(1)}" y2="${y.toFixed(1)}" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+    grid += `<text x="${padL - 6}" y="${(y + 4).toFixed(1)}" text-anchor="end" font-size="11" fill="var(--muted)">${v}</text>`;
+  }
+  const rects = bars
+    .map((b, i) => {
+      const v = Number(b.value) || 0;
+      const h = (v / maxV) * plotH;
+      const x = padL + i * bw;
+      const y = baseY - h;
+      const fill = i === hi ? "var(--coral, #d9795d)" : "var(--teal, #2a9d8f)";
+      return (
+        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}" stroke="#fff" stroke-width="1"/>` +
+        `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy, #264653)">${v}</text>` +
+        `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink, #333)">${esc(b.label ?? "")}</text>`
+      );
+    })
+    .join("");
+  const xLabel = cfg.xLabel
+    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+    : "";
+  const yLabel = cfg.yLabel
+    ? `<text x="14" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 14 ${(padT + plotH / 2).toFixed(1)})">${esc(cfg.yLabel)}</text>`
+    : "";
+  const axis = `<line x1="${padL}" y1="${baseY}" x2="${(W - padR).toFixed(1)}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
+  const title = cfg.title
+    ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
+    : "";
+  const caption = cfg.caption
+    ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
+    : "";
+  return `<div class="histogram-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cfg.title || "Histogram")}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;">${grid}${axis}${rects}${xLabel}${yLabel}</svg>${caption}</div>`;
+}
+
+// Render a styled "data display" for the Launch scenario so the I-notice /
+// I-wonder routine has something concrete to observe. Opt-in via
+// `launch.visual = { kind:"data-chips", title, values:[...], unit }`.
+function renderLaunchVisual(host, visual) {
+  if (!visual) return;
+  if (visual.kind === "data-chips" && Array.isArray(visual.values)) {
+    const card = document.createElement("div");
+    card.style.cssText =
+      "margin-top:var(--sp-4); padding:var(--sp-4); background:var(--cream,#fdf6ec); border:1px solid rgba(0,0,0,0.06); border-radius:var(--radius-md,12px);";
+    const chips = visual.values
+      .map(
+        (v) =>
+          `<span style="display:inline-flex; align-items:center; justify-content:center; min-width:34px; padding:4px 8px; background:#fff; border:1px solid rgba(42,157,143,0.4); border-radius:8px; font-weight:700; color:var(--navy,#264653); font-size:0.9rem;">${esc(v)}</span>`,
+      )
+      .join("");
+    card.innerHTML =
+      (visual.title
+        ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-3); display:flex; align-items:center; gap:8px;"><span>📊</span><span>${esc(visual.title)}</span></div>`
+        : "") +
+      `<div style="display:flex; flex-wrap:wrap; gap:8px;">${chips}</div>` +
+      (visual.unit
+        ? `<div style="font-size:0.8rem; color:var(--muted); margin-top:var(--sp-2);">${esc(visual.unit)}</div>`
+        : "");
+    host.append(card);
+  } else if (visual.kind === "histogram") {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = histogramSVG(visual);
+    host.append(wrap);
+  }
+}
+
 // ── Turn & Talk (non-graded student discussion moments) ──────────────────────
 // A reusable, visually distinct "🗣️ Turn & Talk" block. It is driven by an
 // optional config field `config.turnAndTalk` (array of
@@ -577,6 +677,9 @@ function renderLaunchPhase(el, state, ctx, config) {
   `;
   el.append(scenario);
 
+  // Opt-in concrete data visual so "I notice / I wonder" has something to see.
+  renderLaunchVisual(el, cfg.visual);
+
   const grid = document.createElement("div");
   grid.className = "grid-2";
 
@@ -775,6 +878,13 @@ function renderExplorePhase(el, state, ctx, config) {
       const disc = document.createElement("div");
       disc.className = "card card-teal mt-6";
       disc.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
+      // Reveal the histogram only AFTER the frequency table is built, so the
+      // diagram supports the discussion without giving away the table answers.
+      if (cfg.histogram) {
+        const fig = document.createElement("div");
+        fig.innerHTML = histogramSVG(cfg.histogram);
+        disc.append(fig);
+      }
       renderOpenResponse(disc, {
         prompt: cfg.discourse.prompt,
         sentenceFrame: cfg.discourse.sentenceFrame,
@@ -948,6 +1058,7 @@ function renderConnectPhase(el, state, ctx, config) {
   const card = document.createElement("div");
   card.className = "card";
   card.innerHTML = `<div class="badge badge-amber mb-4">Math in the Wild</div><p style="font-size:1.05rem; line-height:1.6; margin:0;">${esc(cfg.scenario)}</p>`;
+  if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
   el.append(card);
 
   // Turn & Talk primes the written response below. Non-graded; does not gate
