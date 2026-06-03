@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fraction Frenzy — Lessons 2.1–2.5 Game | Neft Teacher</title>
+    <meta name="description" content="Arcade review game for Grade 6 lessons 2.1–2.5: dividing fractions (6.NS.1)." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root { --navy:#0f2b3c; --blue:#1a6fb5; --teal:#0e8a7d; --gold:#d4952a; --coral:#c45a3c; --green:#2d874b; --ink:#1a2633; --muted:#5e6e7e; --line:#e2e7ec; --bg:#f7f9fb; --font:"Segoe UI",system-ui,sans-serif; }
+      * { box-sizing:border-box; }
+      body { margin:0; font-family:var(--font); color:var(--ink); background:var(--bg); line-height:1.5; }
+      .wrap { max-width:680px; margin:0 auto; padding:0 18px 60px; }
+      .ghero { background:linear-gradient(135deg,#c45a3c,#d4952a); color:#fff; text-align:center; padding:30px 20px 26px; }
+      .ghero .deco { font-size:48px; }
+      .ghero h1 { margin:8px 0 6px; font-size:clamp(24px,5vw,34px); }
+      .ghero p { margin:0 auto; max-width:520px; color:rgba(255,255,255,.9); }
+      .breadcrumb { font-size:13px; padding:14px 0; color:var(--muted); }
+      .breadcrumb a { color:var(--blue); text-decoration:none; font-weight:600; }
+      .hud { display:flex; justify-content:space-between; gap:10px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin:18px 0; font-weight:800; box-shadow:0 2px 10px rgba(15,43,60,.06); }
+      .hud .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block; }
+      .hud .val { font-size:22px; }
+      .hearts { color:var(--coral); letter-spacing:2px; }
+      .card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px 22px; box-shadow:0 6px 22px rgba(15,43,60,.08); text-align:center; }
+      .mode-tag { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
+      .prompt { font-size:clamp(22px,5vw,30px); font-weight:800; margin:8px 0 4px; }
+      .sub { color:var(--muted); margin:0 0 18px; }
+      .opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      @media (max-width:460px){ .opts{ grid-template-columns:1fr; } }
+      .opt { padding:16px; border:2px solid var(--line); border-radius:14px; background:#fff; font-size:20px; font-weight:800; cursor:pointer; font-family:inherit; color:var(--ink); transition:transform .06s, border-color .15s; }
+      .opt:hover { border-color:var(--blue); }
+      .opt:active { transform:scale(.97); }
+      .opt.right { border-color:var(--green); background:#e6f4eb; color:var(--green); animation:pop .3s; }
+      .opt.wrong { border-color:var(--coral); background:#fdeee9; color:var(--coral); animation:shake .3s; }
+      @keyframes pop { 50%{ transform:scale(1.06);} }
+      @keyframes shake { 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+      .feedback { min-height:26px; margin-top:16px; font-weight:800; }
+      .feedback.ok { color:var(--green); } .feedback.no { color:var(--coral); }
+      .btn { background:var(--blue); color:#fff; border:none; border-radius:12px; padding:13px 26px; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; margin-top:8px; }
+      .btn:hover { filter:brightness(1.08); }
+      .btn.start { background:var(--teal); font-size:18px; padding:15px 34px; }
+      .bar { height:10px; background:var(--line); border-radius:50px; overflow:hidden; margin:14px 0 2px; }
+      .bar > div { height:100%; width:100%; background:linear-gradient(90deg,var(--gold),var(--coral)); transition:width .25s linear; }
+      .hidden { display:none; }
+      .big-score { font-size:52px; font-weight:900; color:var(--blue); margin:6px 0; }
+      .legend { font-size:13px; color:var(--muted); margin-top:18px; }
+      .legend a { color:var(--blue); font-weight:700; }
+      ul.modes { text-align:left; max-width:430px; margin:14px auto; color:var(--muted); font-size:15px; }
+    </style>
+  </head>
+  <body>
+    <header class="ghero">
+      <div class="deco">🍕</div>
+      <h1>Fraction Frenzy</h1>
+      <p>Race the clock dividing fractions and whole numbers — slicing your way through every kind of fraction division!</p>
+    </header>
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> / <a href="/math/games/">Games</a> / Fraction Frenzy
+      </nav>
+
+      <section class="card" id="startScreen">
+        <p class="mode-tag">Lessons 2.1–2.5 · 6.NS.1</p>
+        <h2 style="margin:6px 0;">Ready for the frenzy?</h2>
+        <ul class="modes">
+          <li><strong>Round 1 — Whole ÷ Unit Fraction.</strong> e.g., 4 ÷ 1/3 = 12.</li>
+          <li><strong>Round 2 — Fraction ÷ Unit Fraction.</strong> e.g., 3/4 ÷ 1/8 = 6.</li>
+          <li><strong>Round 3 — Unit Fraction ÷ Whole.</strong> e.g., 1/2 ÷ 3 = 1/6.</li>
+        </ul>
+        <p class="sub">You have <strong>3 ❤</strong> and a timer on each question. Build a streak for bonus points!</p>
+        <button class="btn start" id="startBtn" type="button">Start Game ▶</button>
+      </section>
+
+      <section id="playScreen" class="hidden">
+        <div class="hud">
+          <div><span class="lbl">Score</span><span class="val" id="score">0</span></div>
+          <div><span class="lbl">Streak</span><span class="val" id="streak">0</span></div>
+          <div><span class="lbl">Lives</span><span class="val hearts" id="lives">❤❤❤</span></div>
+          <div><span class="lbl">Question</span><span class="val" id="qnum">1</span></div>
+        </div>
+        <div class="bar"><div id="timebar"></div></div>
+        <div class="card" style="margin-top:14px;">
+          <span class="mode-tag" id="modeTag"></span>
+          <div class="prompt" id="prompt"></div>
+          <p class="sub" id="sub"></p>
+          <div class="opts" id="opts"></div>
+          <div class="feedback" id="feedback"></div>
+          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
+        </div>
+      </section>
+
+      <section class="card hidden" id="resultScreen">
+        <p class="mode-tag">Game Over</p>
+        <div class="big-score" id="finalScore">0</div>
+        <p id="resultMsg" style="font-weight:700;"></p>
+        <p class="sub" id="resultDetail"></p>
+        <button class="btn start" id="againBtn" type="button">Play Again 🔁</button>
+        <p class="legend">More review: <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> · <a href="/math/games/">All Games</a></p>
+      </section>
+    </div>
+
+    <script>
+      function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+      function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+      function round2(n){ return Math.round(n*100)/100; }
+
+      var TOTAL=12, TIME=12;
+      var state={};
+
+      function distinctOpts(correct, makeWrong, fmt){
+        var set={}; set[fmt(correct)]=true; var opts=[fmt(correct)];
+        var guard=0;
+        while(opts.length<4 && guard<50){ guard++; var w=makeWrong(); var k=fmt(w); if(!set[k]){ set[k]=true; opts.push(k); } }
+        var pad=1;
+        while(opts.length<4){ var ek=fmt(correct + pad); if(!set[ek]){ set[ek]=true; opts.push(ek); } pad++; }
+        return { opts:shuffle(opts), correct:fmt(correct) };
+      }
+
+      function buildQuestion(i){
+        var round = i<4 ? 1 : (i<8 ? 2 : 3);
+
+        if(round===1){
+          // whole ÷ unit fraction = integer: n ÷ (1/d) = n*d
+          var n=rnd(2,6), d=rnd(2,5);
+          var ans=n*d;
+          var o=distinctOpts(ans, function(){ return ans + rnd(-3,3)*d || ans+d; }, String);
+          // ensure no zero or negative in opts by rebuilding if needed
+          return {
+            tag:"Whole ÷ Unit Fraction",
+            prompt:n+" ÷ 1/"+d+" = ?",
+            sub:"Dividing by a fraction: multiply by its reciprocal.",
+            opts:o.opts,
+            correct:o.correct,
+            why:n+" ÷ 1/"+d+" = "+n+" × "+d+" = "+ans+"."
+          };
+        }
+
+        if(round===2){
+          // fraction ÷ unit fraction = integer: (a/b) ÷ (1/d) = a*d/b
+          // pick b in {2,3,4}, a in {1..b-1}, d a multiple of b so a*d/b is a whole number
+          var b=rnd(2,4), a=rnd(1,b-1<1?1:b-1);
+          if(a>=b) a=b-1; // ensure proper fraction
+          var mult=rnd(1,4), d2=b*mult; // d2 is multiple of b
+          var ans2=a*d2/b; // guaranteed integer
+          // distractors: nearby integers, non-zero, non-ans
+          var o2=distinctOpts(ans2, function(){
+            var delta=rnd(1,4);
+            return Math.random()<0.5 ? ans2+delta : Math.max(1,ans2-delta);
+          }, String);
+          return {
+            tag:"Fraction ÷ Unit Fraction",
+            prompt:a+"/"+b+" ÷ 1/"+d2+" = ?",
+            sub:"Flip the divisor and multiply.",
+            opts:o2.opts,
+            correct:o2.correct,
+            why:a+"/"+b+" ÷ 1/"+d2+" = "+a+"/"+b+" × "+d2+" = "+ans2+"."
+          };
+        }
+
+        // round 3: unit fraction ÷ whole = unit fraction
+        // (1/b) ÷ n = 1/(b*n)
+        var b3=rnd(2,6), n3=rnd(2,5);
+        var denom=b3*n3;
+        var ansStr="1/"+denom;
+        var o3=distinctOpts(denom, function(){
+          // generate a different denominator
+          var delta=rnd(1,4);
+          return Math.random()<0.5 ? denom+delta : Math.max(2,denom-delta);
+        }, function(d){ return "1/"+d; });
+        return {
+          tag:"Unit Fraction ÷ Whole",
+          prompt:"1/"+b3+" ÷ "+n3+" = ?",
+          sub:"Divide a unit fraction by a whole number.",
+          opts:o3.opts,
+          correct:o3.correct,
+          why:"1/"+b3+" ÷ "+n3+" = 1/("+b3+"×"+n3+") = 1/"+denom+"."
+        };
+      }
+
+      function startGame(){
+        state={ i:0, score:0, streak:0, lives:3, locked:false };
+        document.getElementById("startScreen").classList.add("hidden");
+        document.getElementById("resultScreen").classList.add("hidden");
+        document.getElementById("playScreen").classList.remove("hidden");
+        nextQuestion();
+      }
+      function nextQuestion(){
+        if(state.lives<=0 || state.i>=TOTAL){ return endGame(); }
+        state.locked=false; state.q=buildQuestion(state.i);
+        document.getElementById("qnum").textContent=(state.i+1)+"/"+TOTAL;
+        document.getElementById("modeTag").textContent=state.q.tag;
+        document.getElementById("prompt").textContent=state.q.prompt;
+        document.getElementById("sub").textContent=state.q.sub;
+        document.getElementById("feedback").textContent=""; document.getElementById("feedback").className="feedback";
+        document.getElementById("nextBtn").classList.add("hidden");
+        var box=document.getElementById("opts"); box.innerHTML="";
+        state.q.opts.forEach(function(o){ var b=document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=o; b.onclick=function(){ answer(o,b); }; box.appendChild(b); });
+        startTimer();
+      }
+      function startTimer(){
+        var t=TIME, bar=document.getElementById("timebar"); bar.style.width="100%"; clearInterval(state.timer);
+        state.timer=setInterval(function(){ t-=0.1; bar.style.width=Math.max(0,(t/TIME*100))+"%"; if(t<=0){ clearInterval(state.timer); if(!state.locked){ timeUp(); } } },100);
+      }
+      function answer(choice, btn){
+        if(state.locked) return; state.locked=true; clearInterval(state.timer);
+        var fb=document.getElementById("feedback"), correct = choice===state.q.correct;
+        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); else if(b===btn) b.classList.add("wrong"); });
+        if(correct){ state.streak++; state.score += 10+Math.min(state.streak,5)*2; fb.textContent="✓ Correct! "+state.q.why+(state.streak>1?"  🔥 Streak ×"+state.streak:""); fb.className="feedback ok"; }
+        else { state.streak=0; state.lives--; fb.textContent="✗ "+state.q.why+"  (−1 ❤)"; fb.className="feedback no"; }
+        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      }
+      function timeUp(){
+        state.locked=true; state.streak=0; state.lives--;
+        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); });
+        var fb=document.getElementById("feedback"); fb.textContent="⏰ Time! "+state.q.why+"  (−1 ❤)"; fb.className="feedback no";
+        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      }
+      function updateHud(){
+        document.getElementById("score").textContent=state.score;
+        document.getElementById("streak").textContent=state.streak;
+        document.getElementById("lives").textContent= state.lives>0 ? "❤".repeat(state.lives) : "—";
+      }
+      function endGame(){
+        clearInterval(state.timer);
+        document.getElementById("playScreen").classList.add("hidden");
+        document.getElementById("resultScreen").classList.remove("hidden");
+        document.getElementById("finalScore").textContent=state.score;
+        var msg;
+        if(state.score>=180) msg="🏆 Fraction Champion!";
+        else if(state.score>=120) msg="🌟 Slicing through it!";
+        else if(state.score>=60) msg="👍 Nice work — keep practicing.";
+        else msg="💪 Try again to beat your score!";
+        document.getElementById("resultMsg").textContent=msg;
+        document.getElementById("resultDetail").textContent=(state.lives<=0?"Out of lives! ":"You finished all "+TOTAL+" questions! ")+"Final score: "+state.score+".";
+      }
+      document.getElementById("startBtn").onclick=startGame;
+      document.getElementById("againBtn").onclick=startGame;
+      document.getElementById("nextBtn").onclick=function(){ state.i++; nextQuestion(); };
+    </script>
+  </body>
+</html>
