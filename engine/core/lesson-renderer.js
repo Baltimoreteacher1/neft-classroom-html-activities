@@ -1,4 +1,4 @@
-import { createApp } from "./app.js";
+import { createApp, UNIT_CULMINATING_PROJECT } from "./app.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { levelOverride, mountLevelSelector } from "./levels.js";
 import {
@@ -326,6 +326,81 @@ function svgFigure(cfg, inner, W, H, padT = 16) {
   return `<div class="data-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cfg.title || "Data figure")}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;"><g transform="translate(0,${padT - 16})">${inner}</g></svg>${caption}</div>`;
 }
 
+// Tape / bar diagram: stacked labeled segments per row. Models part–whole,
+// ratios, rates, and percents (e.g. two rows whose lengths form a ratio).
+function tapeDiagramSVG(cfg) {
+  const rows = Array.isArray(cfg.rows) ? cfg.rows : [];
+  if (!rows.length) return "";
+  const W = 520,
+    padL = 8,
+    padR = 8,
+    rowH = 46,
+    gap = 14,
+    labelW = 96;
+  const H = 8 + rows.length * (rowH + gap);
+  const palette = [
+    "var(--teal,#2a9d8f)",
+    "var(--coral,#d9795d)",
+    "var(--amber,#e9c46a)",
+    "var(--navy,#264653)",
+  ];
+  // Scale so the longest row (by total) fills the track.
+  const totals = rows.map((r) =>
+    (r.parts || []).reduce((s, p) => s + (Number(p.value) || 0), 0),
+  );
+  const maxTotal = Math.max(...totals, 1);
+  const trackW = W - padL - padR - labelW;
+  let y = 8;
+  const body = rows
+    .map((r) => {
+      let x = padL + labelW;
+      const segs = (r.parts || [])
+        .map((p, i) => {
+          const w = ((Number(p.value) || 0) / maxTotal) * trackW;
+          const fill = p.fill || palette[i % palette.length];
+          const rect = `<rect x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="4" fill="${fill}"/><text x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${esc(p.label != null ? p.label : p.value)}</text>`;
+          x += w;
+          return rect;
+        })
+        .join("");
+      const rowLabel = `<text x="${padL}" y="${y + rowH / 2 + 4}" font-size="12" font-weight="700" fill="var(--navy,#264653)">${esc(r.label || "")}</text>`;
+      y += rowH + gap;
+      return rowLabel + segs;
+    })
+    .join("");
+  return svgFigure(cfg, body, W, H, 16);
+}
+
+// Static four-quadrant coordinate plane with optional plotted points.
+function coordPlaneSVG(cfg) {
+  const m = Number(cfg.max ?? 6);
+  const W = 360,
+    H = 360,
+    pad = 24;
+  const span = 2 * m;
+  const plot = W - 2 * pad;
+  const unit = plot / span;
+  const cx = pad + m * unit,
+    cy = pad + m * unit;
+  const X = (x) => pad + (x + m) * unit;
+  const Y = (y) => pad + (m - y) * unit;
+  let grid = "";
+  for (let i = -m; i <= m; i++) {
+    grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="rgba(0,0,0,0.06)"/>`;
+    grid += `<line x1="${pad}" y1="${Y(i)}" x2="${W - pad}" y2="${Y(i)}" stroke="rgba(0,0,0,0.06)"/>`;
+  }
+  const axes = `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="var(--ink,#333)" stroke-width="2"/><line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="var(--ink,#333)" stroke-width="2"/>`;
+  const pts = (cfg.points || [])
+    .map((p) => {
+      const px = X(Number(p.x)),
+        py = Y(Number(p.y));
+      const lbl = p.label || `(${p.x}, ${p.y})`;
+      return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/><text x="${(px + 8).toFixed(1)}" y="${(py - 8).toFixed(1)}" font-size="11" font-weight="700" fill="var(--navy,#264653)">${esc(lbl)}</text>`;
+    })
+    .join("");
+  return svgFigure(cfg, `${grid}${axes}${pts}`, W, H, 16);
+}
+
 // Unified visual builder → HTML string. Returns "" for unknown/empty kinds.
 function buildVisual(v) {
   if (!v) return "";
@@ -340,6 +415,10 @@ function buildVisual(v) {
       return barChartSVG(v);
     case "number-line":
       return numberLineSVG(v);
+    case "tape-diagram":
+      return tapeDiagramSVG(v);
+    case "coordinate-plane":
+      return coordPlaneSVG(v);
     default:
       return "";
   }
@@ -783,6 +862,16 @@ function resolveLanguageObjective(config) {
 function renderLaunchHeader(el, state, config) {
   const s = state.get();
   const homeworkHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.docx`;
+  // Projects link shown next to Homework on the launch screen so it's visible
+  // the moment a lesson opens (the sidebar Projects tab only appears once the
+  // activity starts). Points at any lesson-specific project, else this unit's
+  // culminating-project page. Omitted only when neither exists (e.g. Unit 8).
+  const projectsHref =
+    (Array.isArray(config.projects) &&
+      config.projects[0] &&
+      config.projects[0].href) ||
+    UNIT_CULMINATING_PROJECT[config.unit] ||
+    "";
 
   const block = document.createElement("div");
   block.className = "card launch-intro";
@@ -810,6 +899,12 @@ function renderLaunchHeader(el, state, config) {
       </div>
       <a class="btn btn-secondary launch-homework-link" href="${homeworkHref}"
         download>📄 Homework (Word doc)</a>
+      ${
+        projectsHref
+          ? `<a class="btn btn-secondary launch-projects-link" href="${projectsHref}"
+        target="_blank" rel="noopener">🛠️ Projects</a>`
+          : ""
+      }
     </div>
     <div class="launch-objectives grid-2">
       <div class="card card-teal launch-objective">

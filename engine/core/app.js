@@ -482,7 +482,7 @@ function preLessonNavHtml(config) {
 // are reordered vs Reveal lesson units for 7/8/9: Reveal 7 (equations) ->
 // /math/unit-8, Reveal 9 (coordinate plane) -> /math/unit-7. Reveal unit 8
 // (statistics, 6.SP) has no classroom culminating-project page, so it is omitted.
-const UNIT_CULMINATING_PROJECT = {
+export const UNIT_CULMINATING_PROJECT = {
   1: "/math/unit-1/projects/",
   2: "/math/unit-2/projects/",
   3: "/math/unit-3/projects/",
