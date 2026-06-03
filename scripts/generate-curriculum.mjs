@@ -171,6 +171,13 @@ function lessonResources(id) {
   if (has("lessons", id, "homework.docx")) {
     pills.push(resLink("Homework", `/lessons/${id}/homework.docx`, true));
   }
+  pills.push(
+    resLink(
+      "Google Forms",
+      `https://eduwonderlab.vercel.app/google-forms/?lesson=${encodeURIComponent(id)}`,
+      true
+    )
+  );
 
   return pills;
 }
