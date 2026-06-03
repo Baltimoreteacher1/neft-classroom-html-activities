@@ -9,6 +9,9 @@
 
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="shell">
@@ -39,5 +42,8 @@ function render(){document.getElementById('vocabGrid').innerHTML=vocab.map(v=>`<
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));const status=$('#status');function show(msg){if(!status)return;status.textContent=msg;status.classList.add('show');clearTimeout(show.t);show.t=setTimeout(()=>status.classList.remove('show'),1400)}function openModal(id){const m=document.getElementById(id);if(!m)return;m.classList.add('active');m.setAttribute('aria-hidden','false');const c=$('.close-modal',m);if(c)c.focus({preventScroll:true})}function closeModal(m){if(!m)return;m.classList.remove('active');m.setAttribute('aria-hidden','true')}function toggleDrawer(btn){const d=document.getElementById(btn.dataset.target);if(!d)return;const o=d.classList.toggle('active');btn.setAttribute('aria-expanded',o?'true':'false')}document.addEventListener('click',e=>{const t=e.target.closest('.toggle');if(t){e.preventDefault();toggleDrawer(t);return}const q=e.target.closest('.quote-popup-btn');if(q){e.preventDefault();openModal(q.dataset.popup);return}const c=e.target.closest('.close-modal');if(c){e.preventDefault();closeModal(document.getElementById(c.dataset.close));return}if(e.target.classList&&e.target.classList.contains('quote-modal'))closeModal(e.target)});document.addEventListener('keydown',e=>{if(e.key==='Escape')$$('.quote-modal.active').forEach(closeModal)});$$('.choice input').forEach(input=>input.addEventListener('change',()=>{const card=input.closest('.card');$$('.choice',card).forEach(ch=>ch.classList.remove('correct','incorrect'));input.closest('.choice').classList.add(input.dataset.correct==='true'?'correct':'incorrect');$('.feedback',card).textContent=input.dataset.correct==='true'?'Correct — the locket matters because of its connection to Samuel’s mother and his past.':'Try again — look back at the locket scenes and quote explanations.'}));$('#printBtn').addEventListener('click',()=>window.print());$('#topBtn').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));$('#largeTextBtn').addEventListener('click',()=>{document.body.classList.toggle('large-text');show(document.body.classList.contains('large-text')?'Large text on':'Large text off')});$('#contrastBtn').addEventListener('click',()=>{document.body.classList.toggle('high-contrast');show(document.body.classList.contains('high-contrast')?'High contrast on':'High contrast off')});
 </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-  </body>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
 </html>

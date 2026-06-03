@@ -56,7 +56,10 @@
       .footer { text-align:center; color:var(--muted); font-size:14px; margin-top:30px; }
       @media print { .toolbtn,.checkbtn { display:none !important; } body{ background:#fff; font-size:15px; } .phero{ color:#000; background:#fff; } .card{ box-shadow:none; break-inside:avoid; } details.akey{ display:none; } }
     </style>
-  </head>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
   <body>
     <header class="phero">
       <div class="deco">🛍️</div>
@@ -268,7 +271,10 @@
         Array.prototype.forEach.call(clone.querySelectorAll(".checkbtn, .toolbtn"),function(n){ n.parentNode.removeChild(n); });
         var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>The School Store Sale (ESOL)</title></head><body style="font-family:Calibri,Arial,sans-serif;">'
           +'<h1>The School Store Sale — Reading + Math (ESOL)</h1><p><b>Name: ___________________________  Date: ____________</b></p>'
-          +clone.innerHTML+'</body></html>';
+          +clone.innerHTML+'  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body></html>';
         var blob=new Blob(['﻿',html],{type:"application/msword"});
         var url=URL.createObjectURL(blob);
         var a=document.createElement("a"); a.href=url; a.download="The-School-Store-Sale-ESOL.doc";
