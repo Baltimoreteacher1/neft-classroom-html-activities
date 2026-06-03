@@ -36,6 +36,22 @@
     return v == null ? "" : v;
   }
 
+  /* Read-aloud (text-to-speech) via the Web Speech API. Offline, no assets. */
+  var TTS = (function () {
+    var synth = window.speechSynthesis;
+    function speak(text, lang) {
+      if (!synth) return;
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(
+        String(text).replace(/<[^>]+>/g, ""),
+      );
+      u.lang = lang === "es" ? "es-ES" : "en-US";
+      u.rate = 0.95;
+      synth.speak(u);
+    }
+    return { available: !!synth, speak: speak };
+  })();
+
   /* Interaction + feature extensibility seams. */
   var INTERACTIONS = {}; // name -> { render(step, groupEl, onSolve) }  (must emit .choices/.choice.correct on solve)
 
@@ -375,6 +391,28 @@
       en +
       "</div>" +
       (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
+    if (TTS.available) {
+      var ctl =
+        '<span class="tts">' +
+        '<button class="tts-btn" type="button" data-tts-en aria-label="Read aloud">&#128266;</button>' +
+        (beat.es
+          ? '<button class="tts-btn" type="button" data-tts-es aria-label="Leer en voz alta">ES</button>'
+          : "") +
+        "</span>";
+      b.insertAdjacentHTML("beforeend", ctl);
+      b.querySelector("[data-tts-en]").addEventListener("click", function (e) {
+        e.stopPropagation();
+        TTS.speak(beat.en, "en");
+      });
+      if (beat.es)
+        b.querySelector("[data-tts-es]").addEventListener(
+          "click",
+          function (e) {
+            e.stopPropagation();
+            TTS.speak(beat.es, "es");
+          },
+        );
+    }
     frag.appendChild(b);
     return frag;
   }
@@ -682,6 +720,7 @@
   }
 
   function showScene(name) {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
     SCENE_IDS.forEach(function (s) {
       var sc = $("scene-" + s);
       if (sc) sc.classList.toggle("active", s === name);
