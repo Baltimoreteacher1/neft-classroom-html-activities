@@ -490,6 +490,7 @@ export const UNIT_CULMINATING_PROJECT = {
   5: "/math/unit-5/projects/",
   6: "/math/unit-6/projects/",
   7: "/math/unit-8/projects/",
+  8: "/math/statistics/projects/",
   9: "/math/unit-7/projects/",
   10: "/math/unit-10/projects/",
 };
