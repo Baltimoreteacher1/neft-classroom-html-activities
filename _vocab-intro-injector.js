@@ -799,7 +799,7 @@ function processUnit5Files() {
         def: "The straight (perpendicular) distance from base to top.",
       },
     ],
-    "5-3envtrapezoidactivity": [
+    "trapezoid-area-studio-env": [
       {
         term: "Trapezoid",
         def: "A four-sided shape with exactly one pair of parallel sides.",
@@ -817,7 +817,7 @@ function processUnit5Files() {
         def: "The space inside the trapezoid. Formula: A = 1/2(b1 + b2) x h.",
       },
     ],
-    "5-3rvtrapezoid": [
+    "trapezoid-area-studio-rv": [
       {
         term: "Trapezoid",
         def: "A four-sided shape with exactly one pair of parallel sides.",

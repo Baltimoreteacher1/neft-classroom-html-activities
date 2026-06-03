@@ -582,8 +582,6 @@ body.light-theme .lesson-row.active {
       <label for="curr-search">Search</label>
       <input id="curr-search" type="search" placeholder="Filter by lesson, standard, or topic…" aria-label="Filter lessons by title, standard, or topic" autocomplete="off" />
     </div>
-    <button class="btn" type="button" id="expand-all">Expand all</button>
-    <button class="btn" type="button" id="collapse-all">Collapse all</button>
     <button class="btn" type="button" id="theme-toggle" aria-label="Toggle visual theme">☀️ Light Mode</button>
   </div>
   <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
@@ -1651,7 +1649,7 @@ body.light-theme .lesson-row.active {
     }
   }
 
-  // 3. Render Normal Dashboard View (Collapsible Rows)
+  // 3. Render Normal Dashboard View (Dropdown Selector Form)
   function renderHub() {
     hub.innerHTML = '';
     noResults.classList.remove('show');
@@ -1691,200 +1689,259 @@ body.light-theme .lesson-row.active {
         card.appendChild(resRow);
       }
       
-      // Lessons list
-      var lessonsList = document.createElement('div');
-      lessonsList.className = 'unit-lessons-list';
+      // Select Dropdowns Group
+      var selectorGroup = document.createElement('div');
+      selectorGroup.className = 'selector-group';
+      
+      // Lesson Selector
+      var lessonField = document.createElement('div');
+      lessonField.className = 'selector-field';
+      lessonField.innerHTML = '<span class="selector-label">Lesson</span>';
+      
+      var lessonWrapper = document.createElement('div');
+      lessonWrapper.className = 'select-wrapper';
+      
+      var lessonSelect = document.createElement('select');
+      lessonSelect.className = 'select-control lesson-select';
       
       u.lessons.forEach(function(l, lIdx) {
-        var lessonRow = document.createElement('div');
-        lessonRow.className = 'lesson-row';
-        
-        var lessonHeader = document.createElement('div');
-        lessonHeader.className = 'lesson-row-header';
-        lessonHeader.setAttribute('tabindex', '0');
-        lessonHeader.setAttribute('role', 'button');
-        lessonHeader.setAttribute('aria-expanded', 'false');
-        
-        var titleSpan = document.createElement('span');
-        titleSpan.className = 'lesson-row-title';
-        titleSpan.innerHTML = l.titleHTML;
-        lessonHeader.appendChild(titleSpan);
-        
-        var chevron = document.createElement('span');
-        chevron.className = 'lesson-row-chevron';
-        chevron.textContent = '▼';
-        lessonHeader.appendChild(chevron);
-        
-        lessonRow.appendChild(lessonHeader);
-        
-        var lessonContent = document.createElement('div');
-        lessonContent.className = 'lesson-row-content';
-        
-        var contentInner = document.createElement('div');
-        contentInner.className = 'lesson-row-content-inner';
-        
-        if (l.objective) {
-          var objText = document.createElement('p');
-          objText.className = 'lesson-info-obj';
-          objText.textContent = l.objective;
-          contentInner.appendChild(objText);
+        var opt = document.createElement('option');
+        opt.value = lIdx;
+        opt.textContent = l.title;
+        lessonSelect.appendChild(opt);
+      });
+      lessonWrapper.appendChild(lessonSelect);
+      lessonField.appendChild(lessonWrapper);
+      selectorGroup.appendChild(lessonField);
+      
+      // Activity Selector
+      var actField = document.createElement('div');
+      actField.className = 'selector-field';
+      actField.innerHTML = '<span class="selector-label">Activity</span>';
+      
+      var actWrapper = document.createElement('div');
+      actWrapper.className = 'select-wrapper';
+      
+      var actSelect = document.createElement('select');
+      actSelect.className = 'select-control activity-select';
+      actWrapper.appendChild(actSelect);
+      actField.appendChild(actWrapper);
+      selectorGroup.appendChild(actField);
+      
+      card.appendChild(selectorGroup);
+      
+      // Dynamic details block
+      var infoBlock = document.createElement('div');
+      infoBlock.className = 'lesson-info';
+      
+      var objText = document.createElement('p');
+      objText.className = 'lesson-info-obj';
+      infoBlock.appendChild(objText);
+      
+      var outline = document.createElement('div');
+      outline.className = 'lesson-outline';
+      outline.innerHTML = '<span class="lesson-outline-title">Activities List (Outline Form)</span>';
+      var outlineList = document.createElement('ul');
+      outlineList.className = 'lesson-outline-list';
+      outline.appendChild(outlineList);
+      infoBlock.appendChild(outline);
+      
+      var launchBtn = document.createElement('a');
+      launchBtn.className = 'btn-launch';
+      launchBtn.textContent = 'Launch Activity';
+      launchBtn.target = '_blank';
+      infoBlock.appendChild(launchBtn);
+      
+      card.appendChild(infoBlock);
+      
+      // Update details depending on the selected lesson
+      function updateCardState() {
+        var selectedLessonIdx = parseInt(lessonSelect.value) || 0;
+        var lesson = u.lessons[selectedLessonIdx];
+        if (!lesson) {
+          infoBlock.style.display = 'none';
+          return;
         }
+        infoBlock.style.display = 'flex';
         
-        var resRow = document.createElement('div');
-        resRow.className = 'res-row';
-        l.activities.forEach(function(act) {
-          var a = document.createElement('a');
-          a.className = 'res';
-          a.href = act.href;
-          a.target = '_blank';
+        // Update Objective
+        objText.textContent = lesson.objective || 'No objective specified.';
+        objText.style.display = lesson.objective ? '' : 'none';
+        
+        // Combine activities and projects
+        var allActs = lesson.activities.concat(lesson.projects || []);
+        
+        // Update Activity select dropdown
+        actSelect.innerHTML = '';
+        allActs.forEach(function(act) {
+          var opt = document.createElement('option');
+          opt.value = act.href;
+          opt.textContent = act.text;
+          actSelect.appendChild(opt);
+        });
+        
+        // Update Outline list
+        outlineList.innerHTML = '';
+        allActs.forEach(function(act) {
+          var li = document.createElement('li');
+          li.className = 'lesson-outline-item';
           
+          var isProject = (lesson.projects && lesson.projects.indexOf(act) > -1);
           var icon = '🔗';
           var name = act.text.toLowerCase();
-          if (name.indexOf('lesson') > -1 || name.indexOf('html') > -1) icon = '💻';
-          else if (name.indexOf('notes') > -1 || name.indexOf('packet') > -1) icon = '📝';
-          else if (name.indexOf('homework') > -1) icon = '🏠';
+          if (isProject) {
+            icon = '🛠️';
+          } else if (name.indexOf('lesson') > -1 || name.indexOf('html') > -1) {
+            icon = '💻';
+          } else if (name.indexOf('notes') > -1 || name.indexOf('packet') > -1) {
+            icon = '📝';
+          } else if (name.indexOf('homework') > -1) {
+            icon = '🏠';
+          }
           
+          var a = document.createElement('a');
+          a.href = act.href;
+          a.target = '_blank';
+          if (isProject) {
+            a.className = 'res-project';
+          }
           a.innerHTML = icon + ' ' + act.text;
-          resRow.appendChild(a);
+          li.appendChild(a);
+          outlineList.appendChild(li);
         });
         
-        // Append project/game links
-        if (l.projects && l.projects.length > 0) {
-          l.projects.forEach(function(proj) {
-            var a = document.createElement('a');
-            a.className = 'res res-project';
-            a.href = proj.href;
-            a.target = '_blank';
-            a.innerHTML = '🛠️ ' + proj.text;
-            resRow.appendChild(a);
-          });
+        // Launch Button handler
+        function updateLauncher() {
+          var href = actSelect.value;
+          if (href) {
+            launchBtn.href = href;
+            launchBtn.style.display = '';
+            var selectedActText = actSelect.options[actSelect.selectedIndex].textContent;
+            launchBtn.textContent = 'Launch: ' + selectedActText + ' →';
+          } else {
+            launchBtn.style.display = 'none';
+          }
         }
         
-        contentInner.appendChild(resRow);
-        lessonContent.appendChild(contentInner);
-        lessonRow.appendChild(lessonContent);
-        
-        // Toggle behavior
-        lessonHeader.addEventListener('click', function() {
-          var expanded = lessonHeader.getAttribute('aria-expanded') === 'true';
-          lessonHeader.setAttribute('aria-expanded', !expanded ? 'true' : 'false');
-          lessonRow.classList.toggle('active', !expanded);
-          if (!expanded) {
-            lessonContent.style.maxHeight = lessonContent.scrollHeight + 'px';
-          } else {
-            lessonContent.style.maxHeight = '0';
-          }
-        });
-        lessonHeader.addEventListener('keydown', function(e) {
-          if (e.key === ' ' || e.key === 'Enter') {
-            e.preventDefault();
-            lessonHeader.click();
-          }
-        });
-        
-        lessonsList.appendChild(lessonRow);
-      });
+        actSelect.onchange = updateLauncher;
+        updateLauncher();
+      }
       
-      card.appendChild(lessonsList);
+      lessonSelect.onchange = updateCardState;
+      updateCardState();
+      
       grid.appendChild(card);
     });
     
     hub.appendChild(grid);
   }
 
-  // 4. In-place Search Filtering
-  function handleSearch() {
-    var q = (box.value || '').trim().toLowerCase();
+  // 4. Render Search Results View (Lists items directly)
+  function renderSearchResults(q) {
+    hub.innerHTML = '';
     
-    var unitCards = document.querySelectorAll('.unit-card');
+    var panel = document.createElement('div');
+    panel.className = 'search-results-panel';
+    
+    var title = document.createElement('h2');
+    title.style.fontSize = '18px';
+    title.style.color = 'var(--navy)';
+    title.style.fontFamily = 'Outfit, sans-serif';
+    title.style.marginBottom = '12px';
+    title.textContent = 'Search Results for "' + q + '"';
+    panel.appendChild(title);
+    
     var anyVisible = false;
     
-    unitsData.forEach(function(u, uIdx) {
-      var card = unitCards[uIdx];
-      if (!card) return;
-      var unitHasMatch = false;
-      
-      var lessonRows = card.querySelectorAll('.lesson-row');
-      u.lessons.forEach(function(l, lIdx) {
-        var row = lessonRows[lIdx];
-        if (!row) return;
-        var isMatch = !q || l.dataSearch.indexOf(q) > -1;
-        
-        if (isMatch) {
-          row.style.display = '';
-          unitHasMatch = true;
-          if (q) {
-            row.classList.add('active');
-            var content = row.querySelector('.lesson-row-content');
-            if (content) {
-              content.style.maxHeight = content.scrollHeight + 'px';
+    unitsData.forEach(function(u) {
+      u.lessons.forEach(function(l) {
+        if (l.dataSearch.indexOf(q) > -1) {
+          anyVisible = true;
+          var item = document.createElement('div');
+          item.className = 'search-result-item';
+          
+          var unitLabel = document.createElement('span');
+          unitLabel.className = 'search-result-unit';
+          unitLabel.textContent = u.num + ' · ' + u.name;
+          item.appendChild(unitLabel);
+          
+          var header = document.createElement('div');
+          header.className = 'search-result-header';
+          header.textContent = l.title;
+          item.appendChild(header);
+          
+          if (l.objective) {
+            var obj = document.createElement('p');
+            obj.className = 'lesson-info-obj';
+            obj.style.marginBottom = '12px';
+            obj.textContent = l.objective;
+            item.appendChild(obj);
+          }
+          
+          var outlineList = document.createElement('ul');
+          outlineList.className = 'lesson-outline-list';
+          
+          var allActs = l.activities.concat(l.projects || []);
+          allActs.forEach(function(act) {
+            var li = document.createElement('li');
+            li.className = 'lesson-outline-item';
+            
+            var isProject = (l.projects && l.projects.indexOf(act) > -1);
+            var icon = '🔗';
+            var name = act.text.toLowerCase();
+            if (isProject) {
+              icon = '🛠️';
+            } else if (name.indexOf('lesson') > -1 || name.indexOf('html') > -1) {
+              icon = '💻';
+            } else if (name.indexOf('notes') > -1 || name.indexOf('packet') > -1) {
+              icon = '📝';
+            } else if (name.indexOf('homework') > -1) {
+              icon = '🏠';
             }
-            row.querySelector('.lesson-row-header').setAttribute('aria-expanded', 'true');
-          }
-        } else {
-          row.style.display = 'none';
-          row.classList.remove('active');
-          var content = row.querySelector('.lesson-row-content');
-          if (content) {
-            content.style.maxHeight = '0';
-          }
-          row.querySelector('.lesson-row-header').setAttribute('aria-expanded', 'false');
+            
+            var a = document.createElement('a');
+            a.href = act.href;
+            a.target = '_blank';
+            if (isProject) {
+              a.className = 'res-project';
+            }
+            a.innerHTML = icon + ' ' + act.text;
+            li.appendChild(a);
+            outlineList.appendChild(li);
+          });
+          item.appendChild(outlineList);
+          
+          panel.appendChild(item);
         }
       });
-      
-      if (unitHasMatch) {
-        card.style.display = '';
-        anyVisible = true;
-      } else {
-        card.style.display = 'none';
-      }
     });
     
-    noResults.classList.toggle('show', q && !anyVisible);
+    noResults.classList.toggle('show', !anyVisible);
+    if (!anyVisible) {
+      var noRes = document.createElement('p');
+      noRes.style.color = 'var(--muted)';
+      noRes.style.fontSize = '15px';
+      noRes.style.textAlign = 'center';
+      noRes.style.padding = '24px';
+      noRes.textContent = 'No matching lessons found.';
+      panel.appendChild(noRes);
+    } else {
+      hub.appendChild(panel);
+    }
+  }
+
+  // 5. Wire Search input
+  function handleSearch() {
+    var q = (box.value || '').trim().toLowerCase();
+    if (q) {
+      renderSearchResults(q);
+    } else {
+      renderHub();
+    }
   }
   
   if (box) {
     box.addEventListener('input', handleSearch);
-  }
-  
-  // 5. Expand/Collapse All buttons
-  var expandBtn = document.getElementById('expand-all');
-  var collapseBtn = document.getElementById('collapse-all');
-  
-  if (expandBtn) {
-    expandBtn.addEventListener('click', function() {
-      var lessonRows = document.querySelectorAll('.lesson-row');
-      lessonRows.forEach(function(row) {
-        if (row.style.display !== 'none') {
-          row.classList.add('active');
-          var content = row.querySelector('.lesson-row-content');
-          if (content) {
-            content.style.maxHeight = content.scrollHeight + 'px';
-          }
-          var header = row.querySelector('.lesson-row-header');
-          if (header) {
-            header.setAttribute('aria-expanded', 'true');
-          }
-        }
-      });
-    });
-  }
-  
-  if (collapseBtn) {
-    collapseBtn.addEventListener('click', function() {
-      var lessonRows = document.querySelectorAll('.lesson-row');
-      lessonRows.forEach(function(row) {
-        row.classList.remove('active');
-        var content = row.querySelector('.lesson-row-content');
-        if (content) {
-          content.style.maxHeight = '0';
-        }
-        var header = row.querySelector('.lesson-row-header');
-        if (header) {
-          header.setAttribute('aria-expanded', 'false');
-        }
-      });
-    });
   }
   
   // Theme Toggle Logic

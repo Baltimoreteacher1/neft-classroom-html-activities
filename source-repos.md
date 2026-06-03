@@ -31,8 +31,8 @@ This file maps classroom activity source repository names into the organized sta
 | `VolumeofRectangularPrism` | `/unit-5/volumeofrectangularprism/` |
 | `InteractiveAreaMission` | `/unit-5/interactiveareamission/` |
 | `5.1-5.3Practice` | `/unit-5/5-1-5-3practice/` |
-| `5.3RVTrapezoid` | `/unit-5/5-3rvtrapezoid/` |
-| `5.3ENVTrapezoidActivity` | `/unit-5/5-3envtrapezoidactivity/` |
+| `5.3RVTrapezoid` | `/unit-5/trapezoid-area-studio-rv/` |
+| `5.3ENVTrapezoidActivity` | `/unit-5/trapezoid-area-studio-env/` |
 | `Grade6Area5.1-2` | `/unit-5/grade6area5-1-2/` |
 | `Grade6Area5.1-2Language` | `/unit-5/grade6area5-1-2language/` |
 | `ParallelogramandRhombusGame` | `/unit-5/parallelogramandrhombusgame/` |
@@ -47,7 +47,7 @@ This file maps classroom activity source repository names into the organized sta
 | `Mean-Median-Mode-Game` | `/statistics-data/mean-median-mode-game/` |
 | `Mean-Median-ModeGalleryWalk` | `/statistics-data/mean-median-modegallerywalk/` |
 | `meanmedianmodesoccerandbracelets` | `/statistics-data/meanmedianmodesoccerandbracelets/` |
-| `MeanMedianModeIntrohtml` | `/statistics-data/meanmedianmodeintrohtml/` |
+| `MeanMedianModeIntrohtml` | `/statistics-data/mean-median-mode-intro/` |
 | `Histogramhero` | `/statistics-data/histogramhero/` |
 | `2.2HistogramGraphicNovel` | `/statistics-data/2-2histogramgraphicnovel/` |
 | `6.SP.A.1Game-` | `/statistics-data/6-sp-a-1game/` |
@@ -63,9 +63,9 @@ This file maps classroom activity source repository names into the organized sta
 | --- | --- |
 | `VariableExplorerESOL` | `/expressions-equations/variableexploreresol/` |
 | `VariableExplorer1` | `/expressions-equations/variableexplorer1/` |
-| `6eec9testproject` | `/expressions-equations/6eec9testproject/` |
+| `6eec9testproject` | `/expressions-equations/proportional-relationships-gallery/` |
 | `6.ee.c.9aftertest` | `/expressions-equations/6-ee-c-9aftertest/` |
-| `6eec9aftertest2` | `/expressions-equations/6eec9aftertest2/` |
+| `6eec9aftertest2` | `/expressions-equations/proportional-relationships-mission/` |
 | `6.ee.c.9VariableVelocityGame` | `/expressions-equations/6-ee-c-9variablevelocitygame/` |
 | `6.ee.c.9MartianGame` | `/expressions-equations/6-ee-c-9martiangame/` |
 | `6.ee.c.9Projectroblox` | `/expressions-equations/6-ee-c-9projectroblox/` |
