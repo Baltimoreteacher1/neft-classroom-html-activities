@@ -3,7 +3,9 @@
    "Captain's Challenge" bonus rounds (non-gating, still scored), English-only
    (source has no Spanish), 11-term codex. All math/answers/distractors/glossary
    carried verbatim from graphic-novels/unit1/graphic-novel-2.html (6.NS.4).
-   New: panels, speech, AXIS-voices-the-misconception, vocab pop-ups. */
+   New: panels, speech, AXIS-voices-the-misconception, vocab pop-ups.
+   Literacy layer (SP1): 7 English-only comprehension steps (c1–c7) +
+   meta.readingStandard. All math/answers/glossary unchanged. */
 window.GN_STORY = {
   meta: {
     unit: 1,
@@ -11,6 +13,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Prime Station: The Factor Code",
     standard: "6.NS.4",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #2: Prime Station: The Factor Code",
     artBase: "../_art/unit1/",
     home: "../index.html",
@@ -80,6 +83,10 @@ window.GN_STORY = {
               misconception: true,
               en: "I've decrypted it: 72 = 2³ × 3. Sending the key!",
             },
+            {
+              who: "cadet",
+              en: "Belay that, AXIS — a half-finished factorization is worse than none. One missing prime and the cylinder rejects us. Let me verify it properly before we transmit.",
+            },
           ],
         },
         {
@@ -119,6 +126,37 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "When the Cadet vows to <b>decompose</b> every code, the word <b>decompose</b> most nearly means to —",
+          },
+          choices: [
+            {
+              en: "break the number apart into a product of its prime factors.",
+              correct: true,
+            },
+            {
+              en: "scramble the number so the lock can no longer read it.",
+              correct: false,
+            },
+            {
+              en: "round the number to the nearest power of ten.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Precisely. To <i>decompose</i> is to take apart — here, to break a number into the primes that multiply to make it.",
+          badEn:
+            "❌ In this context, <i>decompose</i> means to break the number down into its prime factors, not to scramble or round it.",
+        },
+        {
           type: "challenge",
           id: "1b",
           art: "factor-tree.png",
@@ -154,6 +192,37 @@ window.GN_STORY = {
             who: "cadet",
             en: "Bay breached. Systems coming back online.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.1b",
+          ask: {
+            who: "log",
+            en: "Claim: <b>a factor tree is accepted only when it is finished, not merely started.</b> Tap the line that <b>best proves</b> this claim.",
+          },
+          choices: [
+            {
+              en: "“Open the bay by choosing the fully reduced factor tree for 120 — every leaf must be prime.”",
+              correct: true,
+            },
+            {
+              en: "“A holographic factor tree for 120 branches above the open bay.”",
+              correct: false,
+            },
+            {
+              en: "“Bay breached. Systems coming back online.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Strong evidence — that line states the exact rule the bay enforces: the tree must be fully reduced, with every leaf prime.",
+          badEn:
+            "❌ That line only sets the scene or reacts afterward. Find the line that states the rule the tree itself must satisfy.",
         },
         {
           type: "challenge",
@@ -228,6 +297,11 @@ window.GN_STORY = {
               misconception: true,
               en: "48 = 2⁴ × 3, 72 = 2³ × 3². Take the highest powers: 2⁴ × 3² = 144. That's the sync!",
             },
+            {
+              who: "log",
+              caption: true,
+              en: "Warning: a frequency set too high will overdrive the mounts. The sync must be the GREATEST factor the drives truly share — no more, no less.",
+            },
           ],
         },
         {
@@ -260,6 +334,37 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c3",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Which statement best captures the <b>central idea</b> of this chapter?",
+          },
+          choices: [
+            {
+              en: "Matching the drives means finding the greatest factor they share, not the largest powers AXIS can grab.",
+              correct: true,
+            },
+            {
+              en: "The station's engines are painted two different colors.",
+              correct: false,
+            },
+            {
+              en: "AXIS is the only crew member who can repair the mounts.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ That's the heart of it — harmonizing the drives depends on the GREATEST shared factor, the GCF.",
+          badEn:
+            "❌ That's a minor or invented detail. The central idea is about syncing the drives by their greatest shared factor.",
+        },
+        {
           type: "challenge",
           id: "2b",
           art: "common-factor.png",
@@ -290,6 +395,68 @@ window.GN_STORY = {
             who: "cadet",
             en: "Supplies kitted and even. The Master Door is next.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.2b",
+          ask: {
+            who: "log",
+            en: "According to the supply puzzle, exactly how many <b>oxygen cells</b> and <b>ration packs</b> must the Cadet pack?",
+          },
+          choices: [
+            {
+              en: "54 oxygen cells and 90 ration packs.",
+              correct: true,
+            },
+            {
+              en: "90 oxygen cells and 54 ration packs.",
+              correct: false,
+            },
+            {
+              en: "18 oxygen cells and 18 ration packs.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly — 54 cells and 90 ration packs, which divide evenly into 18 identical kits.",
+          badEn:
+            "❌ Reread the crate counts: 54 oxygen cells and 90 ration packs. (18 is the number of kits, not the supplies.)",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Order the steps the Cadet followed to find the GCF that synced the drives.",
+          },
+          items: [
+            {
+              en: "Write each engine's draw as a product of primes.",
+              order: 1,
+            },
+            {
+              en: "Identify the prime factors the two draws share.",
+              order: 2,
+            },
+            {
+              en: "Multiply the LOWEST power of each shared prime to get the GCF.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Factor, find what's shared, then take the lowest powers — that's the GCF procedure.",
+          badEn:
+            "❌ Not quite. You must factor first, then find shared primes, and only then multiply their lowest powers.",
         },
         {
           type: "challenge",
@@ -346,6 +513,11 @@ window.GN_STORY = {
               misconception: true,
               en: "Starting the GCF of 84 and 126 — that's 21, easy.",
             },
+            {
+              who: "log",
+              caption: true,
+              en: "Caution: the Master Door grants exactly one attempt. A cipher that fuses factorization and the GCF leaves no margin for a dropped prime.",
+            },
           ],
         },
         {
@@ -380,6 +552,68 @@ window.GN_STORY = {
             who: "cadet",
             en: "Core override accepted! Kepler-9 is coming fully online.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.beats",
+          ask: {
+            who: "log",
+            en: "AXIS insists the GCF of 84 and 126 is 21. What does its repeated error <b>reveal</b> about how AXIS reasons?",
+          },
+          choices: [
+            {
+              en: "It rushes to a shortcut and keeps dropping a shared prime, so it never collects ALL the common factors.",
+              correct: true,
+            },
+            {
+              en: "It deliberately lies to slow the Cadet down.",
+              correct: false,
+            },
+            {
+              en: "It cannot factor any number at all.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Sharp inference — AXIS factors fine but grabs a fast answer, omitting a shared prime, so its GCF falls short.",
+          badEn:
+            "❌ The text doesn't show malice or total failure. AXIS's pattern is rushing and dropping a shared prime.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.F",
+          ask: {
+            who: "log",
+            en: "Given how the Master Door punishes a single dropped prime, what should the Cadet do <b>next</b> before transmitting any combined cipher?",
+          },
+          choices: [
+            {
+              en: "Verify that EVERY shared prime is included in the GCF before sending the one-shot code.",
+              correct: true,
+            },
+            {
+              en: "Trust AXIS's first answer to save time on the single attempt.",
+              correct: false,
+            },
+            {
+              en: "Skip the GCF and send only the prime factorization of 84.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Wise prediction — with one attempt, the Cadet must double-check that no shared prime is missing.",
+          badEn:
+            "❌ With a single attempt and a door that punishes a dropped prime, the Cadet must verify every shared prime first.",
         },
         {
           type: "challenge",
