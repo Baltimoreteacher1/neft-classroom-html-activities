@@ -399,6 +399,9 @@ export default {
       background: COLORS.card,
     });
     card.position.set(0, N * 0.62, -N * 0.5);
+    // Redundant with the engine HUD "Your task" panel; hide so it can't
+    // project over and garble the top-left HUD directions.
+    card.visible = false;
     scene.add(card);
     labels.push(card);
     function setCard(text) {

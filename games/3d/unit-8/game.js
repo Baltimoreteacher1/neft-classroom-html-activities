@@ -453,6 +453,9 @@ export default {
     const problemCard = makeProblemCard();
     problemCard.position.set(0, 4.4, -1.2);
     group.add(problemCard);
+    // Hidden: the engine HUD "Your task" panel already shows the full problem.
+    // This high-floating card projected over the HUD and garbled the directions.
+    problemCard.visible = false;
 
     // ── Cursor (floats over active column / pad) ─────────────────────────────
     const cursorMesh = new THREE.Mesh(

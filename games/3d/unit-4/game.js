@@ -330,6 +330,11 @@ export default {
     // ---- Floating problem card + answer readout ----------------------------
     const cardLabel = makeLabel("", { scale: 1.1, fontSize: 76 });
     cardLabel.position.set(0, 4.2, 0);
+    // HUD "Your task" panel already shows the full problem/equation text. This
+    // high-floating 3D card (and the live dial readout below) projected over the
+    // top HUD and made the directions illegible, so both are kept in the scene
+    // graph (for tap-to-ship + dispose) but never rendered.
+    cardLabel.visible = false;
     group.add(cardLabel);
 
     const readoutLabel = makeLabel("", {
@@ -339,6 +344,7 @@ export default {
       color: "#ffe6a8",
     });
     readoutLabel.position.set(0, 2.9, 0);
+    readoutLabel.visible = false;
     group.add(readoutLabel);
 
     // ---- Visual crate grouping (spawned per round) -------------------------
@@ -1068,8 +1074,9 @@ export default {
           });
 
           // Pointer down: grab a supply crate (whole rounds) or the dial
-          // (decimal rounds) to start a DRAG. Tapping the floating answer card
-          // ships. Tapping the bay/empty area also confirms as a fallback.
+          // (decimal rounds) to start a DRAG. The floating answer card is now
+          // hidden (it overlapped the HUD), so it is filtered out of the
+          // raycast; Space/Enter and a bay/empty-area tap still ship the order.
           unbindTap = input.onTap(() => {
             if (locked || gameOver) return;
             const targets = [cardLabel, supplyCrate, dial].filter(
@@ -1150,9 +1157,11 @@ export default {
               actionEs: "Envía la orden — revisa si tu respuesta es correcta",
             },
             {
-              key: "Tap the problem card",
-              actionEn: "Ship the order (same as Space)",
-              actionEs: "Envía la orden (igual que Espacio)",
+              key: "Tap the bay",
+              actionEn:
+                "Ship the order (same as Space). Read the problem in the Your Task panel (top-left)",
+              actionEs:
+                "Envía la orden (igual que Espacio). Lee el problema en el panel Your Task (arriba a la izquierda)",
             },
             {
               key: "?",

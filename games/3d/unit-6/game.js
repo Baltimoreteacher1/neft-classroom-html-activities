@@ -501,6 +501,9 @@ export default {
     problemSprite.position.set(0, 2.1, -2.3);
     group.add(problemSprite);
     sprites.push(problemSprite);
+    // Hidden: the engine HUD "Your task" panel already shows the full problem.
+    // This high-floating card projected over the HUD and garbled the directions.
+    problemSprite.visible = false;
 
     const liveSprite = makeLabel("", {
       THREE,

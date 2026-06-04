@@ -300,6 +300,9 @@ export default {
     });
     cardLabel.position.set(0, columnTopY + 1.4, 0);
     group.add(cardLabel);
+    // Hidden: the engine HUD "Your task" panel already shows the full problem.
+    // This high-floating card projected over the HUD and garbled the directions.
+    cardLabel.visible = false;
 
     // ---- Submarine (rounded, PBR, casts shadow) -----------------------------
     const subGroup = new THREE.Group();

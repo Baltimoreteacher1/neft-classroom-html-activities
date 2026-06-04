@@ -490,6 +490,9 @@ export default {
       background: "rgba(13,32,56,0.92)",
     });
     cardLabel.position.set(0, 7.6, -3);
+    // Redundant with the engine HUD "Your task" panel; hide so it can't
+    // project over and garble the top-left HUD directions.
+    cardLabel.visible = false;
     group.add(cardLabel);
 
     // ---- Per-round state ----------------------------------------------------

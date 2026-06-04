@@ -375,6 +375,10 @@ export default {
       disposeCard(card);
       card = makeCard(lines, accent);
       card.position.set(0, 5.6, -2.9);
+      // HUD "Your task" panel already shows the full problem/recipe text. This
+      // high-floating 3D card projected over the top HUD and made the directions
+      // illegible, so it is kept in the scene graph but never rendered.
+      card.visible = false;
       group.add(card);
     }
 

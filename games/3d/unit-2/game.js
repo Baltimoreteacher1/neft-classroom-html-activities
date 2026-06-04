@@ -349,6 +349,11 @@ export default {
           color: "#ffe9a8",
         });
         orderLabel.position.set(0, 4.5, -1.4);
+        // HUD "Your task" panel already shows the full bakery order text. This
+        // high-floating 3D order card projected over the top HUD and made the
+        // directions illegible, so it is kept (for dispose tracking) but never
+        // rendered.
+        orderLabel.visible = false;
         group.add(orderLabel);
         ownedTex.add(orderLabel.material.map);
         ownedMat.add(orderLabel.material);

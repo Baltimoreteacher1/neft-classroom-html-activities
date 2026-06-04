@@ -296,6 +296,9 @@ export default {
     cardLabel.position.set(0, N * 0.62 + 1.6, -half - 0.4);
     cardLabel.renderOrder = 10;
     group.add(cardLabel);
+    // Hidden: the engine HUD "Your task" panel already shows the full problem.
+    // This high-floating card projected over the HUD and garbled the directions.
+    cardLabel.visible = false;
 
     let ghostMesh = null;
 

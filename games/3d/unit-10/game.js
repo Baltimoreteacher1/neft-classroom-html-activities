@@ -225,6 +225,9 @@ export default {
       color: "#ffe6a8",
     });
     problemCard.position.set(0, 5.4, 0);
+    // Redundant with the engine HUD "Your task" panel; hide so it can't
+    // project over and garble the top-left HUD directions.
+    problemCard.visible = false;
     group.add(problemCard);
 
     function setProblemCard(text) {
