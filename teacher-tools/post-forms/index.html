@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Post Forms — Classroom / Canvas | Neft Teacher</title>
+    <title>Grade 6 Math — Google Forms (Post &amp; Edit) | Neft Teacher</title>
     <meta
       name="description"
       content="Teacher tool: open, post to Google Classroom, or copy the link (for Canvas) for every Grade 6 math Notes / Practice / Quiz Google Form."
@@ -332,11 +332,11 @@
     <div class="wrap">
       <a class="home-link" href="/">&larr; Neft Hub</a>
       <p class="eyebrow">Teacher Tools</p>
-      <h1>Post Forms to Classroom / Canvas</h1>
+      <h1>Grade 6 Math — Google Forms</h1>
       <p class="lede">
-        Every Grade&nbsp;6 math <b>Notes</b>, <b>Practice</b>, and <b>Quiz</b>
-        Google Form. Open it, post it to a Google Classroom class in one click,
-        or copy the link to paste into Canvas.
+        Every <b>Notes</b>, <b>Practice</b>, and <b>Quiz</b> Google Form, in one
+        place. <b>Post to class</b> — open, share to Google Classroom, or copy
+        for Canvas. <b>Edit forms</b> — jump straight into any form's editor.
       </p>
       <div class="tabs" role="tablist" aria-label="Post or edit">
         <button
@@ -662,7 +662,15 @@
           .then(function (res) {
             DATA = res[0];
             EDIT = res[1];
-            render("");
+            // Deep-link: ?tab=edit (or #edit) opens the Edit tab directly.
+            var want = "";
+            try {
+              want = (
+                new URLSearchParams(location.search).get("tab") ||
+                location.hash.replace("#", "")
+              ).toLowerCase();
+            } catch (e) {}
+            setMode(want === "edit" ? "edit" : "post");
           })
           .catch(function (e) {
             listEl.innerHTML =
