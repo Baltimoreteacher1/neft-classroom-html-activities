@@ -380,27 +380,44 @@
     }
     .click-hint { font-size: 9px; color: var(--gray); margin-top: 4px; font-weight: 600; }
     
-    /* Math Flow Diagram */
-    .flow-diagram {
-      background: var(--teal-light);
-      border-radius: 8px;
-      padding: 12px;
+    /* Concept Instruction Tab Styling */
+    .tabs-container {
       display: flex;
-      align-items: center;
-      justify-content: space-around;
+      gap: 4px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--google-gray);
+      padding-bottom: 2px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 11px;
       font-weight: 700;
-      font-size: 12px;
-      color: var(--navy);
-      margin-top: auto;
-    }
-    .flow-box {
-      background: var(--white);
+      color: var(--gray);
       padding: 6px 12px;
-      border-radius: 4px;
-      border: 1px solid var(--teal);
-      text-align: center;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.2s;
     }
-    .flow-arrow { color: var(--amber); font-size: 18px; }
+    .tab-btn:hover {
+      color: var(--navy);
+      background: rgba(23, 50, 77, 0.05);
+    }
+    .tab-btn.active {
+      color: var(--teal);
+      border-bottom: 3.5px solid var(--teal);
+      background: var(--teal-light);
+    }
+    .tab-content {
+      background: var(--white);
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 12px;
+      height: calc(100% - 35px);
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
     
     /* Visual Math Container with Canvas Overlay */
     .math-visual-container {
@@ -490,14 +507,6 @@
       background: var(--white);
     }
     
-    /* Partner cards */
-    .partner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      height: 100%;
-    }
-    
     /* Fullscreen present mode pacing timer & controls */
     .presenter-hud {
       display: none;
@@ -558,7 +567,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     .post-it-3 { background: var(--teal-light); }
-    .post-it-2 { background: var(--amber-light); }
+    .post-it-2 { background: var(--amber); opacity: 0.85; }
     .post-it-1 { background: var(--coral); }
     .post-it-title { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--navy); margin-bottom: 4px; }
     .post-it input {
@@ -571,7 +580,7 @@
       border-bottom: 1px dotted rgba(23, 50, 77, 0.2);
     }
     
-    /* Self-assessment buttons */
+    /* Assessment & Practice Buttons */
     .assess-row {
       display: flex;
       gap: 8px;
@@ -589,10 +598,32 @@
       text-align: center;
       transition: all 0.2s;
     }
+    .assess-btn:hover {
+      background: var(--google-gray);
+    }
     .assess-btn.active {
       border-color: var(--teal);
       background: var(--teal-light);
       color: var(--navy);
+    }
+    .assess-btn.correct {
+      border-color: var(--teal) !important;
+      background: var(--teal-light) !important;
+      color: var(--navy) !important;
+    }
+    .assess-btn.incorrect {
+      border-color: #D9795D !important;
+      background: var(--coral) !important;
+      color: #D9795D !important;
+    }
+    .px-btn {
+      flex: none;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     
   </style>
@@ -638,32 +669,32 @@
       <!-- Slide 2 -->
       <div class="thumb-card" data-slide="2" onclick="goToSlide(2)">
         <span class="thumb-label">Slide 2</span>
-        <div class="thumb-preview">👀 Be Curious</div>
+        <div class="thumb-preview">👀 Launch</div>
       </div>
       <!-- Slide 3 -->
       <div class="thumb-card" data-slide="3" onclick="goToSlide(3)">
         <span class="thumb-label">Slide 3</span>
-        <div class="thumb-preview">📝 Vocabulary</div>
+        <div class="thumb-preview">💡 Concept</div>
       </div>
       <!-- Slide 4 -->
       <div class="thumb-card" data-slide="4" onclick="goToSlide(4)">
         <span class="thumb-label">Slide 4</span>
-        <div class="thumb-preview">📐 Visual Model</div>
+        <div class="thumb-preview">📝 Vocabulary</div>
       </div>
       <!-- Slide 5 -->
       <div class="thumb-card" data-slide="5" onclick="goToSlide(5)">
         <span class="thumb-label">Slide 5</span>
-        <div class="thumb-preview">📖 Guided</div>
+        <div class="thumb-preview">📐 Model</div>
       </div>
       <!-- Slide 6 -->
       <div class="thumb-card" data-slide="6" onclick="goToSlide(6)">
         <span class="thumb-label">Slide 6</span>
-        <div class="thumb-preview">👥 Activity A</div>
+        <div class="thumb-preview">👥 Explore</div>
       </div>
       <!-- Slide 7 -->
       <div class="thumb-card" data-slide="7" onclick="goToSlide(7)">
         <span class="thumb-label">Slide 7</span>
-        <div class="thumb-preview">⚠️ Activity B</div>
+        <div class="thumb-preview">⚠️ Practice</div>
       </div>
       <!-- Slide 8 -->
       <div class="thumb-card" data-slide="8" onclick="goToSlide(8)">
@@ -684,7 +715,7 @@
       <article class="slide-canvas" id="slide-canvas-element">
       
         <!-- Inside Slide Header -->
-        <header class="slide-header" id="slide-title-bar">LESSON 8-6 · OBJECTIVES</header>
+        <header class="slide-header" id="slide-title-bar">LESSON 8-6 · OBJECTIVES &amp; TOPIC</header>
         
         <!-- SLIDE 1: OBJECTIVES -->
         <div class="slide-body active" id="slide-1">
@@ -699,17 +730,20 @@
                 <strong style="color:var(--navy); font-size:18px;">Language Objective:</strong>
                 <p style="margin: 6px 0 0; color:var(--body-text); font-size:16px;">I can explain my histogram using the words histogram, frequency, interval, and distribution.</p>
               </div>
+              <div style="margin-top:12px; border-top:1px dashed var(--teal); padding-top:12px; font-size:12px; color:var(--gray); font-weight:700;">
+                STANDARD: 6.SP.4
+              </div>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 2: BE CURIOUS -->
+        <!-- SLIDE 2: SCENARIO LAUNCH -->
         <div class="slide-body" id="slide-2">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📋 Scenario Launch</h2>
-                <p class="card-desc" style="font-size:13px; line-height:1.5; margin-bottom:8px;">You have 30 players&#039; points-per-game averages. Why is it easier to display them in a histogram with intervals than to list all 30 numbers?</p>
+                <h2 class="card-title">📋 League Stats Organizer</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">The basketball league has 30 players and wants to display everyone&#039;s points-per-game average in a way that shows how the data is distributed. The raw averages are: 2, 5, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 28, 30, 32. Listing all 30 numbers is hard to read — a histogram will reveal the pattern!</p>
               </div>
               <div style="margin-top:auto;">
                 <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Vocabulary Bank (Click to insert):</strong>
@@ -719,34 +753,58 @@
             <div class="slide-card nw-container">
               <div class="nw-box nw-box-notice" style="display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
-                  <h4>👀 Things I Notice:</h4>
-                  <div class="nw-box-stems"><div>🔹 A histogram is easier because it groups the data into ___.</div><div>🔹 Each bar shows how many players fall in that ___.</div></div>
+                  <h4>👀 Notice Prompts:</h4>
+                  <div class="nw-box-stems" style="margin-bottom:6px;"><div>🔹 Where do most of the scoring averages seem to cluster?</div><div>🔹 Are there many players at the very low or very high end?</div><div>🔹 How could you group these numbers to see a pattern?</div></div>
                 </div>
-                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type your observations here..."></textarea>
+                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice here..."></textarea>
               </div>
               <div class="nw-box nw-box-wonder" style="display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
-                  <h4>💭 Things I Wonder:</h4>
-                  <div class="nw-box-stems"><div>🔹 With intervals of 5, there would be ___ bars and ___ detail.</div><div>🔹 Smaller intervals show ___ but can make the shape look ___.</div></div>
+                  <h4>💭 Wonder Prompts:</h4>
+                  <div class="nw-box-stems" style="margin-bottom:6px;"><div>🔹 What size intervals would work best for this data?</div><div>🔹 What shape will the data make when grouped into a histogram?</div></div>
                 </div>
-                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type your questions here..."></textarea>
+                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder here..."></textarea>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 3: VOCABULARY -->
+        <!-- SLIDE 3: CONCEPT INTRO & FLOW -->
         <div class="slide-body" id="slide-3">
           <div class="slide-grid-2">
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+              <div>
+                <h2 class="card-title">💡 What is a histogram?</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:12px;">A histogram is a bar graph that groups numbers into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch because the intervals are continuous.</p>
+              </div>
+              
+              <div style="background:var(--teal-light); border:1.5px solid var(--teal); border-radius:8px; padding:12px; margin-top:auto;">
+                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Key Idea:</strong>
+                <p style="margin:4px 0 0; font-size:12.5px; font-weight:700; color:var(--navy); line-height:1.4;">Each bar&#039;s height shows how many data values land inside that interval.</p>
+              </div>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; height: 100%;">
+              <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchConceptTab('ido')">Watch Me</button>
+                <button class="tab-btn" onclick="switchConceptTab('wedo')">Try Together</button>
+                <button class="tab-btn" onclick="switchConceptTab('youdo')">Your Turn</button>
+              </div>
+              <div id="concept-tab-content" class="tab-content">
+                <!-- Tab contents populated dynamically by Javascript -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- SLIDE 4: VOCABULARY CARD GRID -->
+        <div class="slide-body" id="slide-4">
+          <div class="slide-grid-2">
             <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%;">
-              <h2 class="card-title">📝 Core Vocabulary</h2>
-              <p class="card-desc" style="font-size:13px;">Click each card to flip and reveal its visual definition. Verify with your partner before moving on.</p>
-              <div class="flow-diagram">
-                <div class="flow-box">INPUT</div>
-                <div class="flow-arrow">➔</div>
-                <div class="flow-box" style="border-color:var(--amber);">PROCESS</div>
-                <div class="flow-arrow">➔</div>
-                <div class="flow-box">OUTPUT</div>
+              <h2 class="card-title">📝 Lesson Vocabulary</h2>
+              <p class="card-desc" style="font-size:13px; line-height:1.5;">Click each card to flip and review its definition, Spanish translation, and visual examples. Compare notes with your partner.</p>
+              <div style="background:var(--teal-light); border-radius:8px; padding:12px; font-size:11.5px; color:var(--navy); font-weight:600; line-height:1.4;">
+                💡 Multi-language terms included. Discuss how each concept works in a math sentence!
               </div>
             </div>
             <div class="vocab-grid">
@@ -755,10 +813,14 @@
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>HISTOGRAM</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Histograma</p>
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>Explain this vocabulary concept using real-world context.</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">A bar graph that groups data into equal ranges. The bars touch.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Una gráfica de barras que agrupa datos en rangos iguales. Las barras se tocan.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> Bars side by side: 0-9 pts (3 players), 10-19 pts (8 players), 20-29 pts (4 players)</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 A bar graph that shows how often data falls into equal intervals is a ___.</div>
           </div>
         </div>
       </div>
@@ -767,10 +829,14 @@
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>FREQUENCY</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Frecuencia</p>
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>Explain this vocabulary concept using real-world context.</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">How many times a value shows up.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Cuántas veces aparece un valor.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> If 5 players scored 10-19 points, the frequency for that interval is 5</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 How many data values fall in an interval is the ___.</div>
           </div>
         </div>
       </div>
@@ -779,10 +845,14 @@
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>INTERVAL</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Intervalo</p>
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>Explain this vocabulary concept using real-world context.</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">A range of numbers used to group data.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Un rango de números para agrupar datos.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> 0-9, 10-19, 20-29 are intervals of width 10 — each covers 10 values</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 An equal-sized range of values used to group data is an ___.</div>
           </div>
         </div>
       </div>
@@ -791,10 +861,14 @@
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>DISTRIBUTION</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Distribución</p>
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>Explain this vocabulary concept using real-world context.</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">How the data is spread out.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Cómo están repartidos los datos.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> Most data in the middle with fewer at the ends = bell-shaped; most on one side with a tail = skewed</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 The overall pattern of how data is spread out is the ___.</div>
           </div>
         </div>
       </div>
@@ -803,13 +877,13 @@
           </div>
         </div>
         
-        <!-- SLIDE 4: VISUAL MODEL WITH CANVAS OVERLAY -->
-        <div class="slide-body" id="slide-4">
+        <!-- SLIDE 5: VISUAL MODEL WITH CANVAS OVERLAY -->
+        <div class="slide-body" id="slide-5">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📐 Visual Modeling Workspace</h2>
-                <p class="card-desc" style="font-size:13px;">Use the drawing tools to label axes, circle key values, or sketch equations directly onto the model grid.</p>
+                <h2 class="card-title">📐 Modeling Workspace</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.4;">Use the drawing tools to annotate, label axes, partition lines, or write equations directly onto the math model representation.</p>
               </div>
               
               <!-- Draw Toolbar -->
@@ -834,7 +908,7 @@
             <div class="math-visual-container">
               <!-- Background SVG visual -->
               <div style="position: absolute; inset: 0; z-index: 1;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="96" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="156" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="216" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="276" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="336" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">League Scoreboard — Points Per Game (30 players)</text><circle cx="40" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="40" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="52.41379310344828" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="52.41379310344828" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">5</text><circle cx="64.82758620689656" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="64.82758620689656" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">7</text><circle cx="77.24137931034483" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="77.24137931034483" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">8</text><circle cx="89.65517241379311" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="89.65517241379311" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">9</text><circle cx="102.06896551724138" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="102.06896551724138" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">10</text><circle cx="114.48275862068965" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="114.48275862068965" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">11</text><circle cx="126.89655172413794" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="126.89655172413794" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">11</text><circle cx="139.31034482758622" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="139.31034482758622" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">12</text><circle cx="151.72413793103448" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="151.72413793103448" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">13</text><circle cx="164.13793103448276" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="164.13793103448276" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">13</text><circle cx="176.55172413793105" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="176.55172413793105" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">14</text><circle cx="188.9655172413793" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="188.9655172413793" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">14</text><circle cx="201.3793103448276" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="201.3793103448276" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">15</text><circle cx="213.79310344827587" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="213.79310344827587" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">15</text><circle cx="226.20689655172413" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="226.20689655172413" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">16</text><circle cx="238.6206896551724" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="238.6206896551724" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">16</text><circle cx="251.0344827586207" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="251.0344827586207" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">17</text><circle cx="263.44827586206895" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="263.44827586206895" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">18</text><circle cx="275.8620689655172" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="275.8620689655172" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">18</text><circle cx="288.2758620689655" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="288.2758620689655" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">19</text><circle cx="300.6896551724138" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="300.6896551724138" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">20</text><circle cx="313.1034482758621" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="313.1034482758621" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">21</text><circle cx="325.51724137931035" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="325.51724137931035" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">22</text><circle cx="337.9310344827586" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="337.9310344827586" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">23</text><circle cx="350.3448275862069" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="350.3448275862069" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">24</text><circle cx="362.7586206896552" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="362.7586206896552" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">25</text><circle cx="375.17241379310343" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="375.17241379310343" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">28</text><circle cx="387.58620689655174" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="387.58620689655174" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">30</text><circle cx="400" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="400" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">32</text><text x="20" y="195" font-family="Hanken Grotesk, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Each tile is one player&#039;s scoring average.</text></svg>
               </div>
               <!-- Transparent overlay canvas for student drawing -->
               <canvas id="math-canvas" width="440" height="240" class="canvas-overlay"></canvas>
@@ -842,81 +916,116 @@
           </div>
         </div>
         
-        <!-- SLIDE 5: GUIDED PRACTICE -->
-        <div class="slide-body" id="slide-5">
+        <!-- SLIDE 6: INTERACTIVE EXPLORE ACTIVITY -->
+        <div class="slide-body" id="slide-6">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📖 Guided Practice</h2>
-                <p class="card-desc" style="font-size:13px; line-height:1.5;">As you build the frequency table with intervals of 10, what does the height of each bar in the histogram represent?</p>
+                <h2 class="card-title">👥 Explore Activity</h2>
+                <p class="card-desc" style="font-size:12.5px; margin-bottom:8px;" id="explore-instructions">Create a frequency table for the league scoring data using intervals of 10. Then describe the histogram shape.</p>
+                
+                <!-- Interactive Sorting Game -->
+                <div id="sorting-game-container" style="background:var(--google-gray); padding:12px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:130px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px;">
+                  <div id="sorting-card" style="background:var(--white); padding:8px 14px; border-radius:6px; border:1.5px solid var(--teal); font-weight:700; font-size:13.5px; color:var(--navy); box-shadow:var(--shadow); width:90%; min-height:48px; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.3;">
+                    <!-- Active Card Text -->
+                  </div>
+                  <div id="sorting-buttons" style="display:flex; gap:8px; justify-content:center; width:100%; flex-wrap:wrap;">
+                    <!-- Category buttons loaded dynamically -->
+                  </div>
+                  <div id="sorting-feedback" style="font-size:11px; font-weight:700; min-height:16px;"></div>
+                </div>
               </div>
-              <textarea id="guided-notes-work" class="slide-input-placeholder" rows="3" placeholder="Type your step-by-step math calculations here..."></textarea>
+              
+              <div style="margin-top:6px;">
+                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
+                <div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">10</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">19</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">right</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">most</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">few</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">high scorers</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cluster</span></div>
+              </div>
             </div>
+            
             <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">✍️ TWR Sentence Expansion</h2>
-                <div class="nw-box-stems" style="font-size:12px; font-style:italic; margin-bottom:12px;"><div>🔹 The height of each bar shows the ___ of that interval.</div><div>🔹 The tallest bar is the interval where ___.</div></div>
+                <h2 class="card-title">✍️ Explore Discourse</h2>
+                <p style="font-size:11.5px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.4;">The tallest bar is the 10–19 interval with 16 players. What does the shape of this histogram tell you about scoring in the league?</p>
+                <div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>Most players score between ___ and ___ points per game. The histogram is skewed ___ because ___. This tells me that ___.</div>
               </div>
-              <textarea id="guided-sentence-work" class="slide-input-placeholder" rows="3" placeholder="Write your complete reasoning sentence here..."></textarea>
+              <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 6: INTERACTIVE WORKSHOP A (Partner Work) -->
-        <div class="slide-body" id="slide-6">
-          <div class="partner-grid">
-            <div class="slide-card" style="justify-content:space-between;">
-              <div>
-                <h2 class="card-title" style="color:var(--teal);">👥 Partner A</h2>
-                <p class="card-desc" style="font-size:12.5px;">Explain how you can approach solving this problem. What steps will you perform first, and what tools will you use?</p>
-              </div>
-              <textarea id="partner-a-work" class="slide-input-placeholder" rows="4" placeholder="Partner A: Type your explanation here..."></textarea>
-            </div>
-            <div class="slide-card" style="justify-content:space-between;">
-              <div>
-                <h2 class="card-title">👥 Partner B</h2>
-                <p class="card-desc" style="font-size:12.5px;">Respond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?</p>
-              </div>
-              <textarea id="partner-b-work" class="slide-input-placeholder" rows="4" placeholder="Partner B: Type your response here..."></textarea>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 7: INTERACTIVE WORKSHOP B (Error Analysis) -->
+        <!-- SLIDE 7: PRACTICE PROBLEM -->
         <div class="slide-body" id="slide-7">
-          <div class="slide-grid-2">
-            <div class="slide-card">
-              <h2 class="card-title" style="color:var(--amber);">⚠️ Incorrect Claim</h2>
-              <p class="card-desc" style="font-size:13px; line-height:1.5;">A student claims that when solving this problem, they should add the values instead of multiplying.<br/><br/>Analyze their reasoning. What mistake did they make, and why is adding incorrect in this context?</p>
-            </div>
-            <div class="slide-card" style="background:var(--coral); justify-content:space-between;">
-              <h2 class="card-title">🛠️ Fix & Justify</h2>
-              <textarea id="error-fix-text" class="slide-input-placeholder" rows="6" placeholder="Explain the error clearly and write the correct calculation steps here..."></textarea>
+          
+      <div class="slide-grid-2">
+        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title" style="color:var(--amber);">⚠️ Find the Histogram Error</h2>
+            <p class="card-desc" style="font-size:12px; margin-bottom:8px; line-height:1.4;">Analyze the student's work on the right. Which step contains the error, and how would you correct it?</p>
+            <div style="border:1.5px solid #dadce0; border-radius:6px; background:var(--white); overflow:hidden;">
+              <div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Data:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">Test scores: 55, 62, 68, 70, 72, 75, 78, 80, 82, 85, 88, 90, 95</span>
+      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Intervals:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">50–59, 60–69, 70–79, 80–89, 90–100</span>
+      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Frequency table:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">50–59: 1, 60–69: 2, 70–79: 3, 80–89: 4, 90–100: 2</span>
+      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Conclusion:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">The histogram is symmetric because the bars go 1, 2, 3, 4, 2.</span>
+      </div>
             </div>
           </div>
+          
+          <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
+            <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
+            <div style="display:flex; gap:6px;">
+              <button class="assess-btn px-btn" id="btn-errstep-1" onclick="checkErrorStep(1, 3)">1</button><button class="assess-btn px-btn" id="btn-errstep-2" onclick="checkErrorStep(2, 3)">2</button><button class="assess-btn px-btn" id="btn-errstep-3" onclick="checkErrorStep(3, 3)">3</button><button class="assess-btn px-btn" id="btn-errstep-4" onclick="checkErrorStep(4, 3)">4</button>
+            </div>
+            <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+          </div>
+        </div>
+        
+        <div class="slide-card" style="background:var(--coral); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title">🛠️ Fix & Justify</h2>
+            <textarea id="practice-fix-work" class="slide-input-placeholder" rows="5" placeholder="Explain the error and write the correct calculation steps here..."></textarea>
+          </div>
+          <button class="btn-present" onclick="revealPracticeSolution()" style="align-self:flex-end; padding:6px 12px; font-size:11px; margin-top:6px;">Reveal Solution</button>
+          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:10px; line-height:1.4; color:var(--body-text); margin-top:6px;">
+            <strong>Correct Work:</strong> The frequencies are correct (1, 2, 3, 4, 2), but this is NOT symmetric. In a symmetric histogram, the bars rise and fall evenly from the center. Here the bars increase from left to right and only drop at the end — the data is skewed LEFT (most scores are on the higher end).
+          </div>
+        </div>
+      </div>
+    
         </div>
         
         <!-- SLIDE 8: REAL-WORLD CONNECTION -->
         <div class="slide-body" id="slide-8">
           <div class="slide-grid-2">
-            <div class="slide-card" style="justify-content:center;">
-              <h2 class="card-title">🌍 Math in the Wild</h2>
-              <p class="card-desc" style="font-size:13.5px; line-height:1.5;">Histogram Master Lab: Learn, practice, then play full histogram games — including a Bonus Games arcade pack.</p>
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+              <div>
+                <h2 class="card-title">🌍 Math in the Wild</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">A soccer coach looks at a histogram of shots-per-game for the team: 0–2 shots: 1 player, 3–5 shots: 8 players, 6–8 shots: 10 players, 9–11 shots: 3 players, 12–14 shots: 1 player. The coach says, &#039;Most of my players take a good number of shots.&#039;</p>
+              </div>
+              <div style="margin-top:auto;">
+                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
+                <div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">6–8</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">10</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">symmetric</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">bell-shaped</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">supports</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">most</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">center</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cluster</span></div>
+              </div>
             </div>
-            <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height:100%;">
+            <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height:100%;">
               <div>
                 <h2 class="card-title">✍️ Connection Reasoning</h2>
-                <p style="font-size:12px; margin-top:0; color:var(--navy);">Complete the connection statements below:</p>
+                <p style="font-size:12px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">Does the histogram support the coach&#039;s claim? What does the shape of the data tell you?</p>
+                <div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>The histogram peaks at the ___ interval with ___ players. The shape is approximately ___. This ___ the coach&#039;s claim because ___.</div>
               </div>
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <input type="text" id="rw-connect-1" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="This math applies to this scenario because..." />
-                <input type="text" id="rw-connect-2" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="I could use this math in real life when..." />
-              </div>
+              <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection explanation here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 9: REFLECTION -->
+        <!-- SLIDE 9: REFLECTION & EXIT TICKET -->
         <div class="slide-body" id="slide-9">
           <div class="slide-grid-2">
             <div class="slide-card" style="justify-content:space-between; height: 100%;">
@@ -936,15 +1045,31 @@
                 </div>
               </div>
             </div>
+            
             <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height: 100%;">
               <div>
                 <h2 class="card-title">📝 Exit Ticket</h2>
-                <p class="card-desc" style="font-size:12px; margin-bottom:8px;">Record your final answer and explanation to show mastery of this standard.</p>
-                <textarea id="exit-ticket-work" class="slide-input-placeholder" rows="3" placeholder="Type your final answer and explanation here..."></textarea>
+                
+      <div style="margin-top:6px;">
+        <p style="font-size:11.5px; font-weight:700; margin:0 0 6px; color:var(--navy); line-height:1.3;">A histogram of player heights shows: 60–63 in: 2, 64–67 in: 7, 68–71 in: 9, 72–75 in: 4. Which interval has the most players?</p>
+        <div style="margin-top:4px;">
+          <button class="assess-btn exit-btn" id="btn-exit-0" onclick="checkExitTicket(0, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        A) 68–71 inches
+      </button><button class="assess-btn exit-btn" id="btn-exit-1" onclick="checkExitTicket(1, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        B) 64–67 inches
+      </button><button class="assess-btn exit-btn" id="btn-exit-2" onclick="checkExitTicket(2, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        C) 72–75 inches
+      </button><button class="assess-btn exit-btn" id="btn-exit-3" onclick="checkExitTicket(3, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        D) 60–63 inches
+      </button>
+        </div>
+        <div id="exit-ticket-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+      </div>
+    
               </div>
               
-              <div>
-                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
+              <div style="margin-top:6px; border-top: 1px dashed var(--teal); padding-top:6px;">
+                <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
                 <div class="assess-row">
                   <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
                   <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost There 🧭</button>
@@ -978,18 +1103,41 @@
     const totalSlides = 9;
     
     const slideTitles = [
-      "LESSON 8-6 · OBJECTIVES",
-      "BE CURIOUS · LAUNCH",
-      "KEY VOCABULARY & FLOW",
+      "LESSON 8-6 · OBJECTIVES & TOPIC",
+      "BE CURIOUS · SCENARIO LAUNCH",
+      "CONCEPT INTRODUCTION · Watch / Try / Apply",
+      "KEY VOCABULARY · Flashcards",
       "VISUAL MODELING WORKSPACE",
-      "GUIDED PRACTICE",
-      "INTERACTIVE WORKSHOP A",
-      "INTERACTIVE WORKSHOP B · ERROR ANALYSIS",
-      "REAL-WORLD CONNECTION · MATH IN THE WILD",
+      "EXPLORE ACTIVITY · Card Sorting & Discourse",
+      "TIERED PRACTICE CHALLENGE",
+      "REAL-WORLD CONNECTION · Math in the Wild",
       "REFLECTION & EXIT TICKET"
     ];
     
-    // Timer variable for present mode
+    // Concept Intro Tab Data
+    const conceptData = {
+      ido: { title: "Watch me", lines: ["My data: 3, 7, 12, 15, 18, 24. I will use intervals of 10: 0–9, 10–19, 20–29.","Interval 0–9: the values 3 and 7 fit, so the frequency is 2.","Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3.","Interval 20–29: only the value 24 fits, so the frequency is 1.","Now I draw three bars with heights 2, 3, and 1, touching each other. The tallest bar (10–19) is where most values are."] },
+      wedo: { title: "Let&#039;s try together", lines: ["New data: 2, 4, 8, 11, 13, 16, 21. We will use intervals of 10 again: 0–9, 10–19, 20–29.","How many values fall in 0–9? Count them. How many fall in 10–19?","How many fall in 20–29? Which interval would have the tallest bar?"] },
+      youdo: { title: "Now it&#039;s your turn", lines: ["Next, you will build a frequency table for all 30 players' scoring averages using intervals of 10.","Then you will read the histogram shape to see where most players cluster."] }
+    };
+    
+    let activeConceptTab = 'ido';
+    
+    // Explore Sorting Game Data
+    const exploreItems = [];
+    const exploreCats = [{"id":"cat-a","label":"Category A"},{"id":"cat-b","label":"Category B"}];
+    let currentExploreIdx = 0;
+    const studentExploreSorted = {};
+    
+    // Practice Checking Variables
+    let studentErrStep = -1;
+    let solutionRevealed = false;
+    let studentPracticeMCIndex = -1;
+    
+    // Exit Ticket Variables
+    let studentExitChoiceIndex = -1;
+    
+    // Timer variables for present mode
     let timerInterval = null;
     let secondsElapsed = 0;
     
@@ -1023,7 +1171,6 @@
       }
     }
     
-    // Listen for fullscreen change to start/stop timer and adjust styles
     document.addEventListener('fullscreenchange', () => {
       const isFullscreen = document.fullscreenElement !== null;
       if (isFullscreen) {
@@ -1037,24 +1184,23 @@
     function goToSlide(num) {
       if (num < 1 || num > totalSlides) return;
       
-      // Update state
       currentSlide = num;
       
-      // Update main panels
       document.querySelectorAll('.slide-body').forEach((el, index) => {
         el.classList.toggle('active', (index + 1) === num);
       });
       
-      // Update sidebar thumbnails
-      document.querySelectorAll('.thumb-card').forEach((el, index) => {
+      document.querySelectorAll('.sidebar-slides .thumb-card').forEach((el, index) => {
         el.classList.toggle('active', (index + 1) === num);
       });
       
-      // Update title text
       document.getElementById('slide-title-bar').textContent = slideTitles[num - 1];
-      
-      // Update HUD page indicators
       document.getElementById('hud-page-indicator').textContent = num + ' / ' + totalSlides;
+      
+      // Delay redraw canvas context
+      if (num === 5) {
+        setTimeout(resizeSlides, 50);
+      }
     }
     
     function prevSlide() {
@@ -1065,10 +1211,9 @@
       if (currentSlide < totalSlides) goToSlide(currentSlide + 1);
     }
     
-    // Wire arrow keys for slide navigation
     document.addEventListener('keydown', function(e) {
       if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
-        return; // ignore shortcuts while writing
+        return;
       }
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
         nextSlide();
@@ -1079,6 +1224,186 @@
       }
     });
     
+    // Concept tabs sequential reveal switcher
+    function switchConceptTab(tabId) {
+      const data = conceptData[tabId];
+      if (!data) return;
+      
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick');
+        if (onclickAttr && onclickAttr.includes(tabId)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      let contentHtml = '<h4 style="margin: 0 0 8px 0; color:var(--navy); font-size:13.5px; font-weight:700;">' + data.title + '</h4>';
+      contentHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 11.5px; line-height: 1.5; color: var(--body-text);">';
+      data.lines.forEach(line => {
+        contentHtml += '<li style="margin-bottom: 6px;">' + line + '</li>';
+      });
+      contentHtml += '</ul>';
+      
+      document.getElementById('concept-tab-content').innerHTML = contentHtml;
+      activeConceptTab = tabId;
+      saveWork();
+    }
+    
+    // Explore Activity sorting game logic
+    function initSortingGame() {
+      const container = document.getElementById('sorting-game-container');
+      if (!container) return;
+      
+      if (exploreItems.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; font-style:italic; color:var(--gray);">No sorting items defined for this explore activity.</div>';
+        return;
+      }
+      
+      renderActiveExploreCard();
+    }
+    
+    function renderActiveExploreCard() {
+      const card = document.getElementById('sorting-card');
+      const buttonsDiv = document.getElementById('sorting-buttons');
+      const feedbackDiv = document.getElementById('sorting-feedback');
+      if (!card) return;
+      
+      if (currentExploreIdx >= exploreItems.length) {
+        card.innerHTML = "🎉 Sorting Complete!";
+        card.style.borderColor = "var(--teal)";
+        card.style.background = "var(--teal-light)";
+        buttonsDiv.innerHTML = '<button class="assess-btn" onclick="resetSortingGame()" style="max-width:120px; padding:6px; font-size:11px;">Reset Game</button>';
+        feedbackDiv.textContent = "Great job sorting all items!";
+        feedbackDiv.style.color = "var(--teal)";
+        return;
+      }
+      
+      const activeItem = exploreItems[currentExploreIdx];
+      card.innerHTML = activeItem.text;
+      card.style.borderColor = "var(--teal)";
+      card.style.background = "var(--white)";
+      feedbackDiv.textContent = "";
+      
+      let btnsHtml = "";
+      exploreCats.forEach(cat => {
+        btnsHtml += '<button class="assess-btn" onclick="sortActiveItem(\'' + cat.id + '\')" style="font-size:11px; padding:6px 12px; flex:1; min-width:85px; font-weight:700;">' + cat.label + '</button>';
+      });
+      buttonsDiv.innerHTML = btnsHtml;
+    }
+    
+    function sortActiveItem(catId) {
+      const activeItem = exploreItems[currentExploreIdx];
+      const feedbackDiv = document.getElementById('sorting-feedback');
+      
+      studentExploreSorted[activeItem.id] = catId;
+      
+      if (activeItem.catId === "" || activeItem.catId === catId) {
+        feedbackDiv.textContent = "Correct! ✓";
+        feedbackDiv.style.color = "var(--teal)";
+        document.getElementById('sorting-card').style.background = "var(--teal-light)";
+      } else {
+        feedbackDiv.textContent = "Incorrect. Try again! ✕";
+        feedbackDiv.style.color = "#D9795D";
+        document.getElementById('sorting-card').style.background = "var(--coral)";
+      }
+      
+      saveWork();
+      
+      setTimeout(() => {
+        currentExploreIdx++;
+        renderActiveExploreCard();
+      }, 750);
+    }
+    
+    function resetSortingGame() {
+      currentExploreIdx = 0;
+      exploreItems.forEach(item => {
+        delete studentExploreSorted[item.id];
+      });
+      renderActiveExploreCard();
+      saveWork();
+    }
+    
+    // Practice slide checking
+    function checkErrorStep(selected, correct) {
+      studentErrStep = selected;
+      const feedback = document.getElementById('error-step-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('[id^="btn-errstep-"]').forEach(btn => {
+        btn.classList.remove('active', 'correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-errstep-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct step identified! Click Reveal Solution to see details. ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Incorrect step. Try again! ✕';
+        feedback.style.color = '#D9795D';
+      }
+      saveWork();
+    }
+    
+    function revealPracticeSolution() {
+      solutionRevealed = true;
+      const box = document.getElementById('practice-solution-box');
+      if (box) box.style.display = 'block';
+      saveWork();
+    }
+    
+    function checkMCQuestion(selected, correct) {
+      studentPracticeMCIndex = selected;
+      const feedback = document.getElementById('mc-question-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('.mc-btn').forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-choice-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct! Great job. ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Incorrect. Review your calculation and try again. ✕';
+        feedback.style.color = '#D9795D';
+        const correctBtn = document.getElementById('btn-choice-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      saveWork();
+    }
+    
+    // Exit ticket checking
+    function checkExitTicket(selected, correct) {
+      studentExitChoiceIndex = selected;
+      const feedback = document.getElementById('exit-ticket-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('.exit-btn').forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-exit-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Response recorded. Correct! ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Response recorded. ✕';
+        feedback.style.color = '#D9795D';
+        const correctBtn = document.getElementById('btn-exit-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      saveWork();
+    }
+
     // Save/Restore student work
     const storageKey = 'neft_slides_work_8-6';
     
@@ -1088,12 +1413,20 @@
         data[input.id || input.placeholder] = input.value;
       });
       
-      // Save canvas state
       const canvas = document.getElementById('math-canvas');
-      data.canvasData = canvas.toDataURL();
+      if (canvas) {
+        data.canvasData = canvas.toDataURL();
+      }
       
-      // Save assessment state
       data.assessment = activeAssessment;
+      
+      data.activeConceptTab = activeConceptTab;
+      data.currentExploreIdx = currentExploreIdx;
+      data.studentExploreSorted = studentExploreSorted;
+      data.studentErrStep = studentErrStep;
+      data.solutionRevealed = solutionRevealed;
+      data.studentPracticeMCIndex = studentPracticeMCIndex;
+      data.studentExitChoiceIndex = studentExitChoiceIndex;
       
       localStorage.setItem(storageKey, JSON.stringify(data));
     }
@@ -1118,19 +1451,66 @@
           });
           
           if (data.canvasData) {
-            const img = new Image();
-            img.src = data.canvasData;
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0);
-            };
+            const canvas = document.getElementById('math-canvas');
+            if (canvas) {
+              const img = new Image();
+              img.src = data.canvasData;
+              img.onload = () => {
+                ctx.drawImage(img, 0, 0);
+              };
+            }
           }
           
           if (data.assessment) {
             setSelfAssessment(data.assessment);
           }
+          
+          if (data.activeConceptTab) {
+            switchConceptTab(data.activeConceptTab);
+          } else {
+            switchConceptTab('ido');
+          }
+          
+          if (data.currentExploreIdx !== undefined) {
+            currentExploreIdx = data.currentExploreIdx;
+          }
+          if (data.studentExploreSorted) {
+            Object.assign(studentExploreSorted, data.studentExploreSorted);
+          }
+          initSortingGame();
+          
+          if (data.studentErrStep !== undefined && data.studentErrStep !== -1) {
+            const errCheckBtn = document.getElementById('btn-errstep-1');
+            if (errCheckBtn) {
+              const errorStepVal = 3;
+              checkErrorStep(data.studentErrStep, errorStepVal);
+            }
+          }
+          if (data.solutionRevealed) {
+            revealPracticeSolution();
+          }
+          if (data.studentPracticeMCIndex !== undefined && data.studentPracticeMCIndex !== -1) {
+            const mcCheckBtn = document.getElementById('btn-choice-0');
+            if (mcCheckBtn) {
+              const correctMCIdxVal = 0;
+              checkMCQuestion(data.studentPracticeMCIndex, correctMCIdxVal);
+            }
+          }
+          
+          if (data.studentExitChoiceIndex !== undefined && data.studentExitChoiceIndex !== -1) {
+            const exitCheckBtn = document.getElementById('btn-exit-0');
+            if (exitCheckBtn) {
+              checkExitTicket(data.studentExitChoiceIndex, 0);
+            }
+          }
+        } else {
+          switchConceptTab('ido');
+          initSortingGame();
         }
       } catch (e) {
         console.error('Failed to load saved work:', e);
+        try { switchConceptTab('ido'); } catch(err){}
+        try { initSortingGame(); } catch(err){}
       }
     }
     
@@ -1138,7 +1518,7 @@
       input.addEventListener('input', saveWork);
     });
     
-    // Insert Word Bank pill text at the cursor position in the active textarea
+    // Insert Word Bank pill text at the cursor position
     let lastActiveTextarea = null;
     document.querySelectorAll('textarea').forEach(textarea => {
       textarea.addEventListener('focus', () => {
@@ -1147,7 +1527,7 @@
     });
     
     function insertAtCursor(text) {
-      const target = lastActiveTextarea || document.getElementById('student-notice');
+      const target = lastActiveTextarea || document.getElementById('student-notice') || document.querySelector('textarea');
       if (!target) return;
       
       const start = target.selectionStart;
@@ -1164,19 +1544,19 @@
     // HTML5 DRAWING CANVAS SYSTEM
     // -----------------------------------------------------------------
     const canvas = document.getElementById('math-canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas ? canvas.getContext('2d') : null;
     
     let drawing = false;
-    let drawMode = 'draw'; // 'draw' or 'erase'
+    let drawMode = 'draw';
     let drawColor = '#17324D';
     let drawSize = 4;
     
     function getMousePos(e) {
+      if (!canvas) return { x: 0, y: 0 };
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       
-      // Calculate scaled coords
       return {
         x: (clientX - rect.left) * (canvas.width / rect.width),
         y: (clientY - rect.top) * (canvas.height / rect.height)
@@ -1184,6 +1564,7 @@
     }
     
     function startDrawing(e) {
+      if (!ctx) return;
       drawing = true;
       ctx.beginPath();
       const pos = getMousePos(e);
@@ -1192,7 +1573,7 @@
     }
     
     function draw(e) {
-      if (!drawing) return;
+      if (!drawing || !ctx) return;
       const pos = getMousePos(e);
       
       ctx.lineTo(pos.x, pos.y);
@@ -1201,7 +1582,6 @@
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       
-      // If erasing, we want to clear the lines cleanly
       if (drawMode === 'erase') {
         ctx.globalCompositeOperation = 'destination-out';
       } else {
@@ -1213,25 +1593,31 @@
     }
     
     function stopDrawing() {
-      if (drawing) {
+      if (drawing && ctx) {
         ctx.closePath();
         drawing = false;
         saveWork();
       }
     }
     
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    window.addEventListener('mouseup', stopDrawing);
-    
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    window.addEventListener('touchend', stopDrawing);
+    if (canvas) {
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDrawing);
+      
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchmove', draw);
+      window.addEventListener('touchend', stopDrawing);
+    }
     
     function setDrawingTool(mode) {
       drawMode = mode;
-      document.getElementById('btn-draw').classList.toggle('active', mode === 'draw');
-      document.getElementById('btn-erase').classList.toggle('active', mode === 'erase');
+      const dBtn = document.getElementById('btn-draw');
+      const eBtn = document.getElementById('btn-erase');
+      if (dBtn && eBtn) {
+        dBtn.classList.toggle('active', mode === 'draw');
+        eBtn.classList.toggle('active', mode === 'erase');
+      }
     }
     
     function setDrawingColor(color) {
@@ -1244,8 +1630,10 @@
     }
     
     function clearDrawingCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      saveWork();
+      if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        saveWork();
+      }
     }
     
     // -----------------------------------------------------------------
@@ -1259,12 +1647,10 @@
       const containerWidth = container.clientWidth - 40;
       const containerHeight = container.clientHeight - 40;
       
-      // Calculate scales based on fixed dimensions (960x540)
       const scaleX = containerWidth / 960;
       const scaleY = containerHeight / 540;
       let scale = Math.min(scaleX, scaleY);
       
-      // Bound scaling between 0.3x and 1.5x
       scale = Math.max(0.3, Math.min(1.5, scale));
       
       canvasEl.style.transform = 'scale(' + scale + ')';

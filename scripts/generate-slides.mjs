@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 const lessonsDir = join(root, 'lessons');
 
-// Define color tokens matching v5.1 Design System
+// Define color tokens matching Design System
 const COLOR_BG = '#F7F4EC';
 const COLOR_NAVY = '#17324D';
 const COLOR_TEAL = '#1FA6A2';
@@ -27,7 +27,7 @@ function esc(str) {
     .replace(/'/g, '&#039;');
 }
 
-// Generate the math SVG diagram for the visual model slide
+// Generate high-fidelity math SVG diagram based on data.launch.visual
 function generateMathVisualSvg(lessonId, data) {
   const width = 440;
   const height = 240;
@@ -36,53 +36,306 @@ function generateMathVisualSvg(lessonId, data) {
   // Outer frame
   svg += `<rect x="5" y="5" width="${width - 10}" height="${height - 10}" fill="#F9FBFC" stroke="${COLOR_TEAL}" stroke-width="2"/>`;
   
-  // Grid Lines
+  // Background Grid Lines
   for (let x = 20; x < width - 10; x += 30) {
     svg += `<line x1="${x}" y1="5" x2="${x}" y2="${height - 5}" stroke="#E1EAEF" stroke-width="1"/>`;
   }
   for (let y = 20; y < height - 10; y += 30) {
     svg += `<line x1="5" y1="${y}" x2="${width - 5}" y2="${y}" stroke="#E1EAEF" stroke-width="1"/>`;
   }
+
+  const visual = data.launch && data.launch.visual;
   
-  const standard = data.standard || '';
-  const isGeometry = standard.includes('.G.') || lessonId.startsWith('5-') || lessonId.startsWith('10-');
-  const isProportional = standard.includes('.RP.') || lessonId.startsWith('3-') || lessonId.startsWith('4-');
-  
-  if (isGeometry) {
-    // Area triangle/parallelogram/polygon representation
-    svg += `<polygon points="80,180 220,50 360,180" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="80" y1="195" x2="360" y2="195" stroke="${COLOR_NAVY}" stroke-width="1.5" stroke-dasharray="3,3"/>`;
-    svg += `<text x="200" y="212" font-family="Calibri" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">Base (b)</text>`;
-    svg += `<line x1="220" y1="50" x2="220" y2="180" stroke="${COLOR_AMBER}" stroke-width="1.5" stroke-dasharray="4,4"/>`;
-    svg += `<text x="230" y="115" font-family="Calibri" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">Height (h)</text>`;
-  } else if (isProportional) {
-    // Coordinate grid quadrant representation
-    svg += `<line x1="60" y1="190" x2="380" y2="190" stroke="${COLOR_NAVY}" stroke-width="2"/>`; // X axis
-    svg += `<line x1="80" y1="30" x2="80" y2="200" stroke="${COLOR_NAVY}" stroke-width="2"/>`; // Y axis
-    // Axis labels
-    svg += `<text x="340" y="210" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Input (x)</text>`;
-    svg += `<text x="25" y="45" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Output (y)</text>`;
-    // Linear plot line
-    svg += `<line x1="80" y1="190" x2="340" y2="60" stroke="${COLOR_AMBER}" stroke-width="3"/>`;
-    svg += `<circle cx="210" cy="125" r="4.5" fill="${COLOR_TEAL}"/>`;
-    svg += `<circle cx="340" cy="60" r="4.5" fill="${COLOR_TEAL}"/>`;
-  } else {
-    // General Number Line representation
-    svg += `<line x1="40" y1="120" x2="400" y2="120" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    // Arrows
-    svg += `<line x1="40" y1="120" x2="48" y2="114" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="40" y1="120" x2="48" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="400" y1="120" x2="392" y2="114" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="400" y1="120" x2="392" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    // Ticks and labels
-    const ticks = [100, 160, 220, 280, 340];
-    const labels = ['-2', '-1', '0', '1', '2'];
-    for (let t = 0; t < ticks.length; t++) {
-      svg += `<line x1="${ticks[t]}" y1="112" x2="${ticks[t]}" y2="128" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
-      svg += `<text x="${ticks[t] - 4}" y="146" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">${labels[t]}</text>`;
+  if (visual && visual.kind) {
+    const kind = visual.kind;
+    
+    if (kind === 'data-chips') {
+      const title = visual.title || 'Data Visual Model';
+      const values = visual.values || [];
+      const unit = visual.unit || '';
+      
+      svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
+      
+      const startX = 40;
+      const count = values.length;
+      const spacing = count > 1 ? Math.min(80, (width - 80) / (count - 1)) : 60;
+      
+      values.forEach((val, idx) => {
+        const cx = startX + idx * spacing;
+        const cy = 110;
+        svg += `<circle cx="${cx}" cy="${cy}" r="20" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_TEAL}" stroke-width="2" />`;
+        svg += `<text x="${cx}" y="${cy + 5}" font-family="Outfit, sans-serif" font-size="13" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(val)}</text>`;
+      });
+      
+      if (unit) {
+        svg += `<text x="20" y="195" font-family="Hanken Grotesk, sans-serif" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">${esc(unit)}</text>`;
+      }
+      
+    } else if (kind === 'number-line') {
+      const title = visual.title || 'Number Line Model';
+      const min = visual.min !== undefined ? visual.min : 0;
+      const max = visual.max !== undefined ? visual.max : 10;
+      const step = visual.step || 1;
+      const points = visual.points || visual.targets || [];
+      const caption = visual.caption || '';
+      
+      svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
+      
+      const startX = 40;
+      const endX = width - 40;
+      const lineY = 120;
+      
+      svg += `<line x1="${startX}" y1="${lineY}" x2="${endX}" y2="${lineY}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="${startX}" y1="${lineY}" x2="${startX + 8}" y2="${lineY - 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="${startX}" y1="${lineY}" x2="${startX + 8}" y2="${lineY + 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="${endX}" y1="${lineY}" x2="${endX - 8}" y2="${lineY - 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="${endX}" y1="${lineY}" x2="${endX - 8}" y2="${lineY + 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      
+      const range = max - min;
+      const startTickX = startX + 15;
+      const tickSpacing = (endX - startX - 30) / (range || 1);
+      
+      for (let v = min; v <= max; v += step) {
+        const tx = startTickX + (v - min) * tickSpacing;
+        svg += `<line x1="${tx}" y1="${lineY - 6}" x2="${tx}" y2="${lineY + 6}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+        svg += `<text x="${tx}" y="${lineY + 18}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${v}</text>`;
+      }
+      
+      points.forEach(pt => {
+        const val = pt.value !== undefined ? pt.value : pt;
+        const label = pt.label || '';
+        const tx = startTickX + (val - min) * tickSpacing;
+        
+        svg += `<circle cx="${tx}" cy="${lineY}" r="5" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="1.2"/>`;
+        if (label) {
+          svg += `<text x="${tx}" y="${lineY - 12}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(label)}</text>`;
+        }
+      });
+      
+      if (caption) {
+        svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
+      }
+      
+    } else if (kind === 'tape-diagram') {
+      const title = visual.title || 'Tape Diagram Model';
+      const rows = visual.rows || [];
+      const caption = visual.caption || '';
+      
+      svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
+      
+      let currentY = 55;
+      rows.forEach((row, rowIdx) => {
+        const parts = row.parts || [];
+        const totalVal = parts.reduce((sum, p) => sum + (p.value || 0), 0);
+        const rowWidth = width - 80;
+        const startX = 40;
+        
+        if (row.label) {
+          svg += `<text x="${startX}" y="${currentY - 6}" font-family="Outfit, sans-serif" font-size="10" fill="${COLOR_NAVY}" font-weight="bold">${esc(row.label)}</text>`;
+        }
+        
+        let currentX = startX;
+        parts.forEach((part, pIdx) => {
+          const partVal = part.value || 0;
+          const partWidth = totalVal > 0 ? (partVal / totalVal) * rowWidth : rowWidth / (parts.length || 1);
+          const partHeight = 35;
+          const fill = pIdx % 2 === 0 ? COLOR_TEAL_LIGHT : COLOR_AMBER;
+          
+          svg += `<rect x="${currentX}" y="${currentY}" width="${partWidth}" height="${partHeight}" fill="${fill}" stroke="${COLOR_NAVY}" stroke-width="1.5" rx="3" ry="3"/>`;
+          
+          const textX = currentX + partWidth / 2;
+          const textY = currentY + 22;
+          const displayLabel = part.label || String(partVal);
+          svg += `<text x="${textX}" y="${textY}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(displayLabel)}</text>`;
+          
+          currentX += partWidth;
+        });
+        currentY += 65;
+      });
+      
+      if (caption) {
+        svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
+      }
+      
+    } else if (kind === 'dot-plot') {
+      const title = visual.title || 'Dot Plot Model';
+      const values = visual.values || [];
+      const xLabel = visual.xLabel || '';
+      const caption = visual.caption || '';
+      
+      svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
+      
+      let minVal = Math.min(...values);
+      let maxVal = Math.max(...values);
+      if (minVal === Infinity || isNaN(minVal)) { minVal = 0; maxVal = 10; }
+      if (minVal === maxVal) { minVal = Math.max(0, minVal - 2); maxVal = maxVal + 2; }
+      
+      const range = maxVal - minVal;
+      const startX = 50;
+      const endX = width - 50;
+      const lineY = 160;
+      const spacing = (endX - startX) / (range || 1);
+      
+      svg += `<line x1="${startX - 10}" y1="${lineY}" x2="${endX + 10}" y2="${lineY}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      
+      for (let v = minVal; v <= maxVal; v++) {
+        const tx = startX + (v - minVal) * spacing;
+        svg += `<line x1="${tx}" y1="${lineY}" x2="${tx}" y2="${lineY + 5}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+        svg += `<text x="${tx}" y="${lineY + 15}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${v}</text>`;
+      }
+      
+      const counts = {};
+      values.forEach(val => {
+        counts[val] = (counts[val] || 0) + 1;
+        const countIdx = counts[val];
+        const tx = startX + (val - minVal) * spacing;
+        const dotY = lineY - countIdx * 10 + 3;
+        svg += `<circle cx="${tx}" cy="${dotY}" r="4" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+      });
+      
+      if (xLabel) {
+        svg += `<text x="${width / 2}" y="${lineY + 28}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(xLabel)}</text>`;
+      }
+      
+      if (caption) {
+        svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
+      }
+      
+    } else if (kind === 'box-plot') {
+      const title = visual.title || 'Box Plot Model';
+      const min = visual.min !== undefined ? visual.min : 0;
+      const q1 = visual.q1 !== undefined ? visual.q1 : 2;
+      const median = visual.median !== undefined ? visual.median : 5;
+      const q3 = visual.q3 !== undefined ? visual.q3 : 8;
+      const max = visual.max !== undefined ? visual.max : 10;
+      const axisMin = visual.axisMin !== undefined ? visual.axisMin : 0;
+      const axisMax = visual.axisMax !== undefined ? visual.axisMax : 10;
+      const caption = visual.caption || '';
+      
+      svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
+      
+      const startX = 50;
+      const endX = width - 50;
+      const axisY = 160;
+      const axisRange = axisMax - axisMin;
+      const scale = (endX - startX) / (axisRange || 1);
+      
+      // Draw axis
+      svg += `<line x1="${startX}" y1="${axisY}" x2="${endX}" y2="${axisY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      const step = axisRange > 20 ? 5 : (axisRange > 10 ? 2 : 1);
+      for (let v = axisMin; v <= axisMax; v += step) {
+        const tx = startX + (v - axisMin) * scale;
+        svg += `<line x1="${tx}" y1="${axisY}" x2="${tx}" y2="${axisY + 5}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+        svg += `<text x="${tx}" y="${axisY + 15}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${v}</text>`;
+      }
+      
+      const plotY = 90;
+      const xMin = startX + (min - axisMin) * scale;
+      const xQ1 = startX + (q1 - axisMin) * scale;
+      const xMed = startX + (median - axisMin) * scale;
+      const xQ3 = startX + (q3 - axisMin) * scale;
+      const xMax = startX + (max - axisMin) * scale;
+      
+      // Whiskers
+      svg += `<line x1="${xMin}" y1="${plotY}" x2="${xQ1}" y2="${plotY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      svg += `<line x1="${xQ3}" y1="${plotY}" x2="${xMax}" y2="${plotY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      svg += `<line x1="${xMin}" y1="${plotY - 10}" x2="${xMin}" y2="${plotY + 10}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      svg += `<line x1="${xMax}" y1="${plotY - 10}" x2="${xMax}" y2="${plotY + 10}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      
+      // Box
+      svg += `<rect x="${xQ1}" y="${plotY - 20}" width="${Math.max(2, xQ3 - xQ1)}" height="40" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      // Median line
+      svg += `<line x1="${xMed}" y1="${plotY - 20}" x2="${xMed}" y2="${plotY + 20}" stroke="${COLOR_NAVY}" stroke-width="2.5"/>`;
+      
+      // Labels
+      svg += `<text x="${xMin}" y="${plotY - 14}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Min (${min})</text>`;
+      svg += `<text x="${xQ1}" y="${plotY - 24}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Q1 (${q1})</text>`;
+      svg += `<text x="${xMed}" y="${plotY + 31}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Med (${median})</text>`;
+      svg += `<text x="${xQ3}" y="${plotY - 24}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Q3 (${q3})</text>`;
+      svg += `<text x="${xMax}" y="${plotY - 14}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Max (${max})</text>`;
+      
+      if (caption) {
+        svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="9" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
+      }
+      
+    } else if (kind === 'histogram') {
+      const title = visual.title || 'Histogram Model';
+      const xLabel = visual.xLabel || '';
+      const yLabel = visual.yLabel || '';
+      const bars = visual.bars || [];
+      const highlightIndex = visual.highlightIndex !== undefined ? visual.highlightIndex : -1;
+      const caption = visual.caption || '';
+      
+      svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
+      
+      const maxVal = Math.max(...bars.map(b => b.value || 0), 1);
+      const startX = 60;
+      const endX = width - 40;
+      const axisY = 165;
+      const chartHeight = 110;
+      const barWidth = (endX - startX) / (bars.length || 1);
+      
+      bars.forEach((bar, idx) => {
+        const val = bar.value || 0;
+        const bHeight = (val / maxVal) * chartHeight;
+        const bx = startX + idx * barWidth;
+        const by = axisY - bHeight;
+        const fill = idx === highlightIndex ? COLOR_AMBER : COLOR_TEAL_LIGHT;
+        
+        svg += `<rect x="${bx}" y="${by}" width="${barWidth - 2}" height="${bHeight}" fill="${fill}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+        svg += `<text x="${bx + barWidth / 2}" y="${axisY + 12}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(bar.label)}</text>`;
+        svg += `<text x="${bx + barWidth / 2}" y="${by - 4}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" text-anchor="middle">${val}</text>`;
+      });
+      
+      svg += `<line x1="${startX - 5}" y1="${axisY}" x2="${endX}" y2="${axisY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      svg += `<line x1="${startX - 5}" y1="${axisY - chartHeight - 5}" x2="${startX - 5}" y2="${axisY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      
+      if (xLabel) {
+        svg += `<text x="${(startX + endX) / 2}" y="${axisY + 26}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(xLabel)}</text>`;
+      }
+      if (yLabel) {
+        svg += `<text x="${startX - 35}" y="${axisY - chartHeight / 2}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle" transform="rotate(-90 ${startX - 35} ${axisY - chartHeight / 2})">${esc(yLabel)}</text>`;
+      }
+      
+      if (caption) {
+        svg += `<text x="20" y="212" font-family="Hanken Grotesk, sans-serif" font-size="9" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
+      }
     }
-    // Highlight dot
-    svg += `<circle cx="280" cy="120" r="5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+  } else {
+    // Standard based geometric / proportional fallback
+    const standard = data.standard || '';
+    const isGeometry = standard.includes('.G.') || lessonId.startsWith('5-') || lessonId.startsWith('10-');
+    const isProportional = standard.includes('.RP.') || lessonId.startsWith('3-') || lessonId.startsWith('4-');
+    
+    if (isGeometry) {
+      svg += `<polygon points="80,180 220,50 360,180" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="80" y1="195" x2="360" y2="195" stroke="${COLOR_NAVY}" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+      svg += `<text x="200" y="212" font-family="Outfit, sans-serif" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Base (b)</text>`;
+      svg += `<line x1="220" y1="50" x2="220" y2="180" stroke="${COLOR_AMBER}" stroke-width="1.5" stroke-dasharray="4,4"/>`;
+      svg += `<text x="230" y="115" font-family="Outfit, sans-serif" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Height (h)</text>`;
+    } else if (isProportional) {
+      svg += `<line x1="60" y1="190" x2="380" y2="190" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="80" y1="30" x2="80" y2="200" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<text x="340" y="210" font-family="Outfit, sans-serif" font-size="10" fill="${COLOR_NAVY}" font-weight="bold">Input (x)</text>`;
+      svg += `<text x="25" y="45" font-family="Outfit, sans-serif" font-size="10" fill="${COLOR_NAVY}" font-weight="bold">Output (y)</text>`;
+      svg += `<line x1="80" y1="190" x2="340" y2="60" stroke="${COLOR_AMBER}" stroke-width="3"/>`;
+      svg += `<circle cx="210" cy="125" r="4.5" fill="${COLOR_TEAL}"/>`;
+      svg += `<circle cx="340" cy="60" r="4.5" fill="${COLOR_TEAL}"/>`;
+    } else {
+      svg += `<line x1="40" y1="120" x2="400" y2="120" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="40" y1="120" x2="48" y2="114" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="40" y1="120" x2="48" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="400" y1="120" x2="392" y2="114" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      svg += `<line x1="400" y1="120" x2="392" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+      
+      const ticks = [100, 160, 220, 280, 340];
+      const labels = ['-2', '-1', '0', '1', '2'];
+      for (let t = 0; t < ticks.length; t++) {
+        svg += `<line x1="${ticks[t]}" y1="112" x2="${ticks[t]}" y2="128" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+        svg += `<text x="${ticks[t]}" y="${142}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${labels[t]}</text>`;
+      }
+      svg += `<circle cx="280" cy="120" r="5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    }
   }
   
   svg += '</svg>';
@@ -92,76 +345,284 @@ function generateMathVisualSvg(lessonId, data) {
 // Generate the self-contained slides HTML
 function generateSlidesHtml(lessonId, data) {
   const title = `Lesson ${lessonId}: ${data.title || 'Math Lesson'}`;
-  const standard = data.standard || '6.EE';
+  const standard = data.standard || '6th Grade Common Core';
   const unit = data.unit || 1;
   const contentObj = data.contentObjective || 'Understand the mathematical connections in this lesson.';
   const langObj = data.languageObjective || 'Discuss findings using math vocab terms.';
   
-  let launchText = 'Solve the problem and record your observations.';
-  let noticeStemsHtml = '<div>🔹 I notice that...</div><div>🔹 Another observation...</div>';
-  let wonderStemsHtml = '<div>🔹 I wonder if...</div><div>🔹 Why does...</div>';
-  let vocabBankHtml = '';
+  // Slide 2 Narrative Launch Bindings
+  const launchBadge = data.launch ? (data.launch.badge || 'Scenario Launch') : 'Scenario Launch';
+  const launchNarrative = data.launch ? (data.launch.narrative || 'Solve the problem and record observations.') : 'Solve the problem and record observations.';
+  const noticePrompts = data.launch ? (data.launch.noticePrompts || []) : [];
+  const wonderPrompts = data.launch ? (data.launch.wonderPrompts || []) : [];
+  const noticeStemsHtml = noticePrompts.map(p => `<div>🔹 ${esc(p)}</div>`).join('');
+  const wonderStemsHtml = wonderPrompts.map(p => `<div>🔹 ${esc(p)}</div>`).join('');
   
+  let launchVocabBankHtml = '';
   if (data.turnAndTalk && data.turnAndTalk.length > 0) {
     const talk = data.turnAndTalk[0];
-    launchText = talk.question || launchText;
-    if (talk.stems) {
-      noticeStemsHtml = talk.stems.map(s => `<div>🔹 ${esc(s.en || s)}</div>`).join('');
-    }
-    if (talk.extendStems) {
-      wonderStemsHtml = talk.extendStems.map(s => `<div>🔹 ${esc(s.en || s)}</div>`).join('');
-    }
     if (talk.wordBank) {
-      vocabBankHtml = talk.wordBank.map(v => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(v)}</span>`).join('');
+      launchVocabBankHtml = talk.wordBank.map(v => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(v)}</span>`).join('');
     }
   }
   
-  // Vocabulary cards
-  let vocabTerms = ['ratio', 'relationship', 'variable', 'quantity'];
-  if (data.turnAndTalk && data.turnAndTalk.length > 0 && data.turnAndTalk[0].wordBank) {
-    vocabTerms = data.turnAndTalk[0].wordBank;
-  }
-  
+  // Slide 3 Concept Intro Bindings
+  const conceptIntro = data.launch ? data.launch.conceptIntro : null;
+  const conceptHeading = conceptIntro ? (conceptIntro.heading || 'Concept Introduction') : 'Concept Introduction';
+  const conceptText = conceptIntro ? (conceptIntro.intro || 'Review the core concept of this lesson.') : 'Review the core concept of this lesson.';
+  const conceptKeyIdea = conceptIntro ? (conceptIntro.keyIdea || '') : '';
+  const iDoTitle = conceptIntro && conceptIntro.iDo ? (conceptIntro.iDo.title || 'Watch me (I Do)') : 'Watch me (I Do)';
+  const iDoLines = conceptIntro && conceptIntro.iDo ? (conceptIntro.iDo.lines || []) : [];
+  const weDoTitle = conceptIntro && conceptIntro.weDo ? (conceptIntro.weDo.title || 'Let\'s try together (We Do)') : 'Let\'s try together (We Do)';
+  const weDoLines = conceptIntro && conceptIntro.weDo ? (conceptIntro.weDo.lines || []) : [];
+  const youDoTitle = conceptIntro && conceptIntro.youDo ? (conceptIntro.youDo.title || 'Now it\'s your turn (You Do)') : 'Now it\'s your turn (You Do)';
+  const youDoLines = conceptIntro && conceptIntro.youDo ? (conceptIntro.youDo.lines || []) : [];
+
+  // Slide 4 Vocabulary cards (dynamic)
+  const vocabList = data.vocabulary || [];
   let vocabCardsHtml = '';
-  vocabTerms.slice(0, 4).forEach(term => {
-    let def = 'Explain this vocabulary concept using real-world context.';
-    if (term.toLowerCase().includes('prime')) def = 'A number greater than 1 with only factors 1 and itself.';
-    if (term.toLowerCase().includes('composite')) def = 'A number with factors other than 1 and itself.';
-    if (term.toLowerCase().includes('factor')) def = 'A number multiplied by another to get a product.';
-    if (term.toLowerCase().includes('ratio')) def = 'A comparison of two quantities by division.';
+  vocabList.slice(0, 4).forEach((v, idx) => {
+    const term = v.term || '';
+    const termEs = v.termEs || '';
+    const definition = v.definition || 'No definition available.';
+    const definitionEs = v.definitionEs || '';
+    const visual = v.visual || '';
+    const cloze = v.cloze || '';
     
     vocabCardsHtml += `
       <div class="vocab-card" onclick="this.classList.toggle('flipped')">
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>${esc(term.toUpperCase())}</h3>
+            ${termEs ? `<p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">${esc(termEs)}</p>` : ''}
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>${esc(def)}</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">${esc(definition)}</p>
+            ${definitionEs ? `<p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">${esc(definitionEs)}</p>` : ''}
+            ${visual ? `<div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> ${esc(visual)}</div>` : ''}
+            ${cloze ? `<div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 ${esc(cloze)}</div>` : ''}
           </div>
         </div>
       </div>
     `;
   });
   
-  // Guided problem
-  let guidedText = 'Explain your reasoning and calculations with your partner.';
-  let guidedStemsHtml = '<div>🔹 First, we need to... because...</div><div>🔹 Therefore, we can find...</div>';
-  if (data.turnAndTalk && data.turnAndTalk.length > 1) {
-    const talk = data.turnAndTalk[1];
-    guidedText = talk.question || guidedText;
-    if (talk.stems) {
-      guidedStemsHtml = talk.stems.map(s => `<div>🔹 ${esc(s.en || s)}</div>`).join('');
+  // Slide 6 Explore Game Bindings
+  const explore = data.explore || {};
+  const exploreInstructions = explore.instructions || explore.label || 'Sort the items into the correct categories.';
+  
+  let normalizedCats = [];
+  if (explore.categories) {
+    normalizedCats = explore.categories.map((c, idx) => {
+      if (typeof c === 'string') {
+        return { id: String(idx), label: c };
+      }
+      return { id: String(c.id || idx), label: c.label || String(c) };
+    });
+  } else {
+    normalizedCats = [
+      { id: 'cat-a', label: 'Category A' },
+      { id: 'cat-b', label: 'Category B' }
+    ];
+  }
+  
+  let normalizedItems = [];
+  const rawItems = explore.items || explore.cards || [];
+  rawItems.forEach((item, idx) => {
+    let text = item.text || String(item);
+    let catId = '';
+    
+    if (item.category !== undefined) {
+      catId = String(item.category);
+    } else if (item.correct !== undefined) {
+      catId = String(item.correct);
+    }
+    
+    normalizedItems.push({ id: idx, text: text, catId: catId });
+  });
+
+  const discourse = explore.discourse || {};
+  const discoursePrompt = discourse.prompt || 'Explain your strategy and reasoning.';
+  const discourseFrame = discourse.sentenceFrame || '';
+  const discourseKeywords = discourse.keywords || [];
+  
+  let exploreVocabBankHtml = '';
+  if (discourseKeywords && discourseKeywords.length > 0) {
+    exploreVocabBankHtml = discourseKeywords.map(k => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(k)}</span>`).join('');
+  }
+  
+  // Slide 7 Practice Problem Bindings
+  let practiceProblem = null;
+  let practiceType = 'generic'; // 'error-analysis', 'multiple-choice', 'generic'
+  
+  if (data.practice && data.practice.extending) {
+    const errProb = data.practice.extending.find(p => p.type === 'error-analysis');
+    if (errProb) {
+      practiceProblem = errProb;
+      practiceType = 'error-analysis';
     }
   }
   
-  // Real world
-  let realWorldText = 'Apply the math from today to understand this context.';
-  if (data.projects && data.projects.length > 0) {
-    realWorldText = `${data.projects[0].title}: ${data.projects[0].desc}`;
+  if (!practiceProblem && data.practice) {
+    const mcProb = []
+      .concat(data.practice.onLevel || [])
+      .concat(data.practice.approaching || [])
+      .concat(data.practice.optional || [])
+      .find(p => p.type === 'multiple-choice');
+    if (mcProb) {
+      practiceProblem = mcProb;
+      practiceType = 'multiple-choice';
+    }
   }
   
+  let practiceHtml = '';
+  
+  if (practiceType === 'error-analysis') {
+    const pTitle = practiceProblem.title || 'Find the Error';
+    const workedExample = practiceProblem.workedExample || [];
+    const errorStep = practiceProblem.errorStep || 1;
+    const correctWork = practiceProblem.correctWork || 'Review and write the correct steps.';
+    
+    let exampleStepsHtml = '';
+    workedExample.forEach((step, idx) => {
+      exampleStepsHtml += `<div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">${esc(step.label)}:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">${esc(step.work)}</span>
+      </div>`;
+    });
+    
+    practiceHtml = `
+      <div class="slide-grid-2">
+        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title" style="color:var(--amber);">⚠️ ${esc(pTitle)}</h2>
+            <p class="card-desc" style="font-size:12px; margin-bottom:8px; line-height:1.4;">Analyze the student's work on the right. Which step contains the error, and how would you correct it?</p>
+            <div style="border:1.5px solid #dadce0; border-radius:6px; background:var(--white); overflow:hidden;">
+              ${exampleStepsHtml}
+            </div>
+          </div>
+          
+          <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
+            <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
+            <div style="display:flex; gap:6px;">
+              ${workedExample.map((s, idx) => `<button class="assess-btn px-btn" id="btn-errstep-${idx + 1}" onclick="checkErrorStep(${idx + 1}, ${errorStep})">${idx + 1}</button>`).join('')}
+            </div>
+            <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+          </div>
+        </div>
+        
+        <div class="slide-card" style="background:var(--coral); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title">🛠️ Fix & Justify</h2>
+            <textarea id="practice-fix-work" class="slide-input-placeholder" rows="5" placeholder="Explain the error and write the correct calculation steps here..."></textarea>
+          </div>
+          <button class="btn-present" onclick="revealPracticeSolution()" style="align-self:flex-end; padding:6px 12px; font-size:11px; margin-top:6px;">Reveal Solution</button>
+          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:10px; line-height:1.4; color:var(--body-text); margin-top:6px;">
+            <strong>Correct Work:</strong> ${esc(correctWork)}
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (practiceType === 'multiple-choice') {
+    const stem = practiceProblem.stem || 'Solve this practice problem.';
+    const choices = practiceProblem.choices || [];
+    const correctIndex = practiceProblem.correctIndex !== undefined ? practiceProblem.correctIndex : 0;
+    
+    let choicesHtml = '';
+    choices.forEach((choice, idx) => {
+      choicesHtml += `<button class="assess-btn mc-btn" id="btn-choice-${idx}" onclick="checkMCQuestion(${idx}, ${correctIndex})" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:block; width:100%; font-weight:600; line-height:1.4;">
+        ${String.fromCharCode(65 + idx)}) ${esc(choice)}
+      </button>`;
+    });
+    
+    practiceHtml = `
+      <div class="slide-grid-2">
+        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title">📝 Practice Challenge</h2>
+            <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.4; margin-bottom:12px; color:var(--navy);">${esc(stem)}</p>
+            <div style="margin-top:10px;">
+              ${choicesHtml}
+            </div>
+          </div>
+          <div id="mc-question-feedback" style="font-size:11px; font-weight:700; min-height:16px;"></div>
+        </div>
+        
+        <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title">✍️ Work & Justification</h2>
+            <p style="font-size:11.5px; margin-top:0; color:var(--navy); line-height:1.4;">Use this workspace to calculate the answer or explain why your selected choice is correct.</p>
+            <textarea id="practice-mc-work" class="slide-input-placeholder" rows="6" placeholder="Type your calculation steps or reasoning here..."></textarea>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    practiceHtml = `
+      <div class="slide-grid-2">
+        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title">📖 Practice Activity</h2>
+            <p class="card-desc" style="font-size:13px; line-height:1.5;">Apply what you have learned to solve this math challenge. Make sure to double check your calculations with your partner.</p>
+          </div>
+          <textarea id="practice-generic-work" class="slide-input-placeholder" rows="6" placeholder="Type your step-by-step calculations here..."></textarea>
+        </div>
+        <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title">✍️ Reasoning & Check</h2>
+            <p style="font-size:12px; margin-top:0; color:var(--navy);">Write a sentence explaining why your answer makes sense in this mathematical context.</p>
+            <textarea id="practice-generic-reasoning" class="slide-input-placeholder" rows="6" placeholder="Explain your mathematical logic here..."></textarea>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Slide 8 Real-world Connection Bindings
+  const connect = data.connect || {};
+  const connectScenario = connect.scenario || 'Apply the math from today to understand this real-world context.';
+  const connectPrompt = connect.promptQuestion || connect.prompt || 'How does this math apply to this scenario?';
+  const connectFrame = connect.prompt || '';
+  const connectKeywords = connect.keywords || [];
+  
+  let connectVocabBankHtml = '';
+  if (connectKeywords && connectKeywords.length > 0) {
+    connectVocabBankHtml = connectKeywords.map(k => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(k)}</span>`).join('');
+  }
+  
+  // Slide 9 Exit Ticket Bindings
+  const exitTicket = data.reflect ? data.reflect.exitTicket : null;
+  const exitStem = exitTicket ? (exitTicket.stem || 'Record your final answer and explanation to show mastery of this standard.') : 'Record your final answer and explanation to show mastery of this standard.';
+  const exitChoices = exitTicket ? (exitTicket.choices || []) : [];
+  const exitCorrectIndex = exitTicket ? (exitTicket.correctIndex !== undefined ? exitTicket.correctIndex : 0) : 0;
+  
+  let exitTicketHtml = '';
+  if (exitChoices && exitChoices.length > 0) {
+    let exitChoicesHtml = '';
+    exitChoices.forEach((choice, idx) => {
+      exitChoicesHtml += `<button class="assess-btn exit-btn" id="btn-exit-${idx}" onclick="checkExitTicket(${idx}, ${exitCorrectIndex})" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        ${String.fromCharCode(65 + idx)}) ${esc(choice)}
+      </button>`;
+    });
+    exitTicketHtml = `
+      <div style="margin-top:6px;">
+        <p style="font-size:11.5px; font-weight:700; margin:0 0 6px; color:var(--navy); line-height:1.3;">${esc(exitStem)}</p>
+        <div style="margin-top:4px;">
+          ${exitChoicesHtml}
+        </div>
+        <div id="exit-ticket-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+      </div>
+    `;
+  } else {
+    exitTicketHtml = `
+      <div>
+        <p style="font-size:12px; margin-bottom:8px; line-height:1.4; font-weight:700; color:var(--navy);">${esc(exitStem)}</p>
+        <textarea id="exit-ticket-text-work" class="slide-input-placeholder" rows="4" placeholder="Type your final answer and explanation here..."></textarea>
+      </div>
+    `;
+  }
+
   const svgVisual = generateMathVisualSvg(lessonId, data);
   
   return `<!doctype html>
@@ -546,27 +1007,44 @@ function generateSlidesHtml(lessonId, data) {
     }
     .click-hint { font-size: 9px; color: var(--gray); margin-top: 4px; font-weight: 600; }
     
-    /* Math Flow Diagram */
-    .flow-diagram {
-      background: var(--teal-light);
-      border-radius: 8px;
-      padding: 12px;
+    /* Concept Instruction Tab Styling */
+    .tabs-container {
       display: flex;
-      align-items: center;
-      justify-content: space-around;
+      gap: 4px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--google-gray);
+      padding-bottom: 2px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 11px;
       font-weight: 700;
-      font-size: 12px;
-      color: var(--navy);
-      margin-top: auto;
-    }
-    .flow-box {
-      background: var(--white);
+      color: var(--gray);
       padding: 6px 12px;
-      border-radius: 4px;
-      border: 1px solid var(--teal);
-      text-align: center;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.2s;
     }
-    .flow-arrow { color: var(--amber); font-size: 18px; }
+    .tab-btn:hover {
+      color: var(--navy);
+      background: rgba(23, 50, 77, 0.05);
+    }
+    .tab-btn.active {
+      color: var(--teal);
+      border-bottom: 3.5px solid var(--teal);
+      background: var(--teal-light);
+    }
+    .tab-content {
+      background: var(--white);
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 12px;
+      height: calc(100% - 35px);
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
     
     /* Visual Math Container with Canvas Overlay */
     .math-visual-container {
@@ -656,14 +1134,6 @@ function generateSlidesHtml(lessonId, data) {
       background: var(--white);
     }
     
-    /* Partner cards */
-    .partner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      height: 100%;
-    }
-    
     /* Fullscreen present mode pacing timer & controls */
     .presenter-hud {
       display: none;
@@ -724,7 +1194,7 @@ function generateSlidesHtml(lessonId, data) {
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     .post-it-3 { background: var(--teal-light); }
-    .post-it-2 { background: var(--amber-light); }
+    .post-it-2 { background: var(--amber); opacity: 0.85; }
     .post-it-1 { background: var(--coral); }
     .post-it-title { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--navy); margin-bottom: 4px; }
     .post-it input {
@@ -737,7 +1207,7 @@ function generateSlidesHtml(lessonId, data) {
       border-bottom: 1px dotted rgba(23, 50, 77, 0.2);
     }
     
-    /* Self-assessment buttons */
+    /* Assessment & Practice Buttons */
     .assess-row {
       display: flex;
       gap: 8px;
@@ -755,10 +1225,32 @@ function generateSlidesHtml(lessonId, data) {
       text-align: center;
       transition: all 0.2s;
     }
+    .assess-btn:hover {
+      background: var(--google-gray);
+    }
     .assess-btn.active {
       border-color: var(--teal);
       background: var(--teal-light);
       color: var(--navy);
+    }
+    .assess-btn.correct {
+      border-color: var(--teal) !important;
+      background: var(--teal-light) !important;
+      color: var(--navy) !important;
+    }
+    .assess-btn.incorrect {
+      border-color: #D9795D !important;
+      background: var(--coral) !important;
+      color: #D9795D !important;
+    }
+    .px-btn {
+      flex: none;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     
   </style>
@@ -804,32 +1296,32 @@ function generateSlidesHtml(lessonId, data) {
       <!-- Slide 2 -->
       <div class="thumb-card" data-slide="2" onclick="goToSlide(2)">
         <span class="thumb-label">Slide 2</span>
-        <div class="thumb-preview">👀 Be Curious</div>
+        <div class="thumb-preview">👀 Launch</div>
       </div>
       <!-- Slide 3 -->
       <div class="thumb-card" data-slide="3" onclick="goToSlide(3)">
         <span class="thumb-label">Slide 3</span>
-        <div class="thumb-preview">📝 Vocabulary</div>
+        <div class="thumb-preview">💡 Concept</div>
       </div>
       <!-- Slide 4 -->
       <div class="thumb-card" data-slide="4" onclick="goToSlide(4)">
         <span class="thumb-label">Slide 4</span>
-        <div class="thumb-preview">📐 Visual Model</div>
+        <div class="thumb-preview">📝 Vocabulary</div>
       </div>
       <!-- Slide 5 -->
       <div class="thumb-card" data-slide="5" onclick="goToSlide(5)">
         <span class="thumb-label">Slide 5</span>
-        <div class="thumb-preview">📖 Guided</div>
+        <div class="thumb-preview">📐 Model</div>
       </div>
       <!-- Slide 6 -->
       <div class="thumb-card" data-slide="6" onclick="goToSlide(6)">
         <span class="thumb-label">Slide 6</span>
-        <div class="thumb-preview">👥 Activity A</div>
+        <div class="thumb-preview">👥 Explore</div>
       </div>
       <!-- Slide 7 -->
       <div class="thumb-card" data-slide="7" onclick="goToSlide(7)">
         <span class="thumb-label">Slide 7</span>
-        <div class="thumb-preview">⚠️ Activity B</div>
+        <div class="thumb-preview">⚠️ Practice</div>
       </div>
       <!-- Slide 8 -->
       <div class="thumb-card" data-slide="8" onclick="goToSlide(8)">
@@ -850,7 +1342,7 @@ function generateSlidesHtml(lessonId, data) {
       <article class="slide-canvas" id="slide-canvas-element">
       
         <!-- Inside Slide Header -->
-        <header class="slide-header" id="slide-title-bar">LESSON ${esc(lessonId)} · OBJECTIVES</header>
+        <header class="slide-header" id="slide-title-bar">LESSON ${esc(lessonId)} · OBJECTIVES &amp; TOPIC</header>
         
         <!-- SLIDE 1: OBJECTIVES -->
         <div class="slide-body active" id="slide-1">
@@ -865,54 +1357,81 @@ function generateSlidesHtml(lessonId, data) {
                 <strong style="color:var(--navy); font-size:18px;">Language Objective:</strong>
                 <p style="margin: 6px 0 0; color:var(--body-text); font-size:16px;">${esc(langObj)}</p>
               </div>
+              <div style="margin-top:12px; border-top:1px dashed var(--teal); padding-top:12px; font-size:12px; color:var(--gray); font-weight:700;">
+                STANDARD: ${esc(standard)}
+              </div>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 2: BE CURIOUS -->
+        <!-- SLIDE 2: SCENARIO LAUNCH -->
         <div class="slide-body" id="slide-2">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📋 Scenario Launch</h2>
-                <p class="card-desc" style="font-size:13px; line-height:1.5; margin-bottom:8px;">${esc(launchText)}</p>
+                <h2 class="card-title">📋 ${esc(launchBadge)}</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">${esc(launchNarrative)}</p>
               </div>
               <div style="margin-top:auto;">
                 <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Vocabulary Bank (Click to insert):</strong>
-                <div style="margin-top:4px;">${vocabBankHtml}</div>
+                <div style="margin-top:4px;">${launchVocabBankHtml}</div>
               </div>
             </div>
             <div class="slide-card nw-container">
               <div class="nw-box nw-box-notice" style="display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
-                  <h4>👀 Things I Notice:</h4>
-                  <div class="nw-box-stems">${noticeStemsHtml}</div>
+                  <h4>👀 Notice Prompts:</h4>
+                  <div class="nw-box-stems" style="margin-bottom:6px;">${noticeStemsHtml}</div>
                 </div>
-                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type your observations here..."></textarea>
+                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice here..."></textarea>
               </div>
               <div class="nw-box nw-box-wonder" style="display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
-                  <h4>💭 Things I Wonder:</h4>
-                  <div class="nw-box-stems">${wonderStemsHtml}</div>
+                  <h4>💭 Wonder Prompts:</h4>
+                  <div class="nw-box-stems" style="margin-bottom:6px;">${wonderStemsHtml}</div>
                 </div>
-                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type your questions here..."></textarea>
+                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder here..."></textarea>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 3: VOCABULARY -->
+        <!-- SLIDE 3: CONCEPT INTRO & FLOW -->
         <div class="slide-body" id="slide-3">
           <div class="slide-grid-2">
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+              <div>
+                <h2 class="card-title">💡 ${esc(conceptHeading)}</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:12px;">${esc(conceptText)}</p>
+              </div>
+              ${conceptKeyIdea ? `
+              <div style="background:var(--teal-light); border:1.5px solid var(--teal); border-radius:8px; padding:12px; margin-top:auto;">
+                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Key Idea:</strong>
+                <p style="margin:4px 0 0; font-size:12.5px; font-weight:700; color:var(--navy); line-height:1.4;">${esc(conceptKeyIdea)}</p>
+              </div>` : ''}
+            </div>
+            
+            <div style="display:flex; flex-direction:column; height: 100%;">
+              <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchConceptTab('ido')">Watch Me</button>
+                <button class="tab-btn" onclick="switchConceptTab('wedo')">Try Together</button>
+                <button class="tab-btn" onclick="switchConceptTab('youdo')">Your Turn</button>
+              </div>
+              <div id="concept-tab-content" class="tab-content">
+                <!-- Tab contents populated dynamically by Javascript -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- SLIDE 4: VOCABULARY CARD GRID -->
+        <div class="slide-body" id="slide-4">
+          <div class="slide-grid-2">
             <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%;">
-              <h2 class="card-title">📝 Core Vocabulary</h2>
-              <p class="card-desc" style="font-size:13px;">Click each card to flip and reveal its visual definition. Verify with your partner before moving on.</p>
-              <div class="flow-diagram">
-                <div class="flow-box">INPUT</div>
-                <div class="flow-arrow">➔</div>
-                <div class="flow-box" style="border-color:var(--amber);">PROCESS</div>
-                <div class="flow-arrow">➔</div>
-                <div class="flow-box">OUTPUT</div>
+              <h2 class="card-title">📝 Lesson Vocabulary</h2>
+              <p class="card-desc" style="font-size:13px; line-height:1.5;">Click each card to flip and review its definition, Spanish translation, and visual examples. Compare notes with your partner.</p>
+              <div style="background:var(--teal-light); border-radius:8px; padding:12px; font-size:11.5px; color:var(--navy); font-weight:600; line-height:1.4;">
+                💡 Multi-language terms included. Discuss how each concept works in a math sentence!
               </div>
             </div>
             <div class="vocab-grid">
@@ -921,13 +1440,13 @@ function generateSlidesHtml(lessonId, data) {
           </div>
         </div>
         
-        <!-- SLIDE 4: VISUAL MODEL WITH CANVAS OVERLAY -->
-        <div class="slide-body" id="slide-4">
+        <!-- SLIDE 5: VISUAL MODEL WITH CANVAS OVERLAY -->
+        <div class="slide-body" id="slide-5">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📐 Visual Modeling Workspace</h2>
-                <p class="card-desc" style="font-size:13px;">Use the drawing tools to label axes, circle key values, or sketch equations directly onto the model grid.</p>
+                <h2 class="card-title">📐 Modeling Workspace</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.4;">Use the drawing tools to annotate, label axes, partition lines, or write equations directly onto the math model representation.</p>
               </div>
               
               <!-- Draw Toolbar -->
@@ -960,81 +1479,73 @@ function generateSlidesHtml(lessonId, data) {
           </div>
         </div>
         
-        <!-- SLIDE 5: GUIDED PRACTICE -->
-        <div class="slide-body" id="slide-5">
+        <!-- SLIDE 6: INTERACTIVE EXPLORE ACTIVITY -->
+        <div class="slide-body" id="slide-6">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📖 Guided Practice</h2>
-                <p class="card-desc" style="font-size:13px; line-height:1.5;">${esc(guidedText)}</p>
+                <h2 class="card-title">👥 Explore Activity</h2>
+                <p class="card-desc" style="font-size:12.5px; margin-bottom:8px;" id="explore-instructions">${esc(exploreInstructions)}</p>
+                
+                <!-- Interactive Sorting Game -->
+                <div id="sorting-game-container" style="background:var(--google-gray); padding:12px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:130px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px;">
+                  <div id="sorting-card" style="background:var(--white); padding:8px 14px; border-radius:6px; border:1.5px solid var(--teal); font-weight:700; font-size:13.5px; color:var(--navy); box-shadow:var(--shadow); width:90%; min-height:48px; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.3;">
+                    <!-- Active Card Text -->
+                  </div>
+                  <div id="sorting-buttons" style="display:flex; gap:8px; justify-content:center; width:100%; flex-wrap:wrap;">
+                    <!-- Category buttons loaded dynamically -->
+                  </div>
+                  <div id="sorting-feedback" style="font-size:11px; font-weight:700; min-height:16px;"></div>
+                </div>
               </div>
-              <textarea id="guided-notes-work" class="slide-input-placeholder" rows="3" placeholder="Type your step-by-step math calculations here..."></textarea>
+              
+              <div style="margin-top:6px;">
+                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
+                <div style="margin-top:4px;">${exploreVocabBankHtml}</div>
+              </div>
             </div>
+            
             <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">✍️ TWR Sentence Expansion</h2>
-                <div class="nw-box-stems" style="font-size:12px; font-style:italic; margin-bottom:12px;">${guidedStemsHtml}</div>
+                <h2 class="card-title">✍️ Explore Discourse</h2>
+                <p style="font-size:11.5px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.4;">${esc(discoursePrompt)}</p>
+                ${discourseFrame ? `<div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>${esc(discourseFrame)}</div>` : ''}
               </div>
-              <textarea id="guided-sentence-work" class="slide-input-placeholder" rows="3" placeholder="Write your complete reasoning sentence here..."></textarea>
+              <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 6: INTERACTIVE WORKSHOP A (Partner Work) -->
-        <div class="slide-body" id="slide-6">
-          <div class="partner-grid">
-            <div class="slide-card" style="justify-content:space-between;">
-              <div>
-                <h2 class="card-title" style="color:var(--teal);">👥 Partner A</h2>
-                <p class="card-desc" style="font-size:12.5px;">Explain how you can approach solving this problem. What steps will you perform first, and what tools will you use?</p>
-              </div>
-              <textarea id="partner-a-work" class="slide-input-placeholder" rows="4" placeholder="Partner A: Type your explanation here..."></textarea>
-            </div>
-            <div class="slide-card" style="justify-content:space-between;">
-              <div>
-                <h2 class="card-title">👥 Partner B</h2>
-                <p class="card-desc" style="font-size:12.5px;">Respond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?</p>
-              </div>
-              <textarea id="partner-b-work" class="slide-input-placeholder" rows="4" placeholder="Partner B: Type your response here..."></textarea>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 7: INTERACTIVE WORKSHOP B (Error Analysis) -->
+        <!-- SLIDE 7: PRACTICE PROBLEM -->
         <div class="slide-body" id="slide-7">
-          <div class="slide-grid-2">
-            <div class="slide-card">
-              <h2 class="card-title" style="color:var(--amber);">⚠️ Incorrect Claim</h2>
-              <p class="card-desc" style="font-size:13px; line-height:1.5;">A student claims that when solving this problem, they should add the values instead of multiplying.<br/><br/>Analyze their reasoning. What mistake did they make, and why is adding incorrect in this context?</p>
-            </div>
-            <div class="slide-card" style="background:var(--coral); justify-content:space-between;">
-              <h2 class="card-title">🛠️ Fix & Justify</h2>
-              <textarea id="error-fix-text" class="slide-input-placeholder" rows="6" placeholder="Explain the error clearly and write the correct calculation steps here..."></textarea>
-            </div>
-          </div>
+          ${practiceHtml}
         </div>
         
         <!-- SLIDE 8: REAL-WORLD CONNECTION -->
         <div class="slide-body" id="slide-8">
           <div class="slide-grid-2">
-            <div class="slide-card" style="justify-content:center;">
-              <h2 class="card-title">🌍 Math in the Wild</h2>
-              <p class="card-desc" style="font-size:13.5px; line-height:1.5;">${esc(realWorldText)}</p>
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+              <div>
+                <h2 class="card-title">🌍 Math in the Wild</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">${esc(connectScenario)}</p>
+              </div>
+              <div style="margin-top:auto;">
+                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
+                <div style="margin-top:4px;">${connectVocabBankHtml}</div>
+              </div>
             </div>
-            <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height:100%;">
+            <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height:100%;">
               <div>
                 <h2 class="card-title">✍️ Connection Reasoning</h2>
-                <p style="font-size:12px; margin-top:0; color:var(--navy);">Complete the connection statements below:</p>
+                <p style="font-size:12px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">${esc(connectPrompt)}</p>
+                ${connectFrame ? `<div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>${esc(connectFrame)}</div>` : ''}
               </div>
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <input type="text" id="rw-connect-1" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="This math applies to this scenario because..." />
-                <input type="text" id="rw-connect-2" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="I could use this math in real life when..." />
-              </div>
+              <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection explanation here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 9: REFLECTION -->
+        <!-- SLIDE 9: REFLECTION & EXIT TICKET -->
         <div class="slide-body" id="slide-9">
           <div class="slide-grid-2">
             <div class="slide-card" style="justify-content:space-between; height: 100%;">
@@ -1054,15 +1565,15 @@ function generateSlidesHtml(lessonId, data) {
                 </div>
               </div>
             </div>
+            
             <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height: 100%;">
               <div>
                 <h2 class="card-title">📝 Exit Ticket</h2>
-                <p class="card-desc" style="font-size:12px; margin-bottom:8px;">Record your final answer and explanation to show mastery of this standard.</p>
-                <textarea id="exit-ticket-work" class="slide-input-placeholder" rows="3" placeholder="Type your final answer and explanation here..."></textarea>
+                ${exitTicketHtml}
               </div>
               
-              <div>
-                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
+              <div style="margin-top:6px; border-top: 1px dashed var(--teal); padding-top:6px;">
+                <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
                 <div class="assess-row">
                   <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
                   <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost There 🧭</button>
@@ -1096,18 +1607,41 @@ function generateSlidesHtml(lessonId, data) {
     const totalSlides = 9;
     
     const slideTitles = [
-      "LESSON ${esc(lessonId)} · OBJECTIVES",
-      "BE CURIOUS · LAUNCH",
-      "KEY VOCABULARY & FLOW",
+      "LESSON ${esc(lessonId)} · OBJECTIVES & TOPIC",
+      "BE CURIOUS · SCENARIO LAUNCH",
+      "CONCEPT INTRODUCTION · Watch / Try / Apply",
+      "KEY VOCABULARY · Flashcards",
       "VISUAL MODELING WORKSPACE",
-      "GUIDED PRACTICE",
-      "INTERACTIVE WORKSHOP A",
-      "INTERACTIVE WORKSHOP B · ERROR ANALYSIS",
-      "REAL-WORLD CONNECTION · MATH IN THE WILD",
+      "EXPLORE ACTIVITY · Card Sorting & Discourse",
+      "TIERED PRACTICE CHALLENGE",
+      "REAL-WORLD CONNECTION · Math in the Wild",
       "REFLECTION & EXIT TICKET"
     ];
     
-    // Timer variable for present mode
+    // Concept Intro Tab Data
+    const conceptData = {
+      ido: { title: "${esc(iDoTitle)}", lines: ${JSON.stringify(iDoLines)} },
+      wedo: { title: "${esc(weDoTitle)}", lines: ${JSON.stringify(weDoLines)} },
+      youdo: { title: "${esc(youDoTitle)}", lines: ${JSON.stringify(youDoLines)} }
+    };
+    
+    let activeConceptTab = 'ido';
+    
+    // Explore Sorting Game Data
+    const exploreItems = ${JSON.stringify(normalizedItems)};
+    const exploreCats = ${JSON.stringify(normalizedCats)};
+    let currentExploreIdx = 0;
+    const studentExploreSorted = {};
+    
+    // Practice Checking Variables
+    let studentErrStep = -1;
+    let solutionRevealed = false;
+    let studentPracticeMCIndex = -1;
+    
+    // Exit Ticket Variables
+    let studentExitChoiceIndex = -1;
+    
+    // Timer variables for present mode
     let timerInterval = null;
     let secondsElapsed = 0;
     
@@ -1141,7 +1675,6 @@ function generateSlidesHtml(lessonId, data) {
       }
     }
     
-    // Listen for fullscreen change to start/stop timer and adjust styles
     document.addEventListener('fullscreenchange', () => {
       const isFullscreen = document.fullscreenElement !== null;
       if (isFullscreen) {
@@ -1155,24 +1688,23 @@ function generateSlidesHtml(lessonId, data) {
     function goToSlide(num) {
       if (num < 1 || num > totalSlides) return;
       
-      // Update state
       currentSlide = num;
       
-      // Update main panels
       document.querySelectorAll('.slide-body').forEach((el, index) => {
         el.classList.toggle('active', (index + 1) === num);
       });
       
-      // Update sidebar thumbnails
-      document.querySelectorAll('.thumb-card').forEach((el, index) => {
+      document.querySelectorAll('.sidebar-slides .thumb-card').forEach((el, index) => {
         el.classList.toggle('active', (index + 1) === num);
       });
       
-      // Update title text
       document.getElementById('slide-title-bar').textContent = slideTitles[num - 1];
-      
-      // Update HUD page indicators
       document.getElementById('hud-page-indicator').textContent = num + ' / ' + totalSlides;
+      
+      // Delay redraw canvas context
+      if (num === 5) {
+        setTimeout(resizeSlides, 50);
+      }
     }
     
     function prevSlide() {
@@ -1183,10 +1715,9 @@ function generateSlidesHtml(lessonId, data) {
       if (currentSlide < totalSlides) goToSlide(currentSlide + 1);
     }
     
-    // Wire arrow keys for slide navigation
     document.addEventListener('keydown', function(e) {
       if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
-        return; // ignore shortcuts while writing
+        return;
       }
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
         nextSlide();
@@ -1197,6 +1728,186 @@ function generateSlidesHtml(lessonId, data) {
       }
     });
     
+    // Concept tabs sequential reveal switcher
+    function switchConceptTab(tabId) {
+      const data = conceptData[tabId];
+      if (!data) return;
+      
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick');
+        if (onclickAttr && onclickAttr.includes(tabId)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      let contentHtml = '<h4 style="margin: 0 0 8px 0; color:var(--navy); font-size:13.5px; font-weight:700;">' + data.title + '</h4>';
+      contentHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 11.5px; line-height: 1.5; color: var(--body-text);">';
+      data.lines.forEach(line => {
+        contentHtml += '<li style="margin-bottom: 6px;">' + line + '</li>';
+      });
+      contentHtml += '</ul>';
+      
+      document.getElementById('concept-tab-content').innerHTML = contentHtml;
+      activeConceptTab = tabId;
+      saveWork();
+    }
+    
+    // Explore Activity sorting game logic
+    function initSortingGame() {
+      const container = document.getElementById('sorting-game-container');
+      if (!container) return;
+      
+      if (exploreItems.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; font-style:italic; color:var(--gray);">No sorting items defined for this explore activity.</div>';
+        return;
+      }
+      
+      renderActiveExploreCard();
+    }
+    
+    function renderActiveExploreCard() {
+      const card = document.getElementById('sorting-card');
+      const buttonsDiv = document.getElementById('sorting-buttons');
+      const feedbackDiv = document.getElementById('sorting-feedback');
+      if (!card) return;
+      
+      if (currentExploreIdx >= exploreItems.length) {
+        card.innerHTML = "🎉 Sorting Complete!";
+        card.style.borderColor = "var(--teal)";
+        card.style.background = "var(--teal-light)";
+        buttonsDiv.innerHTML = '<button class="assess-btn" onclick="resetSortingGame()" style="max-width:120px; padding:6px; font-size:11px;">Reset Game</button>';
+        feedbackDiv.textContent = "Great job sorting all items!";
+        feedbackDiv.style.color = "var(--teal)";
+        return;
+      }
+      
+      const activeItem = exploreItems[currentExploreIdx];
+      card.innerHTML = activeItem.text;
+      card.style.borderColor = "var(--teal)";
+      card.style.background = "var(--white)";
+      feedbackDiv.textContent = "";
+      
+      let btnsHtml = "";
+      exploreCats.forEach(cat => {
+        btnsHtml += '<button class="assess-btn" onclick="sortActiveItem(\\'' + cat.id + '\\')" style="font-size:11px; padding:6px 12px; flex:1; min-width:85px; font-weight:700;">' + cat.label + '</button>';
+      });
+      buttonsDiv.innerHTML = btnsHtml;
+    }
+    
+    function sortActiveItem(catId) {
+      const activeItem = exploreItems[currentExploreIdx];
+      const feedbackDiv = document.getElementById('sorting-feedback');
+      
+      studentExploreSorted[activeItem.id] = catId;
+      
+      if (activeItem.catId === "" || activeItem.catId === catId) {
+        feedbackDiv.textContent = "Correct! ✓";
+        feedbackDiv.style.color = "var(--teal)";
+        document.getElementById('sorting-card').style.background = "var(--teal-light)";
+      } else {
+        feedbackDiv.textContent = "Incorrect. Try again! ✕";
+        feedbackDiv.style.color = "#D9795D";
+        document.getElementById('sorting-card').style.background = "var(--coral)";
+      }
+      
+      saveWork();
+      
+      setTimeout(() => {
+        currentExploreIdx++;
+        renderActiveExploreCard();
+      }, 750);
+    }
+    
+    function resetSortingGame() {
+      currentExploreIdx = 0;
+      exploreItems.forEach(item => {
+        delete studentExploreSorted[item.id];
+      });
+      renderActiveExploreCard();
+      saveWork();
+    }
+    
+    // Practice slide checking
+    function checkErrorStep(selected, correct) {
+      studentErrStep = selected;
+      const feedback = document.getElementById('error-step-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('[id^="btn-errstep-"]').forEach(btn => {
+        btn.classList.remove('active', 'correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-errstep-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct step identified! Click Reveal Solution to see details. ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Incorrect step. Try again! ✕';
+        feedback.style.color = '#D9795D';
+      }
+      saveWork();
+    }
+    
+    function revealPracticeSolution() {
+      solutionRevealed = true;
+      const box = document.getElementById('practice-solution-box');
+      if (box) box.style.display = 'block';
+      saveWork();
+    }
+    
+    function checkMCQuestion(selected, correct) {
+      studentPracticeMCIndex = selected;
+      const feedback = document.getElementById('mc-question-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('.mc-btn').forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-choice-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct! Great job. ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Incorrect. Review your calculation and try again. ✕';
+        feedback.style.color = '#D9795D';
+        const correctBtn = document.getElementById('btn-choice-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      saveWork();
+    }
+    
+    // Exit ticket checking
+    function checkExitTicket(selected, correct) {
+      studentExitChoiceIndex = selected;
+      const feedback = document.getElementById('exit-ticket-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('.exit-btn').forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-exit-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Response recorded. Correct! ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Response recorded. ✕';
+        feedback.style.color = '#D9795D';
+        const correctBtn = document.getElementById('btn-exit-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      saveWork();
+    }
+
     // Save/Restore student work
     const storageKey = 'neft_slides_work_${esc(lessonId)}';
     
@@ -1206,12 +1917,20 @@ function generateSlidesHtml(lessonId, data) {
         data[input.id || input.placeholder] = input.value;
       });
       
-      // Save canvas state
       const canvas = document.getElementById('math-canvas');
-      data.canvasData = canvas.toDataURL();
+      if (canvas) {
+        data.canvasData = canvas.toDataURL();
+      }
       
-      // Save assessment state
       data.assessment = activeAssessment;
+      
+      data.activeConceptTab = activeConceptTab;
+      data.currentExploreIdx = currentExploreIdx;
+      data.studentExploreSorted = studentExploreSorted;
+      data.studentErrStep = studentErrStep;
+      data.solutionRevealed = solutionRevealed;
+      data.studentPracticeMCIndex = studentPracticeMCIndex;
+      data.studentExitChoiceIndex = studentExitChoiceIndex;
       
       localStorage.setItem(storageKey, JSON.stringify(data));
     }
@@ -1236,19 +1955,66 @@ function generateSlidesHtml(lessonId, data) {
           });
           
           if (data.canvasData) {
-            const img = new Image();
-            img.src = data.canvasData;
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0);
-            };
+            const canvas = document.getElementById('math-canvas');
+            if (canvas) {
+              const img = new Image();
+              img.src = data.canvasData;
+              img.onload = () => {
+                ctx.drawImage(img, 0, 0);
+              };
+            }
           }
           
           if (data.assessment) {
             setSelfAssessment(data.assessment);
           }
+          
+          if (data.activeConceptTab) {
+            switchConceptTab(data.activeConceptTab);
+          } else {
+            switchConceptTab('ido');
+          }
+          
+          if (data.currentExploreIdx !== undefined) {
+            currentExploreIdx = data.currentExploreIdx;
+          }
+          if (data.studentExploreSorted) {
+            Object.assign(studentExploreSorted, data.studentExploreSorted);
+          }
+          initSortingGame();
+          
+          if (data.studentErrStep !== undefined && data.studentErrStep !== -1) {
+            const errCheckBtn = document.getElementById('btn-errstep-1');
+            if (errCheckBtn) {
+              const errorStepVal = ${practiceProblem && practiceProblem.errorStep || 1};
+              checkErrorStep(data.studentErrStep, errorStepVal);
+            }
+          }
+          if (data.solutionRevealed) {
+            revealPracticeSolution();
+          }
+          if (data.studentPracticeMCIndex !== undefined && data.studentPracticeMCIndex !== -1) {
+            const mcCheckBtn = document.getElementById('btn-choice-0');
+            if (mcCheckBtn) {
+              const correctMCIdxVal = ${practiceProblem && practiceProblem.correctIndex !== undefined ? practiceProblem.correctIndex : 0};
+              checkMCQuestion(data.studentPracticeMCIndex, correctMCIdxVal);
+            }
+          }
+          
+          if (data.studentExitChoiceIndex !== undefined && data.studentExitChoiceIndex !== -1) {
+            const exitCheckBtn = document.getElementById('btn-exit-0');
+            if (exitCheckBtn) {
+              checkExitTicket(data.studentExitChoiceIndex, ${exitCorrectIndex});
+            }
+          }
+        } else {
+          switchConceptTab('ido');
+          initSortingGame();
         }
       } catch (e) {
         console.error('Failed to load saved work:', e);
+        try { switchConceptTab('ido'); } catch(err){}
+        try { initSortingGame(); } catch(err){}
       }
     }
     
@@ -1256,7 +2022,7 @@ function generateSlidesHtml(lessonId, data) {
       input.addEventListener('input', saveWork);
     });
     
-    // Insert Word Bank pill text at the cursor position in the active textarea
+    // Insert Word Bank pill text at the cursor position
     let lastActiveTextarea = null;
     document.querySelectorAll('textarea').forEach(textarea => {
       textarea.addEventListener('focus', () => {
@@ -1265,7 +2031,7 @@ function generateSlidesHtml(lessonId, data) {
     });
     
     function insertAtCursor(text) {
-      const target = lastActiveTextarea || document.getElementById('student-notice');
+      const target = lastActiveTextarea || document.getElementById('student-notice') || document.querySelector('textarea');
       if (!target) return;
       
       const start = target.selectionStart;
@@ -1282,19 +2048,19 @@ function generateSlidesHtml(lessonId, data) {
     // HTML5 DRAWING CANVAS SYSTEM
     // -----------------------------------------------------------------
     const canvas = document.getElementById('math-canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas ? canvas.getContext('2d') : null;
     
     let drawing = false;
-    let drawMode = 'draw'; // 'draw' or 'erase'
+    let drawMode = 'draw';
     let drawColor = '#17324D';
     let drawSize = 4;
     
     function getMousePos(e) {
+      if (!canvas) return { x: 0, y: 0 };
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       
-      // Calculate scaled coords
       return {
         x: (clientX - rect.left) * (canvas.width / rect.width),
         y: (clientY - rect.top) * (canvas.height / rect.height)
@@ -1302,6 +2068,7 @@ function generateSlidesHtml(lessonId, data) {
     }
     
     function startDrawing(e) {
+      if (!ctx) return;
       drawing = true;
       ctx.beginPath();
       const pos = getMousePos(e);
@@ -1310,7 +2077,7 @@ function generateSlidesHtml(lessonId, data) {
     }
     
     function draw(e) {
-      if (!drawing) return;
+      if (!drawing || !ctx) return;
       const pos = getMousePos(e);
       
       ctx.lineTo(pos.x, pos.y);
@@ -1319,7 +2086,6 @@ function generateSlidesHtml(lessonId, data) {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       
-      // If erasing, we want to clear the lines cleanly
       if (drawMode === 'erase') {
         ctx.globalCompositeOperation = 'destination-out';
       } else {
@@ -1331,25 +2097,31 @@ function generateSlidesHtml(lessonId, data) {
     }
     
     function stopDrawing() {
-      if (drawing) {
+      if (drawing && ctx) {
         ctx.closePath();
         drawing = false;
         saveWork();
       }
     }
     
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    window.addEventListener('mouseup', stopDrawing);
-    
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    window.addEventListener('touchend', stopDrawing);
+    if (canvas) {
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDrawing);
+      
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchmove', draw);
+      window.addEventListener('touchend', stopDrawing);
+    }
     
     function setDrawingTool(mode) {
       drawMode = mode;
-      document.getElementById('btn-draw').classList.toggle('active', mode === 'draw');
-      document.getElementById('btn-erase').classList.toggle('active', mode === 'erase');
+      const dBtn = document.getElementById('btn-draw');
+      const eBtn = document.getElementById('btn-erase');
+      if (dBtn && eBtn) {
+        dBtn.classList.toggle('active', mode === 'draw');
+        eBtn.classList.toggle('active', mode === 'erase');
+      }
     }
     
     function setDrawingColor(color) {
@@ -1362,8 +2134,10 @@ function generateSlidesHtml(lessonId, data) {
     }
     
     function clearDrawingCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      saveWork();
+      if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        saveWork();
+      }
     }
     
     // -----------------------------------------------------------------
@@ -1377,12 +2151,10 @@ function generateSlidesHtml(lessonId, data) {
       const containerWidth = container.clientWidth - 40;
       const containerHeight = container.clientHeight - 40;
       
-      // Calculate scales based on fixed dimensions (960x540)
       const scaleX = containerWidth / 960;
       const scaleY = containerHeight / 540;
       let scale = Math.min(scaleX, scaleY);
       
-      // Bound scaling between 0.3x and 1.5x
       scale = Math.max(0.3, Math.min(1.5, scale));
       
       canvasEl.style.transform = 'scale(' + scale + ')';

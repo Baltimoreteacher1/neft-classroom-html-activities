@@ -380,27 +380,44 @@
     }
     .click-hint { font-size: 9px; color: var(--gray); margin-top: 4px; font-weight: 600; }
     
-    /* Math Flow Diagram */
-    .flow-diagram {
-      background: var(--teal-light);
-      border-radius: 8px;
-      padding: 12px;
+    /* Concept Instruction Tab Styling */
+    .tabs-container {
       display: flex;
-      align-items: center;
-      justify-content: space-around;
+      gap: 4px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--google-gray);
+      padding-bottom: 2px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 11px;
       font-weight: 700;
-      font-size: 12px;
-      color: var(--navy);
-      margin-top: auto;
-    }
-    .flow-box {
-      background: var(--white);
+      color: var(--gray);
       padding: 6px 12px;
-      border-radius: 4px;
-      border: 1px solid var(--teal);
-      text-align: center;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.2s;
     }
-    .flow-arrow { color: var(--amber); font-size: 18px; }
+    .tab-btn:hover {
+      color: var(--navy);
+      background: rgba(23, 50, 77, 0.05);
+    }
+    .tab-btn.active {
+      color: var(--teal);
+      border-bottom: 3.5px solid var(--teal);
+      background: var(--teal-light);
+    }
+    .tab-content {
+      background: var(--white);
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 12px;
+      height: calc(100% - 35px);
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
     
     /* Visual Math Container with Canvas Overlay */
     .math-visual-container {
@@ -490,14 +507,6 @@
       background: var(--white);
     }
     
-    /* Partner cards */
-    .partner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      height: 100%;
-    }
-    
     /* Fullscreen present mode pacing timer & controls */
     .presenter-hud {
       display: none;
@@ -558,7 +567,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     .post-it-3 { background: var(--teal-light); }
-    .post-it-2 { background: var(--amber-light); }
+    .post-it-2 { background: var(--amber); opacity: 0.85; }
     .post-it-1 { background: var(--coral); }
     .post-it-title { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--navy); margin-bottom: 4px; }
     .post-it input {
@@ -571,7 +580,7 @@
       border-bottom: 1px dotted rgba(23, 50, 77, 0.2);
     }
     
-    /* Self-assessment buttons */
+    /* Assessment & Practice Buttons */
     .assess-row {
       display: flex;
       gap: 8px;
@@ -589,10 +598,32 @@
       text-align: center;
       transition: all 0.2s;
     }
+    .assess-btn:hover {
+      background: var(--google-gray);
+    }
     .assess-btn.active {
       border-color: var(--teal);
       background: var(--teal-light);
       color: var(--navy);
+    }
+    .assess-btn.correct {
+      border-color: var(--teal) !important;
+      background: var(--teal-light) !important;
+      color: var(--navy) !important;
+    }
+    .assess-btn.incorrect {
+      border-color: #D9795D !important;
+      background: var(--coral) !important;
+      color: #D9795D !important;
+    }
+    .px-btn {
+      flex: none;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     
   </style>
@@ -638,32 +669,32 @@
       <!-- Slide 2 -->
       <div class="thumb-card" data-slide="2" onclick="goToSlide(2)">
         <span class="thumb-label">Slide 2</span>
-        <div class="thumb-preview">👀 Be Curious</div>
+        <div class="thumb-preview">👀 Launch</div>
       </div>
       <!-- Slide 3 -->
       <div class="thumb-card" data-slide="3" onclick="goToSlide(3)">
         <span class="thumb-label">Slide 3</span>
-        <div class="thumb-preview">📝 Vocabulary</div>
+        <div class="thumb-preview">💡 Concept</div>
       </div>
       <!-- Slide 4 -->
       <div class="thumb-card" data-slide="4" onclick="goToSlide(4)">
         <span class="thumb-label">Slide 4</span>
-        <div class="thumb-preview">📐 Visual Model</div>
+        <div class="thumb-preview">📝 Vocabulary</div>
       </div>
       <!-- Slide 5 -->
       <div class="thumb-card" data-slide="5" onclick="goToSlide(5)">
         <span class="thumb-label">Slide 5</span>
-        <div class="thumb-preview">📖 Guided</div>
+        <div class="thumb-preview">📐 Model</div>
       </div>
       <!-- Slide 6 -->
       <div class="thumb-card" data-slide="6" onclick="goToSlide(6)">
         <span class="thumb-label">Slide 6</span>
-        <div class="thumb-preview">👥 Activity A</div>
+        <div class="thumb-preview">👥 Explore</div>
       </div>
       <!-- Slide 7 -->
       <div class="thumb-card" data-slide="7" onclick="goToSlide(7)">
         <span class="thumb-label">Slide 7</span>
-        <div class="thumb-preview">⚠️ Activity B</div>
+        <div class="thumb-preview">⚠️ Practice</div>
       </div>
       <!-- Slide 8 -->
       <div class="thumb-card" data-slide="8" onclick="goToSlide(8)">
@@ -684,7 +715,7 @@
       <article class="slide-canvas" id="slide-canvas-element">
       
         <!-- Inside Slide Header -->
-        <header class="slide-header" id="slide-title-bar">LESSON 2-4 · OBJECTIVES</header>
+        <header class="slide-header" id="slide-title-bar">LESSON 2-4 · OBJECTIVES &amp; TOPIC</header>
         
         <!-- SLIDE 1: OBJECTIVES -->
         <div class="slide-body active" id="slide-1">
@@ -699,17 +730,20 @@
                 <strong style="color:var(--navy); font-size:18px;">Language Objective:</strong>
                 <p style="margin: 6px 0 0; color:var(--body-text); font-size:16px;">I can explain my steps using the words mixed number, improper fraction, convert, reciprocal, and simplify.</p>
               </div>
+              <div style="margin-top:12px; border-top:1px dashed var(--teal); padding-top:12px; font-size:12px; color:var(--gray); font-weight:700;">
+                STANDARD: 6.NS.1
+              </div>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 2: BE CURIOUS -->
+        <!-- SLIDE 2: SCENARIO LAUNCH -->
         <div class="slide-body" id="slide-2">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📋 Scenario Launch</h2>
-                <p class="card-desc" style="font-size:13px; line-height:1.5; margin-bottom:8px;">Agent Chen maps a 3 1/2-mile route divided into 1/4-mile segments. Why can&#039;t she just divide 3 1/2 by 1/4 while it is still a mixed number?</p>
+                <h2 class="card-title">📋 Detective Agency Case File</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">Agent Chen is mapping a suspect&#039;s route. The total distance is 3 1/2 miles, and each segment between landmarks is 1/4 mile. She needs to know how many segments are on the route to place surveillance cameras at every landmark.</p>
               </div>
               <div style="margin-top:auto;">
                 <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Vocabulary Bank (Click to insert):</strong>
@@ -719,34 +753,58 @@
             <div class="slide-card nw-container">
               <div class="nw-box nw-box-notice" style="display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
-                  <h4>👀 Things I Notice:</h4>
-                  <div class="nw-box-stems"><div>🔹 I cannot divide yet because 3 1/2 is a ___ and I need an ___.</div><div>🔹 First I must convert 3 1/2 into ___.</div></div>
+                  <h4>👀 Notice Prompts:</h4>
+                  <div class="nw-box-stems" style="margin-bottom:6px;"><div>🔹 What is the total distance of the route?</div><div>🔹 How long is each segment?</div><div>🔹 Will the number of segments be more or less than 3?</div></div>
                 </div>
-                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type your observations here..."></textarea>
+                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice here..."></textarea>
               </div>
               <div class="nw-box nw-box-wonder" style="display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
-                  <h4>💭 Things I Wonder:</h4>
-                  <div class="nw-box-stems"><div>🔹 I estimate about ___ segments because ___.</div><div>🔹 Each mile holds ___ quarter-mile segments, so ___.</div></div>
+                  <h4>💭 Wonder Prompts:</h4>
+                  <div class="nw-box-stems" style="margin-bottom:6px;"><div>🔹 Why do we need to convert mixed numbers before dividing?</div><div>🔹 Can you divide mixed numbers without converting first?</div></div>
                 </div>
-                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type your questions here..."></textarea>
+                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder here..."></textarea>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 3: VOCABULARY -->
+        <!-- SLIDE 3: CONCEPT INTRO & FLOW -->
         <div class="slide-body" id="slide-3">
           <div class="slide-grid-2">
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+              <div>
+                <h2 class="card-title">💡 How do I divide with mixed numbers?</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:12px;">A mixed number, like 3 1/2, has a whole part and a fraction part. Before you can divide, you change each mixed number into an improper fraction (top heavier than bottom). Then you use Keep, Change, Flip.</p>
+              </div>
+              
+              <div style="background:var(--teal-light); border:1.5px solid var(--teal); border-radius:8px; padding:12px; margin-top:auto;">
+                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Key Idea:</strong>
+                <p style="margin:4px 0 0; font-size:12.5px; font-weight:700; color:var(--navy); line-height:1.4;">Always convert a mixed number to an improper fraction first, then divide using Keep, Change, Flip.</p>
+              </div>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; height: 100%;">
+              <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchConceptTab('ido')">Watch Me</button>
+                <button class="tab-btn" onclick="switchConceptTab('wedo')">Try Together</button>
+                <button class="tab-btn" onclick="switchConceptTab('youdo')">Your Turn</button>
+              </div>
+              <div id="concept-tab-content" class="tab-content">
+                <!-- Tab contents populated dynamically by Javascript -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- SLIDE 4: VOCABULARY CARD GRID -->
+        <div class="slide-body" id="slide-4">
+          <div class="slide-grid-2">
             <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%;">
-              <h2 class="card-title">📝 Core Vocabulary</h2>
-              <p class="card-desc" style="font-size:13px;">Click each card to flip and reveal its visual definition. Verify with your partner before moving on.</p>
-              <div class="flow-diagram">
-                <div class="flow-box">INPUT</div>
-                <div class="flow-arrow">➔</div>
-                <div class="flow-box" style="border-color:var(--amber);">PROCESS</div>
-                <div class="flow-arrow">➔</div>
-                <div class="flow-box">OUTPUT</div>
+              <h2 class="card-title">📝 Lesson Vocabulary</h2>
+              <p class="card-desc" style="font-size:13px; line-height:1.5;">Click each card to flip and review its definition, Spanish translation, and visual examples. Compare notes with your partner.</p>
+              <div style="background:var(--teal-light); border-radius:8px; padding:12px; font-size:11.5px; color:var(--navy); font-weight:600; line-height:1.4;">
+                💡 Multi-language terms included. Discuss how each concept works in a math sentence!
               </div>
             </div>
             <div class="vocab-grid">
@@ -755,10 +813,14 @@
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>MIXED NUMBER</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Número mixto</p>
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>Explain this vocabulary concept using real-world context.</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">A whole number plus a fraction, like 2 1/3.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Un número entero más una fracción, como 2 1/3.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> 2 1/3 means 2 wholes and 1/3 more — picture 2 full circles and 1/3 of another</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 A number with a whole number and a fraction, like 2 1/3, is a ___.</div>
           </div>
         </div>
       </div>
@@ -767,10 +829,14 @@
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>IMPROPER FRACTION</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Fracción impropia</p>
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>Explain this vocabulary concept using real-world context.</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">A fraction where the top is bigger than or equal to the bottom, like 7/4.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Una fracción donde el número de arriba es mayor o igual al de abajo, como 7/4.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> 7/3 is improper because 7 &gt; 3. It equals 2 1/3 as a mixed number.</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 A fraction whose numerator is greater than or equal to its denominator, like 7/3, is an ___.</div>
           </div>
         </div>
       </div>
@@ -779,10 +845,30 @@
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>CONVERT</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Convertir</p>
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
-            <p>Explain this vocabulary concept using real-world context.</p>
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">To change a number to a new form but keep the same value.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Cambiar un número a otra forma sin cambiar su valor.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> 2 1/3 → multiply 2 × 3 = 6, add 1 → 7/3. Same value, different form.</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 Changing a mixed number into an improper fraction is to ___ it.</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+        <div class="vocab-card-inner">
+          <div class="vocab-card-front">
+            <h3>SIMPLIFY</h3>
+            <p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">Simplificar</p>
+            <p class="click-hint">Click to flip ➔</p>
+          </div>
+          <div class="vocab-card-back">
+            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">To make a fraction smaller using the same parts, like 2/4 = 1/2.</p>
+            <p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">Hacer una fracción más pequeña con las mismas partes, como 2/4 = 1/2.</p>
+            <div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> 8/6: GCF is 2 → 8÷2 / 6÷2 = 4/3 = 1 1/3</div>
+            <div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 Writing a fraction in its smallest equal form is to ___ it.</div>
           </div>
         </div>
       </div>
@@ -791,13 +877,13 @@
           </div>
         </div>
         
-        <!-- SLIDE 4: VISUAL MODEL WITH CANVAS OVERLAY -->
-        <div class="slide-body" id="slide-4">
+        <!-- SLIDE 5: VISUAL MODEL WITH CANVAS OVERLAY -->
+        <div class="slide-body" id="slide-5">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📐 Visual Modeling Workspace</h2>
-                <p class="card-desc" style="font-size:13px;">Use the drawing tools to label axes, circle key values, or sketch equations directly onto the model grid.</p>
+                <h2 class="card-title">📐 Modeling Workspace</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.4;">Use the drawing tools to annotate, label axes, partition lines, or write equations directly onto the math model representation.</p>
               </div>
               
               <!-- Draw Toolbar -->
@@ -822,7 +908,7 @@
             <div class="math-visual-container">
               <!-- Background SVG visual -->
               <div style="position: absolute; inset: 0; z-index: 1;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="96" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="156" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="216" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="276" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="336" y="146" font-family="Calibri" font-size="11" fill="#17324D" font-weight="bold">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="100" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="160" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="220" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="280" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="340" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
               </div>
               <!-- Transparent overlay canvas for student drawing -->
               <canvas id="math-canvas" width="440" height="240" class="canvas-overlay"></canvas>
@@ -830,81 +916,116 @@
           </div>
         </div>
         
-        <!-- SLIDE 5: GUIDED PRACTICE -->
-        <div class="slide-body" id="slide-5">
+        <!-- SLIDE 6: INTERACTIVE EXPLORE ACTIVITY -->
+        <div class="slide-body" id="slide-6">
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📖 Guided Practice</h2>
-                <p class="card-desc" style="font-size:13px; line-height:1.5;">Walk your partner through how you changed the mixed numbers before dividing.</p>
+                <h2 class="card-title">👥 Explore Activity</h2>
+                <p class="card-desc" style="font-size:12.5px; margin-bottom:8px;" id="explore-instructions">Convert each mixed number to an improper fraction, then use Keep, Change, Flip to divide.</p>
+                
+                <!-- Interactive Sorting Game -->
+                <div id="sorting-game-container" style="background:var(--google-gray); padding:12px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:130px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px;">
+                  <div id="sorting-card" style="background:var(--white); padding:8px 14px; border-radius:6px; border:1.5px solid var(--teal); font-weight:700; font-size:13.5px; color:var(--navy); box-shadow:var(--shadow); width:90%; min-height:48px; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.3;">
+                    <!-- Active Card Text -->
+                  </div>
+                  <div id="sorting-buttons" style="display:flex; gap:8px; justify-content:center; width:100%; flex-wrap:wrap;">
+                    <!-- Category buttons loaded dynamically -->
+                  </div>
+                  <div id="sorting-feedback" style="font-size:11px; font-weight:700; min-height:16px;"></div>
+                </div>
               </div>
-              <textarea id="guided-notes-work" class="slide-input-placeholder" rows="3" placeholder="Type your step-by-step math calculations here..."></textarea>
+              
+              <div style="margin-top:6px;">
+                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
+                <div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">improper</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">5/2</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">convert</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">multiply</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">reciprocal</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">keep-change-flip</span></div>
+              </div>
             </div>
+            
             <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">✍️ TWR Sentence Expansion</h2>
-                <div class="nw-box-stems" style="font-size:12px; font-style:italic; margin-bottom:12px;"><div>🔹 First I converted ___ into the improper fraction ___.</div><div>🔹 Then I flipped the divisor and got the quotient ___.</div></div>
+                <h2 class="card-title">✍️ Explore Discourse</h2>
+                <p style="font-size:11.5px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.4;">Why is converting to an improper fraction the first step when dividing mixed numbers?</p>
+                <div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>Before dividing, I convert 2 1/2 to ___ because it is easier to ___ with improper fractions.</div>
               </div>
-              <textarea id="guided-sentence-work" class="slide-input-placeholder" rows="3" placeholder="Write your complete reasoning sentence here..."></textarea>
+              <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 6: INTERACTIVE WORKSHOP A (Partner Work) -->
-        <div class="slide-body" id="slide-6">
-          <div class="partner-grid">
-            <div class="slide-card" style="justify-content:space-between;">
-              <div>
-                <h2 class="card-title" style="color:var(--teal);">👥 Partner A</h2>
-                <p class="card-desc" style="font-size:12.5px;">Explain how you can approach solving this problem. What steps will you perform first, and what tools will you use?</p>
-              </div>
-              <textarea id="partner-a-work" class="slide-input-placeholder" rows="4" placeholder="Partner A: Type your explanation here..."></textarea>
-            </div>
-            <div class="slide-card" style="justify-content:space-between;">
-              <div>
-                <h2 class="card-title">👥 Partner B</h2>
-                <p class="card-desc" style="font-size:12.5px;">Respond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?</p>
-              </div>
-              <textarea id="partner-b-work" class="slide-input-placeholder" rows="4" placeholder="Partner B: Type your response here..."></textarea>
-            </div>
-          </div>
-        </div>
-        
-        <!-- SLIDE 7: INTERACTIVE WORKSHOP B (Error Analysis) -->
+        <!-- SLIDE 7: PRACTICE PROBLEM -->
         <div class="slide-body" id="slide-7">
-          <div class="slide-grid-2">
-            <div class="slide-card">
-              <h2 class="card-title" style="color:var(--amber);">⚠️ Incorrect Claim</h2>
-              <p class="card-desc" style="font-size:13px; line-height:1.5;">A student claims that when solving this problem, they should add the values instead of multiplying.<br/><br/>Analyze their reasoning. What mistake did they make, and why is adding incorrect in this context?</p>
-            </div>
-            <div class="slide-card" style="background:var(--coral); justify-content:space-between;">
-              <h2 class="card-title">🛠️ Fix & Justify</h2>
-              <textarea id="error-fix-text" class="slide-input-placeholder" rows="6" placeholder="Explain the error clearly and write the correct calculation steps here..."></textarea>
+          
+      <div class="slide-grid-2">
+        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title" style="color:var(--amber);">⚠️ Find the Mixed Number Error</h2>
+            <p class="card-desc" style="font-size:12px; margin-bottom:8px; line-height:1.4;">Analyze the student's work on the right. Which step contains the error, and how would you correct it?</p>
+            <div style="border:1.5px solid #dadce0; border-radius:6px; background:var(--white); overflow:hidden;">
+              <div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Problem:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">2 1/3 ÷ 1/2</span>
+      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Convert:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">2 1/3 = 6/3</span>
+      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Keep, Change, Flip:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">6/3 × 2/1</span>
+      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:var(--navy);">Multiply:</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">12/3 = 4</span>
+      </div>
             </div>
           </div>
+          
+          <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
+            <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
+            <div style="display:flex; gap:6px;">
+              <button class="assess-btn px-btn" id="btn-errstep-1" onclick="checkErrorStep(1, 1)">1</button><button class="assess-btn px-btn" id="btn-errstep-2" onclick="checkErrorStep(2, 1)">2</button><button class="assess-btn px-btn" id="btn-errstep-3" onclick="checkErrorStep(3, 1)">3</button><button class="assess-btn px-btn" id="btn-errstep-4" onclick="checkErrorStep(4, 1)">4</button>
+            </div>
+            <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+          </div>
+        </div>
+        
+        <div class="slide-card" style="background:var(--coral); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+          <div>
+            <h2 class="card-title">🛠️ Fix & Justify</h2>
+            <textarea id="practice-fix-work" class="slide-input-placeholder" rows="5" placeholder="Explain the error and write the correct calculation steps here..."></textarea>
+          </div>
+          <button class="btn-present" onclick="revealPracticeSolution()" style="align-self:flex-end; padding:6px 12px; font-size:11px; margin-top:6px;">Reveal Solution</button>
+          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:10px; line-height:1.4; color:var(--body-text); margin-top:6px;">
+            <strong>Correct Work:</strong> 2 1/3 = 7/3 (not 6/3). Multiply: 2 × 3 = 6, then ADD the numerator 1 to get 7. So 7/3 × 2/1 = 14/3 = 4 2/3.
+          </div>
+        </div>
+      </div>
+    
         </div>
         
         <!-- SLIDE 8: REAL-WORLD CONNECTION -->
         <div class="slide-body" id="slide-8">
           <div class="slide-grid-2">
-            <div class="slide-card" style="justify-content:center;">
-              <h2 class="card-title">🌍 Math in the Wild</h2>
-              <p class="card-desc" style="font-size:13.5px; line-height:1.5;">Unit 2 Project — Fraction Division in Action: Apply dividing fractions to a real-world capstone challenge for Unit 2.</p>
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+              <div>
+                <h2 class="card-title">🌍 Math in the Wild</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">A detective has a rope that is 5 1/4 feet long. She needs to cut it into pieces that are each 3/4 of a foot for tying evidence tags. How many pieces can she cut?</p>
+              </div>
+              <div style="margin-top:auto;">
+                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
+                <div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">convert</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">improper</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">reciprocal</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">multiply</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">7</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">pieces</span></div>
+              </div>
             </div>
-            <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height:100%;">
+            <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height:100%;">
               <div>
                 <h2 class="card-title">✍️ Connection Reasoning</h2>
-                <p style="font-size:12px; margin-top:0; color:var(--navy);">Complete the connection statements below:</p>
+                <p style="font-size:12px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">How does dividing mixed numbers help the detective?</p>
+                <div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>The detective can cut ___ pieces because 5 1/4 ÷ 3/4 = 21/4 × 4/3 = 84/12 = ___.</div>
               </div>
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <input type="text" id="rw-connect-1" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="This math applies to this scenario because..." />
-                <input type="text" id="rw-connect-2" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="I could use this math in real life when..." />
-              </div>
+              <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection explanation here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 9: REFLECTION -->
+        <!-- SLIDE 9: REFLECTION & EXIT TICKET -->
         <div class="slide-body" id="slide-9">
           <div class="slide-grid-2">
             <div class="slide-card" style="justify-content:space-between; height: 100%;">
@@ -924,15 +1045,31 @@
                 </div>
               </div>
             </div>
+            
             <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height: 100%;">
               <div>
                 <h2 class="card-title">📝 Exit Ticket</h2>
-                <p class="card-desc" style="font-size:12px; margin-bottom:8px;">Record your final answer and explanation to show mastery of this standard.</p>
-                <textarea id="exit-ticket-work" class="slide-input-placeholder" rows="3" placeholder="Type your final answer and explanation here..."></textarea>
+                
+      <div style="margin-top:6px;">
+        <p style="font-size:11.5px; font-weight:700; margin:0 0 6px; color:var(--navy); line-height:1.3;">What is 2 2/3 ÷ 2/3?</p>
+        <div style="margin-top:4px;">
+          <button class="assess-btn exit-btn" id="btn-exit-0" onclick="checkExitTicket(0, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        A) 4
+      </button><button class="assess-btn exit-btn" id="btn-exit-1" onclick="checkExitTicket(1, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        B) 2/3
+      </button><button class="assess-btn exit-btn" id="btn-exit-2" onclick="checkExitTicket(2, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        C) 8/3
+      </button><button class="assess-btn exit-btn" id="btn-exit-3" onclick="checkExitTicket(3, 0)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
+        D) 1 7/9
+      </button>
+        </div>
+        <div id="exit-ticket-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+      </div>
+    
               </div>
               
-              <div>
-                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
+              <div style="margin-top:6px; border-top: 1px dashed var(--teal); padding-top:6px;">
+                <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
                 <div class="assess-row">
                   <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
                   <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost There 🧭</button>
@@ -966,18 +1103,41 @@
     const totalSlides = 9;
     
     const slideTitles = [
-      "LESSON 2-4 · OBJECTIVES",
-      "BE CURIOUS · LAUNCH",
-      "KEY VOCABULARY & FLOW",
+      "LESSON 2-4 · OBJECTIVES & TOPIC",
+      "BE CURIOUS · SCENARIO LAUNCH",
+      "CONCEPT INTRODUCTION · Watch / Try / Apply",
+      "KEY VOCABULARY · Flashcards",
       "VISUAL MODELING WORKSPACE",
-      "GUIDED PRACTICE",
-      "INTERACTIVE WORKSHOP A",
-      "INTERACTIVE WORKSHOP B · ERROR ANALYSIS",
-      "REAL-WORLD CONNECTION · MATH IN THE WILD",
+      "EXPLORE ACTIVITY · Card Sorting & Discourse",
+      "TIERED PRACTICE CHALLENGE",
+      "REAL-WORLD CONNECTION · Math in the Wild",
       "REFLECTION & EXIT TICKET"
     ];
     
-    // Timer variable for present mode
+    // Concept Intro Tab Data
+    const conceptData = {
+      ido: { title: "Watch me", lines: ["Agent Chen has a 3 1/2-mile route cut into 1/4-mile segments. I want 3 1/2 ÷ 1/4.","First I convert 3 1/2. Multiply the whole by the bottom: 3 × 2 = 6. Add the top: 6 + 1 = 7. So 3 1/2 = 7/2.","Now Keep, Change, Flip: keep 7/2, change ÷ to ×, flip 1/4 to 4/1.","Multiply: 7/2 × 4/1 = 28/2.","Simplify: 28/2 = 14. So 3 1/2 ÷ 1/4 = 14 segments."] },
+      wedo: { title: "Let&#039;s try together", lines: ["Let's try 2 1/2 ÷ 1/2. First convert 2 1/2: 2 × 2 = 4, plus 1 = 5, so 2 1/2 = 5/2.","Keep 5/2, change to ×, flip 1/2 to 2/1.","Multiply: 5/2 × 2/1 = 10/2 = 5. So 2 1/2 ÷ 1/2 = 5."] },
+      youdo: { title: "Now it&#039;s your turn", lines: ["Now fill in the table: convert each mixed number to an improper fraction, then divide using Keep, Change, Flip."] }
+    };
+    
+    let activeConceptTab = 'ido';
+    
+    // Explore Sorting Game Data
+    const exploreItems = [];
+    const exploreCats = [{"id":"cat-a","label":"Category A"},{"id":"cat-b","label":"Category B"}];
+    let currentExploreIdx = 0;
+    const studentExploreSorted = {};
+    
+    // Practice Checking Variables
+    let studentErrStep = -1;
+    let solutionRevealed = false;
+    let studentPracticeMCIndex = -1;
+    
+    // Exit Ticket Variables
+    let studentExitChoiceIndex = -1;
+    
+    // Timer variables for present mode
     let timerInterval = null;
     let secondsElapsed = 0;
     
@@ -1011,7 +1171,6 @@
       }
     }
     
-    // Listen for fullscreen change to start/stop timer and adjust styles
     document.addEventListener('fullscreenchange', () => {
       const isFullscreen = document.fullscreenElement !== null;
       if (isFullscreen) {
@@ -1025,24 +1184,23 @@
     function goToSlide(num) {
       if (num < 1 || num > totalSlides) return;
       
-      // Update state
       currentSlide = num;
       
-      // Update main panels
       document.querySelectorAll('.slide-body').forEach((el, index) => {
         el.classList.toggle('active', (index + 1) === num);
       });
       
-      // Update sidebar thumbnails
-      document.querySelectorAll('.thumb-card').forEach((el, index) => {
+      document.querySelectorAll('.sidebar-slides .thumb-card').forEach((el, index) => {
         el.classList.toggle('active', (index + 1) === num);
       });
       
-      // Update title text
       document.getElementById('slide-title-bar').textContent = slideTitles[num - 1];
-      
-      // Update HUD page indicators
       document.getElementById('hud-page-indicator').textContent = num + ' / ' + totalSlides;
+      
+      // Delay redraw canvas context
+      if (num === 5) {
+        setTimeout(resizeSlides, 50);
+      }
     }
     
     function prevSlide() {
@@ -1053,10 +1211,9 @@
       if (currentSlide < totalSlides) goToSlide(currentSlide + 1);
     }
     
-    // Wire arrow keys for slide navigation
     document.addEventListener('keydown', function(e) {
       if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
-        return; // ignore shortcuts while writing
+        return;
       }
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
         nextSlide();
@@ -1067,6 +1224,186 @@
       }
     });
     
+    // Concept tabs sequential reveal switcher
+    function switchConceptTab(tabId) {
+      const data = conceptData[tabId];
+      if (!data) return;
+      
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick');
+        if (onclickAttr && onclickAttr.includes(tabId)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      let contentHtml = '<h4 style="margin: 0 0 8px 0; color:var(--navy); font-size:13.5px; font-weight:700;">' + data.title + '</h4>';
+      contentHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 11.5px; line-height: 1.5; color: var(--body-text);">';
+      data.lines.forEach(line => {
+        contentHtml += '<li style="margin-bottom: 6px;">' + line + '</li>';
+      });
+      contentHtml += '</ul>';
+      
+      document.getElementById('concept-tab-content').innerHTML = contentHtml;
+      activeConceptTab = tabId;
+      saveWork();
+    }
+    
+    // Explore Activity sorting game logic
+    function initSortingGame() {
+      const container = document.getElementById('sorting-game-container');
+      if (!container) return;
+      
+      if (exploreItems.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; font-style:italic; color:var(--gray);">No sorting items defined for this explore activity.</div>';
+        return;
+      }
+      
+      renderActiveExploreCard();
+    }
+    
+    function renderActiveExploreCard() {
+      const card = document.getElementById('sorting-card');
+      const buttonsDiv = document.getElementById('sorting-buttons');
+      const feedbackDiv = document.getElementById('sorting-feedback');
+      if (!card) return;
+      
+      if (currentExploreIdx >= exploreItems.length) {
+        card.innerHTML = "🎉 Sorting Complete!";
+        card.style.borderColor = "var(--teal)";
+        card.style.background = "var(--teal-light)";
+        buttonsDiv.innerHTML = '<button class="assess-btn" onclick="resetSortingGame()" style="max-width:120px; padding:6px; font-size:11px;">Reset Game</button>';
+        feedbackDiv.textContent = "Great job sorting all items!";
+        feedbackDiv.style.color = "var(--teal)";
+        return;
+      }
+      
+      const activeItem = exploreItems[currentExploreIdx];
+      card.innerHTML = activeItem.text;
+      card.style.borderColor = "var(--teal)";
+      card.style.background = "var(--white)";
+      feedbackDiv.textContent = "";
+      
+      let btnsHtml = "";
+      exploreCats.forEach(cat => {
+        btnsHtml += '<button class="assess-btn" onclick="sortActiveItem(\'' + cat.id + '\')" style="font-size:11px; padding:6px 12px; flex:1; min-width:85px; font-weight:700;">' + cat.label + '</button>';
+      });
+      buttonsDiv.innerHTML = btnsHtml;
+    }
+    
+    function sortActiveItem(catId) {
+      const activeItem = exploreItems[currentExploreIdx];
+      const feedbackDiv = document.getElementById('sorting-feedback');
+      
+      studentExploreSorted[activeItem.id] = catId;
+      
+      if (activeItem.catId === "" || activeItem.catId === catId) {
+        feedbackDiv.textContent = "Correct! ✓";
+        feedbackDiv.style.color = "var(--teal)";
+        document.getElementById('sorting-card').style.background = "var(--teal-light)";
+      } else {
+        feedbackDiv.textContent = "Incorrect. Try again! ✕";
+        feedbackDiv.style.color = "#D9795D";
+        document.getElementById('sorting-card').style.background = "var(--coral)";
+      }
+      
+      saveWork();
+      
+      setTimeout(() => {
+        currentExploreIdx++;
+        renderActiveExploreCard();
+      }, 750);
+    }
+    
+    function resetSortingGame() {
+      currentExploreIdx = 0;
+      exploreItems.forEach(item => {
+        delete studentExploreSorted[item.id];
+      });
+      renderActiveExploreCard();
+      saveWork();
+    }
+    
+    // Practice slide checking
+    function checkErrorStep(selected, correct) {
+      studentErrStep = selected;
+      const feedback = document.getElementById('error-step-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('[id^="btn-errstep-"]').forEach(btn => {
+        btn.classList.remove('active', 'correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-errstep-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct step identified! Click Reveal Solution to see details. ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Incorrect step. Try again! ✕';
+        feedback.style.color = '#D9795D';
+      }
+      saveWork();
+    }
+    
+    function revealPracticeSolution() {
+      solutionRevealed = true;
+      const box = document.getElementById('practice-solution-box');
+      if (box) box.style.display = 'block';
+      saveWork();
+    }
+    
+    function checkMCQuestion(selected, correct) {
+      studentPracticeMCIndex = selected;
+      const feedback = document.getElementById('mc-question-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('.mc-btn').forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-choice-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct! Great job. ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Incorrect. Review your calculation and try again. ✕';
+        feedback.style.color = '#D9795D';
+        const correctBtn = document.getElementById('btn-choice-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      saveWork();
+    }
+    
+    // Exit ticket checking
+    function checkExitTicket(selected, correct) {
+      studentExitChoiceIndex = selected;
+      const feedback = document.getElementById('exit-ticket-feedback');
+      if (!feedback) return;
+      
+      document.querySelectorAll('.exit-btn').forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+      });
+      
+      const btn = document.getElementById('btn-exit-' + selected);
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Response recorded. Correct! ✓';
+        feedback.style.color = 'var(--teal)';
+      } else {
+        btn.classList.add('incorrect');
+        feedback.textContent = 'Response recorded. ✕';
+        feedback.style.color = '#D9795D';
+        const correctBtn = document.getElementById('btn-exit-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      saveWork();
+    }
+
     // Save/Restore student work
     const storageKey = 'neft_slides_work_2-4';
     
@@ -1076,12 +1413,20 @@
         data[input.id || input.placeholder] = input.value;
       });
       
-      // Save canvas state
       const canvas = document.getElementById('math-canvas');
-      data.canvasData = canvas.toDataURL();
+      if (canvas) {
+        data.canvasData = canvas.toDataURL();
+      }
       
-      // Save assessment state
       data.assessment = activeAssessment;
+      
+      data.activeConceptTab = activeConceptTab;
+      data.currentExploreIdx = currentExploreIdx;
+      data.studentExploreSorted = studentExploreSorted;
+      data.studentErrStep = studentErrStep;
+      data.solutionRevealed = solutionRevealed;
+      data.studentPracticeMCIndex = studentPracticeMCIndex;
+      data.studentExitChoiceIndex = studentExitChoiceIndex;
       
       localStorage.setItem(storageKey, JSON.stringify(data));
     }
@@ -1106,19 +1451,66 @@
           });
           
           if (data.canvasData) {
-            const img = new Image();
-            img.src = data.canvasData;
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0);
-            };
+            const canvas = document.getElementById('math-canvas');
+            if (canvas) {
+              const img = new Image();
+              img.src = data.canvasData;
+              img.onload = () => {
+                ctx.drawImage(img, 0, 0);
+              };
+            }
           }
           
           if (data.assessment) {
             setSelfAssessment(data.assessment);
           }
+          
+          if (data.activeConceptTab) {
+            switchConceptTab(data.activeConceptTab);
+          } else {
+            switchConceptTab('ido');
+          }
+          
+          if (data.currentExploreIdx !== undefined) {
+            currentExploreIdx = data.currentExploreIdx;
+          }
+          if (data.studentExploreSorted) {
+            Object.assign(studentExploreSorted, data.studentExploreSorted);
+          }
+          initSortingGame();
+          
+          if (data.studentErrStep !== undefined && data.studentErrStep !== -1) {
+            const errCheckBtn = document.getElementById('btn-errstep-1');
+            if (errCheckBtn) {
+              const errorStepVal = 1;
+              checkErrorStep(data.studentErrStep, errorStepVal);
+            }
+          }
+          if (data.solutionRevealed) {
+            revealPracticeSolution();
+          }
+          if (data.studentPracticeMCIndex !== undefined && data.studentPracticeMCIndex !== -1) {
+            const mcCheckBtn = document.getElementById('btn-choice-0');
+            if (mcCheckBtn) {
+              const correctMCIdxVal = 0;
+              checkMCQuestion(data.studentPracticeMCIndex, correctMCIdxVal);
+            }
+          }
+          
+          if (data.studentExitChoiceIndex !== undefined && data.studentExitChoiceIndex !== -1) {
+            const exitCheckBtn = document.getElementById('btn-exit-0');
+            if (exitCheckBtn) {
+              checkExitTicket(data.studentExitChoiceIndex, 0);
+            }
+          }
+        } else {
+          switchConceptTab('ido');
+          initSortingGame();
         }
       } catch (e) {
         console.error('Failed to load saved work:', e);
+        try { switchConceptTab('ido'); } catch(err){}
+        try { initSortingGame(); } catch(err){}
       }
     }
     
@@ -1126,7 +1518,7 @@
       input.addEventListener('input', saveWork);
     });
     
-    // Insert Word Bank pill text at the cursor position in the active textarea
+    // Insert Word Bank pill text at the cursor position
     let lastActiveTextarea = null;
     document.querySelectorAll('textarea').forEach(textarea => {
       textarea.addEventListener('focus', () => {
@@ -1135,7 +1527,7 @@
     });
     
     function insertAtCursor(text) {
-      const target = lastActiveTextarea || document.getElementById('student-notice');
+      const target = lastActiveTextarea || document.getElementById('student-notice') || document.querySelector('textarea');
       if (!target) return;
       
       const start = target.selectionStart;
@@ -1152,19 +1544,19 @@
     // HTML5 DRAWING CANVAS SYSTEM
     // -----------------------------------------------------------------
     const canvas = document.getElementById('math-canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas ? canvas.getContext('2d') : null;
     
     let drawing = false;
-    let drawMode = 'draw'; // 'draw' or 'erase'
+    let drawMode = 'draw';
     let drawColor = '#17324D';
     let drawSize = 4;
     
     function getMousePos(e) {
+      if (!canvas) return { x: 0, y: 0 };
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       
-      // Calculate scaled coords
       return {
         x: (clientX - rect.left) * (canvas.width / rect.width),
         y: (clientY - rect.top) * (canvas.height / rect.height)
@@ -1172,6 +1564,7 @@
     }
     
     function startDrawing(e) {
+      if (!ctx) return;
       drawing = true;
       ctx.beginPath();
       const pos = getMousePos(e);
@@ -1180,7 +1573,7 @@
     }
     
     function draw(e) {
-      if (!drawing) return;
+      if (!drawing || !ctx) return;
       const pos = getMousePos(e);
       
       ctx.lineTo(pos.x, pos.y);
@@ -1189,7 +1582,6 @@
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       
-      // If erasing, we want to clear the lines cleanly
       if (drawMode === 'erase') {
         ctx.globalCompositeOperation = 'destination-out';
       } else {
@@ -1201,25 +1593,31 @@
     }
     
     function stopDrawing() {
-      if (drawing) {
+      if (drawing && ctx) {
         ctx.closePath();
         drawing = false;
         saveWork();
       }
     }
     
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    window.addEventListener('mouseup', stopDrawing);
-    
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    window.addEventListener('touchend', stopDrawing);
+    if (canvas) {
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDrawing);
+      
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchmove', draw);
+      window.addEventListener('touchend', stopDrawing);
+    }
     
     function setDrawingTool(mode) {
       drawMode = mode;
-      document.getElementById('btn-draw').classList.toggle('active', mode === 'draw');
-      document.getElementById('btn-erase').classList.toggle('active', mode === 'erase');
+      const dBtn = document.getElementById('btn-draw');
+      const eBtn = document.getElementById('btn-erase');
+      if (dBtn && eBtn) {
+        dBtn.classList.toggle('active', mode === 'draw');
+        eBtn.classList.toggle('active', mode === 'erase');
+      }
     }
     
     function setDrawingColor(color) {
@@ -1232,8 +1630,10 @@
     }
     
     function clearDrawingCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      saveWork();
+      if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        saveWork();
+      }
     }
     
     // -----------------------------------------------------------------
@@ -1247,12 +1647,10 @@
       const containerWidth = container.clientWidth - 40;
       const containerHeight = container.clientHeight - 40;
       
-      // Calculate scales based on fixed dimensions (960x540)
       const scaleX = containerWidth / 960;
       const scaleY = containerHeight / 540;
       let scale = Math.min(scaleX, scaleY);
       
-      // Bound scaling between 0.3x and 1.5x
       scale = Math.max(0.3, Math.min(1.5, scale));
       
       canvasEl.style.transform = 'scale(' + scale + ')';
