@@ -82,6 +82,12 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(notes, resolve(destDir, "notes.html"));
           }
+          const slides = resolve(lessonsDir, dir.name, "slides.html");
+          if (existsSync(slides)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(slides, resolve(destDir, "slides.html"));
+          }
           const homework = resolve(lessonsDir, dir.name, "homework.docx");
           if (existsSync(homework)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);
