@@ -55,7 +55,8 @@
    * ------------------------------------------------------------------------ */
   var CENTRAL_RECORD = {
     backend: "googleAppsScript",
-    endpoint: "", // <-- paste your Apps Script /exec URL here to enable
+    endpoint:
+      "https://script.google.com/macros/s/AKfycbyhljxS4TsClKDr-dMpw8cN_mrhDDkHAUbxGCgN7sbAm__vbkoGftY05GH6Sw-1kwmd1Q/exec",
   };
 
   // Unambiguous code alphabet: no 0/O/1/I/L to keep codes student-friendly.
