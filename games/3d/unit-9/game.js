@@ -22,6 +22,10 @@ const COLORS = {
   distance: 0xff9f5a, // distance endpoint (orange)
   axis: 0xdce8ff,
   card: "rgba(10,20,40,0.92)",
+  mystery: 0xeaf2ff, // neutral marker for the point to read (no giveaway)
+  padIdle: 0x1b4a76, // answer pad, not highlighted
+  padActive: 0xffd166, // answer pad, highlighted
+  padOk: 0x0f9d63, // answer pad, chosen-correct
 };
 
 // Each level lists 6–8 rounds. Level 1 = one quadrant + scaffolds; Level 2 =
@@ -286,6 +290,100 @@ export default {
     const markerGeo = new THREE.SphereGeometry(0.2, 18, 14);
     disposables.push(markerGeo);
 
+    // ---- Floating answer pads (identify + distance tasks) ----
+    // A row of selectable choice pads floating beyond the plane. The student
+    // highlights left/right and presses action/confirm to pick one. Reuses the
+    // unit-8 "answer pad" idiom so identify/distance require reading/computing
+    // the answer instead of navigating onto a glowing giveaway.
+    const PAD_Z = HALF + 2.4; // in front of the plane, clear of every point
+    const PAD_Y = 1.5;
+    const padGeo = new RoundedBoxGeometry(2.2, 0.5, 1.4, 4, 0.14);
+    disposables.push(padGeo);
+    const padGroup = new THREE.Group();
+    scene.add(padGroup);
+    let pads = []; // [{ mesh, label, value }]
+    let padIndex = 0;
+    let answerChoices = null; // array of { value, label } when in answer mode
+    let answerCorrect = null; // the correct value (string compare)
+
+    function clearPads() {
+      while (padGroup.children.length) {
+        const child = padGroup.children.pop();
+        if (child.geometry && child.geometry !== padGeo)
+          child.geometry.dispose();
+        if (child.material) {
+          if (child.material.map) child.material.map.dispose();
+          child.material.dispose();
+        }
+      }
+      pads = [];
+      answerChoices = null;
+      answerCorrect = null;
+    }
+
+    function buildPads(choices, correct) {
+      clearPads();
+      answerChoices = choices;
+      answerCorrect = correct;
+      padIndex = 0;
+      const n = choices.length;
+      const gap = 2.9;
+      const startX = -((n - 1) * gap) / 2;
+      choices.forEach((c, i) => {
+        const mesh = new THREE.Mesh(
+          padGeo,
+          new THREE.MeshStandardMaterial({
+            color: COLORS.padIdle,
+            emissive: COLORS.padActive,
+            emissiveIntensity: 0,
+            roughness: 0.45,
+            metalness: 0.2,
+          }),
+        );
+        mesh.position.set(startX + i * gap, PAD_Y, PAD_Z);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.userData.padIndex = i;
+        padGroup.add(mesh);
+        const label = makeLabel(c.label, {
+          scale: 1.0,
+          fontSize: 96,
+          color: "#ffffff",
+        });
+        label.position.set(startX + i * gap, PAD_Y + 0.62, PAD_Z);
+        padGroup.add(label);
+        pads.push({ mesh, label, value: c.value });
+      });
+      highlightPad();
+    }
+
+    function highlightPad() {
+      pads.forEach((p, i) => {
+        const on = i === padIndex;
+        p.mesh.material.color.setHex(on ? COLORS.padActive : COLORS.padIdle);
+        p.mesh.material.emissiveIntensity = on ? 0.75 : 0;
+      });
+      const p = pads[padIndex];
+      if (p && !feel.reducedMotion) {
+        feel.tween({
+          from: 1,
+          to: 1.12,
+          duration: 0.12,
+          onUpdate: (s) => p.mesh.scale.set(s, 1, s),
+          onComplete: () => p.mesh.scale.set(1, 1, 1),
+        });
+      }
+    }
+
+    function movePad(delta) {
+      if (phase !== "answer") return;
+      padIndex = Math.max(0, Math.min(pads.length - 1, padIndex + delta));
+      highlightPad();
+      feel.sfx("select");
+      const p = pads[padIndex];
+      if (p) announce(`Choice ${p.value}.`);
+    }
+
     function placeMarker(x, y, color) {
       const m = new THREE.Mesh(
         markerGeo,
@@ -328,6 +426,9 @@ export default {
     let taskIndex = 0;
     let task = null;
     let solved = false;
+    // "navigate" = plot/reflect (drive the beacon to a computed spot).
+    // "answer" = identify/distance (read/compute, then pick a floating pad).
+    let phase = "navigate";
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
@@ -384,17 +485,26 @@ export default {
       if (task.kind === "plot")
         return `Move the beacon to (${task.x}, ${task.y}). Then place it.`;
       if (task.kind === "identify")
-        return "Read the ordered pair at the gold ring, then move the beacon there and place it.";
+        return "Read the point on the plane — x first, then y. Choose its ordered pair.";
       if (task.kind === "reflect") {
         const want = reflectTarget(task);
         return `Flip (${task.x}, ${task.y}) over the ${task.axis}-axis. Move to (${want.x}, ${want.y}) and place it.`;
       }
       if (task.kind === "distance")
-        return `These two points share a row or column. Count the units between them, then move the beacon to (${task.b.x}, ${task.b.y}) to check.`;
+        return "These two points share a row or column. Count the units between them, then choose the distance.";
       return "";
     }
 
     function updateHud() {
+      // In the answer phase the beacon is idle, so don't clutter the prompt
+      // with its position — just show the question and "pick a pad".
+      if (phase === "answer") {
+        const obj = `${objectiveText()}   Pick a pad.`;
+        hud.setObjective(obj);
+        setCard(`${objectiveText()}\nMove ← → between the pads, then choose.`);
+        if (clarity) clarity.setObjective(obj);
+        return;
+      }
       const obj = `${objectiveText()}   Beacon now at (${cursor.x}, ${cursor.y})`;
       hud.setObjective(obj);
       setCard(`${objectiveText()}\nBeacon: (${cursor.x}, ${cursor.y})`);
@@ -405,13 +515,13 @@ export default {
     function targetChipText() {
       if (!task) return null;
       if (task.kind === "plot") return `Plot (${task.x}, ${task.y})`;
-      if (task.kind === "identify") return "Find the gold ring";
+      if (task.kind === "identify") return "Read the point → choose its pair";
       if (task.kind === "reflect") {
         const want = reflectTarget(task);
         return `Flip over ${task.axis}-axis → (${want.x}, ${want.y})`;
       }
       if (task.kind === "distance")
-        return `Measure to (${task.b.x}, ${task.b.y})`;
+        return "Count the units → choose the distance";
       return null;
     }
 
@@ -420,10 +530,88 @@ export default {
       return { x: -t.x, y: t.y };
     }
 
+    // ---- Answer-choice builders (identify + distance) ----
+    // Shuffle in place (Fisher-Yates) so the correct pad is not always first.
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Take a correct value plus candidate distractors, keep the correct one,
+    // drop duplicates and out-of-domain candidates, top up to `count`, shuffle.
+    function makeChoices(correct, candidates, count, isValid) {
+      const out = [correct];
+      const seen = new Set([correct]);
+      for (const c of candidates) {
+        if (out.length >= count) break;
+        if (c == null || seen.has(c)) continue;
+        if (isValid && !isValid(c)) continue;
+        seen.add(c);
+        out.push(c);
+      }
+      // Safety top-up so there are always `count` distinct pads.
+      let bump = 1;
+      while (out.length < count) {
+        for (const cand of [correct + bump, correct - bump]) {
+          if (out.length >= count) break;
+          if (seen.has(cand)) continue;
+          if (isValid && !isValid(cand)) continue;
+          seen.add(cand);
+          out.push(cand);
+        }
+        bump += 1;
+      }
+      return shuffle(out);
+    }
+
+    // identify: ordered-pair pads. Distractors swap x/y and flip signs — the
+    // classic mistakes when a student reads y before x or misreads a sign.
+    function identifyChoices(x, y) {
+      const fmtPair = (px, py) => `(${px}, ${py})`;
+      const correct = fmtPair(x, y);
+      const candidates = [
+        fmtPair(y, x), // swapped x and y
+        fmtPair(x, -y), // flipped the y sign
+        fmtPair(-x, y), // flipped the x sign
+        fmtPair(-x, -y), // flipped both signs
+      ];
+      const choices = makeChoices(correct, candidates, 4, null).map((v) => ({
+        value: v,
+        label: v,
+      }));
+      return { choices, correct };
+    }
+
+    // distance: numeric pads. Correct = |Δx| or |Δy| along the shared line.
+    // Distractors: off-by-one, the perpendicular coordinate value, and the sum
+    // instead of the difference (a common sign mistake across the origin).
+    function distanceValue(a, b) {
+      return a.y === b.y ? Math.abs(b.x - a.x) : Math.abs(b.y - a.y);
+    }
+    function distanceChoices(a, b) {
+      const d = distanceValue(a, b);
+      const sameRow = a.y === b.y;
+      const sum = sameRow
+        ? Math.abs(b.x) + Math.abs(a.x)
+        : Math.abs(b.y) + Math.abs(a.y);
+      const other = sameRow ? Math.abs(b.x) : Math.abs(b.y);
+      const candidates = [d + 1, sum, d - 1, other, d + 2];
+      const choices = makeChoices(d, candidates, 4, (v) => v >= 0).map((v) => ({
+        value: String(v),
+        label: String(v),
+      }));
+      return { choices, correct: String(d) };
+    }
+
     function startTask() {
       solved = false;
       task = cfg.tasks[taskIndex];
       targetRing.visible = false;
+      clearPads();
+      phase = "navigate";
       hud.setProgress(taskIndex, cfg.tasks.length);
       if (clarity) clarity.setTarget(targetChipText());
       setCursor(0, 0);
@@ -438,10 +626,16 @@ export default {
           `Move the beacon to ${task.x}, ${task.y}. Go ${task.x} on x, then ${task.y} on y. Then place it.`,
         );
       } else if (task.kind === "identify") {
-        targetRing.visible = true;
-        const w = coordToWorld(task.x, task.y);
-        targetRing.position.set(w.x, 0.1, w.z);
-        announce(`Move the beacon onto the gold ring. Then place it.`);
+        // Answer task: show the point with a NEUTRAL marker (no gold ring, no
+        // coordinate label) so it never reveals its ordered pair. The student
+        // must read x then y off the axes and pick the matching pad.
+        phase = "answer";
+        placeMarker(task.x, task.y, COLORS.mystery);
+        const { choices, correct } = identifyChoices(task.x, task.y);
+        buildPads(choices, correct);
+        announce(
+          `Read the point on the plane. Find its x first, then its y. Move left and right between the pads, then choose its ordered pair.`,
+        );
       } else if (task.kind === "reflect") {
         placeMarker(task.x, task.y, COLORS.plotted);
         addPointLabel(task.x, task.y, "#9fc4f0");
@@ -450,13 +644,19 @@ export default {
           `Flip the point ${task.x}, ${task.y} over the ${task.axis}-axis. Move to ${want.x}, ${want.y} and place it.`,
         );
       } else if (task.kind === "distance") {
+        // Answer task: both points are shown, but the student computes the
+        // distance and picks the numeric pad — the game no longer counts for
+        // them by walking the beacon between the endpoints.
+        phase = "answer";
         placeMarker(task.a.x, task.a.y, COLORS.plotted);
         addPointLabel(task.a.x, task.a.y, "#9fc4f0");
         placeMarker(task.b.x, task.b.y, COLORS.distance);
         addPointLabel(task.b.x, task.b.y, "#f0c08a");
-        setCursor(task.a.x, task.a.y);
+        drawDistanceBar(task.a, task.b);
+        const { choices, correct } = distanceChoices(task.a, task.b);
+        buildPads(choices, correct);
         announce(
-          `Move the beacon to ${task.b.x}, ${task.b.y}. Count the steps. That is the distance.`,
+          `These two points share a row or column. Count the units between them, then move left and right between the pads and choose the distance.`,
         );
       }
       feel.sfx("select", `Task ${taskIndex + 1} of ${cfg.tasks.length}.`);
@@ -501,6 +701,7 @@ export default {
 
       later(() => {
         clearMarkers();
+        clearPads();
         if (taskIndex < cfg.tasks.length - 1) {
           taskIndex += 1;
           startTask();
@@ -586,8 +787,76 @@ export default {
       persistentMarkers.push(line);
     }
 
+    // Identify/distance reward: the worked answer, shown after a correct pick.
+    function showDistanceResult() {
+      const dist = distanceValue(task.a, task.b);
+      const lbl = makeLabel(`distance = ${dist}`, {
+        scale: 0.9,
+        fontSize: 80,
+        color: "#f0c08a",
+      });
+      const mx = (task.a.x + task.b.x) / 2;
+      const my = (task.a.y + task.b.y) / 2;
+      const w = coordToWorld(mx, my);
+      lbl.position.set(w.x, 1.1, w.z);
+      scene.add(lbl);
+      persistentMarkers.push(lbl);
+    }
+
+    function distanceExpr() {
+      const dist = distanceValue(task.a, task.b);
+      const fmtOperand = (n) => (n < 0 ? `(−${Math.abs(n)})` : `${n}`);
+      return task.a.y === task.b.y
+        ? `|${fmtOperand(task.b.x)} − ${fmtOperand(task.a.x)}| = ${dist}`
+        : `|${fmtOperand(task.b.y)} − ${fmtOperand(task.a.y)}| = ${dist}`;
+    }
+
+    // Handle a pad selection for identify/distance (the "answer" phase).
+    function chooseAnswer() {
+      if (solved || !task || gameOver || phase !== "answer") return;
+      const p = pads[padIndex];
+      if (!p) return;
+      const ok = p.value === answerCorrect;
+      if (!ok) {
+        const tip =
+          task.kind === "identify"
+            ? "Read the x first, then the y."
+            : "Count the units between them.";
+        reject(`Not that one. ${tip}`);
+        return;
+      }
+      // Correct: light the pad green, then advance via the shared win() flow.
+      p.mesh.material.color.setHex(COLORS.padOk);
+      p.mesh.material.emissive.setHex(COLORS.padOk);
+      p.mesh.material.emissiveIntensity = 0.9;
+      feel.burst(
+        { x: p.mesh.position.x, y: PAD_Y + 0.4, z: PAD_Z },
+        { color: COLORS.target, count: 34, spread: 4 },
+      );
+      if (task.kind === "identify") {
+        addPointLabel(task.x, task.y, "#9fc4f0");
+        win(
+          20,
+          `Correct: (${task.x}, ${task.y}).`,
+          `Yes. The point is the ordered pair ${task.x}, ${task.y}, in ${quadrantName(task.x, task.y)}.`,
+        );
+      } else {
+        const dist = distanceValue(task.a, task.b);
+        showDistanceResult();
+        win(
+          25,
+          `Distance = ${dist}. ${distanceExpr()}`,
+          `The points line up, so the distance is the absolute value of the difference: ${dist} units.`,
+        );
+      }
+    }
+
     function attempt() {
       if (solved || !task || gameOver) return;
+      if (phase === "answer") {
+        chooseAnswer();
+        return;
+      }
 
       if (task.kind === "plot") {
         if (cursor.x === task.x && cursor.y === task.y) {
@@ -601,23 +870,6 @@ export default {
         } else {
           reject(
             `Not there yet. Go to (${task.x}, ${task.y}). You are at (${cursor.x}, ${cursor.y}).`,
-          );
-        }
-        return;
-      }
-
-      if (task.kind === "identify") {
-        if (cursor.x === task.x && cursor.y === task.y) {
-          placeMarker(task.x, task.y, COLORS.plotted);
-          addPointLabel(task.x, task.y, "#9fc4f0");
-          win(
-            20,
-            `Correct: (${task.x}, ${task.y}).`,
-            `Yes. The ringed point is the ordered pair ${task.x}, ${task.y}, in ${quadrantName(task.x, task.y)}.`,
-          );
-        } else {
-          reject(
-            `Not there yet. Move onto the gold ring. You are at (${cursor.x}, ${cursor.y}).`,
           );
         }
         return;
@@ -640,42 +892,6 @@ export default {
         } else {
           reject(
             `Not the flip. Over the ${task.axis}-axis, go to (${want.x}, ${want.y}). You are at (${cursor.x}, ${cursor.y}).`,
-          );
-        }
-        return;
-      }
-
-      if (task.kind === "distance") {
-        if (cursor.x === task.b.x && cursor.y === task.b.y) {
-          const dist =
-            task.a.y === task.b.y
-              ? Math.abs(task.b.x - task.a.x)
-              : Math.abs(task.b.y - task.a.y);
-          drawDistanceBar(task.a, task.b);
-          const lbl = makeLabel(`distance = ${dist}`, {
-            scale: 0.9,
-            fontSize: 80,
-            color: "#f0c08a",
-          });
-          const mx = (task.a.x + task.b.x) / 2;
-          const my = (task.a.y + task.b.y) / 2;
-          const w = coordToWorld(mx, my);
-          lbl.position.set(w.x, 1.1, w.z);
-          scene.add(lbl);
-          persistentMarkers.push(lbl);
-          const fmtOperand = (n) => (n < 0 ? `(−${Math.abs(n)})` : `${n}`);
-          const expr =
-            task.a.y === task.b.y
-              ? `|${fmtOperand(task.b.x)} − ${fmtOperand(task.a.x)}| = ${dist}`
-              : `|${fmtOperand(task.b.y)} − ${fmtOperand(task.a.y)}| = ${dist}`;
-          win(
-            25,
-            `Distance = ${dist}. ${expr}`,
-            `The points line up, so the distance is the absolute value of the difference: ${dist} units.`,
-          );
-        } else {
-          reject(
-            `Keep going to (${task.b.x}, ${task.b.y}). You are at (${cursor.x}, ${cursor.y}).`,
           );
         }
         return;
@@ -737,6 +953,16 @@ export default {
 
           unbinders.push(
             input.onPress((name) => {
+              // Answer phase (identify/distance): left/right highlight a pad,
+              // action/confirm picks it. The beacon does not move here.
+              if (phase === "answer") {
+                if (name === "left") movePad(-1);
+                else if (name === "right") movePad(1);
+                else if (name === "action" || name === "confirm")
+                  chooseAnswer();
+                return;
+              }
+              // Navigate phase (plot/reflect): drive the beacon, then place.
               if (name === "up") move(0, 1);
               else if (name === "down") move(0, -1);
               else if (name === "left") move(-1, 0);
@@ -747,7 +973,23 @@ export default {
 
           unbinders.push(
             input.onTap(() => {
-              if (solved) return;
+              if (solved || gameOver) return;
+              // Answer phase: tap a pad to highlight + choose it.
+              if (phase === "answer") {
+                const hits = input.raycast(
+                  camera,
+                  pads.map((p) => p.mesh),
+                  false,
+                );
+                if (!hits.length) return;
+                const i = hits[0].object.userData.padIndex;
+                if (i == null) return;
+                padIndex = i;
+                highlightPad();
+                chooseAnswer();
+                return;
+              }
+              // Navigate phase: tap a grid spot to jump the beacon and check.
               const c = pointerToCoord();
               if (!c) return;
               setCursor(c.x, c.y, true);
@@ -772,8 +1014,10 @@ export default {
           controls: [
             {
               key: "← / → (or A / D)",
-              actionEn: "Move the beacon left or right — changes the x value",
-              actionEs: "Mueve la baliza izquierda o derecha — cambia la x",
+              actionEn:
+                "Plot & flip tasks: move the beacon's x. Read & distance tasks: move between answer pads",
+              actionEs:
+                "Tareas de ubicar y reflejar: mueve la x de la baliza. Tareas de leer y distancia: muévete entre los botones",
             },
             {
               key: "↑ / ↓ (or W / S)",
@@ -783,13 +1027,16 @@ export default {
             {
               key: "Space / Enter",
               actionEn:
-                "Place the beacon to check the point (the ● button too)",
-              actionEs: "Coloca la baliza para revisar el punto (botón ●)",
+                "Place the beacon, or choose the highlighted answer pad (the ● button too)",
+              actionEs:
+                "Coloca la baliza o elige el botón de respuesta marcado (botón ●)",
             },
             {
               key: "Tap / Click",
-              actionEn: "Tap a grid spot to jump the beacon there and check it",
-              actionEs: "Toca un punto de la cuadrícula para saltar y revisar",
+              actionEn:
+                "Tap a grid spot to move the beacon, or tap an answer pad to choose it",
+              actionEs:
+                "Toca un punto para mover la baliza o toca un botón para elegir la respuesta",
             },
             {
               key: "D-pad",
@@ -803,9 +1050,9 @@ export default {
             },
           ],
           howToWinEn:
-            "Move to the right spot, then place the beacon. Plot pairs like (x, y), flip points over an axis, and count steps for distance. Clear every task to win!",
+            "Plot pairs like (x, y) and flip points over an axis by driving the beacon there and placing it. To read a point or measure a distance, work out the answer and choose the matching floating pad. Clear every task to win!",
           howToWinEs:
-            "Llega al lugar correcto y coloca la baliza. Completa todas las tareas para ganar.",
+            "Ubica pares como (x, y) y refleja puntos llevando la baliza al lugar correcto. Para leer un punto o medir una distancia, calcula la respuesta y elige el botón flotante correcto. Completa todas las tareas para ganar.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });
@@ -834,6 +1081,7 @@ export default {
         timers.forEach(clearTimeout);
         timers.length = 0;
         clearMarkers();
+        clearPads();
         labels.forEach((l) => {
           if (l.material) {
             if (l.material.map) l.material.map.dispose();
@@ -846,6 +1094,7 @@ export default {
         scene.remove(beacon);
         scene.remove(targetRing);
         scene.remove(card);
+        scene.remove(padGroup);
         grid.dispose();
       },
     };

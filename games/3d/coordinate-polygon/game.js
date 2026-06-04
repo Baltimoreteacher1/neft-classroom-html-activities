@@ -15,8 +15,9 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
  * every vertex is placed, the polygon's edges snap into a glowing outline.
  * The student then measures one horizontal and one vertical side by stepping
  * the beacon along it (length = |difference of the changing coordinate|), and
- * finally confirms the whole perimeter. Real interactive 3D, not a quiz: the
- * answer is only revealed in the post-solve feedback (no-giveaway rule).
+ * finally computes the whole perimeter and chooses it from a row of floating
+ * answer pads. Real interactive 3D, not a quiz: the worked perimeter sum is
+ * only revealed AFTER the student picks the correct pad (no-giveaway rule).
  */
 
 const COLORS = {
@@ -28,6 +29,9 @@ const COLORS = {
   measure: 0xff9f5a, // side being measured (orange)
   axis: 0xdce8ff,
   card: "rgba(10,20,40,0.92)",
+  padIdle: 0x1b4a76, // perimeter answer pad (resting)
+  padActive: 0xffd166, // perimeter answer pad (highlighted)
+  padOk: 0x0f9d63, // perimeter answer pad (correct)
 };
 
 // A "shape" task lists vertices in draw order plus the two sides the student
@@ -151,6 +155,59 @@ function perimeterOf(verts) {
   return p;
 }
 
+// List the side lengths around the polygon, in draw order.
+function sideLengths(verts) {
+  const lens = [];
+  for (let k = 0; k < verts.length; k++) {
+    lens.push(sideInfo(verts[k], verts[(k + 1) % verts.length]).len);
+  }
+  return lens;
+}
+
+// Build 4 floating answer choices for the perimeter: the correct sum plus
+// three tempting-but-wrong distractors. Common mistakes we model:
+//   • forgetting one side (sum minus the longest side)
+//   • double-counting / adding an extra side (sum plus the longest side)
+//   • measuring only some sides (sum of all but the last side, i.e. an
+//     "open" path that never closes)
+// We fall back to ±2 nudges so we always reach 4 unique positive values with
+// the correct answer guaranteed to be included.
+function perimeterChoices(verts) {
+  const correct = perimeterOf(verts);
+  const lens = sideLengths(verts);
+  const longest = Math.max(...lens);
+  const openPath = lens.slice(0, -1).reduce((a, b) => a + b, 0);
+  const seeds = [
+    correct,
+    correct - longest, // dropped the longest side
+    correct + longest, // counted an extra side
+    openPath, // only summed the sides drawn so far
+  ];
+  const out = [];
+  const has = (v) => out.some((o) => o === v);
+  for (const v of seeds) {
+    if (v > 0 && !has(v)) out.push(v);
+    if (out.length >= 4) break;
+  }
+  // Top up with nearby nudges until we have 4 distinct positive options.
+  let bump = 1;
+  while (out.length < 4) {
+    for (const cand of [correct + bump, correct - bump]) {
+      if (cand > 0 && !has(cand)) {
+        out.push(cand);
+        break;
+      }
+    }
+    bump += 1;
+  }
+  // Shuffle so the correct answer is not always first.
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return { correct, choices: out };
+}
+
 // Build the worked phases for one shape: plant every vertex, measure one
 // horizontal + one vertical side, then confirm the perimeter.
 function buildPhases(shape) {
@@ -172,7 +229,7 @@ function buildPhases(shape) {
   }
   if (hSide) phases.push({ kind: "measure", side: hSide });
   if (vSide) phases.push({ kind: "measure", side: vSide });
-  // 3) confirm the perimeter by stepping the beacon onto a perimeter pad
+  // 3) compute the perimeter and choose it from floating answer pads
   phases.push({ kind: "perimeter", value: perimeterOf(verts) });
   return phases;
 }
@@ -471,6 +528,8 @@ export default {
     let phaseIndex = 0;
     let phase = null;
     let placedVerts = []; // vertices planted so far this shape
+    let answerPads = []; // floating perimeter answer pads (perimeter phase)
+    let answerIndex = 0; // highlighted answer pad
     let solved = false;
     let streak = 0;
     let bestStreak = 0;
@@ -492,6 +551,7 @@ export default {
           m.material.dispose();
         }
       }
+      clearAnswerPads();
       placedVerts = [];
     }
 
@@ -533,7 +593,7 @@ export default {
         return `Measure the ${word} side from (${s.a.x}, ${s.a.y}) to (${s.b.x}, ${s.b.y}). Move the beacon to (${s.b.x}, ${s.b.y}) and place it.`;
       }
       if (phase.kind === "perimeter") {
-        return `Add up every side. Move the beacon onto the gold PERIMETER pad and place it to confirm.`;
+        return `Add up all the sides, then choose the perimeter.`;
       }
       return "";
     }
@@ -556,57 +616,99 @@ export default {
         const s = phase.side;
         return `Measure side to (${s.b.x}, ${s.b.y})`;
       }
-      if (phase.kind === "perimeter") return "Confirm the perimeter";
+      if (phase.kind === "perimeter") return "Choose the perimeter";
       return null;
     }
 
-    // Gold "perimeter pad" gives the student a clear spot to step onto to
-    // confirm the perimeter. It must NEVER fuse with the shape, so we search for
-    // an in-range lattice point that is not a vertex and not on any polygon
-    // edge. We prefer points just above the top edge near the centroid, then
-    // scan outward, and finally fall back to a guaranteed-empty grid corner.
-    function onShape(x, y) {
-      const vs = shape.verts;
-      for (let i = 0; i < vs.length; i++) {
-        const a = vs[i];
-        const b = vs[(i + 1) % vs.length];
-        if (a.x === x && a.y === y) return true; // a vertex
-        // Only axis-aligned edges occur in these blueprints. Check collinear +
-        // between the endpoints for both orientations.
-        if (a.x === b.x && x === a.x) {
-          if (y >= Math.min(a.y, b.y) && y <= Math.max(a.y, b.y)) return true;
-        } else if (a.y === b.y && y === a.y) {
-          if (x >= Math.min(a.x, b.x) && x <= Math.max(a.x, b.x)) return true;
+    // ---- Floating perimeter answer pads ----
+    // After the sides are measured, the student must COMPUTE the perimeter and
+    // CHOOSE it from a row of floating numeric pads (no walk-on giveaway). Pads
+    // float well above the drawn polygon (high y, pushed toward the camera) so
+    // they never overlap the shape and are reachable with left/right + place.
+    const PAD_Y = N * 0.42; // height above the board, clear of the polygon
+    const PAD_Z = N * 0.55; // toward the camera, in front of the shape
+    const padGeo = new RoundedBoxGeometry(1.7, 0.4, 1.1, 4, 0.12);
+    disposables.push(padGeo);
+    let answerCorrect = null; // correct perimeter value for the current pads
+
+    function clearAnswerPads() {
+      while (answerPads.length) {
+        const p = answerPads.pop();
+        scene.remove(p.mesh);
+        if (p.mesh.material) p.mesh.material.dispose();
+        if (p.label) {
+          scene.remove(p.label);
+          if (p.label.material) {
+            if (p.label.material.map) p.label.material.map.dispose();
+            p.label.material.dispose();
+          }
         }
       }
-      return false;
     }
-    function perimeterPadCoord() {
-      const xs = shape.verts.map((v) => v.x);
-      const ys = shape.verts.map((v) => v.y);
-      const cx = Math.round(xs.reduce((a, b) => a + b, 0) / xs.length);
-      const topY = Math.max(...ys);
-      // Preferred candidates first: directly above the top edge near centroid.
-      const preferred = [
-        { x: cx, y: topY + 1 },
-        { x: cx, y: topY + 2 },
-      ];
-      for (const p of preferred) {
-        if (inRange(p.x, p.y) && !onShape(p.x, p.y)) return p;
-      }
-      // Otherwise scan the whole grid for the first free off-shape point.
-      for (let y = cfg.maxCoord; y >= cfg.minCoord; y--) {
-        for (let x = cfg.minCoord; x <= cfg.maxCoord; x++) {
-          if (!onShape(x, y)) return { x, y };
-        }
-      }
-      // Last resort: a grid corner (shapes never reach the extreme corner).
-      return { x: cfg.minCoord, y: cfg.minCoord };
+
+    function buildAnswerPads(choices) {
+      clearAnswerPads();
+      const n = choices.length;
+      const gap = 2.4;
+      const startX = -((n - 1) * gap) / 2;
+      choices.forEach((value, i) => {
+        const mat = new THREE.MeshStandardMaterial({
+          color: COLORS.padIdle,
+          emissive: COLORS.padActive,
+          emissiveIntensity: 0,
+          roughness: 0.45,
+          metalness: 0.2,
+        });
+        const mesh = new THREE.Mesh(padGeo, mat);
+        mesh.position.set(startX + i * gap, PAD_Y, PAD_Z);
+        mesh.castShadow = true;
+        scene.add(mesh);
+        const label = makeLabel(String(value), {
+          scale: 1.0,
+          fontSize: 96,
+          color: "#ffffff",
+        });
+        label.position.set(startX + i * gap, PAD_Y + 0.75, PAD_Z);
+        scene.add(label);
+        answerPads.push({ mesh, label, value });
+      });
+      answerIndex = 0;
+      highlightAnswerPad();
     }
-    let pad = null;
+
+    function highlightAnswerPad() {
+      answerPads.forEach((p, i) => {
+        const on = i === answerIndex;
+        p.mesh.material.color.setHex(on ? COLORS.padActive : COLORS.padIdle);
+        p.mesh.material.emissiveIntensity = on ? 0.7 : 0;
+      });
+      const p = answerPads[answerIndex];
+      if (p && !feel.reducedMotion) {
+        feel.tween({
+          from: 1,
+          to: 1.12,
+          duration: 0.12,
+          onUpdate: (s) => p.mesh.scale.set(s, 1, s),
+          onComplete: () => p.mesh.scale.set(1, 1, 1),
+        });
+      }
+    }
+
+    function moveAnswer(delta) {
+      if (!phase || phase.kind !== "perimeter" || solved || gameOver) return;
+      if (!answerPads.length) return;
+      answerIndex = Math.max(
+        0,
+        Math.min(answerPads.length - 1, answerIndex + delta),
+      );
+      highlightAnswerPad();
+      feel.sfx("select");
+      announce(`Choice ${answerPads[answerIndex].value}.`);
+    }
 
     function startPhase() {
       solved = false;
+      clearAnswerPads();
       phase = phases[phaseIndex];
       targetRing.visible = false;
       hud.setProgress(phaseIndex, phases.length);
@@ -635,21 +737,15 @@ export default {
           `Measure the ${word} side. Step the beacon from ${s.a.x}, ${s.a.y} to ${s.b.x}, ${s.b.y}. Count the steps. Then place it.`,
         );
       } else if (phase.kind === "perimeter") {
-        pad = perimeterPadCoord();
-        setCursor(0, 0);
-        targetRing.visible = true;
-        const w = coordToWorld(pad.x, pad.y);
-        targetRing.position.set(w.x, 0.1, w.z);
-        const lbl = makeLabel("PERIMETER", {
-          scale: 0.85,
-          fontSize: 72,
-          color: "#ffd166",
-        });
-        lbl.position.set(w.x, 0.7, w.z);
-        scene.add(lbl);
-        shapeMarkers.push(lbl);
+        // Compute the answer choices and float them above the shape. The
+        // correct perimeter comes straight from perimeterOf(...) via the helper.
+        const { correct, choices } = perimeterChoices(shape.verts);
+        answerCorrect = correct;
+        phase.value = correct;
+        buildAnswerPads(choices);
+        const choiceText = choices.join(", ");
         announce(
-          `Add up every side of the polygon. Then move onto the gold perimeter pad and place the beacon to confirm.`,
+          `Add up all the sides of the polygon. Then move left and right to a floating pad and place the beacon to choose the perimeter. Choices: ${choiceText}.`,
         );
       }
 
@@ -840,21 +936,24 @@ export default {
       }
 
       if (phase.kind === "perimeter") {
-        if (pad && cursor.x === pad.x && cursor.y === pad.y) {
+        const pick = answerPads[answerIndex];
+        if (!pick) return;
+        if (pick.value === answerCorrect) {
+          // lock the chosen pad green, then reveal the worked sum AFTER they
+          // answered correctly (no giveaway before the choice).
+          pick.mesh.material.color.setHex(COLORS.padOk);
+          pick.mesh.material.emissive.setHex(COLORS.padOk);
+          pick.mesh.material.emissiveIntensity = 0.9;
           // build a readable sum like 4 + 3 + 4 + 3 = 14
-          const v = shape.verts;
-          const parts = [];
-          for (let k = 0; k < v.length; k++) {
-            parts.push(sideInfo(v[k], v[(k + 1) % v.length]).len);
-          }
+          const parts = sideLengths(shape.verts);
           const sumExpr = `${parts.join(" + ")} = ${phase.value}`;
           win(
             30,
             `Perimeter = ${phase.value} units.`,
             `Right. Adding every side gives the perimeter: ${sumExpr}.`,
           );
-          // show the sum on the card briefly via feedback already; also label it
-          const lbl = makeLabel(`perimeter = ${phase.value}`, {
+          // reveal the worked sum on the board now that it is answered
+          const lbl = makeLabel(`perimeter = ${sumExpr}`, {
             scale: 0.95,
             fontSize: 80,
             color: "#ffd166",
@@ -865,7 +964,7 @@ export default {
           shapeMarkers.push(lbl);
         } else {
           reject(
-            `Move onto the gold perimeter pad at (${pad.x}, ${pad.y}) to confirm. You are at (${cursor.x}, ${cursor.y}).`,
+            `Not quite — count every side. You chose ${pick.value}. Try again.`,
           );
         }
         return;
@@ -930,6 +1029,14 @@ export default {
 
           unbinders.push(
             input.onPress((name) => {
+              // During the perimeter phase, left/right scrub the answer pads
+              // instead of moving the beacon around the grid.
+              if (phase && phase.kind === "perimeter" && !solved) {
+                if (name === "left") moveAnswer(-1);
+                else if (name === "right") moveAnswer(1);
+                else if (name === "action" || name === "confirm") attempt();
+                return;
+              }
               if (name === "up") move(0, 1);
               else if (name === "down") move(0, -1);
               else if (name === "left") move(-1, 0);
@@ -940,7 +1047,21 @@ export default {
 
           unbinders.push(
             input.onTap(() => {
-              if (solved) return;
+              if (solved || gameOver) return;
+              // Perimeter phase: tap a floating answer pad to pick it.
+              if (phase && phase.kind === "perimeter") {
+                const meshes = answerPads.map((p) => p.mesh);
+                const hits = input.raycast(camera, meshes, false);
+                if (hits.length) {
+                  const idx = meshes.indexOf(hits[0].object);
+                  if (idx >= 0) {
+                    answerIndex = idx;
+                    highlightAnswerPad();
+                    attempt();
+                  }
+                }
+                return;
+              }
               const c = pointerToCoord();
               if (!c) return;
               setCursor(c.x, c.y, true);
@@ -996,9 +1117,9 @@ export default {
             },
           ],
           howToWinEn:
-            "Plant every vertex at its (x, y) to draw the polygon. Then measure a flat side and an upright side by stepping the beacon along it — the length is the absolute value of the difference. Finally, add the sides and step onto the gold pad to confirm the perimeter. Finish every blueprint to win!",
+            "Plant every vertex at its (x, y) to draw the polygon. Then measure a flat side and an upright side by stepping the beacon along it — the length is the absolute value of the difference. Finally, add up all the sides and choose the perimeter from the floating answer pads (move left/right, then place). Finish every blueprint to win!",
           howToWinEs:
-            "Ubica cada vértice en su (x, y) para dibujar el polígono. Mide un lado plano y uno vertical, luego suma los lados y confirma el perímetro. Completa todos los planos para ganar.",
+            "Ubica cada vértice en su (x, y) para dibujar el polígono. Mide un lado plano y uno vertical. Luego suma todos los lados y elige el perímetro en los botones flotantes (muévete izquierda/derecha y coloca). Completa todos los planos para ganar.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });
