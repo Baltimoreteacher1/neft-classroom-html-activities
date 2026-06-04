@@ -6,10 +6,10 @@
   <title>📊 Version 2: Game Day Data Lab — Regular Student Edition</title>
   <style>
     :root{
-      --ink:#111827; --muted:#5b6475; --bg:#eef4ff; --panel:#ffffff; --line:#d7e2f2;
-      --blue:#2357d8; --blue2:#163d9f; --cyan:#0fa9c6; --green:#16834f; --yellow:#f4c542;
-      --orange:#f28b35; --red:#d64545; --purple:#7447d8; --dark:#071a3e; --soft:#f7faff;
-      --radius:22px; --shadow:0 20px 55px rgba(17,24,39,.12); --font:Inter, Calibri, Arial, sans-serif;
+      --ink:#0f172a; --muted:#64748b; --bg:#f8fafc; --panel:rgba(255,255,255,0.85); --line:rgba(203,213,225,0.6);
+      --blue:#3b82f6; --blue2:#2563eb; --cyan:#06b6d4; --green:#10b981; --yellow:#f59e0b;
+      --orange:#f97316; --red:#ef4444; --purple:#8b5cf6; --dark:#0f172a; --soft:rgba(240,247,255,0.85);
+      --radius:24px; --shadow:0 25px 60px -12px rgba(0,0,0,0.15); --font:Inter, 'Segoe UI', sans-serif;
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
@@ -27,7 +27,7 @@
     .topbar{position:sticky;top:0;z-index:30;margin:16px 0;padding:12px;border-radius:22px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border:1px solid var(--line);box-shadow:0 12px 36px rgba(17,24,39,.09)}.progress-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin-bottom:10px}.progress-shell{height:11px;background:#e4ebf6;border-radius:999px;overflow:hidden}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--purple));border-radius:999px;transition:.25s ease}.score-pill{white-space:nowrap;border-radius:999px;padding:8px 12px;background:#eef5ff;border:1px solid #cfdef8;color:#173d98;font-weight:900;font-size:13px}.tabs{display:flex;gap:7px;overflow:auto}.tab-btn{min-width:max-content;border:1px solid var(--line);background:#fff;color:#26354f;padding:9px 13px;border-radius:13px;font-weight:900;cursor:pointer}.tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}.tab-btn.locked{opacity:.5;cursor:not-allowed;background:#f4f6fa}
     .quick-help-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 16px;padding:12px 14px;border:1px solid #cddbf5;background:#f5f9ff;border-radius:18px}.help-chip,.stem{border:1px solid #cfd9eb;background:#fff;color:#20304d;border-radius:999px;padding:8px 10px;font-size:13px;font-weight:900;cursor:pointer}.help-chip:hover,.stem:hover{background:#eef5ff;border-color:#a9bfea}.word-help-btn{border:0;background:#153c9f;color:#fff;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900;cursor:pointer}
     main{display:grid;gap:18px}.tab{display:none;animation:fade .22s ease}.tab.active{display:block}@keyframes fade{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:none}}.grid{display:grid;gap:18px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 8px 26px rgba(17,24,39,.06)}.panel.blue{background:linear-gradient(160deg,#eaf3ff,#fff);border-color:#c8ddfb}.panel.green{background:linear-gradient(160deg,#eafaf3,#fff);border-color:#bfe7d1}.panel.yellow{background:linear-gradient(160deg,#fff8df,#fff);border-color:#efdba5}.panel.purple{background:linear-gradient(160deg,#f2edff,#fff);border-color:#d8cdf7}.panel.soft{background:linear-gradient(160deg,#fff,#f8fbff)}
+    .panel{background:var(--panel);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.7);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);transition:0.2s ease}.panel:hover{box-shadow:0 30px 65px -10px rgba(0,0,0,0.18);transform:translateY(-2px)}.panel.blue{background:linear-gradient(160deg,#eaf3ff,#fff);border-color:#c8ddfb}.panel.green{background:linear-gradient(160deg,#eafaf3,#fff);border-color:#bfe7d1}.panel.yellow{background:linear-gradient(160deg,#fff8df,#fff);border-color:#efdba5}.panel.purple{background:linear-gradient(160deg,#f2edff,#fff);border-color:#d8cdf7}.panel.soft{background:linear-gradient(160deg,#fff,#f8fbff)}
     h2{font-size:28px;line-height:1.08;margin:0 0 12px;letter-spacing:-.025em}h3{font-size:20px;line-height:1.16;margin:0 0 10px}h4{font-size:16px;margin:0 0 8px}p{font-size:16px;line-height:1.45;margin:0 0 12px;color:#2d3a50}.lead{font-size:18px;color:#263653}.small{font-size:14px;color:var(--muted);line-height:1.4}.tiny{font-size:12px;color:var(--muted)}.badge{display:inline-flex;align-items:center;gap:7px;margin:0 6px 10px 0;padding:6px 10px;border-radius:999px;background:#edf5ff;color:#173d98;border:1px solid #cfe0fa;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.badge.green{color:#0c653e;background:#eaf8f0;border-color:#c4ead4}.badge.orange{color:#8a410f;background:#fff2e6;border-color:#f0c8a0}.badge.purple{color:#4d2aa7;background:#f3efff;border-color:#ddd2ff}
     .directions{display:flex;gap:12px;align-items:flex-start;margin:14px 0;padding:14px;border-radius:18px;background:#f4f8ff;border:1px solid #d4e4fb}.directions strong{color:#173d98}.callout{padding:15px;border-radius:18px;background:#10265d;color:#fff}.callout p{color:#eaf4ff;margin:0}.callout.green{background:#15452f}.callout.orange{background:#7a3c0d}.visual-card{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:18px;background:#fff;border:1px solid var(--line)}.visual-icon{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;background:#eef5ff;font-size:23px;flex:0 0 auto}.visual-card strong{display:block;margin-bottom:3px;color:#14233d}
     .field{display:grid;gap:6px;margin:11px 0}label{font-weight:900;color:#26354f;font-size:13px;letter-spacing:.02em;text-transform:uppercase}input,textarea,select{width:100%;border:1px solid #cfd8e8;border-radius:14px;padding:12px 13px;font-size:15px;background:#fff;color:var(--ink);outline:none}textarea{min-height:92px;resize:vertical;line-height:1.4}input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(35,87,216,.12)}.field-hint{font-size:13px;color:#536274;margin-top:2px;background:#f7faff;border:1px dashed #d3def0;border-radius:12px;padding:9px}.word-bank{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.pillbar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.level-pill{padding:9px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:900;cursor:pointer}.level-pill.active{background:#153c9f;color:#fff;border-color:#153c9f}
@@ -104,7 +104,7 @@
           <div class="directions"><strong>Sort:</strong><span>Click each card. Then click the correct box. Histograms use number ranges; bar graphs use categories.</span></div><div class="sort-zone"><div class="dropzone" id="histZone" onclick="placeSelected('histogram')"><h4>Histogram: number intervals</h4></div><div class="dropzone" id="barZone" onclick="placeSelected('bar')"><h4>Bar graph: categories</h4></div></div><div class="card-bank" id="sortBank"></div><div class="btn-row"><button class="btn" onclick="checkSort()">Check Sort</button><button class="btn ghost" onclick="resetSort()">Reset Cards</button></div><div class="feedback" id="sortFeedback"></div>
         </div>
         <div class="grid two" style="margin-top:18px"><div class="panel"><h3>Quick Check 1</h3><p>In a histogram, the x-axis usually shows...</p><div id="q1"></div></div><div class="panel"><h3>Quick Check 2</h3><p>A bar with height 6 over the interval 20–29 means...</p><div id="q2"></div></div></div>
-        <div class="btn-row"><button class="btn green" onclick="completeBootcamp()">Save Bootcamp</button><div class="feedback" id="bootcampFeedback"></div></div>
+        <div class="btn-row"><button class="btn green" onclick="completeBootcamp()">Save Bootcamp</button><button id="skipBootcampBtn" class="btn ghost" style="display:none;" onclick="completeBootcamp(true)">Skip Bootcamp</button><div class="feedback" id="bootcampFeedback"></div></div>
       </section>
 
       <section class="tab" data-tab="2" id="tab-2">
@@ -145,6 +145,76 @@ const tabs = ['Setup','Bootcamp','Data Quest','Chart Detective','Build Lab','Cha
 const state = {currentTab:0,completed:Array(tabs.length).fill(false),unlocked:Array(tabs.length).fill(false),badges:0,answers:{},earned:{},sortPlacements:{},selectedCard:null,support:'guided',histogramBuilt:false,finished:false};
 state.unlocked[0]=true;
 
+const AudioSynth = {
+  ctx: null,
+  init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+  playTone(freq, type, duration, vol=0.1) {
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + duration);
+  },
+  click() { this.init(); this.playTone(600, 'sine', 0.05, 0.05); },
+  success() { this.init(); this.playTone(800, 'sine', 0.1, 0.1); setTimeout(()=>this.playTone(1200, 'sine', 0.2, 0.1), 100); },
+  error() { this.init(); this.playTone(200, 'sawtooth', 0.2, 0.1); },
+  tada() { 
+    this.init(); 
+    this.playTone(523.25, 'sine', 0.1, 0.1);
+    setTimeout(()=>this.playTone(659.25, 'sine', 0.1, 0.1), 100);
+    setTimeout(()=>this.playTone(783.99, 'sine', 0.4, 0.15), 200);
+  }
+};
+function fireConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'fixed';
+  canvas.style.inset = 0;
+  canvas.style.width = '100vw';
+  canvas.style.height = '100vh';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = 9999;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pieces = Array.from({length: 120}).map(() => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    w: Math.random() * 10 + 5,
+    h: Math.random() * 10 + 5,
+    color: `hsl(${Math.random()*360}, 100%, 60%)`,
+    vy: Math.random() * 4 + 2,
+    vx: Math.random() * 2 - 1,
+    rot: Math.random() * 360,
+    rv: Math.random() * 10 - 5
+  }));
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let active = false;
+    pieces.forEach(p => {
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rot += p.rv;
+      if (p.y < canvas.height) active = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    if (active) requestAnimationFrame(render);
+    else canvas.remove();
+  }
+  render();
+}
+document.addEventListener('click', e => { if(e.target.matches('button, .data-card, .choice, .level-pill, .stem, .help-chip, .tab-btn')) AudioSynth.click(); });
 function init(){
   document.body.dataset.version = CONFIG.variant;
   renderTabs(); renderQuickHelp(); renderStarters(); renderSources(); renderSortCards(); setupQuestions(); setupDatasets(); applyFieldHints(); loadSaved(); renderPresetCharts(); updateProgress(); updateStatusList(); updateFooter(); updatePreviewCount();
@@ -182,12 +252,13 @@ function renderSources(){const el=document.getElementById('sourceCards');el.inne
 function useSource(key){const s=CONFIG.sources.find(x=>x.key===key);if(!s)return;if(!val('sourceOne')){document.getElementById('sourceOne').value=s.title;document.getElementById('sourceOneValue').value=s.look;}else{document.getElementById('sourceTwo').value=s.title;document.getElementById('sourceTwoValue').value=s.look;}if(CONFIG.datasets[s.dataset]){loadDataset(s.dataset);showToast(`${s.title} loaded into Build Lab.`);}saveState();}
 function completeSources(){const ok=val('sourceOne')&&val('sourceOneValue')&&wordCount(val('sourceReflection'))>=CONFIG.minWords;if(!ok){setFB('sourceFeedback','warn',`Add Source 1, one pattern, and a reflection of at least ${CONFIG.minWords} words.`);return;}addBadge('sources');completeTab(2);setFB('sourceFeedback','good','Data Quest saved. Chart Detective unlocked.');}
 
-function renderSortCards(){const bank=document.getElementById('sortBank');const zones={histogram:document.getElementById('histZone'),bar:document.getElementById('barZone')};zones.histogram.innerHTML='<h4>Histogram: number intervals</h4>';zones.bar.innerHTML='<h4>Bar graph: categories</h4>';bank.innerHTML='';CONFIG.sortCards.forEach((c,i)=>{const btn=document.createElement('button');btn.type='button';btn.className='data-card';btn.textContent=c.text;btn.onclick=()=>selectCard(i);btn.dataset.card=i;const placed=state.sortPlacements[i];if(placed){btn.classList.add(placed===c.type?'correct':'wrong');zones[placed]?.appendChild(btn);}else bank.appendChild(btn);});}
+function renderSortCards(){const bank=document.getElementById('sortBank');const zones={histogram:document.getElementById('histZone'),bar:document.getElementById('barZone')};zones.histogram.innerHTML='<h4>Histogram: number intervals</h4>';zones.bar.innerHTML='<h4>Bar graph: categories</h4>';bank.innerHTML='';CONFIG.sortCards.forEach((c,i)=>{const btn=document.createElement('button');btn.type='button';btn.className='data-card';btn.textContent=c.text;btn.dataset.card=i;const placed=state.sortPlacements[i];if(placed){btn.classList.add(placed===c.type?'correct':'wrong');btn.onclick=()=>undoCard(i);zones[placed]?.appendChild(btn);}else{btn.onclick=()=>selectCard(i);bank.appendChild(btn);}});}
+function undoCard(i){delete state.sortPlacements[i];state.selectedCard=null;renderSortCards();saveState();if(typeof AudioSynth!=='undefined')AudioSynth.click();}
 function selectCard(i){state.selectedCard=i;document.querySelectorAll('.data-card').forEach(c=>c.classList.toggle('selected',Number(c.dataset.card)===i));}
 function placeSelected(type){if(state.selectedCard===null){showToast('Click a card first.');return;}state.sortPlacements[state.selectedCard]=type;state.selectedCard=null;renderSortCards();saveState();}
 function resetSort(){state.sortPlacements={};state.selectedCard=null;renderSortCards();saveState();setFB('sortFeedback','warn','Cards reset. Sort them again.');}
-function checkSort(){const all=Object.keys(state.sortPlacements).length===CONFIG.sortCards.length;const correct=CONFIG.sortCards.every((c,i)=>state.sortPlacements[i]===c.type);if(all&&correct){addBadge('sort');setFB('sortFeedback','good','Correct. Histograms use numerical intervals; bar graphs use categories.');}else if(!all){setFB('sortFeedback','warn','Sort every card before checking.');}else{setFB('sortFeedback','bad','Some cards are in the wrong box. Hint: number ranges go with histogram; category names go with bar graph.');}saveState();}
-function completeBootcamp(){const sortCorrect=CONFIG.sortCards.every((c,i)=>state.sortPlacements[i]===c.type);if(!sortCorrect||state.answers.q1!=='correct'||state.answers.q2!=='correct'){setFB('bootcampFeedback','warn','Finish the sort and answer both quick checks correctly.');return;}completeTab(1);setFB('bootcampFeedback','good','Bootcamp saved. Data Quest unlocked.');}
+function checkSort(){const all=Object.keys(state.sortPlacements).length===CONFIG.sortCards.length;const correct=CONFIG.sortCards.every((c,i)=>state.sortPlacements[i]===c.type);if(all&&correct){addBadge('sort');setFB('sortFeedback','good','Correct. Histograms use numerical intervals; bar graphs use categories.');}else if(!all){setFB('sortFeedback','warn','Sort every card before checking.');}else{setFB('sortFeedback','bad','Some cards are in the wrong box. Click a card to put it back.');}saveState();}
+function completeBootcamp(force=false){const sortCorrect=CONFIG.sortCards.every((c,i)=>state.sortPlacements[i]===c.type);if(!force&&(!sortCorrect||state.answers.q1!=='correct'||state.answers.q2!=='correct')){setFB('bootcampFeedback','warn','Finish the sort and quick checks. Or click "Skip Bootcamp" to move on anyway.');document.getElementById('skipBootcampBtn').style.display='inline-block';return;}completeTab(1);setFB('bootcampFeedback','good','Bootcamp saved. Data Quest unlocked.');}
 
 function setupQuestions(){
   makeMC('q1','q1',[[ 'Categories, like game names','bar'],['Number intervals, like 0–9 or 10–19','correct'],['Only pictures or logos','map']], 'Correct. A histogram groups numerical data into intervals.', 'Try again: look for number ranges or intervals.');
@@ -214,13 +285,13 @@ function renderPresetCharts(){const a=CONFIG.datasets.hoops;drawHistogram('prese
 function buildCustomHistogram(mark=true){const values=parseValues();const start=Number(document.getElementById('binStart').value);const width=Number(document.getElementById('binWidth').value);const count=Number(document.getElementById('binCount').value);const fb=document.getElementById('buildFeedback');if(values.length<8||!Number.isFinite(start)||!Number.isFinite(width)||width<=0||!Number.isFinite(count)||count<1){setFB('buildFeedback','warn','Use at least 8 numbers and valid interval settings.');return;}const bins=makeBins(values,start,width,count);const outside=values.length-bins.reduce((s,b)=>s+b.count,0);drawHistogram('customHist',bins,'Your histogram');document.getElementById('customTitle').textContent='Your histogram';state.histogramBuilt=true;if(mark)addBadge('build');fb.className=outside>0?'feedback warn':'feedback good';fb.textContent=outside>0?`${outside} value(s) fell outside your intervals. Adjust the start, width, or number of intervals if needed.`:'Histogram built. Now analyze the pattern.';saveState();}
 function drawHistogram(containerId,bins,xLabel){const el=document.getElementById(containerId);const max=Math.max(1,...bins.map(b=>b.count));const W=720,H=330,m={l:54,r:24,t:22,b:72};const chartW=W-m.l-m.r,chartH=H-m.t-m.b;const barGap=10;const barW=Math.max(18,(chartW/bins.length)-barGap);let svg=`<svg class="histogram" viewBox="0 0 ${W} ${H}" role="img" aria-label="Histogram"><defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a7be8"/><stop offset="100%" stop-color="#2357d8"/></linearGradient></defs>`;for(let i=0;i<=5;i++){const y=m.t+chartH-(i/5)*chartH;const val=Math.round((i/5)*max);svg+=`<line class="gridline" x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}"></line><text class="tick" x="${m.l-10}" y="${y+4}" text-anchor="end">${val}</text>`;}svg+=`<line class="axis" x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${m.t+chartH}"></line><line class="axis" x1="${m.l}" y1="${m.t+chartH}" x2="${W-m.r}" y2="${m.t+chartH}"></line>`;bins.forEach((b,i)=>{const h=(b.count/max)*chartH;const x=m.l+i*(chartW/bins.length)+barGap/2;const y=m.t+chartH-h;svg+=`<rect class="bar" x="${x}" y="${y}" width="${barW}" height="${h}" rx="7"><title>${labelBin(b)}: ${b.count}</title></rect><text class="bar-label" x="${x+barW/2}" y="${Math.max(14,y-6)}" text-anchor="middle">${b.count}</text><text class="tick" x="${x+barW/2}" y="${m.t+chartH+20}" text-anchor="middle">${labelBin(b)}</text>`;});svg+=`<text class="tick" x="${m.l+chartW/2}" y="${H-16}" text-anchor="middle">${escapeHtml(xLabel)}</text><text class="tick" x="16" y="${m.t+chartH/2}" transform="rotate(-90 16 ${m.t+chartH/2})" text-anchor="middle">Frequency</text></svg>`;el.classList.remove('empty-chart');el.innerHTML=svg;}
 
-function setFB(id,type,msg){const fb=document.getElementById(id);if(!fb)return;fb.className='feedback '+type;fb.textContent=msg;}
+function setFB(id,type,msg){const fb=document.getElementById(id);if(!fb)return;fb.className='feedback '+type;fb.textContent=msg;if(type==='good'&&typeof AudioSynth!=='undefined')AudioSynth.success();else if((type==='warn'||type==='bad')&&typeof AudioSynth!=='undefined')AudioSynth.error();}
 function completeSetup(){if(!val('studentName')||wordCount(val('launchNotice'))<3||wordCount(val('launchWonder'))<3){setFB('launchFeedback','warn','Type your name, one notice, and one wonder.');return;}addBadge('setup');completeTab(0);setFB('launchFeedback','good','Setup saved. Bootcamp unlocked.');}
 function completeDetectiveA(){if(state.answers.q3!=='correct'||state.answers.q4!=='correct'||wordCount(val('detectiveExplainA'))<CONFIG.minWords){setFB('detectiveFeedbackA','warn',`Answer both questions and write at least ${CONFIG.minWords} words.`);return;}addBadge('detectiveA');setFB('detectiveFeedbackA','good','Detective A saved.');saveState();}
 function completeDetectiveB(){if(state.answers.q5!=='correct'||wordCount(val('detectiveExplainB'))<CONFIG.minWords){setFB('detectiveFeedbackB','warn',`Answer the question and write at least ${CONFIG.minWords} words.`);return;}addBadge('detectiveB');completeTab(3);setFB('detectiveFeedbackB','good','Chart Detective saved. Build Lab unlocked.');}
 function completeBuildLab(){if(!state.histogramBuilt||!val('histQuestion1')||!val('histQuestion2')||wordCount(val('histQuestion3'))<CONFIG.minWords||wordCount(val('histQuestion4'))<CONFIG.minWords){setFB('analysisFeedback','warn',`Build your histogram and answer every analysis question. Written answers need at least ${CONFIG.minWords} words.`);return;}addBadge('analysis');completeTab(4);setFB('analysisFeedback','good','Build Lab saved. Challenge unlocked.');}
 function completeChallenge(){if(state.answers.q6!=='correct'||state.answers.q7!=='correct'||wordCount(val('challengeResponse'))<CONFIG.minWords){setFB('challengeFeedback','warn',`Answer both adaptive questions correctly and write at least ${CONFIG.minWords} words.`);return;}addBadge('challenge');completeTab(5);setFB('challengeFeedback','good','Challenge saved. Final Report unlocked.');}
-function finishReport(){const fields=['finalClaim','finalEvidence','finalReasoning','finalQuestion'];const ok=fields.every(id=>wordCount(val(id))>=CONFIG.minWords);if(!ok){setFB('finalFeedback','warn',`Complete all four report boxes. Each response needs at least ${CONFIG.minWords} words.`);return;}state.finished=true;addBadge('final');completeTab(6);document.getElementById('completeCard').classList.add('show');setFB('finalFeedback','good','Mission complete. Your report is ready.');saveState();}
+function finishReport(){const fields=['finalClaim','finalEvidence','finalReasoning','finalQuestion'];const ok=fields.every(id=>wordCount(val(id))>=CONFIG.minWords);if(!ok){setFB('finalFeedback','warn',`Complete all four report boxes. Each response needs at least ${CONFIG.minWords} words.`);return;}state.finished=true;addBadge('final');completeTab(6);document.getElementById('completeCard').classList.add('show');setFB('finalFeedback','good','Mission complete. Your report is ready.');saveState();if(typeof AudioSynth!=='undefined')AudioSynth.tada();if(typeof fireConfetti==='function')fireConfetti();}
 function openGuide(){document.getElementById('modalBackdrop').classList.add('show')}function hideModal(){document.getElementById('modalBackdrop').classList.remove('show')}function closeGuide(e){if(e.target.id==='modalBackdrop')hideModal()}
 function openMiniHelp(term){const info=CONFIG.helpTerms[term]||CONFIG.helpTerms.histogram;document.getElementById('languageHelpTitle').textContent=info.title;document.getElementById('languageHelpSubtitle').textContent=CONFIG.variant==='esol'?'Quick meaning + example + Spanish support.':'Quick definition and example.';document.getElementById('languageHelpContent').innerHTML=helpCard(info);document.getElementById('languageHelpBackdrop').classList.add('show');}
 function helpCard(info){const extra=CONFIG.variant==='esol'?`<span class="term-spanish">Spanish support: ${escapeHtml(info.spanish||'')}</span>`:'';return `<div class="help-definition"><h3>${escapeHtml(info.title)}</h3><p>${escapeHtml(info.simple)}</p><div class="example">${escapeHtml(info.example)}</div>${extra}</div>`;}
