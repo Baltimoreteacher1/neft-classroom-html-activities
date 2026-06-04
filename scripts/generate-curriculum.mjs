@@ -422,7 +422,29 @@ function main() {
   const lessons = lessonConfigs();
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
   const html = buildHub(lessons);
-  writeFileSync(join(outDir, "index.html"), html);
+
+  // GUARD: curriculum/index.html is HAND-MAINTAINED (light theme, the activity
+  // dropdown, the collapsible Teacher Tools panel with the editable Google
+  // Forms links). This generator produces a stripped-down version that would
+  // wipe that hand-maintained work — which has repeatedly clobbered the live
+  // site. So refuse to overwrite a hand-maintained file unless `--force` is
+  // passed. To intentionally regenerate from scratch: `node scripts/generate-curriculum.mjs --force`.
+  const outPath = join(outDir, "index.html");
+  const force = process.argv.includes("--force");
+  if (!force && existsSync(outPath)) {
+    const cur = readFileSync(outPath, "utf8");
+    if (
+      /tt-link|Teacher Tools|actPlaceholder/.test(cur) &&
+      !/tt-link|Teacher Tools|actPlaceholder/.test(html)
+    ) {
+      console.warn(
+        "SKIPPED curriculum/index.html — it is the hand-maintained version (Teacher Tools / dropdown). " +
+          "Run with --force to overwrite it with the generated version.",
+      );
+      return;
+    }
+  }
+  writeFileSync(outPath, html);
 
   // Tally resource links for the run log.
   const units = new Set(lessons.map((l) => l.cfg.unit ?? Number(l.id.split("-")[0])));
