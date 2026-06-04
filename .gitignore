@@ -2,10 +2,12 @@ node_modules
 dist
 .DS_Store
 *.log
-# Keep shared Claude Code config (.claude/settings.json, hooks) tracked;
-# ignore only personal/local Claude files.
-.claude/settings.local.json
-.claude/*.local.json
+# Ignore Claude Code local files (session history, logs, caches) by default,
+# but keep the shared, version-controlled config tracked.
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
+!.claude/commands/
 
 # Local tool caches / build state (never commit)
 .wrangler/
