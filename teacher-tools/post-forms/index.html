@@ -259,6 +259,53 @@
       .help b {
         color: var(--teal);
       }
+      .help i {
+        color: var(--ink);
+        font-style: normal;
+        font-weight: 700;
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        margin: 0 0 14px;
+        background: #eef3f8;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 4px;
+        width: fit-content;
+      }
+      .tab {
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 8px 16px;
+        border-radius: 9px;
+        cursor: pointer;
+        min-height: 40px;
+      }
+      .tab.active {
+        background: var(--paper);
+        color: var(--navy);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+      }
+      .btn-canvas {
+        background: #fef0e8;
+        border-color: #f3cbb0;
+        color: #c2410c;
+      }
+      .btn-canvas:hover {
+        background: #fde2d2;
+      }
+      .btn-edit {
+        background: #f1edff;
+        border-color: #d9cefb;
+        color: #6d28d9;
+      }
+      .btn-edit:hover {
+        background: #e7dffb;
+      }
       #toast {
         position: fixed;
         left: 50%;
@@ -291,11 +338,38 @@
         Google Form. Open it, post it to a Google Classroom class in one click,
         or copy the link to paste into Canvas.
       </p>
-      <div class="help">
-        <b>Google Classroom:</b> "Share to Classroom" opens Google's posting
-        window — pick a class and post as an assignment or material. &nbsp;
-        <b>Canvas:</b> "Copy link," then paste it into a Canvas assignment,
-        module item (External URL), or page.
+      <div class="tabs" role="tablist" aria-label="Post or edit">
+        <button
+          class="tab active"
+          id="tab-post"
+          type="button"
+          role="tab"
+          aria-selected="true"
+        >
+          📤 Post to class
+        </button>
+        <button
+          class="tab"
+          id="tab-edit"
+          type="button"
+          role="tab"
+          aria-selected="false"
+        >
+          ✏️ Edit forms
+        </button>
+      </div>
+
+      <div class="help" id="help-post">
+        <b>Google Classroom:</b> click <b>Classroom</b> → pick a class → post as
+        an assignment or material. &nbsp; <b>Canvas:</b> click
+        <b>Add to Canvas</b> (copies the link), then in Canvas paste it into an
+        Assignment (Submission Type → <i>External Tool / Online URL</i>) or a
+        Module item (<i>External URL</i>).
+      </div>
+      <div class="help" id="help-edit" hidden>
+        <b>Edit mode:</b> opens each form's editor (you're the owner) — changes
+        save to the live form students see. <b>Edit</b> opens it;
+        <b>Copy edit link</b> copies the editor URL.
       </div>
 
       <div class="toolbar">
@@ -400,7 +474,9 @@
         var emptyEl = document.getElementById("empty");
         var countEl = document.getElementById("count");
         var qEl = document.getElementById("q");
-        var DATA = {};
+        var DATA = {}; // student viewform links (post mode)
+        var EDIT = {}; // owner /edit links (edit mode)
+        var mode = "post"; // "post" | "edit"
 
         function unitOf(id) {
           var m = String(id).match(/^(\d+)/);
@@ -427,11 +503,11 @@
             t.classList.remove("show");
           }, 2200);
         }
-        function copy(url) {
+        function copy(url, msg) {
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).then(
               function () {
-                toast("Link copied — paste into Canvas");
+                toast(msg || "Link copied");
               },
               function () {
                 prompt("Copy this link:", url);
@@ -485,7 +561,8 @@
             card.appendChild(head);
 
             TYPES.forEach(function (t) {
-              var url = DATA[id][t.key];
+              var src = mode === "edit" ? EDIT : DATA;
+              var url = (src[id] || {})[t.key];
               if (!url) return;
               var row = document.createElement("div");
               row.className = "form-row";
@@ -495,31 +572,46 @@
               var actions = document.createElement("div");
               actions.className = "actions";
 
-              var open = document.createElement("a");
-              open.className = "btn btn-open";
-              open.href = url;
-              open.target = "_blank";
-              open.rel = "noopener";
-              open.textContent = "Open";
+              function linkBtn(cls, href, text) {
+                var a = document.createElement("a");
+                a.className = "btn " + cls;
+                a.href = href;
+                a.target = "_blank";
+                a.rel = "noopener";
+                a.textContent = text;
+                return a;
+              }
+              function copyBtn(cls, text, value, msg) {
+                var b = document.createElement("button");
+                b.type = "button";
+                b.className = "btn " + cls;
+                b.textContent = text;
+                b.addEventListener("click", function () {
+                  copy(value, msg);
+                });
+                return b;
+              }
 
-              var share = document.createElement("a");
-              share.className = "btn btn-classroom";
-              share.href = classroomShare(url);
-              share.target = "_blank";
-              share.rel = "noopener";
-              share.textContent = "Share to Classroom";
+              if (mode === "edit") {
+                actions.appendChild(linkBtn("btn-edit", url, "✏️ Edit form"));
+                actions.appendChild(
+                  copyBtn("", "Copy edit link", url, "Edit link copied"),
+                );
+              } else {
+                actions.appendChild(linkBtn("btn-open", url, "Open"));
+                actions.appendChild(
+                  linkBtn("btn-classroom", classroomShare(url), "Classroom"),
+                );
+                actions.appendChild(
+                  copyBtn(
+                    "btn-canvas",
+                    "Add to Canvas",
+                    url,
+                    "Link copied — in Canvas, paste into an Assignment (External URL) or Module item.",
+                  ),
+                );
+              }
 
-              var cp = document.createElement("button");
-              cp.type = "button";
-              cp.className = "btn";
-              cp.textContent = "Copy link";
-              cp.addEventListener("click", function () {
-                copy(url);
-              });
-
-              actions.appendChild(open);
-              actions.appendChild(share);
-              actions.appendChild(cp);
               row.appendChild(type);
               row.appendChild(actions);
               card.appendChild(row);
@@ -534,13 +626,42 @@
           render(qEl.value);
         });
 
-        fetch("./forms-index.json")
-          .then(function (r) {
-            if (!r.ok) throw new Error("HTTP " + r.status);
+        // Tab switching (Post / Edit)
+        var tabPost = document.getElementById("tab-post");
+        var tabEdit = document.getElementById("tab-edit");
+        var helpPost = document.getElementById("help-post");
+        var helpEdit = document.getElementById("help-edit");
+        function setMode(m) {
+          mode = m;
+          var post = m === "post";
+          tabPost.classList.toggle("active", post);
+          tabEdit.classList.toggle("active", !post);
+          tabPost.setAttribute("aria-selected", post ? "true" : "false");
+          tabEdit.setAttribute("aria-selected", post ? "false" : "true");
+          helpPost.hidden = !post;
+          helpEdit.hidden = post;
+          render(qEl.value);
+        }
+        tabPost.addEventListener("click", function () {
+          setMode("post");
+        });
+        tabEdit.addEventListener("click", function () {
+          setMode("edit");
+        });
+
+        function loadJSON(path) {
+          return fetch(path).then(function (r) {
+            if (!r.ok) throw new Error(path + " HTTP " + r.status);
             return r.json();
-          })
-          .then(function (json) {
-            DATA = json;
+          });
+        }
+        Promise.all([
+          loadJSON("./forms-index.json"),
+          loadJSON("./forms-edit-index.json"),
+        ])
+          .then(function (res) {
+            DATA = res[0];
+            EDIT = res[1];
             render("");
           })
           .catch(function (e) {
