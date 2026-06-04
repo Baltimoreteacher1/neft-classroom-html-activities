@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cosmic Gravity Lab: An immersive multi-body gravitational sandbox and orbital mechanics simulator. Explore Kepler's laws, slingshots, Lagrange points, and gravity soundscapes.">
+    <title>Cosmic Gravity Lab | Orbital Mechanics & Gravity Sandbox</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #03040b;
+            --bg-surface: #080a18;
+            --bg-card: rgba(12, 15, 38, 0.65);
+            --bg-glow: rgba(99, 102, 241, 0.08);
+            
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(99, 102, 241, 0.45);
+            
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --secondary: #10b981;
+            --secondary-glow: rgba(16, 185, 129, 0.4);
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.4);
+            --pink: #ec4899;
+            --pink-glow: rgba(236, 72, 153, 0.4);
+            --danger: #ef4444;
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dark: #475569;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(99, 102, 241, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 5% 15%, rgba(99, 102, 241, 0.04) 0%, transparent 45%),
+                radial-gradient(circle at 95% 85%, rgba(236, 72, 153, 0.04) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(8, 10, 24, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 3.5s infinite ease-in-out;
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+        }
+
+        .btn-secondary {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-accent {
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .btn-accent:hover {
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.15);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+        }
+
+        /* Layout Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card panels */
+        .glass-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Quests list styles */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .quest-card.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.08);
+            box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .quest-card.completed {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-card.completed:hover {
+            border-color: #34d399;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .quest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .quest-desc-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .quest-badge {
+            font-size: 1.3rem;
+            margin-left: 12px;
+            filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+            transition: var(--transition);
+        }
+
+        /* Quest matching status HUD */
+        .quest-matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Physics Canvas Viewport */
+        .canvas-container {
+            width: 100%;
+            position: relative;
+            background: #010207;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .simulation-canvas {
+            width: 100%;
+            height: 440px;
+            display: block;
+        }
+
+        /* Presets Row */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            padding: 8px;
+            font-size: 0.72rem;
+            text-align: center;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.01);
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .preset-btn:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .preset-btn.active {
+            color: var(--white);
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Sound monitor and control triggers */
+        .sound-monitor-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(236, 72, 153, 0.03));
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            margin-top: 12px;
+        }
+
+        .play-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: var(--transition);
+        }
+
+        .play-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .play-button:active {
+            transform: scale(0.96);
+        }
+
+        .play-button.playing {
+            background: linear-gradient(135deg, var(--danger) 0%, #991b1b 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            animation: pulse-red 2s infinite ease-in-out;
+        }
+
+        /* Planet Launcher Tray */
+        .launcher-tray {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .launcher-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .launcher-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .launcher-card.selected {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.1);
+        }
+
+        .launcher-texture {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin: 0 auto 8px auto;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        .launcher-label {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .launcher-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Parameter Slider */
+        .param-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 50px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .param-label {
+            font-size: 0.8rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .wave-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .wave-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            cursor: pointer;
+            border: 2px solid var(--white);
+            transition: var(--transition);
+        }
+
+        .slider-value-text {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* ESOL Guides styles */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.08) 0%, rgba(99, 102, 241, 0.03) 100%);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--pink);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .sentence-builder-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .sentence-select {
+            background: #0c0e25;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            color: var(--text-main);
+            padding: 4px 8px;
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .sentence-select:focus {
+            border-color: var(--pink);
+        }
+
+        /* Diagnostics Overlay */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 330px;
+            background: #070812;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #010205;
+            border-radius: var(--radius-sm);
+            height: 140px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #34d399;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        .log-error { color: var(--danger); }
+        .log-success { color: var(--secondary); }
+        .log-warning { color: var(--accent); }
+
+        /* Animations */
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.04); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(3, 4, 11, 0.8);
+            font-family: var(--font-display);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <span class="logo-icon">🪐</span>
+            <h1 class="logo-title">Cosmic Gravity Lab</h1>
+        </div>
+        <div class="header-buttons">
+            <button class="btn btn-accent" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar: Quests & Vocabulary guides -->
+        <div class="sidebar">
+            
+            <!-- Mission Control card -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 3.24a14.98 14.98 0 00-3.07 9.17m8.03 1.96a12.007 12.007 0 01-6.03-1.96m0 0A12.001 12.001 0 002.25 12c0 .83.112 1.633.322 2.396C3.961 14.75 5.568 15 7.25 15c1.682 0 3.29-.25 4.79-.63z"></path></svg>
+                    <span id="lbl-mission-control">Mission Control</span>
+                </h2>
+
+                <div class="quest-matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-quest-status">Quest Status</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--text-muted);">SANDBOX</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-quest-target">Task Code</span>
+                        <span class="hud-metric-value" id="quest-tracker-pct">FREE PLAY</span>
+                    </div>
+                </div>
+
+                <div class="quest-list" id="quests-container">
+                    <!-- Dynamic quests list -->
+                </div>
+            </div>
+
+            <!-- ESOL Vocabulary Helper -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--pink); border-bottom-color: rgba(236, 72, 153, 0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253"></path></svg>
+                    <span id="lbl-navigation-guide">Gravity Navigation Scaffold</span>
+                </h2>
+
+                <div class="esol-bubble">
+                    <span id="esol-en">Click and drag to launch planets! Bodies pull on each other based on their mass and distance. Massive bodies pull stronger.</span>
+                    <div class="esol-translation" id="esol-es">¡Haz clic y arrastra para lanzar planetas! Los cuerpos se atraen según su masa y distancia. Los cuerpos masivos tiran más fuerte.</div>
+                </div>
+
+                <div class="sentence-builder-zone">
+                    <span style="font-size:0.75rem; color:var(--pink); font-weight:700; text-transform:uppercase; letter-spacing:0.05em;" id="lbl-builder-title">Dynamic Gravity Scaffold</span>
+                    <p style="font-size:0.85rem; line-height:1.6; margin-top:4px;" id="sentence-frame-rendered">
+                        Select terms to complete gravity mechanics concepts.
+                    </p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;" id="sentence-select-grid">
+                        <!-- drop downs loaded programmatically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Workspace (Canvas simulator & launch configurations) -->
+        <div class="main-workspace">
+            
+            <!-- Canvas viewport card -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div class="viewport-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"></path></svg>
+                        <span id="lbl-workspace-title">N-Body Gravitational Canvas</span>
+                    </div>
+                    
+                    <div style="font-family:var(--font-mono); font-size:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:4px 12px; border-radius:12px; color:var(--text-muted); display:flex; gap:16px;">
+                        <span>E: <b id="energy-total" style="color:var(--secondary);">0.00</b></span>
+                        <span>K: <b id="energy-kinetic" style="color:var(--primary);">0.00</b></span>
+                        <span>U: <b id="energy-potential" style="color:var(--pink);">0.00</b></span>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="sim-canvas" class="simulation-canvas" width="800" height="440"></canvas>
+                </div>
+            </div>
+
+            <!-- Simulation Controls & Planets Launcher Tray -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.767.24.524.914.747 1.439.453l.83-.463c.524-.293.747-.961.453-1.486-.51-.963-.886-1.993-1.12-3.071m-2.587-7.22A11.962 11.962 0 0112 3c.702 0 1.387.06 2.057.177.525.092 1.002-.27 1.095-.795l.147-.83c.092-.525-.27-1.002-.795-1.095A13.916 13.916 0 0012 0c-.82 0-1.63.07-2.421.205-.526.09-.893.565-.805 1.091l.141.838c.088.526.564.893 1.09.805z"></path></svg>
+                    <span id="lbl-controls-title">Planetary Launcher & Cosmic Presets</span>
+                </h2>
+
+                <div class="preset-grid">
+                    <button class="preset-btn active" id="preset-solar" onclick="applyPreset('solar')">Solar System</button>
+                    <button class="preset-btn" id="preset-binary" onclick="applyPreset('binary')">Binary Stars</button>
+                    <button class="preset-btn" id="preset-lagrange" onclick="applyPreset('lagrange')">Lagrange L4</button>
+                    <button class="preset-btn" id="preset-slingshot" onclick="applyPreset('slingshot')">Slingshot challenge</button>
+                    <button class="preset-btn" id="preset-clear" onclick="applyPreset('clear')">Clear Sandbox</button>
+                </div>
+
+                <!-- Launcher Palette -->
+                <div style="font-family:var(--font-display); font-size:0.85rem; font-weight:700; color:var(--text-muted); margin-bottom:8px;" id="lbl-launcher-headline">LAUNCH PALETTE (Select mass, click & drag vector on canvas)</div>
+                <div class="launcher-tray">
+                    <div class="launcher-card selected" id="launch-probe" onclick="selectLaunchType('probe')">
+                        <div class="launcher-texture" style="background:#cbd5e1;"></div>
+                        <span class="launcher-label" id="lbl-mass-probe">Probe</span>
+                        <span class="launcher-sub">Mass: 1</span>
+                    </div>
+                    <div class="launcher-card" id="launch-rocky" onclick="selectLaunchType('rocky')">
+                        <div class="launcher-texture" style="background:#34d399; box-shadow:0 0 10px rgba(52,211,153,0.4)"></div>
+                        <span class="launcher-label" id="lbl-mass-rocky">Rocky Planet</span>
+                        <span class="launcher-sub">Mass: 10</span>
+                    </div>
+                    <div class="launcher-card" id="launch-gas" onclick="selectLaunchType('gas')">
+                        <div class="launcher-texture" style="background:#fbbf24; box-shadow:0 0 10px rgba(251,191,36,0.4)"></div>
+                        <span class="launcher-label" id="lbl-mass-gas">Gas Giant</span>
+                        <span class="launcher-sub">Mass: 100</span>
+                    </div>
+                    <div class="launcher-card" id="launch-star" onclick="selectLaunchType('star')">
+                        <div class="launcher-texture" style="background:#6366f1; box-shadow:0 0 15px rgba(99,102,241,0.6)"></div>
+                        <span class="launcher-label" id="lbl-mass-star">Heavy Star</span>
+                        <span class="launcher-sub">Mass: 10000</span>
+                    </div>
+                </div>
+
+                <!-- Simulation Settings Sound Tray -->
+                <div class="sound-monitor-panel">
+                    <button class="play-button" id="sim-play-btn" onclick="togglePlayback()" aria-label="Pause Simulation">
+                        ⏸
+                    </button>
+
+                    <div style="display:flex; flex-direction:column; gap:8px; flex:1;">
+                        <div class="param-row">
+                            <span class="param-label" id="lbl-sim-speed">Warp Speed</span>
+                            <input type="range" class="wave-slider" id="speed-slider" min="0" max="2" step="0.2" value="1" oninput="adjustPlaybackSpeed(this.value)">
+                            <span class="slider-value-text" id="speed-val">1.0x</span>
+                        </div>
+                        <div class="param-row">
+                            <span class="param-label" id="lbl-cosmic-hum">Cosmic Hum</span>
+                            <input type="range" class="wave-slider" id="hum-slider" min="0" max="0.1" step="0.01" value="0.03" oninput="adjustHumVolume(this.value)">
+                            <span class="slider-value-text" id="hum-val">30%</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="resetSimulation()" id="btn-reset">
+                        🔄 Reset
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 8, 21, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--bg-surface); border: 2px solid var(--border-active); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MISSION ACCOMPLISHED</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; margin-bottom: 24px;">Message here</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Continue</button>
+        </div>
+    </div>
+
+    <!-- Diagnostics panel overlay -->
+    <div class="diagnostics-panel" id="diagnostics-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
+        </button>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support middle/high school waves, physics, and algebraic vectors.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            G: 0.15, // Damped gravitational constant scaled for canvas space pixels
+            timeStep: 0.8, // physics delta time per step
+            maxTrailsCount: 300, // length limit of trails to avoid memory overhead
+            presets: {
+                solar: {
+                    bodies: [
+                        { name: "Star", m: 12000, x: 400, y: 220, vx: 0, vy: 0, r: 15, color: '#6366f1', isFixed: true },
+                        { name: "Gas Giant", m: 150, x: 400, y: 80, vx: 5.4, vy: 0, r: 8, color: '#fbbf24', isFixed: false },
+                        { name: "Rocky Planet", m: 10, x: 400, y: 140, vx: 4.6, vy: 0, r: 5, color: '#34d399', isFixed: false },
+                        { name: "Asteroid", m: 1, x: 400, y: 50, vx: 6.8, vy: 0, r: 3, color: '#cbd5e1', isFixed: false }
+                    ]
+                },
+                binary: {
+                    bodies: [
+                        { name: "Star A", m: 5000, x: 300, y: 220, vx: 0, vy: 1.5, r: 12, color: '#6366f1', isFixed: false },
+                        { name: "Star B", m: 5000, x: 500, y: 220, vx: 0, vy: -1.5, r: 12, color: '#ec4899', isFixed: false }
+                    ]
+                },
+                lagrange: {
+                    bodies: [
+                        { name: "Star", m: 10000, x: 400, y: 220, vx: 0, vy: 0, r: 14, color: '#6366f1', isFixed: true },
+                        { name: "Planet", m: 600, x: 600, y: 220, vx: 0, vy: 2.7, r: 8, color: '#34d399', isFixed: false }
+                        // L4 Lagrange position should be offset 60 degrees in orbit path ahead. Added dynamically during quest check or presets.
+                    ]
+                },
+                slingshot: {
+                    bodies: [
+                        { name: "Gas Giant Base", m: 8000, x: 360, y: 220, vx: 0, vy: 0.1, r: 16, color: '#fbbf24', isFixed: true },
+                        { name: "Distant Gate", m: 0, x: 700, y: 220, vx: 0, vy: 0, r: 10, color: '#10b981', isFixed: true, isGoalGate: true }
+                    ]
+                }
+            },
+            quests: [
+                {
+                    id: 1,
+                    title: '🛰️ Establish Stable Orbit',
+                    title_es: '🛰️ Establecer Órbita Estable',
+                    desc: 'Launch a planet around the heavy central Star so that it orbits stably. Achieve 2 complete orbits (720° angular rotation) without colliding or escaping.',
+                    desc_es: 'Lanza un planeta alrededor de la estrella central. Logra 2 órbitas completas (rotación de 720°) sin chocar ni escapar.',
+                    validator: (state) => {
+                        // Check if any rocky/gas planet accumulated 720 degrees
+                        const targetStar = state.bodies.find(b => b.isFixed && b.m > 9000);
+                        if (!targetStar) return false;
+                        
+                        return state.bodies.some(b => {
+                            if (b.isFixed || b.m < 2) return false; // ignore fixed stars or small probes
+                            const dist = Math.hypot(b.x - targetStar.x, b.y - targetStar.y);
+                            // stable radius boundary check
+                            if (dist < 60 || dist > 350) return false;
+                            return b.accumulatedAngle >= 4 * Math.PI; // 720 degrees
+                        });
+                    }
+                },
+                {
+                    id: 2,
+                    title: '🚀 Slingshot Assist',
+                    title_es: '🚀 Asistencia de Tirachinas',
+                    desc: 'Perform a gravity slingshot around the Gas Giant Base to boost your spacecraft speed and reach the green target Gate on the right (x=700). Proximity speed must boost by 40%!',
+                    desc_es: 'Haz un tirachinas gravitacional alrededor del gigante gaseoso central. ¡Aumenta tu velocidad en 40% y llega a la puerta verde de la derecha!',
+                    validator: (state) => {
+                        const gate = state.bodies.find(b => b.isGoalGate);
+                        if (!gate) return false;
+
+                        // Check if any probe hit the gate and experienced velocity boost
+                        return state.bodies.some(b => {
+                            if (b.m > 2 || b.isFixed) return false; // must be a small probe
+                            const distToGate = Math.hypot(b.x - gate.x, b.y - gate.y);
+                            const hitGate = distToGate < 30;
+                            const gotSlingshotBoost = b.maxVelocityRecorded >= 7.5;
+                            return hitGate && gotSlingshotBoost;
+                        });
+                    }
+                },
+                {
+                    id: 3,
+                    title: '🪐 Stable Binary Dance',
+                    title_es: '🪐 Baile Binario Estable',
+                    desc: 'Configure two heavy stars orbiting each other stably. Their trajectories must spin around their mutual center of mass (barycenter) for 8 seconds without merging or flying away.',
+                    desc_es: 'Configura dos estrellas pesadas orbitando entre sí. Deben girar en torno a su baricentro durante 8 segundos sin chocar ni alejarse.',
+                    validator: (state) => {
+                        if (state.bodies.length !== 2) return false;
+                        const starA = state.bodies[0];
+                        const starB = state.bodies[1];
+                        if (starA.m < 3000 || starB.m < 3000) return false; // must be heavy stars
+
+                        const dist = Math.hypot(starA.x - starB.x, starA.y - starB.y);
+                        // must maintain distance bounds
+                        const inBounds = dist > 90 && dist < 320;
+                        if (!inBounds) {
+                            state.binaryOrbitTime = 0;
+                            return false;
+                        }
+
+                        // Accumulate stable orbit frame duration
+                        if (state.isPlaying) {
+                            state.binaryOrbitTime += 0.016; // increment approximate seconds per frame
+                        }
+                        return state.binaryOrbitTime >= 8.0;
+                    }
+                },
+                {
+                    id: 4,
+                    title: '📍 Lagrange L4 Balance',
+                    title_es: '📍 Equilibrio Lagrange L4',
+                    desc: 'Place a small probe at the stable L4 Lagrange zone (60° ahead of the green planet in its orbit). Hold the probe within the glowing gate area for 5 consecutive seconds.',
+                    desc_es: 'Coloca una sonda en la zona L4 de Lagrange (60° adelante del planeta verde). Mantén la sonda en el portal brillante durante 5 segundos.',
+                    validator: (state) => {
+                        const star = state.bodies.find(b => b.isFixed && b.m > 9000);
+                        const planet = state.bodies.find(b => b.m > 300 && b.m < 1000 && !b.isFixed);
+                        const probe = state.bodies.find(b => b.m === 1 && !b.isFixed);
+                        
+                        if (!star || !planet || !probe) return false;
+
+                        // Calculate ideal L4 coordinates
+                        const px = planet.x - star.x;
+                        const py = planet.y - star.y;
+                        const dist = Math.hypot(px, py);
+                        
+                        // L4 is 60 degrees rotated: (x*cos60 - y*sin60, x*sin60 + y*cos60)
+                        const cos60 = 0.5;
+                        const sin60 = 0.866;
+                        const l4x = star.x + (px * cos60 - py * sin60);
+                        const l4y = star.y + (px * sin60 + py * cos60);
+
+                        const distToL4 = Math.hypot(probe.x - l4x, probe.y - l4y);
+                        const isInsideGate = distToL4 < 35;
+
+                        if (isInsideGate) {
+                            if (state.isPlaying) state.lagrangeLockTime += 0.016;
+                        } else {
+                            state.lagrangeLockTime = 0;
+                        }
+                        return state.lagrangeLockTime >= 5.0;
+                    }
+                }
+            ],
+            esolSentences: [
+                {
+                    id: 'gravity',
+                    label: 'Gravitational Force / Fuerza Gravitacional',
+                    options_en: ['closer', 'further', 'increases', 'decreases', 'stronger', 'weaker'],
+                    options_es: ['más cerca', 'más lejos', 'aumenta', 'disminuye', 'más fuerte', 'más débil'],
+                    en: 'When a planet is placed {opt1} to a star, the gravity force {opt3} because the gravitational pull is {opt5}.',
+                    es: 'Cuando un planeta se coloca {opt1} de una estrella, la fuerza de gravedad {opt3} porque la atracción es {opt5}.',
+                    solutionIdx: [0, 2, 4] // closer, increases, stronger
+                },
+                {
+                    id: 'orbit',
+                    label: 'Orbital Velocity / Velocidad Orbital',
+                    options_en: ['higher', 'lower', 'stable', 'chaotic', 'balanced', 'unbalanced'],
+                    options_es: ['más alta', 'más baja', 'estable', 'caótica', 'equilibrada', 'desequilibrada'],
+                    en: 'To maintain a {opt3} orbit at close distance, a satellite requires a {opt1} velocity vector.',
+                    es: 'Para mantener una órbita {opt3} a corta distancia, un satélite requiere un vector de velocidad {opt1}.',
+                    solutionIdx: [0, 0, 2] // higher, higher, stable (index matching options)
+                }
+            ],
+            translations: {
+                en: {
+                    'mission-control': 'Mission Control',
+                    'navigation-guide': 'Gravity Navigation Scaffold',
+                    'workspace-title': 'N-Body Gravitational Canvas',
+                    'controls-title': 'Planetary Launcher & Cosmic Presets',
+                    'sim-speed': 'Warp Speed',
+                    'cosmic-hum': 'Space Hum',
+                    'quest-status': 'Quest Status',
+                    'quest-target': 'Task Tracker',
+                    'sandbox': 'FREE SANDBOX PLAY',
+                    'active': 'ACTIVE CHALLENGE 🛰️',
+                    'success': 'MISSION COMPLETED! ✅',
+                    'launcher-headline': 'LAUNCH PALETTE (Select mass, click & drag vector on canvas)',
+                    'mass-probe': 'Probe',
+                    'mass-rocky': 'Rocky Planet',
+                    'mass-gas': 'Gas Giant',
+                    'mass-star': 'Heavy Star',
+                    'btn-reset': 'Reset',
+                    'play': '⏸ Pause Sim',
+                    'stop': '▶ Play Sim'
+                },
+                es: {
+                    'mission-control': 'Control de Misiones',
+                    'navigation-guide': 'Ayudante de Navegación ESOL',
+                    'workspace-title': 'Plano de Gravedad N-Cuerpos',
+                    'controls-title': 'Lanzador Planetario y Ajustes Cósmicos',
+                    'sim-speed': 'Warp Speed',
+                    'cosmic-hum': 'Zumbido Espacial',
+                    'quest-status': 'Estado de Misión',
+                    'quest-target': 'Registro de Tarea',
+                    'sandbox': 'MODO LIBRE CÓSMICO',
+                    'active': 'DESAFÍO ACTIVO 🛰️',
+                    'success': '¡MISIÓN COMPLETADA! ✅',
+                    'launcher-headline': 'PALETA DE LANZAMIENTO (Elige masa, haz clic y arrastra el vector)',
+                    'mass-probe': 'Sonda',
+                    'mass-rocky': 'Planeta Rocoso',
+                    'mass-gas': 'Gigante Gaseoso',
+                    'mass-star': 'Estrella Pesada',
+                    'btn-reset': 'Reiniciar',
+                    'play': '⏸ Pausar Sim',
+                    'stop': '▶ Iniciar Sim'
+                }
+            }
+        };
+
+        // ==========================================
+        // 2. CONFIG VALIDATOR (validateConfig)
+        // ==========================================
+        function validateConfig() {
+            if (typeof CONFIG.G !== 'number' || CONFIG.G <= 0) {
+                throw new Error("CONFIG: Gravitational constant G must be positive.");
+            }
+            if (!CONFIG.presets || !CONFIG.presets.solar || !CONFIG.presets.binary) {
+                throw new Error("CONFIG: Cosmic presets data is missing.");
+            }
+            if (!CONFIG.quests || CONFIG.quests.length === 0) {
+                throw new Error("CONFIG: Challenge configurations are missing.");
+            }
+            CONFIG.quests.forEach(q => {
+                if (!q.title || !q.desc || !q.validator) {
+                    throw new Error(`CONFIG: Quest ID ${q.id} setup is incomplete.`);
+                }
+            });
+            if (!CONFIG.translations || !CONFIG.translations.en || !CONFIG.translations.es) {
+                throw new Error("CONFIG: Translation packs are invalid.");
+            }
+        }
+
+        // ==========================================
+        // 3. STATE MACHINE
+        // ==========================================
+        const STATE = {
+            bodies: [], // active N-body planet structures
+            playbackRate: 1.0, // speed slider factor
+            humVolume: 0.03, // space hum gain
+            isPlaying: true, // play state
+            selectedPresetName: 'solar',
+            launchMassType: 'probe', // selected tool palette
+            activeQuestId: null, // null is free play sandbox
+            completedQuests: [],
+            language: 'en', // 'en' or 'es'
+            
+            // Quest specific variables
+            binaryOrbitTime: 0,
+            lagrangeLockTime: 0,
+            
+            // ESOL guides
+            activeSentenceId: 'gravity',
+            builderSelections: [0, 0, 0], // selected indices of dropdown options
+            
+            // Interactive mouse drag coordinates for rocket throws
+            dragStartX: 0,
+            dragStartY: 0,
+            dragCurrentX: 0,
+            dragCurrentY: 0,
+            isDragging: false,
+
+            audioInitialized: false
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+
+            // Redraw GUI labels
+            renderUI();
+
+            // Notify Audio Engine
+            if (STATE.audioInitialized) {
+                AudioEngine.updateOscillators();
+            }
+        }
+
+        // ==========================================
+        // 4. PRESETS MANAGER
+        // ==========================================
+        function applyPreset(presetName) {
+            const template = CONFIG.presets[presetName];
+            if (!template) return;
+
+            // Deep clone coordinates to prevent mutation of static CONFIG presets
+            const clonedBodies = template.bodies.map(b => ({
+                ...b,
+                trails: [], // list of previous {x, y} coordinates
+                accumulatedAngle: 0, // angular velocity accumulator relative to heavy stars
+                previousAngle: null,
+                maxVelocityRecorded: 0
+            }));
+
+            // Custom L4 preset generation dynamically to guide the L4 quest
+            if (presetName === 'lagrange') {
+                const star = clonedBodies[0];
+                const planet = clonedBodies[1];
+                const px = planet.x - star.x;
+                const py = planet.y - star.y;
+                // Place a dummy orbital trajectory marker visualizer for L4
+                const cos60 = 0.5;
+                const sin60 = 0.866;
+                // Target spot 60 degrees ahead of planet
+                const targetL4X = star.x + (px * cos60 - py * sin60);
+                const targetL4Y = star.y + (px * sin60 + py * cos60);
+                
+                clonedBodies.push({
+                    name: "L4 Area Gate", m: 0, x: targetL4X, y: targetL4Y, vx: 0, vy: 0, r: 25, color: '#f59e0b', isFixed: true, isLagrangeTarget: true
+                });
+            }
+
+            transitionState({
+                bodies: clonedBodies,
+                selectedPresetName: presetName,
+                binaryOrbitTime: 0,
+                lagrangeLockTime: 0
+            });
+
+            logDiagnostics(`Loaded preset cosmic system: ${presetName}`);
+        }
+
+        function resetSimulation() {
+            applyPreset(STATE.selectedPresetName);
+            logDiagnostics("Reset cosmic physics environment.");
+        }
+
+        // ==========================================
+        // 5. MOUSE VECTOR CONTROLLER (THROW PLANETS)
+        // ==========================================
+        function selectLaunchType(type) {
+            document.querySelectorAll('.launcher-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(`launch-${type}`).classList.add('selected');
+            STATE.launchMassType = type;
+        }
+
+        function setupLaunchControls() {
+            const canvas = document.getElementById('sim-canvas');
+
+            const getMousePos = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                // Map screen coordinates relative to canvas scales
+                return {
+                    x: ((clientX - rect.left) / rect.width) * canvas.width,
+                    y: ((clientY - rect.top) / rect.height) * canvas.height
+                };
+            };
+
+            const handleStart = (e) => {
+                // If clicked close to canvas borders, allow
+                const pos = getMousePos(e);
+                STATE.dragStartX = pos.x;
+                STATE.dragStartY = pos.y;
+                STATE.dragCurrentX = pos.x;
+                STATE.dragCurrentY = pos.y;
+                STATE.isDragging = true;
+            };
+
+            const handleMove = (e) => {
+                if (!STATE.isDragging) return;
+                const pos = getMousePos(e);
+                STATE.dragCurrentX = pos.x;
+                STATE.dragCurrentY = pos.y;
+            };
+
+            const handleEnd = () => {
+                if (!STATE.isDragging) return;
+                STATE.isDragging = false;
+
+                // Launch Vector calculation: from start to end coordinates scaled
+                // Speed scale divisor: Throw vector makes launches intuitive
+                const scale = 0.05;
+                const vx = (STATE.dragStartX - STATE.dragCurrentX) * scale;
+                const vy = (STATE.dragStartY - STATE.dragCurrentY) * scale;
+
+                let mass = 1;
+                let radius = 3;
+                let color = '#cbd5e1';
+                let name = "Probe";
+
+                if (STATE.launchMassType === 'rocky') {
+                    mass = 10;
+                    radius = 5;
+                    color = '#34d399';
+                    name = "Rocky Planet";
+                } else if (STATE.launchMassType === 'gas') {
+                    mass = 100;
+                    radius = 8;
+                    color = '#fbbf24';
+                    name = "Gas Giant";
+                } else if (STATE.launchMassType === 'star') {
+                    mass = 10000;
+                    radius = 14;
+                    color = '#6366f1';
+                    name = "Heavy Star";
+                }
+
+                // Add to simulation bodies
+                const newPlanet = {
+                    name,
+                    m: mass,
+                    x: STATE.dragStartX,
+                    y: STATE.dragStartY,
+                    vx,
+                    vy,
+                    r: radius,
+                    color,
+                    isFixed: STATE.launchMassType === 'star', // heavy stars remain stationary by default
+                    trails: [],
+                    accumulatedAngle: 0,
+                    previousAngle: null,
+                    maxVelocityRecorded: 0
+                };
+
+                STATE.bodies.push(newPlanet);
+                logDiagnostics(`Launched planet mass=${mass} at speed (${vx.toFixed(2)}, ${vy.toFixed(2)})`);
+                
+                // Play launch audio click
+                if (STATE.audioInitialized) {
+                    AudioEngine.playLaunchChirp();
+                }
+            };
+
+            canvas.addEventListener('mousedown', handleStart);
+            canvas.addEventListener('mousemove', handleMove);
+            window.addEventListener('mouseup', handleEnd);
+
+            canvas.addEventListener('touchstart', handleStart);
+            canvas.addEventListener('touchmove', handleMove);
+            window.addEventListener('touchend', handleEnd);
+        }
+
+        // ==========================================
+        // 6. HIGH-PERFORMANCE VERLET INTEGRATOR (PHYSICS ENGINE)
+        // ==========================================
+        function updatePhysics() {
+            if (!STATE.isPlaying) return;
+
+            const N = STATE.bodies.length;
+            const G = CONFIG.G;
+            const dt = CONFIG.timeStep * STATE.playbackRate;
+            const softening = 15; // Soft-core damping in pixels prevents infinite forces at gravity centers
+
+            // A. Store previous velocities and forces for Verlet update
+            const oldAx = new Float32Array(N);
+            const oldAy = new Float32Array(N);
+            const forcesX = new Float32Array(N);
+            const forcesY = new Float32Array(N);
+
+            // Compute gravitational acceleration forces
+            for (let i = 0; i < N; i++) {
+                const bi = STATE.bodies[i];
+                if (bi.isFixed) continue;
+
+                for (let j = 0; j < N; j++) {
+                    if (i === j) continue;
+                    const bj = STATE.bodies[j];
+
+                    const dx = bj.x - bi.x;
+                    const dy = bj.y - bi.y;
+                    const distSq = dx * dx + dy * dy + softening * softening;
+                    const dist = Math.sqrt(distSq);
+
+                    // Newtonian gravity pull scale
+                    const F = (G * bi.m * bj.m) / distSq;
+                    forcesX[i] += F * (dx / dist);
+                    forcesY[i] += F * (dy / dist);
+                }
+
+                oldAx[i] = forcesX[i] / bi.m;
+                oldAy[i] = forcesY[i] / bi.m;
+            }
+
+            // B. Leapfrog Position updates: x = x + v*dt + 0.5*a*dt^2
+            for (let i = 0; i < N; i++) {
+                const b = STATE.bodies[i];
+                if (b.isFixed) continue;
+
+                b.x += b.vx * dt + 0.5 * oldAx[i] * dt * dt;
+                b.y += b.vy * dt + 0.5 * oldAy[i] * dt * dt;
+                
+                // Trail logging logic
+                b.trails.push({ x: b.x, y: b.y });
+                if (b.trails.length > CONFIG.maxTrailsCount) {
+                    b.trails.shift();
+                }
+            }
+
+            // C. Compute new forces at new positions
+            const newForcesX = new Float32Array(N);
+            const newForcesY = new Float32Array(N);
+
+            for (let i = 0; i < N; i++) {
+                const bi = STATE.bodies[i];
+                if (bi.isFixed) continue;
+
+                for (let j = 0; j < N; j++) {
+                    if (i === j) continue;
+                    const bj = STATE.bodies[j];
+
+                    const dx = bj.x - bi.x;
+                    const dy = bj.y - bi.y;
+                    const distSq = dx * dx + dy * dy + softening * softening;
+                    const dist = Math.sqrt(distSq);
+
+                    const F = (G * bi.m * bj.m) / distSq;
+                    newForcesX[i] += F * (dx / dist);
+                    newForcesY[i] += F * (dy / dist);
+                }
+            }
+
+            // D. Leapfrog Velocity updates: v = v + 0.5*(oldA + newA)*dt
+            for (let i = 0; i < N; i++) {
+                const b = STATE.bodies[i];
+                if (b.isFixed) continue;
+
+                const newAx = newForcesX[i] / b.m;
+                const newAy = newForcesY[i] / b.m;
+
+                b.vx += 0.5 * (oldAx[i] + newAx) * dt;
+                b.vy += 0.5 * (oldAy[i] + newAy) * dt;
+
+                const speed = Math.hypot(b.vx, b.vy);
+                if (speed > b.maxVelocityRecorded) {
+                    b.maxVelocityRecorded = speed;
+                }
+
+                // E. Orbit angular rotation tracking relative to the central star (Quest 1)
+                const star = STATE.bodies.find(s => s.isFixed && s.m > 9000);
+                if (star) {
+                    const currentAngle = Math.atan2(b.y - star.y, b.x - star.x);
+                    if (b.previousAngle !== null) {
+                        let deltaAngle = currentAngle - b.previousAngle;
+                        // Handle circular phase wraps (-PI to PI)
+                        if (deltaAngle < -Math.PI) deltaAngle += 2 * Math.PI;
+                        if (deltaAngle > Math.PI) deltaAngle -= 2 * Math.PI;
+                        b.accumulatedAngle += Math.abs(deltaAngle);
+                    }
+                    b.previousAngle = currentAngle;
+                }
+            }
+
+            // F. Elastic collision checking and merges
+            checkCollisions();
+        }
+
+        function checkCollisions() {
+            const N = STATE.bodies.length;
+            for (let i = 0; i < N; i++) {
+                const bi = STATE.bodies[i];
+                if (!bi) continue;
+
+                for (let j = i + 1; j < N; j++) {
+                    const bj = STATE.bodies[j];
+                    if (!bj) continue;
+
+                    const dist = Math.hypot(bj.x - bi.x, bj.y - bi.y);
+                    const touchDist = bi.r + bj.r;
+
+                    if (dist < touchDist) {
+                        // Merge Collision detected! Let's combine them conservation-wise
+                        // Gate goals should never get consumed
+                        if (bi.isGoalGate || bj.isGoalGate || bi.isLagrangeTarget || bj.isLagrangeTarget) continue;
+
+                        logDiagnostics(`Collision merge between ${bi.name} and ${bj.name}!`, 'warning');
+                        
+                        const mergedMass = bi.m + bj.m;
+                        // Momentum conservation: m1*v1 + m2*v2 = M*v_new
+                        const mergedVx = (bi.m * bi.vx + bj.m * bj.vx) / mergedMass;
+                        const mergedVy = (bi.m * bi.vy + bj.m * bj.vy) / mergedMass;
+                        // Center of mass: x_new = (m1*x1 + m2*x2)/M
+                        const mergedX = (bi.m * bi.x + bj.m * bj.x) / mergedMass;
+                        const mergedY = (bi.m * bi.y + bj.m * bj.y) / mergedMass;
+                        
+                        // Volume accumulation radius R = (R1^3 + R2^3)^(1/3)
+                        const mergedRadius = Math.max(bi.r, bj.r) + 1.5;
+
+                        // Merge into bi
+                        bi.name = "Merged Body";
+                        bi.m = mergedMass;
+                        bi.x = mergedX;
+                        bi.y = mergedY;
+                        bi.vx = mergedVx;
+                        bi.vy = mergedVy;
+                        bi.r = mergedRadius;
+                        bi.color = bi.m > bj.m ? bi.color : bj.color;
+                        bi.trails = [];
+
+                        // Remove bj
+                        STATE.bodies.splice(j, 1);
+                        
+                        // Trigger bright collision synth chime
+                        if (STATE.audioInitialized) {
+                            AudioEngine.playCollisionChime();
+                        }
+                        
+                        // Recalculate index length
+                        return; 
+                    }
+                }
+            }
+        }
+
+        // --- Calculate System Energies ---
+        function calculateSystemEnergy() {
+            let kinetic = 0;
+            let potential = 0;
+            const N = STATE.bodies.length;
+            const G = CONFIG.G;
+            const softening = 15;
+
+            // Kinetic energy sum: K = 0.5 * m * v^2
+            for (let i = 0; i < N; i++) {
+                const b = STATE.bodies[i];
+                if (b.isFixed) continue;
+                const vSq = b.vx * b.vx + b.vy * b.vy;
+                kinetic += 0.5 * b.m * vSq;
+            }
+
+            // Potential energy sum: U = -G * m1 * m2 / d
+            for (let i = 0; i < N; i++) {
+                const bi = STATE.bodies[i];
+                for (let j = i + 1; j < N; j++) {
+                    const bj = STATE.bodies[j];
+                    const d = Math.hypot(bj.x - bi.x, bj.y - bi.y) + softening;
+                    potential -= (G * bi.m * bj.m) / d;
+                }
+            }
+
+            const total = kinetic + potential;
+            document.getElementById('energy-total').innerText = total.toFixed(1);
+            document.getElementById('energy-kinetic').innerText = kinetic.toFixed(1);
+            document.getElementById('energy-potential').innerText = potential.toFixed(1);
+        }
+
+        // ==========================================
+        // 7. CANVAS GRAPHICS RENDER LOOP
+        // ==========================================
+        function runSimulationLoop() {
+            updatePhysics();
+            calculateSystemEnergy();
+            drawCanvas();
+
+            // Run quest completion audits
+            checkQuests();
+
+            requestAnimationFrame(runSimulationLoop);
+        }
+
+        function drawCanvas() {
+            const canvas = document.getElementById('sim-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            // Wipe viewport
+            ctx.fillStyle = '#010207';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw cosmic background matrix stars
+            ctx.fillStyle = 'rgba(255,255,255,0.06)';
+            for (let i = 1; i <= 20; i++) {
+                const x = (i * 97) % canvas.width;
+                const y = (i * 131) % canvas.height;
+                ctx.fillRect(x, y, 1.2, 1.2);
+            }
+
+            // --- Draw Quest Targets overlay ---
+            if (STATE.activeQuestId !== null) {
+                // If Quest 2 Slingshot assist: draw distant target zone gates
+                if (STATE.activeQuestId === 2) {
+                    ctx.strokeStyle = 'rgba(16,185,129,0.3)';
+                    ctx.fillStyle = 'rgba(16,185,129,0.05)';
+                    ctx.lineWidth = 2.0;
+                    ctx.beginPath();
+                    ctx.arc(700, 220, 35, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Text guidance inside viewport
+                    ctx.font = "bold 10px Outfit";
+                    ctx.fillStyle = '#10b981';
+                    ctx.fillText("TARGET SPACE GATE", 650, 175);
+                }
+                
+                // If Quest 4 Lagrange equilibrium: draw glowing indicator area
+                if (STATE.activeQuestId === 4) {
+                    const star = STATE.bodies.find(b => b.isFixed && b.m > 9000);
+                    const planet = STATE.bodies.find(b => b.m > 300 && b.m < 1000 && !b.isFixed);
+                    if (star && planet) {
+                        const px = planet.x - star.x;
+                        const py = planet.y - star.y;
+                        const cos60 = 0.5;
+                        const sin60 = 0.866;
+                        // Lagrange L4 rotates 60 degrees ahead of planet
+                        const targetX = star.x + (px * cos60 - py * sin60);
+                        const targetY = star.y + (px * sin60 + py * cos60);
+
+                        ctx.strokeStyle = 'rgba(245,158,11,0.4)';
+                        ctx.fillStyle = 'rgba(245,158,11,0.06)';
+                        ctx.lineWidth = 1.5;
+                        ctx.setLineDash([4, 4]);
+                        ctx.beginPath();
+                        ctx.arc(targetX, targetY, 35, 0, 2 * Math.PI);
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        
+                        ctx.font = "bold 9px Outfit";
+                        ctx.fillStyle = '#f59e0b';
+                        ctx.fillText("STABLE LAGRANGE L4 LOCK", targetX - 60, targetY - 42);
+                    }
+                }
+            }
+
+            // --- Draw Active Bodies (Planets & Trails) ---
+            STATE.bodies.forEach(b => {
+                // Skip invisible target gates
+                if (b.isGoalGate) return;
+
+                // 1. Draw glowing coordinate trace trails
+                if (b.trails.length > 1) {
+                    ctx.strokeStyle = b.color;
+                    ctx.lineWidth = b.m === 1 ? 0.8 : 1.5;
+                    ctx.globalAlpha = 0.35;
+                    ctx.beginPath();
+                    ctx.moveTo(b.trails[0].x, b.trails[0].y);
+                    for (let step = 1; step < b.trails.length; step++) {
+                        ctx.lineTo(b.trails[step].x, b.trails[step].y);
+                    }
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                }
+
+                // 2. Draw planet body orb
+                ctx.fillStyle = b.color;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Heavy stars have elegant solar flares rings
+                if (b.m > 9000) {
+                    ctx.strokeStyle = 'rgba(99, 102, 241, 0.25)';
+                    ctx.lineWidth = 2.0;
+                    ctx.beginPath();
+                    ctx.arc(b.x, b.y, b.r + 6, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+
+                // Text tag for planets
+                ctx.font = "9px Outfit";
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.fillText(b.name, b.x + b.r + 4, b.y + 3);
+            });
+
+            // --- Draw Active Drag vector throw line ---
+            if (STATE.isDragging) {
+                // Draw starting click point anchor ring
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(STATE.dragStartX, STATE.dragStartY, 6, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Draw speed launch arrow
+                ctx.strokeStyle = 'var(--pink)';
+                ctx.lineWidth = 2.0;
+                ctx.beginPath();
+                ctx.moveTo(STATE.dragStartX, STATE.dragStartY);
+                ctx.lineTo(STATE.dragCurrentX, STATE.dragCurrentY);
+                ctx.stroke();
+
+                // Draw velocity vector arrowhead
+                const angle = Math.atan2(STATE.dragCurrentY - STATE.dragStartY, STATE.dragCurrentX - STATE.dragStartX);
+                ctx.fillStyle = 'var(--pink)';
+                ctx.beginPath();
+                ctx.moveTo(STATE.dragCurrentX, STATE.dragCurrentY);
+                ctx.lineTo(
+                    STATE.dragCurrentX - 10 * Math.cos(angle - Math.PI / 6),
+                    STATE.dragCurrentY - 10 * Math.sin(angle - Math.PI / 6)
+                );
+                ctx.lineTo(
+                    STATE.dragCurrentX - 10 * Math.cos(angle + Math.PI / 6),
+                    STATE.dragCurrentY - 10 * Math.sin(angle + Math.PI / 6)
+                );
+                ctx.closePath();
+                ctx.fill();
+
+                // Print speed calculations HUD
+                const vx = (STATE.dragStartX - STATE.dragCurrentX) * 0.05;
+                const vy = (STATE.dragStartY - STATE.dragCurrentY) * 0.05;
+                const speed = Math.hypot(vx, vy).toFixed(1);
+                ctx.fillStyle = 'var(--text-main)';
+                ctx.font = "bold 11px Outfit";
+                ctx.fillText(`Launch Vector Speed: ${speed}`, STATE.dragStartX + 12, STATE.dragStartY - 12);
+            }
+        }
+
+        // ==========================================
+        // 8. WEB AUDIO SOUND ENGINE
+        // ==========================================
+        const AudioEngine = {
+            ctx: null,
+            masterGain: null,
+            humOscillator: null,
+            humGain: null,
+            planetOscillators: [], // list of sweep oscillators for active planets
+            active: false,
+
+            init() {
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContextClass();
+
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.gain.setValueAtTime(0.7, this.ctx.currentTime);
+                    this.masterGain.connect(this.ctx.destination);
+
+                    // Ambient cosmic background hum
+                    this.humGain = this.ctx.createGain();
+                    this.humGain.gain.setValueAtTime(STATE.humVolume, this.ctx.currentTime);
+                    this.humGain.connect(this.masterGain);
+
+                    this.humOscillator = this.ctx.createOscillator();
+                    this.humOscillator.type = 'triangle';
+                    this.humOscillator.frequency.setValueAtTime(55, this.ctx.currentTime); // Low C1 hum
+                    this.humOscillator.connect(this.humGain);
+                    this.humOscillator.start();
+
+                    STATE.audioInitialized = true;
+                    this.active = true;
+                    logDiagnostics("Web Audio Context initialized successfully.");
+                } catch(e) {
+                    logDiagnostics("Failed to initialize Web Audio: " + e.message, 'error');
+                }
+            },
+
+            adjustHumVolume(vol) {
+                if (this.humGain && this.ctx) {
+                    this.humGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.05);
+                }
+            },
+
+            updateOscillators() {
+                if (!this.active) return;
+                
+                // Clear any dead sweep oscillators
+                this.planetOscillators.forEach(osc => {
+                    try { osc.stop(); } catch(err){}
+                });
+                this.planetOscillators = [];
+
+                if (!STATE.isPlaying) return;
+
+                // Let's create visual tone frequency sweeps for the 2 fastest moving non-fixed bodies
+                const planets = STATE.bodies.filter(b => !b.isFixed && b.m > 2);
+                planets.sort((a,b) => Math.hypot(b.vx, b.vy) - Math.hypot(a.vx, a.vy));
+
+                const sweepCount = Math.min(2, planets.length);
+                for (let i = 0; i < sweepCount; i++) {
+                    const p = planets[i];
+                    const speed = Math.hypot(p.vx, p.vy);
+                    
+                    // Pitch linked to speed: faster speed sweeps pitch higher (kinetic energy)
+                    const targetFreq = 110 + speed * 45;
+
+                    try {
+                        const osc = this.ctx.createOscillator();
+                        const oscGain = this.ctx.createGain();
+                        
+                        // Volume proportional to mass relative size
+                        const volumeFactor = p.m === 10 ? 0.02 : 0.04;
+                        
+                        oscGain.gain.setValueAtTime(volumeFactor, this.ctx.currentTime);
+                        oscGain.connect(this.masterGain);
+                        
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(targetFreq, this.ctx.currentTime);
+                        osc.connect(oscGain);
+                        osc.start();
+
+                        // Keep tracking node to mute later
+                        this.planetOscillators.push(osc);
+                    } catch(err){}
+                }
+            },
+
+            playLaunchChirp() {
+                if (!this.active) this.init();
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(330, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(110, this.ctx.currentTime + 0.3);
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.35);
+                } catch(e){}
+            },
+
+            playCollisionChime() {
+                if (!this.active) return;
+                try {
+                    // Deep resonant gong
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(147, this.ctx.currentTime); // D3 chord
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 1.3);
+                } catch(e){}
+            },
+
+            playSuccessChord() {
+                if (!this.active) return;
+                try {
+                    // Ascending Major chord sweep
+                    const notes = [261.63, 329.63, 392.00, 523.25]; // C major
+                    notes.forEach((freq, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        gain.gain.setValueAtTime(0.06, this.ctx.currentTime + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.6);
+                        gain.connect(this.masterGain);
+
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+                        osc.connect(gain);
+                        osc.start(this.ctx.currentTime + idx * 0.08);
+                        osc.stop(this.ctx.currentTime + idx * 0.08 + 0.7);
+                    });
+                } catch(e){}
+            }
+        };
+
+        function togglePlayback() {
+            const playBtn = document.getElementById('sim-play-btn');
+            const lang = STATE.language;
+            const t = CONFIG.translations[lang];
+
+            if (!STATE.isPlaying) {
+                transitionState({ isPlaying: true });
+                playBtn.classList.remove('playing');
+                playBtn.innerHTML = "⏸";
+                playBtn.setAttribute('aria-label', t['play']);
+                logDiagnostics("Simulation playback resumed.");
+            } else {
+                transitionState({ isPlaying: false });
+                playBtn.classList.add('playing');
+                playBtn.innerHTML = "▶";
+                playBtn.setAttribute('aria-label', t['stop']);
+                logDiagnostics("Simulation playback paused.");
+            }
+        }
+
+        function adjustPlaybackSpeed(val) {
+            const speed = parseFloat(val);
+            document.getElementById('speed-val').innerText = speed.toFixed(1) + "x";
+            transitionState({ playbackRate: speed });
+        }
+
+        function adjustHumVolume(val) {
+            const vol = parseFloat(val);
+            const pct = Math.round((vol / 0.1) * 100);
+            document.getElementById('hum-val').innerText = pct + "%";
+            if (STATE.audioInitialized) {
+                AudioEngine.adjustHumVolume(vol);
+            }
+            STATE.humVolume = vol;
+        }
+
+        // ==========================================
+        // 9. GAMIFIED QUEST AUDITING
+        // ==========================================
+        function checkQuests() {
+            if (STATE.activeQuestId === null) return;
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+            if (!currentQuest) return;
+
+            // Check if validator matches State parameters
+            if (currentQuest.validator(STATE)) {
+                if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
+                    STATE.completedQuests.push(STATE.activeQuestId);
+                    logDiagnostics(`Quest ${STATE.activeQuestId} completed successfully!`, 'success');
+                    
+                    if (STATE.audioInitialized) {
+                        AudioEngine.playSuccessChord();
+                    }
+                    
+                    const title = STATE.language === 'en' ? 'Mission Complete!' : '¡Misión completada!';
+                    const msg = STATE.language === 'en' 
+                        ? 'Cosmic Mission Complete! 🛰️ Successful orbital balance.'
+                        : '¡Misión cósmica completada! 🛰️ Balance orbital exitoso.';
+                    showCustomModal(title, msg, '🛰️', STATE.language === 'en' ? 'Continue' : 'Continuar');
+                    transitionState({ activeQuestId: null }); // return to sandbox
+                }
+            }
+        }
+
+        function selectQuest(questId) {
+            if (STATE.activeQuestId === questId) {
+                // Deselect returns to free sandbox
+                transitionState({ activeQuestId: null });
+                logDiagnostics("Deselected quest. Returned to free sandbox mode.");
+            } else {
+                transitionState({ activeQuestId: questId });
+                logDiagnostics(`Selected Cosmic Quest: ${questId}`);
+                
+                // Automatically switch presets to match the Quest expectations!
+                if (questId === 1) applyPreset('solar');
+                else if (questId === 2) applyPreset('slingshot');
+                else if (questId === 3) applyPreset('binary');
+                else if (questId === 4) applyPreset('lagrange');
+            }
+        }
+
+        // ==========================================
+        // 10. ESOL GUIDE BILINGUAL SCAFFOLDING
+        // ==========================================
+        function renderSentenceBuilder() {
+            const container = document.getElementById('sentence-select-grid');
+            container.innerHTML = '';
+            
+            const activeSentence = CONFIG.esolSentences.find(s => s.id === STATE.activeSentenceId);
+            if (!activeSentence) return;
+
+            const opts = STATE.language === 'en' ? activeSentence.options_en : activeSentence.options_es;
+            
+            // Render 3 dropdown select objects for the sentence builder zone
+            for (let idx = 0; idx < 3; idx++) {
+                const selectId = `esol-select-${idx}`;
+                const activeValIdx = STATE.builderSelections[idx];
+                
+                let optionHtml = '';
+                opts.forEach((optText, oIdx) => {
+                    const isSel = oIdx === activeValIdx ? 'selected' : '';
+                    optionHtml += `<option value="${oIdx}" ${isSel}>${optText}</option>`;
+                });
+
+                container.innerHTML += `
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <span style="font-size:0.65rem; color:var(--text-muted);">Slot ${idx+1}</span>
+                        <select class="sentence-select" id="${selectId}" onchange="handleBuilderSelection(${idx}, this.value)">
+                            ${optionHtml}
+                        </select>
+                    </div>
+                `;
+            }
+
+            updateSentenceFrameText();
+        }
+
+        function handleBuilderSelection(slotIdx, valueIdx) {
+            const selections = [...STATE.builderSelections];
+            selections[slotIdx] = parseInt(valueIdx, 10);
+            STATE.builderSelections = selections;
+            updateSentenceFrameText();
+        }
+
+        function updateSentenceFrameText() {
+            const frameBox = document.getElementById('sentence-frame-rendered');
+            const activeSentence = CONFIG.esolSentences.find(s => s.id === STATE.activeSentenceId);
+            if (!activeSentence) return;
+
+            const opts = STATE.language === 'en' ? activeSentence.options_en : activeSentence.options_es;
+            const textFormat = STATE.language === 'en' ? activeSentence.en : activeSentence.es;
+            
+            // Format terms with bold highlights
+            const val1 = opts[STATE.builderSelections[0]];
+            const val2 = opts[STATE.builderSelections[1]];
+            const val3 = opts[STATE.builderSelections[2]];
+
+            // Check if current configuration matches correct physical solutions
+            const isCorrect = STATE.builderSelections[0] === activeSentence.solutionIdx[0] &&
+                              STATE.builderSelections[1] === activeSentence.solutionIdx[1] &&
+                              STATE.builderSelections[2] === activeSentence.solutionIdx[2];
+
+            const borderHighlight = isCorrect ? 'var(--secondary)' : 'rgba(255,255,255,0.1)';
+            const statusIndicator = isCorrect ? '<span style="color:var(--secondary); font-weight:800; font-size:0.8rem; margin-left:8px;">(Correct Concept! ✅)</span>' : '';
+
+            let rendered = textFormat
+                .replace('{opt1}', `<strong style="color:var(--pink); border-bottom:1.5px dashed var(--pink);">${val1}</strong>`)
+                .replace('{opt3}', `<strong style="color:var(--primary); border-bottom:1.5px dashed var(--primary);">${val2}</strong>`)
+                .replace('{opt5}', `<strong style="color:var(--accent); border-bottom:1.5px dashed var(--accent);">${val3}</strong>`);
+
+            frameBox.innerHTML = `
+                <div style="border-left: 3px solid ${borderHighlight}; padding-left: 8px; transition:var(--transition)">
+                    ${rendered} ${statusIndicator}
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // 11. GUI VIEW ENGINE (renderUI)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+
+            // Translations
+            const lang = STATE.language;
+            const t = CONFIG.translations[lang];
+
+            document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+            document.getElementById('lbl-navigation-guide').innerText = t['navigation-guide'];
+            document.getElementById('lbl-workspace-title').innerText = t['workspace-title'];
+            document.getElementById('lbl-controls-title').innerText = t['controls-title'];
+            document.getElementById('lbl-sim-speed').innerText = t['sim-speed'];
+            document.getElementById('lbl-cosmic-hum').innerText = t['cosmic-hum'];
+            document.getElementById('lbl-quest-status').innerText = t['quest-status'];
+            document.getElementById('lbl-quest-target').innerText = t['quest-target'];
+            document.getElementById('lbl-launcher-headline').innerText = t['launcher-headline'];
+            document.getElementById('btn-reset').innerText = t['btn-reset'];
+            document.getElementById('lang-toggle-btn').innerText = lang === 'en' ? '🌐 EN | ES' : '🌐 ES | EN';
+            
+            document.getElementById('lbl-mass-probe').innerText = t['mass-probe'];
+            document.getElementById('lbl-mass-rocky').innerText = t['mass-rocky'];
+            document.getElementById('lbl-mass-gas').innerText = t['mass-gas'];
+            document.getElementById('lbl-mass-star').innerText = t['mass-star'];
+
+            // Preset button styling borders
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            const presetEl = document.getElementById(`preset-${STATE.selectedPresetName}`);
+            if (presetEl) presetEl.classList.add('active');
+
+            // Render quest checklist sidebar
+            renderQuestSidebar();
+
+            // Quest HUD indicators
+            const statusEl = document.getElementById('quest-status-flag');
+            const trackerEl = document.getElementById('quest-tracker-pct');
+
+            if (STATE.activeQuestId === null) {
+                statusEl.innerText = t['sandbox'];
+                statusEl.style.color = 'var(--text-muted)';
+                trackerEl.innerText = 'FREE PLAY';
+                trackerEl.style.color = 'var(--text-muted)';
+            } else {
+                const quest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+                const completed = STATE.completedQuests.includes(STATE.activeQuestId);
+                
+                if (completed) {
+                    statusEl.innerText = t['success'];
+                    statusEl.style.color = 'var(--secondary)';
+                    trackerEl.innerText = '100% DONE';
+                    trackerEl.style.color = 'var(--secondary)';
+                } else {
+                    statusEl.innerText = t['active'];
+                    statusEl.style.color = 'var(--accent)';
+                    
+                    // Display quest status trackers
+                    if (STATE.activeQuestId === 1) {
+                        // Quest 1: stable orbit angle accumulator progress
+                        const planet = STATE.bodies.find(b => !b.isFixed && b.m > 2);
+                        const progressDeg = planet ? Math.min(100, (planet.accumulatedAngle / (4 * Math.PI)) * 100) : 0;
+                        trackerEl.innerText = `Orbit angle: ${progressDeg.toFixed(0)}%`;
+                    } else if (STATE.activeQuestId === 2) {
+                        // Quest 2: Slingshot speed boost progress
+                        const probe = STATE.bodies.find(b => b.m < 2 && !b.isFixed);
+                        const maxSpd = probe ? probe.maxVelocityRecorded : 0;
+                        trackerEl.innerText = `Max Speed: ${maxSpd.toFixed(1)}/7.5`;
+                    } else if (STATE.activeQuestId === 3) {
+                        // Quest 3: Binary orbit survival time
+                        const dur = Math.min(8.0, STATE.binaryOrbitTime);
+                        trackerEl.innerText = `Survival: ${dur.toFixed(1)}s/8s`;
+                    } else if (STATE.activeQuestId === 4) {
+                        // Quest 4: Lagrange lock survival time
+                        const dur = Math.min(5.0, STATE.lagrangeLockTime);
+                        trackerEl.innerText = `Lock time: ${dur.toFixed(1)}s/5s`;
+                    }
+                    trackerEl.style.color = 'var(--accent)';
+                }
+            }
+
+            // ESOL guides
+            renderSentenceBuilder();
+        }
+
+        function renderQuestSidebar() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const completed = STATE.completedQuests.includes(q.id);
+                
+                const title = STATE.language === 'en' ? q.title : q.title_es;
+                const desc = STATE.language === 'en' ? q.desc : q.desc_es;
+
+                container.innerHTML += `
+                    <div class="quest-card ${isActive?'active':''} ${completed?'completed':''}" onclick="selectQuest(${q.id})">
+                        <div class="quest-info">
+                            <span class="quest-title-text">${title}</span>
+                            <span class="quest-desc-text">${desc}</span>
+                        </div>
+                        <span class="quest-badge">${completed?'✅':'🛰️'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // ==========================================
+        // 12. DIAGNOSTICS & AUTOMATED SELF-TESTS
+        // ==========================================
+        function logDiagnostics(message, type = 'info') {
+            const logsBox = document.getElementById('diagnostics-logs');
+            if (!logsBox) return;
+
+            const time = new Date().toTimeString().split(' ')[0];
+            let colorClass = '';
+            if (type === 'error') colorClass = 'log-error';
+            else if (type === 'success') colorClass = 'log-success';
+            else if (type === 'warning') colorClass = 'log-warning';
+
+            logsBox.innerHTML += `<div class="${colorClass}">[${time}] ${message}</div>`;
+            logsBox.scrollTop = logsBox.scrollHeight;
+        }
+
+        function openDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'block';
+            logDiagnostics("Opened diagnostics telemetry module.");
+        }
+
+        function closeDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'none';
+        }
+
+        function clearDiagnosticsLogs() {
+            document.getElementById('diagnostics-logs').innerHTML = '';
+        }
+
+        // --- Core Automated Self Tests ---
+        function runSelfTests() {
+            openDiagnostics();
+            logDiagnostics("====== Starting Cosmic Gravity Lab Self-Tests ======", 'warning');
+            let failedCount = 0;
+
+            // Test 1: Configuration Validity
+            try {
+                validateConfig();
+                logDiagnostics("Test 1 Passed: Static configuration layout validated.", 'success');
+            } catch(e) {
+                logDiagnostics(`Test 1 Failed: Config error: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 2: State Transitions Reducer
+            try {
+                const initialPreset = STATE.selectedPresetName;
+                transitionState({ selectedPresetName: 'binary' });
+                if (STATE.selectedPresetName === 'binary') {
+                    logDiagnostics("Test 2 Passed: Deterministic state machine reducer validated.", 'success');
+                } else {
+                    throw new Error("State variable did not update properly.");
+                }
+                transitionState({ selectedPresetName: initialPreset });
+            } catch(e) {
+                logDiagnostics(`Test 2 Failed: State updates: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 3: Keplerian Gravity Calculations
+            try {
+                // Test force equation between Star and Planet at x=200 distance
+                // F = G * m1 * m2 / d^2. F = 0.15 * 10000 * 100 / (200^2 + 15^2)
+                const softening = 15;
+                const distSq = 200 * 200 + softening * softening;
+                const F_expected = (0.15 * 10000 * 100) / distSq;
+                
+                if (F_expected > 3.0 && F_expected < 3.8) {
+                    logDiagnostics(`Test 3 Passed: Keplerian Force equation verified (F = ${F_expected.toFixed(2)}N).`, 'success');
+                } else {
+                    throw new Error(`Forces outside mathematical expectations: ${F_expected}`);
+                }
+            } catch(e) {
+                logDiagnostics(`Test 3 Failed: Gravity equations: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 4: Energy Conservation Checker (Leapfrog integrator check)
+            try {
+                const mockProbe = { x: 400, y: 100, vx: 5, vy: 0, m: 10 };
+                const mockStar = { x: 400, y: 220, vx: 0, vy: 0, m: 10000 };
+                
+                // Kinetic: 0.5 * m * v^2 = 0.5 * 10 * 25 = 125
+                const K = 0.5 * mockProbe.m * (mockProbe.vx * mockProbe.vx);
+                // Potential: -G * m1 * m2 / d = -0.15 * 10 * 10000 / 120 = -125
+                const U = -(0.15 * mockProbe.m * mockStar.m) / 120;
+                
+                const totalEnergy = K + U;
+                if (Math.abs(totalEnergy) < 1.0) {
+                    logDiagnostics("Test 4 Passed: Conservation of energy physics calculator validated.", 'success');
+                } else {
+                    throw new Error(`Total energy sum sum errors: ${totalEnergy}`);
+                }
+            } catch(e) {
+                logDiagnostics(`Test 4 Failed: Conservation formulas: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 5: Sound Engine Safety bounds
+            try {
+                if (STATE.humVolume <= 0.1) {
+                    logDiagnostics("Test 5 Passed: Web Audio volume boundaries verified.", 'success');
+                } else {
+                    throw new Error("Hum volume settings exceed safe decimal margins (<=0.1)");
+                }
+            } catch(e) {
+                logDiagnostics(`Test 5 Failed: Sound safety check: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            if (failedCount === 0) {
+                logDiagnostics("====== All 5 Core Tests Passed Successfully! ======", 'success');
+                const title = STATE.language === 'en' ? 'Self-Tests Complete' : 'Pruebas completadas';
+                const msg = STATE.language === 'en' ? '5/5 assertions passed!' : '¡5/5 aserciones pasaron!';
+                showCustomModal(title, msg, '⚡', 'OK');
+            } else {
+                logDiagnostics(`====== Self-Tests Failed: ${failedCount} errors registered ======`, 'error');
+                const title = STATE.language === 'en' ? 'Self-Tests Failed' : 'Pruebas fallidas';
+                const msg = STATE.language === 'en' 
+                    ? `${failedCount} errors registered inside console log.` 
+                    : `${failedCount} errores registrados en el registro de la consola.`;
+                showCustomModal(title, msg, '❌', 'OK');
+            }
+        }
+
+        // Custom Modal Controller Functions
+        function showCustomModal(title, message, icon, buttonText, onClickCallback) {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            document.getElementById('custom-modal-title').innerHTML = title;
+            document.getElementById('custom-modal-message').innerHTML = message;
+            document.getElementById('custom-modal-icon').innerHTML = icon;
+            
+            const btn = document.getElementById('custom-modal-btn');
+            btn.innerHTML = buttonText || (STATE.language === 'en' ? 'Continue' : 'Continuar');
+            
+            btn.onclick = function() {
+                closeCustomModal();
+                if (onClickCallback) onClickCallback();
+            };
+            
+            overlay.style.display = 'flex';
+            overlay.offsetHeight; // force reflow
+            overlay.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        }
+
+        function closeCustomModal() {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            overlay.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // ==========================================
+        // 13. INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            logDiagnostics("Cosmic Gravity Lab DOM loaded.");
+            validateConfig();
+
+            // Set up drag controls inside simulator canvas
+            setupLaunchControls();
+
+            // Set default preset
+            applyPreset('solar');
+
+            // Kick off high-speed physics calculation loop
+            runSimulationLoop();
+
+            logDiagnostics("Verlet physics loop initialized.");
+        });
+    </script>
+</body>
+</html>

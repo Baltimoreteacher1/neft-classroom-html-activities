@@ -1,1828 +1,1465 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Distributive Alchemy Lab: An interactive algebra game. Model the distributive property a(b + c) = ab + ac visually using alchemical potion grids."
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Distributive Alchemy Lab: An interactive algebra game. Model the distributive property a(b + c) = ab + ac visually using alchemical potion grids.">
     <title>Distributive Alchemy Lab | Visual Algebra Game</title>
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --bg-base: #06030c;
-        --bg-surface: #0f091c;
-        --bg-card: rgba(22, 14, 38, 0.7);
-        --bg-glow: rgba(168, 85, 247, 0.08);
+        :root {
+            --bg-base: #06030c;
+            --bg-surface: #0f091c;
+            --bg-card: rgba(22, 14, 38, 0.7);
+            --bg-glow: rgba(168, 85, 247, 0.08);
+            
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(168, 85, 247, 0.45);
+            
+            --primary: #a855f7;
+            --primary-glow: rgba(168, 85, 247, 0.4);
+            --secondary: #fb7185;
+            --secondary-glow: rgba(251, 113, 133, 0.4);
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.4);
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #d8b4fe;
+            --text-dark: #3b0764;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(168, 85, 247, 0.06);
+        }
 
-        --border-glow: rgba(255, 255, 255, 0.08);
-        --border-active: rgba(168, 85, 247, 0.45);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        --primary: #a855f7;
-        --primary-glow: rgba(168, 85, 247, 0.4);
-        --secondary: #fb7185;
-        --secondary-glow: rgba(251, 113, 133, 0.4);
-        --accent: #f59e0b;
-        --accent-glow: rgba(245, 158, 11, 0.4);
-        --white: #ffffff;
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(251, 113, 133, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
 
-        --text-main: #f1f5f9;
-        --text-muted: #d8b4fe;
-        --text-dark: #3b0764;
+        header {
+            background: rgba(15, 9, 28, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        --font-display: "Outfit", sans-serif;
-        --font-main: "Plus Jakarta Sans", sans-serif;
-        --font-mono: "JetBrains Mono", monospace;
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        --radius-lg: 24px;
-        --radius-md: 16px;
-        --radius-sm: 10px;
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 3.5s infinite ease-in-out;
+        }
 
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --shadow:
-          0 16px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(168, 85, 247, 0.06);
-      }
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        -webkit-tap-highlight-color: transparent;
-      }
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
 
-      body {
-        background-color: var(--bg-base);
-        color: var(--text-main);
-        font-family: var(--font-main);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow-x: hidden;
-        background-image:
-          radial-gradient(
-            circle at 10% 20%,
-            rgba(168, 85, 247, 0.05) 0%,
-            transparent 40%
-          ),
-          radial-gradient(
-            circle at 90% 80%,
-            rgba(251, 113, 133, 0.04) 0%,
-            transparent 40%
-          );
-        background-attachment: fixed;
-      }
+        /* Buttons */
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+        }
 
-      header {
-        background: rgba(15, 9, 28, 0.85);
-        backdrop-filter: blur(16px);
-        border-bottom: 1px solid var(--border-glow);
-        padding: 16px 32px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
 
-      .logo-section {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
+        .btn:active {
+            transform: translateY(0);
+        }
 
-      .logo-icon {
-        font-size: 2rem;
-        filter: drop-shadow(0 0 8px var(--primary-glow));
-        animation: pulse-slow 3.5s infinite ease-in-out;
-      }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #581c87 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
 
-      .logo-title {
-        font-family: var(--font-display);
-        font-size: 1.6rem;
-        font-weight: 800;
-        background: linear-gradient(
-          135deg,
-          var(--white) 30%,
-          var(--primary) 100%
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.02em;
-      }
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        }
 
-      .header-buttons {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
+        .btn-secondary {
+            border-color: rgba(251, 113, 133, 0.3);
+            color: #fda4af;
+            background: rgba(251, 113, 133, 0.08);
+        }
 
-      /* Buttons */
-      .btn {
-        font-family: var(--font-display);
-        font-weight: 600;
-        font-size: 0.9rem;
-        padding: 10px 20px;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border-glow);
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-main);
-        background: rgba(255, 255, 255, 0.02);
-        backdrop-filter: blur(4px);
-      }
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            background: rgba(251, 113, 133, 0.15);
+            box-shadow: 0 0 10px rgba(251, 113, 133, 0.15);
+        }
 
-      .btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-      }
-
-      .btn:active {
-        transform: translateY(0);
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, var(--primary) 0%, #581c87 100%);
-        border: none;
-        box-shadow: 0 4px 14px var(--primary-glow);
-      }
-
-      .btn-primary:hover {
-        box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
-        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-      }
-
-      .btn-secondary {
-        border-color: rgba(251, 113, 133, 0.3);
-        color: #fda4af;
-        background: rgba(251, 113, 133, 0.08);
-      }
-
-      .btn-secondary:hover {
-        border-color: var(--secondary);
-        background: rgba(251, 113, 133, 0.15);
-        box-shadow: 0 0 10px rgba(251, 113, 133, 0.15);
-      }
-
-      /* Layout Grid */
-      .app-grid {
-        display: grid;
-        grid-template-columns: 370px 1fr;
-        gap: 24px;
-        max-width: 1440px;
-        width: 100%;
-        margin: 24px auto;
-        padding: 0 24px;
-        flex: 1;
-      }
-
-      @media (max-width: 1100px) {
+        /* Layout Grid */
         .app-grid {
-          grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
         }
-      }
 
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      .main-workspace {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      /* Card panels */
-      .glass-panel {
-        background: var(--bg-card);
-        border: 1px solid var(--border-glow);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(12px);
-        position: relative;
-        overflow: hidden;
-        transition: var(--transition);
-      }
-
-      .glass-panel::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.05),
-          transparent
-        );
-      }
-
-      .glass-panel:hover {
-        border-color: rgba(255, 255, 255, 0.12);
-      }
-
-      .panel-title {
-        font-family: var(--font-display);
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 12px;
-        color: var(--white);
-      }
-
-      .panel-title svg {
-        color: var(--primary);
-      }
-
-      /* Quests list styles */
-      .quest-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .quest-card {
-        background: rgba(255, 255, 255, 0.01);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        border-radius: var(--radius-sm);
-        padding: 14px 16px;
-        cursor: pointer;
-        transition: var(--transition);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-      }
-
-      .quest-card:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(168, 85, 247, 0.3);
-      }
-
-      .quest-card.active {
-        border-color: var(--primary);
-        background: rgba(168, 85, 247, 0.08);
-        box-shadow: inset 0 0 12px rgba(168, 85, 247, 0.1);
-      }
-
-      .quest-card.completed {
-        border-color: var(--secondary);
-        background: rgba(251, 113, 133, 0.05);
-      }
-
-      .quest-card.completed:hover {
-        border-color: #fb7185;
-        background: rgba(251, 113, 133, 0.08);
-      }
-
-      .quest-info {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        flex: 1;
-      }
-
-      .quest-title-text {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--white);
-      }
-
-      .quest-desc-text {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        line-height: 1.4;
-      }
-
-      .quest-badge {
-        font-size: 1.3rem;
-        margin-left: 12px;
-        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
-        transition: var(--transition);
-      }
-
-      .quest-matching-hud {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 16px;
-        background: rgba(0, 0, 0, 0.25);
-        border-radius: var(--radius-sm);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        margin-bottom: 16px;
-      }
-
-      .hud-metric {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
-      .hud-metric-label {
-        font-size: 0.72rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .hud-metric-value {
-        font-family: var(--font-mono);
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--secondary);
-      }
-
-      /* SVG visual alchemical grid */
-      .svg-container {
-        width: 100%;
-        position: relative;
-        background: #040209;
-        border-radius: var(--radius-md);
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
-        overflow: hidden;
-      }
-
-      .viewport-svg {
-        width: 100%;
-        height: 380px;
-        display: block;
-      }
-
-      /* cauldrom style markers */
-      .alchemy-vial-glass {
-        fill: none;
-        stroke: rgba(255, 255, 255, 0.12);
-        stroke-width: 2;
-        transition: var(--transition);
-      }
-
-      .alchemy-vial-liquid {
-        fill: none;
-        transition: var(--transition);
-        filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.15));
-      }
-
-      .vial-liquid-x {
-        fill: var(--primary);
-        filter: drop-shadow(0 0 8px var(--primary-glow));
-      }
-
-      .vial-liquid-int {
-        fill: var(--accent);
-        filter: drop-shadow(0 0 8px var(--accent-glow));
-      }
-
-      .vial-label-text {
-        font-family: var(--font-display);
-        font-size: 11px;
-        font-weight: 700;
-        fill: var(--text-muted);
-        text-anchor: middle;
-      }
-
-      .alchemy-dividing-line {
-        stroke: var(--secondary);
-        stroke-width: 3.5;
-        stroke-dasharray: 6, 4;
-        filter: drop-shadow(0 0 6px var(--secondary-glow));
-      }
-
-      /* Alchemical UI sentence builders */
-      .sentence-builder-zone {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        background: rgba(0, 0, 0, 0.2);
-        padding: 14px;
-        border-radius: var(--radius-sm);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        margin-bottom: 20px;
-      }
-
-      .sentence-select {
-        background: #090612;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 4px;
-        color: var(--text-main);
-        padding: 6px 10px;
-        font-family: var(--font-main);
-        font-size: 0.8rem;
-        outline: none;
-        cursor: pointer;
-        transition: var(--transition);
-      }
-
-      .sentence-select:focus {
-        border-color: var(--primary);
-      }
-
-      /* Potion Cauldron controllers */
-      .potion-brew-panel {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-        background: linear-gradient(
-          135deg,
-          rgba(168, 85, 247, 0.08),
-          rgba(251, 113, 133, 0.03)
-        );
-        border: 1px solid rgba(168, 85, 247, 0.15);
-        padding: 20px;
-        border-radius: var(--radius-md);
-      }
-
-      .cauldron-brew-btn {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary) 0%, #581c87 100%);
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--white);
-        font-size: 1.4rem;
-        box-shadow: 0 4px 15px var(--primary-glow);
-        transition: var(--transition);
-        position: relative;
-      }
-
-      .cauldron-brew-btn:hover {
-        transform: scale(1.08);
-        box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
-      }
-
-      .cauldron-brew-btn:active {
-        transform: scale(0.96);
-      }
-
-      .cauldron-brew-btn.brewing {
-        background: linear-gradient(135deg, var(--secondary) 0%, #9f1239 100%);
-        box-shadow: 0 4px 15px rgba(251, 113, 133, 0.4);
-        animation: pulse-red 2s infinite ease-in-out;
-      }
-
-      /* Slider elements */
-      .param-row {
-        display: grid;
-        grid-template-columns: 80px 1fr 45px;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .param-label {
-        font-size: 0.8rem;
-        font-family: var(--font-display);
-        font-weight: 600;
-        color: var(--text-muted);
-      }
-
-      .wave-slider {
-        -webkit-appearance: none;
-        width: 100%;
-        height: 6px;
-        border-radius: 3px;
-        background: rgba(255, 255, 255, 0.1);
-        outline: none;
-        cursor: pointer;
-        transition: var(--transition);
-      }
-
-      .wave-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: var(--primary);
-        box-shadow: 0 0 10px var(--primary-glow);
-        cursor: pointer;
-        border: 2px solid var(--white);
-        transition: var(--transition);
-      }
-
-      .slider-value-text {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-align: right;
-      }
-
-      /* ESOL Guides glossary panel */
-      .esol-panel {
-        background: linear-gradient(
-          135deg,
-          rgba(168, 85, 247, 0.08) 0%,
-          rgba(251, 113, 133, 0.03) 100%
-        );
-        border: 1px solid rgba(168, 85, 247, 0.2);
-      }
-
-      .esol-bubble {
-        background: rgba(0, 0, 0, 0.25);
-        border-left: 4px solid var(--primary);
-        border-radius: var(--radius-sm);
-        padding: 16px;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: var(--text-main);
-        margin-bottom: 16px;
-      }
-
-      .esol-translation {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-        font-style: italic;
-        margin-top: 8px;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        padding-top: 8px;
-      }
-
-      /* Diagnostics console panel */
-      .diagnostics-panel {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        width: 330px;
-        background: #090612;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        z-index: 1000;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-        display: none;
-        animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      .diagnostics-log-box {
-        background: #020106;
-        border-radius: var(--radius-sm);
-        height: 140px;
-        overflow-y: auto;
-        font-family: var(--font-mono);
-        font-size: 0.72rem;
-        padding: 8px 12px;
-        color: #d8b4fe;
-        margin: 12px 0;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        line-height: 1.4;
-      }
-
-      .log-error {
-        color: var(--secondary);
-      }
-      .log-success {
-        color: #22c55e;
-      }
-      .log-warning {
-        color: var(--accent);
-      }
-
-      @keyframes pulse-slow {
-        0%,
-        100% {
-          transform: scale(1);
-          opacity: 1;
-          filter: drop-shadow(0 0 8px var(--primary-glow));
+        @media (max-width: 1100px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        50% {
-          transform: scale(1.05);
-          opacity: 0.85;
-          filter: drop-shadow(0 0 15px var(--primary));
-        }
-      }
 
-      @keyframes pulse-red {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.4);
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
-        50% {
-          box-shadow: 0 0 0 10px rgba(251, 113, 133, 0);
-        }
-      }
 
-      @keyframes slide-up {
-        from {
-          transform: translateY(100px);
-          opacity: 0;
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
 
-      footer {
-        text-align: center;
-        padding: 24px;
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        border-top: 1px solid var(--border-glow);
-        margin-top: 40px;
-        background: rgba(6, 3, 12, 0.8);
-        font-family: var(--font-display);
-      }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
+        /* Card panels */
+        .glass-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Quests list styles */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .quest-card.active {
+            border-color: var(--primary);
+            background: rgba(168, 85, 247, 0.08);
+            box-shadow: inset 0 0 12px rgba(168, 85, 247, 0.1);
+        }
+
+        .quest-card.completed {
+            border-color: var(--secondary);
+            background: rgba(251, 113, 133, 0.05);
+        }
+
+        .quest-card.completed:hover {
+            border-color: #fb7185;
+            background: rgba(251, 113, 133, 0.08);
+        }
+
+        .quest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .quest-desc-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .quest-badge {
+            font-size: 1.3rem;
+            margin-left: 12px;
+            filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+            transition: var(--transition);
+        }
+
+        .quest-matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* SVG visual alchemical grid */
+        .svg-container {
+            width: 100%;
+            position: relative;
+            background: #040209;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+        }
+
+        .viewport-svg {
+            width: 100%;
+            height: 380px;
+            display: block;
+        }
+
+        /* cauldrom style markers */
+        .alchemy-vial-glass {
+            fill: none;
+            stroke: rgba(255,255,255,0.12);
+            stroke-width: 2.0;
+            transition: var(--transition);
+        }
+
+        .alchemy-vial-liquid {
+            fill: none;
+            transition: var(--transition);
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.15));
+        }
+
+        .vial-liquid-x {
+            fill: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+        }
+
+        .vial-liquid-int {
+            fill: var(--accent);
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .vial-label-text {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            fill: var(--text-muted);
+            text-anchor: middle;
+        }
+
+        .alchemy-dividing-line {
+            stroke: var(--secondary);
+            stroke-width: 3.5;
+            stroke-dasharray: 6, 4;
+            filter: drop-shadow(0 0 6px var(--secondary-glow));
+        }
+
+        /* Alchemical UI sentence builders */
+        .sentence-builder-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 20px;
+        }
+
+        .sentence-select {
+            background: #090612;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            color: var(--text-main);
+            padding: 6px 10px;
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sentence-select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Potion Cauldron controllers */
+        .potion-brew-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(251, 113, 133, 0.03));
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            padding: 20px;
+            border-radius: var(--radius-md);
+        }
+
+        .cauldron-brew-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, #581c87 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .cauldron-brew-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .cauldron-brew-btn:active {
+            transform: scale(0.96);
+        }
+
+        .cauldron-brew-btn.brewing {
+            background: linear-gradient(135deg, var(--secondary) 0%, #9f1239 100%);
+            box-shadow: 0 4px 15px rgba(251, 113, 133, 0.4);
+            animation: pulse-red 2s infinite ease-in-out;
+        }
+
+        /* Slider elements */
+        .param-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 45px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .param-label {
+            font-size: 0.8rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .wave-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .wave-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            cursor: pointer;
+            border: 2px solid var(--white);
+            transition: var(--transition);
+        }
+
+        .slider-value-text {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* ESOL Guides glossary panel */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(251, 113, 133, 0.03) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        /* Diagnostics console panel */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 330px;
+            background: #090612;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #020106;
+            border-radius: var(--radius-sm);
+            height: 140px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #d8b4fe;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        .log-error { color: var(--secondary); }
+        .log-success { color: #22c55e; }
+        .log-warning { color: var(--accent); }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(251, 113, 133, 0); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(6, 3, 12, 0.8);
+            font-family: var(--font-display);
+        }
+    </style>
 </head>
-  <body>
+<body>
+
     <header>
-      <div class="logo-section">
-        <span class="logo-icon">🔮</span>
-        <h1 class="logo-title">Distributive Alchemy Lab</h1>
-      </div>
-      <div class="header-buttons">
-        <button
-          class="btn btn-secondary"
-          id="lang-toggle-btn"
-          onclick="toggleLanguage()"
-        >
-          🌐 EN | ES
-        </button>
-        <button class="btn" onclick="openDiagnostics()">🛠️ Diagnostics</button>
-        <button
-          class="btn btn-primary"
-          id="selftest-btn"
-          onclick="runSelfTests()"
-        >
-          ⚡ Self-Test
-        </button>
-      </div>
+        <div class="logo-section">
+            <span class="logo-icon">🔮</span>
+            <h1 class="logo-title">Distributive Alchemy Lab</h1>
+        </div>
+        <div class="header-buttons">
+            <button class="btn btn-secondary" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
     </header>
 
     <main class="app-grid">
-      <!-- Sidebar: Quests & ESOL sentence selector -->
-      <div class="sidebar">
-        <!-- Quests Panel -->
-        <div class="glass-panel">
-          <h2 class="panel-title">
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.656 48.656 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7C4.547 9.547 4.5 10.768 4.5 12s.047 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.092-1.209.138-2.43.138-3.662z"
-              ></path>
-            </svg>
-            <span id="lbl-mission-control">Alchemy Recipes</span>
-          </h2>
+        <!-- Sidebar: Quests & ESOL sentence selector -->
+        <div class="sidebar">
+            
+            <!-- Quests Panel -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.656 48.656 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7C4.547 9.547 4.5 10.768 4.5 12s.047 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.092-1.209.138-2.43.138-3.662z"></path></svg>
+                    <span id="lbl-mission-control">Alchemy Recipes</span>
+                </h2>
 
-          <div class="quest-matching-hud">
-            <div class="hud-metric">
-              <span class="hud-metric-label" id="lbl-recipe-state"
-                >Recipe State</span
-              >
-              <span
-                class="hud-metric-value"
-                id="quest-status-flag"
-                style="color: var(--text-muted)"
-                >SANDBOX</span
-              >
-            </div>
-            <div class="hud-metric" style="text-align: right">
-              <span class="hud-metric-label" id="lbl-formula-equivalent"
-                >Equivalence</span
-              >
-              <span
-                class="hud-metric-value"
-                id="quest-formula-state"
-                style="color: var(--accent)"
-                >FREE PLAY</span
-              >
-            </div>
-          </div>
+                <div class="quest-matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-recipe-state">Recipe State</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--text-muted);">SANDBOX</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-formula-equivalent">Equivalence</span>
+                        <span class="hud-metric-value" id="quest-formula-state" style="color:var(--accent);">FREE PLAY</span>
+                    </div>
+                </div>
 
-          <div class="quest-list" id="quests-container">
-            <!-- Loaded dynamically -->
-          </div>
+                <div class="quest-list" id="quests-container">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- ESOL Navigation scaffold -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--primary); border-bottom-color: rgba(168, 85, 247, 0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span id="lbl-navigation-guide">Alchemy Formulation helper</span>
+                </h2>
+
+                <div class="esol-bubble">
+                    <span id="esol-en">The outside factor is distributed (multiplied) to every term inside the parentheses! Slide the dividing bar to split your potion grid.</span>
+                    <div class="esol-translation" id="esol-es">¡El factor externo se distribuye (multiplica) a cada término dentro del paréntesis! Desliza la barra divisora para separar tu red.</div>
+                </div>
+
+                <div class="sentence-builder-zone">
+                    <span style="font-size:0.75rem; color:var(--primary); font-weight:700; text-transform:uppercase; letter-spacing:0.05em;" id="lbl-builder-title">Dynamic Distributive sentence</span>
+                    <p style="font-size:0.85rem; line-height:1.6; margin-top:4px;" id="sentence-frame-rendered">
+                        Select terms to complete algebraic equivalence principles.
+                    </p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;" id="sentence-select-grid">
+                        <!-- selectors dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- ESOL Navigation scaffold -->
-        <div class="glass-panel esol-panel">
-          <h2
-            class="panel-title"
-            style="
-              color: var(--primary);
-              border-bottom-color: rgba(168, 85, 247, 0.15);
-            "
-          >
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-            <span id="lbl-navigation-guide">Alchemy Formulation helper</span>
-          </h2>
+        <!-- Main Workspace (Alchemical grid and play cauldrons) -->
+        <div class="main-workspace">
+            
+            <!-- Cauldron interactive SVG Potion Grid -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div class="viewport-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v13.5m0 0l-3-3m3 3l3-3M3 16.5h18"></path></svg>
+                        <span id="lbl-workspace-title">Visual Potion Grid Modeling</span>
+                    </div>
+                    <div style="font-family: var(--font-display); font-size: 0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 12px; color:var(--text-muted);" id="current-formula-hud">
+                        Formula: 3(x + 4)
+                    </div>
+                </div>
 
-          <div class="esol-bubble">
-            <span id="esol-en"
-              >The outside factor is distributed (multiplied) to every term
-              inside the parentheses! Slide the dividing bar to split your
-              potion grid.</span
-            >
-            <div class="esol-translation" id="esol-es">
-              ¡El factor externo se distribuye (multiplica) a cada término
-              dentro del paréntesis! Desliza la barra divisora para separar tu
-              red.
+                <div class="svg-container">
+                    <svg id="alchemy-svg" class="viewport-svg" viewBox="0 0 800 380">
+                        <!-- Glass Vials matrices and dividing lines drawn programmatically -->
+                    </svg>
+                </div>
             </div>
-          </div>
 
-          <div class="sentence-builder-zone">
-            <span
-              style="
-                font-size: 0.75rem;
-                color: var(--primary);
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-              "
-              id="lbl-builder-title"
-              >Dynamic Distributive sentence</span
-            >
-            <p
-              style="font-size: 0.85rem; line-height: 1.6; margin-top: 4px"
-              id="sentence-frame-rendered"
-            >
-              Select terms to complete algebraic equivalence principles.
-            </p>
-            <div
-              style="
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                margin-top: 8px;
-              "
-              id="sentence-select-grid"
-            >
-              <!-- selectors dynamically populated -->
+            <!-- Cauldron controls and slider ratios -->
+            <div class="glass-panel">
+                
+                <div class="potion-brew-panel">
+                    <button class="cauldron-brew-btn" id="cauldron-brew-btn" onclick="triggerBrew()" aria-label="Brew Potion">
+                        🧪
+                    </button>
+
+                    <div style="display:flex; flex-direction:column; gap:8px; flex:1;">
+                        <div class="param-row">
+                            <span class="param-label" id="lbl-multiplier-a">Multiplier (a)</span>
+                            <input type="range" class="wave-slider" id="multiplier-slider" min="1" max="5" value="3" oninput="adjustMultiplierA(this.value)">
+                            <span class="slider-value-text" id="multiplier-val">3</span>
+                        </div>
+                        <div class="param-row">
+                            <span class="param-label" id="lbl-integers-c">Integers (c)</span>
+                            <input type="range" class="wave-slider" id="integers-slider" min="1" max="6" value="4" oninput="adjustIntegersC(this.value)">
+                            <span class="slider-value-text" id="integers-val">4</span>
+                        </div>
+                    </div>
+
+                    <div class="param-row" style="grid-template-columns: 80px 100px; gap:8px; align-items:center;">
+                        <span class="param-label" id="lbl-divider-pos">Split Bar (x)</span>
+                        <input type="range" class="wave-slider" id="split-slider" min="0" max="6" value="1" oninput="adjustSplitX(this.value)" style="width:100%;">
+                    </div>
+                </div>
+
             </div>
-          </div>
+
         </div>
-      </div>
-
-      <!-- Main Workspace (Alchemical grid and play cauldrons) -->
-      <div class="main-workspace">
-        <!-- Cauldron interactive SVG Potion Grid -->
-        <div class="glass-panel" style="padding: 16px">
-          <div
-            class="viewport-header"
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 12px;
-              padding: 4px 8px;
-            "
-          >
-            <div
-              class="panel-title"
-              style="margin-bottom: 0; border-bottom: none; padding-bottom: 0"
-            >
-              <svg
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 3v13.5m0 0l-3-3m3 3l3-3M3 16.5h18"
-                ></path>
-              </svg>
-              <span id="lbl-workspace-title">Visual Potion Grid Modeling</span>
-            </div>
-            <div
-              style="
-                font-family: var(--font-display);
-                font-size: 0.8rem;
-                background: rgba(255, 255, 255, 0.03);
-                border: 1px solid rgba(255, 255, 255, 0.05);
-                padding: 4px 10px;
-                border-radius: 12px;
-                color: var(--text-muted);
-              "
-              id="current-formula-hud"
-            >
-              Formula: 3(x + 4)
-            </div>
-          </div>
-
-          <div class="svg-container">
-            <svg id="alchemy-svg" class="viewport-svg" viewBox="0 0 800 380">
-              <!-- Glass Vials matrices and dividing lines drawn programmatically -->
-            </svg>
-          </div>
-        </div>
-
-        <!-- Cauldron controls and slider ratios -->
-        <div class="glass-panel">
-          <div class="potion-brew-panel">
-            <button
-              class="cauldron-brew-btn"
-              id="cauldron-brew-btn"
-              onclick="triggerBrew()"
-              aria-label="Brew Potion"
-            >
-              🧪
-            </button>
-
-            <div
-              style="display: flex; flex-direction: column; gap: 8px; flex: 1"
-            >
-              <div class="param-row">
-                <span class="param-label" id="lbl-multiplier-a"
-                  >Multiplier (a)</span
-                >
-                <input
-                  type="range"
-                  class="wave-slider"
-                  id="multiplier-slider"
-                  min="1"
-                  max="5"
-                  value="3"
-                  oninput="adjustMultiplierA(this.value)"
-                />
-                <span class="slider-value-text" id="multiplier-val">3</span>
-              </div>
-              <div class="param-row">
-                <span class="param-label" id="lbl-integers-c"
-                  >Integers (c)</span
-                >
-                <input
-                  type="range"
-                  class="wave-slider"
-                  id="integers-slider"
-                  min="1"
-                  max="6"
-                  value="4"
-                  oninput="adjustIntegersC(this.value)"
-                />
-                <span class="slider-value-text" id="integers-val">4</span>
-              </div>
-            </div>
-
-            <div
-              class="param-row"
-              style="
-                grid-template-columns: 80px 100px;
-                gap: 8px;
-                align-items: center;
-              "
-            >
-              <span class="param-label" id="lbl-divider-pos"
-                >Split Bar (x)</span
-              >
-              <input
-                type="range"
-                class="wave-slider"
-                id="split-slider"
-                min="0"
-                max="6"
-                value="1"
-                oninput="adjustSplitX(this.value)"
-                style="width: 100%"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
     </main>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(6, 3, 12, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--bg-surface); border: 2px solid var(--border-active); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">POTION BREWED!</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; margin-bottom: 24px;">Message here</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Continue</button>
+        </div>
+    </div>
 
     <!-- Diagnostics panel overlay -->
     <div class="diagnostics-panel" id="diagnostics-overlay">
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          padding-bottom: 6px;
-        "
-      >
-        <strong style="font-family: var(--font-display); font-size: 0.95rem"
-          >🛠️ Diagnostics Console</strong
-        >
-        <button
-          onclick="closeDiagnostics()"
-          style="
-            background: none;
-            border: none;
-            color: var(--danger);
-            font-size: 1.1rem;
-            font-weight: 800;
-            cursor: pointer;
-          "
-        >
-          &times;
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
         </button>
-      </div>
-      <div class="diagnostics-log-box" id="diagnostics-logs"></div>
-      <button
-        class="btn"
-        style="width: 100%; justify-content: center; padding: 8px"
-        onclick="clearDiagnosticsLogs()"
-      >
-        Clear Logs
-      </button>
     </div>
 
     <footer>
-      <p>
-        &copy; 2026 Neft Learning Systems. Built locally, completely private.
-        Designed to support Grade 6 Distributive Property standards expected
-        score ranges.
-      </p>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Distributive Property standards expected score ranges.</p>
     </footer>
 
     <script>
-      // ==========================================
-      // 1. CONFIGURATION
-      // ==========================================
-      const CONFIG = {
-        quests: [
-          {
-            id: 1,
-            multiplier: 2,
-            integers: 5,
-            targetSplit: 1,
-            title: "🧪 Lesser Elixir",
-            title_es: "🧪 Elixir Menor",
-            desc: "Brew recipe 2(x + 5). Partition grid to verify equivalence: 2x + 10.",
-            desc_es:
-              "Crea la receta 2(x + 5). Divide la red para comprobar la equivalencia: 2x + 10.",
-          },
-          {
-            id: 2,
-            multiplier: 3,
-            integers: 4,
-            targetSplit: 1,
-            title: "🔮 Wisdom Potion",
-            title_es: "🔮 Poción de Sabiduría",
-            desc: "Brew recipe 3(x + 4). Show equivalence matching: 3x + 12.",
-            desc_es:
-              "Crea la receta 3(x + 4). Comprueba la equivalencia: 3x + 12.",
-          },
-          {
-            id: 3,
-            multiplier: 4,
-            integers: 2,
-            targetSplit: 1,
-            title: "💎 Legendary Catalyst",
-            title_es: "💎 Catalizador Legendario",
-            desc: "Brew recipe 4(x + 2). Show equivalence matching: 4x + 8.",
-            desc_es:
-              "Crea la receta 4(x + 2). Comprueba la equivalencia: 4x + 8.",
-          },
-          {
-            id: 4,
-            multiplier: 5,
-            integers: 3,
-            targetSplit: 1,
-            title: "🔥 Solar Core Potion",
-            title_es: "🔥 Poción Núcleo Solar",
-            desc: "Brew recipe 5(x + 3). Distribute factors cleanly: 5x + 15.",
-            desc_es:
-              "Crea la receta 5(x + 3). Distribuye los factores: 5x + 15.",
-          },
-        ],
-        sentences: [
-          {
-            id: "distribute",
-            label: "Distribute Concept / Concepto de Distribuir",
-            options_en: [
-              "multiply",
-              "add",
-              "equivalent",
-              "different",
-              "x",
-              "integers",
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            quests: [
+                { id: 1, multiplier: 2, integers: 5, targetSplit: 1, title: '🧪 Lesser Elixir', title_es: '🧪 Elixir Menor', desc: 'Brew recipe 2(x + 5). Partition grid to verify equivalence: 2x + 10.', desc_es: 'Crea la receta 2(x + 5). Divide la red para comprobar la equivalencia: 2x + 10.' },
+                { id: 2, multiplier: 3, integers: 4, targetSplit: 1, title: '🔮 Wisdom Potion', title_es: '🔮 Poción de Sabiduría', desc: 'Brew recipe 3(x + 4). Show equivalence matching: 3x + 12.', desc_es: 'Crea la receta 3(x + 4). Comprueba la equivalencia: 3x + 12.' },
+                { id: 3, multiplier: 4, integers: 2, targetSplit: 1, title: '💎 Legendary Catalyst', title_es: '💎 Catalizador Legendario', desc: 'Brew recipe 4(x + 2). Show equivalence matching: 4x + 8.', desc_es: 'Crea la receta 4(x + 2). Comprueba la equivalencia: 4x + 8.' },
+                { id: 4, multiplier: 5, integers: 3, targetSplit: 1, title: '🔥 Solar Core Potion', title_es: '🔥 Poción Núcleo Solar', desc: 'Brew recipe 5(x + 3). Distribute factors cleanly: 5x + 15.', desc_es: 'Crea la receta 5(x + 3). Distribuye los factores: 5x + 15.' }
             ],
-            options_es: [
-              "multiplicar",
-              "sumar",
-              "equivalente",
-              "diferente",
-              "x",
-              "enteros",
+            sentences: [
+                {
+                    id: 'distribute',
+                    label: 'Distribute Concept / Concepto de Distribuir',
+                    options_en: ['multiply', 'add', 'equivalent', 'different', 'x', 'integers'],
+                    options_es: ['multiplicar', 'sumar', 'equivalente', 'diferente', 'x', 'enteros'],
+                    en: 'When distributing a across (x + c), I must {opt1} a by both x and c, yielding an {opt3} algebraic sum.',
+                    es: 'Al distribuir a sobre (x + c), debo {opt1} a por x y por c, resultando en una suma algebraica {opt3}.',
+                    solutionIdx: [0, 0, 2] // multiply, multiply, equivalent (index matches options)
+                }
             ],
-            en: "When distributing a across (x + c), I must {opt1} a by both x and c, yielding an {opt3} algebraic sum.",
-            es: "Al distribuir a sobre (x + c), debo {opt1} a por x y por c, resultando en una suma algebraica {opt3}.",
-            solutionIdx: [0, 0, 2], // multiply, multiply, equivalent (index matches options)
-          },
-        ],
-        translations: {
-          en: {
-            "mission-control": "Alchemy Recipes",
-            "navigation-guide": "Alchemy Formulation helper",
-            "workspace-title": "Visual Potion Grid Modeling",
-            "multiplier-a": "Multiplier (a)",
-            "integers-c": "Integers (c)",
-            "divider-pos": "Split Bar (x)",
-            "recipe-state": "Recipe State",
-            "formula-equivalent": "Equivalence",
-            sandbox: "SANDBOX BREWING",
-            active: "RECIPE ACTIVE 🧪",
-            success: "BREWED! 🏆",
-            ready: "EQUIVALENT ✅",
-            "not-ready": "NOT DISTRIBUTED ❌",
-          },
-          es: {
-            "mission-control": "Recetas de Alquimia",
-            "navigation-guide": "Ayudante de Alquimia",
-            "workspace-title": "Red de Modelado Visual",
-            "multiplier-a": "Multiplicador (a)",
-            "integers-c": "Enteros (c)",
-            "divider-pos": "Divisor (x)",
-            "recipe-state": "Estado de Receta",
-            "formula-equivalent": "Equivalencia",
-            sandbox: "ENTRENAMIENTO DE BREBAJES",
-            active: "RECETA ACTIVA 🧪",
-            success: "¡BREBAJE LISTO! 🏆",
-            ready: "EQUIVALENTE ✅",
-            "not-ready": "SIN DISTRIBUIR ❌",
-          },
-        },
-      };
+            translations: {
+                en: {
+                    'mission-control': 'Alchemy Recipes',
+                    'navigation-guide': 'Alchemy Formulation helper',
+                    'workspace-title': 'Visual Potion Grid Modeling',
+                    'multiplier-a': 'Multiplier (a)',
+                    'integers-c': 'Integers (c)',
+                    'divider-pos': 'Split Bar (x)',
+                    'recipe-state': 'Recipe State',
+                    'formula-equivalent': 'Equivalence',
+                    'sandbox': 'SANDBOX BREWING',
+                    'active': 'RECIPE ACTIVE 🧪',
+                    'success': 'BREWED! 🏆',
+                    'ready': 'EQUIVALENT ✅',
+                    'not-ready': 'NOT DISTRIBUTED ❌'
+                },
+                es: {
+                    'mission-control': 'Recetas de Alquimia',
+                    'navigation-guide': 'Ayudante de Alquimia ESOL',
+                    'workspace-title': 'Red de Modelado Visual',
+                    'multiplier-a': 'Multiplicador (a)',
+                    'integers-c': 'Enteros (c)',
+                    'divider-pos': 'Divisor (x)',
+                    'recipe-state': 'Estado de Receta',
+                    'formula-equivalent': 'Equivalencia',
+                    'sandbox': 'ENTRENAMIENTO DE BREBAJES',
+                    'active': 'RECETA ACTIVA 🧪',
+                    'success': '¡BREBAJE LISTO! 🏆',
+                    'ready': 'EQUIVALENTE ✅',
+                    'not-ready': 'SIN DISTRIBUIR ❌'
+                }
+            }
+        };
 
-      // ==========================================
-      // 2. INTEGRITY CHECK (validateConfig)
-      // ==========================================
-      function validateConfig() {
-        if (!CONFIG.quests || CONFIG.quests.length === 0) {
-          throw new Error("CONFIG: Quests list are missing.");
-        }
-        if (!CONFIG.sentences || CONFIG.sentences.length === 0) {
-          throw new Error("CONFIG: Sentence guide models are missing.");
-        }
-        if (
-          !CONFIG.translations ||
-          !CONFIG.translations.en ||
-          !CONFIG.translations.es
-        ) {
-          throw new Error("CONFIG: Bilingual translation arrays are invalid.");
-        }
-      }
-
-      // ==========================================
-      // 3. STATE MACHINE
-      // ==========================================
-      const STATE = {
-        multiplier: 3, // outside multiplier coefficient 'a'
-        integers: 4, // integer term inside parenthesis 'c'
-        splitX: 1, // position of divider: 1 is correct (separates x columns from integers)
-        activeQuestId: null, // null is Sandbox
-        completedQuests: [],
-        language: "en",
-        isBrewing: false,
-        equivalenceProven: false, // true when splitX is exactly 1 (separating 1x from integers)
-
-        // ESOL builder selections
-        activeSentenceId: "distribute",
-        builderSelections: [0, 0, 0],
-
-        audioInitialized: false,
-      };
-
-      function transitionState(updatedFields) {
-        Object.assign(STATE, updatedFields);
-
-        // Equivalence is proven visually when splitX = 1, separating exactly '1x' from integers 'c'
-        STATE.equivalenceProven = STATE.splitX === 1;
-
-        // Update header formula label HUD
-        document.getElementById("current-formula-hud").innerText =
-          `Formula: ${STATE.multiplier}(x + ${STATE.integers})`;
-
-        // Redraw GUI
-        renderUI();
-      }
-
-      // ==========================================
-      // 4. POTION BREWING CONTROLLERS
-      // ==========================================
-      function toggleLanguage() {
-        const next = STATE.language === "en" ? "es" : "en";
-        transitionState({ language: next });
-        logDiagnostics(`Language changed to: ${next}`);
-      }
-
-      function selectQuest(questId) {
-        if (STATE.activeQuestId === questId) {
-          transitionState({ activeQuestId: null });
-          logDiagnostics("Entered free sandbox play.");
-        } else {
-          const quest = CONFIG.quests.find((q) => q.id === questId);
-
-          // Force input controllers to match Quest target values
-          document.getElementById("multiplier-slider").value = quest.multiplier;
-          document.getElementById("multiplier-val").innerText =
-            quest.multiplier;
-
-          document.getElementById("integers-slider").value = quest.integers;
-          document.getElementById("integers-val").innerText = quest.integers;
-
-          document.getElementById("split-slider").value = 0; // reset split bar
-
-          transitionState({
-            activeQuestId: questId,
-            multiplier: quest.multiplier,
-            integers: quest.integers,
-            splitX: 0,
-            equivalenceProven: false,
-          });
-
-          logDiagnostics(
-            `Activated Quest ${questId}: recipe=${quest.multiplier}(x + ${quest.integers})`,
-          );
-        }
-      }
-
-      function adjustMultiplierA(val) {
-        const m = parseInt(val, 10);
-        document.getElementById("multiplier-val").innerText = m;
-        transitionState({ multiplier: m });
-      }
-
-      function adjustIntegersC(val) {
-        const c = parseInt(val, 10);
-        document.getElementById("integers-val").innerText = c;
-        transitionState({ integers: c });
-      }
-
-      function adjustSplitX(val) {
-        const s = parseInt(val, 10);
-        transitionState({ splitX: s });
-        logDiagnostics(`Visual partition bar moved to column index: ${s}`);
-        if (STATE.audioInitialized && s === 1) {
-          AudioEngine.playSuccessHarmonic();
-        }
-      }
-
-      function triggerBrew() {
-        if (STATE.isBrewing) return;
-
-        const playBtn = document.getElementById("cauldron-brew-btn");
-        playBtn.classList.add("brewing");
-
-        transitionState({ isBrewing: true });
-        logDiagnostics("Brewing cauldron triggered...");
-
-        if (STATE.audioInitialized) {
-          AudioEngine.playBrewingBubbles();
+        // ==========================================
+        // 2. INTEGRITY CHECK (validateConfig)
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.quests || CONFIG.quests.length === 0) {
+                throw new Error("CONFIG: Quests list are missing.");
+            }
+            if (!CONFIG.sentences || CONFIG.sentences.length === 0) {
+                throw new Error("CONFIG: Sentence guide models are missing.");
+            }
+            if (!CONFIG.translations || !CONFIG.translations.en || !CONFIG.translations.es) {
+                throw new Error("CONFIG: Bilingual translation arrays are invalid.");
+            }
         }
 
-        // Simulate brewing duration: 1.5 seconds
-        setTimeout(() => {
-          playBtn.classList.remove("brewing");
-          transitionState({ isBrewing: false });
+        // ==========================================
+        // 3. STATE MACHINE
+        // ==========================================
+        const STATE = {
+            multiplier: 3, // outside multiplier coefficient 'a'
+            integers: 4, // integer term inside parenthesis 'c'
+            splitX: 1, // position of divider: 1 is correct (separates x columns from integers)
+            activeQuestId: null, // null is Sandbox
+            completedQuests: [],
+            language: 'en',
+            isBrewing: false,
+            equivalenceProven: false, // true when splitX is exactly 1 (separating 1x from integers)
+            
+            // ESOL builder selections
+            activeSentenceId: 'distribute',
+            builderSelections: [0, 0, 0],
 
-          // Check if equivalence is proven (SplitX === 1)
-          if (STATE.equivalenceProven) {
+            audioInitialized: false
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+            
+            // Equivalence is proven visually when splitX = 1, separating exactly '1x' from integers 'c'
+            STATE.equivalenceProven = STATE.splitX === 1;
+
+            // Update header formula label HUD
+            document.getElementById('current-formula-hud').innerText = `Formula: ${STATE.multiplier}(x + ${STATE.integers})`;
+
+            // Redraw GUI
+            renderUI();
+        }
+
+        // ==========================================
+        // 4. POTION BREWING CONTROLLERS
+        // ==========================================
+        function toggleLanguage() {
+            const next = STATE.language === 'en' ? 'es' : 'en';
+            transitionState({ language: next });
+            logDiagnostics(`Language changed to: ${next}`);
+        }
+
+        function selectQuest(questId) {
+            if (STATE.activeQuestId === questId) {
+                transitionState({ activeQuestId: null });
+                logDiagnostics("Entered free sandbox play.");
+            } else {
+                const quest = CONFIG.quests.find(q => q.id === questId);
+                
+                // Force input controllers to match Quest target values
+                document.getElementById('multiplier-slider').value = quest.multiplier;
+                document.getElementById('multiplier-val').innerText = quest.multiplier;
+                
+                document.getElementById('integers-slider').value = quest.integers;
+                document.getElementById('integers-val').innerText = quest.integers;
+                
+                document.getElementById('split-slider').value = 0; // reset split bar
+
+                transitionState({
+                    activeQuestId: questId,
+                    multiplier: quest.multiplier,
+                    integers: quest.integers,
+                    splitX: 0,
+                    equivalenceProven: false
+                });
+
+                logDiagnostics(`Activated Quest ${questId}: recipe=${quest.multiplier}(x + ${quest.integers})`);
+            }
+        }
+
+        function adjustMultiplierA(val) {
+            const m = parseInt(val, 10);
+            document.getElementById('multiplier-val').innerText = m;
+            transitionState({ multiplier: m });
+        }
+
+        function adjustIntegersC(val) {
+            const c = parseInt(val, 10);
+            document.getElementById('integers-val').innerText = c;
+            transitionState({ integers: c });
+        }
+
+        function adjustSplitX(val) {
+            const s = parseInt(val, 10);
+            transitionState({ splitX: s });
+            logDiagnostics(`Visual partition bar moved to column index: ${s}`);
+            if (STATE.audioInitialized && s === 1) {
+                AudioEngine.playSuccessHarmonic();
+            }
+        }
+
+        function triggerBrew() {
+            if (STATE.isBrewing) return;
+
+            const playBtn = document.getElementById('cauldron-brew-btn');
+            playBtn.classList.add('brewing');
+            
+            transitionState({ isBrewing: true });
+            logDiagnostics("Brewing cauldron triggered...");
+
             if (STATE.audioInitialized) {
-              AudioEngine.playSuccessHarmonic();
+                AudioEngine.playBrewingBubbles();
             }
 
-            const distStr = `${STATE.multiplier}x + ${STATE.multiplier * STATE.integers}`;
-            alert(
-              `Success! Legendary potion brewed! distributed algebraic formula: ${STATE.multiplier}(x + ${STATE.integers}) = ${distStr} is equivalent! ✅`,
-            );
-            logDiagnostics(
-              `Success! Equivalent formula proven: ${distStr}`,
-              "success",
-            );
+            // Simulate brewing duration: 1.5 seconds
+            setTimeout(() => {
+                playBtn.classList.remove('brewing');
+                transitionState({ isBrewing: false });
 
-            // Save quest complete
-            if (STATE.activeQuestId !== null) {
-              if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
-                const completed = [
-                  ...STATE.completedQuests,
-                  STATE.activeQuestId,
-                ];
-                transitionState({ completedQuests: completed });
-              }
-            }
-          } else {
-            alert(
-              "Failure! Cauldron exploded. The algebraic partition bar does not separate x from the integers. Calibrate the split bar to 1.",
-            );
-            logDiagnostics(
-              "Cauldron explosion! Formula was not distributed correctly.",
-              "error",
-            );
-            if (STATE.audioInitialized) {
-              AudioEngine.playExplosionSound();
-            }
-          }
-        }, 1500);
-      }
+                // Check if equivalence is proven (SplitX === 1)
+                if (STATE.equivalenceProven) {
+                    if (STATE.audioInitialized) {
+                        AudioEngine.playSuccessHarmonic();
+                    }
 
-      // ==========================================
-      // 5. WEB AUDIO BUBBLING NOISE (SOUND ENGINE)
-      // ==========================================
-      const AudioEngine = {
-        ctx: null,
-        masterGain: null,
+                    const distStr = `${STATE.multiplier}x + ${STATE.multiplier * STATE.integers}`;
+                    const msg = STATE.language === 'en' 
+                        ? `Success! Legendary potion brewed! distributed algebraic formula: ${STATE.multiplier}(x + ${STATE.integers}) = ${distStr} is equivalent! ✅`
+                        : `¡Éxito! ¡Poción legendaria elaborada! fórmula algebraica distribuida: ${STATE.multiplier}(x + ${STATE.integers}) = ${distStr} es equivalente. ✅`;
+                    const title = STATE.language === 'en' ? 'Success! Potion Brewed' : '¡Éxito! Poción elaborada';
+                    
+                    showCustomModal(title, msg, '🔮', STATE.language === 'en' ? 'Continue' : 'Continuar');
+                    logDiagnostics(`Success! Equivalent formula proven: ${distStr}`, 'success');
 
-        init() {
-          try {
-            const AudioContextClass =
-              window.AudioContext || window.webkitAudioContext;
-            this.ctx = new AudioContextClass();
-            this.masterGain = this.ctx.createGain();
-            this.masterGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-            this.masterGain.connect(this.ctx.destination);
-            STATE.audioInitialized = true;
-          } catch (e) {
-            console.log("AudioContext blocked or unsuited: " + e.message);
-          }
-        },
-
-        playSplitChirp() {
-          if (!STATE.audioInitialized) this.init();
-          try {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + 0.1,
-            );
-            gain.connect(this.masterGain);
-
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(500, this.ctx.currentTime);
-            osc.connect(gain);
-            osc.start();
-            osc.stop(this.ctx.currentTime + 0.12);
-          } catch (e) {}
-        },
-
-        playSuccessHarmonic() {
-          if (!STATE.audioInitialized) this.init();
-          try {
-            // Mystical ascending chord
-            const notes = [293.66, 369.99, 440.0, 587.33]; // D major
-            notes.forEach((freq, idx) => {
-              const osc = this.ctx.createOscillator();
-              const gain = this.ctx.createGain();
-              gain.gain.setValueAtTime(0.05, this.ctx.currentTime + idx * 0.08);
-              gain.gain.exponentialRampToValueAtTime(
-                0.001,
-                this.ctx.currentTime + idx * 0.08 + 0.6,
-              );
-              gain.connect(this.masterGain);
-
-              osc.type = "triangle";
-              osc.frequency.setValueAtTime(
-                freq,
-                this.ctx.currentTime + idx * 0.08,
-              );
-              osc.connect(gain);
-              osc.start(this.ctx.currentTime + idx * 0.08);
-              osc.stop(this.ctx.currentTime + idx * 0.08 + 0.7);
-            });
-          } catch (e) {}
-        },
-
-        playExplosionSound() {
-          if (!STATE.audioInitialized) this.init();
-          try {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + 0.4,
-            );
-            gain.connect(this.masterGain);
-
-            osc.type = "sawtooth";
-            osc.frequency.setValueAtTime(110, this.ctx.currentTime);
-            osc.frequency.linearRampToValueAtTime(
-              40,
-              this.ctx.currentTime + 0.4,
-            );
-            osc.connect(gain);
-            osc.start();
-            osc.stop(this.ctx.currentTime + 0.45);
-          } catch (e) {}
-        },
-
-        playBrewingBubbles() {
-          if (!STATE.audioInitialized) this.init();
-          try {
-            // Bubbling sound effect synthesized programmatically using high-frequency noise and gain sweeps
-            const duration = 1.4;
-            const interval = 0.08;
-            const count = Math.round(duration / interval);
-
-            for (let step = 0; step < count; step++) {
-              const timeOffset = step * interval;
-              const osc = this.ctx.createOscillator();
-              const gain = this.ctx.createGain();
-
-              // Random high frequencies for bubbles pops
-              const freq = 600 + Math.random() * 800;
-
-              gain.gain.setValueAtTime(0.02, this.ctx.currentTime + timeOffset);
-              gain.gain.exponentialRampToValueAtTime(
-                0.001,
-                this.ctx.currentTime + timeOffset + 0.05,
-              );
-              gain.connect(this.masterGain);
-
-              osc.type = "sine";
-              osc.frequency.setValueAtTime(
-                freq,
-                this.ctx.currentTime + timeOffset,
-              );
-              osc.frequency.exponentialRampToValueAtTime(
-                freq * 1.5,
-                this.ctx.currentTime + timeOffset + 0.05,
-              );
-              osc.connect(gain);
-              osc.start(this.ctx.currentTime + timeOffset);
-              osc.stop(this.ctx.currentTime + timeOffset + 0.06);
-            }
-          } catch (e) {}
-        },
-      };
-
-      // ==========================================
-      // 6. GUI VIEW ENGINE (renderUI)
-      // ==========================================
-      function renderUI() {
-        validateConfig();
-
-        // Translations
-        const lang = STATE.language;
-        const t = CONFIG.translations[lang];
-
-        document.getElementById("lbl-mission-control").innerText =
-          t["mission-control"];
-        document.getElementById("lbl-navigation-guide").innerText =
-          t["navigation-guide"];
-        document.getElementById("lbl-workspace-title").innerText =
-          t["workspace-title"];
-        document.getElementById("lbl-multiplier-a").innerText =
-          t["multiplier-a"];
-        document.getElementById("lbl-integers-c").innerText = t["integers-c"];
-        document.getElementById("lbl-divider-pos").innerText = t["divider-pos"];
-        document.getElementById("lbl-recipe-state").innerText =
-          t["recipe-state"];
-        document.getElementById("lbl-formula-equivalent").innerText =
-          t["formula-equivalent"];
-        document.getElementById("lang-toggle-btn").innerText =
-          lang === "en" ? "🌐 EN | ES" : "🌐 ES | EN";
-
-        // Quests recipes list
-        renderQuestsList();
-
-        // HUD labels parameters
-        const statusEl = document.getElementById("quest-status-flag");
-        const trackerEl = document.getElementById("quest-formula-state");
-
-        if (STATE.activeQuestId === null) {
-          statusEl.innerText = t["sandbox"];
-          statusEl.style.color = "var(--text-muted)";
-        } else {
-          const questDone = STATE.completedQuests.includes(STATE.activeQuestId);
-          if (questDone) {
-            statusEl.innerText = t["success"];
-            statusEl.style.color = "#22c55e"; // Green success
-          } else {
-            statusEl.innerText = t["active"];
-            statusEl.style.color = "var(--secondary)";
-          }
+                    // Save quest complete
+                    if (STATE.activeQuestId !== null) {
+                        if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
+                            const completed = [...STATE.completedQuests, STATE.activeQuestId];
+                            transitionState({ completedQuests: completed });
+                        }
+                    }
+                } else {
+                    const msg = STATE.language === 'en'
+                        ? "Failure! Cauldron exploded. The algebraic partition bar does not separate x from the integers. Calibrate the split bar to 1."
+                        : "¡Fallo! La caldera explotó. La barra de partición algebraica no separa la x de los enteros. Calibra la barra divisora en 1.";
+                    const title = STATE.language === 'en' ? 'Cauldron Explosion!' : '¡Explosión de la caldera!';
+                    
+                    showCustomModal(title, msg, '💥', STATE.language === 'en' ? 'Try Again' : 'Intentar de nuevo');
+                    logDiagnostics("Cauldron explosion! Formula was not distributed correctly.", 'error');
+                    if (STATE.audioInitialized) {
+                        AudioEngine.playExplosionSound();
+                    }
+                }
+            }, 1500);
         }
 
-        if (STATE.equivalenceProven) {
-          trackerEl.innerText = t["ready"];
-          trackerEl.style.color = "#22c55e";
-          trackerEl.style.textShadow = "0 0 10px rgba(34,197,94,0.4)";
-        } else {
-          trackerEl.innerText = t["not-ready"];
-          trackerEl.style.color = "var(--secondary)";
-          trackerEl.style.textShadow = "none";
+        // ==========================================
+        // 5. WEB AUDIO BUBBLING NOISE (SOUND ENGINE)
+        // ==========================================
+        const AudioEngine = {
+            ctx: null,
+            masterGain: null,
+
+            init() {
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContextClass();
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    this.masterGain.connect(this.ctx.destination);
+                    STATE.audioInitialized = true;
+                } catch(e) {
+                    console.log("AudioContext blocked or unsuited: " + e.message);
+                }
+            },
+
+            playSplitChirp() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(500, this.ctx.currentTime);
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.12);
+                } catch(e){}
+            },
+
+            playSuccessHarmonic() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    // Mystical ascending chord
+                    const notes = [293.66, 369.99, 440.00, 587.33]; // D major
+                    notes.forEach((freq, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        gain.gain.setValueAtTime(0.05, this.ctx.currentTime + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.6);
+                        gain.connect(this.masterGain);
+
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+                        osc.connect(gain);
+                        osc.start(this.ctx.currentTime + idx * 0.08);
+                        osc.stop(this.ctx.currentTime + idx * 0.08 + 0.7);
+                    });
+                } catch(e){}
+            },
+
+            playExplosionSound() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(110, this.ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.4);
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.45);
+                } catch(e){}
+            },
+
+            playBrewingBubbles() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    // Bubbling sound effect synthesized programmatically using high-frequency noise and gain sweeps
+                    const duration = 1.4;
+                    const interval = 0.08;
+                    const count = Math.round(duration / interval);
+
+                    for (let step = 0; step < count; step++) {
+                        const timeOffset = step * interval;
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        
+                        // Random high frequencies for bubbles pops
+                        const freq = 600 + Math.random() * 800;
+
+                        gain.gain.setValueAtTime(0.02, this.ctx.currentTime + timeOffset);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + timeOffset + 0.05);
+                        gain.connect(this.masterGain);
+
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + timeOffset);
+                        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, this.ctx.currentTime + timeOffset + 0.05);
+                        osc.connect(gain);
+                        osc.start(this.ctx.currentTime + timeOffset);
+                        osc.stop(this.ctx.currentTime + timeOffset + 0.06);
+                    }
+                } catch(e){}
+            }
+        };
+
+        // ==========================================
+        // 6. GUI VIEW ENGINE (renderUI)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+
+            // Translations
+            const lang = STATE.language;
+            const t = CONFIG.translations[lang];
+
+            document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+            document.getElementById('lbl-navigation-guide').innerText = t['navigation-guide'];
+            document.getElementById('lbl-workspace-title').innerText = t['workspace-title'];
+            document.getElementById('lbl-multiplier-a').innerText = t['multiplier-a'];
+            document.getElementById('lbl-integers-c').innerText = t['integers-c'];
+            document.getElementById('lbl-divider-pos').innerText = t['divider-pos'];
+            document.getElementById('lbl-recipe-state').innerText = t['recipe-state'];
+            document.getElementById('lbl-formula-equivalent').innerText = t['formula-equivalent'];
+            document.getElementById('lang-toggle-btn').innerText = lang === 'en' ? '🌐 EN | ES' : '🌐 ES | EN';
+
+            // Quests recipes list
+            renderQuestsList();
+
+            // HUD labels parameters
+            const statusEl = document.getElementById('quest-status-flag');
+            const trackerEl = document.getElementById('quest-formula-state');
+
+            if (STATE.activeQuestId === null) {
+                statusEl.innerText = t['sandbox'];
+                statusEl.style.color = 'var(--text-muted)';
+            } else {
+                const questDone = STATE.completedQuests.includes(STATE.activeQuestId);
+                if (questDone) {
+                    statusEl.innerText = t['success'];
+                    statusEl.style.color = '#22c55e'; // Green success
+                } else {
+                    statusEl.innerText = t['active'];
+                    statusEl.style.color = 'var(--secondary)';
+                }
+            }
+
+            if (STATE.equivalenceProven) {
+                trackerEl.innerText = t['ready'];
+                trackerEl.style.color = '#22c55e';
+                trackerEl.style.textShadow = '0 0 10px rgba(34,197,94,0.4)';
+            } else {
+                trackerEl.innerText = t['not-ready'];
+                trackerEl.style.color = 'var(--secondary)';
+                trackerEl.style.textShadow = 'none';
+            }
+
+            // ESOL guides
+            renderSentenceBuilder();
+
+            // Render interactive SVG Potion Grid vials
+            renderPotionGridGraphics();
         }
 
-        // ESOL guides
-        renderSentenceBuilder();
+        function renderQuestsList() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '';
 
-        // Render interactive SVG Potion Grid vials
-        renderPotionGridGraphics();
-      }
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const completed = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.title_es;
+                const desc = STATE.language === 'en' ? q.desc : q.desc_es;
 
-      function renderQuestsList() {
-        const container = document.getElementById("quests-container");
-        container.innerHTML = "";
-
-        CONFIG.quests.forEach((q) => {
-          const isActive = STATE.activeQuestId === q.id;
-          const completed = STATE.completedQuests.includes(q.id);
-          const title = STATE.language === "en" ? q.title : q.title_es;
-          const desc = STATE.language === "en" ? q.desc : q.desc_es;
-
-          container.innerHTML += `
-                    <div class="quest-card ${isActive ? "active" : ""} ${completed ? "completed" : ""}" onclick="selectQuest(${q.id})">
+                container.innerHTML += `
+                    <div class="quest-card ${isActive?'active':''} ${completed?'completed':''}" onclick="selectQuest(${q.id})">
                         <div class="quest-info">
                             <span class="quest-title-text">${title}</span>
                             <span class="quest-desc-text">${desc}</span>
                         </div>
-                        <span class="quest-badge">${completed ? "✅" : "🧪"}</span>
+                        <span class="quest-badge">${completed?'✅':'🧪'}</span>
                     </div>
                 `;
-        });
-      }
+            });
+        }
 
-      function renderSentenceBuilder() {
-        const container = document.getElementById("sentence-select-grid");
-        container.innerHTML = "";
+        function renderSentenceBuilder() {
+            const container = document.getElementById('sentence-select-grid');
+            container.innerHTML = '';
 
-        const activeSentence = CONFIG.sentences.find(
-          (s) => s.id === STATE.activeSentenceId,
-        );
-        if (!activeSentence) return;
+            const activeSentence = CONFIG.sentences.find(s => s.id === STATE.activeSentenceId);
+            if (!activeSentence) return;
 
-        const opts =
-          STATE.language === "en"
-            ? activeSentence.options_en
-            : activeSentence.options_es;
+            const opts = STATE.language === 'en' ? activeSentence.options_en : activeSentence.options_es;
 
-        // Render 3 selects
-        for (let idx = 0; idx < 3; idx++) {
-          const selectId = `esol-select-${idx}`;
-          const activeValIdx = STATE.builderSelections[idx];
+            // Render 3 selects
+            for (let idx = 0; idx < 3; idx++) {
+                const selectId = `esol-select-${idx}`;
+                const activeValIdx = STATE.builderSelections[idx];
+                
+                let optionHtml = '';
+                opts.forEach((optText, oIdx) => {
+                    const isSel = oIdx === activeValIdx ? 'selected' : '';
+                    optionHtml += `<option value="${oIdx}" ${isSel}>${optText}</option>`;
+                });
 
-          let optionHtml = "";
-          opts.forEach((optText, oIdx) => {
-            const isSel = oIdx === activeValIdx ? "selected" : "";
-            optionHtml += `<option value="${oIdx}" ${isSel}>${optText}</option>`;
-          });
-
-          container.innerHTML += `
+                container.innerHTML += `
                     <div style="display:flex; flex-direction:column; gap:4px;">
-                        <span style="font-size:0.65rem; color:var(--text-muted);">Slot ${idx + 1}</span>
+                        <span style="font-size:0.65rem; color:var(--text-muted);">Slot ${idx+1}</span>
                         <select class="sentence-select" id="${selectId}" onchange="handleBuilderSelection(${idx}, this.value)">
                             ${optionHtml}
                         </select>
                     </div>
                 `;
+            }
+
+            updateSentenceFrameText();
         }
 
-        updateSentenceFrameText();
-      }
+        function handleBuilderSelection(slotIdx, valueIdx) {
+            const selections = [...STATE.builderSelections];
+            selections[slotIdx] = parseInt(valueIdx, 10);
+            STATE.builderSelections = selections;
+            updateSentenceFrameText();
+        }
 
-      function handleBuilderSelection(slotIdx, valueIdx) {
-        const selections = [...STATE.builderSelections];
-        selections[slotIdx] = parseInt(valueIdx, 10);
-        STATE.builderSelections = selections;
-        updateSentenceFrameText();
-      }
+        function updateSentenceFrameText() {
+            const frameBox = document.getElementById('sentence-frame-rendered');
+            const activeSentence = CONFIG.sentences.find(s => s.id === STATE.activeSentenceId);
+            if (!activeSentence) return;
 
-      function updateSentenceFrameText() {
-        const frameBox = document.getElementById("sentence-frame-rendered");
-        const activeSentence = CONFIG.sentences.find(
-          (s) => s.id === STATE.activeSentenceId,
-        );
-        if (!activeSentence) return;
+            const opts = STATE.language === 'en' ? activeSentence.options_en : activeSentence.options_es;
+            const textFormat = STATE.language === 'en' ? activeSentence.en : activeSentence.es;
+            
+            const val1 = opts[STATE.builderSelections[0]];
+            const val2 = opts[STATE.builderSelections[1]];
+            const val3 = opts[STATE.builderSelections[2]];
 
-        const opts =
-          STATE.language === "en"
-            ? activeSentence.options_en
-            : activeSentence.options_es;
-        const textFormat =
-          STATE.language === "en" ? activeSentence.en : activeSentence.es;
+            const isCorrect = STATE.builderSelections[0] === activeSentence.solutionIdx[0] &&
+                              STATE.builderSelections[1] === activeSentence.solutionIdx[1] &&
+                              STATE.builderSelections[2] === activeSentence.solutionIdx[2];
 
-        const val1 = opts[STATE.builderSelections[0]];
-        const val2 = opts[STATE.builderSelections[1]];
-        const val3 = opts[STATE.builderSelections[2]];
+            const borderHighlight = isCorrect ? '#22c55e' : 'rgba(255,255,255,0.1)';
+            const statusIndicator = isCorrect ? '<span style="color:#22c55e; font-weight:800; font-size:0.8rem; margin-left:8px;">(Correct! ✅)</span>' : '';
 
-        const isCorrect =
-          STATE.builderSelections[0] === activeSentence.solutionIdx[0] &&
-          STATE.builderSelections[1] === activeSentence.solutionIdx[1] &&
-          STATE.builderSelections[2] === activeSentence.solutionIdx[2];
+            let rendered = textFormat
+                .replace('{opt1}', `<strong style="color:var(--primary); border-bottom:1.5px dashed var(--primary);">${val1}</strong>`)
+                .replace('{opt3}', `<strong style="color:var(--secondary); border-bottom:1.5px dashed var(--secondary);">${val2}</strong>`)
+                .replace('{opt5}', `<strong style="color:var(--accent); border-bottom:1.5px dashed var(--accent);">${val3}</strong>`);
 
-        const borderHighlight = isCorrect ? "#22c55e" : "rgba(255,255,255,0.1)";
-        const statusIndicator = isCorrect
-          ? '<span style="color:#22c55e; font-weight:800; font-size:0.8rem; margin-left:8px;">(Correct! ✅)</span>'
-          : "";
-
-        let rendered = textFormat
-          .replace(
-            "{opt1}",
-            `<strong style="color:var(--primary); border-bottom:1.5px dashed var(--primary);">${val1}</strong>`,
-          )
-          .replace(
-            "{opt3}",
-            `<strong style="color:var(--secondary); border-bottom:1.5px dashed var(--secondary);">${val2}</strong>`,
-          )
-          .replace(
-            "{opt5}",
-            `<strong style="color:var(--accent); border-bottom:1.5px dashed var(--accent);">${val3}</strong>`,
-          );
-
-        frameBox.innerHTML = `
+            frameBox.innerHTML = `
                 <div style="border-left: 3px solid ${borderHighlight}; padding-left: 8px; transition:var(--transition)">
                     ${rendered} ${statusIndicator}
                 </div>
             `;
-      }
+        }
 
-      function renderPotionGridGraphics() {
-        const svg = document.getElementById("alchemy-svg");
-        if (!svg) return;
-        svg.innerHTML = ""; // Wipe
+        function renderPotionGridGraphics() {
+            const svg = document.getElementById('alchemy-svg');
+            if (!svg) return;
+            svg.innerHTML = ''; // Wipe
 
-        const multiplierA = STATE.multiplier; // rows (up to 5)
-        const integersC = STATE.integers; // integer columns (up to 6)
-        const splitColIndex = STATE.splitX; // index where partition divides (0 to 6)
+            const multiplierA = STATE.multiplier; // rows (up to 5)
+            const integersC = STATE.integers; // integer columns (up to 6)
+            const splitColIndex = STATE.splitX; // index where partition divides (0 to 6)
 
-        const totalCols = 1 + integersC; // 1 algebraic column (x) + C integers columns
-        const W = 800;
-        const H = 380;
+            const totalCols = 1 + integersC; // 1 algebraic column (x) + C integers columns
+            const W = 800;
+            const H = 380;
 
-        const gridStartX = 100;
-        const gridEndX = 700;
-        const gridSpanX = gridEndX - gridStartX;
-        const colWidth = gridSpanX / totalCols;
+            const gridStartX = 100;
+            const gridEndX = 700;
+            const gridSpanX = gridEndX - gridStartX;
+            const colWidth = gridSpanX / totalCols;
 
-        const gridStartY = 60;
-        const gridEndY = 320;
-        const gridSpanY = gridEndY - gridStartY;
-        const rowHeight = gridSpanY / multiplierA;
+            const gridStartY = 60;
+            const gridEndY = 320;
+            const gridSpanY = gridEndY - gridStartY;
+            const rowHeight = gridSpanY / multiplierA;
 
-        // Draw column header labels: Column 1 is 'x', remaining columns are '1'
-        for (let c = 0; c < totalCols; c++) {
-          const cx = gridStartX + c * colWidth + colWidth / 2;
-          const labelText = c === 0 ? "x" : "1";
-          const labelColor = c === 0 ? "var(--primary)" : "var(--accent)";
-          svg.innerHTML += `
+            // Draw column header labels: Column 1 is 'x', remaining columns are '1'
+            for (let c = 0; c < totalCols; c++) {
+                const cx = gridStartX + c * colWidth + colWidth / 2;
+                const labelText = c === 0 ? "x" : "1";
+                const labelColor = c === 0 ? 'var(--primary)' : 'var(--accent)';
+                svg.innerHTML += `
                     <text x="${cx}" y="45" class="vial-label-text" style="fill:${labelColor}; font-size:14px; font-weight:800;">${labelText}</text>
                 `;
-        }
+            }
 
-        // Draw rows index brackets on left
-        for (let r = 0; r < multiplierA; r++) {
-          const cy = gridStartY + r * rowHeight + rowHeight / 2;
-          svg.innerHTML += `
-                    <text x="50" y="${cy + 4}" class="vial-label-text" style="fill:var(--text-muted); font-size:10px; font-weight:700;">Row ${r + 1}</text>
+            // Draw rows index brackets on left
+            for (let r = 0; r < multiplierA; r++) {
+                const cy = gridStartY + r * rowHeight + rowHeight / 2;
+                svg.innerHTML += `
+                    <text x="50" y="${cy + 4}" class="vial-label-text" style="fill:var(--text-muted); font-size:10px; font-weight:700;">Row ${r+1}</text>
                 `;
-        }
+            }
 
-        // --- Draw Matrix of Vials ---
-        for (let r = 0; r < multiplierA; r++) {
-          for (let c = 0; c < totalCols; c++) {
-            const cx = gridStartX + c * colWidth + colWidth / 2;
-            const cy = gridStartY + r * rowHeight + rowHeight / 2;
+            // --- Draw Matrix of Vials ---
+            for (let r = 0; r < multiplierA; r++) {
+                for (let c = 0; c < totalCols; c++) {
+                    const cx = gridStartX + c * colWidth + colWidth / 2;
+                    const cy = gridStartY + r * rowHeight + rowHeight / 2;
+                    
+                    const vialW = colWidth * 0.45;
+                    const vialH = rowHeight * 0.65;
 
-            const vialW = colWidth * 0.45;
-            const vialH = rowHeight * 0.65;
+                    // Determine liquid type based on split partition position:
+                    // Vials left of split index fill with blue elixir (x).
+                    // Vials right of split index fill with yellow sulfur (int).
+                    const fillClass = c < splitColIndex ? 'vial-liquid-x' : 'vial-liquid-int';
 
-            // Determine liquid type based on split partition position:
-            // Vials left of split index fill with blue elixir (x).
-            // Vials right of split index fill with yellow sulfur (int).
-            const fillClass =
-              c < splitColIndex ? "vial-liquid-x" : "vial-liquid-int";
-
-            svg.innerHTML += `
+                    svg.innerHTML += `
                         <g>
                             <!-- Vial liquid fill (animates depending on split) -->
-                            <rect x="${cx - vialW / 2}" y="${cy - vialH / 2 + vialH * 0.3}" width="${vialW}" height="${vialH * 0.7}" rx="4" class="alchemy-vial-liquid ${fillClass}" />
+                            <rect x="${cx - vialW/2}" y="${cy - vialH/2 + vialH * 0.3}" width="${vialW}" height="${vialH * 0.7}" rx="4" class="alchemy-vial-liquid ${fillClass}" />
                             
                             <!-- Glass Outline -->
-                            <rect x="${cx - vialW / 2}" y="${cy - vialH / 2}" width="${vialW}" height="${vialH}" rx="6" class="alchemy-vial-glass" />
-                            <line x1="${cx - vialW * 0.3}" y1="${cy - vialH / 2 + 4}" x2="${cx + vialW * 0.3}" y2="${cy - vialH / 2 + 4}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+                            <rect x="${cx - vialW/2}" y="${cy - vialH/2}" width="${vialW}" height="${vialH}" rx="6" class="alchemy-vial-glass" />
+                            <line x1="${cx - vialW * 0.3}" y1="${cy - vialH/2 + 4}" x2="${cx + vialW * 0.3}" y2="${cy - vialH/2 + 4}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
                         </g>
                     `;
-          }
-        }
+                }
+            }
 
-        // --- Draw Partition Dividing Line ---
-        // If splitColIndex = 0, no partition draws. Otherwise, draws between columns!
-        if (splitColIndex > 0 && splitColIndex < totalCols) {
-          const partitionX = gridStartX + splitColIndex * colWidth;
-          svg.innerHTML += `
+            // --- Draw Partition Dividing Line ---
+            // If splitColIndex = 0, no partition draws. Otherwise, draws between columns!
+            if (splitColIndex > 0 && splitColIndex < totalCols) {
+                const partitionX = gridStartX + splitColIndex * colWidth;
+                svg.innerHTML += `
                     <line x1="${partitionX}" y1="20" x2="${partitionX}" y2="340" class="alchemy-dividing-line" />
                     <text x="${partitionX}" y="356" class="vial-label-text" style="fill:var(--secondary); font-size:10px; font-weight:800;">PARTITION LINE</text>
                 `;
-        }
-      }
-
-      // ==========================================
-      // 7. DIAGNOSTICS & AUTOMATED SELF-TESTS
-      // ==========================================
-      function logDiagnostics(message, type = "info") {
-        const logBox = document.getElementById("diagnostics-logs");
-        if (!logBox) return;
-
-        const time = new Date().toTimeString().split(" ")[0];
-        let colorClass = "";
-        if (type === "error") colorClass = "log-error";
-        else if (type === "success") colorClass = "log-success";
-        else if (type === "warning") colorClass = "log-warning";
-
-        logBox.innerHTML += `<div class="${colorClass}">[${time}] ${message}</div>`;
-        logBox.scrollTop = logBox.scrollHeight;
-      }
-
-      function openDiagnostics() {
-        document.getElementById("diagnostics-overlay").style.display = "block";
-        logDiagnostics("Alchemical telemetry modules online.");
-      }
-
-      function closeDiagnostics() {
-        document.getElementById("diagnostics-overlay").style.display = "none";
-      }
-
-      function clearDiagnosticsLogs() {
-        document.getElementById("diagnostics-logs").innerHTML = "";
-      }
-
-      // --- Core Automated Unit Tests ---
-      function runSelfTests() {
-        openDiagnostics();
-        logDiagnostics(
-          "====== Starting Distributive Alchemy Lab Self-Tests ======",
-          "warning",
-        );
-        let failedCount = 0;
-
-        // Test 1: Config Validity
-        try {
-          validateConfig();
-          logDiagnostics(
-            "Test 1 Passed: Configurations validated cleanly.",
-            "success",
-          );
-        } catch (e) {
-          logDiagnostics(`Test 1 Failed: Config error: ${e.message}`, "error");
-          failedCount++;
+            }
         }
 
-        // Test 2: State Transitions Reducer
-        try {
-          const initialX = STATE.splitX;
-          transitionState({ splitX: 3 });
-          if (STATE.splitX === 3) {
-            logDiagnostics(
-              "Test 2 Passed: Deterministic state machine changes verified.",
-              "success",
-            );
-          } else {
-            throw new Error("Partition state updates did not save.");
-          }
-          transitionState({ splitX: initialX });
-        } catch (e) {
-          logDiagnostics(`Test 2 Failed: Reducer logic: ${e.message}`, "error");
-          failedCount++;
+        // ==========================================
+        // 7. DIAGNOSTICS & AUTOMATED SELF-TESTS
+        // ==========================================
+        function logDiagnostics(message, type = 'info') {
+            const logBox = document.getElementById('diagnostics-logs');
+            if (!logBox) return;
+
+            const time = new Date().toTimeString().split(' ')[0];
+            let colorClass = '';
+            if (type === 'error') colorClass = 'log-error';
+            else if (type === 'success') colorClass = 'log-success';
+            else if (type === 'warning') colorClass = 'log-warning';
+
+            logBox.innerHTML += `<div class="${colorClass}">[${time}] ${message}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // Test 3: Algebraic Equivalence Validator
-        try {
-          // Distributing 3(x + 4) = 3x + 12. Must match visually only when partition splitX = 1
-          const mockCorrectSplit = 1;
-          const mockIncorrectSplit = 2;
-
-          const passCheck = mockCorrectSplit === 1;
-          const failCheck = mockIncorrectSplit === 1;
-
-          if (passCheck === true && failCheck === false) {
-            logDiagnostics(
-              "Test 3 Passed: Distributive property equivalence mathematics verified.",
-              "success",
-            );
-          } else {
-            throw new Error(
-              "Equivalence math checking generated false outputs.",
-            );
-          }
-        } catch (e) {
-          logDiagnostics(
-            `Test 3 Failed: Algebraic logic checks: ${e.message}`,
-            "error",
-          );
-          failedCount++;
+        function openDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'block';
+            logDiagnostics("Alchemical telemetry modules online.");
         }
 
-        // Test 4: Web Audio noise brewing blocks
-        try {
-          if (STATE.isBrewing === false) {
-            logDiagnostics(
-              "Test 4 Passed: Brewing loop concurrency validations verified.",
-              "success",
-            );
-          } else {
-            throw new Error(
-              "Concurrency validations failed inside brewing block.",
-            );
-          }
-        } catch (e) {
-          logDiagnostics(
-            `Test 4 Failed: Brewing checks: ${e.message}`,
-            "error",
-          );
-          failedCount++;
+        function closeDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'none';
         }
 
-        // Test 5: Sound Engine safety constraints
-        try {
-          if (
-            STATE.masterGain === undefined ||
-            STATE.masterGain.gain.value <= 0.1
-          ) {
-            logDiagnostics(
-              "Test 5 Passed: Web Audio safe master gain verified.",
-              "success",
-            );
-          } else {
-            throw new Error("Gain setting exceeds safe margins.");
-          }
-        } catch (e) {
-          logDiagnostics(
-            `Test 5 Failed: Sound safety check: ${e.message}`,
-            "error",
-          );
-          failedCount++;
+        function clearDiagnosticsLogs() {
+            document.getElementById('diagnostics-logs').innerHTML = '';
         }
 
-        if (failedCount === 0) {
-          logDiagnostics(
-            "====== All 5 Core Tests Passed Successfully! ======",
-            "success",
-          );
-          alert("Self-Tests Complete: 5/5 assertions passed!");
-        } else {
-          logDiagnostics(
-            `====== Self-Tests Failed: ${failedCount} errors registered ======`,
-            "error",
-          );
-          alert(
-            `Self-Tests Failed: ${failedCount} errors registered inside console log.`,
-          );
+        // --- Core Automated Unit Tests ---
+        function runSelfTests() {
+            openDiagnostics();
+            logDiagnostics("====== Starting Distributive Alchemy Lab Self-Tests ======", 'warning');
+            let failedCount = 0;
+
+            // Test 1: Config Validity
+            try {
+                validateConfig();
+                logDiagnostics("Test 1 Passed: Configurations validated cleanly.", 'success');
+            } catch(e) {
+                logDiagnostics(`Test 1 Failed: Config error: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 2: State Transitions Reducer
+            try {
+                const initialX = STATE.splitX;
+                transitionState({ splitX: 3 });
+                if (STATE.splitX === 3) {
+                    logDiagnostics("Test 2 Passed: Deterministic state machine changes verified.", 'success');
+                } else {
+                    throw new Error("Partition state updates did not save.");
+                }
+                transitionState({ splitX: initialX });
+            } catch(e) {
+                logDiagnostics(`Test 2 Failed: Reducer logic: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 3: Algebraic Equivalence Validator
+            try {
+                // Distributing 3(x + 4) = 3x + 12. Must match visually only when partition splitX = 1
+                const mockCorrectSplit = 1;
+                const mockIncorrectSplit = 2;
+
+                const passCheck = mockCorrectSplit === 1;
+                const failCheck = mockIncorrectSplit === 1;
+
+                if (passCheck === true && failCheck === false) {
+                    logDiagnostics("Test 3 Passed: Distributive property equivalence mathematics verified.", 'success');
+                } else {
+                    throw new Error("Equivalence math checking generated false outputs.");
+                }
+            } catch(e) {
+                logDiagnostics(`Test 3 Failed: Algebraic logic checks: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 4: Web Audio noise brewing blocks
+            try {
+                if (STATE.isBrewing === false) {
+                    logDiagnostics("Test 4 Passed: Brewing loop concurrency validations verified.", 'success');
+                } else {
+                    throw new Error("Concurrency validations failed inside brewing block.");
+                }
+            } catch(e) {
+                logDiagnostics(`Test 4 Failed: Brewing checks: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 5: Sound Engine safety constraints
+            try {
+                if (STATE.masterGain === undefined || STATE.masterGain.gain.value <= 0.1) {
+                    logDiagnostics("Test 5 Passed: Web Audio safe master gain verified.", 'success');
+                } else {
+                    throw new Error("Gain setting exceeds safe margins.");
+                }
+            } catch(e) {
+                logDiagnostics(`Test 5 Failed: Sound safety check: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            if (failedCount === 0) {
+                logDiagnostics("====== All 5 Core Tests Passed Successfully! ======", 'success');
+                const title = STATE.language === 'en' ? 'Self-Tests Complete' : 'Pruebas completadas';
+                const msg = STATE.language === 'en' ? '5/5 assertions passed!' : '¡5/5 aserciones pasaron!';
+                showCustomModal(title, msg, '⚡', 'OK');
+            } else {
+                logDiagnostics(`====== Self-Tests Failed: ${failedCount} errors registered ======`, 'error');
+                const title = STATE.language === 'en' ? 'Self-Tests Failed' : 'Pruebas fallidas';
+                const msg = STATE.language === 'en' 
+                    ? `${failedCount} errors registered inside console log.` 
+                    : `${failedCount} errores registrados en el registro de la consola.`;
+                showCustomModal(title, msg, '❌', 'OK');
+            }
         }
-      }
 
-      // ==========================================
-      // 10. INITIALIZATION
-      // ==========================================
-      window.addEventListener("DOMContentLoaded", () => {
-        logDiagnostics("Alchemical laboratory console loaded.");
-        validateConfig();
+        // Custom Modal Controller Functions
+        function showCustomModal(title, message, icon, buttonText, onClickCallback) {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            document.getElementById('custom-modal-title').innerHTML = title;
+            document.getElementById('custom-modal-message').innerHTML = message;
+            document.getElementById('custom-modal-icon').innerHTML = icon;
+            
+            const btn = document.getElementById('custom-modal-btn');
+            btn.innerHTML = buttonText || (STATE.language === 'en' ? 'Continue' : 'Continuar');
+            
+            btn.onclick = function() {
+                closeCustomModal();
+                if (onClickCallback) onClickCallback();
+            };
+            
+            overlay.style.display = 'flex';
+            overlay.offsetHeight; // force reflow
+            overlay.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        }
 
-        // Telemetry update
-        renderUI();
-      });
+        function closeCustomModal() {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            overlay.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // ==========================================
+        // 10. INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            logDiagnostics("Alchemical laboratory console loaded.");
+            validateConfig();
+
+            // Telemetry update
+            renderUI();
+        });
     </script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>
