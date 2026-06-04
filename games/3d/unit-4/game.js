@@ -108,13 +108,15 @@ function makeLevel(level) {
         kind: "distributive",
         a: 36,
         b: 8,
-        prompt: "Set the dial to the GCF of 36 and 8. That is the factor.",
+        prompt:
+          "Rewrite 36 + 8 with the distributive property. Build the GCF you pull out (the count of crates in the bay).",
       },
       {
         kind: "distributive",
         a: 18,
         b: 30,
-        prompt: "Set the dial to the GCF of 18 and 30. That is the factor.",
+        prompt:
+          "Rewrite 18 + 30 with the distributive property. Build the GCF you pull out (the count of crates in the bay).",
       },
       {
         kind: "lcm",
@@ -143,7 +145,16 @@ function roundSpec(r) {
         step: 1,
       };
     case "lcm":
-      return { answer: lcm(r.a, r.b), min: 1, max: r.a * r.b, step: 1 };
+      // LCM answers (12, 15, 24…) are too large to build crate-by-crate, so
+      // these rounds use the SLIDE DIAL like the decimal rounds. `step: 1`
+      // keeps it integer; `useDial` routes it to the dial manipulative.
+      return {
+        answer: lcm(r.a, r.b),
+        min: 1,
+        max: r.a * r.b,
+        step: 1,
+        useDial: true,
+      };
     case "decimal-sum":
       return {
         answer: round2(r.op === "+" ? r.a + r.b : r.a - r.b),
@@ -465,10 +476,12 @@ export default {
         case "decimal-prod":
           return `${fmt(round.a)} ${round.op} ${fmt(round.b)} = ${fmt(value)}`;
         case "distributive": {
+          // Only reveal the rewritten form once the GCF is correct. Until then
+          // show a STABLE goal so the card doesn't flicker "?( ? + ? )".
           const g = value;
-          if (g > 0 && round.a % g === 0 && round.b % g === 0)
-            return `${round.a} + ${round.b} = ${g}(${round.a / g} + ${round.b / g})`;
-          return `${round.a} + ${round.b} = ${g}( ? + ? )`;
+          if (g === spec.answer && round.a % g === 0 && round.b % g === 0)
+            return `${round.a} + ${round.b} = ${g} × (${round.a / g} + ${round.b / g})`;
+          return `${round.a} + ${round.b} = ☐ × (☐ + ☐)`;
         }
         default:
           return "";
@@ -514,16 +527,17 @@ export default {
       spec = roundSpec(round);
       value = spec.min;
 
-      // Whole-number rounds → drag crates into the bay. Decimal rounds → slide
-      // the dial. Show only the relevant manipulables.
-      const whole = spec.step >= 1;
-      supplyCrate.visible = whole;
-      supplyLabel.visible = whole;
-      bay.visible = whole;
-      dial.visible = !whole;
+      // Crate rounds (GCF / distributive — small answers) → drag crates into
+      // the bay. Dial rounds (decimals + LCM — large answers) → slide the dial.
+      // Show only the relevant manipulables.
+      const useCrates = spec.step >= 1 && !spec.useDial;
+      supplyCrate.visible = useCrates;
+      supplyLabel.visible = useCrates;
+      bay.visible = useCrates;
+      dial.visible = !useCrates;
       dial.position.set(0, 1.6, 0);
-      // Seed bay crates to match the starting value (spec.min) for whole rounds.
-      if (whole) syncBayCrates();
+      // Seed bay crates to match the starting value (spec.min) for crate rounds.
+      if (useCrates) syncBayCrates();
 
       setLevelLabel();
       hud.setProgress(roundIndex, cfg.rounds.length);
@@ -573,7 +587,9 @@ export default {
       if (clamped === value) return;
       value = clamped;
       refresh();
-      if (spec.step >= 1) syncBayCrates();
+      // Keep the bay crate count in sync only for crate rounds (GCF /
+      // distributive). Dial rounds (LCM / decimals) hide the bay.
+      if (spec.step >= 1 && !spec.useDial) syncBayCrates();
       feel.sfx(dir > 0 ? "add" : "remove");
       announce(`Dial set to ${readoutText().replace("Dial: ", "")}.`);
     }
@@ -841,6 +857,16 @@ export default {
           round.a % value === 0 &&
           round.b % value === 0
         );
+      // Decimal rounds: a slide can land one step shy of the exact answer
+      // (e.g. 5.65 vs 5.70). Accept anything within half a dial step so a
+      // near-miss on the dial isn't wrongly failed. Whole-number / LCM rounds
+      // (step ≥ 1) stay an exact match.
+      const decimal =
+        round.kind === "decimal-sum" || round.kind === "decimal-prod";
+      if (decimal) {
+        const tol = spec.step / 2;
+        return Math.abs(round2(value) - round2(spec.answer)) <= tol + 1e-9;
+      }
       return round2(value) === round2(spec.answer);
     }
 
@@ -910,7 +936,7 @@ export default {
       );
       if (!reduced) feel.shake(0.28);
 
-      const msg = `Correct! ${equationText()}  +${pts}`;
+      const msg = `Correct! ${equationText()} +${pts}`;
       hud.feedback(true, msg);
       announce(`Correct! ${equationText()}. +${pts} points.`);
 
@@ -1098,16 +1124,16 @@ export default {
             {
               key: "Drag a crate",
               actionEn:
-                "Drag crates from the pallet into the glowing bay — the number of crates is your answer (GCF / LCM / factor rounds)",
+                "Whole-number rounds (GCF & distributive factor): drag crates from the pallet into the glowing bay — the number of crates is your answer",
               actionEs:
-                "Arrastra cajas del palé a la bahía brillante — el número de cajas es tu respuesta",
+                "Rondas de números enteros (MCD y factor distributivo): arrastra cajas del palé a la bahía — el número de cajas es tu respuesta",
             },
             {
-              key: "Drag the dial",
+              key: "Slide the dial",
               actionEn:
-                "On decimal rounds, slide the glowing dial up or down to set the answer",
+                "Decimal & LCM rounds: slide the glowing dial up or down to set the answer (the bay is hidden on these rounds)",
               actionEs:
-                "En rondas decimales, desliza el dial para fijar la respuesta",
+                "Rondas de decimales y MCM: desliza el dial para fijar la respuesta (la bahía se oculta en estas rondas)",
             },
             {
               key: "↑ ↓ / → ←",

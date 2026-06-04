@@ -110,8 +110,8 @@ export default {
     let phaseIndex = 0; // 0-based index into plan.phaseUnits
     let bossMaxHp = 0;
     let bossHp = 0;
-    let hitsThisPhase = 0;
     let streak = 0;
+    let totalScore = 0; // running score total we track ourselves (mirrors onScore)
     let answered = false; // guard against double answers per question
     let gameOver = false;
     let currentQ = null;
@@ -428,7 +428,7 @@ export default {
       currentChoiceOrder = shuffle(currentQ.choices);
       answered = false;
 
-      metaEl.textContent = `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} · ${meta.theme} · ${meta.standard} · Topic: ${currentQ.topic}`;
+      metaEl.textContent = `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} · ${meta.theme} · Topic: ${currentQ.topic}`;
       qEl.textContent = currentQ.q;
       whyEl.hidden = true;
       whyEl.textContent = "";
@@ -499,6 +499,7 @@ export default {
       const dmg = 1;
       const bonus = streak >= 3 ? 5 : 0; // streak bonus points
       const points = 10 + bonus;
+      totalScore += points;
       onScore(points); // engine updates score + streak HUD + progress/persist
       feel.sfx("correct", "Correct! Direct hit.");
       hud.setStreak(streak);
@@ -506,7 +507,6 @@ export default {
       // fire energy bolt from camera toward boss
       fireBolt(() => {
         bossHp = Math.max(0, bossHp - dmg);
-        hitsThisPhase += 1;
         applyDamageVisual();
         // hit reaction: flash core, burst, shake, recoil
         flashCore(0x9bffea);
@@ -600,6 +600,7 @@ export default {
       if (gameOver) return;
       const { meta } = phaseIndexUnitMeta();
       feel.sfx("fanfare", `${meta.title} defeated!`);
+      totalScore += 25;
       onScore(25); // phase-clear bonus
       if (!reduced)
         feel.burst(boss.position.clone().add(new THREE.Vector3(0, 0.5, 1)), {
@@ -633,7 +634,6 @@ export default {
     function startPhase() {
       bossMaxHp = plan.hitsForPhase(phaseIndex);
       bossHp = bossMaxHp;
-      hitsThisPhase = 0;
       refillPhaseQueue();
       applyDamageVisual();
     }
@@ -845,7 +845,7 @@ export default {
           life: 1.6,
         });
       }
-      const stats = `Final score: ${ctxScore()} · All ${plan.phaseUnits.length} phases cleared · ${"♥".repeat(Math.max(0, lives))} lives left`;
+      const stats = `Final score: ${totalScore} · All ${plan.phaseUnits.length} phases cleared · ${"♥".repeat(Math.max(0, lives))} lives left`;
       if (clarity) {
         clarity.win({
           badge: "🏆",
@@ -862,7 +862,7 @@ export default {
         );
         wireRestart();
       }
-      announce(`Victory! You defeated the boss. Final score ${ctxScore()}.`);
+      announce(`Victory! You defeated the boss. Final score ${totalScore}.`);
     }
 
     function loseGame() {
@@ -872,7 +872,7 @@ export default {
       panel.classList.add("bb-hidden");
       hpWrap.classList.add("bb-hidden");
       const { meta } = phaseIndexUnitMeta();
-      const stats = `You fell on Phase ${phaseIndex + 1}: ${meta.title}. Score: ${ctxScore()} — review ${meta.theme} (${meta.standard}) and try again!`;
+      const stats = `You fell on Phase ${phaseIndex + 1}: ${meta.title}. Score: ${totalScore} — review ${meta.theme} (${meta.standard}) and try again!`;
       if (clarity) {
         clarity.lose({
           badge: "💥",
@@ -889,15 +889,7 @@ export default {
         );
         wireRestart();
       }
-      announce(`Defeated on phase ${phaseIndex + 1}. Score ${ctxScore()}.`);
-    }
-
-    function ctxScore() {
-      // The engine owns the running total; mirror it from the HUD score text.
-      const el = document.querySelector('[data-hud="score"]');
-      if (!el) return 0;
-      const m = el.textContent.match(/-?\d+/);
-      return m ? m[0] : 0;
+      announce(`Defeated on phase ${phaseIndex + 1}. Score ${totalScore}.`);
     }
 
     function wireRestart() {
@@ -979,22 +971,24 @@ export default {
           standard: `${plan.phaseUnits.length} phases · all Grade 6 units (6.RP, 6.NS, 6.EE, 6.G, 6.SP)`,
           controls: [
             {
-              key: "Tap / Click",
-              actionEn: "Choose an answer to fire an attack at the boss",
-              actionEs: "Toca una respuesta para atacar al jefe",
+              key: "Tap / Click a choice",
+              actionEn:
+                "Choose an answer to fire an attack at the boss (on a tablet, just tap an answer)",
+              actionEs:
+                "Toca una respuesta para atacar al jefe (en una tableta, solo toca una respuesta)",
             },
             {
-              key: "1–4",
+              key: "Keyboard: 1–4",
               actionEn: "Pick answer A, B, C, or D by number",
               actionEs: "Elige la respuesta A, B, C o D por número",
             },
             {
-              key: "A–D",
+              key: "Keyboard: A–D",
               actionEn: "Pick an answer by its letter",
               actionEs: "Elige una respuesta por su letra",
             },
             {
-              key: "Tab / Enter",
+              key: "Keyboard: Tab / Enter",
               actionEn: "Move between answers and confirm the focused one",
               actionEs: "Muévete entre respuestas y confirma con Enter",
             },

@@ -88,8 +88,8 @@ export function createInput(domEl) {
   // On-screen touch controls (touch devices only)
   let touchUi = null;
   if (isTouch) {
-    touchUi = buildTouchUi(domEl.parentNode || domEl, state, () =>
-      fire(pressListeners, "action"),
+    touchUi = buildTouchUi(domEl.parentNode || domEl, state, (name) =>
+      fire(pressListeners, name),
     );
   }
 
@@ -129,7 +129,7 @@ export function createInput(domEl) {
   };
 }
 
-function buildTouchUi(host, state, fireAction) {
+function buildTouchUi(host, state, firePress) {
   const wrap = document.createElement("div");
   wrap.className = "e3d-touch";
   wrap.innerHTML = `
@@ -139,9 +139,14 @@ function buildTouchUi(host, state, fireAction) {
       <button data-dir="right" class="e3d-tbtn e3d-right">▶</button>
       <button data-dir="down" class="e3d-tbtn e3d-down">▼</button>
     </div>
+    <button data-dir="confirm" class="e3d-tbtn e3d-confirm" aria-label="Check / Confirm">✓</button>
     <button data-dir="action" class="e3d-tbtn e3d-action" aria-label="Action">●</button>`;
   injectTouchStyles();
 
+  // Buttons that fire a one-shot named "press" (like keyboard Space/Enter) on
+  // touchdown, in addition to setting held state. "confirm" was previously
+  // unreachable on touch, which broke submit/check on tablets.
+  const PRESS_BTNS = { action: true, confirm: true };
   wrap.querySelectorAll("[data-dir]").forEach((btn) => {
     const dir = btn.getAttribute("data-dir");
     const down = (e) => {
@@ -149,18 +154,13 @@ function buildTouchUi(host, state, fireAction) {
       // Stop the event reaching the canvas so a game using onTap on the
       // canvas does not also fire a tap when the on-screen control is pressed.
       e.stopPropagation();
-      if (dir === "action") {
-        state.action = true;
-        fireAction();
-      } else {
-        state[dir] = true;
-      }
+      state[dir] = true;
+      if (PRESS_BTNS[dir]) firePress(dir);
     };
     const up = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      if (dir === "action") state.action = false;
-      else state[dir] = false;
+      state[dir] = false;
     };
     btn.addEventListener("pointerdown", down);
     btn.addEventListener("pointerup", up);
@@ -185,6 +185,9 @@ function injectTouchStyles() {
   .e3d-up{left:52px;top:0;} .e3d-down{left:52px;top:104px;}
   .e3d-left{left:0;top:52px;} .e3d-right{left:104px;top:52px;}
   .e3d-action{position:absolute;right:24px;bottom:40px;width:70px;height:70px;
-    border-radius:50%;background:rgba(31,166,162,.9);font-size:26px;pointer-events:auto;}`;
+    border-radius:50%;background:rgba(31,166,162,.9);font-size:26px;pointer-events:auto;}
+  .e3d-confirm{position:absolute;right:104px;bottom:54px;width:56px;height:56px;
+    border-radius:50%;background:rgba(34,197,94,.92);color:#fff;font-size:24px;
+    font-weight:700;pointer-events:auto;}`;
   document.head.appendChild(s);
 }

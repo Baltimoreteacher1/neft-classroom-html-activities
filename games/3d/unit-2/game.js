@@ -469,9 +469,7 @@ export default {
           orderTxt +
           ". Add 1 over " +
           round.denom +
-          " slices, then serve. Answer: " +
-          orderTxt +
-          ".",
+          " slices, then serve.",
       );
       if (cfg.hints)
         hud.message(
@@ -511,20 +509,28 @@ export default {
       round._sum = sum;
       round._targetUnits = (sum.n * builtDenom) / sum.d;
       round._orderTxt =
-        round.a.n + "/" + round.a.d + " + " + round.b.n + "/" + round.b.d;
-      setOrderLabel("Order: " + round._orderTxt + " = " + sum.n + "/" + sum.d);
+        "Make " +
+        sum.n +
+        "/" +
+        sum.d +
+        " using 1/" +
+        round.a.d +
+        " and 1/" +
+        round.b.d +
+        " slices";
+      setOrderLabel("Order: " + round._orderTxt);
       announce(
         "Order " +
           (roundIndex + 1) +
-          ". Add both slice sizes to make " +
+          ". Use the 1 over " +
+          round.a.d +
+          " and 1 over " +
+          round.b.d +
+          " slices to make " +
           sum.n +
           " over " +
           sum.d +
-          ", then serve. Answer: " +
-          sum.n +
-          " over " +
-          sum.d +
-          ".",
+          ", then serve.",
       );
     }
 
@@ -603,9 +609,7 @@ export default {
           round.unitDenom +
           " scoops fill " +
           round.whole +
-          " cups? Scoop them all, then serve. Answer: " +
-          round._answer +
-          ".",
+          " cups? Scoop them all, then serve.",
       );
     }
 
@@ -630,11 +634,9 @@ export default {
           round.whole +
             " ÷ 1/" +
             round.unitDenom +
-            " = " +
-            round._answer +
-            ". Scoop " +
-            round._answer +
-            ", then SERVE. Scooped: " +
+            " = ? Scoop 1/" +
+            round.unitDenom +
+            " until the cups are full, then SERVE. Scooped: " +
             scoopCount +
             ".",
         );
@@ -1122,7 +1124,9 @@ export default {
           });
         }
 
-        caption("Match the gold order, then tap green SERVE.");
+        caption(
+          "Match the gold order, then Serve (tap the green button or press Enter).",
+        );
 
         // Begin the actual round loop + input binding only after the student
         // presses Start in the clarity overlay. This is the single entry point
@@ -1178,8 +1182,16 @@ export default {
             "Read each bakery order, build or scoop the exact fraction on the plate, then Serve to fill it.",
           objectiveEs:
             "Lee cada orden, arma o sirve la fracción exacta en el plato y pulsa Servir.",
-          standard: "6.NS.A.1 · Dividing Fractions & Mixed Numbers",
+          standard:
+            "6.NS.A.1 · Fractions: build, combine & divide by a unit fraction",
           controls: [
+            {
+              key: "No buttons",
+              actionEn:
+                "There is no on-screen button bar — drag a slice onto the plate, or use ← → to pick a tool and Space to use it. Press Enter to Serve.",
+              actionEs:
+                "No hay botones en pantalla — arrastra una porción al plato, o usa ← → para elegir una herramienta y Espacio para usarla. Pulsa Enter para servir.",
+            },
             {
               key: "Drag / Click",
               actionEn:

@@ -519,7 +519,13 @@ export default {
     function objectiveText() {
       if (!phase) return "";
       if (phase.kind === "plant") {
-        return `Plant vertex ${phase.idx + 1} of ${shape.verts.length} at (${phase.x}, ${phase.y}). Then place it.`;
+        // Level 1 (hints) scaffolds with the literal target pair. Level 2 hides
+        // it — naming the vertex generically so students read it off the
+        // blueprint instead of being handed the coordinates.
+        if (cfg.hints) {
+          return `Plant vertex ${phase.idx + 1} of ${shape.verts.length} at (${phase.x}, ${phase.y}). Then place it.`;
+        }
+        return `Plant vertex ${phase.idx + 1} of ${shape.verts.length} from the blueprint, then place it.`;
       }
       if (phase.kind === "measure") {
         const s = phase.side;
@@ -542,7 +548,10 @@ export default {
     function targetChipText() {
       if (!phase) return null;
       if (phase.kind === "plant")
-        return `Plant vertex ${phase.idx + 1} → (${phase.x}, ${phase.y})`;
+        // Match objectiveText: keep the literal pair only in Level 1 (scaffold).
+        return cfg.hints
+          ? `Plant vertex ${phase.idx + 1} → (${phase.x}, ${phase.y})`
+          : `Plant vertex ${phase.idx + 1} from the blueprint`;
       if (phase.kind === "measure") {
         const s = phase.side;
         return `Measure side to (${s.b.x}, ${s.b.y})`;
@@ -551,18 +560,48 @@ export default {
       return null;
     }
 
-    // Gold "perimeter pad" sits a little above the top edge of the shape so the
-    // student has a clear spot to step onto to confirm the perimeter. We pick a
-    // free in-range lattice point near the centroid's top.
+    // Gold "perimeter pad" gives the student a clear spot to step onto to
+    // confirm the perimeter. It must NEVER fuse with the shape, so we search for
+    // an in-range lattice point that is not a vertex and not on any polygon
+    // edge. We prefer points just above the top edge near the centroid, then
+    // scan outward, and finally fall back to a guaranteed-empty grid corner.
+    function onShape(x, y) {
+      const vs = shape.verts;
+      for (let i = 0; i < vs.length; i++) {
+        const a = vs[i];
+        const b = vs[(i + 1) % vs.length];
+        if (a.x === x && a.y === y) return true; // a vertex
+        // Only axis-aligned edges occur in these blueprints. Check collinear +
+        // between the endpoints for both orientations.
+        if (a.x === b.x && x === a.x) {
+          if (y >= Math.min(a.y, b.y) && y <= Math.max(a.y, b.y)) return true;
+        } else if (a.y === b.y && y === a.y) {
+          if (x >= Math.min(a.x, b.x) && x <= Math.max(a.x, b.x)) return true;
+        }
+      }
+      return false;
+    }
     function perimeterPadCoord() {
       const xs = shape.verts.map((v) => v.x);
       const ys = shape.verts.map((v) => v.y);
       const cx = Math.round(xs.reduce((a, b) => a + b, 0) / xs.length);
-      let py = Math.max(...ys);
-      // place one row above the top edge if it fits, else on the top edge
-      let pad = { x: cx, y: py + 1 };
-      if (!inRange(pad.x, pad.y)) pad = { x: cx, y: py };
-      return pad;
+      const topY = Math.max(...ys);
+      // Preferred candidates first: directly above the top edge near centroid.
+      const preferred = [
+        { x: cx, y: topY + 1 },
+        { x: cx, y: topY + 2 },
+      ];
+      for (const p of preferred) {
+        if (inRange(p.x, p.y) && !onShape(p.x, p.y)) return p;
+      }
+      // Otherwise scan the whole grid for the first free off-shape point.
+      for (let y = cfg.maxCoord; y >= cfg.minCoord; y--) {
+        for (let x = cfg.minCoord; x <= cfg.maxCoord; x++) {
+          if (!onShape(x, y)) return { x, y };
+        }
+      }
+      // Last resort: a grid corner (shapes never reach the extreme corner).
+      return { x: cfg.minCoord, y: cfg.minCoord };
     }
     let pad = null;
 
@@ -934,7 +973,7 @@ export default {
               actionEs: "Mueve la baliza arriba o abajo — cambia la y",
             },
             {
-              key: "Space / Enter",
+              key: "● / Space / Enter",
               actionEn:
                 "Place the beacon to plant a vertex or check a measurement (the ● button too)",
               actionEs:

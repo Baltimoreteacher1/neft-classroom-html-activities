@@ -49,7 +49,6 @@ function makeLevel(level) {
         { kind: "ratio", a: 1, b: 2 },
         { kind: "ratio", a: 2, b: 3 },
         { kind: "ratio", a: 3, b: 2 },
-        { kind: "ratio", a: 2, b: 4 }, // equivalent to 1:2
       ],
     };
   }
@@ -494,7 +493,7 @@ export default {
       const [ba, bb] = simplify(round.a, round.b);
       // Ratio-table framing: show the recipe and the order's yellow count, but
       // NOT the red answer — the student works it out from the ratio and builds.
-      const text = `Recipe ${ba} red : ${bb} yellow.  Fill the order — ? red : ${round.b} yellow (keep the same ratio).  You have ${ratioText()}.`;
+      const text = `Recipe ${ba} red : ${bb} yellow. Make ${round.b} yellow with the matching red, then Serve. You have ${ratioText()}.`;
       hud.setObjective(text);
       if (clarity) clarity.setObjective(text);
     }
@@ -664,7 +663,7 @@ export default {
     function finish() {
       hud.setObjective("Done! You served every order. Great work!");
       hud.message("All done! 🎉", { tone: "ok", duration: 0 });
-      setCard(["Smoothie Stand", "All done! 🎉"], "#4aa978");
+      setCard(["Smoothie Stand", "All done!"], "#4aa978");
       feel.sfx("fanfare");
       if (!reduced) {
         [0, 200, 420].forEach((ms, i) =>
@@ -889,30 +888,37 @@ export default {
           standard: "6.RP.A.1–3 · Ratios & Unit Rates",
           controls: [
             {
-              key: "🍓 / 🍌",
+              key: "Tap",
               actionEn:
-                "Tap a fruit bin (or the on-screen + buttons) to add a scoop",
-              actionEs: "Toca una fruta o los botones + para agregar una bola",
+                "Tap a 🍓/🍌 fruit bin (or the on-screen + buttons) to add a scoop",
+              actionEs:
+                "Toca una fruta 🍓/🍌 o los botones + para agregar una bola",
             },
             {
-              key: "← / ↑",
-              actionEn: "Add a red (strawberry) scoop",
-              actionEs: "Agrega una bola roja (fresa)",
+              key: "↑ / →",
+              actionEn:
+                "Add a red (strawberry) scoop (on price/▢ rounds: raise your number)",
+              actionEs:
+                "Agrega una bola roja (fresa) (en rondas de precio/▢: sube tu número)",
             },
             {
-              key: "→ / ↓",
-              actionEn: "Add a yellow (banana) scoop",
-              actionEs: "Agrega una bola amarilla (plátano)",
+              key: "↓ / ←",
+              actionEn:
+                "Add a yellow (banana) scoop (on price/▢ rounds: lower your number)",
+              actionEs:
+                "Agrega una bola amarilla (plátano) (en rondas de precio/▢: baja tu número)",
             },
             {
               key: "Enter",
-              actionEn: "Remove the last scoop (the − buttons also remove)",
-              actionEs: "Quita la última bola (los botones − también quitan)",
+              actionEn:
+                "Remove the last scoop (the − buttons also remove); on price/▢ rounds it serves",
+              actionEs:
+                "Quita la última bola (los botones − también quitan); en rondas de precio/▢ sirve",
             },
             {
               key: "Space",
-              actionEn: "Serve — check if your scoops match the order",
-              actionEs: "Sirve — revisa si tus bolas igualan la orden",
+              actionEn: "Serve — check if your answer matches the order",
+              actionEs: "Sirve — revisa si tu respuesta iguala la orden",
             },
             {
               key: "?",
@@ -921,7 +927,7 @@ export default {
             },
           ],
           howToWinEn:
-            "Match every order's ratio (or find the unit rate) and Serve. Clear all orders to win. Equivalent ratios like 2:3 and 4:6 both count!",
+            "Read each order, add the matching red and yellow scoops, then Serve. Clear every order to win.",
           howToWinEs:
             "Iguala la razón de cada orden y sirve. Completa todas para ganar.",
           onStart: beginGameplay,
