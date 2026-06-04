@@ -154,6 +154,13 @@ function lessonResources(id) {
 
   if (has("lessons", id, "index.html")) {
     pills.push(resLink("Interactive Lesson", `/lessons/${id}/`, true));
+    pills.push(
+      resLink(
+        "Google Slides",
+        `https://eduwonderlab.vercel.app/google-slides/?lesson=${encodeURIComponent(id)}`,
+        true
+      )
+    );
   }
   if (has("lessons", id, "notes.html")) {
     pills.push(resLink("Guided Notes", `/lessons/${id}/notes.html`, true));
