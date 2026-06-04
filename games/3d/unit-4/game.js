@@ -895,6 +895,9 @@ export default {
         announce(tip);
         return;
       }
+      // Snap to the exact answer so the win readout shows the true value
+      // (e.g. 5.7), not a dialed value accepted within tolerance (e.g. 5.65).
+      value = round2(spec.answer);
       win();
     }
 
