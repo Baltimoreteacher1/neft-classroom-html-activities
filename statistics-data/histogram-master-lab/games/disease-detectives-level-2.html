@@ -1076,7 +1076,7 @@
 
       <section class="tab" data-tab="1" id="tab-1">
         <div class="panel blue">
-          <span class="badge">2 • Histogram Bootcamp</span>
+          <span class="badge">2 • Histogram Bootcamp (Optional)</span>
           <h2>Histogram or bar graph?</h2>
           <p class="lead">A histogram groups <strong>numbers</strong> into intervals. A bar graph compares <strong>categories</strong>.</p>
           <div class="grid two">
@@ -1089,7 +1089,7 @@
             <div class="dropzone" id="barZone" onclick="placeSelected('bar')"><h4>Bar graph: categories</h4></div>
           </div>
           <div class="card-bank" id="sortBank"></div>
-          <div class="btn-row"><button class="btn" onclick="checkSort()">Check Sort</button><button class="btn ghost" onclick="resetSort()">Reset Cards</button><button id="skipBootcampBtn" class="btn ghost" style="display:none;" onclick="skipBootcamp()">Skip Bootcamp</button></div>
+          <div class="btn-row"><button class="btn" onclick="checkSort()">Check Sort</button><button class="btn ghost" onclick="resetSort()">Reset Cards</button><button id="skipBootcampBtn" class="btn ghost" onclick="skipBootcamp()">Skip Bootcamp</button></div>
           <div class="feedback" id="sortFeedback"></div>
         </div>
         <div class="grid two" style="margin-top:18px">
@@ -1320,7 +1320,7 @@
 
   <script>
     const tabs = [
-      'Setup','Bootcamp','Source Hunt','Chart Detective','Build Lab','Challenge','Final Report'
+      'Setup','Bootcamp (Optional)','Source Hunt','Chart Detective','Build Lab','Challenge','Final Report'
     ];
     const sourceLinks = [
       {abbr:'WHO', title:'WHO Global Health Observatory', url:'https://www.who.int/data/gho', desc:'Search many health indicators across WHO Member States. Look for a map, chart, or country comparison.'},
@@ -1799,7 +1799,7 @@ document.addEventListener('click', e => { if(e.target.matches('button, .data-car
       if(type==='good'&&typeof AudioSynth!=='undefined')AudioSynth.success();
       else if((type==='warn'||type==='bad')&&typeof AudioSynth!=='undefined')AudioSynth.error();
     }function goTab(i){
-      const unlocked = i===0 || state.completed[i-1] || state.completed[i];
+      const unlocked = i===0 || (i===2 ? state.completed[0] : state.completed[i-1]) || state.completed[i];
       if(!unlocked){showToast('Complete the previous tab first.');return;}
       state.currentTab=i;
       document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1811,7 +1811,7 @@ document.addEventListener('click', e => { if(e.target.matches('button, .data-car
     function previousTab(){const prev=Math.max(0,state.currentTab-1);goTab(prev)}
     function startQuest(){goTab(0);document.getElementById('studentName').focus();}
     function updateProgress(){
-      const unlockedTabs=tabs.map((_,i)=>i===0||state.completed[i-1]||state.completed[i]);
+      const unlockedTabs=tabs.map((_,i)=>i===0||(i===2 ? state.completed[0] : state.completed[i-1])||state.completed[i]);
       document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('locked',!unlockedTabs[i]));
       const pct=Math.round((state.completed.filter(Boolean).length/tabs.length)*100);
       document.getElementById('progressFill').style.width=pct+'%';
