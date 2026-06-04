@@ -671,6 +671,17 @@
               ).toLowerCase();
             } catch (e) {}
             setMode(want === "edit" ? "edit" : "post");
+            // Deep-link: ?lesson=1-1 pre-filters to that lesson (used by the
+            // curriculum lesson cards so each lesson opens straight to its forms).
+            try {
+              var wantLesson = new URLSearchParams(location.search).get(
+                "lesson",
+              );
+              if (wantLesson) {
+                qEl.value = wantLesson;
+                render(wantLesson);
+              }
+            } catch (e) {}
           })
           .catch(function (e) {
             listEl.innerHTML =
