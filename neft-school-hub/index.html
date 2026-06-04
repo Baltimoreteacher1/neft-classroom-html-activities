@@ -3946,6 +3946,10 @@
       async function apiReq(method, path, body) {
         const headers = { Accept: "application/json" };
         if (body !== undefined) headers["Content-Type"] = "application/json";
+        // Bearer token (works cross-site on Safari/Chrome where the third-party
+        // session cookie is blocked). Cookie still sent as a fallback.
+        const _tok = lsGet("nsh:token", null);
+        if (_tok) headers["Authorization"] = "Bearer " + _tok;
         const res = await fetch(NSH_API_BASE + path, {
           method,
           headers,
@@ -4303,6 +4307,7 @@
       nshSignOut = function () {
         if (USE_API) {
           audit("Sign out");
+          localStorage.removeItem("nsh:token");
           window.location =
             NSH_API_BASE +
             "/auth/logout?redirect=" +
@@ -4312,6 +4317,17 @@
         _nshSignOut();
       };
       window.nshSignOut = nshSignOut;
+
+      // Returning from Google sign-in: the Worker put the session token in the
+      // URL fragment. Store it for Bearer auth, switch to API mode, clean URL.
+      (function captureAuthToken() {
+        const m = location.hash.match(/[#&]nsh_token=([^&]+)/);
+        if (!m) return;
+        lsSet("nsh:token", decodeURIComponent(m[1]));
+        lsSet("nsh:useapi", "1");
+        USE_API = true;
+        history.replaceState(null, "", location.pathname + location.search);
+      })();
 
       nshApplyGateMode();
 
