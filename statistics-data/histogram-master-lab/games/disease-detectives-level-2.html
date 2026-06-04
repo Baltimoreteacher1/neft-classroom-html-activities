@@ -1985,7 +1985,7 @@ document.addEventListener('click', e => { if(e.target.matches('button, .data-car
     }
     function updateGuideForVersion(){
       const guide=document.querySelector('#guideTitle');
-      if(guide) guide.textContent=SUPPORT_VARIANT==='esol'?'Student Help: ESOL + Visual Edition':'Student Help: Regular Edition';
+      if(guide) guide.textContent=SUPPORT_VARIANT==='esol'?'Student Help: Extra Support + Visual Edition':'Student Help: Regular Edition';
       const modal=document.querySelector('#modalBackdrop .modal .stepper');
       if(modal && !modal.dataset.versionReady){
         modal.dataset.versionReady='1';
@@ -2016,7 +2016,7 @@ document.addEventListener('click', e => { if(e.target.matches('button, .data-car
         const extra=SUPPORT_VARIANT==='esol'?`<span class="term-spanish">${escapeHtml(info.spanish||'')}</span>`:'';
         return `<div class="help-definition"><h3>${escapeHtml(info.title)}</h3><p>${escapeHtml(info.simple)}</p><div class="example">${escapeHtml(info.example)}</div>${extra}</div>`;
       }).join('');
-      document.getElementById('languageHelpTitle').textContent=SUPPORT_VARIANT==='esol'?'ESOL Word Help':'Word Help';
+      document.getElementById('languageHelpTitle').textContent=SUPPORT_VARIANT==='esol'?'Word Help':'Word Help';
       document.getElementById('languageHelpSubtitle').textContent=SUPPORT_VARIANT==='esol'?'Use these words to read sources, charts, and questions.':'Use these words while reading and explaining histograms.';
       document.getElementById('languageHelpContent').innerHTML=html;
       document.getElementById('languageHelpBackdrop').classList.add('show');
