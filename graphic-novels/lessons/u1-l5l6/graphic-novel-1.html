@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #1 &middot; Decimal Docking Bay</title>
+    <style>
+      :root {
+        --bg:#0a1228; --ink:#f4f7ff; --muted:#aebbdd; --accent:#ff8a3d;
+        --accent2:#3da5ff; --panel:#13234d; --line:#2a4378; --ok:#39d98a;
+        --bad:#ff6b6b; --bubble:#fffdf7; --bubble-ink:#16213d;
+        --font:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+      }
+      *{box-sizing:border-box;margin:0;padding:0;}
+      html,body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;}
+      body{min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+      img{max-width:100%;display:block;}
+      a{color:var(--accent2);}
+      .topbar{position:sticky;top:0;z-index:30;background:rgba(10,18,40,0.96);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
+      .topbar-inner{max-width:1000px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+      .home{min-height:44px;display:flex;align-items:center;text-decoration:none;color:var(--muted);font-size:0.85rem;border:1px solid var(--line);border-radius:10px;padding:0 12px;}
+      .home:hover{color:var(--ink);}
+      .title{font-size:1rem;font-weight:700;}
+      .title .v{color:var(--accent);}
+      .progress-wrap{flex:1;min-width:160px;display:flex;align-items:center;gap:8px;}
+      .progress{flex:1;height:10px;background:#0b1530;border:1px solid var(--line);border-radius:999px;overflow:hidden;}
+      .progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width 0.4s ease;}
+      .progress-label{font-size:0.75rem;color:var(--muted);white-space:nowrap;}
+      .tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;max-width:1000px;margin:0 auto;width:100%;scrollbar-width:thin;}
+      .tab{flex:0 0 auto;min-height:44px;display:flex;align-items:center;gap:6px;background:#0e1c40;border:1px solid var(--line);color:var(--muted);border-radius:12px;padding:8px 14px;font-size:0.9rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+      .tab[aria-selected="true"]{background:linear-gradient(135deg,var(--accent),#ff6a3d);color:#1a0d02;border-color:transparent;}
+      .tab:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .tab.locked{opacity:0.5;cursor:not-allowed;}
+      .tab .lk{font-size:0.8rem;}
+      main{flex:1;width:100%;max-width:1000px;margin:0 auto;padding:14px;}
+      .scene{display:none;}
+      .scene.active{display:block;animation:fade 0.35s ease;}
+      @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+      .art{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0b1530;aspect-ratio:16/9;}
+      .art img{width:100%;height:100%;object-fit:cover;}
+      /* Graceful fallback when panel art is unavailable (same as units 8/9) */
+      .art img.art-missing{display:none;}
+      .art.art-fallback::after{content:attr(data-fallback);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--muted);font-size:0.9rem;font-style:italic;background:repeating-linear-gradient(135deg,#0b1530,#0b1530 12px,#0e1c40 12px,#0e1c40 24px);}
+      .scene-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+      .scene-head h2{font-size:clamp(1.2rem,3.5vw,1.7rem);}
+      .scene-head .act{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);}
+      .dialogue{margin-top:14px;min-height:96px;}
+      .bubble{background:var(--bubble);color:var(--bubble-ink);border-radius:16px;padding:14px 16px;position:relative;box-shadow:0 8px 20px -10px rgba(0,0,0,0.6);animation:fade 0.25s ease;}
+      .bubble .who{font-weight:800;color:#c2461d;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+      .bubble .en{font-size:1.05rem;}
+      .bubble .es{font-size:0.92rem;color:#566677;margin-top:6px;font-style:italic;}
+      .bubble.caption{background:#0e1c40;color:var(--ink);border:1px solid var(--line);}
+      .bubble.caption .es{color:var(--muted);}
+      .dlg-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px;flex-wrap:wrap;}
+      .dots{display:flex;gap:5px;}
+      .dots i{width:8px;height:8px;border-radius:50%;background:#2a4378;}
+      .dots i.on{background:var(--accent);}
+      .next{min-height:44px;background:linear-gradient(135deg,var(--accent2),#5d7bff);color:#02112a;border:none;border-radius:12px;padding:10px 18px;font-weight:800;font-size:1rem;cursor:pointer;}
+      .next:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .next[disabled]{opacity:0.4;cursor:default;}
+      .challenge{margin-top:16px;background:#0e1c40;border:1px solid var(--line);border-radius:16px;padding:16px;}
+      .challenge h3{font-size:1.05rem;margin-bottom:4px;color:var(--accent);}
+      .challenge .prompt{font-size:1.05rem;margin-bottom:6px;}
+      .challenge .prompt .es{display:block;font-size:0.9rem;color:var(--muted);font-style:italic;margin-top:4px;}
+      .chal-grid{display:flex;flex-direction:column;gap:16px;}
+      @media (min-width:768px){
+        .chal-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:24px;align-items:start;}
+        .chal-left{border-right:1px dashed rgba(42,67,120,0.4);padding-right:24px;}
+      }
+      .hint{font-size:0.9rem;color:#ffd9b3;background:#3a2410;border:1px solid #7a4d1f;border-radius:10px;padding:8px 12px;margin:8px 0;}
+      .hint b{color:var(--accent);}
+      .choices{display:grid;gap:10px;margin-top:10px;}
+      .choice{min-height:48px;text-align:left;background:#13234d;border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:1rem;cursor:pointer;font-family:var(--font);}
+      .choice:hover{border-color:var(--accent2);}
+      .choice:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .choice.correct{border-color:var(--ok);background:#10351f;}
+      .choice.wrong{border-color:var(--bad);background:#3a1414;}
+      .feedback{margin-top:12px;border-radius:12px;padding:12px 14px;font-size:1rem;display:none;}
+      .feedback.show{display:block;animation:fade 0.25s ease;}
+      .feedback.good{background:#10351f;border:1px solid var(--ok);color:#c8ffe0;}
+      .feedback.bad{background:#3a1414;border:1px solid var(--bad);color:#ffd5d5;}
+      .feedback .es{display:block;font-style:italic;color:#9fd;opacity:0.85;margin-top:4px;font-size:0.9rem;}
+      .frame{margin-top:12px;font-size:0.92rem;color:var(--muted);background:#0b1530;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;}
+      .frame b{color:var(--accent2);}
+      .scene-foot{margin-top:18px;display:flex;justify-content:flex-end;}
+      .advance{min-height:48px;background:linear-gradient(135deg,var(--accent),#ff6a3d);color:#1a0d02;border:none;border-radius:12px;padding:12px 22px;font-weight:800;font-size:1.05rem;cursor:pointer;display:none;}
+      .advance.show{display:inline-flex;align-items:center;gap:8px;animation:fade 0.3s ease;}
+      .advance:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .cover-card{text-align:center;}
+      .cover-card .art{aspect-ratio:16/9;margin-bottom:16px;}
+      .cover-card h2{font-size:clamp(1.6rem,5vw,2.4rem);}
+      .cover-card p{color:var(--muted);max-width:620px;margin:10px auto;}
+      .start{min-height:52px;margin-top:8px;background:linear-gradient(135deg,var(--accent),#ff6a3d);color:#1a0d02;border:none;border-radius:14px;padding:14px 28px;font-weight:800;font-size:1.15rem;cursor:pointer;}
+      .start:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .level-pill{display:inline-block;margin-bottom:10px;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:#02112a;background:var(--accent2);border-radius:999px;padding:5px 14px;font-weight:700;}
+      .gloss{display:grid;gap:12px;}
+      .term{background:#0e1c40;border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;}
+      .term .ico{font-size:1.6rem;flex:0 0 auto;}
+      .term h3{font-size:1.1rem;}
+      .term .es-term{color:var(--accent2);font-size:0.9rem;font-style:italic;}
+      .term p{color:var(--muted);margin-top:4px;}
+      .complete{text-align:center;display:none;}
+      .complete.show{display:block;}
+      .complete .art{margin-bottom:16px;}
+      .complete h2{font-size:clamp(1.6rem,5vw,2.4rem);color:var(--accent);}
+      .badge-done{display:inline-block;font-size:3rem;margin:8px;}
+      .restart{min-height:48px;margin-top:14px;background:#0e1c40;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;}
+      .locked-note{display:none;text-align:center;color:var(--muted);padding:30px 10px;}
+      .locked-note.show{display:block;}
+      @media (max-width:480px){.topbar-inner{gap:8px;}.title{font-size:0.9rem;flex:1 1 100%;}}
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../../index.html">&#8592; Home</a>
+        <span class="title"><span class="v">#1</span> Decimal Docking Bay</span>
+        <div class="progress-wrap">
+          <div class="progress" role="progressbar" aria-label="Story progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button class="tab" role="tab" aria-selected="true" data-scene="cover" id="tab-cover">Cover</button>
+        <button class="tab" role="tab" aria-selected="false" data-scene="act1" id="tab-act1">Act 1: Fuel Totals</button>
+        <button class="tab locked" role="tab" aria-selected="false" data-scene="act2" id="tab-act2"><span class="lk">&#128274;</span> Act 2: Power Boost</button>
+        <button class="tab locked" role="tab" aria-selected="false" data-scene="final" id="tab-final"><span class="lk">&#128274;</span> Final: Launch Code</button>
+        <button class="tab" role="tab" aria-selected="false" data-scene="gloss" id="tab-gloss">Glossary</button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section class="scene active cover-card" id="scene-cover" role="tabpanel" aria-labelledby="tab-cover">
+        <div class="art">
+          <img src="../../_art/lessons/u1-l5l6/cover.png" alt="A space cadet stands at a glowing docking-bay console covered in decimal fuel readouts" />
+        </div>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Decimal Docking Bay</h2>
+        <p>The station's fuel computer is glitching! Only correct decimal math can dock the supply ship. Line up those decimal points and save the crew, Cadet.</p>
+        <p style="font-size:0.92rem"><i>¡La computadora de combustible falla! Solo las matematicas con decimales pueden acoplar la nave. Alinea los puntos decimales y salva a la tripulacion.</i></p>
+        <button class="start" id="start-btn">Start Mission 🚀 &#9654;</button>
+      </section>
+
+      <section class="scene" id="scene-act1" role="tabpanel" aria-labelledby="tab-act1">
+          <div class="scene-head">
+            <span class="act">Act 1 &middot; Lesson 1-5</span>
+            <h2>Fuel Totals</h2>
+          </div>
+        <div class="art">
+            <img id="art-act1" src="../../_art/lessons/u1-l5l6/act1.png" alt="Two fuel tanks with decimal gauges glowing on the bridge" />
+          </div>
+          <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act1"></div>
+            <button class="next" id="next-act1">Next &#9654;</button>
+          </div>
+        <div class="challenge" id="chal-act1-a" style="display:none">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <h3>⛽ Fuel Lock #1 — Add Decimals</h3>
+              <p class="prompt" style="font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:12px;">Add the two tanks: 3.4 + 2.75. Line up the decimal points. What is the total?<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);font-weight:normal;">Suma los dos tanques: 3.4 + 2.75. Alinea los puntos. ¿Cuál es el total?</span></p>
+            <div class="hint">&#128161; <b>Hint:</b> Annex a zero so both have 2 places: 3.40 + 2.75. Add hundredths, tenths, then ones.</div>
+            <div class="frame" id="frame-act1-a" style="display:none"><b>Sentence frame:</b> &ldquo;I lined up the decimal points and added to get ____ liters.&rdquo;</div>
+            </div>
+            <div class="chal-right">
+              <div class="choices" id="choices-act1-a">
+            <button class="choice" data-correct="true">6.15 liters  (3.40 + 2.75)</button>
+            <button class="choice" data-correct="false">5.79 liters</button>
+            <button class="choice" data-correct="false">6.9 liters  (added without lining up)</button>
+              </div>
+              <div class="feedback" id="fb-act1-a"></div>
+            </div>
+          </div>
+        </div>
+        <div class="challenge" id="chal-act1-b" style="display:none">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <h3>⛽ Fuel Lock #2 — Subtract Decimals</h3>
+              <p class="prompt" style="font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:12px;">A leak drains fuel. Start with 8.5 liters and subtract 3.27 liters. How much is left?<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);font-weight:normal;">Una fuga drena combustible. De 8.5 litros resta 3.27. ¿Cuánto queda?</span></p>
+            <div class="hint">&#128161; <b>Hint:</b> Annex a zero: 8.50 - 3.27. Line up the points and subtract place by place.</div>
+            <div class="frame" id="frame-act1-b" style="display:none"><b>Sentence frame:</b> &ldquo;After lining up the points, 8.50 - 3.27 = ____ liters.&rdquo;</div>
+            </div>
+            <div class="chal-right">
+              <div class="choices" id="choices-act1-b">
+            <button class="choice" data-correct="true">5.23 liters  (8.50 - 3.27)</button>
+            <button class="choice" data-correct="false">5.27 liters</button>
+            <button class="choice" data-correct="false">4.23 liters</button>
+              </div>
+              <div class="feedback" id="fb-act1-b"></div>
+            </div>
+          </div>
+        </div>
+          <div class="scene-foot">
+            <button class="advance" id="adv-act1">Lock in the total &#9654;</button>
+          </div>
+      </section>
+
+      <section class="scene" id="scene-act2" role="tabpanel" aria-labelledby="tab-act2">
+        <div class="locked-note" id="lock-act2">&#128274; Finish the previous chapter first to unlock this one.</div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Lesson 1-6</span>
+            <h2>Power Boost</h2>
+          </div>
+        <div class="art">
+            <img id="art-act2" src="../../_art/lessons/u1-l5l6/act2.png" alt="A glowing reactor core multiplying decimal energy values" />
+          </div>
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+        <div class="challenge" id="chal-act2-a" style="display:none">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <h3>⚡ Power Lock #1 — Multiply Decimals</h3>
+              <p class="prompt" style="font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:12px;">Set the reactor: 0.6 × 0.4. Multiply, then place the decimal point. What is the product?<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);font-weight:normal;">Ajusta el reactor: 0.6 × 0.4. Multiplica y coloca el punto. ¿Cuál es el producto?</span></p>
+            <div class="hint">&#128161; <b>Hint:</b> 6 × 4 = 24. There is 1 decimal place in 0.6 and 1 in 0.4 — that's 2 places total, so the product has 2 places.</div>
+            <div class="frame" id="frame-act2-a" style="display:none"><b>Sentence frame:</b> &ldquo;0.6 has 1 place and 0.4 has 1 place, so the product 0.24 has ____ decimal places.&rdquo;</div>
+            </div>
+            <div class="chal-right">
+              <div class="choices" id="choices-act2-a">
+            <button class="choice" data-correct="true">0.24  (2 decimal places)</button>
+            <button class="choice" data-correct="false">2.4</button>
+            <button class="choice" data-correct="false">0.024</button>
+              </div>
+              <div class="feedback" id="fb-act2-a"></div>
+            </div>
+          </div>
+        </div>
+        <div class="challenge" id="chal-act2-b" style="display:none">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <h3>⚡ Power Lock #2 — Place the Point</h3>
+              <p class="prompt" style="font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:12px;">Fine-tune the power: 1.2 × 0.05. Multiply, then place the decimal point correctly.<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);font-weight:normal;">Ajuste fino: 1.2 × 0.05. Multiplica y coloca bien el punto.</span></p>
+            <div class="hint">&#128161; <b>Hint:</b> 12 × 5 = 60. Places: 1 (in 1.2) + 2 (in 0.05) = 3. You may need to annex a zero in front.</div>
+            <div class="frame" id="frame-act2-b" style="display:none"><b>Sentence frame:</b> &ldquo;1.2 (1 place) × 0.05 (2 places) needs ____ decimal places, so the product is 0.06.&rdquo;</div>
+            </div>
+            <div class="chal-right">
+              <div class="choices" id="choices-act2-b">
+            <button class="choice" data-correct="true">0.06  (3 decimal places, annex a zero)</button>
+            <button class="choice" data-correct="false">0.6</button>
+            <button class="choice" data-correct="false">0.006</button>
+              </div>
+              <div class="feedback" id="fb-act2-b"></div>
+            </div>
+          </div>
+        </div>
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">Charge the core &#9654;</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene" id="scene-final" role="tabpanel" aria-labelledby="tab-final">
+        <div class="locked-note" id="lock-final">&#128274; Finish the previous chapter first to unlock this one.</div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final &middot; Lessons 1-5 &amp; 1-6</span>
+            <h2>The Launch Code</h2>
+          </div>
+        <div class="art">
+            <img id="art-final" src="../../_art/lessons/u1-l5l6/final.png" alt="A glowing launch console asking for one combined decimal code" />
+          </div>
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+        <div class="challenge" id="chal-final-a" style="display:none">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <h3>🔒 Launch Code — Add then Multiply</h3>
+              <p class="prompt" style="font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:12px;">Compute (4.5 + 1.5) × 0.5. Add first, then multiply. Which line is fully correct?<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);font-weight:normal;">Calcula (4.5 + 1.5) × 0.5. Suma primero, luego multiplica. ¿Cuál línea es correcta?</span></p>
+            <div class="hint">&#128161; <b>Hint:</b> 4.5 + 1.5 = 6.0. Then 6.0 × 0.5 = 3.0 (half of 6).</div>
+            <div class="frame" id="frame-final-a" style="display:none"><b>Sentence frame:</b> &ldquo;4.5 + 1.5 = ____, and that sum × 0.5 = ____.&rdquo;</div>
+            </div>
+            <div class="chal-right">
+              <div class="choices" id="choices-final-a">
+            <button class="choice" data-correct="true">4.5 + 1.5 = 6.0, then 6.0 × 0.5 = 3.0</button>
+            <button class="choice" data-correct="false">4.5 + 1.5 = 6.0, then 6.0 × 0.5 = 30</button>
+            <button class="choice" data-correct="false">4.5 + 1.5 = 5.0, then 5.0 × 0.5 = 2.5</button>
+              </div>
+              <div class="feedback" id="fb-final-a"></div>
+            </div>
+          </div>
+        </div>
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">Launch! 🌟 &#9654;</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MISSION COMPLETE -->
+      <section class="scene complete" id="scene-complete" role="tabpanel" aria-label="Story complete">
+        <div class="art">
+          <img src="../../_art/lessons/u1-l5l6/complete.png" alt="The cadet watches the supply ship launch safely into a star field" />
+        </div>
+        <span class="badge-done">&#127881;&#11088;</span>
+        <h2>Mission Complete!</h2>
+        <p>You added and subtracted decimals to dock the ship and multiplied decimals to power the launch. The station is fueled and flying. Great work, Cadet!</p>
+        <p style="color:var(--muted);font-size:0.92rem"><i>¡Sumaste, restaste y multiplicaste decimales para salvar la estación! Excelente trabajo.</i></p>
+        <div class="challenge bonus" id="chalComplete" style="margin-top:24px;text-align:left;background:#1c1606;border:2px solid #ffd166;">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <span class="bonus-tag" style="background:#ffd166;color:#1a1200;font-weight:800;font-size:0.72rem;letter-spacing:0.1em;padding:3px 8px;border-radius:6px;display:inline-block;">&#127942; MASTER RANK CHALLENGE</span>
+              <h3 style="color:#ffd166;font-size:1.15rem;margin-top:8px;margin-bottom:6px;font-weight:700;">Bonus challenge — for mastery, not required.</h3>
+              <p class="prompt" style="font-size:1.05rem;margin-bottom:12px;line-height:1.55;">Master check: 2.5 × 0.4. Multiply, then place the decimal point. What is the product?<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);">Reto maestro: 2.5 × 0.4. Multiplica y coloca el punto. ¿Cuál es el producto?</span></p>
+            </div>
+            <div class="chal-right">
+              <div class="choices" id="choicesComplete" style="display:grid;gap:10px;">
+            <button class="choice" data-correct="true">1  (25 × 4 = 100, 2 decimal places → 1.00)</button>
+            <button class="choice" data-correct="false">10</button>
+            <button class="choice" data-correct="false">0.1</button>
+              </div>
+              <div class="feedback" id="fbComplete" style="margin-top:12px;border-radius:12px;padding:12px 14px;font-size:1rem;display:none;"></div>
+            </div>
+          </div>
+        </div>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
+      </section>
+
+      <!-- GLOSSARY -->
+      <section class="scene" id="scene-gloss" role="tabpanel" aria-labelledby="tab-gloss">
+        <div class="scene-head"><span class="act">Reference</span><h2>Glossary &middot; Word Bank</h2></div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Graceful art fallback (panel image unavailable) ---------- */
+        Array.prototype.slice.call(document.querySelectorAll(".art img")).forEach(function (im) {
+          im.addEventListener("error", function () {
+            im.classList.add("art-missing");
+            var box = im.closest(".art");
+            if (box) {
+              box.classList.add("art-fallback");
+              box.setAttribute("data-fallback", im.getAttribute("alt") || "Illustration");
+            }
+          });
+          if (im.complete && im.naturalWidth === 0) {
+            im.dispatchEvent(new Event("error"));
+          }
+        });
+
+        var DLG = {
+          act1: [
+            { who: "Station AI", en: "Cadet! Tank A holds 3.4 liters, Tank B holds 2.75 liters. I need the TOTAL fuel to dock.", es: "¡Cadete! El tanque A tiene 3.4 litros y el B tiene 2.75. Necesito el TOTAL para acoplar.", cap: true },
+            { who: "Cadet", en: "To add decimals I line up the decimal points first. I can annex a zero so 3.4 becomes 3.40.", es: "Para sumar decimales alineo los puntos primero. Puedo agregar un cero: 3.4 es 3.40." }
+          ],
+          act1b: [
+            { who: "Cadet", en: "Total locked in! Now a leak — I must subtract what we lost.", es: "¡Total listo! Ahora hay una fuga: debo restar lo que perdimos." }
+          ],
+          act2: [
+            { who: "Station AI", en: "Docking complete. Now multiply decimals to set the reactor power. No lining up needed — count the decimal places!", es: "Acople listo. Ahora multiplica decimales para la potencia. No alineas: ¡cuenta los lugares decimales!", cap: true },
+            { who: "Cadet", en: "Right — I multiply like whole numbers, then place the decimal point using the total number of decimal places.", es: "Claro: multiplico como enteros y luego coloco el punto usando el total de lugares decimales." }
+          ],
+          act2b: [
+            { who: "Cadet", en: "Core stable! One more: a smaller setting with extra decimal places.", es: "¡Núcleo estable! Una más: un ajuste pequeño con más decimales." }
+          ],
+          final: [
+            { who: "Station AI", en: "Final launch code, Cadet! It uses BOTH skills — add, then multiply.", es: "¡Código final, Cadete! Usa AMBAS destrezas: suma y luego multiplica.", cap: true },
+            { who: "Cadet", en: "First I add 4.5 + 1.5, then multiply the sum by 0.5. Order matters!", es: "Primero sumo 4.5 + 1.5, luego multiplico por 0.5. ¡El orden importa!" }
+          ]
+        };
+        var GLOSS = [
+          { en: "Decimal", es: "Decimal", def: "A number with a dot that shows a part between whole numbers." },
+          { en: "Place value", es: "Valor posicional", def: "What a digit is worth based on where it sits in a number." },
+          { en: "Tenths", es: "Décimas", def: "The first spot after the decimal point. It shows parts out of 10." },
+          { en: "Hundredths", es: "Centésimas", def: "The second spot after the decimal point. It shows parts out of 100." },
+          { en: "Annex zeros", es: "Agregar ceros", def: "Adding zeros at the end of a decimal so numbers line up evenly." },
+          { en: "Product", es: "Producto", def: "The answer when you multiply." },
+          { en: "Decimal point", es: "Punto decimal", def: "The dot that splits the whole number from the part after it." },
+          { en: "Estimate", es: "Estimar", def: "A close answer you get by rounding first." },
+          { en: "Decimal places", es: "Cifras decimales", def: "How many digits come after the decimal point." }
+        ];
+        var ACTS = [
+          { scene: "act1", hasB: true, last: false, next: "act2" },
+          { scene: "act2", hasB: true, last: false, next: "final" },
+          { scene: "final", hasB: false, last: true, next: null }
+        ];
+        var SCENES = ["cover","act1","act2","final","gloss"];
+
+        function $(id) { return document.getElementById(id); }
+        function qa(sel, root) {
+          return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+        }
+
+        /* ---------- Progress ---------- */
+        var solvedCount = 0;
+        function updateProgress() {
+          var pct = Math.round((solvedCount / ACTS.length) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document.querySelector(".progress").setAttribute("aria-valuenow", pct);
+        }
+
+        /* ---------- Tab locking ---------- */
+        var unlocked = { cover: true, gloss: true };
+        ACTS.forEach(function (a, i) { unlocked[a.scene] = i === 0; });
+        function refreshLocks() {
+          ACTS.forEach(function (a, i) {
+            if (i === 0) return;
+            var locked = !unlocked[a.scene];
+            var tab = $("tab-" + a.scene);
+            if (tab) tab.classList.toggle("locked", locked);
+            var ln = $("lock-" + a.scene);
+            if (ln) ln.classList.toggle("show", locked);
+            var body = $("body-" + a.scene);
+            if (body) body.style.display = locked ? "none" : "";
+          });
+        }
+
+        /* ---------- Scene switching ---------- */
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab) tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          var comp = $("scene-complete");
+          comp.classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) { var sc = $("scene-" + s); if (sc) sc.classList.remove("active"); });
+          qa(".tab").forEach(function (t) { t.setAttribute("aria-selected", "false"); });
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
+            if (e.key === "ArrowRight") { e.preventDefault(); (tabsArr[i + 1] || tabsArr[0]).focus(); }
+            if (e.key === "ArrowLeft") { e.preventDefault(); (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus(); }
+          });
+        });
+
+        /* ---------- Dialogue engine ---------- */
+        function runDialogue(opts) {
+          var idx = 0;
+          var dlgBox = $(opts.dlgId), nextBtn = $(opts.nextId), dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () { dots.appendChild(document.createElement("i")); });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' + (line.cap ? " caption" : "") + '">' +
+              '<div class="who">' + line.who + "</div>" +
+              '<div class="en">' + line.en + "</div>" +
+              '<div class="es">' + line.es + "</div></div>";
+            qa("i", dots).forEach(function (d, k) { d.classList.toggle("on", k <= idx); });
+            nextBtn.textContent = idx === opts.dlg.length - 1 ? (opts.lastLabel || "Continue \u25B6") : "Next \u25B6";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) { idx++; render(); }
+            else { if (opts.onDone) opts.onDone(); }
+          };
+          render();
+        }
+
+        /* ---------- Choice handler ---------- */
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var correct = btn.dataset.correct === "true";
+              var fb = $(opts.feedbackId);
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
+                qa(".choice", $(opts.choicesId)).forEach(function (b) { b.disabled = true; });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn + '<span class="es">' + opts.badEs + "</span>";
+              }
+            });
+          });
+        }
+
+        /* ---------- Glossary ---------- */
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">&#128218;</div><div><h3>' + g.en +
+              (g.es ? ' <span class="es-term">(' + g.es + ")</span>" : "") +
+              "</h3><p>" + g.def + "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        /* ---------- Per-act challenge data (math) ---------- */
+        var CH = {
+          "act1": { a: { startLabel: "Add the fuel ▶", goodEn: "✅ Correct! 3.40 + 2.75 = 6.15 liters. Lining up the points keeps each place value matched.", goodEs: "¡Correcto! 3.40 + 2.75 = 6.15 litros.", badEn: "❌ Check your places. Annex a zero (3.40) and line up the decimal points, then add.", badEs: "❌ Revisa los valores posicionales. Agrega un cero (3.40) y alinea los puntos." }, b: { goodEn: "✅ Yes! 8.50 - 3.27 = 5.23 liters. The decimal points stay lined up in the answer too.", goodEs: "¡Sí! 8.50 - 3.27 = 5.23 litros.", badEn: "❌ Annex a zero (8.50) and subtract place by place, keeping the decimal points aligned.", badEs: "❌ Agrega un cero (8.50) y resta posición por posición." } },
+          "act2": { a: { startLabel: "Multiply ▶", goodEn: "✅ Correct! 6×4=24, and 1+1=2 decimal places gives 0.24.", goodEs: "¡Correcto! 6×4=24, y 1+1=2 lugares: 0.24.", badEn: "❌ Multiply 6×4=24, then count decimal places: 1+1=2, so the answer is 0.24.", badEs: "❌ Multiplica 6×4=24 y cuenta los lugares: 1+1=2, así que es 0.24." }, b: { goodEn: "✅ Yes! 12×5=60; with 3 decimal places that is 0.060 = 0.06. Reactor tuned!", goodEs: "¡Sí! 12×5=60; con 3 lugares es 0.060 = 0.06.", badEn: "❌ 12×5=60. Count places: 1+2=3, so write 0.060 = 0.06.", badEs: "❌ 12×5=60. Cuenta lugares: 1+2=3, así que 0.060 = 0.06." } },
+          "final": { a: { startLabel: "Enter the code ▶", goodEn: "✅ CODE ACCEPTED! 6.0 × 0.5 = 3.0 — exactly half of 6. Launch sequence go!", goodEs: "¡CÓDIGO ACEPTADO! 6.0 × 0.5 = 3.0. ¡Lanzamiento listo!", badEn: "❌ Add first: 4.5 + 1.5 = 6.0. Then 6.0 × 0.5 is HALF of 6, which is 3.0 — not 30.", badEs: "❌ Suma primero: 4.5 + 1.5 = 6.0. Luego × 0.5 es la MITAD de 6, o sea 3.0." } }
+        };
+
+        /* ---------- Generic act initialiser ---------- */
+        function initAct(actDesc) {
+          var s = actDesc.scene;
+          var data = CH[s];
+          runDialogue({
+            dlgId: "dlg-" + s, nextId: "next-" + s, dotsId: "dots-" + s,
+            dlg: DLG[s], lastLabel: data.a.startLabel || "Try it \u25B6",
+            onDone: function () {
+              $("next-" + s).style.display = "none";
+              $("chal-" + s + "-a").style.display = "block";
+              var fr = $("frame-" + s + "-a"); if (fr) fr.style.display = "block";
+              $("chal-" + s + "-a").scrollIntoView({ behavior: "smooth", block: "center" });
+            },
+          });
+          wireChoices({
+            choicesId: "choices-" + s + "-a", feedbackId: "fb-" + s + "-a",
+            goodEn: data.a.goodEn, goodEs: data.a.goodEs, badEn: data.a.badEn, badEs: data.a.badEs,
+            onSolve: function () {
+              if (actDesc.hasB) {
+                var box = $("dlg-" + s);
+                setTimeout(function () {
+                  if (DLG[s + "b"] && DLG[s + "b"][0]) {
+                    var il = DLG[s + "b"][0];
+                    box.innerHTML = '<div class="bubble"><div class="who">' + il.who +
+                      '</div><div class="en">' + il.en + '</div><div class="es">' + il.es + "</div></div>";
+                  }
+                  $("chal-" + s + "-b").style.display = "block";
+                  var fr = $("frame-" + s + "-b"); if (fr) fr.style.display = "block";
+                  $("chal-" + s + "-b").scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 500);
+              } else {
+                finishAct(actDesc);
+              }
+            },
+          });
+          if (actDesc.hasB) {
+            wireChoices({
+              choicesId: "choices-" + s + "-b", feedbackId: "fb-" + s + "-b",
+              goodEn: data.b.goodEn, goodEs: data.b.goodEs, badEn: data.b.badEn, badEs: data.b.badEs,
+              onSolve: function () { finishAct(actDesc); },
+            });
+          }
+          $("adv-" + s).addEventListener("click", function () {
+            if (actDesc.last) { showComplete(); }
+            else { unlocked[actDesc.next] = true; refreshLocks(); showScene(actDesc.next); }
+          });
+        }
+        function finishAct(actDesc) {
+          if (!actDesc._solved) { actDesc._solved = true; solvedCount++; updateProgress(); }
+          $("adv-" + actDesc.scene).classList.add("show");
+        }
+
+        /* ---------- Start / restart ---------- */
+        $("start-btn").addEventListener("click", function () { showScene(ACTS[0].scene); });
+        $("restart-btn").addEventListener("click", function () { location.reload(); });
+
+        /* ---------- Optional non-gating bonus ---------- */
+        (function () {
+          var wrap = $("choicesComplete"); if (!wrap) return;
+          var solved = false;
+          var fb = $("fbComplete");
+          qa(".choice", wrap).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "&#127942; <b>Master Rank!</b> Excellent work \u2014 you have mastered this skill. \u2B50";
+                qa(".choice", wrap).forEach(function (b) { b.disabled = true; });
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "&#10060; Not quite. Review your work and try another option.";
+              }
+            });
+          });
+        })();
+
+        /* ---------- Init ---------- */
+        ACTS.forEach(initAct);
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

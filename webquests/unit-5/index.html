@@ -1,0 +1,1622 @@
+<!doctype html>
+<html lang="en" class="nt-theme-aware">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      WebQuest · Unit 5 · The Mosaic Commission — Area of Polygons | Neft
+      Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 area WebQuest: design a tiled plaza mosaic by finding the area of parallelograms, triangles, trapezoids, regular polygons, and composite figures (6.G.A.1)."
+    />
+
+    <!-- Shared Neft design system -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+
+    <style>
+      /* ============================================================
+     Unit 5 WebQuest — uses shared --nt-* theme variables.
+     Scoped styles only; visuals are SVG/divs (no ASCII art).
+     ============================================================ */
+      :root {
+        --wq-tile-1: #3b82f6;
+        --wq-tile-2: #10b981;
+        --wq-tile-3: #f59e0b;
+        --wq-tile-4: #ef4444;
+        --wq-tile-5: #8b5cf6;
+        --wq-tile-6: #ec4899;
+        --wq-mortar: #64748b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
+      }
+      .wq-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 18px 80px;
+      }
+
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #1e3a8a 0%,
+          #0f766e 55%,
+          #7c3aed 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
+      }
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
+        display: inline-block;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #eef2ff;
+      }
+      .wq-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -10px;
+        bottom: -22px;
+        width: 230px;
+        opacity: 0.92;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
+      }
+      .wq-l1 {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0f766e;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Formula reference ---------- */
+      .wq-formula-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .wq-formula {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+        text-align: center;
+      }
+      .wq-formula svg {
+        display: block;
+        margin: 0 auto 8px;
+      }
+      .wq-formula .wq-fname {
+        font-weight: 700;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-formula .wq-feq {
+        display: inline-block;
+        margin-top: 4px;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+        background: rgba(36, 94, 168, 0.1);
+        padding: 3px 10px;
+        border-radius: 8px;
+        color: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Mission / task plaza ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-plaza {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-bg, #f8fafc);
+        padding: 10px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Rubric table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 130px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-num:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
+
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
+      }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
+      }
+
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="ntkit"></div>
+
+    <main class="wq-wrap">
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker">Grade 6 Math WebQuest · Unit 5 · 6.G.A.1</span>
+        <h1>The Mosaic Commission</h1>
+        <p>
+          The city is reopening Riverbend Plaza, and the parks department has
+          hired <strong>your design studio</strong> to lay a giant stone mosaic
+          in the center. The catch: tiles are sold by the square foot, the
+          budget is tight, and your mosaic uses every shape in the geometry
+          toolbox. Find the area of each piece, total the cost, and submit a
+          winning bid.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 2–3 class periods</span>
+          <span class="wq-badge">📐 Area of polygons</span>
+          <span class="wq-badge">🧮 Composite figures</span>
+          <span class="wq-badge">💵 Real budget math</span>
+        </div>
+        <!-- decorative mosaic SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 200 200" aria-hidden="true">
+          <g stroke="#0b1f33" stroke-width="2">
+            <polygon points="20,20 90,20 70,70 20,60" fill="#3b82f6" />
+            <polygon points="90,20 160,40 120,80 70,70" fill="#10b981" />
+            <polygon points="160,40 180,110 130,120 120,80" fill="#f59e0b" />
+            <polygon points="20,60 70,70 60,140 20,130" fill="#ef4444" />
+            <polygon
+              points="70,70 120,80 130,120 110,160 60,140"
+              fill="#8b5cf6"
+            />
+            <polygon points="130,120 180,110 170,170 110,160" fill="#ec4899" />
+            <polygon points="20,130 60,140 50,185 25,185" fill="#22d3ee" />
+          </g>
+        </svg>
+      </header>
+
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Your Studio's Big
+          Break
+        </h2>
+        <p class="wq-lead">
+          A mosaic is a picture made of many flat shapes fit together with no
+          gaps — exactly how mathematicians break a hard area problem into easy
+          ones. In this WebQuest you become a <strong>mosaic architect</strong>.
+          Every shape in the Riverbend design has a real area, a real tile cost,
+          and a real place in your bid.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How can decomposing a complex shape into familiar polygons help you
+            measure and budget the real world accurately?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Area means "how much flat space is covered," measured in square units
+          (like square feet). Picture filling the shape with 1-ft × 1-ft tiles
+          and counting them.
+          <span class="wq-es"
+            >En español: El área es el espacio plano que cubre una figura,
+            medido en unidades cuadradas (pies cuadrados). Imagina llenar la
+            figura con baldosas de 1 pie por 1 pie y contarlas.</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Designers rarely measure a weird shape directly. They
+          <em>decompose</em> it into rectangles, triangles, and trapezoids, find
+          each area, then add — or they enclose it in a big rectangle and
+          <em>subtract</em> the empty corners. Keep both strategies ready; pick
+          the faster one for each piece.
+        </div>
+      </section>
+
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of this WebQuest, your studio will submit a
+              <strong>Mosaic Bid Sheet</strong> for Riverbend Plaza. A winning
+              bid must:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                Find the area of <strong>six mosaic pieces</strong>: a
+                parallelogram, a triangle, a trapezoid, a regular hexagon, and
+                two composite figures.
+              </li>
+              <li>
+                Show each area in <strong>square feet</strong> with the formula
+                you used.
+              </li>
+              <li>
+                Multiply total area by the
+                <strong>tile price ($6.50 / ft²)</strong> to get the project
+                cost.
+              </li>
+              <li>
+                Stay under the <strong>$4,000 budget</strong> — or explain
+                exactly which piece to resize.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom.
+              </li>
+            </ul>
+          </div>
+          <div class="wq-plaza" aria-label="Riverbend Plaza mosaic blueprint">
+            <svg viewBox="0 0 280 230" role="img" aria-labelledby="plaza-title">
+              <title id="plaza-title">
+                Blueprint of the six mosaic pieces in Riverbend Plaza
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="230"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <!-- parallelogram -->
+              <polygon
+                points="20,30 95,30 75,75 0,75"
+                fill="var(--wq-tile-1)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text x="38" y="58" font-size="11" fill="#fff" font-weight="700">
+                P
+              </text>
+              <!-- triangle -->
+              <polygon
+                points="110,30 185,75 110,75"
+                fill="var(--wq-tile-2)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text x="128" y="68" font-size="11" fill="#fff" font-weight="700">
+                T
+              </text>
+              <!-- trapezoid -->
+              <polygon
+                points="205,35 265,35 280,75 195,75"
+                fill="var(--wq-tile-3)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text x="228" y="60" font-size="11" fill="#fff" font-weight="700">
+                Z
+              </text>
+              <!-- hexagon -->
+              <polygon
+                points="55,95 95,95 115,130 95,165 55,165 35,130"
+                fill="var(--wq-tile-5)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text x="68" y="135" font-size="11" fill="#fff" font-weight="700">
+                H
+              </text>
+              <!-- composite L (house arrow) -->
+              <polygon
+                points="135,95 215,95 215,130 175,130 175,165 135,165"
+                fill="var(--wq-tile-4)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text
+                x="150"
+                y="120"
+                font-size="11"
+                fill="#fff"
+                font-weight="700"
+              >
+                C1
+              </text>
+              <!-- composite house pentagon -->
+              <polygon
+                points="230,120 270,120 270,165 230,165 250,95"
+                fill="var(--wq-tile-6)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text
+                x="243"
+                y="150"
+                font-size="11"
+                fill="#fff"
+                font-weight="700"
+              >
+                C2
+              </text>
+              <text x="8" y="200" font-size="11" fill="var(--nt-muted,#5b6b80)">
+                P parallelogram · T triangle · Z trapezoid · H hexagon · C1 / C2
+                composites
+              </text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work through the steps in order. Each step builds one row of your Bid
+          Sheet.
+        </p>
+
+        <h3>Step 1 — Stock your formula toolbox</h3>
+        <p>
+          Before you measure anything, review the five area formulas you will
+          use. Keep this reference open.
+        </p>
+        <div class="wq-formula-grid">
+          <div class="wq-formula">
+            <svg width="92" height="60" viewBox="0 0 92 60" aria-hidden="true">
+              <polygon
+                points="20,10 82,10 72,50 10,50"
+                fill="var(--wq-tile-1)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="10"
+                y1="50"
+                x2="10"
+                y2="10"
+                stroke="#0b1f33"
+                stroke-dasharray="3 3"
+              />
+            </svg>
+            <div class="wq-fname">Parallelogram</div>
+            <span class="wq-feq">A = b × h</span>
+          </div>
+          <div class="wq-formula">
+            <svg width="92" height="60" viewBox="0 0 92 60" aria-hidden="true">
+              <polygon
+                points="14,50 78,50 30,10"
+                fill="var(--wq-tile-2)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="30"
+                y1="10"
+                x2="30"
+                y2="50"
+                stroke="#0b1f33"
+                stroke-dasharray="3 3"
+              />
+            </svg>
+            <div class="wq-fname">Triangle</div>
+            <span class="wq-feq">A = ½ × b × h</span>
+          </div>
+          <div class="wq-formula">
+            <svg width="92" height="60" viewBox="0 0 92 60" aria-hidden="true">
+              <polygon
+                points="28,10 64,10 80,50 12,50"
+                fill="var(--wq-tile-3)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+            </svg>
+            <div class="wq-fname">Trapezoid</div>
+            <span class="wq-feq">A = ½(b₁+b₂) × h</span>
+          </div>
+          <div class="wq-formula">
+            <svg width="92" height="60" viewBox="0 0 92 60" aria-hidden="true">
+              <polygon
+                points="32,8 60,8 76,30 60,52 32,52 16,30"
+                fill="var(--wq-tile-5)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+            </svg>
+            <div class="wq-fname">Regular polygon</div>
+            <span class="wq-feq">decompose into triangles</span>
+          </div>
+          <div class="wq-formula">
+            <svg width="92" height="60" viewBox="0 0 92 60" aria-hidden="true">
+              <polygon
+                points="10,12 50,12 50,30 80,30 80,52 10,52"
+                fill="var(--wq-tile-4)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="50"
+                y1="12"
+                x2="50"
+                y2="52"
+                stroke="#fff"
+                stroke-dasharray="3 3"
+              />
+            </svg>
+            <div class="wq-fname">Composite</div>
+            <span class="wq-feq">add or subtract parts</span>
+          </div>
+        </div>
+
+        <h3>Step 2 — Measure the simple pieces (P, T, Z)</h3>
+        <p>
+          Use these blueprint measurements (in feet) and the formulas above.
+          Record each area on your Bid Sheet.
+        </p>
+        <ul>
+          <li>
+            <strong>Piece P — Parallelogram walkway:</strong> base = 12 ft,
+            height = 5 ft.
+          </li>
+          <li>
+            <strong>Piece T — Triangle banner:</strong> base = 9 ft, height = 6
+            ft.
+          </li>
+          <li>
+            <strong>Piece Z — Trapezoid fountain ring:</strong> base₁ = 10 ft,
+            base₂ = 6 ft, height = 4 ft.
+          </li>
+        </ul>
+        <div class="wq-example">
+          <p><b>Worked example — Piece Z (trapezoid):</b></p>
+          <p class="wq-work">
+            A = ½ × (b₁ + b₂) × h = ½ × (10 + 6) × 4 = ½ × 16 × 4 =
+            <b>32 ft²</b>
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Stuck on the triangle? A triangle is exactly half of a parallelogram
+          with the same base and height. Find b × h first, then take half.
+          <span class="wq-es"
+            >En español: Un triángulo es la mitad de un paralelogramo con la
+            misma base y altura. Calcula b × h y luego toma la mitad.</span
+          >
+        </div>
+
+        <h3>Step 3 — Tackle the regular hexagon (H)</h3>
+        <p>
+          Piece H is a regular hexagon park bench. A regular hexagon splits into
+          <strong>6 identical triangles</strong>. Each triangle has base 4 ft
+          and height 3.5 ft.
+        </p>
+        <p>
+          Find one triangle's area, then multiply by 6 for the whole hexagon.
+        </p>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          The height of each inner triangle is the hexagon's <em>apothem</em>.
+          Notice your method (½ × perimeter × apothem) is the same idea
+          professional surveyors use for any regular polygon. Predict: would a
+          regular octagon split into how many triangles?
+        </div>
+
+        <h3>Step 4 — Decompose the composite pieces (C1, C2)</h3>
+        <p>
+          Composite pieces are made of simpler shapes joined together. You can
+          <strong>add</strong> the parts or <strong>subtract</strong> from a big
+          rectangle.
+        </p>
+        <ul>
+          <li>
+            <strong>Piece C1 — L-shaped stage:</strong> a 10 ft × 4 ft rectangle
+            joined to a 5 ft × 4 ft rectangle.
+          </li>
+          <li>
+            <strong>Piece C2 — "House" pentagon:</strong> a 6 ft × 5 ft
+            rectangle with a triangle roof on top (triangle base 6 ft, height 4
+            ft).
+          </li>
+        </ul>
+        <div class="wq-example">
+          <p><b>Worked example — Piece C1 (add the parts):</b></p>
+          <p class="wq-work">
+            Rectangle 1 = 10 × 4 = 40 ft² · Rectangle 2 = 5 × 4 = 20 ft² · Total
+            = 40 + 20 = <b>60 ft²</b>
+          </p>
+        </div>
+
+        <h3>Step 5 — Total the area and build the bid</h3>
+        <p>
+          Add all six areas to get the <strong>total mosaic area</strong>.
+          Multiply by the tile price <strong>$6.50 / ft²</strong> to get the
+          project cost. Compare against the <strong>$4,000 budget</strong>. If
+          you are over, decide which single piece to shrink and by how much.
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Cost = total area × $6.50. To check if you are under budget, ask: is
+          your cost less than $4,000? If yes, you win the bid.
+          <span class="wq-es"
+            >En español: Costo = área total × $6.50. ¿Tu costo es menor que
+            $4,000? Si es sí, ganas la licitación.</span
+          >
+        </div>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-5/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 5 · 3D Area Builder</span
+              ><span class="wq-rdesc"
+                >Snap polygons together and watch areas update live.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-5/">
+            <span class="wq-ricon" aria-hidden="true">📐</span>
+            <span
+              ><span class="wq-rtitle">Area Architect Activity</span
+              ><span class="wq-rdesc"
+                >Practice decomposing composite figures step by step.</span
+              ></span
+            >
+          </a>
+          <a href="/reveal-evidence-studio/">
+            <span class="wq-ricon" aria-hidden="true">🔍</span>
+            <span
+              ><span class="wq-rtitle">Reveal Evidence Studio</span
+              ><span class="wq-rdesc"
+                >Write your Claim–Evidence–Reasoning for the bid.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <ul>
+          <li>
+            <strong>Area / Área</strong> — flat space inside a shape, in square
+            units.
+          </li>
+          <li>
+            <strong>Base / Base</strong> and <strong>Height / Altura</strong> —
+            the perpendicular measurements a formula needs.
+          </li>
+          <li>
+            <strong>Decompose / Descomponer</strong> — break a shape into
+            simpler shapes.
+          </li>
+          <li>
+            <strong>Composite figure / Figura compuesta</strong> — a shape built
+            from two or more polygons.
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Mosaic Bid Sheet will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Architect</th>
+                <th>3 · Builder</th>
+                <th>2 · Apprentice</th>
+                <th>1 · Getting started</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Area accuracy</td>
+                <td>All 6 areas correct with correct formulas.</td>
+                <td>5 of 6 areas correct.</td>
+                <td>3–4 areas correct.</td>
+                <td>0–2 areas correct.</td>
+              </tr>
+              <tr>
+                <td>Decomposition</td>
+                <td>Both composites clearly split and justified.</td>
+                <td>One composite clearly split.</td>
+                <td>Attempts splitting with errors.</td>
+                <td>No clear strategy shown.</td>
+              </tr>
+              <tr>
+                <td>Budget &amp; cost</td>
+                <td>Cost correct; budget decision justified.</td>
+                <td>Cost correct; decision unclear.</td>
+                <td>Cost has a small error.</td>
+                <td>Cost missing or incorrect.</td>
+              </tr>
+              <tr>
+                <td>Units &amp; labels</td>
+                <td>Every answer labeled ft² and $.</td>
+                <td>Most answers labeled.</td>
+                <td>Some labels missing.</td>
+                <td>No units shown.</td>
+              </tr>
+              <tr>
+                <td>Reasoning</td>
+                <td>Clear claim–evidence–reasoning explanation.</td>
+                <td>Explains most choices.</td>
+                <td>Brief or partial reasoning.</td>
+                <td>No explanation.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Mosaic Commission · Bid Sheet</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Mosaic Bid Sheet</h3>
+          <ul>
+            <li><strong>Parallelogram P:</strong> A = b × h = 12 × 5 = <strong>60 ft²</strong>.</li>
+            <li><strong>Triangle T:</strong> A = ½bh = ½ × 9 × 6 = <strong>27 ft²</strong>.</li>
+            <li><strong>Trapezoid Z:</strong> A = ½(b₁+b₂)h = ½(10+6)×4 = <strong>32 ft²</strong>.</li>
+            <li><strong>Regular hexagon H:</strong> 6 triangles, each ½ × 4 × 3.5 = 7 ft² → 6 × 7 = <strong>42 ft²</strong>.</li>
+            <li><strong>Composite C1 (L-shape):</strong> 10×4 + 5×4 = 40 + 20 = <strong>60 ft²</strong>.</li>
+            <li><strong>Composite C2 (house):</strong> rectangle 6×5 = 30 + triangle ½×6×4 = 12 → <strong>42 ft²</strong>.</li>
+            <li><strong>Total cost:</strong> sum the six areas, then × $6.50/ft² for the bid total ($1,644.50 with the full set).</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Require the formula beside each area; decompose composites into known shapes.</li>
+            <li>Only the <em>final</em> total area is multiplied by the tile price.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.G.A.1</strong>.</p>
+        </div>
+      </details>
+
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
+        <p>
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These match the pieces in your bid.
+        </p>
+
+        <!-- Q1 parallelogram -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="num"
+          data-answer="60"
+          data-tol="0.5"
+          data-skill="Parallelogram area"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >Piece P parallelogram: base = 12 ft, height = 5 ft. What is the
+              area?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="120"
+              height="64"
+              viewBox="0 0 120 64"
+              role="img"
+              aria-label="Parallelogram with base 12 feet and height 5 feet"
+            >
+              <polygon
+                points="24,12 108,12 96,52 12,52"
+                fill="var(--wq-tile-1)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="12"
+                y1="52"
+                x2="12"
+                y2="12"
+                stroke="#0b1f33"
+                stroke-dasharray="3 3"
+              />
+              <text x="50" y="62" font-size="10">b = 12 ft</text>
+              <text x="0" y="34" font-size="10">h=5</text>
+            </svg>
+          </div>
+          <label for="q1in" class="sr-only"
+            >Area of piece P in square feet</label
+          >
+          <input
+            id="q1in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft²"
+          />
+          <div class="wq-hint">Hint / Pista: A = b × h.</div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2 triangle -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="27"
+          data-tol="0.5"
+          data-skill="Triangle area"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >Piece T triangle: base = 9 ft, height = 6 ft. What is the
+              area?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="120"
+              height="64"
+              viewBox="0 0 120 64"
+              role="img"
+              aria-label="Triangle with base 9 feet and height 6 feet"
+            >
+              <polygon
+                points="14,52 100,52 40,10"
+                fill="var(--wq-tile-2)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="40"
+                y1="10"
+                x2="40"
+                y2="52"
+                stroke="#0b1f33"
+                stroke-dasharray="3 3"
+              />
+              <text x="40" y="62" font-size="10">b = 9 ft</text>
+            </svg>
+          </div>
+          <label for="q2in" class="sr-only"
+            >Area of piece T in square feet</label
+          >
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft²"
+          />
+          <div class="wq-hint">Hint / Pista: A = ½ × b × h.</div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3 trapezoid -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="num"
+          data-answer="32"
+          data-tol="0.5"
+          data-skill="Trapezoid area"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >Piece Z trapezoid: base₁ = 10 ft, base₂ = 6 ft, height = 4 ft.
+              What is the area?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="130"
+              height="64"
+              viewBox="0 0 130 64"
+              role="img"
+              aria-label="Trapezoid with parallel sides 10 and 6 feet and height 4 feet"
+            >
+              <polygon
+                points="36,12 86,12 116,52 6,52"
+                fill="var(--wq-tile-3)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text x="48" y="9" font-size="10">b₂ = 6</text>
+              <text x="40" y="62" font-size="10">b₁ = 10 ft</text>
+            </svg>
+          </div>
+          <label for="q3in" class="sr-only"
+            >Area of piece Z in square feet</label
+          >
+          <input
+            id="q3in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft²"
+          />
+          <div class="wq-hint">Hint / Pista: A = ½(b₁ + b₂) × h.</div>
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4 hexagon -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="num"
+          data-answer="42"
+          data-tol="0.5"
+          data-skill="Regular polygon area"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >Piece H regular hexagon: 6 identical triangles, each base = 4 ft,
+              height = 3.5 ft. What is the total hexagon area?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="80"
+              height="76"
+              viewBox="0 0 80 76"
+              role="img"
+              aria-label="Regular hexagon split into six triangles from the center"
+            >
+              <polygon
+                points="40,6 70,23 70,53 40,70 10,53 10,23"
+                fill="var(--wq-tile-5)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <g stroke="#fff" stroke-width="1">
+                <line x1="40" y1="38" x2="40" y2="6" />
+                <line x1="40" y1="38" x2="70" y2="23" />
+                <line x1="40" y1="38" x2="70" y2="53" />
+                <line x1="40" y1="38" x2="40" y2="70" />
+                <line x1="40" y1="38" x2="10" y2="53" />
+                <line x1="40" y1="38" x2="10" y2="23" />
+              </g>
+            </svg>
+          </div>
+          <label for="q4in" class="sr-only"
+            >Area of piece H in square feet</label
+          >
+          <input
+            id="q4in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft²"
+          />
+          <div class="wq-hint">
+            Hint / Pista: one triangle = ½ × 4 × 3.5, then × 6.
+          </div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5 composite C2 (choose strategy) -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Composite figure strategy"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >Piece C2 is a rectangle (6 ft × 5 ft) with a triangle roof (base
+              6 ft, height 4 ft). Which plan finds its area correctly?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="a" /> Add the rectangle and
+            triangle perimeters.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="b" /> Area = (6 × 5) + (½ × 6
+            × 4) = 30 + 12 = 42 ft².</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="c" /> Area = 6 × 5 × 4 = 120
+            ft².</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="d" /> You cannot find the area
+            of a composite figure.</label
+          >
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6 budget total -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="num"
+          data-answer="1644.50"
+          data-tol="1"
+          data-skill="Total area and budget"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >The six pieces total <strong>253 ft²</strong> of tile. At
+              <strong>$6.50 / ft²</strong>, what is the project cost? (Round to
+              the nearest cent.)</span
+            >
+          </div>
+          <label for="q6in" class="sr-only">Project cost in dollars</label>
+          <input
+            id="q6in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="$"
+          />
+          <div class="wq-hint">
+            Hint / Pista: Cost = total area × price. Is it under $4,000?
+          </div>
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did what real designers, builders, and surveyors do every day: you
+          broke a complicated space into shapes you understand, measured each
+          one, and turned area into money. The total cost of
+          <strong>$1,644.50</strong> comes in well under the $4,000 budget —
+          your studio wins the Riverbend Plaza commission!
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              Redesign one piece to be 25% larger and recalculate the bid. Stay
+              under budget while making the mosaic bolder.
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              Which piece was hardest to measure, and what decomposition made it
+              easier? Explain in 2–3 sentences. ¿Cuál figura fue la más difícil
+              y qué descomposición la hizo más fácil?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Landscape architects, tile setters, and game level designers all
+              bid jobs using polygon area — exactly the skill you just used.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
+
+        var ACTIVITY_ID = "webquest-unit-5-mosaic";
+        var ACTIVITY_TITLE = "WebQuest · Unit 5 · The Mosaic Commission";
+        var STANDARD = "6.G.A.1";
+
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
+        }
+
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the formula and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u5-q" + card.getAttribute("data-q"),
+              skill: card.getAttribute("data-skill") || "Area",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
+          });
+        }
+
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            var graded = false;
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+                graded = true;
+              }
+            } catch (e) {
+              graded = false;
+            }
+
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Bid approved — your studio wins the commission! ¡Felicidades!"
+                : " Review the pieces marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              var input = card.querySelector("input.wq-num");
+              if (input) input.value = "";
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

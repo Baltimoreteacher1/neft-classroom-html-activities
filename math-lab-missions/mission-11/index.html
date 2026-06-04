@@ -1,0 +1,1801 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.G.A.4 · Unit 5" data-standard="6.G.A.4" data-unit="5" />
+    <title>Mission 11: Surface Area (6.G.A.4) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        margin: 0;
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--paper);
+        color: var(--ink);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.6;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      a {
+        color: inherit;
+      }
+      .page-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 48px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn:hover {
+        opacity: 0.88;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 24px;
+        align-items: start;
+        margin-bottom: 32px;
+      }
+      .hero-text {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: clamp(22px, 4vw, 38px);
+        box-shadow: var(--shadow);
+      }
+      .hero-text .eyebrow {
+        color: var(--teal);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        line-height: 1.08;
+        color: var(--navy);
+        margin: 0 0 12px;
+      }
+      .hero-text .standards {
+        display: inline-block;
+        background: var(--soft-teal);
+        color: var(--teal);
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+      }
+      .hero-svg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        min-height: 400px;
+      }
+      .section {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 28px;
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+      }
+      .section h2 {
+        color: var(--navy);
+        font-size: 1.5rem;
+        margin: 0 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--soft-teal);
+      }
+      .section h3 {
+        color: var(--teal);
+        font-size: 1.15rem;
+        margin: 20px 0 10px;
+      }
+      .problem-box {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+      }
+      .problem-box strong {
+        color: var(--gold);
+      }
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        background: #fafcff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 14px 14px 14px 54px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--teal);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .step-list .guiding-q {
+        color: var(--teal);
+        font-style: italic;
+        margin-top: 4px;
+        display: block;
+      }
+      .language-box {
+        background: var(--soft-green);
+        border: 2px solid #a3d9a5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .language-box h3 {
+        color: var(--green);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .vocab-card {
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .vocab-card strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        padding: 12px 16px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+      }
+      .rep-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .rep-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #115e60;
+        font-size: 1.05rem;
+      }
+      .role .mission-task {
+        color: var(--teal);
+        font-weight: 600;
+        font-style: italic;
+        margin-top: 6px;
+        display: block;
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px 16px;
+        cursor: pointer;
+        border: 0;
+        width: 100%;
+        background: transparent;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-header:hover {
+        background: #f8fafe;
+      }
+      .phase-time {
+        padding: 5px 10px;
+        border-radius: 99px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .phase-name {
+        font-weight: 800;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 16px 14px;
+        color: var(--muted);
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .checkpoint {
+        background: var(--soft-blue);
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin-top: 8px;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      .challenge-box {
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 12px;
+      }
+      .defense-questions ol {
+        padding-left: 20px;
+      }
+      .defense-questions li {
+        margin-bottom: 8px;
+      }
+      .sentence-starters {
+        background: var(--soft-teal);
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin-top: 12px;
+      }
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .rubric-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .rubric-item strong {
+        color: var(--navy);
+        display: block;
+        margin-bottom: 4px;
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        padding: 20px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .print-workspace {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .topbar,
+        .timer-bar,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .hero {
+          display: block;
+        }
+        .section,
+        .hero-text,
+        .hero-svg {
+          box-shadow: none;
+          break-inside: avoid;
+          border-color: #999;
+          margin-bottom: 12px;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+          page-break-before: always;
+        }
+        .print-workspace .work-area {
+          border: 1px solid #ccc;
+          min-height: 200px;
+          margin-bottom: 16px;
+          padding: 12px;
+        }
+      }
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .rep-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .page-shell {
+          padding: 14px 0 32px;
+        }
+        .timer-display {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="topbar" aria-label="Mission navigation">
+        <div class="nav-links">
+          <a class="btn btn-secondary" href="/math-lab-missions/"
+            >All Missions</a
+          >
+          <a class="btn btn-secondary" href="/math-lab-missions/mission-10/"
+            >Prev: Mission 10</a
+          >
+          <a class="btn btn-secondary" href="/math-lab-missions/mission-12/"
+            >Next: Mission 12</a
+          >
+        </div>
+        <a class="btn btn-primary" href="/">Neft Hub</a>
+      </nav>
+
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 11 &middot; Unit 5</p>
+          <h1 id="mission-title">Surface Area</h1>
+          <span class="standards">6.G.A.4 &middot; Unit 5</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Use nets to find the surface area of 3-D figures.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="scenario">
+            The art teacher is having students build gift boxes for the school
+            fundraiser. Each box is a <strong>rectangular prism</strong> that is
+            <strong>10 inches long</strong>, <strong>6 inches wide</strong>, and
+            <strong>4 inches tall</strong>. Students will cover every face of
+            the box with decorative wrapping paper. Your team must figure out
+            the total surface area so the art teacher can cut the right amount
+            of paper for each box. She has a roll of paper that is
+            <strong>2,000 square inches</strong>. How many complete boxes can be
+            wrapped with one roll?
+          </p>
+        </div>
+        <div
+          class="hero-svg"
+          aria-label="Illustration of a rectangular prism and its net"
+        >
+          <svg
+            viewBox="0 0 400 440"
+            width="400"
+            height="440"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Gift box as rectangular prism with unfolded net below"
+          >
+            <!-- 3D Box (isometric-ish) -->
+            <text
+              x="200"
+              y="22"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              3-D Box
+            </text>
+            <!-- Front face -->
+            <rect
+              x="90"
+              y="50"
+              width="120"
+              height="60"
+              fill="#b2dfdb"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="150"
+              y="85"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#115e60"
+            >
+              Front
+            </text>
+            <!-- Top face (parallelogram) -->
+            <polygon
+              points="90,50 150,28 270,28 210,50"
+              fill="#80cbc4"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="180"
+              y="44"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#004d40"
+            >
+              Top
+            </text>
+            <!-- Right face (parallelogram) -->
+            <polygon
+              points="210,50 270,28 270,88 210,110"
+              fill="#4db6ac"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="240"
+              y="72"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#004d40"
+            >
+              Side
+            </text>
+            <!-- Dimension labels on box -->
+            <text
+              x="150"
+              y="125"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              10 in
+            </text>
+            <text
+              x="78"
+              y="82"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              4 in
+            </text>
+            <text
+              x="240"
+              y="23"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              6 in
+            </text>
+
+            <!-- NET below -->
+            <text
+              x="200"
+              y="155"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              Unfolded Net
+            </text>
+            <!-- Cross-shaped net for rectangular prism -->
+            <!-- Center row: left, front, right, back -->
+            <g transform="translate(20,170)">
+              <!-- Left face (6x4) -->
+              <rect
+                x="0"
+                y="50"
+                width="60"
+                height="40"
+                fill="#fff6df"
+                stroke="#b7791f"
+                stroke-width="1.5"
+              />
+              <text
+                x="30"
+                y="75"
+                text-anchor="middle"
+                font-size="9"
+                font-weight="700"
+                fill="#b7791f"
+              >
+                Left
+              </text>
+              <text
+                x="30"
+                y="65"
+                text-anchor="middle"
+                font-size="8"
+                fill="#5b6573"
+              >
+                6x4
+              </text>
+
+              <!-- Front face (10x4) -->
+              <rect
+                x="60"
+                y="50"
+                width="100"
+                height="40"
+                fill="#c8e6c9"
+                stroke="#2e7d32"
+                stroke-width="1.5"
+              />
+              <text
+                x="110"
+                y="75"
+                text-anchor="middle"
+                font-size="9"
+                font-weight="700"
+                fill="#2e7d32"
+              >
+                Front
+              </text>
+              <text
+                x="110"
+                y="65"
+                text-anchor="middle"
+                font-size="8"
+                fill="#5b6573"
+              >
+                10x4
+              </text>
+
+              <!-- Right face (6x4) -->
+              <rect
+                x="160"
+                y="50"
+                width="60"
+                height="40"
+                fill="#fff6df"
+                stroke="#b7791f"
+                stroke-width="1.5"
+              />
+              <text
+                x="190"
+                y="75"
+                text-anchor="middle"
+                font-size="9"
+                font-weight="700"
+                fill="#b7791f"
+              >
+                Right
+              </text>
+              <text
+                x="190"
+                y="65"
+                text-anchor="middle"
+                font-size="8"
+                fill="#5b6573"
+              >
+                6x4
+              </text>
+
+              <!-- Back face (10x4) -->
+              <rect
+                x="220"
+                y="50"
+                width="100"
+                height="40"
+                fill="#c8e6c9"
+                stroke="#2e7d32"
+                stroke-width="1.5"
+              />
+              <text
+                x="270"
+                y="75"
+                text-anchor="middle"
+                font-size="9"
+                font-weight="700"
+                fill="#2e7d32"
+              >
+                Back
+              </text>
+              <text
+                x="270"
+                y="65"
+                text-anchor="middle"
+                font-size="8"
+                fill="#5b6573"
+              >
+                10x4
+              </text>
+
+              <!-- Top face (10x6) -->
+              <rect
+                x="60"
+                y="0"
+                width="100"
+                height="50"
+                fill="#b2dfdb"
+                stroke="#207a7a"
+                stroke-width="1.5"
+              />
+              <text
+                x="110"
+                y="30"
+                text-anchor="middle"
+                font-size="9"
+                font-weight="700"
+                fill="#115e60"
+              >
+                Top
+              </text>
+              <text
+                x="110"
+                y="18"
+                text-anchor="middle"
+                font-size="8"
+                fill="#5b6573"
+              >
+                10x6
+              </text>
+
+              <!-- Bottom face (10x6) -->
+              <rect
+                x="60"
+                y="90"
+                width="100"
+                height="50"
+                fill="#b2dfdb"
+                stroke="#207a7a"
+                stroke-width="1.5"
+              />
+              <text
+                x="110"
+                y="120"
+                text-anchor="middle"
+                font-size="9"
+                font-weight="700"
+                fill="#115e60"
+              >
+                Bottom
+              </text>
+              <text
+                x="110"
+                y="108"
+                text-anchor="middle"
+                font-size="8"
+                fill="#5b6573"
+              >
+                10x6
+              </text>
+            </g>
+
+            <!-- Calculation summary -->
+            <rect
+              x="30"
+              y="345"
+              width="340"
+              height="82"
+              rx="8"
+              fill="#23395d"
+            />
+            <text
+              x="200"
+              y="368"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#ffd700"
+            >
+              Surface Area = 2(lw) + 2(lh) + 2(wh)
+            </text>
+            <text
+              x="200"
+              y="388"
+              text-anchor="middle"
+              font-size="12"
+              fill="#b2dfdb"
+            >
+              = 2(10x6) + 2(10x4) + 2(6x4)
+            </text>
+            <text
+              x="200"
+              y="406"
+              text-anchor="middle"
+              font-size="12"
+              fill="#b2dfdb"
+            >
+              = 120 + 80 + 48
+            </text>
+            <text
+              x="200"
+              y="424"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#ffd700"
+            >
+              = 248 in&sup2;
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Investigation -->
+      <section class="section" id="investigation">
+        <h2>Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> A gift box is 10 inches long, 6 inches
+          wide, and 4 inches tall. (A) Draw and label the net of this
+          rectangular prism. (B) Find the area of each face. (C) Calculate the
+          total surface area. (D) How many complete boxes can be wrapped with a
+          2,000 in&sup2; roll of paper?
+        </div>
+
+        <h3>Visual Model: The Six Faces</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 740 280"
+            width="740"
+            height="280"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Table showing all six faces with dimensions and areas"
+          >
+            <!-- Header -->
+            <rect x="10" y="10" width="720" height="40" rx="6" fill="#23395d" />
+            <text
+              x="80"
+              y="36"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              Face
+            </text>
+            <text
+              x="230"
+              y="36"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              Dimensions
+            </text>
+            <text
+              x="400"
+              y="36"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              Area Formula
+            </text>
+            <text
+              x="560"
+              y="36"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              Area
+            </text>
+            <text
+              x="680"
+              y="36"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#ffd700"
+            >
+              x2
+            </text>
+
+            <!-- Row 1: Top & Bottom -->
+            <rect x="10" y="55" width="720" height="36" fill="#ecf8f6" />
+            <text
+              x="80"
+              y="78"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#115e60"
+            >
+              Top &amp; Bottom
+            </text>
+            <text
+              x="230"
+              y="78"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              10 in x 6 in
+            </text>
+            <text
+              x="400"
+              y="78"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              l x w = 10 x 6
+            </text>
+            <text
+              x="560"
+              y="78"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              60 in&sup2;
+            </text>
+            <text
+              x="680"
+              y="78"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              120 in&sup2;
+            </text>
+
+            <!-- Row 2: Front & Back -->
+            <rect x="10" y="91" width="720" height="36" fill="#fff" />
+            <text
+              x="80"
+              y="114"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#2e7d32"
+            >
+              Front &amp; Back
+            </text>
+            <text
+              x="230"
+              y="114"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              10 in x 4 in
+            </text>
+            <text
+              x="400"
+              y="114"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              l x h = 10 x 4
+            </text>
+            <text
+              x="560"
+              y="114"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              40 in&sup2;
+            </text>
+            <text
+              x="680"
+              y="114"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              80 in&sup2;
+            </text>
+
+            <!-- Row 3: Left & Right -->
+            <rect x="10" y="127" width="720" height="36" fill="#ecf8f6" />
+            <text
+              x="80"
+              y="150"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Left &amp; Right
+            </text>
+            <text
+              x="230"
+              y="150"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              6 in x 4 in
+            </text>
+            <text
+              x="400"
+              y="150"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              w x h = 6 x 4
+            </text>
+            <text
+              x="560"
+              y="150"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              24 in&sup2;
+            </text>
+            <text
+              x="680"
+              y="150"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              48 in&sup2;
+            </text>
+
+            <!-- Total row -->
+            <rect
+              x="10"
+              y="170"
+              width="720"
+              height="40"
+              rx="6"
+              fill="#207a7a"
+            />
+            <text
+              x="400"
+              y="196"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#fff"
+            >
+              Total Surface Area = 120 + 80 + 48 = 248 in&sup2;
+            </text>
+
+            <!-- Division for boxes -->
+            <rect
+              x="10"
+              y="225"
+              width="720"
+              height="45"
+              rx="8"
+              fill="#fff6df"
+              stroke="#ead39d"
+              stroke-width="1.5"
+            />
+            <text
+              x="360"
+              y="248"
+              text-anchor="middle"
+              font-size="14"
+              fill="#5b6573"
+            >
+              2,000 in&sup2; &div; 248 in&sup2; per box =
+              <tspan font-weight="900" fill="#23395d">8</tspan>
+              complete boxes (with 16 in&sup2; left over)
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Identify the 3 dimensions.</strong> A rectangular prism has
+            length (l), width (w), and height (h). For this box: l = 10 in, w =
+            6 in, h = 4 in. Write these down.
+            <span class="guiding-q"
+              >How many faces does a rectangular prism have? How many pairs of
+              matching faces?</span
+            >
+          </li>
+          <li>
+            <strong>Draw the net.</strong> Imagine cutting the box along its
+            edges and unfolding it flat. You get a cross-shaped pattern with 6
+            rectangles. Label each face: Top, Bottom, Front, Back, Left, Right.
+            <span class="guiding-q"
+              >Which faces are the same size? Why do they come in pairs?</span
+            >
+          </li>
+          <li>
+            <strong>Find the area of each face.</strong> Top/Bottom: 10 x 6 = 60
+            in&sup2; each. Front/Back: 10 x 4 = 40 in&sup2; each. Left/Right: 6
+            x 4 = 24 in&sup2; each.
+            <span class="guiding-q"
+              >Why do opposite faces always have the same area?</span
+            >
+          </li>
+          <li>
+            <strong>Double each pair.</strong> Since there are 2 of each face:
+            2(60) = 120, 2(40) = 80, 2(24) = 48.
+            <span class="guiding-q"
+              >Why do we multiply by 2 instead of just adding the three
+              faces?</span
+            >
+          </li>
+          <li>
+            <strong>Add all face areas.</strong> Total surface area = 120 + 80 +
+            48 = 248 in&sup2;. This is how much paper covers one box completely.
+            <span class="guiding-q"
+              >Does this formula work: SA = 2lw + 2lh + 2wh? Try plugging in the
+              numbers to check.</span
+            >
+          </li>
+          <li>
+            <strong>Solve the paper roll problem.</strong> Divide 2,000 by 248.
+            You get 8 full boxes with some paper left over. Calculate the
+            leftover amount.
+            <span class="guiding-q"
+              >Why can you not wrap a 9th box? How much paper would you be
+              short?</span
+            >
+          </li>
+        </ol>
+
+        <!-- Language Box -->
+        <div class="language-box">
+          <h3>Language Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <strong>surface area</strong> &mdash; the total area of all the
+              faces (outside surfaces) of a 3-D shape
+            </div>
+            <div class="vocab-card">
+              <strong>face</strong> &mdash; one flat side of a 3-D shape; a
+              rectangular prism has 6 faces
+            </div>
+            <div class="vocab-card">
+              <strong>net</strong> &mdash; a flat pattern that can be folded up
+              into a 3-D shape
+            </div>
+            <div class="vocab-card">
+              <strong>rectangular prism</strong> &mdash; a 3-D box shape where
+              every face is a rectangle
+            </div>
+            <div class="vocab-card">
+              <strong>edge</strong> &mdash; the line where two faces meet on a
+              3-D shape
+            </div>
+            <div class="vocab-card">
+              <strong>dimension</strong> &mdash; a measurement like length,
+              width, or height
+            </div>
+            <div class="vocab-card">
+              <strong>square inches (in&sup2;)</strong> &mdash; the unit for
+              measuring area; a square that is 1 inch on each side
+            </div>
+            <div class="vocab-card">
+              <strong>opposite faces</strong> &mdash; two faces across from each
+              other; they are always the same size
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <h4 style="margin: 0 0 8px; color: var(--green)">
+              Sentence Frames
+            </h4>
+            <p>
+              "The net has _____ faces. The top and bottom each measure _____ by
+              _____, so their area is _____."
+            </p>
+            <p>
+              "The total surface area is _____ in&sup2; because I added all
+              _____ face areas together."
+            </p>
+            <p>
+              "With 2,000 in&sup2; of paper, we can wrap _____ boxes because
+              2,000 divided by _____ equals _____."
+            </p>
+          </div>
+        </div>
+
+        <!-- Multiple Representations -->
+        <h3>Multiple Representations</h3>
+        <div class="rep-grid">
+          <div class="rep-card">
+            <h4>Net Drawing</h4>
+            <p>
+              Cut and fold a paper net. Label each face with its dimensions and
+              area. Fold it to see the box. This physical model makes every face
+              visible.
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: understanding what "surface area" covers and why nets
+              work
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Area Table</h4>
+            <p>
+              Make a table with columns: Face Pair | Dimensions | One Face Area
+              | x2 Total. Fill in 3 rows (top/bottom, front/back, left/right).
+              Sum the last column.
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: organizing the calculation and avoiding missed faces
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Formula</h4>
+            <p>
+              SA = 2(lw) + 2(lh) + 2(wh)<br />
+              SA = 2(10)(6) + 2(10)(4) + 2(6)(4)<br />
+              SA = 120 + 80 + 48 = 248 in&sup2;
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: quick calculation once you understand the concept
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team Roles -->
+      <section class="section" id="roles">
+        <h2>Team Roles</h2>
+        <div class="role-grid">
+          <div class="role">
+            <strong>Facilitator</strong>
+            <span
+              >Keeps the group on track, watches the timer, makes sure everyone
+              speaks.</span
+            >
+            <span class="mission-task"
+              >Mission 11 task: Ensure the team draws a net, calculates all 6
+              face areas, AND answers how many boxes can be wrapped.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Model Builder</strong>
+            <span
+              >Draws the net, labels every face, and creates the area
+              table.</span
+            >
+            <span class="mission-task"
+              >Mission 11 task: Draw a clearly labeled net of the 10x6x4 box.
+              Color-code matching face pairs.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Precision Checker</strong>
+            <span
+              >Verifies every multiplication, checks that all 6 faces are
+              counted, and confirms units.</span
+            >
+            <span class="mission-task"
+              >Mission 11 task: Check that the formula SA = 2lw + 2lh + 2wh
+              gives the same answer as adding individual face areas. Verify
+              2,000 / 248.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Reporter</strong>
+            <span
+              >Prepares the defense: claim, evidence, and one mistake the team
+              caught.</span
+            >
+            <span class="mission-task"
+              >Mission 11 task: Explain the connection between the net and the
+              surface area formula. Show how the paper roll division
+              works.</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Timed Phases -->
+      <section class="section" id="phases">
+        <h2>Timed Lab Phases</h2>
+        <div class="timer-bar">
+          <div>
+            <strong id="activePhaseLabel">Ready</strong>
+            <div style="color: var(--muted); font-size: 0.9rem">
+              Click a phase, then press Start.
+            </div>
+          </div>
+          <div class="timer-display" id="timerDisplay" aria-live="polite">
+            03:00
+          </div>
+          <div class="timer-controls">
+            <button class="btn btn-primary" id="startTimer">Start</button>
+            <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+            <button class="btn btn-secondary" id="resetTimer">Reset</button>
+          </div>
+        </div>
+        <div class="phase-cards" id="phaseCards">
+          <article class="phase-card open" data-minutes="3">
+            <button class="phase-header" data-phase="0">
+              <span class="phase-time">3 min</span>
+              <span class="phase-name">Launch</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Read the scenario out loud.</strong> Assign roles.
+                Underline the 3 dimensions: 10 in, 6 in, 4 in.
+              </p>
+              <ul>
+                <li>How many faces does a box have? Can you name them?</li>
+                <li>
+                  Which faces are the same size? (Think about opposite sides.)
+                </li>
+                <li>What does "net" mean? Imagine unfolding a cereal box.</li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: Every teammate can name all 6 faces and identify the
+                3 pairs.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="6">
+            <button class="phase-header" data-phase="1">
+              <span class="phase-time">6 min</span>
+              <span class="phase-name">Build</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Draw the net and label each face.</strong> Calculate the
+                area of each face.
+              </p>
+              <ul>
+                <li>Draw a cross-shaped net with 6 rectangles.</li>
+                <li>Write dimensions on each rectangle: 10x6, 10x4, or 6x4.</li>
+                <li>Calculate the area inside each rectangle.</li>
+                <li>
+                  Color-code matching pairs (e.g., top/bottom same color).
+                </li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: The net is drawn with all 6 face areas calculated.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="5">
+            <button class="phase-header" data-phase="2">
+              <span class="phase-time">5 min</span>
+              <span class="phase-name">Solve</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Add all face areas for total surface area.</strong> Then
+                divide the paper roll by the surface area.
+              </p>
+              <ul>
+                <li>SA = 2(60) + 2(40) + 2(24) = 120 + 80 + 48 = ?</li>
+                <li>Also check using the formula: SA = 2lw + 2lh + 2wh.</li>
+                <li>Divide: 2,000 / 248 = ? boxes. What is the remainder?</li>
+                <li>
+                  Could you wrap part of another box with the leftover paper?
+                </li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: SA = 248 in&sup2;, and the team knows how many boxes
+                can be wrapped.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="4">
+            <button class="phase-header" data-phase="3">
+              <span class="phase-time">4 min</span>
+              <span class="phase-name">Defend</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Prepare your presentation.</strong> Show the net, the
+                calculation, and the paper roll answer.
+              </p>
+              <ul>
+                <li>State your claim: "The surface area is 248 in&sup2;."</li>
+                <li>Point to the net as evidence showing all 6 faces.</li>
+                <li>Explain how you know you did not miss any faces.</li>
+                <li>
+                  Share one mistake your team caught (forgot a face, wrong pair,
+                  etc.).
+                </li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: Reporter can walk through net, formula, and answer
+                in under 60 seconds.
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Challenge -->
+      <section class="section" id="challenge">
+        <h2>Challenge Zone</h2>
+        <div class="challenge-box">
+          <strong>Extension:</strong> The art teacher wants to add a ribbon
+          around the middle of each box (the perimeter at height = 2 in). The
+          ribbon goes around the long way: 10 + 6 + 10 + 6 = 32 inches per box.
+          If ribbon costs $0.05 per inch, what is the ribbon cost for all 8
+          boxes?
+        </div>
+        <div class="whatif">
+          <strong>What If?</strong> What if the box were a cube with 6-inch
+          sides instead of 10x6x4? Would the surface area be more or less than
+          248 in&sup2;? Calculate it and compare. Which shape uses less paper
+          per cubic inch of space inside?
+        </div>
+        <div class="whatif">
+          <strong>Real-Life Connection:</strong> Think about wrapping a birthday
+          present. You always need more paper than the surface area because of
+          overlaps and folds. If you need 10% extra paper for overlaps, how much
+          total paper do you need per box? How does this change how many boxes
+          you can wrap?
+        </div>
+      </section>
+
+      <!-- Defense Preparation -->
+      <section class="section" id="defense">
+        <h2>Defense Preparation</h2>
+        <div class="defense-questions">
+          <h3>Questions Your Team Must Answer</h3>
+          <ol>
+            <li>
+              How does the net connect to the surface area? Point to each face
+              on your net.
+            </li>
+            <li>
+              Why does a rectangular prism always have exactly 3 pairs of
+              matching faces?
+            </li>
+            <li>What is the total surface area? Show the calculation.</li>
+            <li>
+              How many boxes can be wrapped with the paper roll? What happens to
+              the leftover paper?
+            </li>
+            <li>
+              If one dimension changed (say height becomes 5 inches), which
+              faces change and which stay the same?
+            </li>
+          </ol>
+        </div>
+        <div class="sentence-starters">
+          <h3 style="margin-top: 0">Sentence Starters for Your Defense</h3>
+          <p>
+            "The surface area is _____ in&sup2; because the box has _____ pairs
+            of faces with areas of _____, _____, and _____."
+          </p>
+          <p>
+            "Our net shows all 6 faces. We verified by checking that 2(60) +
+            2(40) + 2(24) = _____."
+          </p>
+          <p>
+            "With 2,000 in&sup2; of paper, we can wrap _____ boxes because 2,000
+            / 248 = _____ with _____ left over."
+          </p>
+          <p>"One mistake we caught was _____. We fixed it by _____."</p>
+        </div>
+        <div class="rubric-grid">
+          <div class="rubric-item">
+            <strong>Accuracy (4 pts)</strong>
+            All face areas are correct. SA = 248 in&sup2;. Paper roll division
+            is correct.
+          </div>
+          <div class="rubric-item">
+            <strong>Net (4 pts)</strong>
+            Net is drawn with all 6 rectangles correctly sized and labeled with
+            dimensions.
+          </div>
+          <div class="rubric-item">
+            <strong>Reasoning (4 pts)</strong>
+            Team explains why faces come in pairs and connects net to formula.
+          </div>
+          <div class="rubric-item">
+            <strong>Communication (4 pts)</strong>
+            Reporter uses vocabulary (surface area, net, face, edge, dimension)
+            and teammates can explain.
+          </div>
+        </div>
+      </section>
+
+      <!-- Exit Product -->
+      <section class="section" id="exit">
+        <h2>Exit Product</h2>
+        <div class="exit-box">
+          <h3 style="margin-top: 0; color: var(--navy)">
+            Deliver: Gift Box Wrapping Report
+          </h3>
+          <p>Your team submits a one-page report that includes:</p>
+          <ul class="checklist">
+            <li>A labeled net of the 10 x 6 x 4 rectangular prism</li>
+            <li>
+              The area of each face pair (top/bottom, front/back, left/right)
+            </li>
+            <li>Total surface area using both adding faces and the formula</li>
+            <li>
+              Division showing how many boxes can be wrapped from 2,000 in&sup2;
+            </li>
+            <li>Explanation of what happens to leftover paper</li>
+            <li>
+              A 3-sentence defense: claim, evidence, and reasonableness check
+            </li>
+          </ul>
+          <h4 style="color: var(--navy); margin-top: 16px">Self-Assessment</h4>
+          <ul class="checklist">
+            <li>I can draw and label the net of a rectangular prism.</li>
+            <li>
+              I found the area of all 6 faces and added them for surface area.
+            </li>
+            <li>I can explain why opposite faces have equal area.</li>
+            <li>I used correct units (in&sup2;) throughout my work.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Print workspace -->
+      <section class="print-workspace">
+        <h2>Student Work Space</h2>
+        <p>
+          <strong
+            >Net Drawing (label all faces with dimensions and areas):</strong
+          >
+        </p>
+        <div class="work-area" style="min-height: 260px"></div>
+        <p><strong>Face Area Table:</strong></p>
+        <div class="work-area"></div>
+        <p><strong>Total Surface Area Calculation:</strong></p>
+        <div class="work-area" style="min-height: 120px"></div>
+        <p><strong>Paper Roll Division:</strong></p>
+        <div class="work-area" style="min-height: 120px"></div>
+        <p><strong>Defense (Claim, Evidence, Reasonableness):</strong></p>
+        <div class="work-area"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var activePhase = 0,
+          remaining = phases[0].minutes * 60,
+          tid = null;
+        var display = document.getElementById("timerDisplay");
+        var label = document.getElementById("activePhaseLabel");
+        var cards = document.querySelectorAll(".phase-card");
+        function fmt(s) {
+          var m = Math.floor(s / 60),
+            r = s % 60;
+          return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+        }
+        function setPhase(i) {
+          activePhase = i;
+          remaining = phases[i].minutes * 60;
+          label.textContent = phases[i].name + " phase";
+          display.textContent = fmt(remaining);
+          cards.forEach(function (c, j) {
+            c.classList.toggle("open", j === i);
+          });
+        }
+        function stop() {
+          if (tid) {
+            clearInterval(tid);
+            tid = null;
+          }
+        }
+        document
+          .getElementById("phaseCards")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            stop();
+            setPhase(Number(h.dataset.phase));
+          });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (tid) return;
+            tid = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              display.textContent = fmt(remaining);
+              if (remaining === 0) {
+                stop();
+                label.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document.getElementById("pauseTimer").addEventListener("click", stop);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stop();
+            setPhase(activePhase);
+          });
+        setPhase(0);
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

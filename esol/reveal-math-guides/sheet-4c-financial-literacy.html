@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>4C Financial Literacy Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>4C | Financial Literacy Study Guide</h1>
+        <div class="guide-meta">
+          Unit 4: Percents &bull; Lesson 4.3 &bull; Standard: 6.RP.3c
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Tax</strong> &mdash; extra money added to the price by the
+          government.
+          <span class="spanish">(impuesto)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Tip</strong> &mdash; extra money you give to thank someone for
+          their service (like a waiter).
+          <span class="spanish">(propina)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Discount</strong> &mdash; an amount subtracted from the
+          original price (a sale).
+          <span class="spanish">(descuento)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Markup</strong> &mdash; the amount a store adds to the cost to
+          make a profit.
+          <span class="spanish">(margen)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Sale Price</strong> &mdash; the new, lower price after a
+          discount is taken off.
+          <span class="spanish">(precio de venta)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Original Price</strong> &mdash; the price before any discount
+          or tax.
+          <span class="spanish">(precio original)</span>
+        </div>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step</h2>
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap">
+          <div style="flex: 1; min-width: 250px">
+            <h3 style="color: var(--guide-primary); margin-bottom: 0.5rem">
+              Tax or Tip (ADD)
+            </h3>
+            <ol class="step-list">
+              <li>
+                <span class="step-num">1</span> Convert the percent to a
+                decimal.
+              </li>
+              <li>
+                <span class="step-num">2</span> Multiply the price by the
+                decimal.
+              </li>
+              <li>
+                <span class="step-num">3</span> ADD the result to the original
+                price.
+              </li>
+            </ol>
+            <div class="example-box">
+              <strong>$40 meal + 15% tip</strong><br />
+              0.15 &times; $40 = $6.00 tip<br />
+              $40 + $6 = <strong>$46.00 total</strong>
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 250px">
+            <h3 style="color: var(--guide-primary); margin-bottom: 0.5rem">
+              Discount (SUBTRACT)
+            </h3>
+            <ol class="step-list">
+              <li>
+                <span class="step-num">1</span> Convert the percent to a
+                decimal.
+              </li>
+              <li>
+                <span class="step-num">2</span> Multiply the original price by
+                the decimal.
+              </li>
+              <li>
+                <span class="step-num">3</span> SUBTRACT the result from the
+                original price.
+              </li>
+            </ol>
+            <div class="example-box">
+              <strong>$60 shirt, 25% off</strong><br />
+              0.25 &times; $60 = $15 discount<br />
+              $60 &minus; $15 = <strong>$45 sale price</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Formula Box</h2>
+        <div class="formula-highlight">
+          Tax / Tip Amount = Price &times; Rate (as decimal)
+        </div>
+        <div class="formula-highlight">Total with Tax = Price + Tax Amount</div>
+        <div class="formula-highlight">
+          Discount Amount = Original Price &times; Discount Rate
+        </div>
+        <div class="formula-highlight">
+          Sale Price = Original Price &minus; Discount Amount
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>Tax and tip are ADDED</strong> to the price. Discounts are
+            SUBTRACTED.
+          </li>
+          <li>
+            <strong>Always convert the percent to a decimal first!</strong> 8% =
+            0.08, not 0.8.
+          </li>
+          <li>
+            <strong>Sale price is NOT the discount.</strong> If a $50 item is
+            20% off, the discount is $10, but the sale price is $40.
+          </li>
+          <li>
+            <strong>Round money to two decimal places</strong> (cents). $12.456
+            &rarr; $12.46.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> A meal costs $25.00. The tax rate is 6%. What is
+            the total cost including tax?
+          </p>
+          <input
+            type="text"
+            id="q1"
+            placeholder="Type your answer (e.g., $26.50)..."
+          />
+          <button class="check-btn" onclick="checkMoney('q1', 26.5, 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> You want to leave a 20% tip on a $35.00 dinner.
+            How much is the tip?
+          </p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkMoney('q2', 7.0, 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> A $80 pair of shoes is 30% off. What is the sale
+            price?
+          </p>
+          <input type="text" id="q3" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkMoney('q3', 56.0, 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> A store buys a jacket for $40 and marks it up
+            50%. What is the selling price?
+          </p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkMoney('q4', 60.0, 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkMoney(inputId, correctNum, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/[$,\s]/g, "");
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else if (Math.abs(parseFloat(val) - correctNum) < 0.01) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

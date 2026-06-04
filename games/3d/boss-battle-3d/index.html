@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>MCAP Boss Battle 3D — Grade 6 Math Review (Reveal, BCPS)</title>
+    <link rel="stylesheet" href="/assets/design-tokens.css" />
+    <!-- Shared clarity/onboarding kit (start overlay, how-to-play, end screen).
+         Auto-injected by clarity-kit.js too; preloaded here to avoid a flash. -->
+    <link rel="stylesheet" href="/games/3d/_clarity/clarity-kit.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--navy, #12355b);
+        font-family: var(--font-body, system-ui, sans-serif);
+      }
+      #game {
+        position: fixed;
+        inset: 0;
+      }
+      .e3d-boot-title {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        z-index: 16;
+        pointer-events: none;
+        font-family: var(--font-display, system-ui, sans-serif);
+        font-weight: 700;
+        font-size: 15px;
+        opacity: 0.85;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      .e3d-fallback {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      .e3d-fallback a {
+        color: var(--amber, #f2c15b);
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/games/engine3d/vendor/three/build/three.module.js",
+          "three/addons/": "/games/engine3d/vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div
+      id="game"
+      role="application"
+      tabindex="0"
+      aria-label="MCAP Boss Battle. A 3D math review game. Answer Grade 6 questions to attack the boss across 10 phases."
+    ></div>
+    <div class="e3d-boot-title">MCAP Boss Battle 3D — Grade 6 Review</div>
+    <div class="e3d-fallback" id="fallback">
+      <div>
+        <h2>Couldn't start the 3D Boss Battle</h2>
+        <p>
+          This game needs a browser with WebGL turned on. Try refreshing once,
+          or open it in a different browser or on another device.
+        </p>
+      </div>
+    </div>
+
+    <script type="module">
+      import { mountGame } from "/games/engine3d/index.js";
+      import bossBattle from "/games/3d/boss-battle-3d/game.js";
+
+      try {
+        // Omit `level` so the Level 1 (support) / Level 2 (enrichment) selector
+        // shows first, then the vocab gate, then the battle.
+        mountGame(document.getElementById("game"), bossBattle, {
+          sceneOpts: {
+            background: 0x0c1830,
+            cameraPos: [0, 3.4, 11],
+            fov: 55,
+            // a touch more bloom than default so the boss core / strikes glow
+            bloomStrength: 0.32,
+            bloomThreshold: 0.82,
+          },
+        });
+      } catch (err) {
+        console.error("Failed to mount Boss Battle 3D:", err);
+        document.getElementById("fallback").style.display = "flex";
+      }
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

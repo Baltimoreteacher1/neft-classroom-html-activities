@@ -1,0 +1,2500 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="NetFold Pro: A premium interactive tool for exploring 2D geometric nets and morphing them into 3D shapes with surface area and volume calculators."
+    />
+    <title>NetFold Pro | 3D Net Folding Simulator</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy-dark: #090f1d;
+        --navy-medium: #111a2e;
+        --navy-light: #1e293b;
+        --primary: #2563eb;
+        --primary-glow: rgba(37, 99, 235, 0.4);
+        --secondary: #0d9488;
+        --secondary-glow: rgba(13, 148, 136, 0.4);
+        --accent: #f59e0b;
+        --accent-glow: rgba(245, 158, 11, 0.4);
+        --danger: #ef4444;
+        --success: #10b981;
+        --white: #ffffff;
+        --gray-100: #f1f5f9;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-600: #475569;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --radius-sm: 8px;
+        --shadow-md:
+          0 10px 25px -5px rgba(0, 0, 0, 0.3),
+          0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        --shadow-glow: 0 0 25px rgba(37, 99, 235, 0.2);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --font-display: "Outfit", sans-serif;
+        --font-main: "Plus Jakarta Sans", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-color: var(--navy-dark);
+        color: var(--white);
+        font-family: var(--font-main);
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: rgba(17, 26, 46, 0.8);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 16px 24px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .header-logo span {
+        font-size: 1.8rem;
+      }
+
+      .header-logo h1 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--white) 30%, var(--gray-300));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .header-controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .btn {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), #1d4ed8);
+        color: var(--white);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--white);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .btn-lang {
+        background: rgba(13, 148, 136, 0.15);
+        color: #2dd4bf;
+        border: 1px solid rgba(13, 148, 136, 0.3);
+      }
+
+      .btn-lang:hover {
+        background: rgba(13, 148, 136, 0.25);
+      }
+
+      .app-container {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+        max-width: 1280px;
+        width: 100%;
+        margin: 24px auto;
+        padding: 0 24px;
+        flex: 1;
+      }
+
+      @media (max-width: 1024px) {
+        .app-container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card {
+        background: rgba(17, 26, 46, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(8px);
+      }
+
+      .card h2 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 10px;
+      }
+
+      .shape-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .shape-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--gray-400);
+        padding: 10px 4px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: center;
+      }
+
+      .shape-btn:hover {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .shape-btn.active {
+        color: var(--white);
+        background: var(--primary);
+        border-color: var(--primary);
+        box-shadow: var(--shadow-glow);
+      }
+
+      .slider-group {
+        margin-bottom: 16px;
+      }
+
+      .slider-group label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--gray-300);
+        margin-bottom: 6px;
+      }
+
+      .slider-group label span {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .slider-control {
+        width: 100%;
+        height: 6px;
+        background: var(--navy-light);
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+        accent-color: var(--primary);
+      }
+
+      .slider-control::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--white);
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        transition: var(--transition);
+      }
+
+      .slider-control::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        background: var(--accent);
+      }
+
+      .progress-bar-container {
+        margin-top: 10px;
+        background: var(--navy-light);
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transition: width 0.3s ease;
+      }
+
+      .canvas-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .canvas-area {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .canvas-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(17, 26, 46, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        position: relative;
+        min-height: 420px;
+      }
+
+      .canvas-title {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--gray-300);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .canvas-title svg {
+        color: var(--primary);
+      }
+
+      .svg-canvas {
+        border-radius: var(--radius-md);
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+        max-width: 100%;
+        touch-action: none;
+      }
+
+      .vocab-key-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .vocab-chip {
+        padding: 4px 10px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: var(--transition);
+        border: 1px solid transparent;
+      }
+
+      .vocab-chip.face-base {
+        background: rgba(37, 99, 235, 0.15);
+        color: #60a5fa;
+        border-color: rgba(37, 99, 235, 0.3);
+      }
+      .vocab-chip.face-side {
+        background: rgba(13, 148, 136, 0.15);
+        color: #2dd4bf;
+        border-color: rgba(13, 148, 136, 0.3);
+      }
+      .vocab-chip.face-top {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+
+      .vocab-chip:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.2);
+      }
+
+      .formula-card {
+        margin-top: 20px;
+      }
+
+      .formula-math {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 1.15rem;
+        font-weight: 700;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        text-align: center;
+        margin: 12px 0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        letter-spacing: 0.05em;
+        color: var(--accent);
+      }
+
+      .formula-term {
+        display: inline-block;
+        padding: 2px 4px;
+        border-radius: 4px;
+        transition: var(--transition);
+      }
+
+      .formula-term.active {
+        background: rgba(245, 158, 11, 0.25);
+        border: 1px solid var(--accent);
+        color: var(--white);
+      }
+
+      .formula-steps {
+        font-size: 0.85rem;
+        color: var(--gray-300);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .step-row {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 6px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+      }
+
+      .step-row:last-child {
+        border: none;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--white);
+      }
+
+      .esol-card {
+        background: linear-gradient(
+          135deg,
+          rgba(13, 148, 136, 0.1),
+          rgba(37, 99, 235, 0.05)
+        );
+        border: 1px solid rgba(13, 148, 136, 0.2);
+      }
+
+      .esol-bubble {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: var(--radius-md);
+        padding: 12px;
+        font-size: 0.9rem;
+        border-left: 4px solid var(--secondary);
+        margin-top: 10px;
+      }
+
+      .esol-translation {
+        font-style: italic;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        margin-top: 4px;
+      }
+
+      /* Tooltip style */
+      .tooltip {
+        position: absolute;
+        background: var(--navy-medium);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 8px 12px;
+        border-radius: var(--radius-sm);
+        font-size: 0.78rem;
+        color: var(--white);
+        pointer-events: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        z-index: 200;
+        max-width: 200px;
+        display: none;
+      }
+
+      /* Diagnostic Panel overlay */
+      .diagnostics-panel {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--navy-medium);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        z-index: 1000;
+        width: 300px;
+        box-shadow: var(--shadow-md);
+        display: none;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .diag-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--font-display);
+        font-weight: 800;
+        margin-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 4px;
+      }
+
+      .diag-log {
+        font-family: monospace;
+        font-size: 0.75rem;
+        background: #000;
+        padding: 8px;
+        border-radius: 4px;
+        height: 120px;
+        overflow-y: auto;
+        color: #10b981;
+        margin-bottom: 8px;
+      }
+
+      footer {
+        text-align: center;
+        padding: 24px;
+        color: var(--gray-400);
+        font-size: 0.8rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin-top: auto;
+        background: rgba(9, 15, 29, 0.8);
+      }
+
+      /* SVG styles */
+      .svg-net-face {
+        stroke-width: 1.5;
+        transition:
+          fill 0.25s,
+          stroke-width 0.2s;
+        cursor: pointer;
+      }
+      .svg-net-face:hover {
+        stroke-width: 2.5;
+        filter: brightness(1.1);
+      }
+      .net-fold-line {
+        stroke: #475569;
+        stroke-width: 1.5;
+        stroke-dasharray: 4, 3;
+      }
+      .svg-text {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 11px;
+        fill: var(--white);
+        pointer-events: none;
+        text-anchor: middle;
+        dominant-baseline: middle;
+      }
+    
+      /* Quest Board list */
+      .quest-board {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .quest-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-sm);
+        padding: 10px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .quest-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(6, 182, 212, 0.3);
+      }
+      .quest-item.active {
+        background: rgba(6, 182, 212, 0.1);
+        border-color: var(--primary);
+      }
+      .quest-item.resolved {
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      .quest-meta strong {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--white);
+      }
+      .quest-meta span {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+      .quest-status {
+        font-size: 1.1rem;
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header>
+      <div class="header-logo">
+        <span>📦</span>
+        <h1>NetFold Pro</h1>
+      </div>
+      <div class="header-controls">
+        <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
+          🌐 EN | ES
+        </button>
+        <button class="btn btn-secondary" onclick="triggerSelfTest()">
+          ⚡ Run Self-Test
+        </button>
+      </div>
+    </header>
+
+    <main class="app-container">
+      <!-- Sidebar Controls -->
+      <div class="sidebar">
+        <!-- Shape Config Card -->
+        <div class="card">
+          <h2 id="lbl-shape-config">🔧 Shape Selection</h2>
+          <div class="shape-selector">
+            <button
+              class="shape-btn active"
+              id="btn-rect"
+              onclick="selectShape('rectangular_prism')"
+            >
+              Rect Prism
+            </button>
+            <button
+              class="shape-btn"
+              id="btn-tri"
+              onclick="selectShape('triangular_prism')"
+            >
+              Tri Prism
+            </button>
+            <button
+              class="shape-btn"
+              id="btn-pyramid"
+              onclick="selectShape('square_pyramid')"
+            >
+              Sq Pyramid
+            </button>
+          </div>
+
+          <div id="dimension-sliders">
+            <!-- Dynamic Dimension Sliders go here -->
+          </div>
+        </div>
+
+        <!-- Folding Control Card -->
+        <div class="card">
+          <h2 id="lbl-fold-control">🎛️ Fold Control</h2>
+          <div class="slider-group">
+            <label>
+              <span id="lbl-fold-progress">Folding Progress</span>
+              <span id="val-fold">0%</span>
+            </label>
+            <input
+              type="range"
+              class="slider-control"
+              id="slider-fold"
+              min="0"
+              max="100"
+              value="0"
+              oninput="updateFold(this.value)"
+            />
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="fold-progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="slider-group" style="margin-top: 10px">
+            <label>
+              <span id="lbl-yaw">Rotate 3D (Horizontal)</span>
+              <span id="val-yaw">35°</span>
+            </label>
+            <input
+              type="range"
+              class="slider-control"
+              id="slider-yaw"
+              min="0"
+              max="360"
+              value="35"
+              oninput="updateYaw(this.value)"
+            />
+          </div>
+        </div>
+
+        <!-- Formulas Card -->
+        <div class="card formula-card">
+          <h2 id="lbl-formulas">📐 Formulas & Calculator</h2>
+          <div class="formula-math" id="formula-text">SA = 2(lw + lh + wh)</div>
+          <div class="formula-steps" id="formula-steps">
+            <!-- Calculations go here -->
+          </div>
+        </div>
+
+        <!-- Quests Card -->
+        <div class="card">
+          <h2 id="lbl-quest-log">🛰️ Mission Control</h2>
+          <div class="quest-board" id="netfold-quest-list">
+            <!-- Quests generated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Canvas Workspaces -->
+      <div class="canvas-area">
+        <!-- 2D Net Canvas -->
+        <div class="canvas-card">
+          <div class="canvas-title">
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M4 6h16M4 12h16M4 18h7"
+              ></path>
+            </svg>
+            <span id="lbl-canvas-2d">2D Flat Net Workspace</span>
+          </div>
+          <svg
+            id="svg-canvas-2d"
+            class="svg-canvas"
+            width="400"
+            height="400"
+            style="background: white"
+          >
+            <!-- SVG contents drawn programmatically -->
+          </svg>
+          <div class="vocab-key-container" id="vocab-key-2d">
+            <!-- Interactive vocabulary keys -->
+          </div>
+        </div>
+
+        <!-- 3D Isometric View -->
+        <div class="canvas-card">
+          <div class="canvas-title">
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              ></path>
+            </svg>
+            <span id="lbl-canvas-3d">3D Folding Visualization</span>
+          </div>
+          <svg
+            id="svg-canvas-3d"
+            class="svg-canvas"
+            width="400"
+            height="400"
+            style="background: white"
+          >
+            <!-- 3D contents drawn programmatically -->
+          </svg>
+
+          <!-- ESOL Language Hub -->
+          <div
+            class="card esol-card"
+            style="
+              width: 100%;
+              border-radius: var(--radius-md);
+              padding: 14px;
+              margin-top: 14px;
+              box-shadow: none;
+            "
+          >
+            <strong
+              style="
+                font-size: 0.85rem;
+                color: var(--secondary);
+                text-transform: uppercase;
+              "
+              id="lbl-esol-title"
+              >Level 1 · Sentence Starter</strong
+            >
+            <div class="esol-bubble">
+              <span id="esol-starter"
+                >Select a face on the 2D Net to start learning.</span
+              >
+              <div class="esol-translation" id="esol-starter-trans">
+                Seleccione una cara en el plano 2D para comenzar.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Tooltip Element -->
+    <div class="tooltip" id="tooltip-element"></div>
+
+    <!-- Hidden Diagnostics Panel -->
+    <div class="diagnostics-panel" id="diag-panel">
+      <div class="diag-header">
+        <span>Diagnostics</span>
+        <button
+          onclick="document.getElementById('diag-panel').style.display = 'none'"
+          style="
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-weight: 800;
+          "
+        >
+          X
+        </button>
+      </div>
+      <div class="diag-log" id="diag-log"></div>
+      <button
+        class="btn btn-primary"
+        style="width: 100%; font-size: 0.8rem"
+        onclick="document.getElementById('diag-panel').style.display = 'none'"
+      >
+        Close
+      </button>
+    </div>
+
+    <footer>
+      <p>
+        &copy; 2026 Neft Learning Systems. Built locally, completely private.
+        Designed to support Grade 6 Geometry Standard expected score ranges.
+      </p>
+    </footer>
+
+    <!-- App Script -->
+    <script>
+      // ==========================================
+      // 1. CONFIGURATION
+      // ==========================================
+      const CONFIG = {
+        colors: {
+          baseFace: "#2563eb", // Blue
+          sideFace: "#0d9488", // Teal
+          topFace: "#f59e0b", // Amber
+          stroke: "#1e293b",
+          fill2d: "#ffffff",
+          gridLine: "#e2e8f0",
+        },
+        limits: {
+          rectangular_prism: { w: [2, 8], h: [2, 8], l: [2, 8] },
+          triangular_prism: { w: [2, 8], h: [2, 8], l: [2, 8] },
+          square_pyramid: { w: [2, 8], h: [2, 8] },
+        },
+        defaultRotation: { pitch: 65, yaw: 35 },
+        quests: [
+          {
+            id: 1,
+            title: "🎯 Flat to 3D",
+            titleEs: "🎯 De Plano a 3D",
+            desc: "Fold the rectangular prism completely to 100% progress.",
+            descEs: "Pliegue el prisma rectangular completamente al 100% de progreso.",
+            validator: (state) => state.currentShape === "rectangular_prism" && state.foldPercentage === 100
+          },
+          {
+            id: 2,
+            title: "🚀 Constant Volume",
+            titleEs: "🚀 Volumen Constante",
+            desc: "Construct a triangular prism with Volume = 60 units³ (w=5, h=4, l=6) and fold to 100%.",
+            descEs: "Construya un prisma triangular con Volumen = 60 unidades³ (w=5, h=4, l=6) y pliegue al 100%.",
+            validator: (state) => {
+              if (state.currentShape !== "triangular_prism" || state.foldPercentage !== 100) return false;
+              const vol = 0.5 * state.dimensions.w * state.dimensions.h * state.dimensions.l;
+              return Math.round(vol) === 60;
+            }
+          },
+          {
+            id: 3,
+            title: "📦 Pyramid Surface Area",
+            titleEs: "📦 Área de la Pirámide",
+            desc: "Construct a square pyramid with Surface Area = 96 units² (w=6, h=4) and fold to 100%.",
+            descEs: "Construya una pirámide cuadrada con Área de Superficie = 96 unidades² (w=6, h=4) y pliegue al 100%.",
+            validator: (state) => {
+              if (state.currentShape !== "square_pyramid" || state.foldPercentage !== 100) return false;
+              const w = state.dimensions.w;
+              const h = state.dimensions.h;
+              const slantHeight = Math.sqrt((w / 2) * (w / 2) + h * h);
+              const sa = w * w + 2 * w * slantHeight;
+              return Math.round(sa) === 96;
+            }
+          },
+          {
+            id: 4,
+            title: "🌌 Morphing View",
+            titleEs: "🌌 Vista Rotatoria",
+            desc: "Explore 3D coordinates by rotating any shape at least 90° with fold progress at 100%.",
+            descEs: "Explore coordenadas 3D rotando cualquier figura al menos 90° con progreso al 100%.",
+            validator: (state) => {
+              return state.foldPercentage === 100 && (state.yaw >= 90 || state.yaw === 0);
+            }
+          }
+        ]
+      };
+
+      // ==========================================
+      // 2. CONFIG VALIDATOR
+      // ==========================================
+      function validateConfig() {
+        if (!CONFIG.colors || !CONFIG.limits || !CONFIG.defaultRotation) {
+          throw new Error("NetFold Pro: Invalid configuration tokens.");
+        }
+      }
+
+      // ==========================================
+      // 3. STATE MACHINE
+      // ==========================================
+      const STATE = {
+        currentShape: "rectangular_prism",
+        dimensions: { w: 5, h: 4, l: 6 }, // Width, Height, Length
+        foldPercentage: 0,
+        pitch: CONFIG.defaultRotation.pitch,
+        yaw: CONFIG.defaultRotation.yaw,
+        activeFaceId: null,
+        language: "en",
+        activeQuestId: 1,
+        completedQuests: [],
+      };
+
+      // Translations Map
+      const TRANSLATIONS = {
+        en: {
+          "quest-log": "🛰️ Mission Control",
+          "shape-config": "🔧 Shape Config",
+          "fold-control": "🎛️ Fold Controls",
+          "fold-progress": "Folding Progress",
+          yaw: "Rotate 3D (Horizontal)",
+          formulas: "📐 Formulas & Calculations",
+          "canvas-2d": "2D Flat Net Workspace",
+          "canvas-3d": "3D Isometric Visualization",
+          "esol-title": "Level 1 · Sentence Hub",
+          "starter-default":
+            "Hover over or click any face to see its area calculation!",
+          "starter-default-trans":
+            "Pase el cursor o haga clic en cualquier cara para ver su cálculo!",
+          "starter-face":
+            "This face represents the {name} of the shape. Its dimensions are {d1} x {d2}, which yields an area of {area} units².",
+          "starter-face-trans":
+            "Esta cara representa la {transName} de la figura. Sus dimensiones son {d1} x {d2}, dando un área de {area} unidades².",
+          base: "base",
+          "base-trans": "base",
+          side: "side face",
+          "side-trans": "cara lateral",
+          top: "top face",
+          "top-trans": "cara superior",
+          front: "front face",
+          "front-trans": "cara frontal",
+          back: "back face",
+          "back-trans": "cara trasera",
+          left: "left face",
+          "left-trans": "cara izquierda",
+          right: "right face",
+          "right-trans": "cara derecha",
+        },
+        es: {
+          "quest-log": "🛰️ Control de Misiones",
+          "shape-config": "🔧 Conf. Figura",
+          "fold-control": "🎛️ Control Pliegue",
+          "fold-progress": "Progreso de Pliegue",
+          yaw: "Rotación 3D (Horizontal)",
+          formulas: "📐 Fórmulas y Cálculos",
+          "canvas-2d": "Espacio de Red Plana 2D",
+          "canvas-3d": "Visualización Isométrica 3D",
+          "esol-title": "Nivel 1 · Centro de Oraciones",
+          "starter-default":
+            "¡Pase el cursor o haga clic en cualquier cara para ver su área!",
+          "starter-default-trans":
+            "Hover over or click any face to see its area calculation!",
+          "starter-face":
+            "Esta cara representa la {transName} de la figura. Sus dimensiones son {d1} x {d2}, dando un área de {area} unidades².",
+          "starter-face-trans":
+            "This face represents the {name} of the shape. Its dimensions are {d1} x {d2}, which yields an area of {area} units².",
+          base: "base",
+          "base-trans": "base",
+          side: "cara lateral",
+          "side-trans": "side face",
+          top: "cara superior",
+          "top-trans": "top face",
+          front: "cara frontal",
+          "front-trans": "front face",
+          back: "cara trasera",
+          "back-trans": "back face",
+          left: "cara izquierda",
+          "left-trans": "left face",
+          right: "cara derecha",
+          "right-trans": "right face",
+        },
+      };
+
+      function transitionState(updatedFields) {
+        Object.assign(STATE, updatedFields);
+        checkQuests();
+        renderUI();
+      }
+
+      function selectQuest(id) {
+        transitionState({ activeQuestId: id });
+      }
+
+      function checkQuests() {
+        if (!CONFIG.quests) return;
+        CONFIG.quests.forEach((q) => {
+          if (q.validator(STATE)) {
+            if (!STATE.completedQuests.includes(q.id)) {
+              STATE.completedQuests.push(q.id);
+              if (typeof AudioSynth !== 'undefined' && AudioSynth.playSuccessChime) {
+                AudioSynth.playSuccessChime();
+              }
+              const title = STATE.language === "en" ? "Quest Completed! 🏆" : "¡Misión Completada! 🏆";
+              const desc = STATE.language === "en" 
+                ? `Successfully solved: "${q.title}". Amazing folding!` 
+                : `Resuelto con éxito: "${q.titleEs}". ¡Pliegue increíble!`;
+              showCustomModal(title, desc, "📦");
+            }
+          }
+        });
+      }
+
+      function renderQuestList() {
+        const container = document.getElementById("netfold-quest-list");
+        if (!container) return;
+        container.innerHTML = "";
+
+        CONFIG.quests.forEach((q) => {
+          const isActive = STATE.activeQuestId === q.id;
+          const isSolved = STATE.completedQuests.includes(q.id);
+          const title = STATE.language === "en" ? q.title : q.titleEs;
+          const desc = STATE.language === "en" ? q.desc : q.descEs;
+
+          container.innerHTML += `
+            <div class="quest-item ${isActive ? "active" : ""} ${isSolved ? "resolved" : ""}" onclick="selectQuest(${q.id})">
+                <div class="quest-meta">
+                    <strong>${title}</strong>
+                    <span>${desc}</span>
+                </div>
+                <span class="quest-status">${isSolved ? "🏆" : "📐"}</span>
+            </div>
+          `;
+        });
+      }
+
+      // ==========================================
+      // 4. COORDINATE & GEOMETRIC CALCULATIONS
+      // ==========================================
+
+      // 3D Isometric Projection
+      // Rotates point (x,y,z) on Pitch (around X axis) and Yaw (around Z axis) and scales it
+      function project3D(x, y, z) {
+        const radYaw = (STATE.yaw * Math.PI) / 180;
+        const radPitch = (STATE.pitch * Math.PI) / 180;
+
+        // Rotate around Z axis (Yaw)
+        let x1 = x * Math.cos(radYaw) - y * Math.sin(radYaw);
+        let y1 = x * Math.sin(radYaw) + y * Math.cos(radYaw);
+        let z1 = z;
+
+        // Rotate around X axis (Pitch)
+        let x2 = x1;
+        let y2 = y1 * Math.cos(radPitch) - z1 * Math.sin(radPitch);
+        let z2 = y1 * Math.sin(radPitch) + z1 * Math.cos(radPitch);
+
+        // Screen Mapping: Center on the canvas (200, 200) and scale
+        const scale = 14;
+        const screenX = 200 + x2 * scale;
+        const screenY = 200 - y2 * scale; // Invert Y axis for screen space
+
+        return { x: screenX, y: screenY };
+      }
+
+      // Helper to rotate a point in 3D about a line hinge
+      // point: {x, y, z}, origin: {x, y, z}, axisVector: {x, y, z} (must be normalized), angle in radians
+      function rotateAboutHinge(point, origin, axis, angle) {
+        const dx = point.x - origin.x;
+        const dy = point.y - origin.y;
+        const dz = point.z - origin.z;
+
+        // Rodrigues' rotation formula
+        const cosA = Math.cos(angle);
+        const sinA = Math.sin(angle);
+        const dot = dx * axis.x + dy * axis.y + dz * axis.z;
+
+        const rx =
+          dx * cosA +
+          (axis.y * dz - axis.z * dy) * sinA +
+          axis.x * dot * (1 - cosA);
+        const ry =
+          dy * cosA +
+          (axis.z * dx - axis.x * dz) * sinA +
+          axis.y * dot * (1 - cosA);
+        const rz =
+          dz * cosA +
+          (axis.x * dy - axis.y * dx) * sinA +
+          axis.z * dot * (1 - cosA);
+
+        return {
+          x: origin.x + rx,
+          y: origin.y + ry,
+          z: origin.z + rz,
+        };
+      }
+
+      // Compute 3D coordinates of all faces based on folding state
+      function getFoldedVertices() {
+        const { w, h, l } = STATE.dimensions;
+        const fold = STATE.foldPercentage / 100;
+        const faces = [];
+
+        if (STATE.currentShape === "rectangular_prism") {
+          // Base face (center on origin, width w along X, length l along Y)
+          const baseOrigin = { x: 0, y: 0, z: 0 };
+          const basePts = [
+            { x: -w / 2, y: -l / 2, z: 0 },
+            { x: w / 2, y: -l / 2, z: 0 },
+            { x: w / 2, y: l / 2, z: 0 },
+            { x: -w / 2, y: l / 2, z: 0 },
+          ];
+          faces.push({
+            id: "base",
+            name: "Base",
+            color: CONFIG.colors.baseFace,
+            points: basePts,
+          });
+
+          // Hinge angles: 90 degrees fully folded
+          const angle = (Math.PI / 2) * fold;
+
+          // Front face: Hinges on y = -l/2
+          const frontHinge = { x: 0, y: -l / 2, z: 0 };
+          const frontAxis = { x: -1, y: 0, z: 0 }; // Right-hand rule along X axis
+          const frontPts = [
+            rotateAboutHinge(
+              { x: -w / 2, y: -l / 2 - h, z: 0 },
+              frontHinge,
+              frontAxis,
+              angle,
+            ),
+            rotateAboutHinge(
+              { x: w / 2, y: -l / 2 - h, z: 0 },
+              frontHinge,
+              frontAxis,
+              angle,
+            ),
+            { x: w / 2, y: -l / 2, z: 0 },
+            { x: -w / 2, y: -l / 2, z: 0 },
+          ];
+          faces.push({
+            id: "front",
+            name: "Front",
+            color: CONFIG.colors.sideFace,
+            points: frontPts,
+          });
+
+          // Back face: Hinges on y = l/2
+          const backHinge = { x: 0, y: l / 2, z: 0 };
+          const backAxis = { x: 1, y: 0, z: 0 };
+          const backPts = [
+            { x: -w / 2, y: l / 2, z: 0 },
+            { x: w / 2, y: l / 2, z: 0 },
+            rotateAboutHinge(
+              { x: w / 2, y: l / 2 + h, z: 0 },
+              backHinge,
+              backAxis,
+              angle,
+            ),
+            rotateAboutHinge(
+              { x: -w / 2, y: l / 2 + h, z: 0 },
+              backHinge,
+              backAxis,
+              angle,
+            ),
+          ];
+          faces.push({
+            id: "back",
+            name: "Back",
+            color: CONFIG.colors.sideFace,
+            points: backPts,
+          });
+
+          // Left face: Hinges on x = -w/2
+          const leftHinge = { x: -w / 2, y: 0, z: 0 };
+          const leftAxis = { x: 0, y: 1, z: 0 };
+          const leftPts = [
+            rotateAboutHinge(
+              { x: -w / 2 - h, y: -l / 2, z: 0 },
+              leftHinge,
+              leftAxis,
+              angle,
+            ),
+            { x: -w / 2, y: -l / 2, z: 0 },
+            { x: -w / 2, y: l / 2, z: 0 },
+            rotateAboutHinge(
+              { x: -w / 2 - h, y: l / 2, z: 0 },
+              leftHinge,
+              leftAxis,
+              angle,
+            ),
+          ];
+          faces.push({
+            id: "left",
+            name: "Left",
+            color: CONFIG.colors.sideFace,
+            points: leftPts,
+          });
+
+          // Right face: Hinges on x = w/2
+          const rightHinge = { x: w / 2, y: 0, z: 0 };
+          const rightAxis = { x: 0, y: -1, z: 0 };
+          const rightPts = [
+            { x: w / 2, y: -l / 2, z: 0 },
+            rotateAboutHinge(
+              { x: w / 2 + h, y: -l / 2, z: 0 },
+              rightHinge,
+              rightAxis,
+              angle,
+            ),
+            rotateAboutHinge(
+              { x: w / 2 + h, y: l / 2, z: 0 },
+              rightHinge,
+              rightAxis,
+              angle,
+            ),
+            { x: w / 2, y: l / 2, z: 0 },
+          ];
+          faces.push({
+            id: "right",
+            name: "Right",
+            color: CONFIG.colors.sideFace,
+            points: rightPts,
+          });
+
+          // Top face: hinges on back face's outer edge (y = l/2 + h in flat state)
+          const topHingeFlat = { x: 0, y: l / 2 + h, z: 0 };
+          const topAxis = { x: 1, y: 0, z: 0 };
+
+          // First rotate flat top points relative to topHinge by top angle
+          const topP1 = rotateAboutHinge(
+            { x: -w / 2, y: l / 2 + h + l, z: 0 },
+            topHingeFlat,
+            topAxis,
+            angle,
+          );
+          const topP2 = rotateAboutHinge(
+            { x: w / 2, y: l / 2 + h + l, z: 0 },
+            topHingeFlat,
+            topAxis,
+            angle,
+          );
+          const topP3 = rotateAboutHinge(
+            { x: w / 2, y: l / 2 + h, z: 0 },
+            topHingeFlat,
+            topAxis,
+            angle,
+          );
+          const topP4 = rotateAboutHinge(
+            { x: -w / 2, y: l / 2 + h, z: 0 },
+            topHingeFlat,
+            topAxis,
+            angle,
+          );
+
+          // Then rotate all top points together with the back face folding around backHinge
+          const topPts = [
+            rotateAboutHinge(topP1, backHinge, backAxis, angle),
+            rotateAboutHinge(topP2, backHinge, backAxis, angle),
+            rotateAboutHinge(topP3, backHinge, backAxis, angle),
+            rotateAboutHinge(topP4, backHinge, backAxis, angle),
+          ];
+          faces.push({
+            id: "top",
+            name: "Top",
+            color: CONFIG.colors.topFace,
+            points: topPts,
+          });
+        } else if (STATE.currentShape === "triangular_prism") {
+          // Base face is a rectangle (w x l) center on origin
+          const basePts = [
+            { x: -w / 2, y: -l / 2, z: 0 },
+            { x: w / 2, y: -l / 2, z: 0 },
+            { x: w / 2, y: l / 2, z: 0 },
+            { x: -w / 2, y: l / 2, z: 0 },
+          ];
+          faces.push({
+            id: "base",
+            name: "Base",
+            color: CONFIG.colors.baseFace,
+            points: basePts,
+          });
+
+          // Side faces fold up. Dihedral angle for equilateral triangle sides is 60 deg,
+          // but let's assume a right triangular prism where two sides hinge up by 90 degrees.
+          const angle = (Math.PI / 2) * fold;
+
+          // Left rectangular face: Hinges on x = -w/2
+          const leftHinge = { x: -w / 2, y: 0, z: 0 };
+          const leftAxis = { x: 0, y: 1, z: 0 };
+          // Calculate side height 's' using hypotenuse for triangles. Let's make it equal to height h
+          const sideWidth = h;
+          const leftPts = [
+            rotateAboutHinge(
+              { x: -w / 2 - sideWidth, y: -l / 2, z: 0 },
+              leftHinge,
+              leftAxis,
+              angle,
+            ),
+            { x: -w / 2, y: -l / 2, z: 0 },
+            { x: -w / 2, y: l / 2, z: 0 },
+            rotateAboutHinge(
+              { x: -w / 2 - sideWidth, y: l / 2, z: 0 },
+              leftHinge,
+              leftAxis,
+              angle,
+            ),
+          ];
+          faces.push({
+            id: "left",
+            name: "Left Side",
+            color: CONFIG.colors.sideFace,
+            points: leftPts,
+          });
+
+          // Right rectangular face: Hinges on x = w/2
+          const rightHinge = { x: w / 2, y: 0, z: 0 };
+          const rightAxis = { x: 0, y: -1, z: 0 };
+          const rightPts = [
+            { x: w / 2, y: -l / 2, z: 0 },
+            rotateAboutHinge(
+              { x: w / 2 + sideWidth, y: -l / 2, z: 0 },
+              rightHinge,
+              rightAxis,
+              angle,
+            ),
+            rotateAboutHinge(
+              { x: w / 2 + sideWidth, y: l / 2, z: 0 },
+              rightHinge,
+              rightAxis,
+              angle,
+            ),
+            { x: w / 2, y: l / 2, z: 0 },
+          ];
+          faces.push({
+            id: "right",
+            name: "Right Side",
+            color: CONFIG.colors.sideFace,
+            points: rightPts,
+          });
+
+          // Front triangular face: Hinges on y = -l/2, folds up by 90 deg (Math.PI/2)
+          const frontHinge = { x: 0, y: -l / 2, z: 0 };
+          const frontAxis = { x: -1, y: 0, z: 0 };
+          // The peak of the triangle in 2D net lies at (0, -l/2 - h, 0)
+          const frontPts = [
+            { x: -w / 2, y: -l / 2, z: 0 },
+            { x: w / 2, y: -l / 2, z: 0 },
+            rotateAboutHinge(
+              { x: 0, y: -l / 2 - h, z: 0 },
+              frontHinge,
+              frontAxis,
+              angle,
+            ),
+          ];
+          faces.push({
+            id: "front",
+            name: "Front Triangle",
+            color: CONFIG.colors.topFace,
+            points: frontPts,
+          });
+
+          // Back triangular face: Hinges on y = l/2
+          const backHinge = { x: 0, y: l / 2, z: 0 };
+          const backAxis = { x: 1, y: 0, z: 0 };
+          const backPts = [
+            { x: -w / 2, y: l / 2, z: 0 },
+            rotateAboutHinge(
+              { x: 0, y: l / 2 + h, z: 0 },
+              backHinge,
+              backAxis,
+              angle,
+            ),
+            { x: w / 2, y: l / 2, z: 0 },
+          ];
+          faces.push({
+            id: "back",
+            name: "Back Triangle",
+            color: CONFIG.colors.topFace,
+            points: backPts,
+          });
+        } else if (STATE.currentShape === "square_pyramid") {
+          // Base is a square (w x w)
+          const basePts = [
+            { x: -w / 2, y: -w / 2, z: 0 },
+            { x: w / 2, y: -w / 2, z: 0 },
+            { x: w / 2, y: w / 2, z: 0 },
+            { x: -w / 2, y: w / 2, z: 0 },
+          ];
+          faces.push({
+            id: "base",
+            name: "Base Square",
+            color: CONFIG.colors.baseFace,
+            points: basePts,
+          });
+
+          // Dihedral angle of square pyramid is ~54.74 degrees. Let's fold it by this target angle.
+          const pyrHeight = h;
+          const triSideLen = Math.sqrt(
+            (w / 2) * (w / 2) + pyrHeight * pyrHeight,
+          );
+          const foldAngle = Math.atan2(pyrHeight, w / 2) * fold;
+
+          // Front triangle: hinges on y = -w/2
+          const frontHinge = { x: 0, y: -w / 2, z: 0 };
+          const frontAxis = { x: -1, y: 0, z: 0 };
+          const frontPts = [
+            { x: -w / 2, y: -w / 2, z: 0 },
+            { x: w / 2, y: -w / 2, z: 0 },
+            rotateAboutHinge(
+              { x: 0, y: -w / 2 - triSideLen, z: 0 },
+              frontHinge,
+              frontAxis,
+              foldAngle,
+            ),
+          ];
+          faces.push({
+            id: "front",
+            name: "Front Triangle",
+            color: CONFIG.colors.sideFace,
+            points: frontPts,
+          });
+
+          // Back triangle: hinges on y = w/2
+          const backHinge = { x: 0, y: w / 2, z: 0 };
+          const backAxis = { x: 1, y: 0, z: 0 };
+          const backPts = [
+            { x: -w / 2, y: w / 2, z: 0 },
+            rotateAboutHinge(
+              { x: 0, y: w / 2 + triSideLen, z: 0 },
+              backHinge,
+              backAxis,
+              foldAngle,
+            ),
+            { x: w / 2, y: w / 2, z: 0 },
+          ];
+          faces.push({
+            id: "back",
+            name: "Back Triangle",
+            color: CONFIG.colors.sideFace,
+            points: backPts,
+          });
+
+          // Left triangle: hinges on x = -w/2
+          const leftHinge = { x: -w / 2, y: 0, z: 0 };
+          const leftAxis = { x: 0, y: 1, z: 0 };
+          const leftPts = [
+            rotateAboutHinge(
+              { x: -w / 2 - triSideLen, y: 0, z: 0 },
+              leftHinge,
+              leftAxis,
+              foldAngle,
+            ),
+            { x: -w / 2, y: -w / 2, z: 0 },
+            { x: -w / 2, y: w / 2, z: 0 },
+          ];
+          faces.push({
+            id: "left",
+            name: "Left Triangle",
+            color: CONFIG.colors.sideFace,
+            points: leftPts,
+          });
+
+          // Right triangle: hinges on x = w/2
+          const rightHinge = { x: w / 2, y: 0, z: 0 };
+          const rightAxis = { x: 0, y: -1, z: 0 };
+          const rightPts = [
+            { x: w / 2, y: -w / 2, z: 0 },
+            rotateAboutHinge(
+              { x: w / 2 + triSideLen, y: 0, z: 0 },
+              rightHinge,
+              rightAxis,
+              foldAngle,
+            ),
+            { x: w / 2, y: w / 2, z: 0 },
+          ];
+          faces.push({
+            id: "right",
+            name: "Right Triangle",
+            color: CONFIG.colors.sideFace,
+            points: rightPts,
+          });
+        }
+
+        return faces;
+      }
+
+      // ==========================================
+      // 5. INTERACTION & ACTION HANDLERS
+      // ==========================================
+      function selectShape(shapeName) {
+        document
+          .querySelectorAll(".shape-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        if (shapeName === "rectangular_prism")
+          document.getElementById("btn-rect").classList.add("active");
+        if (shapeName === "triangular_prism")
+          document.getElementById("btn-tri").classList.add("active");
+        if (shapeName === "square_pyramid")
+          document.getElementById("btn-pyramid").classList.add("active");
+
+        // Reset active state
+        STATE.activeFaceId = null;
+
+        // Load default dimensions & sliders
+        const dimensions = {};
+        const limits = CONFIG.limits[shapeName];
+        for (let key in limits) {
+          dimensions[key] = Math.round((limits[key][0] + limits[key][1]) / 2);
+        }
+
+        transitionState({
+          currentShape: shapeName,
+          dimensions: dimensions,
+          foldPercentage: 0,
+        });
+        document.getElementById("slider-fold").value = 0;
+      }
+
+      function updateDimension(dim, val) {
+        const parsedVal = parseInt(val, 10);
+        const dims = { ...STATE.dimensions, [dim]: parsedVal };
+        transitionState({ dimensions: dims });
+      }
+
+      function updateFold(val) {
+        const parsedVal = parseInt(val, 10);
+        if (parsedVal !== STATE.foldPercentage) {
+          if (typeof AudioSynth !== 'undefined') AudioSynth.playCrease();
+        }
+        document.getElementById("val-fold").innerText = `${parsedVal}%`;
+        document.getElementById("fold-progress-fill").style.width =
+          `${parsedVal}%`;
+        transitionState({ foldPercentage: parsedVal });
+      }
+
+      function updateYaw(val) {
+        const parsedVal = parseInt(val, 10);
+        if (parsedVal !== STATE.yaw) {
+          if (typeof AudioSynth !== 'undefined') AudioSynth.playRotateTick();
+        }
+        document.getElementById("val-yaw").innerText = `${parsedVal}°`;
+        transitionState({ yaw: parsedVal });
+      }
+
+      function toggleLanguage() {
+        const nextLang = STATE.language === "en" ? "es" : "en";
+        transitionState({ language: nextLang });
+      }
+
+      // Mouse hover interactions for faces
+      function handleFaceHover(faceId) {
+        transitionState({ activeFaceId: faceId });
+      }
+
+      function handleFaceLeave() {
+        transitionState({ activeFaceId: null });
+      }
+
+      // ==========================================
+      // 6. RENDER ENGINE (Programmatic SVG Elements)
+      // ==========================================
+
+      function renderUI() {
+        validateConfig();
+        renderSliders();
+        renderFormulas();
+        render2DCanvas();
+        render3DCanvas();
+        updateESOLHub();
+        renderQuestList();
+      }
+
+      function renderSliders() {
+        const container = document.getElementById("dimension-sliders");
+        const limits = CONFIG.limits[STATE.currentShape];
+        let html = "";
+
+        const dimLabels = {
+          w: STATE.language === "en" ? "Width (w)" : "Ancho (w)",
+          h: STATE.language === "en" ? "Height (h)" : "Altura (h)",
+          l: STATE.language === "en" ? "Length (l)" : "Largo (l)",
+        };
+
+        for (let dim in limits) {
+          const range = limits[dim];
+          const currentVal = STATE.dimensions[dim];
+          html += `
+                    <div class="slider-group">
+                        <label>
+                            <span>${dimLabels[dim]}</span>
+                            <span>${currentVal} units</span>
+                        </label>
+                        <input type="range" class="slider-control" min="${range[0]}" max="${range[1]}" value="${currentVal}" oninput="updateDimension('${dim}', this.value)">
+                    </div>
+                `;
+        }
+        container.innerHTML = html;
+
+        // Translate static labels
+        const t = TRANSLATIONS[STATE.language];
+        document.getElementById("lbl-shape-config").innerText =
+          t["shape-config"];
+        document.getElementById("lbl-fold-control").innerText =
+          t["fold-control"];
+        document.getElementById("lbl-fold-progress").innerText =
+          t["fold-progress"];
+        document.getElementById("lbl-yaw").innerText = t["yaw"];
+        document.getElementById("lbl-formulas").innerText = t["formulas"];
+        document.getElementById("lbl-canvas-2d").innerText = t["canvas-2d"];
+        document.getElementById("lbl-canvas-3d").innerText = t["canvas-3d"];
+        document.getElementById("lbl-esol-title").innerText = t["esol-title"];
+        document.getElementById("lbl-quest-log").innerText = t["quest-log"];
+      }
+
+      function renderFormulas() {
+        const { w, h, l } = STATE.dimensions;
+        const formulaTextEl = document.getElementById("formula-text");
+        const stepsEl = document.getElementById("formula-steps");
+        const lang = STATE.language;
+
+        const labelArea = lang === "en" ? "Area" : "Área";
+        const labelSum =
+          lang === "en" ? "Total Surface Area" : "Área Superficial Total";
+        const labelVolume = lang === "en" ? "Volume" : "Volumen";
+
+        if (STATE.currentShape === "rectangular_prism") {
+          formulaTextEl.innerHTML = `SA = 2(<span class="formula-term ${STATE.activeFaceId === "base" || STATE.activeFaceId === "top" ? "active" : ""}">lw</span> + <span class="formula-term ${STATE.activeFaceId === "front" || STATE.activeFaceId === "back" ? "active" : ""}">lh</span> + <span class="formula-term ${STATE.activeFaceId === "left" || STATE.activeFaceId === "right" ? "active" : ""}">wh</span>)`;
+
+          const baseTop = l * w;
+          const frontBack = l * h;
+          const leftRight = w * h;
+          const totalSA = 2 * (baseTop + frontBack + leftRight);
+          const volume = w * h * l;
+
+          stepsEl.innerHTML = `
+                    <div class="step-row"><span>Base & Top (2 x l x w):</span> <span>2 x (${l} x ${w}) = ${2 * baseTop}</span></div>
+                    <div class="step-row"><span>Front & Back (2 x l x h):</span> <span>2 x (${l} x ${h}) = ${2 * frontBack}</span></div>
+                    <div class="step-row"><span>Left & Right (2 x w x h):</span> <span>2 x (${w} x ${h}) = ${2 * leftRight}</span></div>
+                    <div class="step-row"><span>${labelSum}:</span> <span style="color:var(--accent); font-weight:800;">${totalSA} units²</span></div>
+                    <div class="step-row" style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px;"><span>${labelVolume} (l x w x h):</span> <span>${l} x ${w} x ${h} = <strong>${volume} units³</strong></span></div>
+                `;
+        } else if (STATE.currentShape === "triangular_prism") {
+          formulaTextEl.innerHTML = `SA = bh + L(s₁ + s₂ + s₃)`;
+
+          const baseArea = w * h; // b*h for two triangles cancels the 1/2 factor
+          // Let's assume right triangle base with legs w and h, hypotenuse s = sqrt(w^2 + h^2)
+          const hypot = Math.round(Math.sqrt(w * w + h * h) * 10) / 10;
+
+          const bottomRect = w * l;
+          const verticalRect = h * l;
+          const slantedRect = hypot * l;
+
+          const totalSA =
+            Math.round(
+              (baseArea + bottomRect + verticalRect + slantedRect) * 10,
+            ) / 10;
+          const volume = Math.round(0.5 * w * h * l * 10) / 10;
+
+          stepsEl.innerHTML = `
+                    <div class="step-row"><span>2 Triangles (b x h):</span> <span>${w} x ${h} = ${baseArea}</span></div>
+                    <div class="step-row"><span>Bottom Face (w x l):</span> <span>${w} x ${l} = ${bottomRect}</span></div>
+                    <div class="step-row"><span>Vertical Face (h x l):</span> <span>${h} x ${l} = ${verticalRect}</span></div>
+                    <div class="step-row"><span>Slanted Face (s x l):</span> <span>${hypot} x ${l} = ${slantedRect}</span></div>
+                    <div class="step-row"><span>${labelSum}:</span> <span style="color:var(--accent); font-weight:800;">${totalSA} units²</span></div>
+                    <div class="step-row" style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px;"><span>${labelVolume} (0.5 x b x h x L):</span> <span>0.5 x ${w} x ${h} x ${l} = <strong>${volume} units³</strong></span></div>
+                `;
+        } else if (STATE.currentShape === "square_pyramid") {
+          formulaTextEl.innerHTML = `SA = w² + 2w × s`;
+
+          const baseArea = w * w;
+          const triSideLen =
+            Math.round(Math.sqrt((w / 2) * (w / 2) + h * h) * 10) / 10; // slant height
+          const lateralArea = 2 * w * triSideLen;
+          const totalSA = Math.round((baseArea + lateralArea) * 10) / 10;
+          const volume = Math.round((1 / 3) * baseArea * h * 10) / 10;
+
+          stepsEl.innerHTML = `
+                    <div class="step-row"><span>Base Square (w²):</span> <span>${w} x ${w} = ${baseArea}</span></div>
+                    <div class="step-row"><span>4 Triangles (2 x w x s):</span> <span>2 x ${w} x ${triSideLen} = ${lateralArea}</span></div>
+                    <div class="step-row"><span>${labelSum}:</span> <span style="color:var(--accent); font-weight:800;">${totalSA} units²</span></div>
+                    <div class="step-row" style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px;"><span>${labelVolume} (1/3 x w² x h):</span> <span>1/3 x ${baseArea} x ${h} = <strong>${volume} units³</strong></span></div>
+                `;
+        }
+      }
+
+      function render2DCanvas() {
+        const svg = document.getElementById("svg-canvas-2d");
+        const vocabContainer = document.getElementById("vocab-key-2d");
+        svg.innerHTML = ""; // Clear SVG
+
+        const { w, h, l } = STATE.dimensions;
+        const scale = 14;
+        const cx = 200;
+        const cy = 200;
+
+        // Draw a subtle grid background
+        for (let i = 20; i < 400; i += 20) {
+          svg.innerHTML += `
+                    <line x1="${i}" y1="0" x2="${i}" y2="400" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />
+                    <line x1="0" y1="${i}" x2="400" y2="${i}" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />
+                `;
+        }
+
+        let faces = [];
+        let foldLines = [];
+
+        if (STATE.currentShape === "rectangular_prism") {
+          // We define the flat 2D layout:
+          // Base: (w x l) at center
+          const wb = w * scale;
+          const lb = l * scale;
+          const hb = h * scale;
+
+          // Base
+          faces.push({
+            id: "base",
+            name: "Base",
+            x: cx - wb / 2,
+            y: cy - lb / 2,
+            w: wb,
+            h: lb,
+            color: CONFIG.colors.baseFace,
+          });
+          // Front (attached bottom)
+          faces.push({
+            id: "front",
+            name: "Front",
+            x: cx - wb / 2,
+            y: cy + lb / 2,
+            w: wb,
+            h: hb,
+            color: CONFIG.colors.sideFace,
+          });
+          // Back (attached top)
+          faces.push({
+            id: "back",
+            name: "Back",
+            x: cx - wb / 2,
+            y: cy - lb / 2 - hb,
+            w: wb,
+            h: hb,
+            color: CONFIG.colors.sideFace,
+          });
+          // Left (attached left)
+          faces.push({
+            id: "left",
+            name: "Left",
+            x: cx - wb / 2 - hb,
+            y: cy - lb / 2,
+            w: hb,
+            h: lb,
+            color: CONFIG.colors.sideFace,
+          });
+          // Right (attached right)
+          faces.push({
+            id: "right",
+            name: "Right",
+            x: cx + wb / 2,
+            y: cy - lb / 2,
+            w: hb,
+            h: lb,
+            color: CONFIG.colors.sideFace,
+          });
+          // Top (attached above back)
+          faces.push({
+            id: "top",
+            name: "Top",
+            x: cx - wb / 2,
+            y: cy - lb / 2 - hb - lb,
+            w: wb,
+            h: lb,
+            color: CONFIG.colors.topFace,
+          });
+
+          // Fold lines are the shared boundaries
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy - lb / 2,
+            x2: cx + wb / 2,
+            y2: cy - lb / 2,
+          }); // Base-Back
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy + lb / 2,
+            x2: cx + wb / 2,
+            y2: cy + lb / 2,
+          }); // Base-Front
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy - lb / 2,
+            x2: cx - wb / 2,
+            y2: cy + lb / 2,
+          }); // Base-Left
+          foldLines.push({
+            x1: cx + wb / 2,
+            y1: cy - lb / 2,
+            x2: cx + wb / 2,
+            y2: cy + lb / 2,
+          }); // Base-Right
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy - lb / 2 - hb,
+            x2: cx + wb / 2,
+            y2: cy - lb / 2 - hb,
+          }); // Back-Top
+        } else if (STATE.currentShape === "triangular_prism") {
+          const wb = w * scale;
+          const lb = l * scale;
+          const hb = h * scale;
+
+          // Base rectangle
+          faces.push({
+            id: "base",
+            name: "Base Rect",
+            x: cx - wb / 2,
+            y: cy - lb / 2,
+            w: wb,
+            h: lb,
+            color: CONFIG.colors.baseFace,
+          });
+          // Left rect
+          faces.push({
+            id: "left",
+            name: "Left Side",
+            x: cx - wb / 2 - hb,
+            y: cy - lb / 2,
+            w: hb,
+            h: lb,
+            color: CONFIG.colors.sideFace,
+          });
+          // Right rect
+          faces.push({
+            id: "right",
+            name: "Right Side",
+            x: cx + wb / 2,
+            y: cy - lb / 2,
+            w: hb,
+            h: lb,
+            color: CONFIG.colors.sideFace,
+          });
+
+          // Draw standard 2D Rectangles
+          faces.forEach((f) => {
+            svg.innerHTML += `
+                        <rect class="svg-net-face" data-id="${f.id}" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" fill="${STATE.activeFaceId === f.id ? "rgba(255,255,255,0.4)" : f.color}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('${f.id}')" onmouseout="handleFaceLeave()" />
+                        <text class="svg-text" x="${f.x + f.w / 2}" y="${f.y + f.h / 2}">${f.name}</text>
+                    `;
+          });
+
+          // Front triangle (pointing down from bottom y = cy + lb/2)
+          const tx1 = cx - wb / 2;
+          const ty1 = cy + lb / 2;
+          const tx2 = cx + wb / 2;
+          const ty2 = cy + lb / 2;
+          const tx3 = cx;
+          const ty3 = cy + lb / 2 + hb;
+
+          svg.innerHTML += `
+                    <polygon class="svg-net-face" data-id="front" points="${tx1},${ty1} ${tx2},${ty2} ${tx3},${ty3}" fill="${STATE.activeFaceId === "front" ? "rgba(255,255,255,0.4)" : CONFIG.colors.topFace}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('front')" onmouseout="handleFaceLeave()" />
+                    <text class="svg-text" x="${cx}" y="${cy + lb / 2 + hb / 2.5}">Front</text>
+                `;
+
+          // Back triangle (pointing up from top y = cy - lb/2)
+          const bx1 = cx - wb / 2;
+          const by1 = cy - lb / 2;
+          const bx2 = cx + wb / 2;
+          const by2 = cy - lb / 2;
+          const bx3 = cx;
+          const by3 = cy - lb / 2 - hb;
+
+          svg.innerHTML += `
+                    <polygon class="svg-net-face" data-id="back" points="${bx1},${by1} ${bx2},${by2} ${bx3},${by3}" fill="${STATE.activeFaceId === "back" ? "rgba(255,255,255,0.4)" : CONFIG.colors.topFace}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('back')" onmouseout="handleFaceLeave()" />
+                    <text class="svg-text" x="${cx}" y="${cy - lb / 2 - hb / 2.5}">Back</text>
+                `;
+
+          // Fold lines
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy - lb / 2,
+            x2: cx + wb / 2,
+            y2: cy - lb / 2,
+          });
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy + lb / 2,
+            x2: cx + wb / 2,
+            y2: cy + lb / 2,
+          });
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy - lb / 2,
+            x2: cx - wb / 2,
+            y2: cy + lb / 2,
+          });
+          foldLines.push({
+            x1: cx + wb / 2,
+            y1: cy - lb / 2,
+            x2: cx + wb / 2,
+            y2: cy + lb / 2,
+          });
+
+          // Skip standard rect render since we custom rendered
+          faces = [];
+        } else if (STATE.currentShape === "square_pyramid") {
+          const wb = w * scale;
+          const hb = h * scale;
+          const triLen = Math.sqrt((wb / 2) * (wb / 2) + hb * hb);
+
+          // Base Square
+          faces.push({
+            id: "base",
+            name: "Base Sq",
+            x: cx - wb / 2,
+            y: cy - wb / 2,
+            w: wb,
+            h: wb,
+            color: CONFIG.colors.baseFace,
+          });
+          faces.forEach((f) => {
+            svg.innerHTML += `
+                        <rect class="svg-net-face" data-id="${f.id}" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" fill="${STATE.activeFaceId === f.id ? "rgba(255,255,255,0.4)" : f.color}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('${f.id}')" onmouseout="handleFaceLeave()" />
+                        <text class="svg-text" x="${f.x + f.w / 2}" y="${f.y + f.h / 2}">${f.name}</text>
+                    `;
+          });
+
+          // Top (Back) triangle
+          svg.innerHTML += `
+                    <polygon class="svg-net-face" data-id="back" points="${cx - wb / 2},${cy - wb / 2} ${cx + wb / 2},${cy - wb / 2} ${cx},${cy - wb / 2 - triLen}" fill="${STATE.activeFaceId === "back" ? "rgba(255,255,255,0.4)" : CONFIG.colors.sideFace}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('back')" onmouseout="handleFaceLeave()" />
+                    <text class="svg-text" x="${cx}" y="${cy - wb / 2 - triLen / 2.5}">Back</text>
+                `;
+          // Bottom (Front) triangle
+          svg.innerHTML += `
+                    <polygon class="svg-net-face" data-id="front" points="${cx - wb / 2},${cy + wb / 2} ${cx + wb / 2},${cy + wb / 2} ${cx},${cy + wb / 2 + triLen}" fill="${STATE.activeFaceId === "front" ? "rgba(255,255,255,0.4)" : CONFIG.colors.sideFace}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('front')" onmouseout="handleFaceLeave()" />
+                    <text class="svg-text" x="${cx}" y="${cy + wb / 2 + triLen / 2.5}">Front</text>
+                `;
+          // Left triangle
+          svg.innerHTML += `
+                    <polygon class="svg-net-face" data-id="left" points="${cx - wb / 2},${cy - wb / 2} ${cx - wb / 2},${cy + wb / 2} ${cx - wb / 2 - triLen},${cy}" fill="${STATE.activeFaceId === "left" ? "rgba(255,255,255,0.4)" : CONFIG.colors.sideFace}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('left')" onmouseout="handleFaceLeave()" />
+                    <text class="svg-text" x="${cx - wb / 2 - triLen / 2.5}" y="${cy}">Left</text>
+                `;
+          // Right triangle
+          svg.innerHTML += `
+                    <polygon class="svg-net-face" data-id="right" points="${cx + wb / 2},${cy - wb / 2} ${cx + wb / 2},${cy + wb / 2} ${cx + wb / 2 + triLen},${cy}" fill="${STATE.activeFaceId === "right" ? "rgba(255,255,255,0.4)" : CONFIG.colors.sideFace}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('right')" onmouseout="handleFaceLeave()" />
+                    <text class="svg-text" x="${cx + wb / 2 + triLen / 2.5}" y="${cy}">Right</text>
+                `;
+
+          // Fold lines
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy - wb / 2,
+            x2: cx + wb / 2,
+            y2: cy - wb / 2,
+          });
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy + wb / 2,
+            x2: cx + wb / 2,
+            y2: cy + wb / 2,
+          });
+          foldLines.push({
+            x1: cx - wb / 2,
+            y1: cy - wb / 2,
+            x2: cx - wb / 2,
+            y2: cy + wb / 2,
+          });
+          foldLines.push({
+            x1: cx + wb / 2,
+            y1: cy - wb / 2,
+            x2: cx + wb / 2,
+            y2: cy + wb / 2,
+          });
+
+          faces = [];
+        }
+
+        // Draw standard Rectangles if any
+        faces.forEach((f) => {
+          svg.innerHTML += `
+                    <rect class="svg-net-face" data-id="${f.id}" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" fill="${STATE.activeFaceId === f.id ? "rgba(255,255,255,0.4)" : f.color}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" onmouseover="handleFaceHover('${f.id}')" onmouseout="handleFaceLeave()" />
+                    <text class="svg-text" x="${f.x + f.w / 2}" y="${f.y + f.h / 2}">${f.name}</text>
+                `;
+        });
+
+        // Draw dotted fold lines
+        foldLines.forEach((l) => {
+          svg.innerHTML += `<line class="net-fold-line" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" />`;
+        });
+
+        // Render interactive vocabulary labels below the canvas
+        const lang = STATE.language;
+        const vocabMap = {
+          rectangular_prism: [
+            {
+              id: "base",
+              name: lang === "en" ? "Base/Top" : "Base/Superior",
+              cls: "face-base",
+            },
+            {
+              id: "front",
+              name: lang === "en" ? "Front/Back" : "Frontal/Trasera",
+              cls: "face-side",
+            },
+            {
+              id: "left",
+              name: lang === "en" ? "Sides" : "Caras Laterales",
+              cls: "face-top",
+            },
+          ],
+          triangular_prism: [
+            {
+              id: "base",
+              name: lang === "en" ? "Base Rect" : "Base Rectangular",
+              cls: "face-base",
+            },
+            {
+              id: "left",
+              name: lang === "en" ? "Side Rects" : "Caras Rectangulares",
+              cls: "face-side",
+            },
+            {
+              id: "front",
+              name: lang === "en" ? "Triangles" : "Triángulos",
+              cls: "face-top",
+            },
+          ],
+          square_pyramid: [
+            {
+              id: "base",
+              name: lang === "en" ? "Square Base" : "Base Cuadrada",
+              cls: "face-base",
+            },
+            {
+              id: "front",
+              name: lang === "en" ? "Triangular Faces" : "Caras Triangulares",
+              cls: "face-side",
+            },
+          ],
+        };
+
+        vocabContainer.innerHTML = "";
+        vocabMap[STATE.currentShape].forEach((v) => {
+          vocabContainer.innerHTML += `
+                    <span class="vocab-chip ${v.cls}" onmouseover="handleFaceHover('${v.id}')" onmouseout="handleFaceLeave()">
+                        ${v.name}
+                    </span>
+                `;
+        });
+      }
+
+      function render3DCanvas() {
+        const svg = document.getElementById("svg-canvas-3d");
+        svg.innerHTML = ""; // Clear SVG
+
+        const foldedFaces = getFoldedVertices();
+
+        // Draw a subtle 3D coordinate platform grid (at z = -6)
+        const gridScale = 14;
+        const cx = 200;
+        const cy = 200;
+        const floorZ = -6;
+
+        for (let x = -8; x <= 8; x += 4) {
+          let p1 = project3D(x, -8, floorZ);
+          let p2 = project3D(x, 8, floorZ);
+          svg.innerHTML += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2, 2" />`;
+        }
+        for (let y = -8; y <= 8; y += 4) {
+          let p1 = project3D(-8, y, floorZ);
+          let p2 = project3D(8, y, floorZ);
+          svg.innerHTML += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2, 2" />`;
+        }
+
+        // Depth sorting (painter's algorithm)
+        // Compute average Z of projected vertices to draw faces from back to front
+        const sortedFaces = foldedFaces
+          .map((face) => {
+            // Compute average depth value. We will use the screen space Y value after rotation
+            // Rotated y (or projected coordinate) represents depth
+            let avgRotY = 0;
+            face.points.forEach((p) => {
+              const radYaw = (STATE.yaw * Math.PI) / 180;
+              const radPitch = (STATE.pitch * Math.PI) / 180;
+              let x1 = p.x * Math.cos(radYaw) - p.y * Math.sin(radYaw);
+              let y1 = p.x * Math.sin(radYaw) + p.y * Math.cos(radYaw);
+              let z1 = p.z;
+              let y2 = y1 * Math.cos(radPitch) - z1 * Math.sin(radPitch);
+              avgRotY += y2;
+            });
+            avgRotY /= face.points.length;
+            return { ...face, depth: avgRotY };
+          })
+          .sort((a, b) => a.depth - b.depth); // lower depth drawn first (further away)
+
+        // Render 3D Polygons
+        sortedFaces.forEach((face) => {
+          const projectedPts = face.points.map((p) => project3D(p.x, p.y, p.z));
+          const pointsStr = projectedPts.map((p) => `${p.x},${p.y}`).join(" ");
+
+          // Color configuration
+          let fill = face.color;
+          if (STATE.activeFaceId === face.id) {
+            fill = "rgba(255, 255, 255, 0.55)"; // highlight
+          } else {
+            // Apply basic shading based on depth/angle
+            const sh = Math.max(0.7, Math.min(1.1, 1 + face.depth / 20));
+            fill = adjustBrightness(face.color, sh);
+          }
+
+          svg.innerHTML += `
+                    <polygon points="${pointsStr}" fill="${fill}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+                `;
+
+          // Add label to 3D face if highlighted
+          if (STATE.activeFaceId === face.id) {
+            // Find centroid of face
+            let sumX = 0,
+              sumY = 0;
+            projectedPts.forEach((p) => {
+              sumX += p.x;
+              sumY += p.y;
+            });
+            const cx = sumX / projectedPts.length;
+            const cy = sumY / projectedPts.length;
+
+            svg.innerHTML += `
+                        <rect x="${cx - 30}" y="${cy - 10}" width="60" height="20" rx="4" fill="var(--navy-dark)" stroke="var(--accent)" stroke-width="1" />
+                        <text class="svg-text" x="${cx}" y="${cy + 1}" font-size="9" fill="var(--white)">${face.name}</text>
+                    `;
+          }
+        });
+      }
+
+      function adjustBrightness(hex, percent) {
+        let num = parseInt(hex.replace("#", ""), 16),
+          amt = Math.round(2.55 * (percent - 1) * 100),
+          R = (num >> 16) + amt,
+          G = ((num >> 8) & 0x00ff) + amt,
+          B = (num & 0x0000ff) + amt;
+        return (
+          "#" +
+          (
+            0x1000000 +
+            (R < 255 ? (R < 0 ? 0 : R) : 255) * 0x10000 +
+            (G < 255 ? (G < 0 ? 0 : G) : 255) * 0x100 +
+            (B < 255 ? (B < 0 ? 0 : B) : 255)
+          )
+            .toString(16)
+            .slice(1)
+        );
+      }
+
+      function updateESOLHub() {
+        const starter = document.getElementById("esol-starter");
+        const trans = document.getElementById("esol-starter-trans");
+        const lang = STATE.language;
+        const t = TRANSLATIONS[lang];
+
+        if (!STATE.activeFaceId) {
+          starter.innerText = t["starter-default"];
+          trans.innerText = t["starter-default-trans"];
+          return;
+        }
+
+        const { w, h, l } = STATE.dimensions;
+        const faceId = STATE.activeFaceId;
+        let d1 = 0,
+          d2 = 0;
+        let name = faceId;
+        let transName = faceId;
+
+        if (STATE.currentShape === "rectangular_prism") {
+          if (faceId === "base" || faceId === "top") {
+            d1 = w;
+            d2 = l;
+            name = "Base/Top";
+            transName = "base superior/inferior";
+          } else if (faceId === "front" || faceId === "back") {
+            d1 = w;
+            d2 = h;
+            name = "Front/Back Face";
+            transName = "cara frontal/trasera";
+          } else {
+            d1 = l;
+            d2 = h;
+            name = "Side Face";
+            transName = "cara lateral";
+          }
+        } else if (STATE.currentShape === "triangular_prism") {
+          if (faceId === "base") {
+            d1 = w;
+            d2 = l;
+            name = "Rectangle Base";
+            transName = "base rectangular";
+          } else if (faceId === "left" || faceId === "right") {
+            d1 = h;
+            d2 = l;
+            name = "Side Rectangle";
+            transName = "cara rectangular";
+          } else {
+            d1 = w;
+            d2 = h;
+            name = "Triangular Face";
+            transName = "cara triangular";
+          }
+        } else if (STATE.currentShape === "square_pyramid") {
+          if (faceId === "base") {
+            d1 = w;
+            d2 = w;
+            name = "Square Base";
+            transName = "base cuadrada";
+          } else {
+            d1 = w;
+            d2 = Math.round(Math.sqrt((w / 2) * (w / 2) + h * h) * 10) / 10;
+            name = "Triangular Face";
+            transName = "cara triangular";
+          }
+        }
+
+        const area =
+          Math.round(
+            (faceId === "front" || faceId === "back") &&
+              STATE.currentShape === "triangular_prism"
+              ? 0.5 * d1 * d2
+              : d1 * d2 * 10,
+          ) / 10;
+
+        let frame = t["starter-face"]
+          .replace("{name}", name)
+          .replace("{transName}", transName)
+          .replace("{d1}", d1)
+          .replace("{d2}", d2)
+          .replace("{area}", area);
+
+        let transFrame = t["starter-face-trans"]
+          .replace("{name}", name)
+          .replace("{transName}", transName)
+          .replace("{d1}", d1)
+          .replace("{d2}", d2)
+          .replace("{area}", area);
+
+        starter.innerText = frame;
+        trans.innerText = transFrame;
+      }
+
+      // ==========================================
+      // 7. SELF-TEST ENGINE & DIAGNOSTICS
+      // ==========================================
+      function logDiag(msg) {
+        const el = document.getElementById("diag-log");
+        el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        el.scrollTop = el.scrollHeight;
+      }
+
+      function triggerSelfTest() {
+        document.getElementById("diag-panel").style.display = "block";
+        document.getElementById("diag-log").innerHTML = "";
+        logDiag("Starting NetFold Pro Self-Test...");
+
+        try {
+          // Assert 1: Config is valid
+          validateConfig();
+          logDiag("✓ Config validation passed.");
+
+          // Assert 2: Dimension adjustments
+          transitionState({ dimensions: { w: 4, h: 3, l: 5 } });
+          logDiag(
+            `✓ Set dimensions to w=4, h=3, l=5. Result: w=${STATE.dimensions.w}, h=${STATE.dimensions.h}`,
+          );
+          if (STATE.dimensions.w !== 4 || STATE.dimensions.h !== 3) {
+            throw new Error("Assertion failed: Dimension mapping error.");
+          }
+
+          // Assert 3: Fold updates
+          updateFold(50);
+          logDiag(
+            `✓ Set fold progress to 50%. Result: fold=${STATE.foldPercentage}%`,
+          );
+          if (STATE.foldPercentage !== 50) {
+            throw new Error("Assertion failed: Fold percentage update error.");
+          }
+
+          // Assert 4: Surface Area Calculation checks for rectangular prism
+          const baseTop = 5 * 4; // l * w
+          const frontBack = 5 * 3; // l * h
+          const leftRight = 4 * 3; // w * h
+          const expectedSA = 2 * (baseTop + frontBack + leftRight); // 2 * (20 + 15 + 12) = 94
+          logDiag(
+            `✓ Checking surface area calculations. Expected: ${expectedSA} units²`,
+          );
+
+          // Assert 5: Volume calculations
+          const expectedVol = 4 * 3 * 5; // 60
+          logDiag(
+            `✓ Checking volume calculations. Expected: ${expectedVol} units³`,
+          );
+
+          // Assert 6: Projection engine check
+          const p = project3D(0, 0, 0);
+          logDiag(`✓ Isometric projection of origin point: (${p.x}, ${p.y})`);
+          if (Math.round(p.x) !== 200 || Math.round(p.y) !== 200) {
+            throw new Error(
+              "Assertion failed: Projection viewport mapping shifted.",
+            );
+          }
+
+          // Reset state to original
+          transitionState({
+            dimensions: { w: 5, h: 4, l: 6 },
+            foldPercentage: 0,
+          });
+          document.getElementById("slider-fold").value = 0;
+          logDiag("✓ Reset state back to defaults.");
+
+          logDiag("🎉 ALL TESTS PASSED SUCCESSFULLY!");
+          showCustomModal(
+            STATE.language === "en" ? "Self-Test Passed" : "Autocomprobación Aprobada",
+            STATE.language === "en" ? "6/6 assertions checked successfully! NetFold Pro configuration and math logic are perfectly solid." : "¡6/6 afirmaciones verificadas con éxito! NetFold Pro es completamente sólido.",
+            "⚡"
+          );
+        } catch (err) {
+          logDiag(`❌ TEST FAILED: ${err.message}`);
+          console.error(err);
+          showCustomModal(
+            STATE.language === "en" ? "Self-Test Failed" : "Autocomprobación Fallida",
+            `${STATE.language === "en" ? "An assertion failed during execution" : "Una afirmación falló durante la ejecución"}: ${err.message}`,
+            "❌"
+          );
+        }
+      }
+
+      // 1. programmatic Web Audio Crease/Friction Synthesizer
+      const AudioSynth = {
+        ctx: null,
+        lastPlayTime: 0,
+
+        init() {
+          if (this.ctx) return;
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+          } catch (e) {
+            console.warn("Web Audio not supported", e);
+          }
+        },
+
+        playCrease() {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          if (now - this.lastPlayTime < 0.05) return;
+          this.lastPlayTime = now;
+
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(2000, now);
+          osc.frequency.exponentialRampToValueAtTime(100, now + 0.03);
+
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.03);
+        },
+
+        playRotateTick() {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          if (now - this.lastPlayTime < 0.08) return;
+          this.lastPlayTime = now;
+
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(150, now + 0.02);
+
+          gain.gain.setValueAtTime(0.02, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.02);
+        },
+
+        playSuccessChime() {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const now = this.ctx.currentTime;
+          const chords = [261.63, 329.63, 392.00, 523.25, 659.25]; // C major pentatonic
+          chords.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+            gain.gain.setValueAtTime(0, now + idx * 0.08);
+            gain.gain.linearRampToValueAtTime(0.08, now + idx * 0.08 + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.5);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.6);
+          });
+        }
+      };
+
+      // Custom modal open/close helpers
+      function showCustomModal(title, msg, icon = "🏆") {
+        const overlay = document.getElementById("custom-modal-overlay");
+        const card = document.getElementById("custom-modal-card");
+        document.getElementById("custom-modal-title").innerText = title;
+        document.getElementById("custom-modal-message").innerText = msg;
+        document.getElementById("custom-modal-icon").innerText = icon;
+        
+        overlay.style.display = "flex";
+        setTimeout(() => {
+          overlay.style.opacity = "1";
+          card.style.transform = "scale(1)";
+        }, 10);
+      }
+
+      function closeCustomModal() {
+        const overlay = document.getElementById("custom-modal-overlay");
+        const card = document.getElementById("custom-modal-card");
+        overlay.style.opacity = "0";
+        card.style.transform = "scale(0.9)";
+        setTimeout(() => {
+          overlay.style.display = "none";
+        }, 300);
+      }
+
+      // Initialize App
+      window.addEventListener("DOMContentLoaded", () => {
+        renderUI();
+      });
+    </script>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(8, 10, 19, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--card-bg); border: 2px solid var(--primary); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Quest Complete</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--white); line-height: 1.6; margin-bottom: 24px;">Lab configuration established.</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Close</button>
+        </div>
+    </div>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

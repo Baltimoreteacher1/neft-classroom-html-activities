@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartesian Coordinate Quest — Reflections & Distance</title>
+  <meta name="description" content="An interactive grid-based coordinates adventure. Reflect across axes and calculate Cartesian distances to unlock campaign levels." />
+  
+  <!-- CSS Imports -->
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <link rel="stylesheet" href="/assets/design-tokens.css" />
+  
+  <style>
+    /* Premium Local Styles Override */
+    :root {
+      --accent: var(--teal);
+      --accent-dark: var(--teal-dark);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --shadow-premium: 0 12px 30px rgba(18, 53, 91, 0.08);
+      
+      /* Grid Elements Colors */
+      --color-grid: #d7e2ed;
+      --color-laser: #ef4444;
+      --color-player: var(--teal);
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .main-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--sp-6);
+      margin-top: var(--sp-4);
+    }
+
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Workspace Panel */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+    }
+
+    .board-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-premium);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--coral), var(--navy));
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: var(--sp-3);
+    }
+
+    .board-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    /* Level Banner Selection */
+    .level-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3) var(--sp-4);
+      margin-bottom: var(--sp-4);
+    }
+
+    .level-tab-group {
+      display: flex;
+      gap: var(--sp-2);
+    }
+
+    .level-btn {
+      padding: 6px var(--sp-3);
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--navy);
+      transition: all 0.15s;
+    }
+
+    .level-btn.active {
+      background: var(--navy);
+      color: white;
+      border-color: var(--navy);
+    }
+
+    .level-objective-box {
+      background: var(--surface);
+      border-left: 4px solid var(--coral);
+      padding: var(--sp-3);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--sp-4);
+      font-size: 0.88rem;
+      border: 1px solid var(--line);
+      border-left-width: 5px;
+      border-left-color: var(--coral);
+    }
+
+    /* SVG Coordinate Grid Map layout */
+    .grid-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto var(--sp-4) auto;
+      background: white;
+      border: 2px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: var(--sp-2);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+      aspect-ratio: 1 / 1;
+    }
+
+    .grid-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Controls Panel */
+    .game-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-4);
+      margin-bottom: var(--sp-2);
+    }
+
+    @media (max-width: 600px) {
+      .game-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-subcard {
+      background: #f0f4f8;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-4);
+      text-align: center;
+    }
+
+    .control-subcard-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--sp-3);
+    }
+
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 4px;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .dpad-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s;
+      font-weight: bold;
+    }
+
+    .dpad-btn:hover {
+      background: var(--teal-light);
+      border-color: var(--teal);
+    }
+
+    .dpad-btn:active {
+      transform: scale(0.92);
+    }
+
+    .reflect-action-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      align-items: stretch;
+      max-width: 240px;
+      margin: 0 auto;
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 8px var(--sp-4);
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      transition: all 0.15s;
+      border: none;
+      font-family: var(--font-display);
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--navy-light); }
+
+    .btn-accent {
+      background: var(--coral);
+      color: white;
+    }
+    .btn-accent:hover { background: #b84f33; }
+
+    .btn-teal {
+      background: var(--teal);
+      color: white;
+    }
+    .btn-teal:hover { background: var(--teal-dark); }
+
+    .btn-secondary {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: var(--navy);
+    }
+    .btn-secondary:hover { background: var(--line); }
+
+    /* Interactive Stats Scoreboard */
+    .quest-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-3);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3);
+      margin-bottom: var(--sp-4);
+    }
+
+    .quest-stat-badge {
+      text-align: center;
+    }
+
+    .quest-stat-lbl {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .quest-stat-val {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    /* Math Riddle Input Area */
+    .riddle-lock-box {
+      background: #fef7e0;
+      border: 1px solid var(--amber);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-4);
+      display: none;
+      text-align: center;
+    }
+
+    .riddle-input {
+      width: 80px;
+      padding: var(--sp-2);
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      outline: none;
+      margin-right: 8px;
+    }
+
+    .riddle-input:focus {
+      border-color: var(--teal);
+    }
+
+    /* Audio achievement Toast */
+    .toast {
+      position: fixed;
+      bottom: var(--sp-6);
+      right: var(--sp-6);
+      background: var(--navy);
+      color: white;
+      padding: var(--sp-3) var(--sp-5);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Reflection animation path line */
+    .reflect-arc {
+      fill: none;
+      stroke: var(--coral);
+      stroke-width: 3;
+      stroke-dasharray: 4,4;
+      animation: dash 1.5s linear infinite;
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -20; }
+    }
+
+    /* Print certificate layout */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .page-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .hero, .site-footer, .game-controls, .level-banner, .btn, .riddle-lock-box {
+        display: none !important;
+      }
+      .main-container {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+      }
+      .board-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+      }
+      .board-card::before {
+        display: none;
+      }
+      .grid-container {
+        border: 3px solid black !important;
+        max-width: 420px !important;
+        margin: 20px auto !important;
+      }
+      .quest-stats {
+        border: 2px solid black !important;
+        margin-bottom: 20px;
+      }
+      .print-report-header {
+        display: block !important;
+        margin-bottom: 20px;
+        border-bottom: 3px double black;
+        padding-bottom: 10px;
+      }
+      .student-meta-inputs {
+        display: flex !important;
+        gap: 40px;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+      .print-certificate-card {
+        display: block !important;
+        border: 8px double var(--navy);
+        padding: 30px;
+        text-align: center;
+        margin-top: 40px;
+        background: #fdfdfd;
+        border-radius: var(--radius-lg);
+        page-break-before: always;
+      }
+    }
+
+    .print-report-header { display: none; }
+    .student-meta-inputs { display: none; }
+    .print-certificate-card { display: none; }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div class="page-shell">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="/">Neft Hub</a> &middot; <a href="/math/">Grade 6 Math</a> &middot; <span>Cartesian Quest</span>
+    </div>
+
+    <!-- Printable Report Header -->
+    <div class="print-report-header">
+      <h1 style="font-size: 2rem; margin: 0; font-family: Outfit, sans-serif;">CARTESIAN EXPLORER LOG</h1>
+      <p style="margin: 5px 0 0 0; color: #555;">Topic: 6.NS.C.6 & 6.NS.C.8 — Coordinate Planes, Reflections, & Coordinate Distance</p>
+      <div class="student-meta-inputs">
+        <div>STUDENT NAME: ___________________________</div>
+        <div>DATE: __________________</div>
+      </div>
+    </div>
+
+    <!-- Page Title / Hero -->
+    <div class="hero">
+      <span class="eyebrow">🗺️ Unit 9 Coordinate Plane</span>
+      <h1>Cartesian Coordinate Quest</h1>
+      <p class="hero-copy">
+        Navigate the grid, collect keys, and reach the final treasure chest. Solid walls block your path, forcing you to mathematically reflect across the X and Y axes to warp around obstacles!
+      </p>
+    </div>
+
+    <main class="main-container">
+      
+      <!-- LEFT COLUMN: Main Workspace -->
+      <div class="workspace">
+        
+        <div class="board-card">
+          <div class="board-header" style="margin-bottom: 12px;">
+            <div class="board-title">
+              <span>🕹️</span> Mission Control
+            </div>
+            
+            <div class="controls-row">
+              <button class="btn btn-secondary" onclick="resetCurrentLevel()" title="Reset current layout">🔄 Restart Level</button>
+              <button class="btn btn-accent" onclick="window.print()" title="Print explorer worksheet">🖨️ Print Progress</button>
+            </div>
+          </div>
+
+          <!-- Level Tabs Selector -->
+          <div class="level-banner">
+            <span style="font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 0.95rem;">Select Campaign Mission:</span>
+            <div class="level-tab-group">
+              <button class="level-btn active" id="lvl-btn-1" onclick="loadLevel(1)">1: Reflection Jump</button>
+              <button class="level-btn" id="lvl-btn-2" onclick="loadLevel(2)">2: Distance Lock</button>
+              <button class="level-btn" id="lvl-btn-3" onclick="loadLevel(3)">3: Mirror Maze</button>
+            </div>
+          </div>
+
+          <!-- Objective Description -->
+          <div class="level-objective-box" id="objective-box">
+            Objective description loading...
+          </div>
+
+          <!-- Interactive Scoreboard Stats -->
+          <div class="quest-stats">
+            <div class="quest-stat-badge">
+              <div class="quest-stat-lbl">Current Location</div>
+              <div class="quest-stat-val" id="player-coord-lbl">(0, 0)</div>
+            </div>
+            <div class="quest-stat-badge" style="border-left: 1px solid var(--line);">
+              <div class="quest-stat-lbl">Action Moves</div>
+              <div class="quest-stat-val" id="move-count-lbl">0</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Coordinate Plane Grid -->
+          <div class="grid-container">
+            <svg id="cartesian-grid-svg" class="grid-svg" viewBox="0 0 500 500">
+              <!-- Coordinates axes, lines, labels, keys, player rendered here -->
+            </svg>
+          </div>
+
+          <!-- Riddle Input Box (Level 2 specific) -->
+          <div class="riddle-lock-box" id="riddle-lock-container">
+            <h4 style="margin: 0 0 8px 0; font-family: var(--font-display); color: var(--navy); font-weight: bold;">
+              🔓 Distance Decryption System
+            </h4>
+            <p style="font-size: 0.82rem; color: var(--muted); margin: 0 0 12px 0;" id="riddle-desc-lbl">
+              Find absolute coordinate distance to disable lasers.
+            </p>
+            <div style="display: flex; align-items: center; justify-content: center;">
+              <input type="number" class="riddle-input" id="riddle-input" placeholder="Units">
+              <button class="btn btn-teal" onclick="submitDistanceRiddle()">Submit Decryption</button>
+            </div>
+          </div>
+
+          <!-- Interactive Controls Grid -->
+          <div class="game-controls">
+            
+            <!-- Move Panel (D-Pad) -->
+            <div class="control-subcard">
+              <div class="control-subcard-title">🕹️ Directional Step (1 Unit)</div>
+              <div class="dpad">
+                <div></div>
+                <button class="dpad-btn" onclick="movePlayer(0, 1)">▲</button>
+                <div></div>
+                <button class="dpad-btn" onclick="movePlayer(-1, 0)">◀</button>
+                <div style="display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;color:var(--muted);">MOVE</div>
+                <button class="dpad-btn" onclick="movePlayer(1, 0)">▶</button>
+                <div></div>
+                <button class="dpad-btn" onclick="movePlayer(0, -1)">▼</button>
+                <div></div>
+              </div>
+            </div>
+
+            <!-- Warp/Reflect Panel -->
+            <div class="control-subcard" style="display: flex; flex-direction: column; justify-content: center;">
+              <div class="control-subcard-title">🌀 Dimensional Axes Reflection</div>
+              <div class="reflect-action-group">
+                <button class="btn btn-primary" onclick="reflectPlayer('x')" title="Keep X, negate Y">🪞 Reflect over X-Axis</button>
+                <button class="btn btn-primary" onclick="reflectPlayer('y')" title="Negate X, keep Y">🪞 Reflect over Y-Axis</button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Printable Explorer Certificate -->
+        <div class="print-certificate-card" id="cert-card">
+          <div style="font-size: 2.2rem; font-family: Outfit, sans-serif; font-weight: 900; color: var(--navy); margin-bottom: 5px;">CERTIFICATE OF Cartesian MASTERY</div>
+          <p style="font-size: 0.95rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; color: var(--muted); margin: 0 0 25px 0;">Awarded to the Explorer of Grid Worlds</p>
+          <h2 style="font-size: 1.8rem; border-bottom: 2px solid black; display: inline-block; padding: 0 30px; margin-bottom: 20px;" id="cert-student-name">MASTER STUDENT</h2>
+          <p style="max-width: 500px; margin: 0 auto 25px auto; line-height: 1.5; font-size: 0.92rem;">
+            Having successfully demonstrated absolute-value calculation of distances on the 4-quadrant coordinate plane, and navigated barriers using axes reflections ($x$ and $y$ sign coordinate inversions) across all 3 Campaign Levels.
+          </p>
+          <div style="display: flex; justify-content: space-around; margin-top: 30px; font-weight: bold; font-family: Outfit;">
+            <div>MISSION CONTROLLER: <br><span style="border-top:1px solid black; display:inline-block; margin-top:5px; padding:0 20px;">Mr. Neft</span></div>
+            <div>EXPLORER SCORE: <br><span style="border-top:1px solid black; display:inline-block; margin-top:5px; padding:0 20px;" id="cert-moves">24 Total Moves</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Campaign details -->
+      <div class="challenges-card">
+        <h2 style="font-family: var(--font-display); font-weight: 900; color: var(--navy); margin-bottom: var(--sp-2);">📚 Cartesian Guidelines</h2>
+        <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: var(--sp-4);">
+          Review the absolute value and coordinate mapping rules to solve missions quickly.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: var(--sp-3); font-size: 0.85rem;">
+          
+          <div style="background:var(--cream); padding:var(--sp-3); border-radius:var(--radius-sm); border:1px solid var(--line);">
+            <strong style="color:var(--navy); display:block; margin-bottom:4px;">🪞 The Reflection Rules</strong>
+            - **Reflecting over the X-Axis**: The x-coordinate remains identical, but the y-coordinate sign flips to its opposite:
+              $$(x, y) \xrightarrow{\text{Reflect } X} (x, -y)$$
+            - **Reflecting over the Y-Axis**: The y-coordinate remains identical, but the x-coordinate sign flips to its opposite:
+              $$(x, y) \xrightarrow{\text{Reflect } Y} (-x, y)$$
+          </div>
+
+          <div style="background:var(--cream); padding:var(--sp-3); border-radius:var(--radius-sm); border:1px solid var(--line);">
+            <strong style="color:var(--navy); display:block; margin-bottom:4px;">📏 Coordinate Distances</strong>
+            To calculate the distance between two coordinates with matching x or y coordinates:
+            - **Different Quadrants**: Add the absolute values of the varying coordinates:
+              $$d = |y_1| + |y_2| \quad \text{or} \quad |x_1| + |x_2|$$
+            - **Same Quadrants**: Subtract the smaller absolute value from the larger:
+              $$d = |y_1| - |y_2| \quad \text{or} \quad |x_1| - |x_2|$$
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div>Neft Teacher &middot; Grade 6 Mathematics</div>
+      <div>Standard References: CCSS.MATH.CONTENT.6.NS.C.6, 6.NS.C.8</div>
+    </footer>
+  </div>
+
+  <!-- Audio and Achievement Toast -->
+  <div id="toast" class="toast">
+    <span style="font-size: 1.5rem;">🎉</span>
+    <div>
+      <div style="font-weight: 800;" id="toast-title">Mission Success!</div>
+      <div style="font-size: 0.78rem; opacity: 0.9;" id="toast-desc">Key collected successfully.</div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script>
+    // Audio Synth Engine (Retro Web Audio API)
+    const Synth = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) this.ctx = new AudioContextClass();
+        }
+      },
+      play(type) {
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gainNode = this.ctx.createGain();
+        const t = this.ctx.currentTime;
+
+        const presets = {
+          click: { type: 'sine', f: [400, 300], d: 0.08, v: 0.05 },
+          correct: { type: 'sine', f: [523.25, 659.25, 783.99], d: 0.25, v: 0.08 }, // C major arpeggio
+          complete: { type: 'triangle', f: [440, 554, 659, 880], d: 0.4, v: 0.1 }, // A major
+          wrong: { type: 'sawtooth', f: [220, 110], d: 0.25, v: 0.06 }
+        };
+
+        const config = presets[type] || presets.click;
+        osc.type = config.type;
+        osc.frequency.setValueAtTime(config.f[0], t);
+        if (config.f.length === 2) {
+          osc.frequency.exponentialRampToValueAtTime(config.f[1], t + config.d);
+        } else if (config.f.length > 2) {
+          const step = config.d / config.f.length;
+          for(let i = 0; i < config.f.length; i++) {
+            osc.frequency.setValueAtTime(config.f[i], t + (i * step));
+          }
+        }
+
+        gainNode.gain.setValueAtTime(0.001, t);
+        gainNode.gain.linearRampToValueAtTime(config.v, t + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, t + config.d);
+
+        osc.connect(gainNode).connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + config.d + 0.01);
+      }
+    };
+
+    // Level Blueprints State Maps
+    const levels = {
+      1: {
+        playerStart: { x: 3, y: 2 },
+        key: { x: 3, y: -2 },
+        exit: { x: -3, y: -2 },
+        walls: [
+          // Wall blocks grid coordinates
+          { x: 3, y: 0 }, { x: 2, y: 0 }, { x: 4, y: 0 }
+        ],
+        lasers: [],
+        objective: "🔑 **Mission 1: The Reflection Jump**<br>The key is trapped in Quadrant IV at $(3, -2)$ behind a solid wall. You start in Quadrant I at $(3, 2)$. **Reflect over the X-Axis** to warp right onto the key! Then walk to the exit portal at $(-3, -2)$."
+      },
+      2: {
+        playerStart: { x: 0, y: -3 },
+        key: { x: -4, y: 3 },
+        exit: { x: 4, y: 3 },
+        walls: [],
+        lasers: [
+          // Laser coordinate blockages
+          { x1: -4, y1: 0, x2: 4, y2: 0, active: true } // horizontal laser wall separating top and bottom
+        ],
+        objective: "🔑 **Mission 2: Distance Decryption**<br>Collect the key at $(-4, 3)$, then escape through the portal at $(4, 3)$. Red laser barriers prevent any vertical movement. Find the absolute distance between the key and exit coordinates to hack the laser grid!",
+        riddle: {
+          q: "What is the absolute distance (in units) between the key $(-4, 3)$ and exit portal $(4, 3)$? Hint: calculate $|-4| + |4|$.",
+          ans: 8
+        }
+      },
+      3: {
+        playerStart: { x: -2, y: -4 },
+        key: { x: 2, y: 4 },
+        exit: { x: 0, y: 2 },
+        walls: [
+          // Complex grid maze walls blocking straight walks
+          { x: -2, y: -2 }, { x: -2, y: -1 }, { x: -2, y: 0 }, { x: -2, y: 1 }, { x: -2, y: 2 },
+          { x: 2, y: -2 }, { x: 2, y: -1 }, { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 2, y: 2 },
+          { x: -1, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 }
+        ],
+        lasers: [],
+        objective: "🔑 **Mission 3: The Mirror Maze**<br>A grand maze wraps the coordinate plane. Start at $(-2, -4)$, reflect over the **Y-Axis** to bypass the left walls, walk upwards, then reflect over the **X-Axis** to land on the key at $(2, 4)$! Exit at $(0, 2)$."
+      }
+    };
+
+    // State Variables
+    let currentLevelId = 1;
+    let player = { x: 0, y: 0 };
+    let moves = 0;
+    let hasKey = false;
+    let laserDeactivated = false;
+    let activeReflectArc = null; // { x1, y1, x2, y2, type }
+
+    // HTML elements
+    const gridSvg = document.getElementById('cartesian-grid-svg');
+    const objectiveBox = document.getElementById('objective-box');
+    const playerCoordLbl = document.getElementById('player-coord-lbl');
+    const moveCountLbl = document.getElementById('move-count-lbl');
+
+    const riddleLockContainer = document.getElementById('riddle-lock-container');
+    const riddleDescLbl = document.getElementById('riddle-desc-lbl');
+    const riddleInput = document.getElementById('riddle-input');
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLevel(1);
+    });
+
+    // Load Campaign Level layout
+    function loadLevel(lvlId) {
+      Synth.play('click');
+      currentLevelId = lvlId;
+      
+      // Update levels selector styling
+      document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`lvl-btn-${lvlId}`).classList.add('active');
+
+      const lvl = levels[lvlId];
+      player = { ...lvl.playerStart };
+      moves = 0;
+      hasKey = false;
+      laserDeactivated = false;
+      activeReflectArc = null;
+
+      objectiveBox.innerHTML = lvl.objective;
+      riddleInput.value = '';
+
+      // Activate riddle input if Level 2
+      if (lvlId === 2) {
+        riddleLockContainer.style.display = 'block';
+        riddleDescLbl.innerHTML = lvl.riddle.q;
+      } else {
+        riddleLockContainer.style.display = 'none';
+      }
+
+      updateUI();
+    }
+
+    // Restart Level
+    function resetCurrentLevel() {
+      loadLevel(currentLevelId);
+    }
+
+    // Submit distance answer
+    function submitDistanceRiddle() {
+      const ans = parseInt(riddleInput.value);
+      const lvl = levels[currentLevelId];
+      
+      if (ans === lvl.riddle.ans) {
+        Synth.play('correct');
+        laserDeactivated = true;
+        riddleLockContainer.style.background = '#e6f7ef';
+        riddleLockContainer.style.borderColor = 'var(--success)';
+        riddleDescLbl.innerHTML = "<strong>🔓 Decryption Successful!</strong> Laser fields have been deactivated.";
+        showToast("Lasers Deactivated!", "You can now safely cross the horizontal axis.");
+        updateUI();
+      } else {
+        Synth.play('wrong');
+        showToast("Incorrect Answer!", "Double check your math absolute calculations!");
+      }
+    }
+
+    // Grid coordinates math calculations
+    function svgX(x) {
+      // Maps coordinate grid -5..+5 to SVG coordinates 40..460
+      return 250 + x * 40;
+    }
+
+    function svgY(y) {
+      // Maps coordinate grid -5..+5 to SVG coordinates 460..40 (flipped Y axis)
+      return 250 - y * 40;
+    }
+
+    // RENDER SVG CARTESIAN PLANE
+    function drawGrid() {
+      let html = '';
+      const size = 500;
+
+      // 1. Draw light coordinate grid coordinates
+      for (let i = -5; i <= 5; i++) {
+        if (i === 0) continue; // Major axes drawn separately
+        const x = svgX(i);
+        const y = svgY(i);
+
+        // Vertical lines
+        html += `<line x1="${x}" y1="20" x2="${x}" y2="480" stroke="${varThemeColor('grid')}" stroke-width="1" />`;
+        // Horizontal lines
+        html += `<line x1="20" y1="${y}" x2="480" y2="${y}" stroke="${varThemeColor('grid')}" stroke-width="1" />`;
+
+        // Ticks labels along axes
+        html += `
+          <text x="${x}" y="264" font-family="var(--font-body)" font-size="10" font-weight="bold" text-anchor="middle" fill="var(--muted)">${i}</text>
+          <text x="238" y="${y + 4}" font-family="var(--font-body)" font-size="10" font-weight="bold" text-anchor="end" fill="var(--muted)">${i}</text>
+        `;
+      }
+
+      // 2. Bold Coordinate Axes (X and Y major intersection)
+      html += `
+        <line x1="20" y1="250" x2="480" y2="250" stroke="var(--navy)" stroke-width="3" />
+        <line x1="250" y1="20" x2="250" y2="480" stroke="var(--navy)" stroke-width="3" />
+        
+        <!-- Axis labels -->
+        <text x="475" y="242" font-family="var(--font-display)" font-size="12" font-weight="900" fill="var(--navy)">X</text>
+        <text x="262" y="32" font-family="var(--font-display)" font-size="12" font-weight="900" fill="var(--navy)">Y</text>
+      `;
+
+      // 3. Label Quadrants in soft transparent watermark text
+      html += `
+        <text x="360" y="110" font-family="var(--font-display)" font-size="28" font-weight="900" fill="rgba(18,53,91,0.06)" text-anchor="middle">QUAD I</text>
+        <text x="140" y="110" font-family="var(--font-display)" font-size="28" font-weight="900" fill="rgba(18,53,91,0.06)" text-anchor="middle">QUAD II</text>
+        <text x="140" y="390" font-family="var(--font-display)" font-size="28" font-weight="900" fill="rgba(18,53,91,0.06)" text-anchor="middle">QUAD III</text>
+        <text x="360" y="390" font-family="var(--font-display)" font-size="28" font-weight="900" fill="rgba(18,53,91,0.06)" text-anchor="middle">QUAD IV</text>
+      `;
+
+      const lvl = levels[currentLevelId];
+
+      // 4. Draw Maze Walls
+      lvl.walls.forEach(w => {
+        const x = svgX(w.x) - 18;
+        const y = svgY(w.y) - 18;
+        html += `
+          <rect x="${x}" y="${y}" width="36" height="36" fill="#ccd6dd" stroke="var(--navy)" stroke-width="2" rx="4" />
+          <line x1="${x+4}" y1="${y+9}" x2="${x+32}" y2="${y+9}" stroke="var(--navy)" stroke-width="1.5" />
+          <line x1="${x+4}" y1="${y+18}" x2="${x+32}" y2="${y+18}" stroke="var(--navy)" stroke-width="1.5" />
+          <line x1="${x+4}" y1="${y+27}" x2="${x+32}" y2="${y+27}" stroke="var(--navy)" stroke-width="1.5" />
+        `;
+      });
+
+      // 5. Draw Laser lines (Level 2 specific)
+      lvl.lasers.forEach(l => {
+        if (!laserDeactivated) {
+          const x1 = svgX(l.x1);
+          const y1 = svgY(l.y1);
+          const x2 = svgX(l.x2);
+          const y2 = svgY(l.y2);
+          html += `
+            <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${varThemeColor('laser')}" stroke-width="5" stroke-linecap="round" opacity="0.8" />
+            <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-dasharray="10,5" />
+          `;
+        }
+      });
+
+      // 6. Draw Key (if not collected yet)
+      if (!hasKey) {
+        const kx = svgX(lvl.key.x);
+        const ky = svgY(lvl.key.y);
+        html += `
+          <g transform="translate(${kx - 15}, ${ky - 15})">
+            <circle cx="10" cy="15" r="8" fill="var(--amber)" stroke="var(--navy)" stroke-width="2" />
+            <rect x="15" y="11" width="12" height="8" fill="var(--amber)" stroke="var(--navy)" stroke-width="2" />
+            <line x1="21" y1="15" x2="21" y2="23" stroke="var(--navy)" stroke-width="2.5" />
+            <line x1="25" y1="15" x2="25" y2="23" stroke="var(--navy)" stroke-width="2.5" />
+          </g>
+        `;
+      }
+
+      // 7. Draw Exit Portal
+      const ex = svgX(lvl.exit.x);
+      const ey = svgY(lvl.exit.y);
+      html += `
+        <circle cx="${ex}" cy="${ey}" r="18" fill="none" stroke="var(--coral)" stroke-width="4.5" stroke-dasharray="6,3" />
+        <circle cx="${ex}" cy="${ey}" r="12" fill="var(--coral-light)" opacity="0.7" />
+        <text x="${ex}" y="${ey + 5}" font-size="14" text-anchor="middle">🌀</text>
+      `;
+
+      // 8. Draw Reflection Animation Arc Trace
+      if (activeReflectArc) {
+        const x1 = svgX(activeReflectArc.x1);
+        const y1 = svgY(activeReflectArc.y1);
+        const x2 = svgX(activeReflectArc.x2);
+        const y2 = svgY(activeReflectArc.y2);
+
+        if (activeReflectArc.type === 'x') {
+          // Curved arc bending towards the Y axis center (X reflect flips Y sign)
+          const midX = x1;
+          const midY = 250;
+          const curveVal = x1 > 250 ? 50 : -50;
+          html += `
+            <path class="reflect-arc" d="M ${x1} ${y1} Q ${midX + curveVal} ${midY} ${x2} ${y2}" />
+          `;
+        } else {
+          // Y reflect flips X sign
+          const midX = 250;
+          const midY = y1;
+          const curveVal = y1 > 250 ? 50 : -50;
+          html += `
+            <path class="reflect-arc" d="M ${x1} ${y1} Q ${midX} ${midY + curveVal} ${x2} ${y2}" />
+          `;
+        }
+      }
+
+      // 9. Draw Player Avatar (represented as a cute visual emoji badge)
+      const px = svgX(player.x);
+      const py = svgY(player.y);
+      html += `
+        <g id="player-avatar">
+          <circle cx="${px}" cy="${py}" r="17" fill="var(--teal)" stroke="var(--navy)" stroke-width="3" />
+          <circle cx="${px}" cy="${py}" r="11" fill="white" opacity="0.2" />
+          <text x="${px}" y="${py + 6}" font-size="16" text-anchor="middle">🤠</text>
+        </g>
+      `;
+
+      gridSvg.innerHTML = html;
+    }
+
+    function varThemeColor(type) {
+      if (type === 'grid') return '#d7e2ed';
+      if (type === 'laser') return '#ef4444';
+    }
+
+    // Player Directional Movement
+    function movePlayer(dx, dy) {
+      const nextX = player.x + dx;
+      const nextY = player.y + dy;
+
+      // Coordinate boundary bounds check (-5 to +5)
+      if (nextX < -5 || nextX > 5 || nextY < -5 || nextY > 5) {
+        Synth.play('wrong');
+        showToast("Grid Limit Reached!", "You cannot step off the coordinate coordinate grid!");
+        return;
+      }
+
+      const lvl = levels[currentLevelId];
+
+      // Solid Wall checks
+      const isWall = lvl.walls.some(w => w.x === nextX && w.y === nextY);
+      if (isWall) {
+        Synth.play('wrong');
+        showToast("Blocked by Wall!", "Arrange an axis reflection to warp past solid obstacles!");
+        return;
+      }
+
+      // Laser checks
+      if (!laserDeactivated && currentLevelId === 2) {
+        // Laser sits horizontally at y=0 separating positive and negative y coordinates
+        if ((player.y > 0 && nextY <= 0) || (player.y < 0 && nextY >= 0)) {
+          Synth.play('wrong');
+          showToast("Blocked by Lasers!", "Enter the absolute-value distance riddle answer to disable the laser field.");
+          return;
+        }
+      }
+
+      // Valid move step
+      Synth.play('click');
+      player.x = nextX;
+      player.y = nextY;
+      moves++;
+      activeReflectArc = null;
+
+      checkCollision();
+      updateUI();
+    }
+
+    // Axis Reflection warp
+    function reflectPlayer(axis) {
+      Synth.play('click');
+      const startX = player.x;
+      const startY = player.y;
+
+      let nextX = player.x;
+      let nextY = player.y;
+
+      if (axis === 'x') {
+        // Keep X, negate Y
+        nextY = -player.y;
+      } else {
+        // Negate X, keep Y
+        nextX = -player.x;
+      }
+
+      const lvl = levels[currentLevelId];
+
+      // Solid Wall check on landing coordinates
+      const isWall = lvl.walls.some(w => w.x === nextX && w.y === nextY);
+      if (isWall) {
+        Synth.play('wrong');
+        showToast("Reflection Blocked!", "You cannot reflect onto a solid coordinate wall!");
+        return;
+      }
+
+      // Register reflection animation trace
+      activeReflectArc = { x1: startX, y1: startY, x2: nextX, y2: nextY, type: axis };
+
+      player.x = nextX;
+      player.y = nextY;
+      moves++;
+
+      checkCollision();
+      updateUI();
+    }
+
+    // Key and Portal collision checking
+    function checkCollision() {
+      const lvl = levels[currentLevelId];
+
+      // Grab Key
+      if (!hasKey && player.x === lvl.key.x && player.y === lvl.key.y) {
+        Synth.play('correct');
+        hasKey = true;
+        showToast("Key Collected!", "Head to the escape coordinate exit portal!");
+      }
+
+      // Exit Level check
+      if (player.x === lvl.exit.x && player.y === lvl.exit.y) {
+        if (!hasKey) {
+          Synth.play('wrong');
+          showToast("Exit Locked!", "You must retrieve the gold key first!");
+        } else {
+          // Victory level arpeggios
+          Synth.play('complete');
+          showToast("Campaign Solved!", "Incredible navigation work.");
+          
+          // Move to next level after delay
+          setTimeout(() => {
+            if (currentLevelId < 3) {
+              loadLevel(currentLevelId + 1);
+            } else {
+              // Completed final level - show certificate
+              showCertificate();
+            }
+          }, 2000);
+        }
+      }
+    }
+
+    // Show achievement certificate
+    function showCertificate() {
+      const cert = document.getElementById('cert-card');
+      cert.style.display = 'block';
+      document.getElementById('cert-moves').innerText = `${moves} Total Move Actions`;
+      
+      // Auto fill student name in printable certificate prompt
+      const sName = prompt("Congratulations Cartesian Explorer! Enter your name for your certificate:");
+      if (sName) {
+        document.getElementById('cert-student-name').innerText = sName.toUpperCase();
+      }
+      
+      showToast("Master Certificate Generated!", "Use the 'Print Progress' button to print your physical award!");
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Update Dashboard Labels
+    function updateUI() {
+      playerCoordLbl.innerText = `(${player.x}, ${player.y})`;
+      moveCountLbl.innerText = moves;
+      drawGrid();
+    }
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

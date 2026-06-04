@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Detectives: The Histogram Case</title>
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <style>
+    :root {
+      --ink: #121826;
+      --paper: #fff9ef;
+      --panel: #fffdf8;
+      --blue: #1d4ed8;
+      --red: #b42318;
+      --green: #047857;
+      --gold: #f2b705;
+      --sky: #dbeafe;
+      --night: #111827;
+      --line: #0f172a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(17, 24, 39, 0.05) 1px, transparent 1px),
+        linear-gradient(rgba(17, 24, 39, 0.05) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+    }
+
+    a { color: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -60px;
+      z-index: 20;
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    .shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 20px 0 44px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .topbar a,
+    .control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      text-decoration: none;
+      box-shadow: 3px 3px 0 var(--line);
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .topbar a:focus-visible,
+    .control:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 4px solid #facc15;
+      outline-offset: 3px;
+    }
+
+    .cover {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      min-height: 520px;
+      border: 4px solid var(--line);
+      background: #ffffff;
+      box-shadow: 8px 8px 0 var(--line);
+    }
+
+    .cover-copy {
+      padding: 28px;
+      background:
+        linear-gradient(135deg, rgba(29, 78, 216, 0.14), transparent 45%),
+        #fffdf8;
+      border-right: 4px solid var(--line);
+    }
+
+    .issue-tag {
+      display: inline-block;
+      padding: 6px 9px;
+      background: var(--gold);
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: 3.05rem;
+      line-height: 0.98;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .dek {
+      max-width: 55ch;
+      font-size: 1.13rem;
+      font-weight: 700;
+    }
+
+    .cast {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .cast-card {
+      min-height: 88px;
+      padding: 10px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+    }
+
+    .cast-card strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .scene-cover {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(#93c5fd 0 44%, #86efac 44% 58%, #374151 58%);
+    }
+
+    .runner {
+      position: absolute;
+      width: 92px;
+      height: 128px;
+      left: 48px;
+      bottom: 54px;
+    }
+
+    .runner::before {
+      content: "";
+      position: absolute;
+      width: 42px;
+      height: 42px;
+      left: 24px;
+      top: 0;
+      border: 4px solid var(--line);
+      border-radius: 50%;
+      background: #f4c7a1;
+    }
+
+    .runner::after {
+      content: "";
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      left: 16px;
+      top: 45px;
+      border: 4px solid var(--line);
+      border-radius: 8px;
+      background: var(--red);
+    }
+
+    .finish-banner {
+      position: absolute;
+      right: 22px;
+      top: 34px;
+      width: 210px;
+      padding: 14px;
+      border: 4px solid var(--line);
+      background: #ffffff;
+      font-weight: 900;
+      text-align: center;
+      transform: rotate(3deg);
+    }
+
+    .cover-bars {
+      position: absolute;
+      right: 24px;
+      bottom: 46px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 180px;
+      padding: 14px;
+      border: 4px solid var(--line);
+      background: #fffdf8;
+    }
+
+    .cover-bars span {
+      width: 28px;
+      border: 3px solid var(--line);
+      background: var(--blue);
+    }
+
+    .reader-nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      margin: 28px 0 12px;
+      padding: 10px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 253, 248, 0.96);
+      box-shadow: 0 4px 0 rgba(15, 23, 42, 0.22);
+    }
+
+    .page-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .page-tabs button {
+      min-width: 44px;
+      min-height: 38px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .page-tabs button[aria-selected="true"] {
+      background: var(--gold);
+      box-shadow: inset 0 -4px 0 rgba(15, 23, 42, 0.18);
+    }
+
+    .comic-page {
+      display: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+      border: 4px solid var(--line);
+      background: var(--line);
+      margin-bottom: 20px;
+    }
+
+    .comic-page.active { display: grid; }
+
+    .panel {
+      position: relative;
+      min-height: 245px;
+      overflow: hidden;
+      padding: 14px;
+      border-radius: 6px;
+      border: 3px solid var(--line);
+      background: var(--panel);
+    }
+
+    .panel.wide { grid-column: span 2; }
+    .panel.tall { min-height: 335px; }
+
+    .caption {
+      display: inline-block;
+      max-width: 100%;
+      padding: 7px 9px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: var(--gold);
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    .bubble {
+      position: relative;
+      max-width: 46ch;
+      margin-top: 12px;
+      padding: 12px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      font-weight: 700;
+      box-shadow: 4px 4px 0 rgba(15, 23, 42, 0.16);
+    }
+
+    .bubble small {
+      display: block;
+      margin-bottom: 4px;
+      color: #475569;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .scene-floor {
+      position: absolute;
+      inset: auto 0 0;
+      height: 34%;
+      background: #d1fae5;
+      border-top: 4px solid var(--line);
+    }
+
+    .character {
+      position: absolute;
+      width: 74px;
+      height: 124px;
+      bottom: 18px;
+    }
+
+    .character::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 0;
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--line);
+      border-radius: 50%;
+      background: #f0c7a0;
+    }
+
+    .character::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 39px;
+      width: 52px;
+      height: 64px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: var(--blue);
+    }
+
+    .maya { right: 24px; }
+    .jalen { right: 98px; }
+    .jalen::after { background: var(--green); }
+    .noor { right: 172px; }
+    .noor::after { background: var(--red); }
+
+    .clue-card,
+    .data-strip,
+    .math-note {
+      position: relative;
+      z-index: 2;
+      margin-top: 12px;
+      padding: 12px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      font-weight: 700;
+    }
+
+    .data-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .data-strip span {
+      min-width: 42px;
+      text-align: center;
+      padding: 5px 7px;
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      background: #eff6ff;
+      font-weight: 900;
+    }
+
+    .histogram {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: end;
+      gap: 0;
+      min-height: 230px;
+      margin-top: 14px;
+      padding: 14px 10px 34px 44px;
+      border-left: 4px solid var(--line);
+      border-bottom: 4px solid var(--line);
+      background: repeating-linear-gradient(to top, #eef2ff 0, #eef2ff 34px, #ffffff 35px);
+    }
+
+    .histogram .bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 28px;
+      border: 3px solid var(--line);
+      border-bottom: 0;
+      background: var(--blue);
+      color: #ffffff;
+      font-weight: 900;
+      padding-top: 6px;
+    }
+
+    .histogram .label {
+      position: absolute;
+      bottom: 5px;
+      font-size: 0.78rem;
+      font-weight: 900;
+      transform: translateX(-50%);
+    }
+
+    .axis-note {
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: #334155;
+    }
+
+    .challenge {
+      position: relative;
+      z-index: 2;
+      margin-top: 12px;
+      padding: 12px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: #fff7ed;
+    }
+
+    .challenge label {
+      display: block;
+      margin: 8px 0 4px;
+      font-weight: 900;
+    }
+
+    .challenge input,
+    .challenge textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      font: inherit;
+      background: #ffffff;
+    }
+
+    .challenge textarea { min-height: 96px; resize: vertical; }
+
+    .feedback {
+      min-height: 28px;
+      margin-top: 8px;
+      font-weight: 900;
+    }
+
+    .reveal {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: #ecfdf5;
+      font-weight: 800;
+    }
+
+    .reveal.show { display: block; }
+
+    .info-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 2px 8px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: #fff3bf;
+      color: var(--line);
+      font: inherit;
+      font-weight: 900;
+      line-height: 1.1;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 rgba(15, 23, 42, 0.18);
+    }
+
+    .info-button.math { background: #dbeafe; }
+    .info-button:hover { transform: translateY(-1px); }
+    .info-button:focus-visible { outline: 4px solid #38bdf8; outline-offset: 2px; }
+
+    .info-dialog {
+      width: min(460px, calc(100% - 28px));
+      border: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    .info-dialog::backdrop { background: rgba(15, 23, 42, 0.55); }
+
+    .info-card {
+      padding: 20px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+      color: var(--line);
+      box-shadow: 8px 8px 0 rgba(15, 23, 42, 0.22);
+    }
+
+    .info-card h2 { margin: 0 0 8px; font-size: 1.45rem; }
+    .info-card p { margin: 0 0 14px; font-weight: 700; }
+
+    .info-close {
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      background: var(--gold);
+      padding: 8px 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .sfx {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      padding: 6px 9px;
+      border: 3px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 900;
+      transform: rotate(4deg);
+    }
+
+    .footer-card {
+      padding: 16px;
+      border: 4px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      box-shadow: 6px 6px 0 var(--line);
+    }
+
+    @media (max-width: 860px) {
+      .cover,
+      .comic-page { grid-template-columns: 1fr; }
+      .cover-copy { border-right: 0; border-bottom: 4px solid var(--line); }
+      .panel.wide { grid-column: span 1; }
+      h1 { font-size: 2.25rem; }
+      .cast { grid-template-columns: 1fr; }
+      .reader-nav { position: static; }
+      .scene-cover { min-height: 360px; }
+      .finish-banner { width: 170px; }
+      .cover-bars { right: 12px; transform: scale(0.85); transform-origin: right bottom; }
+    }
+  </style>
+<style>/* a11y: respect reduced motion (parity with main accessibility pass) */@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <a class="skip-link" href="#reader">Skip to the comic reader</a>
+  <main class="shell">
+    <nav class="topbar" aria-label="Activity navigation">
+      <a href="/statistics-data/">Statistics and Data</a>
+      <a href="/curriculum/">Curriculum Hub</a>
+    </nav>
+
+    <section class="cover" aria-labelledby="comic-title">
+      <div class="cover-copy">
+        <span class="issue-tag">Graphic Novel Case File 2.2</span>
+        <h1 id="comic-title">Data Detectives: The Histogram Case</h1>
+        <p class="dek">When the Spring 5K committee argues over finish times, four student detectives turn a messy list into a histogram that tells the real story.</p>
+        <div class="cast" aria-label="Cast">
+          <div class="cast-card"><strong>Maya</strong> Lead detective. Spots patterns before anyone else.</div>
+          <div class="cast-card"><strong>Jalen</strong> Route captain. Needs evidence for race-day decisions.</div>
+          <div class="cast-card"><strong>Noor</strong> Visual artist. Turns data into clear displays.</div>
+          <div class="cast-card"><strong>Coach Rivera</strong> Client. Has a clipboard full of clues.</div>
+        </div>
+        <a class="control" href="#reader">Open the Case</a>
+      </div>
+      <div class="scene-cover" aria-hidden="true">
+        <div class="finish-banner">Finish Times Mystery</div>
+        <div class="runner"></div>
+        <div class="cover-bars">
+          <span style="height:52px"></span>
+          <span style="height:96px"></span>
+          <span style="height:146px"></span>
+          <span style="height:84px"></span>
+          <span style="height:34px"></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="reader" class="reader-nav" aria-label="Comic reader controls">
+      <div>
+        <strong id="page-title">Chapter 1: The Call at Mile Zero</strong>
+        <div class="axis-note" id="progress-note">Page 1 of 6</div>
+      </div>
+      <div class="page-tabs" role="tablist" aria-label="Comic pages">
+        <button type="button" role="tab" aria-selected="true" data-page-button="0">1</button>
+        <button type="button" role="tab" aria-selected="false" data-page-button="1">2</button>
+        <button type="button" role="tab" aria-selected="false" data-page-button="2">3</button>
+        <button type="button" role="tab" aria-selected="false" data-page-button="3">4</button>
+        <button type="button" role="tab" aria-selected="false" data-page-button="4">5</button>
+        <button type="button" role="tab" aria-selected="false" data-page-button="5">6</button>
+      </div>
+      <div>
+        <button class="control" type="button" id="prev-page">Back</button>
+        <button class="control" type="button" id="next-page">Next</button>
+      </div>
+    </section>
+
+    <article class="comic-page active" data-page="0" aria-label="Chapter 1">
+      <section class="panel wide tall">
+        <span class="caption">Chapter 1: The Call at Mile Zero</span>
+        <span class="sfx">RING!</span>
+        <div class="scene-floor"></div>
+        <div class="bubble"><small>Coach Rivera</small>The race is in two days. I have finish times, but every committee member is telling a different story.</div>
+        <div class="bubble"><small>Maya</small>A single fastest time is not enough. We need the <button class="info-button math" type="button" data-info-title="Shape of Data" data-info-body="The shape tells whether most values are low, high, in the middle, or spread out. A histogram lets you see the whole group at once.">shape</button> of the whole group.</div>
+        <div class="character maya"></div>
+        <div class="character jalen"></div>
+        <div class="character noor"></div>
+      </section>
+      <section class="panel">
+        <span class="caption">The Evidence</span>
+        <div class="data-strip" aria-label="5K finish times in minutes">
+          <span>22</span><span>25</span><span>27</span><span>31</span><span>33</span><span>34</span><span>35</span><span>37</span><span>38</span><span>41</span><span>42</span><span>43</span><span>45</span><span>47</span><span>52</span><span>56</span><span>61</span>
+        </div>
+        <div class="bubble"><small>Noor</small>They look like random numbers until we group them.</div>
+      </section>
+      <section class="panel">
+        <span class="caption">Detective Move</span>
+        <div class="challenge">
+          <p><strong>Think first:</strong> What question should the detectives answer with the data?</p>
+          <textarea aria-label="Question the histogram should answer" placeholder="The histogram should help us decide..."></textarea>
+          <button class="control" type="button" data-reveal="r1">Compare with the detectives</button>
+          <div class="reveal" id="r1">They decide to answer: When do most runners finish, and how spread out are the finish times?</div>
+        </div>
+      </section>
+    </article>
+
+    <article class="comic-page" data-page="1" aria-label="Chapter 2">
+      <section class="panel wide">
+        <span class="caption">Chapter 2: Operation Group the Data</span>
+        <div class="bubble"><small>Jalen</small>The water crew needs time windows, not a huge list. Let's use <button class="info-button math" type="button" data-info-title="Intervals" data-info-body="Intervals are equal number ranges, like 0-4 or 5-9. They organize many data values into groups.">intervals</button>.</div>
+        <div class="clue-card">Intervals chosen: 20-29, 30-39, 40-49, 50-59, 60-69 minutes.</div>
+      </section>
+      <section class="panel">
+        <span class="caption">Tally Room</span>
+        <div class="clue-card">
+          <p>20-29: 22, 25, 27</p>
+          <p>30-39: 31, 33, 34, 35, 37, 38</p>
+          <p>40-49: 41, 42, 43, 45, 47</p>
+          <p>50-59: 52, 56</p>
+          <p>60-69: 61</p>
+        </div>
+      </section>
+      <section class="panel">
+        <span class="caption">Check the Count</span>
+        <div class="challenge">
+          <label for="bin-count">How many runners finished from 30 to 39 minutes?</label>
+          <input id="bin-count" type="number" inputmode="numeric" />
+          <button class="control" type="button" data-check="bin-count" data-answer="6">Check</button>
+          <div class="feedback" id="feedback-bin-count" aria-live="polite"></div>
+        </div>
+      </section>
+    </article>
+
+    <article class="comic-page" data-page="2" aria-label="Chapter 3">
+      <section class="panel wide tall">
+        <span class="caption">Chapter 3: The Histogram Rises</span>
+        <div class="histogram" aria-label="Histogram of finish times">
+          <div class="bar" style="height:82px">3</div>
+          <div class="bar" style="height:158px">6</div>
+          <div class="bar" style="height:132px">5</div>
+          <div class="bar" style="height:58px">2</div>
+          <div class="bar" style="height:34px">1</div>
+          <span class="label" style="left:13%">20-29</span>
+          <span class="label" style="left:31%">30-39</span>
+          <span class="label" style="left:50%">40-49</span>
+          <span class="label" style="left:69%">50-59</span>
+          <span class="label" style="left:88%">60-69</span>
+        </div>
+        <div class="bubble"><small>Noor</small>The <button class="info-button math" type="button" data-info-title="Touching Bars" data-info-body="Histogram bars touch because the number intervals connect with no category gaps between them.">bars touch</button> because the intervals are connected number ranges.</div>
+      </section>
+      <section class="panel">
+        <span class="caption">Why Not a Bar Graph?</span>
+        <div class="bubble"><small>Maya</small>A bar graph compares categories. A histogram shows how numbers fall across intervals.</div>
+      </section>
+      <section class="panel">
+        <span class="caption">Evidence Line</span>
+        <div class="challenge">
+          <p>Write one sentence that names the highest interval and uses the word <button class="info-button" type="button" data-info-title="Frequency" data-info-body="Frequency means how many data values are in an interval. A taller bar has a greater frequency.">frequency</button>.</p>
+          <textarea aria-label="Histogram evidence sentence"></textarea>
+        </div>
+      </section>
+    </article>
+
+    <article class="comic-page" data-page="3" aria-label="Chapter 4">
+      <section class="panel wide">
+        <span class="caption">Chapter 4: The Shape of the Crowd</span>
+        <div class="bubble"><small>Jalen</small>Most runners are not finishing at 22 minutes. The biggest cluster is later.</div>
+        <div class="math-note">Shape clue: The data peak is at 30-39 minutes, then the bars decrease toward longer times.</div>
+      </section>
+      <section class="panel">
+        <span class="caption">Decision Board</span>
+        <div class="challenge">
+          <p>Where should the announcer expect the busiest finish-line moment?</p>
+          <button class="control" type="button" data-reveal="r4">Reveal the evidence</button>
+          <div class="reveal" id="r4">The busiest finish-line moment should be around 30-49 minutes, especially 30-39 minutes, because those intervals have the highest frequencies.</div>
+        </div>
+      </section>
+      <section class="panel">
+        <span class="caption">What About Outliers?</span>
+        <div class="bubble"><small>Maya</small>The 61-minute time matters, but it should not trick us into planning the whole race around one runner.</div>
+      </section>
+    </article>
+
+    <article class="comic-page" data-page="4" aria-label="Chapter 5">
+      <section class="panel wide">
+        <span class="caption">Chapter 5: The Greenhouse Case</span>
+        <div class="bubble"><small>Coach Rivera</small>New case: The garden club measured plant heights. Which interval has the most plants?</div>
+        <div class="data-strip" aria-label="Plant height frequencies">
+          <span>4-6: 2</span><span>7-9: 5</span><span>10-12: 8</span><span>13-15: 4</span><span>16-18: 1</span>
+        </div>
+      </section>
+      <section class="panel">
+        <span class="caption">Transfer the Skill</span>
+        <div class="challenge">
+          <label for="plant-peak">Which plant-height interval has the greatest <button class="info-button" type="button" data-info-title="Frequency" data-info-body="Frequency means how many data values are in an interval. Look for the tallest bar to find the greatest frequency.">frequency</button>?</label>
+          <input id="plant-peak" type="text" />
+          <button class="control" type="button" data-check="plant-peak" data-answer="10-12">Check</button>
+          <div class="feedback" id="feedback-plant-peak" aria-live="polite"></div>
+        </div>
+      </section>
+      <section class="panel">
+        <span class="caption">Noor's Rule</span>
+        <div class="bubble"><small>Noor</small>If your <button class="info-button math" type="button" data-info-title="Equal Intervals" data-info-body="Equal intervals use the same width each time, such as 0-4, 5-9, and 10-14. That keeps the histogram fair and readable.">intervals</button> are equal and your <button class="info-button math" type="button" data-info-title="Touching Bars" data-info-body="Touching bars signal that the data is numerical and grouped into connected ranges.">bars touch</button>, the reader can scan the distribution fast.</div>
+      </section>
+    </article>
+
+    <article class="comic-page" data-page="5" aria-label="Chapter 6">
+      <section class="panel wide">
+        <span class="caption">Chapter 6: Case Closed</span>
+        <div class="bubble"><small>Maya</small>Our claim needs data, not vibes.</div>
+        <div class="math-note">Claim: Most 5K runners finish between 30 and 49 minutes. Evidence: Those two intervals contain 11 of the 17 runners.</div>
+      </section>
+      <section class="panel">
+        <span class="caption">Final Report</span>
+        <div class="challenge">
+          <p>Write the detectives' recommendation for the finish-line crew. Use at least one <button class="info-button math" type="button" data-info-title="Interval" data-info-body="An interval is a number range used to group data in a histogram.">interval</button> and one <button class="info-button" type="button" data-info-title="Frequency" data-info-body="Frequency is the count of data values in a group or interval.">frequency</button>.</p>
+          <textarea aria-label="Final histogram recommendation"></textarea>
+        </div>
+      </section>
+      <section class="panel">
+        <span class="caption">Detective Badge</span>
+        <div class="bubble"><small>Jalen</small>You did more than draw bars. You used a histogram to make a decision.</div>
+        <button class="control" type="button" id="print-page">Print or Save</button>
+      </section>
+    </article>
+
+    <section class="footer-card" aria-label="Teacher note">
+      <strong>Student goal:</strong> Read the story, use the panels as evidence, and explain how a histogram shows the distribution of numerical data.
+    </section>
+    <dialog class="info-dialog" id="infoDialog" aria-labelledby="infoTitle">
+      <div class="info-card">
+        <h2 id="infoTitle">Math Help</h2>
+        <p id="infoBody"></p>
+        <button class="info-close" type="button" id="infoClose">Close</button>
+      </div>
+    </dialog>
+  </main>
+
+  <script>
+    const titles = [
+      "Chapter 1: The Call at Mile Zero",
+      "Chapter 2: Operation Group the Data",
+      "Chapter 3: The Histogram Rises",
+      "Chapter 4: The Shape of the Crowd",
+      "Chapter 5: The Greenhouse Case",
+      "Chapter 6: Case Closed"
+    ];
+
+    let currentPage = 0;
+    const pages = Array.from(document.querySelectorAll(".comic-page"));
+    const buttons = Array.from(document.querySelectorAll("[data-page-button]"));
+    const pageTitle = document.getElementById("page-title");
+    const progressNote = document.getElementById("progress-note");
+    const prev = document.getElementById("prev-page");
+    const next = document.getElementById("next-page");
+    const infoDialog = document.getElementById("infoDialog");
+    const infoTitle = document.getElementById("infoTitle");
+    const infoBody = document.getElementById("infoBody");
+    const infoClose = document.getElementById("infoClose");
+
+    function openInfo(title, body) {
+      infoTitle.textContent = title;
+      infoBody.textContent = body;
+      if (typeof infoDialog.showModal === "function") {
+        infoDialog.showModal();
+      } else {
+        alert(`${title}\n\n${body}`);
+      }
+    }
+
+    document.querySelectorAll("[data-info-title]").forEach(button => {
+      button.addEventListener("click", () => openInfo(button.dataset.infoTitle, button.dataset.infoBody));
+    });
+
+    infoClose.addEventListener("click", () => infoDialog.close());
+    infoDialog.addEventListener("click", event => {
+      if (event.target === infoDialog) infoDialog.close();
+    });
+
+    function showPage(index) {
+      currentPage = Math.max(0, Math.min(index, pages.length - 1));
+      pages.forEach((page, pageIndex) => page.classList.toggle("active", pageIndex === currentPage));
+      buttons.forEach((button, buttonIndex) => button.setAttribute("aria-selected", String(buttonIndex === currentPage)));
+      pageTitle.textContent = titles[currentPage];
+      progressNote.textContent = `Page ${currentPage + 1} of ${pages.length}`;
+      prev.disabled = currentPage === 0;
+      next.disabled = currentPage === pages.length - 1;
+      document.getElementById("reader").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => showPage(Number(button.dataset.pageButton)));
+    });
+
+    prev.addEventListener("click", () => showPage(currentPage - 1));
+    next.addEventListener("click", () => showPage(currentPage + 1));
+
+    document.querySelectorAll("[data-reveal]").forEach(button => {
+      button.addEventListener("click", () => {
+        const target = document.getElementById(button.dataset.reveal);
+        target.classList.toggle("show");
+        button.textContent = target.classList.contains("show") ? "Hide evidence" : "Reveal evidence";
+      });
+    });
+
+    document.querySelectorAll("[data-check]").forEach(button => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.check);
+        const feedback = document.getElementById(`feedback-${button.dataset.check}`);
+        const answer = button.dataset.answer.trim().toLowerCase();
+        const value = input.value.trim().toLowerCase();
+        feedback.textContent = value === answer ? "Case note accepted." : "Check the panel evidence and try again.";
+      });
+    });
+
+    document.getElementById("print-page").addEventListener("click", () => window.print());
+    showPage(0);
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

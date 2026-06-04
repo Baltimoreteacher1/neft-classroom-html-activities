@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shape of Data Distributions — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Shape of Data Distributions · Standard 6.SP.2";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+}
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="8-7-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/8-7-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/8-7-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 8 · Standard 6.SP.2</p>
+    <h1>Shape of Data Distributions </h1>
+    <p class="meta">Lesson 8-7</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  
+  <section class="section vocab">
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Symmetric: Data that looks about the same on the left and right." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Heights: 60, 62, 64, 66, 68, 66, 64, 62, 60 — rises and falls evenly like a hill</p>
+  </div>
+  <h3 class="vocab-term">Symmetric</h3>
+  <p class="vocab-def">Data that looks about the same on the left and right.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Skewed: Data bunched on one side with a tail on the other." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Skewed right: most data low (1,2,2,3,3,3,15) — tail stretches toward the high value</p>
+  </div>
+  <h3 class="vocab-term">Skewed</h3>
+  <p class="vocab-def">Data bunched on one side with a tail on the other.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/cluster.svg" alt="Illustration of Cluster: A group of numbers that are close together." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</p>
+  </div>
+  <h3 class="vocab-term">Cluster</h3>
+  <p class="vocab-def">A group of numbers that are close together.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Gap: A big empty space where there is no data." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap</p>
+  </div>
+  <h3 class="vocab-term">Gap</h3>
+  <p class="vocab-def">A big empty space where there is no data.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</p>
+  </div>
+  <h3 class="vocab-term">Data distribution</h3>
+  <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly</p>
+  </div>
+  <h3 class="vocab-term">Variability</h3>
+  <p class="vocab-def">How spread out the numbers are.</p>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">The league analyst is studying three different data sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches.</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Symmetric</span><span class="notes-word-chip">Skewed</span><span class="notes-word-chip">Cluster</span><span class="notes-word-chip">Gap</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div>
+    </div></div>
+  <div class="think-block">
+    <h3>🤔 Think About It</h3>
+    <ul class="prompt-list"><li>Do the three data sets look the same when graphed?</li><li>Which graph has data bunched in the middle? Which has a long tail?</li><li>Are there any gaps or clusters you can spot?</li></ul>
+  </div>
+  <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A histogram of basketball players' ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p>
+      <ol class="try-choices" type="A"><li>Skewed right</li><li>Symmetric</li><li>Skewed left</li><li>Uniform</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Most data is on the left (younger ages) with a tail stretching right (older ages).</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> This is skewed right.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. Skewed right</p>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A data set is symmetric. What is likely true about the mean and median?</p>
+      <ol class="try-choices" type="A"><li>They are approximately equal</li><li>The mean is much higher than the median</li><li>The median is much higher than the mean</li><li>They are always exactly the same</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Match each description with the correct distribution shape.</p>
+      
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+  </div>
+</section>
+  <section class="section turn-and-talk">
+  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
+  <div class="tt-card">
+  <span class="tt-phase">Launch</span>
+  <p class="tt-question">The analyst graphs player heights, 3-pointers per game, and coaches' years of experience. Why might each data set have a DIFFERENT shape when graphed?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Different real-world data sets form different distribution shapes: symmetric, skewed, or clustered.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;symmetric&quot; or &quot;skewed&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The shapes are different because the data ___.</span><span class="twr-es">Las formas son diferentes porque los datos ___.</span></p><p class="twr-frame"><span class="twr-en">A symmetric shape looks ___, while a skewed shape looks ___.</span><span class="twr-es">Una forma simétrica se ve ___, mientras que una sesgada se ve ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">symmetric</span><span class="tt-word">skewed</span><span class="tt-word">cluster</span><span class="tt-word">gap</span><span class="tt-word">distribution</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students explain different data produces different shapes and can describe symmetric (balanced) versus skewed (lopsided) distributions.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Predict: which of the three data sets is most likely to be skewed, and why?</p>
+    <ul class="tt-extend-stems"><li>I predict ___ is most likely skewed because ___.</li><li>The values would pile up on one side since ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Explore</span>
+  <p class="tt-question">As you match each data description to its shape, how can you tell a symmetric distribution from a skewed one just by looking?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A symmetric distribution is balanced around the center; a skewed one has a longer tail on one side.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;symmetric&quot; or &quot;skewed&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">A symmetric distribution has data that is ___ on both sides.</span><span class="twr-es">Una distribución simétrica tiene datos ___ en ambos lados.</span></p><p class="twr-frame"><span class="twr-en">A skewed distribution has a longer ___ on one side.</span><span class="twr-es">Una distribución sesgada tiene una ___ más larga en un lado.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">symmetric</span><span class="tt-word">skewed</span><span class="tt-word">cluster</span><span class="tt-word">gap</span><span class="tt-word">tail</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer says symmetric data mirrors around the center while skewed data has a longer tail pulling to the left or right.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Compare: how do clusters and gaps in a distribution give you extra information beyond just 'symmetric' or 'skewed'?</p>
+    <ul class="tt-extend-stems"><li>A cluster tells me ___, while a gap tells me ___.</li><li>These features matter because ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Connect</span>
+  <p class="tt-question">Marathon times cluster at 3.5-4.5 hours, with elites at 2.0-2.5 and a long tail of slower runners at 5-7 hours. What is the shape, and should the reporter use the mean or median for a 'typical' time?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A skewed distribution is better summarized by the median than the mean.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;symmetric&quot; or &quot;skewed&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">This distribution is skewed to the ___ because of the long tail of ___.</span><span class="twr-es">Esta distribución está sesgada hacia la ___ por la cola larga de ___.</span></p><p class="twr-frame"><span class="twr-en">The reporter should use the ___ because ___.</span><span class="twr-es">El reportero debería usar la ___ porque ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">symmetric</span><span class="tt-word">skewed</span><span class="tt-word">cluster</span><span class="tt-word">gap</span><span class="tt-word">distribution</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students identify the right-skewed shape (long tail of slow runners) and choose the median because the slow tail would pull the mean up.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Critique: the reporter wants the finish times to sound fast. Which measure might they pick, and would that be honest given the shape?</p>
+    <ul class="tt-extend-stems"><li>To sound fast, the reporter might pick the ___ because ___.</li><li>That would be honest/misleading because the shape is ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Reflect</span>
+  <p class="tt-question">A data set has most values clustered between 40-60 with a few at 90-100. What is the shape of the distribution, and which measure of center is best?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A few high values create a right-skewed shape, so the median is the better center.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;symmetric&quot; or &quot;skewed&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The shape is skewed to the ___ because of the values at ___.</span><span class="twr-es">La forma está sesgada hacia la ___ por los valores en ___.</span></p><p class="twr-frame"><span class="twr-en">The best measure of center is the ___ because ___.</span><span class="twr-es">La mejor medida de centro es la ___ porque ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">symmetric</span><span class="tt-word">skewed</span><span class="tt-word">cluster</span><span class="tt-word">gap</span><span class="tt-word">median</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students describe a right-skewed shape (cluster at 40-60, gap, then 90-100) and choose the median because the high values would inflate the mean.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Generalize: state a rule connecting the SHAPE of a distribution to the best measure of center to use.</p>
+    <ul class="tt-extend-stems"><li>If the shape is symmetric, the best center is the ___.</li><li>If the shape is skewed, the best center is the ___ because ___.</li></ul>
+  </div>
+</div>
+</section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: describe the center, spread, and overall shape of your data distribution.</p>
+      <div class="project-links">
+        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🕵️</span>
+        <h3 class="project-title">Distribution Detective</h3>
+      </div>
+      <p class="project-desc">Identify symmetric, skewed, and clustered shapes in data distributions (6.SP.2).</p>
+      <div class="project-links">
+        <a href="/statistics-data/distribution-detective/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📊</span>
+        <h3 class="project-title">Histogram Master Lab</h3>
+      </div>
+      <p class="project-desc">Read histograms to see the shape and spread of a distribution.</p>
+      <div class="project-links">
+        <a href="/statistics-data/histogram-master-lab/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📖</span>
+        <h3 class="project-title">Unit 8 Graphic Novel</h3>
+      </div>
+      <p class="project-desc">Story-driven comic exploring statistics and data distributions.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit8/graphic-novel-1.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain my description using the words symmetric, skewed, cluster, and gap.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Data distribution is how the data looks: where it sits and how spread out it is.<span class="twr-es">Distribución de datos es cómo se ven los datos: dónde están y qué tan separados están.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about data distribution. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre distribución de datos. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Data distribution matters in math<span class="twr-es">Distribución de datos importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Data distribution matters in math because ___.</span><span class="twr-es">Distribución de datos importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Data distribution matters in math, but ___.</span><span class="twr-es">Distribución de datos importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Data distribution matters in math, so ___.</span><span class="twr-es">Distribución de datos importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about data distribution.<span class="twr-es">Di un hecho verdadero sobre data distribution.</span></p>
+        <p class="twr-frame"><span class="twr-en">Data distribution ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about data distribution.<span class="twr-es">Haz una pregunta sobre data distribution.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about data distribution.<span class="twr-es">Muestra entusiasmo sobre data distribution.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with data distribution.<span class="twr-es">Dile a un compañero qué hacer con data distribution.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">The shapes are different because the data ___.</span><span class="twr-es">Las formas son diferentes porque los datos ___.</span></p><p class="twr-frame"><span class="twr-en">A symmetric shape looks ___, while a skewed shape looks ___.</span><span class="twr-es">Una forma simétrica se ve ___, mientras que una sesgada se ve ___.</span></p><p class="twr-frame"><span class="twr-en">A symmetric distribution has data that is ___ on both sides.</span><span class="twr-es">Una distribución simétrica tiene datos ___ en ambos lados.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. In a right-skewed distribution, how does the mean compare to the median?</p>
+  <ol class="try-choices" type="A"><li>The mean is usually greater than the median</li><li>They are always equal</li><li>The mean is always 0</li><li>The median is always larger by 10</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A distribution with two clear peaks is described as...</p>
+  <ol class="try-choices" type="A"><li>Bimodal</li><li>Symmetric only</li><li>Uniform</li><li>Skewed left</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">A teacher shows two dot plots of quiz scores from two different classes. Class A's data is symmetric with a cluster around 80. Class B's data is skewed right with most scores between 60–70 and a few scores near 100. Compare the classes: which has a higher median? Which has a higher mean? In which class does the mean better represent a typical score?</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Class A is ___ with scores clustered around ___. Class B is skewed ___ with most scores at ___. Class A likely has a ___ median. Class B's mean is pulled ___ by the high scores. The mean better represents a typical score in Class ___ because ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">A data set has most values clustered between 40–60, with a few values at 90–100. What is the shape of the distribution and which measure of center is best?</p>
+  <ol class="try-choices" type="A"><li>Skewed right; use median</li><li>Symmetric; use mean</li><li>Skewed left; use median</li><li>Uniform; use mean</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key &amp; Teacher Guide</h2>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. They are approximately equal <span class="ak-why">— In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.</span></li><li><strong>Try It 1:</strong> A. The mean is usually greater than the median <span class="ak-why">— The long right tail pulls the mean above the median.</span></li><li><strong>Try It 2:</strong> A. Bimodal <span class="ak-why">— Two peaks means the distribution is bimodal.</span></li><li><strong>Exit Ticket:</strong> A. Skewed right; use median <span class="ak-why">— The data clusters on the left (40–60) with a tail to the right (90–100). This is skewed right. The median is best because the mean would be pulled toward the high values.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Data distribution is how the data looks: where it sits and how spread out it is.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-7 · Standard 6.SP.2</footer>
+</main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

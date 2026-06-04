@@ -740,8 +740,92 @@
       }
     }
   </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
+<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+<style>
+#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
+#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
+.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
+@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
+.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
+.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
+.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
+.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
+.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
+.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
+.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
+.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
+.vso-dot.active{background:#6366F1;transform:scale(1.25)}
+.vso-dot.seen{background:#A5B4FC}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<div id="vocabSlideshowOverlay">
+<div class="vso-card">
+  <div class="vso-progress" id="vsoProgress">Word 1 of 7</div>
+  <div class="vso-svg-wrap" id="vsoSvg"></div>
+  <div class="vso-word" id="vsoWord"></div>
+  <div class="vso-def" id="vsoDef"></div>
+  <div class="vso-nav">
+    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
+    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
+    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
+  </div>
+  <div class="vso-dots" id="vsoDots"></div>
+</div>
+</div>
+<script>
+(function(){
+const VSO_ITEMS=[
+  {word: 'Expression', def: 'A math phrase with numbers, variables, and operations but no equal sign.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="100" width="240" height="100" rx="16" fill="#FEF3C7" stroke="#F59E0B" stroke-width="3"/>   <text x="150" y="165" text-anchor="middle" font-size="42" font-weight="800" fill="#92400E" font-family="sans-serif">3x + 5</text>   <text x="150" y="82" text-anchor="middle" font-size="20" font-weight="700" fill="#B45309" font-family="sans-serif">no equal sign</text>   <line x1="90" y1="90" x2="210" y2="90" stroke="#F59E0B" stroke-width="2" stroke-dasharray="6,4"/> </svg>'},
+  {word: 'Coefficient', def: 'The number in front of a variable.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="50" y="90" width="200" height="120" rx="18" fill="#FEF3C7" stroke="#F59E0B" stroke-width="3"/>   <text x="110" y="165" text-anchor="middle" font-size="64" font-weight="900" fill="#DC2626" font-family="sans-serif">5</text>   <text x="170" y="165" text-anchor="middle" font-size="64" font-weight="900" fill="#6366F1" font-family="sans-serif">x</text>   <path d="M95,185 Q110,210 125,185" stroke="#DC2626" stroke-width="3" fill="none"/>   <text x="110" y="230" text-anchor="middle" font-size="16" font-weight="700" fill="#DC2626" font-family="sans-serif">coefficient</text> </svg>'},
+  {word: 'Constant', def: 'A number in an expression with no variable.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="140" r="70" fill="#DBEAFE" stroke="#3B82F6" stroke-width="4"/>   <text x="150" y="155" text-anchor="middle" font-size="56" font-weight="900" fill="#1E40AF" font-family="sans-serif">7</text>   <text x="150" y="240" text-anchor="middle" font-size="18" font-weight="700" fill="#3B82F6" font-family="sans-serif">always stays the same</text> </svg>'},
+  {word: 'Like Terms', def: 'Terms with the same variable that can be combined.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="90" width="80" height="50" rx="10" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="70" y="122" text-anchor="middle" font-size="24" font-weight="800" fill="#1E40AF" font-family="sans-serif">3x</text>   <rect x="190" y="90" width="80" height="50" rx="10" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="230" y="122" text-anchor="middle" font-size="24" font-weight="800" fill="#1E40AF" font-family="sans-serif">5x</text>   <text x="145" y="122" text-anchor="middle" font-size="28" font-weight="900" fill="#10B981" font-family="sans-serif">+</text>   <text x="150" y="190" text-anchor="middle" font-size="18" font-weight="700" fill="#3B82F6" font-family="sans-serif">same variable = like terms</text> </svg>'},
+  {word: 'Distributive Property', def: 'Multiply outside the parentheses by each term inside: a(b+c) = ab + ac.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <text x="150" y="100" text-anchor="middle" font-size="28" font-weight="800" fill="#1E293B" font-family="sans-serif">a(b + c)</text>   <text x="150" y="145" text-anchor="middle" font-size="28" font-weight="900" fill="#6366F1" font-family="sans-serif">= ab + ac</text>   <path d="M80,110 Q60,140 80,165" stroke="#DC2626" stroke-width="3" fill="none"/>   <path d="M220,110 Q240,140 220,165" stroke="#DC2626" stroke-width="3" fill="none"/> </svg>'},
+  {word: 'Greatest Common Factor', def: 'The largest number that divides evenly into two or more numbers.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="120" cy="140" r="60" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2" opacity="0.7"/>   <circle cx="180" cy="140" r="60" fill="#D1FAE5" stroke="#10B981" stroke-width="2" opacity="0.7"/>   <text x="90" y="145" text-anchor="middle" font-size="16" font-weight="700" fill="#1E40AF" font-family="sans-serif">12</text>   <text x="150" y="145" text-anchor="middle" font-size="20" font-weight="900" fill="#DC2626" font-family="sans-serif">4</text>   <text x="210" y="145" text-anchor="middle" font-size="16" font-weight="700" fill="#065F46" font-family="sans-serif">8</text>   <text x="150" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">GCF = 4</text> </svg>'},
+  {word: 'Commutative Property', def: 'Changing the order does not change the answer: a + b = b + a.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="90" width="100" height="50" rx="10" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2"/>   <text x="80" y="122" text-anchor="middle" font-size="22" font-weight="800" fill="#1E40AF" font-family="sans-serif">a + b</text>   <text x="150" y="122" text-anchor="middle" font-size="28" font-weight="900" fill="#059669" font-family="sans-serif">=</text>   <rect x="170" y="90" width="100" height="50" rx="10" fill="#D1FAE5" stroke="#10B981" stroke-width="2"/>   <text x="220" y="122" text-anchor="middle" font-size="22" font-weight="800" fill="#065F46" font-family="sans-serif">b + a</text>   <path d="M80,85 Q150,50 220,85" stroke="#F59E0B" stroke-width="3" fill="none" marker-end="url(#arrComm)"/>   <defs><marker id="arrComm" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#F59E0B"/></marker></defs> </svg>'}
+];
+let vsoIdx=0,vsoSeen=new Set();
+function vsoRender(){
+  const it=VSO_ITEMS[vsoIdx];
+  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
+  document.getElementById('vsoWord').textContent=it.word;
+  document.getElementById('vsoDef').textContent=it.def;
+  document.getElementById('vsoSvg').innerHTML=it.svg;
+  vsoSeen.add(vsoIdx);
+  document.getElementById('vsoPrev').disabled=vsoIdx===0;
+  const isLast=vsoIdx===VSO_ITEMS.length-1;
+  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
+  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
+  const dots=document.getElementById('vsoDots');
+  dots.innerHTML='';
+  VSO_ITEMS.forEach(function(_,i){
+    const d=document.createElement('span');
+    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
+    d.onclick=function(){vsoIdx=i;vsoRender();};
+    dots.appendChild(d);
+  });
+}
+window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
+window.vsoClose=function(){
+  const el=document.getElementById('vocabSlideshowOverlay');
+  el.classList.add('vso-hidden');
+  setTimeout(function(){el.remove();},600);
+};
+vsoRender();
+})();
+</script>
+<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+
+
   <div class="app-shell">
     <header class="hero">
       <div class="hero-top">
@@ -1561,5 +1645,9 @@
 
     renderApp();
   </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

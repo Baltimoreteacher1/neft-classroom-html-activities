@@ -1,0 +1,1872 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>
+      Unit 7 Supplemental — Integers &amp; Coordinate Plane | Neft Teacher
+    </title>
+    <style>
+      :root {
+        --esol-primary: #0891b2;
+        --esol-light: #ecfeff;
+        --esol-border: #a5f3fc;
+        --esol-dark: #155e75;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #faf5ff;
+        --enrich-border: #c4b5fd;
+        --enrich-dark: #4c1d95;
+        --enrich-gold: #d97706;
+        --enrich-gold-light: #fffbeb;
+      }
+
+      .supp-shell {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+
+      .supp-header {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--teal);
+        border-radius: var(--radius);
+        padding: clamp(24px, 4vw, 40px);
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .supp-header h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        margin-bottom: 8px;
+      }
+      .supp-header .standards {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        margin-bottom: 28px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 2px solid var(--line);
+      }
+
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 800;
+        text-align: center;
+        transition:
+          background 0.2s,
+          color 0.2s;
+        background: var(--surface);
+        color: var(--muted);
+      }
+
+      .tab-btn.esol-btn.active {
+        background: var(--esol-primary);
+        color: #fff;
+      }
+      .tab-btn.enrich-btn.active {
+        background: var(--enrich-primary);
+        color: #fff;
+      }
+      .tab-btn:hover:not(.active) {
+        background: var(--surface-soft);
+      }
+
+      .tab-panel {
+        display: none;
+        animation: fadeUp 0.3s ease;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-block {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 6px 18px rgba(23, 32, 42, 0.06);
+      }
+
+      .esol-section {
+        border-left: 5px solid var(--esol-primary);
+      }
+      .enrich-section {
+        border-left: 5px solid var(--enrich-primary);
+      }
+
+      .section-block h2 {
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .esol-section h2 {
+        color: var(--esol-dark);
+      }
+      .enrich-section h2 {
+        color: var(--enrich-dark);
+      }
+
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+      }
+
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+
+      .vocab-card svg {
+        display: block;
+        margin: 0 auto 10px;
+      }
+      .vocab-term {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.88rem;
+        color: var(--esol-primary);
+        font-style: italic;
+        margin: 2px 0 6px;
+      }
+      .vocab-def {
+        font-size: 0.92rem;
+        color: var(--ink);
+      }
+
+      .sentence-frame {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      .sentence-frame .blank {
+        display: inline-block;
+        min-width: 80px;
+        border-bottom: 2px dashed var(--esol-primary);
+        margin: 0 4px;
+      }
+
+      .step-guide {
+        counter-reset: step;
+      }
+
+      .step {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .step:last-child {
+        border-bottom: none;
+      }
+
+      .step-num {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #fff;
+      }
+
+      .esol-section .step-num {
+        background: var(--esol-primary);
+      }
+      .enrich-section .step-num {
+        background: var(--enrich-primary);
+      }
+
+      .step-content {
+        flex: 1;
+      }
+      .step-content p {
+        margin-bottom: 6px;
+      }
+
+      .problem {
+        background: #fafafa;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .problem-num {
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .esol-section .problem-num {
+        color: var(--esol-dark);
+      }
+      .enrich-section .problem-num {
+        color: var(--enrich-dark);
+      }
+
+      .hint-toggle,
+      .answer-toggle {
+        display: inline-block;
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface-soft);
+        cursor: pointer;
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-top: 8px;
+        margin-right: 6px;
+        transition: background 0.15s;
+      }
+
+      .hint-toggle:hover,
+      .answer-toggle:hover {
+        background: #e2e8f0;
+      }
+
+      .hint-content,
+      .answer-content {
+        display: none;
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: var(--radius);
+        font-size: 0.95rem;
+      }
+
+      .hint-content {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+      }
+      .answer-content {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+      }
+      .hint-content.show,
+      .answer-content.show {
+        display: block;
+      }
+
+      .scenario-card {
+        background: linear-gradient(135deg, var(--esol-light), #fff);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+
+      .enrich-section .scenario-card {
+        background: linear-gradient(135deg, var(--enrich-light), #fff);
+        border-color: var(--enrich-border);
+      }
+
+      .scenario-card h4 {
+        margin-bottom: 8px;
+        color: var(--ink);
+      }
+      .scenario-card p {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 0;
+      }
+
+      .teaser-card {
+        background: linear-gradient(135deg, var(--enrich-gold-light), #fff);
+        border: 1px solid #fbbf24;
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+
+      .teaser-card h4 {
+        color: var(--enrich-gold);
+        margin-bottom: 8px;
+      }
+
+      .checklist label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+
+      .checklist label:last-child {
+        border-bottom: none;
+      }
+
+      .checklist input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--enrich-primary);
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 10px;
+        background: #e5e7eb;
+        border-radius: 99px;
+        margin-top: 14px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--enrich-primary),
+          var(--enrich-gold)
+        );
+        border-radius: 99px;
+        transition: width 0.4s ease;
+        width: 0%;
+      }
+
+      .extension-card {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .extension-card h4 {
+        color: var(--enrich-dark);
+        margin-bottom: 6px;
+      }
+      .extension-card p {
+        font-size: 0.92rem;
+        margin-bottom: 0;
+      }
+
+      .print-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: var(--teal);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+      }
+
+      .print-btn:hover {
+        background: var(--teal-dark);
+      }
+
+      .worked-svg {
+        display: block;
+        margin: 12px auto;
+        max-width: 100%;
+      }
+
+      /* Coordinate grid SVG helper */
+      .grid-container {
+        text-align: center;
+        margin: 16px 0;
+      }
+
+      @media print {
+        .tab-bar,
+        .print-btn,
+        .hint-toggle,
+        .answer-toggle {
+          display: none;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .hint-content,
+        .answer-content {
+          display: block !important;
+        }
+        .section-block {
+          break-inside: avoid;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .vocab-grid {
+          grid-template-columns: 1fr;
+        }
+        .tab-btn {
+          font-size: 0.88rem;
+          padding: 10px 12px;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+<div class="l0-extra-support" role="note">
+  🟠 <b>Level 0 — Most Support.</b> Same skills as Level 1, with extra help:
+  press <button id="readAloudBtn" class="l0-readaloud" type="button">🔊 Read aloud</button>
+  then tap any text to hear it. Open every 💡 Hint — that is okay here.
+</div>
+<style>
+.l0-extra-support{display:none;max-width:900px;margin:10px auto;padding:12px 16px;background:#fff7ed;border:1px solid #fdba74;border-radius:12px;color:#7c2d12;font-size:15px;line-height:1.5;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+body.l0on .l0-extra-support{display:block}
+.l0-readaloud{border:1px solid #fdba74;background:#fff;color:#9a3412;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;font-size:14px}
+.l0-readaloud:hover{background:#ffedd5}
+.tab-btn[data-tab="level0"]{color:#9a3412}
+.tab-btn.active[data-tab="level0"]{background:#fff7ed;border-color:#fdba74;color:#9a3412}
+body.l0-reading *{cursor:help}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<script>
+(function(){var b=document.getElementById("readAloudBtn");if(!b)return;var on=false;
+function speak(t){try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=0.9;window.speechSynthesis.speak(u);}catch(e){}}
+b.addEventListener("click",function(){on=!on;document.body.classList.toggle("l0-reading",on);b.textContent=on?"🔊 Tap text to hear":"🔊 Read aloud";if(!on){try{window.speechSynthesis.cancel();}catch(e){}}});
+document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(".l0-extra-support"))return;var el=e.target.closest("p,li,h1,h2,h3,h4,label,td,.q-text");if(el){var t=el.textContent.trim();if(t&&t.length<400)speak(t);}},true);})();
+</script>
+
+    <div class="supp-shell">
+
+      <div class="supp-header">
+        <p class="eyebrow">
+          Reveal Math &middot; Unit 7 &middot; Supplemental Resources
+        </p>
+        <h1>Integers &amp; Coordinate Plane</h1>
+        <p class="standards">
+          Standards: 6.NS.C.5 (Positive/Negative) &middot; 6.NS.C.6 (Number
+          Line/Coordinate Plane) &middot; 6.NS.C.7 (Absolute Value) &middot;
+          6.NS.C.8 (Graphing)
+        </p>
+      </div>
+
+      <button class="print-btn" onclick="window.print()">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M6 9V2h12v7" />
+          <path
+            d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"
+          />
+          <rect x="6" y="14" width="12" height="8" />
+        </svg>
+        Print
+      </button>
+        <button class="print-btn" onclick="NeftDocx.exportPage()">⬇ Download Word Doc</button>
+
+      <div class="tab-bar">
+        <button class="tab-btn tab-btn-l0 level0-btn" data-tab="level0" onclick="switchTab('level0')">
+          🟠 Level 0 · Most Support
+        </button>
+        <button
+          class="tab-btn esol-btn active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          Level 1 Support
+        </button>
+        <button
+          class="tab-btn enrich-btn"
+          data-tab="enrich"
+          onclick="switchTab('enrich')"
+        >
+          Enrichment
+        </button>
+      </div>
+
+      <!-- =========================================== -->
+      <!--              LEVEL 1 SUPPORT TAB               -->
+      <!-- =========================================== -->
+      <div id="esol-panel" class="tab-panel active">
+        <!-- Visual Vocabulary -->
+        <div class="section-block esol-section">
+          <h2>Visual Vocabulary</h2>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg width="140" height="60" viewBox="0 0 140 60">
+                <line
+                  x1="10"
+                  y1="30"
+                  x2="130"
+                  y2="30"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <line
+                  x1="70"
+                  y1="20"
+                  x2="70"
+                  y2="40"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <text
+                  x="67"
+                  y="52"
+                  font-size="10"
+                  fill="#d97706"
+                  font-weight="700"
+                >
+                  0
+                </text>
+                <circle cx="40" cy="30" r="5" fill="#dc2626" />
+                <text
+                  x="34"
+                  y="20"
+                  font-size="10"
+                  fill="#dc2626"
+                  font-weight="700"
+                >
+                  &minus;3
+                </text>
+                <circle cx="100" cy="30" r="5" fill="#16a34a" />
+                <text
+                  x="95"
+                  y="20"
+                  font-size="10"
+                  fill="#16a34a"
+                  font-weight="700"
+                >
+                  +3
+                </text>
+              </svg>
+              <div class="vocab-term">Integer</div>
+              <div class="vocab-spanish">N&uacute;mero entero</div>
+              <div class="vocab-def">
+                A whole number that can be positive, negative, or zero.
+                Examples: &minus;5, 0, 3
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="140" height="60" viewBox="0 0 140 60">
+                <line
+                  x1="10"
+                  y1="30"
+                  x2="130"
+                  y2="30"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <line
+                  x1="70"
+                  y1="20"
+                  x2="70"
+                  y2="40"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <text
+                  x="67"
+                  y="52"
+                  font-size="10"
+                  fill="#d97706"
+                  font-weight="700"
+                >
+                  0
+                </text>
+                <circle cx="30" cy="30" r="5" fill="#dc2626" />
+                <text x="24" y="20" font-size="10" fill="#dc2626">
+                  &minus;4
+                </text>
+                <circle cx="110" cy="30" r="5" fill="#16a34a" />
+                <text x="105" y="20" font-size="10" fill="#16a34a">+4</text>
+                <path
+                  d="M 30 42 Q 70 58 110 42"
+                  stroke="#7c3aed"
+                  stroke-width="1.5"
+                  fill="none"
+                  stroke-dasharray="4,3"
+                />
+                <text
+                  x="56"
+                  y="56"
+                  font-size="9"
+                  fill="#7c3aed"
+                  font-weight="700"
+                >
+                  opposites
+                </text>
+              </svg>
+              <div class="vocab-term">Opposite</div>
+              <div class="vocab-spanish">Opuesto</div>
+              <div class="vocab-def">
+                Two numbers the same distance from 0 but on different sides. +4
+                and &minus;4 are opposites.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="140" height="60" viewBox="0 0 140 60">
+                <line
+                  x1="10"
+                  y1="30"
+                  x2="130"
+                  y2="30"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <line
+                  x1="70"
+                  y1="20"
+                  x2="70"
+                  y2="40"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <text
+                  x="67"
+                  y="52"
+                  font-size="10"
+                  fill="#d97706"
+                  font-weight="700"
+                >
+                  0
+                </text>
+                <circle cx="30" cy="30" r="5" fill="#dc2626" />
+                <text x="24" y="20" font-size="10" fill="#dc2626">
+                  &minus;4
+                </text>
+                <line
+                  x1="30"
+                  y1="36"
+                  x2="70"
+                  y2="36"
+                  stroke="#7c3aed"
+                  stroke-width="3"
+                  opacity="0.4"
+                />
+                <text
+                  x="40"
+                  y="48"
+                  font-size="10"
+                  fill="#7c3aed"
+                  font-weight="700"
+                >
+                  |&minus;4| = 4
+                </text>
+              </svg>
+              <div class="vocab-term">Absolute Value</div>
+              <div class="vocab-spanish">Valor absoluto</div>
+              <div class="vocab-def">
+                The distance from 0 on a number line. Always positive or zero.
+                |&minus;4| = 4
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="140" height="100" viewBox="0 0 140 100">
+                <!-- Axes -->
+                <line
+                  x1="70"
+                  y1="5"
+                  x2="70"
+                  y2="95"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="5"
+                  y1="50"
+                  x2="135"
+                  y2="50"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <!-- Quadrant labels -->
+                <text
+                  x="90"
+                  y="30"
+                  font-size="10"
+                  fill="#155e75"
+                  font-weight="700"
+                >
+                  I (+,+)
+                </text>
+                <text
+                  x="15"
+                  y="30"
+                  font-size="10"
+                  fill="#155e75"
+                  font-weight="700"
+                >
+                  II (&minus;,+)
+                </text>
+                <text
+                  x="12"
+                  y="76"
+                  font-size="10"
+                  fill="#155e75"
+                  font-weight="700"
+                >
+                  III (&minus;,&minus;)
+                </text>
+                <text
+                  x="88"
+                  y="76"
+                  font-size="10"
+                  fill="#155e75"
+                  font-weight="700"
+                >
+                  IV (+,&minus;)
+                </text>
+                <text x="72" y="12" font-size="9" fill="#d97706">y</text>
+                <text x="126" y="48" font-size="9" fill="#d97706">x</text>
+                <circle cx="70" cy="50" r="3" fill="#d97706" />
+                <text x="57" y="62" font-size="8" fill="#d97706">origin</text>
+              </svg>
+              <div class="vocab-term">Coordinate Plane</div>
+              <div class="vocab-spanish">Plano de coordenadas</div>
+              <div class="vocab-def">
+                A grid with an x-axis (horizontal) and y-axis (vertical) that
+                cross at the origin (0, 0).
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="140" height="80" viewBox="0 0 140 80">
+                <text
+                  x="20"
+                  y="25"
+                  font-size="14"
+                  fill="#0891b2"
+                  font-weight="700"
+                >
+                  (3, &minus;2)
+                </text>
+                <text x="20" y="46" font-size="11" fill="#155e75">
+                  x = 3 (right 3)
+                </text>
+                <text x="20" y="62" font-size="11" fill="#155e75">
+                  y = &minus;2 (down 2)
+                </text>
+                <text x="20" y="76" font-size="10" fill="#d97706">
+                  Quadrant IV
+                </text>
+              </svg>
+              <div class="vocab-term">Ordered Pair</div>
+              <div class="vocab-spanish">Par ordenado</div>
+              <div class="vocab-def">
+                Two numbers (x, y) that tell the exact location of a point. x
+                goes left/right, y goes up/down.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="140" height="80" viewBox="0 0 140 80">
+                <text
+                  x="15"
+                  y="25"
+                  font-size="12"
+                  fill="#0891b2"
+                  font-weight="700"
+                >
+                  Quadrant
+                </text>
+                <text x="15" y="44" font-size="11" fill="#155e75">
+                  The 4 sections of
+                </text>
+                <text x="15" y="58" font-size="11" fill="#155e75">
+                  the coordinate plane
+                </text>
+                <text x="15" y="74" font-size="10" fill="#d97706">
+                  I, II, III, IV
+                </text>
+              </svg>
+              <div class="vocab-term">Quadrant</div>
+              <div class="vocab-spanish">Cuadrante</div>
+              <div class="vocab-def">
+                One of the four sections of the coordinate plane. Numbered I,
+                II, III, IV counter-clockwise from top-right.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="section-block esol-section">
+          <h2>Sentence Frames</h2>
+          <div class="sentence-frame">
+            The number <span class="blank">&nbsp;</span> is a
+            <span class="blank">&nbsp;</span> (positive/negative) integer
+            because it is <span class="blank">&nbsp;</span> (above/below) zero.
+          </div>
+          <div class="sentence-frame">
+            The opposite of <span class="blank">&nbsp;</span> is
+            <span class="blank">&nbsp;</span> because they are the same distance
+            from zero but on <span class="blank">&nbsp;</span> sides.
+          </div>
+          <div class="sentence-frame">
+            The absolute value of <span class="blank">&nbsp;</span> is
+            <span class="blank">&nbsp;</span> because it is
+            <span class="blank">&nbsp;</span> units from zero.
+          </div>
+          <div class="sentence-frame">
+            The point (<span class="blank">&nbsp;</span>,
+            <span class="blank">&nbsp;</span>) is in Quadrant
+            <span class="blank">&nbsp;</span> because x is
+            <span class="blank">&nbsp;</span> and y is
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            To plot (3, &minus;4), I start at the origin, move
+            <span class="blank">&nbsp;</span> units right, then
+            <span class="blank">&nbsp;</span> units down.
+          </div>
+          <div class="sentence-frame">
+            The distance between <span class="blank">&nbsp;</span> and
+            <span class="blank">&nbsp;</span> on the number line is
+            <span class="blank">&nbsp;</span> because |<span class="blank"
+              >&nbsp;</span
+            >| + |<span class="blank">&nbsp;</span>| =
+            <span class="blank">&nbsp;</span>.
+          </div>
+        </div>
+
+        <!-- Step-by-Step: Plotting Points -->
+        <div class="section-block esol-section">
+          <h2>Step-by-Step: Plot a Point on the Coordinate Plane</h2>
+          <p style="margin-bottom: 8px; color: var(--muted)">
+            Example: Plot the point (&minus;3, 2)
+          </p>
+          <div class="grid-container">
+            <svg width="260" height="260" viewBox="0 0 260 260">
+              <!-- Grid lines -->
+              <defs>
+                <pattern
+                  id="grid"
+                  width="25"
+                  height="25"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M 25 0 L 0 0 0 25"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    stroke-width="0.5"
+                  />
+                </pattern>
+              </defs>
+              <rect x="5" y="5" width="250" height="250" fill="url(#grid)" />
+              <!-- Axes -->
+              <line
+                x1="130"
+                y1="5"
+                x2="130"
+                y2="255"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <line
+                x1="5"
+                y1="130"
+                x2="255"
+                y2="130"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <!-- Axis labels -->
+              <text
+                x="240"
+                y="125"
+                font-size="12"
+                fill="#0891b2"
+                font-weight="700"
+              >
+                x
+              </text>
+              <text
+                x="135"
+                y="18"
+                font-size="12"
+                fill="#0891b2"
+                font-weight="700"
+              >
+                y
+              </text>
+              <!-- Tick marks & numbers -->
+              <text x="126" y="145" font-size="9" fill="#5b6773">0</text>
+              <text x="151" y="145" font-size="9" fill="#5b6773">1</text>
+              <text x="176" y="145" font-size="9" fill="#5b6773">2</text>
+              <text x="201" y="145" font-size="9" fill="#5b6773">3</text>
+              <text x="226" y="145" font-size="9" fill="#5b6773">4</text>
+              <text x="95" y="145" font-size="9" fill="#5b6773">&minus;1</text>
+              <text x="70" y="145" font-size="9" fill="#5b6773">&minus;2</text>
+              <text x="45" y="145" font-size="9" fill="#5b6773">&minus;3</text>
+              <text x="20" y="145" font-size="9" fill="#5b6773">&minus;4</text>
+              <text x="135" y="108" font-size="9" fill="#5b6773">1</text>
+              <text x="135" y="83" font-size="9" fill="#5b6773">2</text>
+              <text x="135" y="58" font-size="9" fill="#5b6773">3</text>
+              <text x="135" y="33" font-size="9" fill="#5b6773">4</text>
+              <text x="133" y="158" font-size="9" fill="#5b6773">&minus;1</text>
+              <text x="133" y="183" font-size="9" fill="#5b6773">&minus;2</text>
+              <text x="133" y="208" font-size="9" fill="#5b6773">&minus;3</text>
+              <text x="133" y="233" font-size="9" fill="#5b6773">&minus;4</text>
+              <!-- Arrows showing movement -->
+              <line
+                x1="130"
+                y1="130"
+                x2="55"
+                y2="130"
+                stroke="#dc2626"
+                stroke-width="2.5"
+                marker-end="url(#arrowR)"
+              />
+              <line
+                x1="55"
+                y1="130"
+                x2="55"
+                y2="80"
+                stroke="#16a34a"
+                stroke-width="2.5"
+                marker-end="url(#arrowG)"
+              />
+              <defs>
+                <marker
+                  id="arrowR"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626" />
+                </marker>
+                <marker
+                  id="arrowG"
+                  viewBox="0 0 10 10"
+                  refX="5"
+                  refY="9"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#16a34a" />
+                </marker>
+              </defs>
+              <!-- Point -->
+              <circle
+                cx="55"
+                cy="80"
+                r="7"
+                fill="#7c3aed"
+                stroke="#fff"
+                stroke-width="2"
+              />
+              <text
+                x="32"
+                y="72"
+                font-size="11"
+                fill="#7c3aed"
+                font-weight="700"
+              >
+                (&minus;3, 2)
+              </text>
+              <!-- Step labels -->
+              <text
+                x="72"
+                y="125"
+                font-size="10"
+                fill="#dc2626"
+                font-weight="700"
+              >
+                left 3
+              </text>
+              <text
+                x="58"
+                y="110"
+                font-size="10"
+                fill="#16a34a"
+                font-weight="700"
+              >
+                up 2
+              </text>
+            </svg>
+          </div>
+          <div class="step-guide">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <p>
+                  <strong>Start at the origin</strong> (0, 0) &mdash; where the
+                  two axes cross.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <p>
+                  <strong>Look at x = &minus;3.</strong> Negative means left.
+                  Move <strong>3 units left</strong>.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <p>
+                  <strong>Look at y = 2.</strong> Positive means up. Move
+                  <strong>2 units up</strong>.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <p>
+                  <strong>Draw a dot.</strong> This is (&minus;3, 2). It is in
+                  <strong>Quadrant II</strong> (x negative, y positive).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step-by-Step: Absolute Value & Distance -->
+        <div class="section-block esol-section">
+          <h2>Step-by-Step: Find Distance Between Two Points</h2>
+          <p style="margin-bottom: 8px; color: var(--muted)">
+            Example: Distance between (&minus;3, 2) and (4, 2)
+          </p>
+          <div class="step-guide">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <p>
+                  <strong>Check:</strong> Are the points on the same horizontal
+                  line? Yes! Both have y = 2.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <p>
+                  <strong>Find the difference in x-values:</strong> |&minus;3| +
+                  |4| = 3 + 4 = 7 (they are on opposite sides of 0).
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <p><strong>The distance is 7 units.</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice -->
+        <div class="section-block esol-section">
+          <h2>Practice Problems</h2>
+
+          <div class="problem">
+            <div class="problem-num">Problem 1</div>
+            <p>What is the opposite of 7?</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              The opposite has the same number but a different sign.
+            </div>
+            <div class="answer-content"><strong>&minus;7</strong></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 2</div>
+            <p>What is |&minus;9|?</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Absolute value is the distance from 0. It is always positive.
+            </div>
+            <div class="answer-content">
+              <strong>9</strong> &mdash; &minus;9 is 9 units from zero.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 3</div>
+            <p>Which is greater: &minus;3 or &minus;8?</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              On a number line, the number farther to the right is greater.
+              &minus;3 is to the right of &minus;8.
+            </div>
+            <div class="answer-content">
+              <strong>&minus;3 &gt; &minus;8</strong> &mdash; &minus;3 is closer
+              to zero, so it is greater.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 4</div>
+            <p>In which quadrant is the point (4, &minus;5)?</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              x is positive (right), y is negative (down). That is the
+              bottom-right section.
+            </div>
+            <div class="answer-content"><strong>Quadrant IV</strong></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 5</div>
+            <p>What is the opposite of &minus;12?</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Change the sign. Negative becomes positive.
+            </div>
+            <div class="answer-content"><strong>12</strong></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 6</div>
+            <p>
+              Put these in order from least to greatest: 3, &minus;5, 0,
+              &minus;1, 4
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Negative numbers are always less than positive numbers. More
+              negative = smaller.
+            </div>
+            <div class="answer-content">
+              <strong>&minus;5, &minus;1, 0, 3, 4</strong>
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 7</div>
+            <p>What is the distance between &minus;3 and 5 on a number line?</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              They are on opposite sides of 0. Add |&minus;3| + |5|.
+            </div>
+            <div class="answer-content">
+              <strong>8 units</strong> &mdash; |&minus;3| + |5| = 3 + 5 = 8
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 8</div>
+            <p>In which quadrant is (&minus;2, &minus;6)?</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Both x and y are negative. That is the bottom-left section.
+            </div>
+            <div class="answer-content"><strong>Quadrant III</strong></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 9</div>
+            <p>
+              What are the coordinates of a point that is 3 units left and 4
+              units up from the origin?
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Left means negative x. Up means positive y.
+            </div>
+            <div class="answer-content"><strong>(&minus;3, 4)</strong></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Problem 10</div>
+            <p>Find the distance between (2, 5) and (2, &minus;3).</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Same x-value, so it is a vertical distance. Use the y-values: |5|
+              + |&minus;3|.
+            </div>
+            <div class="answer-content">
+              <strong>8 units</strong> &mdash; |5| + |&minus;3| = 5 + 3 = 8
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="section-block esol-section">
+          <h2>Real-World Connections</h2>
+
+          <div class="scenario-card">
+            <h4>Temperature</h4>
+            <p>
+              When the temperature is &minus;5&deg;F, it is 5 degrees below
+              zero. If it goes up 12 degrees, the new temperature is &minus;5 +
+              12 = 7&deg;F. Absolute value tells us how cold: |&minus;5| = 5
+              degrees below zero.
+            </p>
+          </div>
+
+          <div class="scenario-card">
+            <h4>Bank Account</h4>
+            <p>
+              Positive numbers = money you have. Negative numbers = money you
+              owe. If you have $20 and spend $35, your balance is 20 &minus; 35
+              = &minus;$15 (you owe $15).
+            </p>
+          </div>
+
+          <div class="scenario-card">
+            <h4>City Map</h4>
+            <p>
+              A city grid works like a coordinate plane. Your school is at the
+              origin. The library is 3 blocks east and 2 blocks north = (3, 2).
+              The park is 4 blocks west and 1 block south = (&minus;4,
+              &minus;1).
+            </p>
+          </div>
+
+          <div class="scenario-card">
+            <h4>Elevator</h4>
+            <p>
+              Ground floor = 0. Going up 5 floors = +5. Going to the basement 2
+              floors down = &minus;2. The distance between floor &minus;2 and
+              floor 5 is |&minus;2| + |5| = 7 floors.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================== -->
+      <!--            ENRICHMENT TAB                   -->
+      <!-- =========================================== -->
+      <div id="enrich-panel" class="tab-panel">
+        <!-- Challenge Problems -->
+        <div class="section-block enrich-section">
+          <h2>Challenge Problems</h2>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 1</div>
+            <p>
+              Point A is at (&minus;4, 3) and Point B is at (5, 3). What is the
+              distance between them? What is the midpoint?
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Same y-coordinate, so horizontal distance. For midpoint, average
+              the x-values.
+            </div>
+            <div class="answer-content">
+              <strong>Distance = 9 units, Midpoint = (0.5, 3)</strong> &mdash;
+              Distance: |&minus;4| + |5| = 9. Midpoint x: (&minus;4 + 5)
+              &divide; 2 = 0.5.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 2</div>
+            <p>
+              A rectangle on the coordinate plane has vertices at (&minus;3, 4),
+              (5, 4), (5, &minus;2), and (&minus;3, &minus;2). Find its
+              perimeter and area.
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Find the length (horizontal distance) and width (vertical
+              distance).
+            </div>
+            <div class="answer-content">
+              <strong>Perimeter = 28, Area = 48</strong> &mdash; Length:
+              |&minus;3| + |5| = 8. Width: |4| + |&minus;2| = 6. P = 2(8+6) =
+              28. A = 8 &times; 6 = 48.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 3</div>
+            <p>
+              Arrange from least to greatest: |&minus;7|, &minus;4, |3|,
+              &minus;|&minus;5|, 0
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              First simplify: |&minus;7| = 7, |3| = 3, &minus;|&minus;5| =
+              &minus;5.
+            </div>
+            <div class="answer-content">
+              <strong>&minus;5, &minus;4, 0, 3, 7</strong> &mdash; That is:
+              &minus;|&minus;5|, &minus;4, 0, |3|, |&minus;7|
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 4</div>
+            <p>
+              A triangle has vertices at (0, 0), (6, 0), and (6, 8). Find the
+              perimeter. (Hint: you will need the distance formula or
+              Pythagorean theorem for the slanted side.)
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Two sides are along the axes: 6 and 8. The hypotenuse:
+              &radic;(6&sup2; + 8&sup2;) = &radic;(36 + 64) = &radic;100.
+            </div>
+            <div class="answer-content">
+              <strong>24 units</strong> &mdash; Bottom = 6, Right side = 8,
+              Hypotenuse = &radic;100 = 10. Perimeter = 6 + 8 + 10 = 24.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 5</div>
+            <p>
+              A point is reflected across the x-axis. Its new coordinates are
+              (3, &minus;7). What were the original coordinates?
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Reflecting across the x-axis changes the sign of the y-coordinate.
+            </div>
+            <div class="answer-content">
+              <strong>(3, 7)</strong> &mdash; The y-coordinate flips: &minus;7
+              becomes 7. The x stays the same.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 6</div>
+            <p>
+              Point P is at (&minus;2, 5). It is reflected across the y-axis to
+              get P', then P' is reflected across the x-axis to get P''. What
+              are the coordinates of P''?
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Reflecting across y-axis: change sign of x. Then reflecting across
+              x-axis: change sign of y.
+            </div>
+            <div class="answer-content">
+              <strong>(2, &minus;5)</strong> &mdash; P' = (2, 5), then P'' = (2,
+              &minus;5). Double reflection = both signs change.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 7</div>
+            <p>
+              The temperature at midnight was &minus;8&deg;C. By noon it rose
+              15&deg;C. Then it dropped 7&deg;C by evening. What was the evening
+              temperature? What was the total change from midnight to evening?
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              &minus;8 + 15 = noon temp. Then subtract 7 for evening.
+            </div>
+            <div class="answer-content">
+              <strong>Evening: 0&deg;C. Total change: +8&deg;C</strong> &mdash;
+              &minus;8 + 15 = 7. 7 &minus; 7 = 0. Change: 0 &minus; (&minus;8) =
+              8.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 8</div>
+            <p>
+              A square has one vertex at (&minus;1, &minus;1) and the opposite
+              vertex at (3, 3). Find the coordinates of the other two vertices
+              and the area.
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              The other vertices pair opposite x and y values: (&minus;1, 3) and
+              (3, &minus;1). Side length is the distance between adjacent
+              vertices.
+            </div>
+            <div class="answer-content">
+              <strong
+                >Vertices: (&minus;1, 3) and (3, &minus;1). Area = 16</strong
+              >
+              &mdash; Side = |3 &minus; (&minus;1)| = 4. Area = 4&sup2; = 16.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 9</div>
+            <p>Find all integers x such that |x| &lt; 4.</p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Which integers are less than 4 units from zero?
+            </div>
+            <div class="answer-content">
+              <strong>&minus;3, &minus;2, &minus;1, 0, 1, 2, 3</strong> &mdash;
+              Seven integers total.
+            </div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-num">Challenge 10</div>
+            <p>
+              A parallelogram on the coordinate plane has vertices at (&minus;4,
+              0), (0, 3), (6, 3), and (2, 0). Find its area.
+            </p>
+            <span class="hint-toggle" onclick="toggleHint(this)"
+              >Show Hint</span
+            >
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="hint-content">
+              Base = horizontal distance of bottom side. Height = vertical
+              distance between parallel sides.
+            </div>
+            <div class="answer-content">
+              <strong>18 square units</strong> &mdash; Base = |2 &minus;
+              (&minus;4)| = 6. Height = |3 &minus; 0| = 3. Area = 6 &times; 3 =
+              18.
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="section-block enrich-section">
+          <h2>Real-World Investigations</h2>
+
+          <div class="scenario-card">
+            <h4>Investigation 1: Map Your Neighborhood</h4>
+            <p>
+              Choose a location near your home as the origin. Draw a coordinate
+              grid and plot at least 8 locations (your house, school, store,
+              park, etc.) as ordered pairs. Label each point with coordinates.
+              Find the distance between at least 3 pairs of locations. Which two
+              places are farthest apart? Create a "walking route" that visits
+              all locations and calculate the total distance.
+            </p>
+          </div>
+
+          <div class="scenario-card">
+            <h4>Investigation 2: Stock Market Tracker</h4>
+            <p>
+              Track a stock or the daily high temperature for 10 days. Record
+              each day's change as a positive or negative number. Create a
+              coordinate plane graph where the x-axis is the day and y-axis is
+              the cumulative change. On which days was the cumulative change
+              positive? Negative? What was the total change over all 10 days?
+              Which day had the biggest absolute change?
+            </p>
+          </div>
+
+          <div class="scenario-card">
+            <h4>Investigation 3: Game Board Designer</h4>
+            <p>
+              Design a board game on a coordinate grid. Create at least 3
+              different polygon regions (a triangular "danger zone," a
+              rectangular "safe zone," a parallelogram "bonus area"). Specify
+              each polygon using coordinates. Calculate the area and perimeter
+              of each region. Write the rules explaining what happens when a
+              player lands in each zone.
+            </p>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="section-block enrich-section">
+          <h2>Brain Teasers</h2>
+
+          <div class="teaser-card">
+            <h4>Teaser 1: The Absolute Truth</h4>
+            <p>
+              Is it possible for |a| + |b| to equal |a + b|? When does this
+              happen? When does |a| + |b| &gt; |a + b|? (Hint: try positive and
+              negative combinations.)
+            </p>
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="answer-content">
+              |a| + |b| = |a + b| when a and b have the
+              <strong>same sign</strong> (or one is zero). |a| + |b| &gt; |a +
+              b| when a and b have <strong>different signs</strong>. Example:
+              |3| + |&minus;5| = 8, but |3 + (&minus;5)| = |&minus;2| = 2. This
+              is the <strong>triangle inequality</strong>.
+            </div>
+          </div>
+
+          <div class="teaser-card">
+            <h4>Teaser 2: Quadrant Puzzle</h4>
+            <p>
+              A point (a, b) is in Quadrant II. In which quadrant is (&minus;a,
+              &minus;b)? What about (b, a)? Prove your answers.
+            </p>
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="answer-content">
+              If (a, b) is in Quadrant II, then a &lt; 0 and b &gt; 0. So
+              &minus;a &gt; 0 and &minus;b &lt; 0, meaning (&minus;a, &minus;b)
+              is in <strong>Quadrant IV</strong>. For (b, a): b &gt; 0 and a
+              &lt; 0, so (b, a) is in <strong>Quadrant IV</strong> as well.
+            </div>
+          </div>
+
+          <div class="teaser-card">
+            <h4>Teaser 3: The Elevator Riddle</h4>
+            <p>
+              An elevator starts at floor &minus;3 (basement level 3). It goes
+              up 7 floors, down 4 floors, up 2 floors, down 8 floors, and up 5
+              floors. What floor is it on? Without calculating each step, can
+              you find a shortcut?
+            </p>
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="answer-content">
+              Shortcut: add all the changes. +7 &minus; 4 + 2 &minus; 8 + 5 =
+              +2. Start at &minus;3, move +2:
+              <strong>Floor &minus;1</strong> (one level below ground).
+            </div>
+          </div>
+
+          <div class="teaser-card">
+            <h4>Teaser 4: Coordinate Symmetry</h4>
+            <p>
+              What shape is formed by connecting these points in order: (2, 0),
+              (0, 2), (&minus;2, 0), (0, &minus;2)? What is special about its
+              position on the coordinate plane? Calculate its area.
+            </p>
+            <span class="answer-toggle" onclick="toggleAnswer(this)"
+              >Show Answer</span
+            >
+            <div class="answer-content">
+              It forms a <strong>square</strong> rotated 45 degrees (a diamond).
+              It is centered at the origin with perfect symmetry across both
+              axes. Side length = &radic;(2&sup2; + 2&sup2;) = &radic;8. Area =
+              side&sup2; = 8 square units. (Or: it is a square with diagonal 4,
+              so area = &frac12; &times; 4 &times; 4 = 8.)
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="section-block enrich-section">
+          <h2>Where This Math Leads Next</h2>
+
+          <div class="extension-card">
+            <h4>7th Grade: Integer Operations</h4>
+            <p>
+              You will add, subtract, multiply, and divide positive and negative
+              numbers fluently. Rules like "negative times negative equals
+              positive" build on the number line understanding you are
+              developing now.
+            </p>
+          </div>
+
+          <div class="extension-card">
+            <h4>7th Grade: Proportional Relationships on Graphs</h4>
+            <p>
+              The coordinate plane becomes the place where you graph
+              proportional relationships (y = kx) and identify the constant of
+              proportionality from a graph.
+            </p>
+          </div>
+
+          <div class="extension-card">
+            <h4>8th Grade: Linear Equations &amp; Slope</h4>
+            <p>
+              Plotting points leads to graphing lines. You will learn slope
+              (rise over run) and y-intercept to write equations like y = mx +
+              b. Every point on the line is an ordered pair that satisfies the
+              equation.
+            </p>
+          </div>
+
+          <div class="extension-card">
+            <h4>High School: Transformations &amp; Distance Formula</h4>
+            <p>
+              Reflections across axes become full geometric transformations
+              (translations, rotations, dilations). The distance formula d =
+              &radic;((x&#8322;&minus;x&#8321;)&sup2; +
+              (y&#8322;&minus;y&#8321;)&sup2;) extends what you learn about
+              horizontal and vertical distance.
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="section-block enrich-section">
+          <h2>Self-Assessment Checklist</h2>
+          <div class="checklist" id="checklist-7">
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I understand positive and negative integers and can place them on
+              a number line.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can find the opposite of any integer.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can find the absolute value of any number.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can compare and order positive and negative rational
+              numbers.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can plot ordered pairs in all four quadrants of the coordinate
+              plane.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can identify which quadrant a point is in based on its
+              signs.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can find horizontal and vertical distances between
+              points.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can draw polygons on the coordinate plane using vertices.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can reflect points across the x-axis and y-axis.</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                onchange="updateProgress('checklist-7', 'progress-7')"
+              />
+              I can apply integers and coordinate graphing to real-world
+              problems.</label
+            >
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-7"></div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher &middot; Unit 7 Supplemental</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </div>
+
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById((tab === "level0" ? "esol" : tab) + "-panel").classList.add("active");
+        document.body.classList.toggle("l0on", tab === "level0");
+        document
+          .querySelector(".tab-btn." + tab + "-btn")
+          .classList.add("active");
+      }
+
+      function toggleHint(el) {
+        var content = el.parentElement.querySelector(".hint-content");
+        content.classList.toggle("show");
+        el.textContent = content.classList.contains("show")
+          ? "Hide Hint"
+          : "Show Hint";
+      }
+
+      function toggleAnswer(el) {
+        var content = el.parentElement.querySelector(".answer-content");
+        content.classList.toggle("show");
+        el.textContent = content.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+
+      function updateProgress(checklistId, progressId) {
+        var cl = document.getElementById(checklistId);
+        var boxes = cl.querySelectorAll('input[type="checkbox"]');
+        var checked = cl.querySelectorAll(
+          'input[type="checkbox"]:checked',
+        ).length;
+        var pct = Math.round((checked / boxes.length) * 100);
+        document.getElementById(progressId).style.width = pct + "%";
+      }
+
+      document.querySelectorAll("[data-current-year]").forEach(function (el) {
+        el.textContent = new Date().getFullYear();
+      });
+    </script>
+      <script src="/assets/docx-export.js"></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 4 Review: Rates and Percents</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --primary: #ec4899;
+        --primary-light: #f472b6;
+        --primary-dark: #db2777;
+        --bg: #f9fafb;
+        --text: #1e293b;
+        --card: #ffffff;
+        --correct: #16a34a;
+        --incorrect: #dc2626;
+        --border: #e2e8f0;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: var(--primary-dark);
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 4px;
+      }
+      .subtitle {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-header .badge {
+        background: rgba(255, 255, 255, 0.25);
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-left: auto;
+      }
+      .question-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 14px;
+        transition: border-color 0.3s;
+      }
+      .question-card.answered-correct {
+        border-color: var(--correct);
+        background: #f0fdf4;
+      }
+      .question-card.answered-incorrect {
+        border-color: var(--incorrect);
+        background: #fef2f2;
+      }
+      .q-number {
+        display: inline-block;
+        background: var(--primary);
+        color: #fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-right: 8px;
+      }
+      .q-text {
+        font-weight: 600;
+        margin-bottom: 12px;
+        font-size: 1rem;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .option {
+        padding: 10px 14px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .option:hover:not(.disabled) {
+        border-color: var(--primary);
+        background: #fdf2f8;
+      }
+      .option.selected {
+        border-color: var(--primary);
+        background: #fce7f3;
+      }
+      .option.correct-answer {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .option.wrong-answer {
+        border-color: var(--incorrect);
+        background: #fee2e2;
+      }
+      .option.disabled {
+        cursor: default;
+        opacity: 0.85;
+      }
+      .option .radio {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #94a3b8;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .option.selected .radio,
+      .option.correct-answer .radio {
+        border-color: var(--primary);
+        background: var(--primary);
+      }
+      .option.wrong-answer .radio {
+        border-color: var(--incorrect);
+        background: var(--incorrect);
+      }
+      .radio-dot {
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 50%;
+        display: none;
+      }
+      .option.selected .radio-dot,
+      .option.correct-answer .radio-dot,
+      .option.wrong-answer .radio-dot {
+        display: block;
+      }
+      .fill-input {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px 14px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct-input {
+        border-color: var(--correct);
+        background: #f0fdf4;
+      }
+      .fill-input.incorrect-input {
+        border-color: var(--incorrect);
+        background: #fef2f2;
+      }
+      .check-btn {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        margin-top: 8px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .check-btn:hover {
+        background: var(--primary-dark);
+      }
+      .check-btn:disabled {
+        background: #94a3b8;
+        cursor: default;
+      }
+      .feedback {
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+      .feedback.incorrect {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+      .progress-bar {
+        background: #e2e8f0;
+        border-radius: 20px;
+        height: 10px;
+        margin: 16px 0;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        border-radius: 20px;
+        transition: width 0.5s ease;
+      }
+      .progress-text {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 12px;
+      }
+      .login-screen {
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .login-screen .emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .login-input {
+        width: 100%;
+        max-width: 320px;
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .login-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .login-btn {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        font-weight: 700;
+        transition: background 0.2s;
+      }
+      .login-btn:hover {
+        background: var(--primary-dark);
+      }
+      .login-btn:disabled {
+        background: #94a3b8;
+        cursor: default;
+      }
+      .summary-screen {
+        display: none;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .score-circle.high {
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+      }
+      .score-circle.mid {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      }
+      .score-circle.low {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+      }
+      .score-circle .label {
+        font-size: 0.75rem;
+        font-weight: 400;
+        opacity: 0.9;
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-score:last-child {
+        border-bottom: none;
+      }
+      .section-score .name {
+        font-weight: 600;
+      }
+      .section-score .score {
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+      .study-tips {
+        background: #fdf2f8;
+        border: 1px solid #fbcfe8;
+        border-radius: 10px;
+        padding: 16px;
+        margin-top: 16px;
+      }
+      .study-tips h3 {
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+        font-size: 1rem;
+      }
+      .study-tips ul {
+        padding-left: 20px;
+        font-size: 0.9rem;
+      }
+      .study-tips li {
+        margin-bottom: 6px;
+      }
+      .export-btn {
+        background: var(--primary-dark);
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 8px;
+        transition: background 0.2s;
+      }
+      .export-btn:hover {
+        background: #be185d;
+      }
+      .restart-btn {
+        background: #64748b;
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 8px;
+      }
+      .restart-btn:hover {
+        background: #475569;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        margin-top: 20px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .nav-btns {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px;
+        }
+        h1 {
+          font-size: 1.4rem;
+        }
+        .card {
+          padding: 16px;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="container">
+      <!-- LOGIN -->
+      <div id="loginScreen" class="card login-screen">
+        <div class="emoji">🕹️</div>
+        <h1>Unit 4 Review: Rates and Percents</h1>
+        <p class="subtitle">
+          Grade 6 &bull; 6.RP.2 &bull; 6.RP.3c &bull; 6.RP.3d &bull; 20
+          Questions
+        </p>
+        <p style="margin: 16px 0; color: #64748b; font-size: 0.95rem">
+          Enter your name to begin the review.
+        </p>
+        <input
+          type="text"
+          id="nameInput"
+          class="login-input"
+          placeholder="Your Name"
+          maxlength="40"
+          autocomplete="off"
+        />
+        <br />
+        <button
+          id="startBtn"
+          class="login-btn"
+          disabled
+          onclick="startReview()"
+        >
+          Start Review
+        </button>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <h1>🕹️ Unit 4 Review: Rates and Percents</h1>
+        <p class="subtitle" id="studentLabel"></p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <p class="progress-text" id="progressText">0 of 20 answered</p>
+        <div id="quizContent"></div>
+        <div class="nav-btns">
+          <button
+            class="export-btn"
+            id="finishBtn"
+            style="display: none"
+            onclick="showSummary()"
+          >
+            See My Results
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <h1>🕹️ Review Complete!</h1>
+        <p class="subtitle" id="summaryLabel"></p>
+        <div class="card" id="summaryCard"></div>
+        <div class="nav-btns">
+          <button class="export-btn" onclick="exportResults()">
+            Export Results
+          </button>
+          <button class="export-btn" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
+          <button class="restart-btn" onclick="restartReview()">Restart</button>
+        </div>
+      </div>
+
+      <div class="footer">
+        Neft Teacher &bull; Unit 4 Rates and Percents Review
+      </div>
+    </div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      const STORAGE_KEY = "unit4Review_v1";
+      let studentName = "";
+      let answers = {};
+      let totalAnswered = 0;
+
+      const questions = [
+        // === SECTION 1: Vocabulary (1-5) MC ===
+        {
+          id: 1,
+          section: "Vocabulary",
+          type: "mc",
+          text: "What is a percent?",
+          options: [
+            "A ratio that compares a number to 10",
+            "A ratio that compares a number to 100",
+            "A fraction with a denominator of 50",
+            "Any number less than 1",
+          ],
+          answer: 1,
+          explanation:
+            'A percent is a ratio that compares a number to 100. The word "percent" means "per hundred."',
+        },
+        {
+          id: 2,
+          section: "Vocabulary",
+          type: "mc",
+          text: "What is a unit rate?",
+          options: [
+            "A rate where both quantities are equal",
+            "A rate where the first quantity is 1",
+            "A rate where the second quantity is 1",
+            "A rate that uses percentages",
+          ],
+          answer: 2,
+          explanation:
+            "A unit rate is a rate in which the second quantity (denominator) is 1, such as $3.50 per pound or 65 miles per hour.",
+        },
+        {
+          id: 3,
+          section: "Vocabulary",
+          type: "mc",
+          text: "Which of the following is the correct decimal form of 45%?",
+          options: ["4.5", "0.045", "0.45", "45.0"],
+          answer: 2,
+          explanation:
+            "To convert a percent to a decimal, divide by 100: 45 ÷ 100 = 0.45.",
+        },
+        {
+          id: 4,
+          section: "Vocabulary",
+          type: "mc",
+          text: 'What does "discount" mean in a math context?',
+          options: [
+            "The total price after tax",
+            "The amount added to a price",
+            "The amount subtracted from the original price",
+            "The original price of an item",
+          ],
+          answer: 2,
+          explanation:
+            "A discount is the amount subtracted from the original price. It is often given as a percent of the original price.",
+        },
+        {
+          id: 5,
+          section: "Vocabulary",
+          type: "mc",
+          text: "Which fraction is equivalent to 75%?",
+          options: ["7/5", "3/4", "3/5", "7/10"],
+          answer: 1,
+          explanation:
+            "75% = 75/100. Simplify by dividing numerator and denominator by 25: 75/100 = 3/4.",
+        },
+
+        // === SECTION 2: Quick Check (6-10) MC ===
+        {
+          id: 6,
+          section: "Quick Check",
+          type: "mc",
+          text: "Convert 3/5 to a percent.",
+          options: ["35%", "50%", "60%", "65%"],
+          answer: 2,
+          explanation: "3/5 = 3 ÷ 5 = 0.60 = 60%.",
+        },
+        {
+          id: 7,
+          section: "Quick Check",
+          type: "mc",
+          text: "Convert 0.08 to a percent.",
+          options: ["0.8%", "8%", "80%", "0.08%"],
+          answer: 1,
+          explanation: "Multiply by 100: 0.08 × 100 = 8%.",
+        },
+        {
+          id: 8,
+          section: "Quick Check",
+          type: "mc",
+          text: "A runner completes 6 miles in 48 minutes. What is the unit rate in minutes per mile?",
+          options: [
+            "6 minutes per mile",
+            "7 minutes per mile",
+            "8 minutes per mile",
+            "9 minutes per mile",
+          ],
+          answer: 2,
+          explanation: "48 minutes ÷ 6 miles = 8 minutes per mile.",
+        },
+        {
+          id: 9,
+          section: "Quick Check",
+          type: "mc",
+          text: "What is 25% of 80?",
+          options: ["15", "20", "25", "32"],
+          answer: 1,
+          explanation: "25% of 80 = 0.25 × 80 = 20.",
+        },
+        {
+          id: 10,
+          section: "Quick Check",
+          type: "mc",
+          text: "Convert 7/8 to a decimal.",
+          options: ["0.78", "0.875", "0.87", "0.785"],
+          answer: 1,
+          explanation: "7 ÷ 8 = 0.875.",
+        },
+
+        // === SECTION 3: Practice (11-15) Fill-in ===
+        {
+          id: 11,
+          section: "Practice",
+          type: "fill",
+          text: "Convert 40% to a fraction in simplest form. (Write as a/b, e.g., 1/5)",
+          answer: "2/5",
+          accept: ["2/5"],
+          explanation: "40% = 40/100. Divide both by 20: 40/100 = 2/5.",
+        },
+        {
+          id: 12,
+          section: "Practice",
+          type: "fill",
+          text: "What is 15% of 200?",
+          answer: "30",
+          accept: ["30"],
+          explanation: "15% of 200 = 0.15 × 200 = 30.",
+        },
+        {
+          id: 13,
+          section: "Practice",
+          type: "fill",
+          text: "A store sells 4 pens for $6.00. What is the unit price per pen? (Write just the number, e.g., 1.50)",
+          answer: "1.50",
+          accept: ["1.50", "1.5", "$1.50", "$1.5"],
+          explanation: "$6.00 ÷ 4 = $1.50 per pen.",
+        },
+        {
+          id: 14,
+          section: "Practice",
+          type: "fill",
+          text: "Convert 0.375 to a fraction in simplest form. (Write as a/b)",
+          answer: "3/8",
+          accept: ["3/8"],
+          explanation: "0.375 = 375/1000. Divide both by 125: 375/1000 = 3/8.",
+        },
+        {
+          id: 15,
+          section: "Practice",
+          type: "fill",
+          text: "Convert 5/6 to a decimal rounded to the nearest hundredth.",
+          answer: "0.83",
+          accept: ["0.83"],
+          explanation:
+            "5 ÷ 6 = 0.8333... ≈ 0.83 (rounded to the nearest hundredth).",
+        },
+
+        // === SECTION 4: Challenge (16-20) MC word problems ===
+        {
+          id: 16,
+          section: "Challenge",
+          type: "mc",
+          text: "A jacket costs $80 and is on sale for 30% off. What is the sale price?",
+          options: ["$24", "$50", "$56", "$60"],
+          answer: 2,
+          explanation:
+            "Discount = 30% of $80 = 0.30 × 80 = $24. Sale price = $80 − $24 = $56.",
+        },
+        {
+          id: 17,
+          section: "Challenge",
+          type: "mc",
+          text: "A meal costs $45. You add an 18% tip. What is the total amount you pay?",
+          options: ["$8.10", "$48.10", "$53.10", "$63.00"],
+          answer: 2,
+          explanation:
+            "Tip = 18% of $45 = 0.18 × 45 = $8.10. Total = $45 + $8.10 = $53.10.",
+        },
+        {
+          id: 18,
+          section: "Challenge",
+          type: "mc",
+          text: "Brand A orange juice costs $3.84 for 64 oz. Brand B costs $2.40 for 32 oz. Which is the better buy?",
+          options: [
+            "Brand A ($0.06/oz)",
+            "Brand B ($0.075/oz)",
+            "They cost the same per ounce",
+            "Cannot be determined",
+          ],
+          answer: 0,
+          explanation:
+            "Brand A: $3.84 ÷ 64 = $0.06/oz. Brand B: $2.40 ÷ 32 = $0.075/oz. Brand A is cheaper per ounce.",
+        },
+        {
+          id: 19,
+          section: "Challenge",
+          type: "mc",
+          text: "A book costs $25 before 8% sales tax. What is the total cost including tax?",
+          options: ["$25.80", "$26.00", "$27.00", "$33.00"],
+          answer: 2,
+          explanation:
+            "Tax = 8% of $25 = 0.08 × 25 = $2.00. Total = $25 + $2 = $27.00.",
+        },
+        {
+          id: 20,
+          section: "Challenge",
+          type: "mc",
+          text: "A recipe calls for 3 cups of milk. You want to convert to fluid ounces (1 cup = 8 fl oz). How many fluid ounces of milk do you need?",
+          options: ["16 fl oz", "20 fl oz", "24 fl oz", "32 fl oz"],
+          answer: 2,
+          explanation: "3 cups × 8 fl oz per cup = 24 fl oz.",
+        },
+      ];
+
+      // Login
+      const nameInput = document.getElementById("nameInput");
+      const startBtn = document.getElementById("startBtn");
+      nameInput.addEventListener("input", () => {
+        startBtn.disabled = nameInput.value.trim().length < 1;
+      });
+      nameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && nameInput.value.trim()) startReview();
+      });
+
+      function startReview() {
+        studentName = nameInput.value.trim();
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        document.getElementById("studentLabel").textContent =
+          studentName + " • Take your time!";
+        renderQuiz();
+        loadProgress();
+      }
+
+      function renderQuiz() {
+        const sections = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+        const sectionEmoji = {
+          Vocabulary: "📖",
+          "Quick Check": "⚡",
+          Practice: "✍️",
+          Challenge: "🏆",
+        };
+        let html = "";
+        sections.forEach((sec) => {
+          const qs = questions.filter((q) => q.section === sec);
+          html += `<div class="section-header">${sectionEmoji[sec] || ""} ${sec}<span class="badge">${qs.length} questions</span></div>`;
+          qs.forEach((q) => {
+            html += `<div class="question-card" id="qcard-${q.id}">`;
+            html += `<div class="q-text"><span class="q-number">${q.id}</span>${q.text}</div>`;
+            if (q.type === "mc") {
+              html += `<div class="options" id="opts-${q.id}">`;
+              q.options.forEach((opt, i) => {
+                html += `<div class="option" id="opt-${q.id}-${i}" onclick="selectMC(${q.id},${i})"><span class="radio"><span class="radio-dot"></span></span>${opt}</div>`;
+              });
+              html += `</div>`;
+            } else {
+              html += `<input type="text" class="fill-input" id="fill-${q.id}" placeholder="Type your answer..." autocomplete="off">`;
+              html += `<br><button class="check-btn" id="checkbtn-${q.id}" onclick="checkFill(${q.id})">Check</button>`;
+            }
+            html += `<div class="feedback" id="fb-${q.id}"></div>`;
+            html += `</div>`;
+          });
+        });
+        document.getElementById("quizContent").innerHTML = html;
+      }
+
+      function selectMC(qid, idx) {
+        const q = questions.find((x) => x.id === qid);
+        if (answers[qid] !== undefined) return;
+        answers[qid] = idx;
+        const isCorrect = idx === q.answer;
+        const opts = document.querySelectorAll(`#opts-${qid} .option`);
+        opts.forEach((o, i) => {
+          o.classList.add("disabled");
+          if (i === q.answer) o.classList.add("correct-answer");
+          if (i === idx && !isCorrect) o.classList.add("wrong-answer");
+          if (i === idx) o.classList.add("selected");
+        });
+        showFeedback(qid, isCorrect, q.explanation);
+        updateProgress();
+        saveProgress();
+      }
+
+      function checkFill(qid) {
+        const q = questions.find((x) => x.id === qid);
+        if (answers[qid] !== undefined) return;
+        const inp = document.getElementById(`fill-${qid}`);
+        const val = inp.value.trim();
+        if (!val) return;
+        const isCorrect = q.accept.some(
+          (a) => a.toLowerCase() === val.toLowerCase(),
+        );
+        answers[qid] = val;
+        inp.disabled = true;
+        document.getElementById(`checkbtn-${qid}`).disabled = true;
+        inp.classList.add(isCorrect ? "correct-input" : "incorrect-input");
+        showFeedback(
+          qid,
+          isCorrect,
+          q.explanation +
+            (isCorrect ? "" : ` The correct answer is ${q.answer}.`),
+        );
+        const card = document.getElementById(`qcard-${qid}`);
+        card.classList.add(
+          isCorrect ? "answered-correct" : "answered-incorrect",
+        );
+        updateProgress();
+        saveProgress();
+      }
+
+      function showFeedback(qid, isCorrect, explanation) {
+        const fb = document.getElementById(`fb-${qid}`);
+        fb.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
+        fb.innerHTML = `<strong>${isCorrect ? "✅ Correct!" : "❌ Incorrect."}</strong> ${explanation}`;
+        const card = document.getElementById(`qcard-${qid}`);
+        if (questions.find((x) => x.id === qid).type === "mc")
+          card.classList.add(
+            isCorrect ? "answered-correct" : "answered-incorrect",
+          );
+      }
+
+      function updateProgress() {
+        totalAnswered = Object.keys(answers).length;
+        document.getElementById("progressFill").style.width =
+          `${(totalAnswered / 20) * 100}%`;
+        document.getElementById("progressText").textContent =
+          `${totalAnswered} of 20 answered`;
+        document.getElementById("finishBtn").style.display =
+          totalAnswered === 20 ? "inline-block" : "none";
+      }
+
+      function getScore(section) {
+        const qs = questions.filter((q) => q.section === section);
+        let correct = 0;
+        qs.forEach((q) => {
+          if (q.type === "mc" && answers[q.id] === q.answer) correct++;
+          if (
+            q.type === "fill" &&
+            q.accept.some(
+              (a) =>
+                a.toLowerCase() ===
+                (answers[q.id] || "").toString().toLowerCase(),
+            )
+          )
+            correct++;
+        });
+        return { correct, total: qs.length };
+      }
+
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        const sum = document.getElementById("summaryScreen");
+        sum.style.display = "block";
+        document.getElementById("summaryLabel").textContent = studentName;
+
+        const sections = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+        let totalCorrect = 0,
+          totalQ = 0;
+        let secHTML = "";
+        let weakSections = [];
+        sections.forEach((s) => {
+          const sc = getScore(s);
+          totalCorrect += sc.correct;
+          totalQ += sc.total;
+          const pct = Math.round((sc.correct / sc.total) * 100);
+          secHTML += `<div class="section-score"><span class="name">${s}</span><span class="score">${sc.correct}/${sc.total} (${pct}%)</span></div>`;
+          if (pct < 60) weakSections.push(s);
+        });
+
+        const pct = Math.round((totalCorrect / totalQ) * 100);
+        const grade = pct >= 80 ? "high" : pct >= 60 ? "mid" : "low";
+        let tips = [];
+        if (weakSections.includes("Vocabulary"))
+          tips.push(
+            "Review key vocabulary: percent, unit rate, discount, tax, tip, and how percents relate to fractions and decimals.",
+          );
+        if (weakSections.includes("Quick Check"))
+          tips.push(
+            "Practice converting between fractions, decimals, and percents. Remember: percent ÷ 100 = decimal; fraction ÷ = decimal.",
+          );
+        if (weakSections.includes("Practice"))
+          tips.push(
+            "Work through unit price and conversion problems step by step. Simplify fractions by finding the GCF.",
+          );
+        if (weakSections.includes("Challenge"))
+          tips.push(
+            "For discount/tax/tip problems: find the percent amount first, then add or subtract from the original. For unit rates, always divide total cost by quantity.",
+          );
+        if (tips.length === 0)
+          tips.push(
+            "Great work! Keep practicing percent conversions and real-world rate problems to stay confident for the test.",
+          );
+
+        let html = `<div class="score-circle ${grade}">${pct}%<span class="label">${totalCorrect}/${totalQ}</span></div>`;
+        html += secHTML;
+        html += `<div class="study-tips"><h3>💡 Study Tips</h3><ul>`;
+        tips.forEach((t) => (html += `<li>${t}</li>`));
+        html += `</ul></div>`;
+        document.getElementById("summaryCard").innerHTML = html;
+        saveProgress();
+      }
+
+      function exportResults() {
+        const sections = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+        let text = `UNIT 4 REVIEW: RATES AND PERCENTS\nStudent: ${studentName}\nDate: ${new Date().toLocaleDateString()}\n${"=".repeat(44)}\n\n`;
+        let totalC = 0,
+          totalQ = 0;
+        sections.forEach((s) => {
+          const sc = getScore(s);
+          totalC += sc.correct;
+          totalQ += sc.total;
+          text += `${s}: ${sc.correct}/${sc.total}\n`;
+        });
+        text += `\nOVERALL: ${totalC}/${totalQ} (${Math.round((totalC / totalQ) * 100)}%)\n\n`;
+        text += `DETAILS:\n${"-".repeat(44)}\n`;
+        questions.forEach((q) => {
+          const userAns = answers[q.id];
+          let correct = false;
+          let userStr = "";
+          if (q.type === "mc") {
+            correct = userAns === q.answer;
+            userStr = q.options[userAns] || "No answer";
+          } else {
+            correct = q.accept.some(
+              (a) =>
+                a.toLowerCase() === (userAns || "").toString().toLowerCase(),
+            );
+            userStr = userAns || "No answer";
+          }
+          text += `Q${q.id}. ${q.text}\n   Your answer: ${userStr} ${correct ? "✅" : "❌"}\n`;
+          if (!correct)
+            text += `   Correct answer: ${q.type === "mc" ? q.options[q.answer] : q.answer}\n`;
+          text += "\n";
+        });
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit4_Review_${studentName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      function downloadResultsCSV() {
+        const sectionNames = [
+          "Vocabulary",
+          "Quick Check",
+          "Practice",
+          "Challenge",
+        ];
+        let totalCorrect = 0,
+          totalQ = 0;
+        const sections = sectionNames.map((s) => {
+          const sc = getScore(s);
+          totalCorrect += sc.correct;
+          totalQ += sc.total;
+          return { name: s, correct: sc.correct, total: sc.total };
+        });
+        if (typeof NTResults === "undefined") return;
+        NTResults.finish({
+          student: studentName,
+          assessment: "Unit 4 Review",
+          standard: "6.RP.3",
+          sections: sections,
+          correct: totalCorrect,
+          total: totalQ,
+        });
+      }
+
+      function restartReview() {
+        answers = {};
+        totalAnswered = 0;
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuiz();
+        updateProgress();
+      }
+
+      function saveProgress() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ name: studentName, answers }),
+        );
+      }
+
+      function loadProgress() {
+        try {
+          const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (d && d.name === studentName && d.answers) {
+            answers = d.answers;
+            Object.keys(answers).forEach((qid) => {
+              const q = questions.find((x) => x.id === parseInt(qid));
+              if (!q) return;
+              if (q.type === "mc") {
+                const idx = answers[qid];
+                const isCorrect = idx === q.answer;
+                const opts = document.querySelectorAll(`#opts-${qid} .option`);
+                opts.forEach((o, i) => {
+                  o.classList.add("disabled");
+                  if (i === q.answer) o.classList.add("correct-answer");
+                  if (i === idx && !isCorrect) o.classList.add("wrong-answer");
+                  if (i === idx) o.classList.add("selected");
+                });
+                showFeedback(parseInt(qid), isCorrect, q.explanation);
+              } else {
+                const inp = document.getElementById(`fill-${qid}`);
+                inp.value = answers[qid];
+                inp.disabled = true;
+                document.getElementById(`checkbtn-${qid}`).disabled = true;
+                const isCorrect = q.accept.some(
+                  (a) =>
+                    a.toLowerCase() === answers[qid].toString().toLowerCase(),
+                );
+                inp.classList.add(
+                  isCorrect ? "correct-input" : "incorrect-input",
+                );
+                showFeedback(
+                  parseInt(qid),
+                  isCorrect,
+                  q.explanation +
+                    (isCorrect ? "" : ` The correct answer is ${q.answer}.`),
+                );
+                const card = document.getElementById(`qcard-${qid}`);
+                card.classList.add(
+                  isCorrect ? "answered-correct" : "answered-incorrect",
+                );
+              }
+            });
+            updateProgress();
+          }
+        } catch (e) {}
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,2261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 2 — Boardwalk Build | Fraction-Division Engineering (6.NS.A.1)
+    </title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px 16px 72px;
+      }
+
+      /* ── Learning target ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Hero (timber / wetland palette) ── */
+      header.hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #fdf6ec;
+        background:
+          radial-gradient(
+            1100px 280px at 84% -40%,
+            rgba(94, 198, 176, 0.4),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #5e3c18, #2b1c0c 70%, #10333d);
+        border: 1px solid rgba(94, 198, 176, 0.35);
+      }
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #f0c894;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #f3e6d2;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        color: #fdf3e6;
+      }
+
+      /* ── Design-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.28);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #f3e6d2;
+        background: rgba(94, 198, 176, 0.1);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #f0c894;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
+        font-weight: 700;
+        color: #fdf6ec;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #5ec6b0, #f0c894);
+        transition: width 0.3s ease;
+      }
+
+      /* ── Cards / tasks ── */
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+      }
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Blueprint (dark drafting board) ── */
+      .bp {
+        background: #10333d;
+        border: 1px solid rgba(94, 198, 176, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-grid {
+        stroke: rgba(94, 198, 176, 0.22);
+      }
+      .bp-dim {
+        stroke: #f0c894;
+        stroke-width: 1.2;
+      }
+      .bp-dimtext {
+        fill: #f0c894;
+        font:
+          700 12px ui-monospace,
+          monospace;
+      }
+      .bp-label {
+        fill: #eef8f5;
+        font:
+          700 14px system-ui,
+          sans-serif;
+      }
+      .bp-sub {
+        fill: #bfe6e0;
+        font:
+          600 11px system-ui,
+          sans-serif;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #7fd8c6;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      /* ── Fraction-bar model figures ── */
+      .fig {
+        text-align: center;
+      }
+      .fig svg {
+        width: 100%;
+        max-width: 240px;
+        height: auto;
+      }
+      .fig figcaption {
+        font-weight: 700;
+        margin-top: 4px;
+        font-size: 15px;
+      }
+      .fcode {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        display: block;
+        margin-top: 2px;
+      }
+
+      /* ── Interactive Plank Fitter controls ── */
+      .ctrl-row {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+        margin: 6px 0 4px;
+      }
+      .ctrl {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .ctrl label {
+        font-weight: 700;
+        font-size: 15px;
+      }
+      input[type="range"] {
+        width: 220px;
+        accent-color: var(--nt-accent);
+      }
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 22px;
+        font-weight: 800;
+      }
+      .chip {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 2px 8px;
+      }
+      .legend {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: #bfe6e0;
+        margin-top: 6px;
+      }
+      .legend i {
+        display: inline-block;
+        width: 14px;
+        height: 10px;
+        border-radius: 2px;
+        margin-right: 5px;
+        vertical-align: middle;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 130px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+      .frame {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin: 8px 0 4px;
+        font-size: 15px;
+      }
+      .frame .blank {
+        display: inline-block;
+        min-width: 46px;
+        border-bottom: 2px solid var(--nt-accent);
+        text-align: center;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(155, 108, 255, 0.12);
+        border: 1px solid rgba(155, 108, 255, 0.45);
+      }
+      .lvl2 .pill {
+        background: #7b4fd0;
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Worked example box ── */
+      .worked {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 6px;
+        font-size: 15px;
+      }
+      .frac {
+        display: inline-flex;
+        flex-direction: column;
+        text-align: center;
+        vertical-align: middle;
+        margin: 0 2px;
+        font-weight: 700;
+      }
+      .frac .top {
+        border-bottom: 2px solid currentColor;
+        padding: 0 5px;
+        line-height: 1.2;
+      }
+      .frac .bot {
+        padding: 0 5px;
+        line-height: 1.2;
+      }
+
+      /* ── Supplier / material chooser ── */
+      .matgrid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
+      }
+      @media (max-width: 560px) {
+        .matgrid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .matcard {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      .matcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(94, 198, 176, 0.2);
+      }
+      .matcard .sw {
+        height: 40px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .matcard b {
+        font-size: 15px;
+      }
+      .matcard small {
+        color: var(--nt-muted);
+      }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        margin-top: 6px;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 480px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+      table.spec {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+        font-size: 15px;
+      }
+      table.spec th,
+      table.spec td {
+        border-bottom: 1px solid var(--nt-border);
+        padding: 9px 10px;
+        text-align: left;
+      }
+      table.spec thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+      table.spec td.num {
+        font:
+          700 15px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+
+      #ntkit {
+        margin-top: 18px;
+      }
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn {
+          display: none !important;
+        }
+        .wrap {
+          padding-bottom: 0;
+        }
+        .card {
+          break-inside: avoid;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+
+  <body class="nt-theme-aware">
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <div class="wrap">
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>
+            I can divide a whole number or mixed number by a fraction to find
+            how many equal pieces fit.
+          </li>
+          <li>
+            I can divide a fraction by a whole number to split a total into
+            equal shares.
+          </li>
+          <li>
+            I can use the rule "multiply by the reciprocal" and explain why it
+            works.
+          </li>
+          <li>
+            I can interpret a remainder in a real build — deciding when to round
+            down to whole pieces.
+          </li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.NS.A.1</span>
+          <span>Time: ~40 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief" together. Anchor
+              the two meanings of fraction division:
+              <em>how many fit</em> (measurement division — "how many ¾-ft
+              planks fit in 8¼ ft?") versus <em>fair share</em> (partitive
+              division — "split ¾ gal equally among 6 crew members"). Both
+              appear in this build.
+            </li>
+            <li>
+              <strong>Design work (25–30 min):</strong> Students complete Task 1
+              → 4 in order. Task 1 (Plank Fitter) is the hands-on interactive
+              model; Task 4 (Optimize the Order) reuses the division skill to
+              compare leftover waste across plank widths.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Surface the "invert and
+              multiply" rule and <em>why</em> it works (dividing by a/b is the
+              same as multiplying by b/a). Then discuss interpreting the
+              remainder — in Task 3, students must round DOWN because a partial
+              trail section is not a finished, sealed section.
+            </li>
+          </ul>
+          <h3>Differentiation</h3>
+          <ul>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and
+              bilingual (EN/ES) prompts. Let students experiment with the Plank
+              Fitter slider to <em>see</em> the quotient before computing.
+              Provide a printed "flip-and-multiply" reference card.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Have students justify why a
+              remainder that is 0.5 of a section cannot be counted, and confirm
+              the least-waste answer by converting the decimal remainder back to
+              a fractional length.
+            </li>
+          </ul>
+          <h3>Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q2.1 — Decking planks:</strong> 8¼ ÷ ¾ = 33/4 × 4/3 =
+              132/12 = <strong>11 planks</strong>.
+            </li>
+            <li>
+              <strong>Q2.2 — Balusters:</strong> 12 ÷ ⅔ = 12 × 3/2 = 36/2 =
+              <strong>18 balusters</strong>.
+            </li>
+            <li>
+              <strong>Q2.3 — Support gaps:</strong> 8¼ ÷ 2¾ = 33/4 ÷ 11/4 = 33/4
+              × 4/11 = 132/44 = <strong>3 gaps</strong> (so 4 posts).
+            </li>
+            <li>
+              <strong>Q3.1 — Sealant sections (exact quotient):</strong> 5½ ÷ ⅓
+              = 11/2 × 3/1 = 33/2 = <strong>16.5</strong>.
+            </li>
+            <li>
+              <strong>Q3.2 — Fully-coated sections:</strong>
+              <strong>16</strong> sections (round DOWN — the 0.5 leftover is not
+              enough to fully coat one more section).
+            </li>
+            <li>
+              <strong>Q3.3 — Fair share:</strong> ¾ ÷ 6 = 3/4 × 1/6 = 3/24 = 1/8
+              = <strong>0.125 gal</strong> each. This is the
+              <em>sharing</em> (partitive) meaning of division.
+            </li>
+            <li>
+              <strong>Q4.1 — Least-waste plank width:</strong> the
+              <strong>⅝ ft</strong> plank leaves only ⅛ ft (0.125 ft). Check: 8¼
+              ÷ ⅝ = 33/4 × 8/5 = 264/20 = 13.2; 13 full planks use 8⅛ ft,
+              leaving <strong>⅛ ft</strong> waste.
+            </li>
+          </ul>
+          <h3>Common Misconceptions</h3>
+          <ul>
+            <li>
+              <strong>Multiplying instead of dividing:</strong> remind students
+              that "÷ a fraction" means "× its reciprocal (flip)."
+            </li>
+            <li>
+              <strong>Rounding 16.5 up to 17:</strong> in a real build, a
+              partial section is not a finished, sealed section — always round
+              DOWN when the question asks for <em>whole</em> completed units.
+            </li>
+            <li>
+              <strong>Post-count confusion:</strong> 3 gaps require 4 posts (one
+              at each end plus one between each gap). Use the fence-post
+              analogy: posts = gaps + 1.
+            </li>
+          </ul>
+          <h3>STEM Connection</h3>
+          <ul>
+            <li>
+              This is an authentic civil/timber-engineering task. Structural
+              engineers use fraction division every time they perform a
+              <em>material take-off</em> — figuring out how many equal-size
+              members fit a span and how much material is left over. Students do
+              the exact arithmetic a real engineer uses.
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>
+            CCSS <strong>6.NS.A.1</strong> — Interpret and compute quotients of
+            fractions, and solve word problems involving division of fractions
+            by fractions, including mixed numbers.
+          </p>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag"
+          >Unit 2 · Math Architect · Fraction Division (6.NS.A.1)</span
+        >
+        <h1>Build Challenge: The Wetland Trail Boardwalk</h1>
+        <p class="lede">
+          You are the <strong>timber engineer</strong> on the Cedar Marsh Park
+          crew. A raised wooden walkway must cross a protected wetland. Your
+          job: cut planks, space support posts, and ration sealant so the
+          boardwalk is safe, level, and built with
+          <strong>no wasted lumber</strong>. Every decision is a
+          fraction-division problem.
+        </p>
+        <div class="badges">
+          <span class="badge">Standard 6.NS.A.1</span>
+          <span class="badge">Dividing Fractions</span>
+          <span class="badge">Civil / Timber Engineering</span>
+          <span class="badge">STEM Design Cycle</span>
+          <span class="badge">Material Take-off</span>
+        </div>
+        <div class="cycle">
+          <div><b>1 · Define</b>Read the build brief &amp; the spec sheet.</div>
+          <div><b>2 · Model</b>See division on a scale plank diagram.</div>
+          <div><b>3 · Calculate</b>Divide by fractions to size each part.</div>
+          <div><b>4 · Interpret</b>Decide what the remainder means.</div>
+          <div><b>5 · Optimize</b>Pick the width with the least waste.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Build checks approved: <span id="pcount">0</span> / 7
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="7"
+            aria-label="Build checks approved"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ THE BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          A wetland boardwalk is a raised wooden walkway. It is built from three
+          parts you must engineer — and each one is a question of
+          <strong>how many equal-size pieces fit into a length</strong>, or
+          <strong>how big each share becomes when a total is split</strong>.
+          Both are answered by dividing.
+        </p>
+        <div class="bp">
+          <svg
+            viewBox="0 0 760 300"
+            role="img"
+            aria-label="Labeled cross-section of a wetland boardwalk showing decking planks resting on a joist beam, support posts, and a railing, above marsh water."
+          >
+            <rect x="0" y="0" width="760" height="300" fill="#0c2a32" />
+            <rect x="0" y="232" width="760" height="68" fill="#143842" />
+            <path
+              d="M0 236 q40 -8 80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0"
+              stroke="#3f8a8a"
+              stroke-width="2"
+              fill="none"
+              opacity=".7"
+            />
+            <rect x="0" y="284" width="760" height="16" fill="#0a221b" />
+            <rect x="120" y="150" width="16" height="140" fill="#8a5a2b" />
+            <rect x="372" y="150" width="16" height="140" fill="#8a5a2b" />
+            <rect x="624" y="150" width="16" height="140" fill="#8a5a2b" />
+            <rect
+              x="90"
+              y="138"
+              width="580"
+              height="14"
+              rx="2"
+              fill="#a06a32"
+            />
+            <g fill="#caa06a" stroke="#7a4f22" stroke-width="1">
+              <rect x="95" y="120" width="46" height="16" rx="2" />
+              <rect x="145" y="120" width="46" height="16" rx="2" />
+              <rect x="195" y="120" width="46" height="16" rx="2" />
+              <rect x="245" y="120" width="46" height="16" rx="2" />
+              <rect x="295" y="120" width="46" height="16" rx="2" />
+              <rect x="345" y="120" width="46" height="16" rx="2" />
+              <rect x="395" y="120" width="46" height="16" rx="2" />
+              <rect x="445" y="120" width="46" height="16" rx="2" />
+              <rect x="495" y="120" width="46" height="16" rx="2" />
+              <rect x="545" y="120" width="46" height="16" rx="2" />
+              <rect x="595" y="120" width="46" height="16" rx="2" />
+            </g>
+            <rect x="92" y="60" width="8" height="62" fill="#8a5a2b" />
+            <rect x="636" y="60" width="8" height="62" fill="#8a5a2b" />
+            <rect x="92" y="60" width="552" height="8" rx="3" fill="#a06a32" />
+            <text
+              x="370"
+              y="40"
+              text-anchor="middle"
+              font-family="ui-monospace, monospace"
+              font-weight="700"
+              fill="#f0c894"
+              font-size="15"
+            >
+              BOARDWALK CROSS-SECTION
+            </text>
+            <g>
+              <line x1="300" y1="112" x2="300" y2="92" class="bp-dim" />
+              <text x="300" y="86" text-anchor="middle" class="bp-sub">
+                decking planks
+              </text>
+              <line x1="660" y1="145" x2="712" y2="145" class="bp-dim" />
+              <text x="714" y="149" class="bp-sub">joist beam</text>
+              <line x1="128" y1="210" x2="44" y2="210" class="bp-dim" />
+              <text x="40" y="214" text-anchor="end" class="bp-sub">
+                support post
+              </text>
+              <text
+                x="380"
+                y="270"
+                text-anchor="middle"
+                class="bp-sub"
+                font-style="italic"
+              >
+                protected marsh water
+              </text>
+            </g>
+          </svg>
+          <div class="bp-cap">
+            <span>Figure 1 · Boardwalk cross-section</span>
+            <span>planks → joists → posts → water</span>
+          </div>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            <strong>Dividing</strong> answers "how many equal groups fit?" To
+            divide by a fraction, <strong>flip it and multiply</strong> (use the
+            reciprocal). Example: 6 ÷ ½ asks "how many halves fit in 6?" — and 6
+            × 2 = 12.
+          </p>
+          <span class="es"
+            >Español: <strong>Dividir</strong> responde "¿cuántos grupos iguales
+            caben?" Para dividir entre una fracción,
+            <strong>invierte y multiplica</strong> (usa el recíproco). Ejemplo:
+            6 ÷ ½ = 6 × 2 = 12.</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ SPEC SHEET ══ -->
+      <section class="card" aria-label="Spec sheet">
+        <h2>Spec Sheet &amp; Constraints</h2>
+        <p>
+          The park issued the official build specs. Hit every number exactly —
+          the wetland permit allows
+          <strong>no extra cuts or wasted lumber</strong>. Notice every value is
+          a length or amount being split into equal fraction-size pieces.
+        </p>
+        <table class="spec">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Constraint</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Trail span (length of walkway)</td>
+              <td>Total distance to bridge</td>
+              <td class="num">8¼ ft</td>
+            </tr>
+            <tr>
+              <td>Decking plank width</td>
+              <td>Each board across the walkway</td>
+              <td class="num">¾ ft</td>
+            </tr>
+            <tr>
+              <td>Support-post spacing</td>
+              <td>Largest gap allowed between posts</td>
+              <td class="num">2¾ ft</td>
+            </tr>
+            <tr>
+              <td>Railing baluster stock</td>
+              <td>One long board you cut up</td>
+              <td class="num">12 ft</td>
+            </tr>
+            <tr>
+              <td>Baluster length</td>
+              <td>Each upright railing piece</td>
+              <td class="num">⅔ ft</td>
+            </tr>
+            <tr>
+              <td>Sealant supply</td>
+              <td>Total weatherproofing on hand</td>
+              <td class="num">5½ gal</td>
+            </tr>
+            <tr>
+              <td>Sealant per section</td>
+              <td>Used to coat each trail section</td>
+              <td class="num">⅓ gal</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══ MODEL TOOLKIT ══ -->
+      <section class="card" aria-label="Fraction-division models">
+        <h2>Engineer's Model Toolkit</h2>
+        <p class="muted" style="margin-top: 0">
+          Two pictures explain every problem on this page. A measurement bar
+          shows "how many fit," and a share bar shows "split into equal parts."
+        </p>
+        <div class="grid2">
+          <figure class="fig">
+            <svg
+              viewBox="0 0 240 110"
+              role="img"
+              aria-label="A bar of length 3 split into pieces of one-half, showing 6 pieces fit."
+            >
+              <rect
+                x="10"
+                y="30"
+                width="220"
+                height="34"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <g stroke="currentColor" stroke-width="1">
+                <line x1="46.7" y1="30" x2="46.7" y2="64" />
+                <line x1="83.3" y1="30" x2="83.3" y2="64" />
+                <line x1="120" y1="30" x2="120" y2="64" />
+                <line x1="156.7" y1="30" x2="156.7" y2="64" />
+                <line x1="193.3" y1="30" x2="193.3" y2="64" />
+              </g>
+              <text
+                x="120"
+                y="20"
+                text-anchor="middle"
+                class="fcode"
+                fill="currentColor"
+              >
+                3 ÷ ½ = 6 pieces
+              </text>
+              <text
+                x="120"
+                y="84"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                count the ½-size pieces
+              </text>
+            </svg>
+            <figcaption>
+              Measurement (how many fit)<span class="fcode"
+                >a ÷ b/c = a × c/b</span
+              >
+            </figcaption>
+          </figure>
+          <figure class="fig">
+            <svg
+              viewBox="0 0 240 110"
+              role="img"
+              aria-label="A bar of length three-fourths split equally among 3 shares, each one-fourth."
+            >
+              <rect
+                x="10"
+                y="30"
+                width="165"
+                height="34"
+                fill="rgba(94,198,176,.25)"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <rect
+                x="175"
+                y="30"
+                width="55"
+                height="34"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-dasharray="4 3"
+              />
+              <g stroke="currentColor" stroke-width="1">
+                <line x1="65" y1="30" x2="65" y2="64" />
+                <line x1="120" y1="30" x2="120" y2="64" />
+              </g>
+              <text
+                x="120"
+                y="20"
+                text-anchor="middle"
+                class="fcode"
+                fill="currentColor"
+              >
+                ¾ ÷ 3 = ¼ each
+              </text>
+              <text
+                x="92"
+                y="84"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                split ¾ into 3 equal shares
+              </text>
+            </svg>
+            <figcaption>
+              Sharing (split into parts)<span class="fcode"
+                >a/b ÷ n = a/b × 1/n</span
+              >
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ══ TASK 1 · INTERACTIVE PLANK FITTER ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · The Plank Fitter
+          <span class="tag-shape">Interactive model</span>
+        </h2>
+        <p>
+          <strong>Drag the green handle</strong> on the plan to stretch the
+          <strong>trail span</strong>, or use the sliders to set the span and
+          <strong>plank width</strong>. The scale plan redraws the planks live
+          and the console reports how many whole planks fit and how much board
+          is left over. Use it to <em>see</em> what
+          <span class="scale">span ÷ width</span> means before you compute.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 210"
+              id="fitterSvg"
+              role="img"
+              aria-label="Top-down scale plan of the boardwalk. Planks are laid across the span; full planks are solid wood and any leftover gap is shown striped red."
+            >
+              <rect x="0" y="0" width="360" height="210" fill="#10333d" />
+              <line
+                x1="24"
+                y1="40"
+                x2="336"
+                y2="40"
+                stroke="#7fd8c6"
+                stroke-width="1.4"
+              />
+              <line
+                x1="24"
+                y1="34"
+                x2="24"
+                y2="46"
+                stroke="#7fd8c6"
+                stroke-width="1.4"
+              />
+              <line
+                x1="336"
+                y1="34"
+                x2="336"
+                y2="46"
+                stroke="#7fd8c6"
+                stroke-width="1.4"
+              />
+              <text
+                id="spanDim"
+                x="180"
+                y="28"
+                text-anchor="middle"
+                class="bp-dimtext"
+              >
+                span = 8¼ ft
+              </text>
+              <g id="plankGroup"></g>
+              <!-- draggable span end-handle (JS positions cx to match the span) -->
+              <circle
+                id="spanHandle"
+                cx="336"
+                cy="40"
+                r="9"
+                fill="#33d6a6"
+                stroke="#0c1226"
+                stroke-width="3"
+                style="cursor: ew-resize"
+              />
+              <text
+                id="spanHandleHint"
+                x="336"
+                y="16"
+                text-anchor="middle"
+                font-family="ui-monospace, monospace"
+                font-size="10"
+                fill="#7fd8c6"
+              >
+                drag ↔
+              </text>
+              <text
+                id="fitNote"
+                x="180"
+                y="198"
+                text-anchor="middle"
+                font-family="ui-monospace, monospace"
+                font-size="13"
+                fill="#f0c894"
+              >
+                —
+              </text>
+            </svg>
+            <div class="legend">
+              <span><i style="background: #caa06a"></i>full plank</span>
+              <span
+                ><i
+                  style="
+                    background: repeating-linear-gradient(
+                      45deg,
+                      #c0392b,
+                      #c0392b 4px,
+                      #7a2318 4px,
+                      #7a2318 8px
+                    );
+                  "
+                ></i
+                >leftover gap (wasted board)</span
+              >
+            </div>
+            <div class="bp-cap">
+              <span>Figure 2 · Top-down plank plan</span>
+              <span>1 square = 1 ft</span>
+            </div>
+          </div>
+          <div>
+            <div class="ctrl-row">
+              <div class="ctrl">
+                <label for="spanSlider"
+                  >Trail span:
+                  <span class="chip" id="spanLabel">8¼ ft</span></label
+                >
+                <input
+                  type="range"
+                  id="spanSlider"
+                  min="6"
+                  max="12"
+                  step="0.25"
+                  value="8.25"
+                  aria-label="Trail span in feet"
+                />
+              </div>
+              <div class="ctrl">
+                <label for="plankSlider"
+                  >Plank width:
+                  <span class="chip" id="plankLabel">¾ ft</span></label
+                >
+                <input
+                  type="range"
+                  id="plankSlider"
+                  min="0.25"
+                  max="1.5"
+                  step="0.125"
+                  value="0.75"
+                  aria-label="Plank width in feet"
+                />
+              </div>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">span ÷ width</span><br /><span
+                  class="v"
+                  id="quotientVal"
+                  >11</span
+                >
+              </div>
+              <div>
+                <span class="k">Whole planks</span><br /><span
+                  class="v"
+                  id="wholeVal"
+                  >11</span
+                >
+              </div>
+              <div>
+                <span class="k">Leftover</span><br /><span
+                  class="v"
+                  id="leftVal"
+                  >0 ft</span
+                >
+              </div>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Set the span to <strong>8¼</strong> and the plank width to
+                <strong>¾</strong>. Count the planks the console draws and check
+                the leftover. Then do the same calculation by hand using the
+                "flip and multiply" method for Q2.1 below.
+              </p>
+              <span class="es"
+                >Español: Pon el tramo en 8¼ y el ancho en ¾. Cuenta los
+                tablones que aparecen, luego haz el cálculo a mano para
+                Q2.1.</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 2 · MEASUREMENT DIVISION (how many fit) ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · Cut the Build
+          <span class="tag-shape">Division: how many fit?</span>
+        </h2>
+        <p>
+          Use the spec sheet values. Each question asks "how many equal-size
+          pieces fit?" — set up the division, convert any mixed numbers to
+          improper fractions, then multiply by the reciprocal.
+        </p>
+        <div class="worked">
+          <strong>Worked method:</strong>
+          8¼ ÷ ¾ &nbsp;=&nbsp;
+          <span class="frac"
+            ><span class="top">33</span><span class="bot">4</span></span
+          >
+          ÷
+          <span class="frac"
+            ><span class="top">3</span><span class="bot">4</span></span
+          >
+          &nbsp;=&nbsp;
+          <span class="frac"
+            ><span class="top">33</span><span class="bot">4</span></span
+          >
+          ×
+          <span class="frac"
+            ><span class="top">4</span><span class="bot">3</span></span
+          >
+          &nbsp;=&nbsp;
+          <span class="frac"
+            ><span class="top">132</span><span class="bot">12</span></span
+          >
+          = <strong>11 planks</strong>.
+        </div>
+
+        <div class="q" data-q="planks">
+          <p class="lbl">
+            Q2.1 — Decking planks across the 8¼ ft span (¾ ft each)
+          </p>
+          <div class="frame">
+            8¼ ÷ ¾ = <span class="blank">33</span>/4 × 4/<span class="blank"
+              >3</span
+            >
+            = <span class="blank">?</span>
+          </div>
+          <div class="row">
+            <input
+              type="text"
+              inputmode="decimal"
+              id="q-planks"
+              data-ans="11"
+              data-tol="0.001"
+              data-why="8¼ ÷ ¾ = 33/4 × 4/3 = 132/12 = 11 planks"
+              aria-label="Number of decking planks"
+            />
+            <span class="unit">planks</span>
+            <button type="button" class="btn" data-check="planks">Check</button>
+            <button type="button" class="btn ghost" data-hint="planks">
+              Hint
+            </button>
+          </div>
+          <p class="fb" id="fb-planks"></p>
+        </div>
+
+        <div class="q" data-q="balusters">
+          <p class="lbl">
+            Q2.2 — Balusters cut from one 12 ft railing board (⅔ ft each)
+          </p>
+          <div class="frame">
+            12 ÷ ⅔ = 12 × <span class="blank">3</span>/<span class="blank"
+              >2</span
+            >
+            = <span class="blank">?</span>
+          </div>
+          <div class="row">
+            <input
+              type="text"
+              inputmode="decimal"
+              id="q-balusters"
+              data-ans="18"
+              data-tol="0.001"
+              data-why="12 ÷ ⅔ = 12 × 3/2 = 36/2 = 18 balusters"
+              aria-label="Number of balusters"
+            />
+            <span class="unit">balusters</span>
+            <button type="button" class="btn" data-check="balusters">
+              Check
+            </button>
+            <button type="button" class="btn ghost" data-hint="balusters">
+              Hint
+            </button>
+          </div>
+          <p class="fb" id="fb-balusters"></p>
+        </div>
+
+        <div class="q" data-q="posts">
+          <p class="lbl">
+            Q2.3 — Support-post spacing. The 8¼ ft span must be divided into
+            equal gaps of exactly 2¾ ft between posts. How many gaps does that
+            make?
+          </p>
+          <div class="frame">
+            8¼ ÷ 2¾ =
+            <span class="frac" style="display: inline-flex"
+              ><span class="top">33</span><span class="bot">4</span></span
+            >
+            ÷
+            <span class="frac" style="display: inline-flex"
+              ><span class="top">11</span><span class="bot">4</span></span
+            >
+            =
+            <span class="frac" style="display: inline-flex"
+              ><span class="top">33</span><span class="bot">4</span></span
+            >
+            × <span class="blank">?</span> = <span class="blank">?</span>
+          </div>
+          <div class="row">
+            <input
+              type="text"
+              inputmode="decimal"
+              id="q-posts"
+              data-ans="3"
+              data-tol="0.001"
+              data-why="8¼ ÷ 2¾ = 33/4 ÷ 11/4 = 33/4 × 4/11 = 132/44 = 3 gaps (so 4 posts)"
+              aria-label="Number of support gaps"
+            />
+            <span class="unit">gaps</span>
+            <button type="button" class="btn" data-check="posts">Check</button>
+            <button type="button" class="btn ghost" data-hint="posts">
+              Hint
+            </button>
+          </div>
+          <p class="fb" id="fb-posts"></p>
+        </div>
+
+        <div class="lvl lvl2">
+          <span class="pill">Level 2 · Enrichment</span>
+          <p>
+            Q2.3 gives 3 gaps. Three equal gaps need
+            <strong>how many posts</strong>? (Think fence-post counting: a gap
+            has a post on each end.) Be ready to defend your post count in the
+            build report.
+          </p>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            Turn mixed numbers into improper fractions first: 8¼ = 33/4, 2¾ =
+            11/4. Then <strong>flip the second fraction and multiply</strong>.
+          </p>
+          <span class="es"
+            >Español: Convierte a fracción impropia (8¼ = 33/4), luego invierte
+            la segunda fracción y multiplica.</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ TASK 3 · SEALANT + REMAINDER + SHARING ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · Seal &amp; Share
+          <span class="tag-shape">Remainders &amp; fair shares</span>
+        </h2>
+        <p>
+          Now the trickier engineering judgment: dividing does not always give a
+          whole answer, and sometimes you divide to <em>share</em>, not to
+          count.
+        </p>
+
+        <div class="q" data-q="sealant">
+          <p class="lbl">
+            Q3.1 — You have 5½ gal of sealant. Each trail section needs ⅓ gal.
+            Compute the exact quotient 5½ ÷ ⅓ (enter the mixed-number value as a
+            decimal).
+          </p>
+          <div class="frame">
+            5½ ÷ ⅓ = <span class="blank">11</span>/2 × 3/<span class="blank"
+              >1</span
+            >
+            = 33/2 = <span class="blank">?</span>
+          </div>
+          <div class="row">
+            <input
+              type="text"
+              inputmode="decimal"
+              id="q-sealant"
+              data-ans="16.5"
+              data-tol="0.01"
+              data-why="5½ ÷ ⅓ = 11/2 × 3/1 = 33/2 = 16.5"
+              aria-label="Exact sealant quotient"
+            />
+            <span class="unit">sections</span>
+            <button type="button" class="btn" data-check="sealant">
+              Check
+            </button>
+            <button type="button" class="btn ghost" data-hint="sealant">
+              Hint
+            </button>
+          </div>
+          <p class="fb" id="fb-sealant"></p>
+        </div>
+
+        <div class="q" data-q="sealfull">
+          <p class="lbl">
+            Q3.2 — You cannot coat half a section. How many sections can be
+            <strong>fully</strong> coated? (Interpret the remainder.)
+          </p>
+          <div class="row">
+            <input
+              type="text"
+              inputmode="decimal"
+              id="q-sealfull"
+              data-ans="16"
+              data-tol="0.001"
+              data-why="16.5 means 16 full sections plus enough for half of one more — round DOWN to 16 fully-coated sections."
+              aria-label="Fully coated sections"
+            />
+            <span class="unit">full sections</span>
+            <button type="button" class="btn" data-check="sealfull">
+              Check
+            </button>
+            <button type="button" class="btn ghost" data-hint="sealfull">
+              Hint
+            </button>
+          </div>
+          <p class="fb" id="fb-sealfull"></p>
+        </div>
+
+        <div class="q" data-q="share">
+          <p class="lbl">
+            Q3.3 — Fair share: ¾ gal of touch-up stain is split equally among 6
+            crew members. How much does each get, in gallons? (Enter a decimal.)
+          </p>
+          <div class="frame">
+            ¾ ÷ 6 = 3/4 × 1/<span class="blank">6</span> = 3/24 = 1/8 =
+            <span class="blank">?</span>
+          </div>
+          <div class="row">
+            <input
+              type="text"
+              inputmode="decimal"
+              id="q-share"
+              data-ans="0.125"
+              data-tol="0.001"
+              data-why="¾ ÷ 6 = 3/4 × 1/6 = 3/24 = 1/8 = 0.125 gal each. This is the SHARING meaning of division."
+              aria-label="Stain per crew member"
+            />
+            <span class="unit">gal each</span>
+            <button type="button" class="btn" data-check="share">Check</button>
+            <button type="button" class="btn ghost" data-hint="share">
+              Hint
+            </button>
+          </div>
+          <p class="fb" id="fb-share"></p>
+        </div>
+
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            "How many fit" → <strong>flip and multiply</strong>. "Split a total
+            into equal shares" → still divide: a fraction ÷ a whole number means
+            multiply by <strong>1 over that number</strong>.
+          </p>
+          <span class="es"
+            >Español: Dividir una fracción entre un número entero = multiplicar
+            por 1 sobre ese número. ¾ ÷ 6 = ¾ × ⅙.</span
+          >
+        </div>
+        <div class="lvl lvl2">
+          <span class="pill">Level 2 · Enrichment</span>
+          <p>
+            Q3.1 gives a decimal quotient; Q3.2 requires a whole-number answer.
+            In your build report, explain: when does a real engineer keep the
+            fractional part of a quotient, and when must they round down to the
+            nearest whole unit? Give one example from this boardwalk where each
+            rule applies.
+          </p>
+        </div>
+      </section>
+
+      <!-- ══ TASK 4 · OPTIMIZE (supplier chooser) ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · Optimize the Order
+          <span class="tag-shape">Least-waste decision</span>
+        </h2>
+        <p>
+          New request from the park manager:
+          <strong>minimize wasted lumber</strong>. The supplier is out of ¾ ft
+          planks. Choose an available width for the 8¼ ft span; the panel shows
+          the live quotient and leftover. Pick the width with the
+          <strong>least leftover</strong>.
+        </p>
+        <div class="grid2">
+          <div>
+            <div
+              class="matgrid"
+              id="matChooser"
+              role="group"
+              aria-label="Available plank widths"
+            >
+              <button
+                type="button"
+                class="matcard"
+                data-mat="½ ft planks"
+                data-width="0.5"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #caa06a, #8a5a2b)"
+                ></div>
+                <b>½ ft</b><br /><small>wide gaps</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="⅝ ft planks"
+                data-width="0.625"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #d8b483, #a06a32)"
+                ></div>
+                <b>⅝ ft</b><br /><small>mid width</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="1 ft planks"
+                data-width="1"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #b98b54, #6e451d)"
+                ></div>
+                <b>1 ft</b><br /><small>fewest boards</small>
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Selected</span><br /><span
+                  class="v"
+                  id="optName"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">8¼ ÷ width</span><br /><span
+                  class="v"
+                  id="optQuot"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">Leftover</span><br /><span
+                  class="v"
+                  id="optLeft"
+                  >—</span
+                >
+              </div>
+            </div>
+          </div>
+          <div>
+            <table class="spec">
+              <thead>
+                <tr>
+                  <th>Width</th>
+                  <th>8¼ ÷ width</th>
+                  <th>Whole</th>
+                  <th>Leftover</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="num">½ ft</td>
+                  <td class="num">16½</td>
+                  <td class="num">16</td>
+                  <td class="num">¼ ft</td>
+                </tr>
+                <tr>
+                  <td class="num">⅝ ft</td>
+                  <td class="num">13⅕</td>
+                  <td class="num">13</td>
+                  <td class="num">⅛ ft</td>
+                </tr>
+                <tr>
+                  <td class="num">1 ft</td>
+                  <td class="num">8¼</td>
+                  <td class="num">8</td>
+                  <td class="num">¼ ft</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="q" data-q="best" style="margin-top: 14px">
+              <p class="lbl">
+                Q4.1 — Which width leaves the least lumber wasted? Enter its
+                leftover in feet as a decimal.
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-best"
+                  data-ans="0.125"
+                  data-tol="0.001"
+                  data-why="⅝ ft planks leave only ⅛ ft (0.125 ft) — the least waste. 8¼ ÷ ⅝ = 33/4 × 8/5 = 264/20 = 13.2; 13 full planks use 8⅛ ft, leaving ⅛ ft."
+                  aria-label="Least leftover in feet"
+                />
+                <span class="unit">ft</span>
+                <button type="button" class="btn" data-check="best">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="best">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-best"></p>
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Confirm with the math: 8¼ ÷ ⅝ = 33/4 × 8/5 = 13.2 planks. The
+                0.2 of a plank is the part that does <em>not</em> fit — convert
+                it back to feet (0.2 × ⅝). Why is the smallest leftover the best
+                engineering choice here?
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ BUILD REPORT / SIGN-OFF ══ -->
+      <section class="card" aria-label="Engineer sign-off">
+        <h2>Engineer's Build Report &amp; Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When all build checks are approved, hand your plan to the park. Enter
+          your name in the field below, then press
+          <strong>Submit build report &amp; grade</strong> to save your score as
+          a PDF or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit build report &amp; grade
+        </button>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Fraction-Division Engineering (6.NS.A.1)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>7 / 7</td>
+                <td>
+                  Divides whole and mixed numbers by fractions accurately using
+                  the reciprocal, distinguishes "how many fit" from "fair
+                  share," interprets the remainder correctly, and justifies the
+                  least-waste plank width.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>5–6 / 7</td>
+                <td>
+                  Computes most quotients correctly with at most one slip.
+                  Reaches a valid build with correct plank, baluster, and
+                  section counts.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>3–4 / 7</td>
+                <td>
+                  Divides simple cases but forgets to use the reciprocal,
+                  misreads a mixed number, or does not interpret the remainder.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–2 / 7</td>
+                <td>
+                  Few correct quotients. Confuses multiplying and dividing by a
+                  fraction. Needs reteaching on the reciprocal method.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
+        }
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
+        }
+
+        var SPAN = 8.25;
+
+        /* Pretty-print quarters/eighths for readouts */
+        function frac(v) {
+          var whole = Math.floor(v + 1e-9);
+          var rem = v - whole;
+          var key = Math.round(rem * 8) / 8;
+          var map = {
+            0: "",
+            0.125: "⅛",
+            0.25: "¼",
+            0.375: "⅜",
+            0.5: "½",
+            0.625: "⅝",
+            0.75: "¾",
+            0.875: "⅞",
+          };
+          var f = map[key] !== undefined ? map[key] : "";
+          if (whole === 0 && f === "") return "0";
+          if (whole === 0) return f;
+          if (f === "") return String(whole);
+          return whole + f;
+        }
+
+        /* Auto-graded problems */
+        var problems = [
+          {
+            id: "planks",
+            ans: "11",
+            skill: "Divide a mixed number by a fraction",
+            prompt: "Decking planks: 8¼ ÷ ¾",
+          },
+          {
+            id: "balusters",
+            ans: "18",
+            skill: "Divide a whole number by a fraction",
+            prompt: "Balusters: 12 ÷ ⅔",
+          },
+          {
+            id: "posts",
+            ans: "3",
+            skill: "Divide mixed numbers (post spacing)",
+            prompt: "Support gaps: 8¼ ÷ 2¾",
+          },
+          {
+            id: "sealant",
+            ans: "16.5",
+            skill: "Divide a mixed number by a fraction",
+            prompt: "Sealant sections: 5½ ÷ ⅓",
+          },
+          {
+            id: "sealfull",
+            ans: "16",
+            skill: "Interpret a remainder",
+            prompt: "Fully-coated sections from 16.5",
+          },
+          {
+            id: "share",
+            ans: "0.125",
+            skill: "Divide a fraction by a whole number (sharing)",
+            prompt: "Fair share: ¾ ÷ 6",
+          },
+          {
+            id: "best",
+            ans: "0.125",
+            skill: "Optimize with fraction division",
+            prompt: "Least leftover width (⅝ ft → ⅛ ft)",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
+        }
+        function isCorrect(id) {
+          var inp = inputFor(id);
+          if (!inp) return false;
+          var got = num(inp.value);
+          var want = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol")) || 0.01;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
+        }
+        function paint() {
+          var n = 0;
+          problems.forEach(function (p) {
+            if (correct[p.id]) n++;
+          });
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width =
+            (n / problems.length) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var inp = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          if (inp) {
+            inp.classList.toggle("ok", ok);
+            inp.classList.toggle("bad", !ok);
+          }
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Approved — " + inp.getAttribute("data-why")
+              : "✗ Not yet. Flip the divisor and multiply, then check your arithmetic.";
+          }
+          correct[id] = ok;
+          live(ok ? "Build check approved." : "Not correct yet, try again.");
+          paint();
+        }
+
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var inp = inputFor(id);
+            var fb = document.getElementById("fb-" + id);
+            if (fb && inp) {
+              fb.className = "fb";
+              fb.textContent =
+                "Hint: rewrite mixed numbers as improper fractions, then flip the divisor and multiply.";
+            }
+          }
+        });
+        problems.forEach(function (p) {
+          var inp = inputFor(p.id);
+          if (inp)
+            inp.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                check(p.id);
+              }
+            });
+        });
+
+        /* Task 1: interactive Plank Fitter */
+        var fitterSvg = document.getElementById("fitterSvg");
+        (function () {
+          var defs = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "defs",
+          );
+          defs.innerHTML =
+            '<pattern id="leftPattern" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#7a2318"/><rect width="4" height="8" fill="#c0392b"/></pattern>';
+          fitterSvg.insertBefore(defs, fitterSvg.firstChild);
+        })();
+
+        /* span-handle scale: maps span 6..12 ft to dimension-track x 24..336 */
+        var SPAN_MIN = 6,
+          SPAN_MAX = 12,
+          SPAN_X0 = 24,
+          SPAN_X1 = 336;
+
+        function updateFitter() {
+          var span = num(document.getElementById("spanSlider").value);
+          var width = num(document.getElementById("plankSlider").value);
+          document.getElementById("spanLabel").textContent = frac(span) + " ft";
+          document.getElementById("plankLabel").textContent =
+            frac(width) + " ft";
+          document.getElementById("spanDim").textContent =
+            "span = " + frac(span) + " ft";
+          /* position the draggable span handle on the dimension track */
+          var hx =
+            SPAN_X0 +
+            ((span - SPAN_MIN) / (SPAN_MAX - SPAN_MIN)) * (SPAN_X1 - SPAN_X0);
+          var handle = document.getElementById("spanHandle");
+          var hint = document.getElementById("spanHandleHint");
+          if (handle) handle.setAttribute("cx", hx);
+          if (hint) hint.setAttribute("x", hx);
+
+          var quotient = span / width;
+          var whole = Math.floor(quotient + 1e-9);
+          var leftover = span - whole * width;
+          if (leftover < 1e-9) leftover = 0;
+
+          document.getElementById("quotientVal").textContent =
+            Math.round(quotient * 100) / 100;
+          document.getElementById("wholeVal").textContent = whole;
+          document.getElementById("leftVal").textContent =
+            frac(Math.round(leftover * 8) / 8) + " ft";
+
+          var x0 = 24,
+            x1 = 336,
+            pxPerFt = (x1 - x0) / span;
+          var g = document.getElementById("plankGroup");
+          while (g.firstChild) g.removeChild(g.firstChild);
+          var y = 60,
+            h = 80;
+          for (var i = 0; i < whole; i++) {
+            var r = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "rect",
+            );
+            r.setAttribute("x", x0 + i * width * pxPerFt);
+            r.setAttribute("y", y);
+            r.setAttribute("width", Math.max(width * pxPerFt - 2, 1));
+            r.setAttribute("height", h);
+            r.setAttribute("rx", "2");
+            r.setAttribute("fill", "#caa06a");
+            r.setAttribute("stroke", "#7a4f22");
+            r.setAttribute("stroke-width", "1");
+            g.appendChild(r);
+          }
+          if (leftover > 0) {
+            var lr = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "rect",
+            );
+            lr.setAttribute("x", x0 + whole * width * pxPerFt);
+            lr.setAttribute("y", y);
+            lr.setAttribute("width", Math.max(leftover * pxPerFt - 2, 1));
+            lr.setAttribute("height", h);
+            lr.setAttribute("rx", "2");
+            lr.setAttribute("fill", "url(#leftPattern)");
+            g.appendChild(lr);
+          }
+          var note = document.getElementById("fitNote");
+          if (leftover === 0) {
+            note.textContent =
+              "✓ " + whole + " planks fit exactly — no wasted lumber!";
+            note.setAttribute("fill", "#7fd8c6");
+          } else {
+            note.textContent =
+              whole +
+              " full planks + " +
+              frac(Math.round(leftover * 8) / 8) +
+              " ft leftover";
+            note.setAttribute("fill", "#f0c894");
+          }
+        }
+        document
+          .getElementById("spanSlider")
+          .addEventListener("input", updateFitter);
+        document
+          .getElementById("plankSlider")
+          .addEventListener("input", updateFitter);
+
+        /* Drag the span end-handle directly on the plan to set the trail span */
+        (function () {
+          var handle = document.getElementById("spanHandle");
+          var spanSlider = document.getElementById("spanSlider");
+          if (!handle || !spanSlider) return;
+          var step = num(spanSlider.step) || 0.25;
+          var dragging = false;
+
+          function clientXToSpan(clientX) {
+            var rect = fitterSvg.getBoundingClientRect();
+            var px = ((clientX - rect.left) / rect.width) * 360; /* viewBox w */
+            var span =
+              SPAN_MIN +
+              ((px - SPAN_X0) / (SPAN_X1 - SPAN_X0)) * (SPAN_MAX - SPAN_MIN);
+            span = Math.round(span / step) * step; /* snap to slider step */
+            return Math.max(SPAN_MIN, Math.min(SPAN_MAX, span));
+          }
+          function startDrag(e) {
+            dragging = true;
+            e.preventDefault();
+          }
+          function moveDrag(e) {
+            if (!dragging) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            spanSlider.value = clientXToSpan(cx);
+            updateFitter();
+            if (e.cancelable) e.preventDefault();
+          }
+          function endDrag() {
+            dragging = false;
+          }
+          handle.addEventListener("mousedown", startDrag);
+          handle.addEventListener("touchstart", startDrag, { passive: false });
+          window.addEventListener("mousemove", moveDrag);
+          window.addEventListener("touchmove", moveDrag, { passive: false });
+          window.addEventListener("mouseup", endDrag);
+          window.addEventListener("touchend", endDrag);
+        })();
+
+        /* Task 4: supplier width chooser */
+        document
+          .querySelectorAll("#matChooser .matcard")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll("#matChooser .matcard")
+                .forEach(function (b) {
+                  b.setAttribute("aria-pressed", "false");
+                });
+              btn.setAttribute("aria-pressed", "true");
+              var w = num(btn.getAttribute("data-width"));
+              var quot = SPAN / w;
+              var whole = Math.floor(quot + 1e-9);
+              var leftover = SPAN - whole * w;
+              if (leftover < 1e-9) leftover = 0;
+              document.getElementById("optName").textContent =
+                btn.getAttribute("data-mat");
+              document.getElementById("optQuot").textContent =
+                Math.round(quot * 100) / 100;
+              document.getElementById("optLeft").textContent =
+                frac(Math.round(leftover * 8) / 8) + " ft";
+            });
+          });
+
+        /* Mount NTKit + grade on submit */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var items = problems.map(function (p) {
+              var inp = inputFor(p.id);
+              return {
+                prompt: p.prompt,
+                studentAnswer: inp ? String(num(inp.value)) : "",
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
+            });
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-2",
+                activityTitle:
+                  "Unit 2 · Math Architect — Wetland Trail Boardwalk (Fraction-Division Engineering)",
+                standard: "6.NS.A.1",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return num(x.studentAnswer) === num(x.correctAnswer);
+              }).length;
+              alert(
+                "Build report submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " checks correct.",
+              );
+            }
+          });
+
+        updateFitter();
+        paint();
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

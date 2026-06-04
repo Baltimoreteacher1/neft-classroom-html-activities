@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 8 Review: Statistics 🏀</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --primary: #d0342c;
+        --bg: #f4f5f7;
+        --accent: #d0342c;
+        --text: #1e3a5f;
+        --correct: #16a34a;
+        --wrong: #dc2626;
+        --card-bg: #ffffff;
+        --shadow: 0 2px 8px rgba(30, 58, 95, 0.1);
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        text-align: center;
+      }
+      .login-screen h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+      .login-screen .emoji-hero {
+        font-size: 3.5rem;
+        margin-bottom: 12px;
+      }
+      .login-screen p {
+        color: #555;
+        margin-bottom: 24px;
+        max-width: 420px;
+      }
+      .login-screen input {
+        padding: 12px 16px;
+        font-size: 1.1rem;
+        border: 2px solid var(--text);
+        border-radius: 8px;
+        width: 280px;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .login-screen input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      /* BUTTONS */
+      .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-accent {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--text);
+        color: var(--text);
+      }
+
+      /* PROGRESS */
+      .progress-bar-wrap {
+        background: #d1d5db;
+        border-radius: 99px;
+        height: 12px;
+        margin: 16px 0 24px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), #f87171);
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px 10px 0 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      /* QUESTION CARD */
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .card-body {
+        padding: 20px;
+      }
+      .q-number {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      /* MC OPTIONS */
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .option-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--primary);
+        background: #fef2f2;
+      }
+      .option-btn.selected {
+        border-color: var(--text);
+        background: #dbeafe;
+      }
+      .option-btn.correct-answer {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .option-btn.wrong-answer {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+
+      /* FILL-IN */
+      .fill-input {
+        padding: 10px 14px;
+        font-size: 1.1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        width: 160px;
+        text-align: center;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct-border {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .fill-input.wrong-border {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+
+      /* FEEDBACK */
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        display: none;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+        display: block;
+      }
+      .feedback.wrong {
+        background: #fee2e2;
+        color: #991b1b;
+        display: block;
+      }
+
+      /* SUMMARY */
+      .summary-screen {
+        display: none;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0 auto 20px;
+        color: #fff;
+      }
+      .score-a {
+        background: var(--correct);
+      }
+      .score-b {
+        background: #f59e0b;
+      }
+      .score-c {
+        background: var(--wrong);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .study-tips {
+        background: #fef2f2;
+        border-left: 4px solid var(--primary);
+        padding: 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 20px;
+      }
+      .study-tips h3 {
+        margin-bottom: 8px;
+      }
+      .study-tips li {
+        margin-bottom: 6px;
+      }
+
+      /* DATA TABLE */
+      .data-table {
+        border-collapse: collapse;
+        margin: 10px 0 16px;
+      }
+      .data-table th,
+      .data-table td {
+        border: 1px solid #d1d5db;
+        padding: 6px 12px;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+      .data-table th {
+        background: #f3f4f6;
+        font-weight: 700;
+      }
+
+      /* FOOTER */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 40px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px;
+        }
+        .login-screen h1 {
+          font-size: 1.5rem;
+        }
+        .q-text {
+          font-size: 1rem;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="container" id="app">
+      <!-- LOGIN -->
+      <div class="login-screen" id="loginScreen">
+        <div class="emoji-hero">🏀</div>
+        <h1>Unit 8 Review</h1>
+        <h2 style="color: var(--primary); margin-bottom: 8px">Statistics</h2>
+        <p>
+          20 problems across 4 sections to help you prepare for the Unit 8 test.
+          Many problems use real sports data! Enter your name to begin.
+        </p>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter your name"
+          maxlength="30"
+          autocomplete="off"
+        />
+        <br />
+        <button class="btn btn-primary" onclick="startReview()">
+          Start Review 🏀
+        </button>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h2 id="sectionTitle" style="font-size: 1.1rem"></h2>
+          <span id="qCounter" style="font-size: 0.9rem; color: #6b7280"></span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div
+            class="progress-bar-fill"
+            id="progressBar"
+            style="width: 0%"
+          ></div>
+        </div>
+        <div id="questionArea"></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">
+            Next &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <div style="text-align: center">
+          <div class="emoji-hero">🏀</div>
+          <h1>Review Complete!</h1>
+          <p id="summaryName" style="font-size: 1.1rem; color: #6b7280"></p>
+        </div>
+        <div class="score-circle" id="scoreCircle"></div>
+        <div class="card"><div class="card-body" id="sectionScores"></div></div>
+        <div class="study-tips" id="studyTips"></div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn btn-primary" onclick="exportResults()">
+            Export Results 📄
+          </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher) 📊
+          </button>
+          <button class="btn btn-accent" onclick="resetReview()">
+            Try Again 🔄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Neft Teacher &bull; Grade 6 &bull; Unit 8 Pre-Test Review
+    </div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      const STORAGE_KEY = "unit8Review_v1";
+      const SECTIONS = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+      const SECTION_EMOJIS = ["📖", "⚡", "✏️", "🏆"];
+
+      // ===== QUESTIONS =====
+      const questions = [
+        // ── SECTION 1: VOCABULARY (5 MC) ──
+        {
+          section: 0,
+          type: "mc",
+          text: "The sum of all data values divided by the number of values is called the:",
+          choices: ["Median", "Mode", "Mean", "Range"],
+          answer: 2,
+          explain:
+            "The mean (average) is found by adding all data values and dividing by the number of values.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "The middle value when data is arranged in order from least to greatest is the:",
+          choices: ["Mean", "Median", "Mode", "Range"],
+          answer: 1,
+          explain:
+            "The median is the middle value in an ordered data set. If there are two middle values, find their average.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "A question is a statistical question if it:",
+          choices: [
+            "Has exactly one correct answer",
+            "Can be answered by collecting data that varies",
+            "Uses only whole numbers",
+            "Requires a calculator to solve",
+          ],
+          answer: 1,
+          explain:
+            'A statistical question expects variability in the data collected to answer it (e.g., "How tall are 6th graders?" varies from student to student).',
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "What does MAD stand for in statistics?",
+          choices: [
+            "Maximum Absolute Distance",
+            "Mean Absolute Deviation",
+            "Median Average Difference",
+            "Most Accurate Data",
+          ],
+          answer: 1,
+          explain:
+            "MAD stands for Mean Absolute Deviation. It measures how spread out data values are from the mean.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "A box plot displays data using five key values. Which set is correct?",
+          choices: [
+            "Mean, median, mode, range, MAD",
+            "Minimum, Q1, median, Q3, maximum",
+            "First value, last value, mean, median, mode",
+            "Lower bound, mean, median, mode, upper bound",
+          ],
+          answer: 1,
+          explain:
+            "A box plot uses the five-number summary: minimum, first quartile (Q1), median, third quartile (Q3), and maximum.",
+        },
+
+        // ── SECTION 2: QUICK CHECK (5 MC) ──
+        {
+          section: 1,
+          type: "mc",
+          text: "Which of the following is a statistical question?",
+          choices: [
+            "How old is the principal?",
+            "What is 12 × 8?",
+            "How many hours per week do 6th graders spend on homework?",
+            "What day is it today?",
+          ],
+          answer: 2,
+          explain:
+            '"How many hours per week do 6th graders spend on homework?" expects answers that vary from student to student, making it a statistical question.',
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Find the median of this data set: 3, 7, 9, 12, 15",
+          choices: ["7", "9", "9.2", "12"],
+          answer: 1,
+          explain:
+            "The data is already in order. With 5 values, the middle (3rd) value is 9.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Find the mean of: 10, 14, 8, 12, 16",
+          choices: ["10", "12", "14", "8"],
+          answer: 1,
+          explain: "Mean = (10 + 14 + 8 + 12 + 16) ÷ 5 = 60 ÷ 5 = 12.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "A histogram displays data using:",
+          choices: [
+            "Individual data points on a number line",
+            "Bars that show frequency for intervals of data",
+            "A circle divided into sectors",
+            "A line connecting data points over time",
+          ],
+          answer: 1,
+          explain:
+            "A histogram uses bars to show the frequency (count) of data values within equal-sized intervals.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: 'On a box plot, the "box" represents what portion of the data?',
+          choices: [
+            "The top 50%",
+            "The bottom 50%",
+            "The middle 50%",
+            "All 100%",
+          ],
+          answer: 2,
+          explain:
+            "The box in a box plot spans from Q1 to Q3, containing the middle 50% of the data (the interquartile range).",
+        },
+
+        // ── SECTION 3: PRACTICE (5 fill-in) ──
+        {
+          section: 2,
+          type: "fill",
+          text: "A basketball player scored these points in 6 games: 18, 24, 12, 30, 22, 14. What is the mean?",
+          answer: "20",
+          explain: "Mean = (18 + 24 + 12 + 30 + 22 + 14) ÷ 6 = 120 ÷ 6 = 20.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Data set: 4, 7, 10, 13, 16. The mean is 10. Find the MAD.",
+          answer: "3.6",
+          altAnswers: ["3.60"],
+          explain:
+            "Deviations from mean 10: |4−10|=6, |7−10|=3, |10−10|=0, |13−10|=3, |16−10|=6. MAD = (6+3+0+3+6) ÷ 5 = 18 ÷ 5 = 3.6.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Find the median: 22, 35, 17, 41, 28, 30. (Hint: put them in order first!)",
+          answer: "29",
+          explain:
+            "Ordered: 17, 22, 28, 30, 35, 41. Two middle values: 28 and 30. Median = (28 + 30) ÷ 2 = 29.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "A data set has: min = 5, Q1 = 12, median = 18, Q3 = 25, max = 32. What is the interquartile range (IQR)?",
+          answer: "13",
+          explain: "IQR = Q3 − Q1 = 25 − 12 = 13.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Data: 8, 5, 8, 3, 8, 6, 2. What is the mode?",
+          answer: "8",
+          explain:
+            "The mode is the value that appears most often. 8 appears 3 times, more than any other value.",
+        },
+
+        // ── SECTION 4: CHALLENGE (5 MC word problems with sports data) ──
+        {
+          section: 3,
+          type: "mc",
+          text: "A soccer team scored these goals in 8 games: 2, 0, 3, 1, 4, 1, 2, 3. What is the mean number of goals per game?",
+          choices: ["1.5", "2", "2.5", "3"],
+          answer: 1,
+          explain: "Mean = (2+0+3+1+4+1+2+3) ÷ 8 = 16 ÷ 8 = 2 goals per game.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: 'Two basketball teams\' points per game are shown:<br><table class="data-table"><tr><th>Team A</th><td>72</td><td>68</td><td>75</td><td>80</td><td>70</td></tr><tr><th>Team B</th><td>90</td><td>55</td><td>95</td><td>60</td><td>50</td></tr></table>Which team has a greater MAD (more spread out scores)?',
+          choices: [
+            "Team A (MAD = 3.2)",
+            "Team B (MAD = 17.2)",
+            "They are the same",
+            "Cannot be determined",
+          ],
+          answer: 1,
+          explain:
+            "Team A mean = 73, deviations: 1+5+2+7+3 = 18, MAD = 3.6. Team B mean = 70, deviations: 20+15+25+10+20 = 90, MAD = 18. Team B has much more spread. (Answer B, MAD ≈ 18, is closest.)",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "A track coach recorded 100m dash times (seconds) for 5 runners: 12.1, 11.8, 13.5, 12.4, 11.2. What is the median time?",
+          choices: ["11.8", "12.1", "12.2", "12.4"],
+          answer: 1,
+          explain:
+            "Ordered: 11.2, 11.8, 12.1, 12.4, 13.5. The middle (3rd) value is 12.1 seconds.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "A box plot of free-throw percentages shows: min = 45, Q1 = 58, median = 70, Q3 = 82, max = 95. A new player has a 60% free-throw rate. Where does this player fall?",
+          choices: [
+            "Below Q1 (bottom 25%)",
+            "Between Q1 and the median (second quarter)",
+            "Between the median and Q3 (third quarter)",
+            "Above Q3 (top 25%)",
+          ],
+          answer: 1,
+          explain:
+            "60% is between Q1 (58) and the median (70), placing the player in the second quarter of the data.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: 'A histogram shows basketball players\' heights:<br><table class="data-table"><tr><th>Height (in.)</th><th>60–64</th><th>65–69</th><th>70–74</th><th>75–79</th></tr><tr><th>Players</th><td>3</td><td>8</td><td>10</td><td>4</td></tr></table>Which statement is true?',
+          choices: [
+            "Most players are under 65 inches",
+            "The most common height range is 70–74 inches",
+            "More players are 75–79 inches than 65–69 inches",
+            "There are 20 players total",
+          ],
+          answer: 1,
+          explain:
+            "The 70–74 inch interval has 10 players, the highest frequency. Total players: 3+8+10+4 = 25, not 20.",
+        },
+      ];
+
+      // ===== STATE =====
+      let playerName = "";
+      let currentQ = 0;
+      let answers = new Array(20).fill(null);
+      let graded = new Array(20).fill(false);
+
+      // ===== INIT =====
+      function startReview() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (!name) {
+          document.getElementById("nameInput").style.borderColor =
+            "var(--wrong)";
+          return;
+        }
+        playerName = name;
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        loadState();
+        renderQuestion();
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved && saved.name === playerName) {
+            answers = saved.answers || new Array(20).fill(null);
+            graded = saved.graded || new Array(20).fill(false);
+            currentQ = saved.currentQ || 0;
+          }
+        } catch (e) {}
+      }
+
+      function saveState() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            name: playerName,
+            answers,
+            graded,
+            currentQ,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+
+      // ===== RENDER =====
+      function renderQuestion() {
+        const q = questions[currentQ];
+        const sIdx = q.section;
+        const qInSection = currentQ - sIdx * 5 + 1;
+        document.getElementById("sectionTitle").textContent =
+          `${SECTION_EMOJIS[sIdx]} ${SECTIONS[sIdx]}`;
+        document.getElementById("qCounter").textContent =
+          `Question ${currentQ + 1} of 20`;
+        document.getElementById("progressBar").style.width =
+          `${((currentQ + 1) / 20) * 100}%`;
+
+        let html = `<div class="card">`;
+        if (qInSection === 1) {
+          html += `<div class="section-header">${SECTION_EMOJIS[sIdx]} Section ${sIdx + 1}: ${SECTIONS[sIdx]}</div>`;
+        }
+        html += `<div class="card-body">`;
+        html += `<div class="q-number">Question ${currentQ + 1}</div>`;
+        html += `<div class="q-text">${q.text}</div>`;
+
+        if (q.type === "mc") {
+          html += `<div class="options">`;
+          const labels = ["A", "B", "C", "D"];
+          q.choices.forEach((ch, i) => {
+            let cls = "option-btn";
+            if (graded[currentQ]) {
+              cls += " locked";
+              if (i === q.answer) cls += " correct-answer";
+              else if (answers[currentQ] === i && i !== q.answer)
+                cls += " wrong-answer";
+            } else if (answers[currentQ] === i) {
+              cls += " selected";
+            }
+            html += `<button class="${cls}" onclick="selectMC(${i})" ${graded[currentQ] ? "disabled" : ""}>${labels[i]}. ${ch}</button>`;
+          });
+          html += `</div>`;
+          if (!graded[currentQ]) {
+            html += `<div style="margin-top:12px;text-align:right;">
+        <button class="btn btn-accent" onclick="submitAnswer()" ${answers[currentQ] === null ? "disabled" : ""} id="submitBtn">Check Answer</button>
+      </div>`;
+          }
+        } else {
+          let val = answers[currentQ] !== null ? answers[currentQ] : "";
+          let inputCls = "fill-input";
+          if (graded[currentQ]) {
+            inputCls += isCorrect(currentQ)
+              ? " correct-border"
+              : " wrong-border";
+          }
+          html += `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <input type="text" class="${inputCls}" id="fillInput" value="${val}" placeholder="Your answer"
+        ${graded[currentQ] ? "disabled" : ""} onkeydown="if(event.key==='Enter')submitAnswer()" oninput="onFillInput(this)">`;
+          if (!graded[currentQ]) {
+            html += `<button class="btn btn-accent" onclick="submitAnswer()" ${answers[currentQ] === null ? "disabled" : ""} id="submitBtn">Check Answer</button>`;
+          }
+          html += `</div>`;
+        }
+
+        // Feedback
+        if (graded[currentQ]) {
+          const ok = isCorrect(currentQ);
+          html += `<div class="feedback ${ok ? "correct" : "wrong"}">${ok ? "✅ Correct!" : "❌ Incorrect."} ${q.explain}</div>`;
+        }
+
+        html += `</div></div>`;
+        document.getElementById("questionArea").innerHTML = html;
+
+        document.getElementById("prevBtn").style.visibility =
+          currentQ === 0 ? "hidden" : "visible";
+        document.getElementById("nextBtn").textContent =
+          currentQ === 19 ? "Finish ✓" : "Next →";
+      }
+
+      function selectMC(idx) {
+        if (graded[currentQ]) return;
+        answers[currentQ] = idx;
+        saveState();
+        renderQuestion();
+      }
+
+      function onFillInput(el) {
+        answers[currentQ] = el.value.trim() || null;
+        const btn = document.getElementById("submitBtn");
+        if (btn) btn.disabled = !el.value.trim();
+        saveState();
+      }
+
+      function submitAnswer() {
+        if (graded[currentQ] || answers[currentQ] === null) return;
+        graded[currentQ] = true;
+        saveState();
+        renderQuestion();
+      }
+
+      function isCorrect(idx) {
+        const q = questions[idx];
+        if (q.type === "mc") return answers[idx] === q.answer;
+        const userAns = String(answers[idx]).trim();
+        if (userAns === String(q.answer)) return true;
+        if (q.altAnswers && q.altAnswers.includes(userAns)) return true;
+        return false;
+      }
+
+      function navigate(dir) {
+        const next = currentQ + dir;
+        if (next < 0) return;
+        if (next >= 20) {
+          const unanswered = graded.filter((g) => !g).length;
+          if (unanswered > 0) {
+            if (
+              !confirm(
+                `You have ${unanswered} unanswered question(s). Finish anyway?`,
+              )
+            )
+              return;
+          }
+          showSummary();
+          return;
+        }
+        currentQ = next;
+        saveState();
+        renderQuestion();
+      }
+
+      // ===== SUMMARY =====
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        document.getElementById("summaryScreen").style.display = "block";
+
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / 20) * 100);
+        document.getElementById("summaryName").textContent =
+          `${playerName} — ${total}/20 (${pct}%)`;
+
+        const circle = document.getElementById("scoreCircle");
+        circle.textContent = `${pct}%`;
+        circle.className =
+          "score-circle " +
+          (pct >= 80 ? "score-a" : pct >= 60 ? "score-b" : "score-c");
+
+        let scoresHTML =
+          '<h3 style="margin-bottom:12px;">Section Breakdown</h3>';
+        const sectionResults = [];
+        for (let s = 0; s < 4; s++) {
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            if (graded[i] && isCorrect(i)) correct++;
+          }
+          sectionResults.push(correct);
+          const spct = (correct / 5) * 100;
+          scoresHTML += `<div class="section-score">
+      <span>${SECTION_EMOJIS[s]} ${SECTIONS[s]}</span>
+      <span style="font-weight:700;color:${spct >= 80 ? "var(--correct)" : spct >= 60 ? "#f59e0b" : "var(--wrong)"}">${correct}/5</span>
+    </div>`;
+        }
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+
+        let tips = [];
+        if (sectionResults[0] < 4)
+          tips.push(
+            "Review key vocabulary: mean, median, mode, MAD, statistical question, box plot, histogram.",
+          );
+        if (sectionResults[1] < 4)
+          tips.push(
+            "Practice identifying statistical questions and reading histograms and box plots.",
+          );
+        if (sectionResults[2] < 4)
+          tips.push(
+            "Practice calculating mean, median, mode, MAD, and IQR with real data sets.",
+          );
+        if (sectionResults[3] < 4)
+          tips.push(
+            "Work on interpreting data displays (box plots, histograms) and applying statistics to real-world contexts.",
+          );
+        if (tips.length === 0)
+          tips.push(
+            "Excellent work! You are well prepared for the Unit 8 test.",
+          );
+
+        let tipsHTML =
+          '<h3>📝 Study Tips</h3><ul style="margin-top:8px;padding-left:20px;">';
+        tips.forEach((t) => (tipsHTML += `<li>${t}</li>`));
+        tipsHTML += "</ul>";
+        document.getElementById("studyTips").innerHTML = tipsHTML;
+
+        saveState();
+      }
+
+      // ===== EXPORT =====
+      function exportResults() {
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / 20) * 100);
+        let text = `UNIT 8 REVIEW RESULTS — STATISTICS\n`;
+        text += `Student: ${playerName}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${total}/20 (${pct}%)\n\n`;
+
+        for (let s = 0; s < 4; s++) {
+          text += `--- ${SECTIONS[s]} ---\n`;
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            const q = questions[i];
+            const ok = graded[i] && isCorrect(i);
+            if (ok) correct++;
+            const userAns =
+              q.type === "mc" && answers[i] !== null
+                ? q.choices[answers[i]]
+                : answers[i] || "No answer";
+            const correctAns = q.type === "mc" ? q.choices[q.answer] : q.answer;
+            text += `Q${i + 1}: ${ok ? "✓" : "✗"} | Your answer: ${userAns} | Correct: ${correctAns}\n`;
+          }
+          text += `Section Score: ${correct}/5\n\n`;
+        }
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit8_Review_${playerName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      // ===== TEACHER CSV (shared NTResults module) =====
+      function downloadResultsCSV() {
+        // Reuse the same tallies the summary computes.
+        const sections = [];
+        let total = 0;
+        for (let s = 0; s < 4; s++) {
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            if (graded[i] && isCorrect(i)) correct++;
+          }
+          sections.push({ name: SECTIONS[s], correct: correct, total: 5 });
+          total += correct;
+        }
+        NTResults.finish({
+          student: playerName,
+          assessment: "Unit 8 Review",
+          standard: "6.SP",
+          sections: sections,
+          correct: total,
+          total: 20,
+        });
+      }
+
+      function resetReview() {
+        if (!confirm("Reset all progress and start over?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        answers = new Array(20).fill(null);
+        graded = new Array(20).fill(false);
+        currentQ = 0;
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      document
+        .getElementById("nameInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") startReview();
+        });
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

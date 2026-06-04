@@ -1,655 +1,1115 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit Rate Quest — 6.RP.A.2</title>
-<script src="/assets/vendor/gsap-3.12.2.min.js"></script>
-<style>
-:root{--bg:#0a0e1a;--navy:#0d1527;--panel:#111827;--teal:#00f5c4;--teal-d:#00b894;--gold:#ffd700;--gold-d:#f0a500;--purple:#a855f7;--purple-d:#7c3aed;--rose:#f43f5e;--sky:#38bdf8;--text:#e2e8f0;--muted:#64748b;--ok:#10b981;--err:#ef4444}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-/* PARALLAX BG */
-.parallax-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle linear infinite}
-@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.8}}
-.grid-lines{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,245,196,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,196,.03) 1px,transparent 1px);background-size:50px 50px;z-index:0;pointer-events:none}
-/* SCREENS */
-.screen{position:relative;z-index:10;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-.screen.active{display:flex}
-/* TITLE SCREEN */
-.game-logo{font-family:'Orbitron',monospace;font-size:clamp(28px,6vw,56px);font-weight:900;text-align:center;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,var(--teal),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.game-sub{font-size:16px;color:var(--muted);text-align:center;margin-bottom:8px}
-.std-badge{display:inline-block;background:rgba(0,245,196,.1);border:1px solid rgba(0,245,196,.3);color:var(--teal);font-size:12px;font-weight:700;letter-spacing:2px;padding:6px 16px;border-radius:20px;margin-bottom:32px}
-/* GLASSMORPHISM CARD */
-.glass{background:rgba(17,24,39,.8);border:1px solid rgba(0,245,196,.15);border-radius:20px;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.05)}
-/* BUTTONS */
-.btn-neon{border:none;border-radius:12px;padding:14px 32px;font-family:'Orbitron',monospace;font-size:14px;font-weight:700;cursor:pointer;transition:all .25s;letter-spacing:1px;position:relative;overflow:hidden}
-.btn-neon::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.1);border-radius:50%;transform:translate(-50%,-50%);transition:width .4s,height .4s}
-.btn-neon:hover::before{width:200px;height:200px}
-.btn-teal{background:linear-gradient(135deg,var(--teal-d),var(--teal));color:#0a0e1a;box-shadow:0 0 20px rgba(0,245,196,.3)}
-.btn-teal:hover{box-shadow:0 0 40px rgba(0,245,196,.6);transform:translateY(-2px)}
-.btn-gold{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0a0e1a;box-shadow:0 0 20px rgba(255,215,0,.3)}
-.btn-gold:hover{box-shadow:0 0 40px rgba(255,215,0,.6);transform:translateY(-2px)}
-.btn-purple{background:linear-gradient(135deg,var(--purple-d),var(--purple));color:#fff;box-shadow:0 0 20px rgba(168,85,247,.3)}
-.btn-purple:hover{transform:translateY(-2px)}
-.btn-outline{background:transparent;border:2px solid rgba(0,245,196,.4);color:var(--teal);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;border-radius:10px;cursor:pointer;transition:all .2s}
-.btn-outline:hover{border-color:var(--teal);background:rgba(0,245,196,.08)}
-/* SKILL TREE */
-.skill-tree{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:700px;width:100%;margin:24px 0}
-.skill-node{glass;border-radius:16px;padding:20px;text-align:center;cursor:pointer;border:2px solid;transition:all .25s;position:relative;overflow:hidden}
-.skill-node.locked{border-color:rgba(255,255,255,.1);opacity:.5;cursor:not-allowed}
-.skill-node.available{border-color:rgba(0,245,196,.3);background:rgba(17,24,39,.8)}
-.skill-node.available:hover{border-color:var(--teal);box-shadow:0 0 30px rgba(0,245,196,.2);transform:translateY(-3px)}
-.skill-node.complete{border-color:var(--gold);background:rgba(255,215,0,.05)}
-.skill-icon{font-size:32px;margin-bottom:8px}
-.skill-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:4px}
-.skill-desc{font-size:11px;color:var(--muted)}
-.skill-stars{margin-top:8px;font-size:14px}
-/* HUD */
-.hud{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(10,14,26,.9);border-bottom:1px solid rgba(0,245,196,.1);position:fixed;top:0;left:0;width:100%;z-index:100}
-.hud-item{display:flex;flex-direction:column;align-items:center;gap:2px}
-.hud-val{font-family:'Orbitron',monospace;font-size:14px;font-weight:700}
-.hud-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.hp-bar{height:8px;width:120px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden}
-.hp-fill{height:100%;background:linear-gradient(to right,var(--rose),var(--gold),var(--ok));border-radius:4px;transition:width .4s}
-.xp-bar{height:6px;width:100px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
-.xp-fill{height:100%;background:linear-gradient(to right,var(--purple),var(--teal));border-radius:3px;transition:width .5s}
-.streak-badge{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0a0e1a;border-radius:20px;padding:4px 12px;font-family:'Orbitron',monospace;font-size:11px;font-weight:700}
-/* GAME SCREEN */
-.game-main{width:100%;max-width:800px;padding-top:80px}
-.enemy-area{text-align:center;margin-bottom:24px;position:relative}
-.enemy-sprite{font-size:80px;display:block;filter:drop-shadow(0 0 20px rgba(0,245,196,.3))}
-.enemy-name{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--teal);margin:8px 0 4px}
-.enemy-hp-bar{height:12px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden;margin:8px 24px}
-.enemy-hp-fill{height:100%;background:linear-gradient(to right,var(--rose),var(--gold));border-radius:6px;transition:width .6s}
-.problem-card{padding:28px;margin-bottom:20px}
-.prob-context{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.prob-text{font-size:18px;font-weight:600;color:var(--text);line-height:1.6;margin-bottom:20px}
-.answer-area{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.ans-input{background:rgba(255,255,255,.05);border:2px solid rgba(0,245,196,.3);border-radius:12px;padding:14px 18px;font-size:18px;font-weight:700;color:var(--teal);font-family:'Inter',sans-serif;width:140px;outline:none;transition:all .2s;text-align:center}
-.ans-input:focus{border-color:var(--teal);box-shadow:0 0 20px rgba(0,245,196,.2);background:rgba(0,245,196,.05)}
-.ans-unit{font-size:14px;color:var(--muted);font-weight:600}
-.submit-btn{background:linear-gradient(135deg,var(--teal-d),var(--teal));border:none;border-radius:12px;padding:14px 28px;font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#0a0e1a;cursor:pointer;transition:all .25s;letter-spacing:1px}
-.submit-btn:hover{box-shadow:0 0 30px rgba(0,245,196,.5);transform:translateY(-2px)}
-.attempt-dots{display:flex;gap:8px;margin-top:12px}
-.dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.1);transition:all .3s}
-.dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold)}
-.dot.used{background:var(--rose)}
-/* HINT */
-.hint-panel{margin-top:16px;border-radius:14px;padding:18px;display:none}
-.hint-panel.show{display:block}
-.hint-type{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.hint-txt{font-size:14px;color:var(--text);line-height:1.6}
-/* TWR */
-.twr-panel{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:14px;padding:16px;margin-top:14px}
-.twr-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:8px}
-.twr-s{font-size:14px;color:var(--text);line-height:1.8}
-.twr-inp{background:transparent;border:none;border-bottom:1px solid var(--purple);color:var(--purple);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;width:80px;outline:none;text-align:center;padding:0 4px}
-/* FEEDBACK */
-.feedback-overlay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:200;pointer-events:none;font-family:'Orbitron',monospace;font-size:36px;font-weight:900;opacity:0}
-/* PARTICLES */
-.particle{position:fixed;pointer-events:none;border-radius:50%;z-index:300}
-/* COMBO */
-.combo-display{position:fixed;top:90px;right:20px;z-index:150;text-align:right}
-.combo-num{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--gold);text-shadow:0 0 20px var(--gold);opacity:0}
-.combo-txt{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:2px;opacity:0}
-/* ACHIEVEMENT */
-.achievement-popup{position:fixed;bottom:30px;right:20px;z-index:200;background:rgba(255,215,0,.1);border:2px solid var(--gold);border-radius:16px;padding:16px 20px;max-width:280px;transform:translateX(320px);transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
-.achievement-popup.show{transform:translateX(0)}
-.ach-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:4px}
-.ach-name{font-size:14px;font-weight:700;color:var(--text)}
-/* STATS SCREEN */
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:500px;width:100%;margin:20px 0}
-.stat-card{glass;border-radius:14px;padding:20px;text-align:center;border:1px solid rgba(0,245,196,.1)}
-.stat-val{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--teal)}
-.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px}
-.stars-row{font-size:36px;text-align:center;margin:16px 0;letter-spacing:8px}
-/* BILINGUAL */
-.lang-toggle{display:flex;gap:8px;margin-bottom:16px}
-.lang-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s}
-.lang-btn.active{background:rgba(0,245,196,.1);border-color:var(--teal);color:var(--teal)}
-/* MUTE */
-.mute-btn{position:fixed;bottom:20px;left:20px;z-index:200;background:rgba(17,24,39,.8);border:1px solid rgba(255,255,255,.1);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}
-.mute-btn:hover{border-color:var(--teal)}
-/* ACCESSIBLE */
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-@media(max-width:600px){.skill-tree{grid-template-columns:1fr 1fr}.game-logo{font-size:28px}.prob-text{font-size:15px}}
-</style>
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit Rate Factory — 6.RP.A.2</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0a0e1a;
+        overflow: hidden;
+      }
+      #game-container {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
-<body>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      (() => {
+        const W = 1024,
+          H = 768;
 
-<div class="parallax-bg" id="stars"></div>
-<div class="grid-lines"></div>
+        // ─── AUDIO ───
+        const AC = window.AudioContext || window.webkitAudioContext;
+        let actx = null;
+        function audio() {
+          if (!actx) actx = new AC();
+          if (actx.state === "suspended") actx.resume();
+        }
+        function beep(f, d, t = "sine", v = 0.15) {
+          if (!actx) return;
+          const o = actx.createOscillator(),
+            g = actx.createGain();
+          o.connect(g);
+          g.connect(actx.destination);
+          o.frequency.value = f;
+          o.type = t;
+          g.gain.setValueAtTime(v, actx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + d);
+          o.start();
+          o.stop(actx.currentTime + d);
+        }
+        function sfxOk() {
+          beep(523, 0.08);
+          setTimeout(() => beep(659, 0.08), 80);
+          setTimeout(() => beep(784, 0.15), 160);
+        }
+        function sfxNo() {
+          beep(180, 0.25, "square", 0.1);
+        }
+        function sfxClick() {
+          beep(440, 0.05, "sine", 0.08);
+        }
+        function sfxLvl() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => beep(f, 0.12), i * 90),
+          );
+        }
+        function sfxConveyor() {
+          beep(200, 0.08, "triangle", 0.04);
+        }
 
-<!-- TITLE SCREEN -->
-<div class="screen active" id="screen-title">
-  <div class="game-logo">Unit Rate Quest</div>
-  <div class="game-sub">Master Unit Rates — Battle Through 6.RP.A.2</div>
-  <div class="std-badge">CCSS · 6.RP.A.2 · GRADE 6</div>
-  <div class="glass" style="padding:32px;max-width:500px;width:100%;text-align:center;margin-bottom:24px">
-    <div style="font-size:14px;color:var(--muted);margin-bottom:20px">Defeat enemies by calculating <strong style="color:var(--teal)">unit rates</strong>. Answer correctly to deal damage. Each zone targets a different real-world context.</div>
-    <div class="lang-toggle" style="justify-content:center">
-      <button class="lang-btn active" onclick="setLang('en')" id="lb-en">🇺🇸 English</button>
-      <button class="lang-btn" onclick="setLang('es')" id="lb-es">🇪🇸 Español</button>
-    </div>
-    <button class="btn-neon btn-teal" style="width:100%;margin-bottom:12px" onclick="showScreen('screen-skilltree')">⚔️ Start Quest</button>
-    <button class="btn-outline" onclick="showScreen('screen-stats')">📊 View Stats</button>
-  </div>
-  <div style="font-size:12px;color:var(--muted);text-align:center">
-    2-attempt hint system · 15+ problems · Streak combos · 3-star rating · EduWonderLab · Neft.Alba
-  </div>
-</div>
+        // ─── COLORS ───
+        const C = {
+          bg: 0x0a0e1a,
+          panel: 0x111827,
+          teal: 0x00f5c4,
+          gold: 0xffd700,
+          purple: 0xa855f7,
+          rose: 0xf43f5e,
+          sky: 0x38bdf8,
+          ok: 0x10b981,
+          err: 0xef4444,
+          white: 0xffffff,
+          dark: 0x060a14,
+          line: 0x1a2744,
+        };
 
-<!-- SKILL TREE -->
-<div class="screen" id="screen-skilltree">
-  <div style="text-align:center;margin-bottom:8px">
-    <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--teal)">⚔️ Choose Your Battle Zone</div>
-    <div style="font-size:13px;color:var(--muted);margin-top:4px">Each zone unlocks as you progress</div>
-  </div>
-  <div class="skill-tree">
-    <div class="skill-node available" onclick="startZone(0)" id="node0">
-      <div class="skill-icon">🛒</div>
-      <div class="skill-name">Zone 1</div>
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Market Math</div>
-      <div class="skill-desc">Unit prices, shopping, best buys</div>
-      <div class="skill-stars" id="stars0">⭐⭐⭐</div>
-    </div>
-    <div class="skill-node locked" onclick="startZone(1)" id="node1">
-      <div class="skill-icon">🚗</div>
-      <div class="skill-name">Zone 2</div>
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Speed Zone</div>
-      <div class="skill-desc">Miles per hour, distance, travel</div>
-      <div class="skill-stars" id="stars1">🔒</div>
-    </div>
-    <div class="skill-node locked" onclick="startZone(2)" id="node2">
-      <div class="skill-icon">🍳</div>
-      <div class="skill-name">Zone 3</div>
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Recipe Lab</div>
-      <div class="skill-desc">Cooking ratios, ingredients</div>
-      <div class="skill-stars" id="stars2">🔒</div>
-    </div>
-    <div class="skill-node locked" onclick="startZone(3)" id="node3">
-      <div class="skill-icon">💼</div>
-      <div class="skill-name">Zone 4</div>
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Work & Earn</div>
-      <div class="skill-desc">Wages, earnings, production rates</div>
-      <div class="skill-stars" id="stars3">🔒</div>
-    </div>
-    <div class="skill-node locked" onclick="startZone(4)" id="node4">
-      <div class="skill-icon">🏃</div>
-      <div class="skill-name">Zone 5</div>
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Fitness Frenzy</div>
-      <div class="skill-desc">Reps, laps, sports stats</div>
-      <div class="skill-stars" id="stars4">🔒</div>
-    </div>
-    <div class="skill-node locked" onclick="startZone(5)" id="node5">
-      <div class="skill-icon">🌟</div>
-      <div class="skill-name">Boss Zone</div>
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">The Final Rate</div>
-      <div class="skill-desc">Mixed challenges — all contexts</div>
-      <div class="skill-stars" id="stars5">🔒</div>
-    </div>
-  </div>
-  <button class="btn-outline" onclick="showScreen('screen-title')">← Back</button>
-</div>
+        // ─── QUESTION GENERATOR ───
+        function genQuestions() {
+          const qs = [];
+          const contexts = [
+            {
+              cat: "MARKET",
+              icon: "\u{1F6D2}",
+              templates: [
+                (a, b) => ({
+                  text: `A store sells ${a} cans for $${((b * a) / 100).toFixed(2)}. Unit price per can?`,
+                  ans: +(b / 100).toFixed(2),
+                  unit: "$ per can",
+                  num: ((b * a) / 100).toFixed(2),
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `${a} pounds of fruit cost $${((b * a) / 100).toFixed(2)}. Price per pound?`,
+                  ans: +(b / 100).toFixed(2),
+                  unit: "$ per pound",
+                  num: ((b * a) / 100).toFixed(2),
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `A ${a}-pack of water costs $${((b * a) / 100).toFixed(2)}. Price per bottle?`,
+                  ans: +(b / 100).toFixed(2),
+                  unit: "$ per bottle",
+                  num: ((b * a) / 100).toFixed(2),
+                  den: a,
+                }),
+              ],
+            },
+            {
+              cat: "SPEED",
+              icon: "\u{1F697}",
+              templates: [
+                (a, b) => ({
+                  text: `A car travels ${a * b} miles in ${a} hours. Speed in mph?`,
+                  ans: b,
+                  unit: "mph",
+                  num: a * b,
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `A train covers ${a * b} km in ${a} hours. Speed in km/h?`,
+                  ans: b,
+                  unit: "km/h",
+                  num: a * b,
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `A bike rides ${a * b} miles in ${a} hours. Miles per hour?`,
+                  ans: b,
+                  unit: "mph",
+                  num: a * b,
+                  den: a,
+                }),
+              ],
+            },
+            {
+              cat: "RECIPE",
+              icon: "\u{1F373}",
+              templates: [
+                (a, b) => ({
+                  text: `${a} cups of flour for ${b} servings. Cups per serving?`,
+                  ans: +(a / b).toFixed(2),
+                  unit: "cups/serving",
+                  num: a,
+                  den: b,
+                }),
+                (a, b) => ({
+                  text: `${a} eggs for ${b} batches. Eggs per batch?`,
+                  ans: +(a / b).toFixed(2),
+                  unit: "eggs/batch",
+                  num: a,
+                  den: b,
+                }),
+              ],
+            },
+            {
+              cat: "WORK",
+              icon: "\u{1F4BC}",
+              templates: [
+                (a, b) => ({
+                  text: `$${a * b} earned in ${a} hours. Hourly rate?`,
+                  ans: b,
+                  unit: "$/hour",
+                  num: a * b,
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `A factory makes ${a * b} bottles in ${a} hours. Bottles per hour?`,
+                  ans: b,
+                  unit: "bottles/hr",
+                  num: a * b,
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `${a * b} pages printed in ${a} minutes. Pages per minute?`,
+                  ans: b,
+                  unit: "pages/min",
+                  num: a * b,
+                  den: a,
+                }),
+              ],
+            },
+            {
+              cat: "FITNESS",
+              icon: "\u{1F3C3}",
+              templates: [
+                (a, b) => ({
+                  text: `${a * b} jumping jacks in ${a} minutes. Per minute?`,
+                  ans: b,
+                  unit: "per min",
+                  num: a * b,
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `${a * b} laps in ${a} hours. Laps per hour?`,
+                  ans: b,
+                  unit: "laps/hr",
+                  num: a * b,
+                  den: a,
+                }),
+                (a, b) => ({
+                  text: `${a * b} points in ${a} games. Points per game?`,
+                  ans: b,
+                  unit: "pts/game",
+                  num: a * b,
+                  den: a,
+                }),
+              ],
+            },
+          ];
 
-<!-- GAME SCREEN -->
-<div class="screen" id="screen-game" style="padding-top:0;justify-content:flex-start">
-  <div class="hud">
-    <div class="hud-item">
-      <div class="hud-val" id="hud-score" style="color:var(--gold)">0</div>
-      <div class="hud-lbl">Score</div>
-    </div>
-    <div class="hud-item">
-      <div class="hp-bar"><div class="hp-fill" id="player-hp" style="width:100%"></div></div>
-      <div class="hud-lbl">Player HP</div>
-    </div>
-    <div class="hud-item">
-      <div class="streak-badge" id="streak-badge">🔥 0x</div>
-      <div class="hud-lbl">Streak</div>
-    </div>
-    <div class="hud-item">
-      <div class="xp-bar"><div class="xp-fill" id="xp-bar" style="width:0%"></div></div>
-      <div class="hud-lbl">XP</div>
-    </div>
-    <div class="hud-item">
-      <div class="hud-val" id="hud-q" style="color:var(--teal)">1/5</div>
-      <div class="hud-lbl">Question</div>
-    </div>
-  </div>
-  <div class="game-main" id="game-main">
-    <div class="enemy-area">
-      <div class="enemy-sprite" id="enemy-sprite">🏪</div>
-      <div class="enemy-name" id="enemy-name">Market Boss</div>
-      <div class="enemy-hp-bar"><div class="enemy-hp-fill" id="enemy-hp" style="width:100%"></div></div>
-    </div>
-    <div class="glass problem-card" id="prob-card">
-      <div class="prob-context" id="prob-ctx">🛒 MARKET MATH</div>
-      <div class="prob-text" id="prob-txt">Loading...</div>
-      <div class="attempt-dots" id="dots">
-        <div class="dot active" id="d0"></div><div class="dot active" id="d1"></div><div class="dot" id="d2" style="opacity:.3;font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--muted)">✗</div>
-      </div>
-      <div class="answer-area">
-        <input class="ans-input" type="number" step="any" id="ans" placeholder="?" aria-label="Your answer" onkeydown="if(event.key==='Enter')submitAns()">
-        <span class="ans-unit" id="ans-unit">per unit</span>
-        <button class="submit-btn" onclick="submitAns()">ATTACK! ⚡</button>
-      </div>
-      <div class="hint-panel glass" id="hint-panel" style="background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.3)">
-        <div class="hint-type" id="hint-type">💡 HINT — ATTEMPT 1</div>
-        <div class="hint-txt" id="hint-txt"></div>
-      </div>
-      <div class="twr-panel" id="twr-panel" style="display:none">
-        <div class="twr-lbl">✍️ Explain Your Thinking (TWR)</div>
-        <div class="twr-s" id="twr-s">The unit rate is <input class="twr-inp" id="twr-val" placeholder="?"> per <input class="twr-inp" id="twr-unit" style="width:70px" placeholder="unit">, because I divided <input class="twr-inp" id="twr-num" placeholder="?"> by <input class="twr-inp" id="twr-den" placeholder="?">.</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:12px;justify-content:center;margin-top:8px">
-      <button class="btn-outline" onclick="showScreen('screen-skilltree')" style="font-size:12px">⬅ Zones</button>
-      <button class="btn-outline" onclick="skipQuestion()" style="font-size:12px">⏭ Skip</button>
-    </div>
-  </div>
-</div>
+          for (let i = 0; i < 20; i++) {
+            const ctx = contexts[i % contexts.length];
+            const tmpl =
+              ctx.templates[Math.floor(Math.random() * ctx.templates.length)];
+            const a = 3 + Math.floor(Math.random() * 8);
+            const b =
+              ctx.cat === "MARKET"
+                ? 25 + Math.floor(Math.random() * 20) * 5
+                : 5 + Math.floor(Math.random() * 20) * 5;
+            const q = tmpl(a, b);
+            const correct = q.ans;
+            const wrongs = [
+              correct * 2,
+              +(correct + correct * 0.5).toFixed(2),
+              +(correct * 0.5).toFixed(2),
+            ].filter((w) => w !== correct);
+            while (wrongs.length < 3)
+              wrongs.push(+(correct + 1 + wrongs.length).toFixed(2));
+            const choices = shuffle([correct, ...wrongs.slice(0, 3)]);
+            qs.push({
+              cat: ctx.cat,
+              icon: ctx.icon,
+              text: q.text,
+              ans: correct,
+              unit: q.unit,
+              num: q.num,
+              den: q.den,
+              choices: choices.map((c) =>
+                typeof c === "number"
+                  ? Number.isInteger(c)
+                    ? String(c)
+                    : c.toFixed(2)
+                  : String(c),
+              ),
+              correctStr:
+                typeof correct === "number"
+                  ? Number.isInteger(correct)
+                    ? String(correct)
+                    : correct.toFixed(2)
+                  : String(correct),
+              hint: `Divide: ${q.num} ÷ ${q.den}`,
+              explain: `${q.num} ÷ ${q.den} = ${typeof correct === "number" ? (Number.isInteger(correct) ? correct : correct.toFixed(2)) : correct} ${q.unit}`,
+            });
+          }
+          return shuffle(qs);
+        }
+        function shuffle(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
+        }
 
-<!-- STATS SCREEN -->
-<div class="screen" id="screen-stats">
-  <div style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--teal);margin-bottom:8px">📊 Your Stats</div>
-  <div class="stars-row" id="final-stars">⭐⭐⭐</div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-val" id="st-score">0</div><div class="stat-lbl">Total Score</div></div>
-    <div class="stat-card"><div class="stat-val" id="st-correct">0</div><div class="stat-lbl">Correct Answers</div></div>
-    <div class="stat-card"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Best Streak</div></div>
-    <div class="stat-card"><div class="stat-val" id="st-zones">0/6</div><div class="stat-lbl">Zones Complete</div></div>
-  </div>
-  <div class="glass" style="padding:20px;max-width:400px;width:100%;margin-bottom:20px;text-align:center">
-    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Personal Best</div>
-    <div style="font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--gold)" id="st-pb">---</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px">Saved locally</div>
-  </div>
-  <div style="display:flex;gap:12px">
-    <button class="btn-neon btn-teal" onclick="showScreen('screen-skilltree')">⚔️ Play Again</button>
-    <button class="btn-outline" onclick="showScreen('screen-title')">🏠 Home</button>
-  </div>
-</div>
+        // ─── TITLE SCENE ───
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("TitleScene");
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg).fadeIn(500);
 
-<!-- ZONE COMPLETE -->
-<div class="screen" id="screen-zonecomplete">
-  <div id="zc-stars" style="font-size:64px;text-align:center;margin-bottom:8px">⭐⭐⭐</div>
-  <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--gold);text-align:center;margin-bottom:8px" id="zc-title">Zone Complete!</div>
-  <div style="font-size:14px;color:var(--muted);text-align:center;margin-bottom:24px" id="zc-sub">Market Math cleared</div>
-  <div class="glass" style="padding:24px;max-width:360px;width:100%;margin-bottom:24px">
-    <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="color:var(--muted)">Score</span><span style="font-family:'Orbitron',monospace;color:var(--gold)" id="zc-score">0</span></div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="color:var(--muted)">Accuracy</span><span style="color:var(--teal)" id="zc-acc">0%</span></div>
-    <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Best Streak</span><span style="color:var(--purple)" id="zc-streak">0</span></div>
-  </div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-    <button class="btn-neon btn-teal" onclick="replayZone()">🔁 Replay Zone</button>
-    <button class="btn-neon btn-gold" onclick="nextZone()">➡ Next Zone</button>
-    <button class="btn-outline" onclick="showScreen('screen-skilltree')">🗺 Zone Map</button>
-  </div>
-</div>
+            // Grid lines BG
+            const gfx = this.add.graphics();
+            gfx.lineStyle(1, C.teal, 0.04);
+            for (let x = 0; x < W; x += 50) {
+              gfx.lineBetween(x, 0, x, H);
+            }
+            for (let y = 0; y < H; y += 50) {
+              gfx.lineBetween(0, y, W, y);
+            }
 
-<!-- FEEDBACK OVERLAY -->
-<div class="feedback-overlay" id="feedback-overlay"></div>
+            // Stars
+            for (let i = 0; i < 60; i++) {
+              const s = this.add.circle(
+                Math.random() * W,
+                Math.random() * H,
+                1 + Math.random(),
+                C.white,
+                0.3 + Math.random() * 0.4,
+              );
+              this.tweens.add({
+                targets: s,
+                alpha: 0.1,
+                duration: 1500 + Math.random() * 2000,
+                yoyo: true,
+                repeat: -1,
+              });
+            }
 
-<!-- COMBO -->
-<div class="combo-display">
-  <div class="combo-num" id="combo-num"></div>
-  <div class="combo-txt" id="combo-txt">COMBO!</div>
-</div>
+            this.add
+              .text(W / 2, 140, "UNIT RATE FACTORY", {
+                fontSize: "56px",
+                fontFamily: "Arial Black",
+                color: "#00f5c4",
+                stroke: "#000",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 205, "6.RP.A.2 — Understand Unit Rates", {
+                fontSize: "18px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                240,
+                "Manage the factory conveyor belt! Calculate unit rates to keep production running!",
+                {
+                  fontSize: "14px",
+                  color: "#4a5568",
+                },
+              )
+              .setOrigin(0.5);
 
-<!-- ACHIEVEMENT -->
-<div class="achievement-popup" id="ach-popup">
-  <div class="ach-title">🏆 ACHIEVEMENT UNLOCKED</div>
-  <div class="ach-name" id="ach-name">First Blood</div>
-</div>
+            // Mode select
+            const modes = [
+              {
+                name: "Apprentice",
+                desc: "Guided, forgiving",
+                icon: "\u{1F527}",
+                color: C.teal,
+              },
+              {
+                name: "Engineer",
+                desc: "Standard challenge",
+                icon: "⚙️",
+                color: C.gold,
+              },
+              {
+                name: "Foreman",
+                desc: "Fast & intense",
+                icon: "\u{1F525}",
+                color: C.rose,
+              },
+            ];
+            this.selectedMode = 1;
+            this.modeCards = [];
 
-<!-- MUTE -->
-<button class="mute-btn" onclick="toggleMute()" id="mute-btn" title="Toggle sound">🔊</button>
+            modes.forEach((m, i) => {
+              const x = 262 + i * 250,
+                y = 400;
+              const card = this.add
+                .rectangle(x, y, 210, 180, C.panel)
+                .setStrokeStyle(3, i === 1 ? C.gold : 0x1a2744)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(x, y - 50, m.icon, { fontSize: "40px" })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y, m.name, {
+                  fontSize: "18px",
+                  color: "#fff",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 28, m.desc, { fontSize: "12px", color: "#64748b" })
+                .setOrigin(0.5);
+              card.on("pointerdown", () => {
+                audio();
+                sfxClick();
+                this.selectedMode = i;
+                this.modeCards.forEach((c, j) =>
+                  c.setStrokeStyle(3, j === i ? C.gold : 0x1a2744),
+                );
+              });
+              this.modeCards.push(card);
+            });
 
-<script>
-// ═══════════════════════════════════════════════
-// AUDIO ENGINE
-// ═══════════════════════════════════════════════
-let muted=false;
-const AC=new(window.AudioContext||window.webkitAudioContext)();
-function beep(freq=440,dur=0.15,type='sine',vol=0.3){
-  if(muted)return;
-  const o=AC.createOscillator(),g=AC.createGain();
-  o.connect(g);g.connect(AC.destination);
-  o.frequency.value=freq;o.type=type;
-  g.gain.setValueAtTime(vol,AC.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.01,AC.currentTime+dur);
-  o.start();o.stop(AC.currentTime+dur);
-}
-function playCorrect(){beep(523,.1,'sine');setTimeout(()=>beep(659,.1,'sine'),100);setTimeout(()=>beep(784,.2,'sine'),200)}
-function playWrong(){beep(200,.3,'square',.2)}
-function playLevelUp(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.2,'sine'),i*120))}
-function toggleMute(){muted=!muted;document.getElementById('mute-btn').textContent=muted?'🔇':'🔊'}
+            const btn = this.add
+              .rectangle(W / 2, 560, 280, 56, C.teal)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2, 560, "START PRODUCTION", {
+                fontSize: "22px",
+                fontFamily: "Arial Black",
+                color: "#0a0e1a",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerdown", () => {
+              audio();
+              sfxClick();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () =>
+                this.scene.start("GameScene", { mode: this.selectedMode }),
+              );
+            });
+            btn.on("pointerover", () => btn.setScale(1.04));
+            btn.on("pointerout", () => btn.setScale(1));
+          }
+        }
 
-// ═══════════════════════════════════════════════
-// STARS GENERATION
-// ═══════════════════════════════════════════════
-(function(){
-  const c=document.getElementById('stars');
-  for(let i=0;i<80;i++){
-    const s=document.createElement('div');
-    s.className='star';
-    const sz=Math.random()*2+1;
-    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*3}s`;
-    c.appendChild(s);
-  }
-})();
+        // ─── GAME SCENE ───
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("GameScene");
+          }
+          init(data) {
+            this.mode = data.mode;
+          }
 
-// ═══════════════════════════════════════════════
-// LANGUAGE
-// ═══════════════════════════════════════════════
-let lang='en';
-function setLang(l){
-  lang=l;
-  document.getElementById('lb-en').classList.toggle('active',l==='en');
-  document.getElementById('lb-es').classList.toggle('active',l==='es');
-}
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg).fadeIn(400);
+            const diffMult = [0.7, 1.0, 1.5][this.mode];
 
-// ═══════════════════════════════════════════════
-// QUESTION BANK — 18+ problems per zone
-// ═══════════════════════════════════════════════
-const zones=[
-  {
-    id:0,name:'Market Math',icon:'🛒',ctx:'🛒 MARKET MATH',
-    enemy:{sprite:'🏪',name:'Market Boss',hp:5},
-    questions:[
-      {en:'A store sells 6 cans of soup for $4.80. What is the unit price per can?',es:'Una tienda vende 6 latas de sopa por $4.80. ¿Cuál es el precio unitario por lata?',ans:0.80,unit:'$ per can',unit_es:'$ por lata',hints:['Divide the total cost by the number of cans.','$4.80 ÷ 6 = ?'],twr:{num:'4.80',den:'6',unit:'can'}},
-      {en:'Grapes cost $7.50 for 5 pounds. What is the unit price per pound?',es:'Las uvas cuestan $7.50 por 5 libras. ¿Cuál es el precio por libra?',ans:1.50,unit:'$ per pound',unit_es:'$ por libra',hints:['Divide $7.50 by 5 pounds.','$7.50 ÷ 5 = ?'],twr:{num:'7.50',den:'5',unit:'pound'}},
-      {en:'A 12-pack of water bottles costs $3.60. What is the unit price per bottle?',es:'Un paquete de 12 botellas cuesta $3.60. ¿Cuál es el precio por botella?',ans:0.30,unit:'$ per bottle',unit_es:'$ por botella',hints:['Divide $3.60 by 12 bottles.','$3.60 ÷ 12 = ?'],twr:{num:'3.60',den:'12',unit:'bottle'}},
-      {en:'You paid $14.00 for 4 movie tickets. What is the price per ticket?',es:'Pagaste $14.00 por 4 entradas de cine. ¿Cuánto es por entrada?',ans:3.50,unit:'$ per ticket',unit_es:'$ por entrada',hints:['Divide $14.00 by 4 tickets.','$14 ÷ 4 = ?'],twr:{num:'14',den:'4',unit:'ticket'}},
-      {en:'Apples are $2.40 for 8 apples. What is the unit price per apple?',es:'Las manzanas cuestan $2.40 por 8. ¿Cuánto cuesta cada una?',ans:0.30,unit:'$ per apple',unit_es:'$ por manzana',hints:['Divide $2.40 by 8.','$2.40 ÷ 8 = ?'],twr:{num:'2.40',den:'8',unit:'apple'}},
-    ]
-  },
-  {
-    id:1,name:'Speed Zone',icon:'🚗',ctx:'🚗 SPEED ZONE',
-    enemy:{sprite:'🚀',name:'Speed Demon',hp:5},
-    questions:[
-      {en:'A car travels 240 miles in 4 hours. What is the speed in miles per hour?',es:'Un auto viaja 240 millas en 4 horas. ¿Cuál es la velocidad en millas por hora?',ans:60,unit:'miles per hour',unit_es:'millas por hora',hints:['Divide 240 miles by 4 hours.','240 ÷ 4 = ?'],twr:{num:'240',den:'4',unit:'hour'}},
-      {en:'A train covers 350 km in 5 hours. What is its speed in km per hour?',es:'Un tren cubre 350 km en 5 horas. ¿Cuál es su velocidad?',ans:70,unit:'km per hour',unit_es:'km por hora',hints:['Divide 350 km by 5 hours.','350 ÷ 5 = ?'],twr:{num:'350',den:'5',unit:'hour'}},
-      {en:'A runner completes 1.5 miles in 3 minutes. How many miles per minute?',es:'Un corredor completa 1.5 millas en 3 minutos. ¿Cuántas millas por minuto?',ans:0.5,unit:'miles per minute',unit_es:'millas por minuto',hints:['Divide 1.5 miles by 3 minutes.','1.5 ÷ 3 = ?'],twr:{num:'1.5',den:'3',unit:'minute'}},
-      {en:'A bike travels 90 miles in 6 hours. What is its speed in miles per hour?',es:'Una bicicleta viaja 90 millas en 6 horas. ¿Cuál es su velocidad?',ans:15,unit:'miles per hour',unit_es:'millas por hora',hints:['Divide 90 miles by 6 hours.','90 ÷ 6 = ?'],twr:{num:'90',den:'6',unit:'hour'}},
-      {en:'A plane flies 2,400 miles in 8 hours. What is its speed in miles per hour?',es:'Un avión vuela 2,400 millas en 8 horas. ¿Cuál es su velocidad?',ans:300,unit:'miles per hour',unit_es:'millas por hora',hints:['Divide 2400 by 8.','2400 ÷ 8 = ?'],twr:{num:'2400',den:'8',unit:'hour'}},
-    ]
-  },
-  {
-    id:2,name:'Recipe Lab',icon:'🍳',ctx:'🍳 RECIPE LAB',
-    enemy:{sprite:'👨‍🍳',name:'Chef Ratio',hp:5},
-    questions:[
-      {en:'A recipe uses 3 cups of flour for 4 servings. How many cups per serving? (Enter as decimal)',es:'Una receta usa 3 tazas de harina para 4 porciones. ¿Cuántas tazas por porción?',ans:0.75,unit:'cups per serving',unit_es:'tazas por porción',hints:['Divide 3 cups by 4 servings.','3 ÷ 4 = 0.75'],twr:{num:'3',den:'4',unit:'serving'}},
-      {en:'A cake needs 2.5 cups of sugar for 5 servings. Cups of sugar per serving?',es:'Un pastel necesita 2.5 tazas de azúcar para 5 porciones. ¿Tazas por porción?',ans:0.5,unit:'cups per serving',unit_es:'tazas por porción',hints:['Divide 2.5 by 5.','2.5 ÷ 5 = ?'],twr:{num:'2.5',den:'5',unit:'serving'}},
-      {en:'Soup recipe: 6 cups of broth for 8 people. Cups of broth per person?',es:'Receta de sopa: 6 tazas de caldo para 8 personas. ¿Tazas por persona?',ans:0.75,unit:'cups per person',unit_es:'tazas por persona',hints:['Divide 6 by 8.','6 ÷ 8 = 0.75'],twr:{num:'6',den:'8',unit:'person'}},
-      {en:'Cookies: 4 eggs for 48 cookies. How many eggs per cookie? (decimal)',es:'Galletas: 4 huevos para 48 galletas. ¿Cuántos huevos por galleta?',ans:0.08,unit:'eggs per cookie',unit_es:'huevos por galleta',hints:['Divide 4 eggs by 48 cookies.','4 ÷ 48 ≈ 0.083 → round to 0.08'],twr:{num:'4',den:'48',unit:'cookie'}},
-      {en:'Bread: 12 oz of yeast for 8 loaves. How many oz of yeast per loaf?',es:'Pan: 12 oz de levadura para 8 panes. ¿Cuántas oz por pan?',ans:1.5,unit:'oz per loaf',unit_es:'oz por pan',hints:['Divide 12 oz by 8 loaves.','12 ÷ 8 = ?'],twr:{num:'12',den:'8',unit:'loaf'}},
-    ]
-  },
-  {
-    id:3,name:'Work & Earn',icon:'💼',ctx:'💼 WORK & EARN',
-    enemy:{sprite:'🤖',name:'Factory Bot',hp:5},
-    questions:[
-      {en:'Jayla earns $56 in 8 hours. What is her hourly rate?',es:'Jayla gana $56 en 8 horas. ¿Cuál es su tarifa por hora?',ans:7,unit:'$ per hour',unit_es:'$ por hora',hints:['Divide $56 by 8 hours.','$56 ÷ 8 = ?'],twr:{num:'56',den:'8',unit:'hour'}},
-      {en:'A factory makes 840 bottles in 7 hours. Bottles per hour?',es:'Una fábrica hace 840 botellas en 7 horas. ¿Botellas por hora?',ans:120,unit:'bottles per hour',unit_es:'botellas por hora',hints:['Divide 840 by 7.','840 ÷ 7 = ?'],twr:{num:'840',den:'7',unit:'hour'}},
-      {en:'Marcus earns $135 for 9 hours of work. What is his hourly rate?',es:'Marcus gana $135 por 9 horas de trabajo. ¿Cuánto gana por hora?',ans:15,unit:'$ per hour',unit_es:'$ por hora',hints:['Divide $135 by 9 hours.','$135 ÷ 9 = ?'],twr:{num:'135',den:'9',unit:'hour'}},
-      {en:'A printer prints 480 pages in 6 minutes. Pages per minute?',es:'Una impresora imprime 480 páginas en 6 minutos. ¿Páginas por minuto?',ans:80,unit:'pages per minute',unit_es:'páginas por minuto',hints:['Divide 480 by 6.','480 ÷ 6 = ?'],twr:{num:'480',den:'6',unit:'minute'}},
-      {en:'A worker assembles 72 toys in 9 hours. How many toys per hour?',es:'Un trabajador ensambla 72 juguetes en 9 horas. ¿Juguetes por hora?',ans:8,unit:'toys per hour',unit_es:'juguetes por hora',hints:['Divide 72 by 9.','72 ÷ 9 = ?'],twr:{num:'72',den:'9',unit:'hour'}},
-    ]
-  },
-  {
-    id:4,name:'Fitness Frenzy',icon:'🏃',ctx:'🏃 FITNESS FRENZY',
-    enemy:{sprite:'🏋️',name:'Gym Boss',hp:5},
-    questions:[
-      {en:'Destiny does 96 jumping jacks in 4 minutes. How many per minute?',es:'Destiny hace 96 saltos en 4 minutos. ¿Cuántos por minuto?',ans:24,unit:'per minute',unit_es:'por minuto',hints:['Divide 96 by 4 minutes.','96 ÷ 4 = ?'],twr:{num:'96',den:'4',unit:'minute'}},
-      {en:'A swimmer completes 72 laps in 6 hours. Laps per hour?',es:'Un nadador completa 72 largos en 6 horas. ¿Largos por hora?',ans:12,unit:'laps per hour',unit_es:'largos por hora',hints:['Divide 72 laps by 6 hours.','72 ÷ 6 = ?'],twr:{num:'72',den:'6',unit:'hour'}},
-      {en:'A player scores 45 points in 9 games. Points per game?',es:'Un jugador anota 45 puntos en 9 juegos. ¿Puntos por juego?',ans:5,unit:'points per game',unit_es:'puntos por juego',hints:['Divide 45 points by 9 games.','45 ÷ 9 = ?'],twr:{num:'45',den:'9',unit:'game'}},
-      {en:'A sprinter runs 200 meters in 25 seconds. Meters per second?',es:'Un velocista corre 200 metros en 25 segundos. ¿Metros por segundo?',ans:8,unit:'meters per second',unit_es:'metros por segundo',hints:['Divide 200 meters by 25 seconds.','200 ÷ 25 = ?'],twr:{num:'200',den:'25',unit:'second'}},
-      {en:'A cyclist rides 90 miles in 6 hours. Miles per hour?',es:'Un ciclista recorre 90 millas en 6 horas. ¿Millas por hora?',ans:15,unit:'miles per hour',unit_es:'millas por hora',hints:['Divide 90 by 6.','90 ÷ 6 = ?'],twr:{num:'90',den:'6',unit:'hour'}},
-    ]
-  },
-  {
-    id:5,name:'The Final Rate',icon:'🌟',ctx:'🌟 BOSS BATTLE',
-    enemy:{sprite:'👾',name:'The Grand Rate',hp:8},
-    questions:[
-      {en:'[BOSS] A store charges $13.50 for 9 pens. What is the unit price in cents?',es:'[JEFE] Una tienda cobra $13.50 por 9 bolígrafos. ¿Precio unitario en centavos?',ans:150,unit:'cents per pen',unit_es:'centavos por bolígrafo',hints:['$13.50 = 1350 cents. Divide by 9.','1350 ÷ 9 = ?'],twr:{num:'1350',den:'9',unit:'pen'}},
-      {en:'[BOSS] A train travels 2,100 miles in 7 hours. Speed in miles per hour?',es:'[JEFE] Un tren viaja 2,100 millas en 7 horas. ¿Velocidad en millas por hora?',ans:300,unit:'miles per hour',unit_es:'millas por hora',hints:['Divide 2100 by 7.','2100 ÷ 7 = ?'],twr:{num:'2100',den:'7',unit:'hour'}},
-      {en:'[BOSS] A worker earns $187.50 in 15 hours. Hourly rate?',es:'[JEFE] Un trabajador gana $187.50 en 15 horas. ¿Tarifa por hora?',ans:12.5,unit:'$ per hour',unit_es:'$ por hora',hints:['Divide $187.50 by 15 hours.','$187.50 ÷ 15 = ?'],twr:{num:'187.50',den:'15',unit:'hour'}},
-      {en:'[BOSS] A recipe needs 2.4 cups of oil for 8 servings. Cups per serving?',es:'[JEFE] Una receta necesita 2.4 tazas de aceite para 8 porciones. ¿Tazas por porción?',ans:0.3,unit:'cups per serving',unit_es:'tazas por porción',hints:['Divide 2.4 by 8.','2.4 ÷ 8 = ?'],twr:{num:'2.4',den:'8',unit:'serving'}},
-      {en:'[BOSS] A printer does 4,320 pages in 6 hours. Pages per minute?',es:'[JEFE] Una impresora hace 4,320 páginas en 6 horas. ¿Páginas por minuto?',ans:12,unit:'pages per minute',unit_es:'páginas por minuto',hints:['6 hours = 360 minutes. Divide 4320 by 360.','4320 ÷ 360 = ?'],twr:{num:'4320',den:'360',unit:'minute'}},
-    ]
-  }
-];
+            // State
+            this.questions = genQuestions();
+            this.qIdx = 0;
+            this.score = 0;
+            this.streak = 0;
+            this.bestStreak = 0;
+            this.correct = 0;
+            this.total = 0;
+            this.lives = [4, 3, 2][this.mode];
+            this.maxLives = this.lives;
+            this.answered = false;
+            this.attempts = 0;
+            this.timeLeft = Math.round([35, 30, 20][this.mode]);
+            this.baseTime = this.timeLeft;
+            this.level = 1;
+            this.xp = 0;
+            this.combo = 1;
+            this.enemyHp = 100;
 
-// ═══════════════════════════════════════════════
-// GAME STATE
-// ═══════════════════════════════════════════════
-let gs={
-  zone:0,qIdx:0,qs:[],attempts:0,score:0,streak:0,bestStreak:0,
-  playerHP:100,enemyHP:100,correct:0,total:0,xp:0,
-  zoneScores:[],zonesComplete:0,pb:parseInt(localStorage.getItem('urq_pb')||'0')
-};
-const QUESTIONS_PER_ZONE=5;
+            // Factory BG
+            this.add.rectangle(W / 2, H / 2, W, H, C.dark);
+            const gfx = this.add.graphics();
+            gfx.lineStyle(1, C.teal, 0.03);
+            for (let x = 0; x < W; x += 50) gfx.lineBetween(x, 0, x, H);
+            for (let y = 0; y < H; y += 50) gfx.lineBetween(0, y, W, y);
 
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+            // Conveyor belt visual
+            this.conveyorY = 120;
+            this.add
+              .rectangle(W / 2, this.conveyorY, W, 50, 0x1a2744)
+              .setStrokeStyle(1, 0x2a3754);
+            this.conveyorLines = [];
+            for (let x = 0; x < W; x += 40) {
+              const ln = this.add.rectangle(
+                x,
+                this.conveyorY,
+                3,
+                50,
+                C.teal,
+                0.15,
+              );
+              this.conveyorLines.push(ln);
+            }
 
-function startZone(id){
-  if(id>0&&!gs.zoneScores[id-1]&&id!==0){return;}// locked
-  const node=document.getElementById('node'+id);
-  if(node.classList.contains('locked'))return;
-  gs.zone=id;gs.qIdx=0;gs.attempts=0;gs.score=0;gs.streak=0;gs.correct=0;gs.total=0;
-  gs.playerHP=100;gs.enemyHP=100;gs.xp=0;
-  gs.qs=shuffle([...zones[id].questions]).slice(0,QUESTIONS_PER_ZONE);
-  showScreen('screen-game');
-  updateHUD();
-  loadQuestion();
-}
+            // Product on conveyor
+            this.product = this.add
+              .text(50, this.conveyorY, "\u{1F4E6}", { fontSize: "32px" })
+              .setOrigin(0.5);
+            this.productTween = null;
+            this.startConveyor();
 
-function loadQuestion(){
-  if(gs.qIdx>=gs.qs.length){zoneComplete();return;}
-  const q=gs.qs[gs.qIdx];
-  gs.attempts=0;
-  document.getElementById('prob-ctx').textContent=zones[gs.zone].ctx;
-  document.getElementById('prob-txt').textContent=lang==='es'&&q.es?q.es:q.en;
-  document.getElementById('ans-unit').textContent=lang==='es'&&q.unit_es?q.unit_es:q.unit;
-  document.getElementById('ans').value='';
-  document.getElementById('ans').focus();
-  document.getElementById('hint-panel').classList.remove('show');
-  document.getElementById('twr-panel').style.display='none';
-  document.getElementById('hud-q').textContent=(gs.qIdx+1)+'/'+gs.qs.length;
-  // dots
-  document.getElementById('d0').className='dot active';
-  document.getElementById('d1').className='dot active';
-  // enemy
-  const z=zones[gs.zone];
-  document.getElementById('enemy-sprite').textContent=z.enemy.sprite;
-  document.getElementById('enemy-name').textContent=z.enemy.name;
-  const ep=(1-gs.qIdx/gs.qs.length)*100;
-  document.getElementById('enemy-hp').style.width=ep+'%';
-  gsap.fromTo('#prob-card',{opacity:0,y:20},{opacity:1,y:0,duration:.4,ease:'power2.out'});
-}
+            // HUD
+            this.add.rectangle(W / 2, 30, W, 60, C.bg, 0.95);
+            this.add.rectangle(W / 2, 60, W, 2, C.teal, 0.15);
+            this.hudScore = this.add.text(60, 12, "0", {
+              fontSize: "22px",
+              fontFamily: "Arial Black",
+              color: "#ffd700",
+            });
+            this.add.text(60, 38, "SCORE", {
+              fontSize: "9px",
+              color: "#64748b",
+              letterSpacing: 2,
+            });
+            this.hudStreak = this.add.text(200, 18, "\u{1F525} 0x", {
+              fontSize: "14px",
+              color: "#a855f7",
+              fontStyle: "bold",
+            });
+            this.hudLives = this.add.text(W - 120, 12, "", {
+              fontSize: "14px",
+              color: "#f43f5e",
+            });
+            this.hudTimer = this.add.text(W - 120, 36, "", {
+              fontSize: "14px",
+              color: "#ffd700",
+            });
+            this.hudQ = this.add
+              .text(W / 2, 18, "", { fontSize: "13px", color: "#00f5c4" })
+              .setOrigin(0.5, 0);
+            this.hudXp = this.add.rectangle(W / 2, 58, 200, 4, 0x222, 0.3);
+            this.hudXpFill = this.add
+              .rectangle(W / 2 - 100, 58, 0, 4, C.purple)
+              .setOrigin(0, 0.5);
 
-function submitAns(){
-  if(AC.state==='suspended')AC.resume();
-  const raw=parseFloat(document.getElementById('ans').value);
-  if(isNaN(raw)){document.getElementById('ans').style.borderColor='var(--rose)';return;}
-  const q=gs.qs[gs.qIdx];
-  gs.attempts++;gs.total++;
-  const correct=Math.abs(raw-q.ans)<0.05;
-  if(correct){handleCorrect(q);}
-  else{handleWrong(q);}
-}
+            // Enemy (machine boss)
+            this.enemyArea = this.add.container(W / 2, 175);
+            this.enemySprite = this.add
+              .text(0, -10, "\u{1F3ED}", { fontSize: "48px" })
+              .setOrigin(0.5);
+            this.enemyName = this.add
+              .text(0, 25, "Production Machine", {
+                fontSize: "14px",
+                color: "#00f5c4",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            this.enemyHpBg = this.add
+              .rectangle(0, 45, 200, 10, 0x222)
+              .setOrigin(0.5);
+            this.enemyHpBar = this.add
+              .rectangle(-100, 45, 200, 10, C.rose)
+              .setOrigin(0, 0.5);
+            this.enemyArea.add([
+              this.enemySprite,
+              this.enemyName,
+              this.enemyHpBg,
+              this.enemyHpBar,
+            ]);
 
-function handleCorrect(q){
-  playCorrect();
-  const pts=gs.attempts===1?100:50;
-  gs.score+=pts+(gs.streak*10);gs.correct++;
-  gs.streak++;if(gs.streak>gs.bestStreak)gs.bestStreak=gs.streak;
-  gs.xp=Math.min(100,gs.xp+20);
-  showFeedback('✅ CORRECT!','#00f5c4');
-  spawnParticles(true);
-  if(gs.streak>=3)showCombo(gs.streak);
-  // damage enemy
-  const dmg=100/gs.qs.length;
-  gs.enemyHP=Math.max(0,(gs.enemyHP||100)-dmg);
-  document.getElementById('enemy-hp').style.width=gs.enemyHP+'%';
-  gsap.to('#enemy-sprite',{rotation:15,duration:.1,yoyo:true,repeat:3});
-  updateHUD();
-  if(gs.streak===5)unlockAchievement('🔥 On Fire! 5-streak');
-  if(gs.correct===1)unlockAchievement('⚡ First Hit!');
-  // show TWR on correct
-  document.getElementById('twr-val').value=q.ans;
-  document.getElementById('twr-unit').value=lang==='es'&&q.twr.unit_es?q.twr.unit_es:q.twr.unit;
-  document.getElementById('twr-num').value=q.twr.num;
-  document.getElementById('twr-den').value=q.twr.den;
-  document.getElementById('twr-panel').style.display='block';
-  setTimeout(()=>{gs.qIdx++;loadQuestion();},1600);
-}
+            // Question card
+            this.qCard = this.add
+              .rectangle(W / 2, 350, 720, 240, C.panel)
+              .setStrokeStyle(1, 0x2a3754);
+            this.qCat = this.add
+              .text(W / 2, 245, "", {
+                fontSize: "11px",
+                color: "#ffd700",
+                letterSpacing: 2,
+              })
+              .setOrigin(0.5);
+            this.qText = this.add
+              .text(W / 2, 290, "", {
+                fontSize: "18px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+                wordWrap: { width: 660 },
+                align: "center",
+              })
+              .setOrigin(0.5);
 
-function handleWrong(q){
-  playWrong();
-  gs.streak=0;
-  gs.playerHP=Math.max(0,gs.playerHP-15);
-  document.getElementById('player-hp').style.width=gs.playerHP+'%';
-  spawnParticles(false);
-  showFeedback('❌ MISS!','var(--rose)');
-  updateHUD();
-  // mark dot used
-  if(gs.attempts===1){document.getElementById('d0').className='dot used';}
-  else if(gs.attempts===2){document.getElementById('d1').className='dot used';}
-  // show hints
-  showHint(q,gs.attempts);
-  if(gs.attempts>=3){
-    // reveal answer and move on
-    showFeedback('Answer: '+q.ans,'var(--gold)');
-    setTimeout(()=>{gs.qIdx++;loadQuestion();},2000);
-  }
-}
+            // Choices (4 buttons)
+            this.btns = [];
+            this.btnTexts = [];
+            for (let i = 0; i < 4; i++) {
+              const col = i % 2,
+                row = Math.floor(i / 2);
+              const x = W / 2 - 170 + col * 340,
+                y = 355 + row * 58;
+              const btn = this.add
+                .rectangle(x, y, 320, 48, 0x0d1527)
+                .setStrokeStyle(2, 0x1a2744)
+                .setInteractive({ useHandCursor: true });
+              const txt = this.add
+                .text(x, y, "", {
+                  fontSize: "16px",
+                  color: "#e2e8f0",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0.5);
+              btn.on("pointerdown", () => this.pick(i));
+              btn.on("pointerover", () => {
+                if (!this.answered) btn.setStrokeStyle(2, C.teal);
+              });
+              btn.on("pointerout", () => {
+                if (!this.answered) btn.setStrokeStyle(2, 0x1a2744);
+              });
+              this.btns.push(btn);
+              this.btnTexts.push(txt);
+            }
 
-function showHint(q,attempt){
-  const hp=document.getElementById('hint-panel');
-  hp.classList.add('show');
-  const hints=q.hints||[];
-  if(attempt===1){
-    document.getElementById('hint-type').textContent='💡 HINT — Conceptual';
-    document.getElementById('hint-txt').textContent=hints[0]||'Think: divide the total by the number of units.';
-  } else if(attempt===2){
-    document.getElementById('hint-type').textContent='🔧 HINT — Procedural';
-    document.getElementById('hint-txt').textContent=hints[1]||'Try dividing the two numbers shown.';
-  } else {
-    document.getElementById('hint-type').textContent='📖 WORKED EXAMPLE';
-    document.getElementById('hint-txt').textContent='Answer: '+q.ans+'. '+((hints[1]||'')+'= '+q.ans);
-  }
-}
+            // Hint
+            this.hintBg = this.add
+              .rectangle(W / 2, 498, 600, 36, 0x1a1a00, 0.8)
+              .setAlpha(0);
+            this.hintTxt = this.add
+              .text(W / 2, 498, "", { fontSize: "13px", color: "#ffd700" })
+              .setOrigin(0.5)
+              .setAlpha(0);
 
-function skipQuestion(){gs.qIdx++;gs.streak=0;updateHUD();loadQuestion();}
+            // Feedback
+            this.fbBg = this.add
+              .rectangle(W / 2, 545, 720, 44, C.panel)
+              .setAlpha(0);
+            this.fbTxt = this.add
+              .text(W / 2, 545, "", {
+                fontSize: "14px",
+                color: "#e2e8f0",
+                wordWrap: { width: 680 },
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
 
-function showFeedback(txt,color){
-  const el=document.getElementById('feedback-overlay');
-  el.textContent=txt;el.style.color=color;
-  gsap.fromTo(el,{opacity:0,scale:.5},{opacity:1,scale:1.2,duration:.25,ease:'back.out(2)',onComplete:()=>{
-    gsap.to(el,{opacity:0,y:-40,duration:.6,delay:.4});
-  }});
-}
+            // Next
+            this.nxtBtn = this.add
+              .rectangle(W / 2, 610, 220, 46, C.teal)
+              .setInteractive({ useHandCursor: true })
+              .setAlpha(0);
+            this.nxtTxt = this.add
+              .text(W / 2, 610, "NEXT UNIT >", {
+                fontSize: "16px",
+                fontFamily: "Arial Black",
+                color: "#0a0e1a",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.nxtBtn.on("pointerdown", () => {
+              if (this.answered) this.nextQ();
+            });
 
-function showCombo(n){
-  const cn=document.getElementById('combo-num'),ct=document.getElementById('combo-txt');
-  cn.textContent=n+'x';
-  gsap.fromTo(cn,{opacity:0,scale:.5},{opacity:1,scale:1.3,duration:.3,ease:'back.out(2)'});
-  gsap.fromTo(ct,{opacity:0},{opacity:1,duration:.3});
-  gsap.to([cn,ct],{opacity:0,duration:.5,delay:1.2});
-}
+            // Timer
+            this.timerEvt = this.time.addEvent({
+              delay: 1000,
+              callback: this.tick,
+              callbackScope: this,
+              loop: true,
+            });
 
-function updateHUD(){
-  document.getElementById('hud-score').textContent=gs.score;
-  document.getElementById('streak-badge').textContent='🔥 '+gs.streak+'x';
-  document.getElementById('player-hp').style.width=gs.playerHP+'%';
-  document.getElementById('xp-bar').style.width=gs.xp+'%';
-}
+            // Keys
+            this.input.keyboard.on("keydown", (e) => {
+              if (e.key === "1" || e.key === "a") this.pick(0);
+              if (e.key === "2" || e.key === "b") this.pick(1);
+              if (e.key === "3" || e.key === "c") this.pick(2);
+              if (e.key === "4" || e.key === "d") this.pick(3);
+              if (e.key === "Enter" && this.answered) this.nextQ();
+            });
 
-function spawnParticles(correct){
-  const colors=correct?['#00f5c4','#ffd700','#38bdf8']:['#ef4444','#f97316'];
-  for(let i=0;i<(correct?12:5);i++){
-    const p=document.createElement('div');
-    p.className='particle';
-    const sz=4+Math.random()*6;
-    p.style.cssText=`width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:50%;top:50%`;
-    document.body.appendChild(p);
-    gsap.to(p,{x:(Math.random()-0.5)*300,y:(Math.random()-0.5)*300,opacity:0,scale:0,duration:0.8+Math.random()*.5,ease:'power2.out',onComplete:()=>p.remove()});
-  }
-}
+            this.loadQ();
+          }
 
-function unlockAchievement(name){
-  const p=document.getElementById('ach-popup');
-  document.getElementById('ach-name').textContent=name;
-  p.classList.add('show');
-  setTimeout(()=>p.classList.remove('show'),3500);
-  beep(880,.1,'sine');setTimeout(()=>beep(1108,.2,'sine'),120);
-}
+          startConveyor() {
+            this.product.setX(-30);
+            this.productTween = this.tweens.add({
+              targets: this.product,
+              x: W + 30,
+              duration: 8000,
+              ease: "Linear",
+              repeat: -1,
+              onRepeat: () => {
+                sfxConveyor();
+              },
+            });
+            // Animate conveyor lines
+            this.tweens.add({
+              targets: this.conveyorLines,
+              x: "+=40",
+              duration: 2000,
+              ease: "Linear",
+              repeat: -1,
+              onRepeat: () => {
+                this.conveyorLines.forEach((l) => {
+                  if (l.x > W) l.setX(l.x - W - 40);
+                });
+              },
+            });
+          }
 
-// ═══════════════════════════════════════════════
-// ZONE COMPLETE
-// ═══════════════════════════════════════════════
-function zoneComplete(){
-  const acc=Math.round(gs.correct/gs.total*100)||0;
-  const starsN=acc>=90?3:acc>=70?2:1;
-  gs.zoneScores[gs.zone]={score:gs.score,stars:starsN,acc};
-  // unlock next zone
-  const nextId=gs.zone+1;
-  if(nextId<zones.length){
-    const nextNode=document.getElementById('node'+nextId);
-    nextNode.classList.remove('locked');nextNode.classList.add('available');
-    document.getElementById('stars'+nextId).textContent='⭐⭐⭐';
-  }
-  document.getElementById('node'+gs.zone).classList.add('complete');
-  document.getElementById('stars'+gs.zone).textContent='⭐'.repeat(starsN)+'☆'.repeat(3-starsN);
-  gs.zonesComplete=gs.zoneScores.filter(Boolean).length;
-  // update pb
-  if(gs.score>gs.pb){gs.pb=gs.score;localStorage.setItem('urq_pb',gs.score);}
-  // show screen
-  document.getElementById('zc-stars').textContent='⭐'.repeat(starsN)+'☆'.repeat(3-starsN);
-  document.getElementById('zc-title').textContent=zones[gs.zone].name+' Complete!';
-  document.getElementById('zc-sub').textContent='Accuracy: '+acc+'%';
-  document.getElementById('zc-score').textContent=gs.score;
-  document.getElementById('zc-acc').textContent=acc+'%';
-  document.getElementById('zc-streak').textContent=gs.bestStreak+'x';
-  playLevelUp();
-  showScreen('screen-zonecomplete');
-}
+          tick() {
+            if (this.answered || this.timeLeft <= 0) return;
+            this.timeLeft--;
+            this.hudTimer.setText("\u{23F1} " + this.timeLeft + "s");
+            if (this.timeLeft <= 5 && this.timeLeft > 0) {
+              beep(300, 0.04, "square", 0.04);
+              this.hudTimer.setColor("#ff4444");
+            }
+            if (this.timeLeft <= 0) {
+              this.timeout();
+            }
+          }
 
-function replayZone(){startZone(gs.zone);}
-function nextZone(){
-  const next=gs.zone+1;
-  if(next<zones.length)startZone(next);
-  else showStats();
-}
-function showStats(){
-  const total=gs.zoneScores.reduce((a,z)=>a+(z?z.score:0),0);
-  document.getElementById('st-score').textContent=total;
-  document.getElementById('st-correct').textContent=gs.correct;
-  document.getElementById('st-streak').textContent=gs.bestStreak+'x';
-  document.getElementById('st-zones').textContent=gs.zonesComplete+'/6';
-  document.getElementById('st-pb').textContent=gs.pb;
-  const stars=gs.zoneScores.reduce((a,z)=>a+(z?z.stars:0),0);
-  const maxS=gs.zonesComplete*3||1;
-  const pct=stars/maxS;
-  document.getElementById('final-stars').textContent=pct>0.85?'⭐⭐⭐':pct>0.6?'⭐⭐':'⭐';
-  showScreen('screen-stats');
-}
+          timeout() {
+            this.answered = true;
+            sfxNo();
+            this.streak = 0;
+            this.combo = 1;
+            this.lives--;
+            this.showFB(false);
+            this.cameras.main.shake(200, 0.01);
+            this.updateHUD();
+            if (this.lives <= 0)
+              this.time.delayedCall(1500, () => this.endGame());
+          }
 
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
-  const el=document.getElementById(id);
-  el.style.display='flex';el.classList.add('active');
-  gsap.fromTo(el,{opacity:0},{opacity:1,duration:.4});
-}
+          loadQ() {
+            if (this.qIdx >= this.questions.length)
+              this.questions.push(...genQuestions());
+            const q = this.questions[this.qIdx];
+            this.answered = false;
+            this.attempts = 0;
+            this.timeLeft = this.baseTime;
+            this.hudTimer.setColor("#ffd700");
 
-// init
-gsap.fromTo('#screen-title',{opacity:0,y:30},{opacity:1,y:0,duration:.8,ease:'power2.out'});
-document.getElementById('st-pb').textContent=gs.pb||'---';
-</script>
+            this.qCat.setText(q.icon + " " + q.cat);
+            this.qText.setText(q.text);
+
+            q.choices.forEach((c, i) => {
+              this.btnTexts[i].setText(
+                String.fromCharCode(65 + i) + ". " + c + " " + q.unit,
+              );
+              this.btns[i].fillColor = 0x0d1527;
+              this.btns[i].setStrokeStyle(2, 0x1a2744);
+              this.btns[i].setAlpha(1);
+              this.btnTexts[i].setAlpha(1);
+              this.btns[i].setInteractive();
+            });
+
+            this.hintBg.setAlpha(0);
+            this.hintTxt.setAlpha(0);
+            this.fbBg.setAlpha(0);
+            this.fbTxt.setAlpha(0);
+            this.nxtBtn.setAlpha(0);
+            this.nxtTxt.setAlpha(0);
+            this.updateHUD();
+          }
+
+          pick(i) {
+            if (this.answered) return;
+            audio();
+            const q = this.questions[this.qIdx];
+            const chosen = q.choices[i];
+
+            if (chosen === q.correctStr) {
+              this.answered = true;
+              sfxOk();
+              this.correct++;
+              this.total++;
+              this.streak++;
+              if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+              this.combo = Math.min(5, 1 + Math.floor(this.streak / 3));
+              const pts =
+                (100 + (this.attempts === 0 ? 50 : 0) + this.streak * 15) *
+                this.combo;
+              this.score += pts;
+              this.xp += 20;
+              if (this.xp >= 100) {
+                this.xp -= 100;
+                this.level++;
+                sfxLvl();
+              }
+
+              // Damage enemy
+              const dmg = 100 / 5;
+              this.enemyHp = Math.max(0, this.enemyHp - dmg);
+              this.enemyHpBar.setDisplaySize(Math.max(0, this.enemyHp * 2), 10);
+              this.tweens.add({
+                targets: this.enemySprite,
+                angle: 10,
+                duration: 80,
+                yoyo: true,
+                repeat: 2,
+              });
+              if (this.enemyHp <= 0) {
+                this.level++;
+                this.enemyHp = 100;
+                this.enemyHpBar.setDisplaySize(200, 10);
+                sfxLvl();
+                this.showLevelBanner();
+              }
+
+              this.btns[i].fillColor = C.ok;
+              this.showFB(true);
+              this.spawnParts(this.btns[i].x, this.btns[i].y, true);
+              this.showPts(pts);
+            } else {
+              sfxNo();
+              this.attempts++;
+              this.btns[i].fillColor = C.err;
+              this.btns[i].setAlpha(0.4);
+              this.btns[i].disableInteractive();
+              this.cameras.main.shake(120, 0.006);
+
+              if (this.attempts >= 2) {
+                this.answered = true;
+                this.total++;
+                this.streak = 0;
+                this.combo = 1;
+                this.lives--;
+                q.choices.forEach((c, j) => {
+                  if (c === q.correctStr) this.btns[j].fillColor = C.ok;
+                });
+                this.showFB(false);
+                if (this.lives <= 0)
+                  this.time.delayedCall(1500, () => this.endGame());
+              } else {
+                this.hintBg.setAlpha(0.8);
+                this.hintTxt.setText("\u{1F4A1} " + q.hint).setAlpha(1);
+              }
+            }
+            this.updateHUD();
+          }
+
+          showFB(ok) {
+            const q = this.questions[this.qIdx];
+            this.fbBg.setAlpha(0.95);
+            this.fbBg.fillColor = ok ? 0x0a2010 : 0x200a0a;
+            this.fbTxt.setText((ok ? "✅ " : "❌ ") + q.explain).setAlpha(1);
+            this.nxtBtn.setAlpha(1);
+            this.nxtTxt.setAlpha(1);
+            this.nxtTxt.setText(this.lives <= 0 ? "RESULTS" : "NEXT UNIT >");
+          }
+
+          showPts(p) {
+            const t = this.add
+              .text(
+                W / 2,
+                200,
+                "+" + p + (this.combo > 1 ? " x" + this.combo : ""),
+                {
+                  fontSize: "24px",
+                  fontFamily: "Arial Black",
+                  color: "#ffd700",
+                  stroke: "#000",
+                  strokeThickness: 3,
+                },
+              )
+              .setOrigin(0.5);
+            this.tweens.add({
+              targets: t,
+              y: 160,
+              alpha: 0,
+              duration: 1000,
+              onComplete: () => t.destroy(),
+            });
+          }
+
+          showLevelBanner() {
+            const bg = this.add
+              .rectangle(W / 2, H / 2, 400, 120, C.panel, 0.95)
+              .setStrokeStyle(2, C.gold)
+              .setDepth(100);
+            const txt = this.add
+              .text(W / 2, H / 2 - 15, "PRODUCTION LEVEL " + this.level + "!", {
+                fontSize: "24px",
+                fontFamily: "Arial Black",
+                color: "#ffd700",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+            const sub = this.add
+              .text(W / 2, H / 2 + 20, "Machine upgraded!", {
+                fontSize: "14px",
+                color: "#00f5c4",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+            this.time.delayedCall(1800, () => {
+              bg.destroy();
+              txt.destroy();
+              sub.destroy();
+            });
+          }
+
+          spawnParts(x, y, ok) {
+            const colors = ok
+              ? [C.teal, C.gold, C.ok, C.white]
+              : [C.err, C.rose];
+            for (let i = 0; i < 14; i++) {
+              const p = this.add.circle(
+                x,
+                y,
+                2 + Math.random() * 3,
+                colors[Math.floor(Math.random() * colors.length)],
+              );
+              this.tweens.add({
+                targets: p,
+                x: x + (Math.random() - 0.5) * 280,
+                y: y + (Math.random() - 0.5) * 180,
+                alpha: 0,
+                scale: 0,
+                duration: 500 + Math.random() * 400,
+                onComplete: () => p.destroy(),
+              });
+            }
+          }
+
+          nextQ() {
+            if (!this.answered) return;
+            sfxClick();
+            if (this.lives <= 0) {
+              this.endGame();
+              return;
+            }
+            this.qIdx++;
+            this.loadQ();
+          }
+
+          updateHUD() {
+            this.hudScore.setText(this.score.toLocaleString());
+            this.hudStreak.setText("\u{1F525} " + this.streak + "x");
+            this.hudLives.setText("❤️".repeat(Math.max(0, this.lives)));
+            this.hudTimer.setText("\u{23F1} " + this.timeLeft + "s");
+            this.hudQ.setText(
+              "Unit " + (this.qIdx + 1) + " | Lv " + this.level,
+            );
+            this.hudXpFill.setDisplaySize(this.xp * 2, 4);
+          }
+
+          endGame() {
+            this.timerEvt.remove();
+            if (this.productTween) this.productTween.stop();
+            this.cameras.main.fadeOut(500);
+            this.time.delayedCall(500, () => {
+              this.scene.start("ResultScene", {
+                score: this.score,
+                correct: this.correct,
+                total: this.total,
+                bestStreak: this.bestStreak,
+                level: this.level,
+                mode: this.mode,
+              });
+            });
+          }
+        }
+
+        // ─── RESULT SCENE ───
+        class ResultScene extends Phaser.Scene {
+          constructor() {
+            super("ResultScene");
+          }
+          init(d) {
+            Object.assign(this, d);
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg).fadeIn(500);
+            const pct =
+              this.total > 0
+                ? Math.round((this.correct / this.total) * 100)
+                : 0;
+
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: this.correct,
+                  maxScore: this.total,
+                  problemsCorrect: this.correct,
+                  problemsAttempted: this.total,
+                  standard: "6.RP.A.2",
+                });
+            } catch (e) {}
+
+            let rank, emoji;
+            if (pct >= 90) {
+              rank = "S — FACTORY LEGEND";
+              emoji = "\u{1F451}";
+            } else if (pct >= 80) {
+              rank = "A — EXCELLENT";
+              emoji = "\u{1F3C6}";
+            } else if (pct >= 70) {
+              rank = "B — GREAT";
+              emoji = "⭐";
+            } else if (pct >= 60) {
+              rank = "C — GOOD TRY";
+              emoji = "\u{1F4AA}";
+            } else {
+              rank = "KEEP TRAINING";
+              emoji = "\u{1F4DA}";
+            }
+
+            this.add
+              .text(W / 2, 80, emoji, { fontSize: "64px" })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 150, "PRODUCTION REPORT", {
+                fontSize: "40px",
+                fontFamily: "Arial Black",
+                color: "#00f5c4",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 200, rank, {
+                fontSize: "20px",
+                color: "#fff",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 260, this.score.toLocaleString(), {
+                fontSize: "52px",
+                fontFamily: "Arial Black",
+                color: "#ffd700",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 300, "POINTS", {
+                fontSize: "12px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+
+            const stats = [
+              { l: "Correct", v: this.correct + "/" + this.total },
+              { l: "Accuracy", v: pct + "%" },
+              { l: "Best Streak", v: this.bestStreak },
+              { l: "Level", v: this.level },
+            ];
+            stats.forEach((s, i) => {
+              const x = 162 + i * 200,
+                y = 400;
+              this.add
+                .rectangle(x, y, 170, 80, C.panel)
+                .setStrokeStyle(1, 0x1a2744);
+              this.add
+                .text(x, y - 10, String(s.v), {
+                  fontSize: "24px",
+                  fontFamily: "Arial Black",
+                  color: "#00f5c4",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 20, s.l, { fontSize: "11px", color: "#64748b" })
+                .setOrigin(0.5);
+            });
+
+            const btn = this.add
+              .rectangle(W / 2, 520, 260, 54, C.teal)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2, 520, "PLAY AGAIN", {
+                fontSize: "20px",
+                fontFamily: "Arial Black",
+                color: "#0a0e1a",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerdown", () => {
+              sfxClick();
+              this.scene.start("TitleScene");
+            });
+            btn.on("pointerover", () => btn.setScale(1.05));
+            btn.on("pointerout", () => btn.setScale(1));
+
+            for (let i = 0; i < 25; i++) {
+              const p = this.add.circle(
+                Math.random() * W,
+                Math.random() * H,
+                2 + Math.random() * 2,
+                [C.teal, C.gold, C.purple][Math.floor(Math.random() * 3)],
+                0.5,
+              );
+              this.tweens.add({
+                targets: p,
+                y: p.y - 200 - Math.random() * 300,
+                alpha: 0,
+                duration: 2000 + Math.random() * 2000,
+                delay: Math.random() * 1000,
+                repeat: -1,
+              });
+            }
+          }
+        }
+
+        new Phaser.Game({
+          type: Phaser.AUTO,
+          parent: "game-container",
+          width: W,
+          height: H,
+          backgroundColor: "#0a0e1a",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          scene: [TitleScene, GameScene, ResultScene],
+        });
+      })();
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

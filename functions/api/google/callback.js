@@ -9,7 +9,7 @@ export async function onRequestGet({ request, env }) {
   const error = url.searchParams.get('error');
   const appBaseUrl = (env.APP_BASE_URL || '').replace(/\/$/, '');
 
-  if (error) return Response.redirect(`${appBaseUrl}/noam-school/?google=error&reason=${encodeURIComponent(error)}`, 302);
+  if (error) return Response.redirect(`${appBaseUrl}/noam-school-v10/?google=error&reason=${encodeURIComponent(error)}`, 302);
   if (!code || !state) return json({ ok: false, error: 'Missing Google OAuth code or state.' }, { status: 400 });
 
   const session = await loadSession(request, env);
@@ -28,7 +28,7 @@ export async function onRequestGet({ request, env }) {
   };
 
   await saveSession(env, session.id, data);
-  return Response.redirect(`${appBaseUrl}/noam-school/?google=connected`, 302, {
+  return Response.redirect(`${appBaseUrl}/noam-school-v10/?google=connected`, 302, {
     headers: { 'set-cookie': sessionCookie(session.id) }
   });
 }

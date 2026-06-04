@@ -1,0 +1,1760 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.G.A.1 · Unit 5" data-standard="6.G.A.1" data-unit="5" />
+    <title>Mission 10: Area of Polygons (6.G.A.1) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        margin: 0;
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--paper);
+        color: var(--ink);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.6;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      a {
+        color: inherit;
+      }
+      .page-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 48px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn-ghost {
+        background: var(--soft-teal);
+        border-color: #a7d8d0;
+        color: #135f60;
+      }
+      .btn:hover {
+        opacity: 0.88;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 24px;
+        align-items: start;
+        margin-bottom: 32px;
+      }
+      .hero-text {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: clamp(22px, 4vw, 38px);
+        box-shadow: var(--shadow);
+      }
+      .hero-text .eyebrow {
+        color: var(--teal);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        line-height: 1.08;
+        color: var(--navy);
+        margin: 0 0 12px;
+      }
+      .hero-text .standards {
+        display: inline-block;
+        background: var(--soft-teal);
+        color: var(--teal);
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+      }
+      .hero-svg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        min-height: 400px;
+      }
+      .section {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 28px;
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+      }
+      .section h2 {
+        color: var(--navy);
+        font-size: 1.5rem;
+        margin: 0 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--soft-teal);
+      }
+      .section h3 {
+        color: var(--teal);
+        font-size: 1.15rem;
+        margin: 20px 0 10px;
+      }
+      .problem-box {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+      }
+      .problem-box strong {
+        color: var(--gold);
+      }
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        background: #fafcff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 14px 14px 14px 54px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--teal);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .step-list .guiding-q {
+        color: var(--teal);
+        font-style: italic;
+        margin-top: 4px;
+        display: block;
+      }
+      .language-box {
+        background: var(--soft-green);
+        border: 2px solid #a3d9a5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .language-box h3 {
+        color: var(--green);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .vocab-card {
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .vocab-card strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        padding: 12px 16px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+      }
+      .rep-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .rep-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #115e60;
+        font-size: 1.05rem;
+      }
+      .role .mission-task {
+        color: var(--teal);
+        font-weight: 600;
+        font-style: italic;
+        margin-top: 6px;
+        display: block;
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px 16px;
+        cursor: pointer;
+        border: 0;
+        width: 100%;
+        background: transparent;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-header:hover {
+        background: #f8fafe;
+      }
+      .phase-time {
+        padding: 5px 10px;
+        border-radius: 99px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .phase-name {
+        font-weight: 800;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 16px 14px;
+        color: var(--muted);
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .checkpoint {
+        background: var(--soft-blue);
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin-top: 8px;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      .challenge-box {
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 12px;
+      }
+      .defense-questions ol {
+        padding-left: 20px;
+      }
+      .defense-questions li {
+        margin-bottom: 8px;
+      }
+      .sentence-starters {
+        background: var(--soft-teal);
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin-top: 12px;
+      }
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .rubric-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .rubric-item strong {
+        color: var(--navy);
+        display: block;
+        margin-bottom: 4px;
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        padding: 20px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .print-workspace {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .topbar,
+        .timer-bar,
+        .timer-controls,
+        .btn,
+        .no-print {
+          display: none !important;
+        }
+        .hero {
+          display: block;
+        }
+        .section,
+        .hero-text,
+        .hero-svg {
+          box-shadow: none;
+          break-inside: avoid;
+          border-color: #999;
+          margin-bottom: 12px;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+          page-break-before: always;
+        }
+        .print-workspace .work-area {
+          border: 1px solid #ccc;
+          min-height: 200px;
+          margin-bottom: 16px;
+          padding: 12px;
+        }
+      }
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .rep-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .page-shell {
+          padding: 14px 0 32px;
+        }
+        .timer-display {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="topbar" aria-label="Mission navigation">
+        <div class="nav-links">
+          <a class="btn btn-secondary" href="/math-lab-missions/"
+            >All Missions</a
+          >
+          <a class="btn btn-secondary" href="/math-lab-missions/mission-9/"
+            >Prev: Mission 9</a
+          >
+          <a class="btn btn-secondary" href="/math-lab-missions/mission-11/"
+            >Next: Mission 11</a
+          >
+        </div>
+        <a class="btn btn-primary" href="/">Neft Hub</a>
+      </nav>
+
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 10 &middot; Unit 5</p>
+          <h1 id="mission-title">Area of Polygons</h1>
+          <span class="standards">6.G.A.1 &middot; Unit 5</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Find the area of triangles and polygons by composing and decomposing.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="scenario">
+            The school is building a new outdoor reading garden. The garden plot
+            is an irregular polygon shaped like an L. The groundskeeper needs
+            your team to calculate the exact area so she can order the right
+            amount of sod (grass). The L-shaped plot has these measurements: the
+            full length is <strong>18 meters</strong>, the full width is
+            <strong>12 meters</strong>, and the cutout rectangle in the
+            upper-right corner is <strong>8 meters</strong> long and
+            <strong>5 meters</strong> wide. She also wants a triangular flower
+            bed with a base of <strong>6 meters</strong> and a height of
+            <strong>4 meters</strong> placed inside the garden.
+          </p>
+        </div>
+        <div
+          class="hero-svg"
+          aria-label="Illustration of L-shaped garden plot with measurements"
+        >
+          <svg
+            viewBox="0 0 400 440"
+            width="400"
+            height="440"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="L-shaped garden with dimensions labeled"
+          >
+            <!-- Grass background for full rectangle -->
+            <rect
+              x="40"
+              y="60"
+              width="320"
+              height="260"
+              rx="4"
+              fill="#c8e6c9"
+              stroke="#2e7d32"
+              stroke-width="2"
+            />
+            <!-- Cutout (upper right) -->
+            <rect
+              x="188"
+              y="60"
+              width="172"
+              height="108"
+              rx="2"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="2"
+              stroke-dasharray="6,4"
+            />
+            <text
+              x="274"
+              y="120"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Cutout
+            </text>
+            <text
+              x="274"
+              y="138"
+              text-anchor="middle"
+              font-size="11"
+              fill="#b7791f"
+            >
+              8 m x 5 m
+            </text>
+
+            <!-- Dimension labels - full width -->
+            <line
+              x1="40"
+              y1="42"
+              x2="360"
+              y2="42"
+              stroke="#23395d"
+              stroke-width="1.5"
+              marker-start="url(#arrowL)"
+              marker-end="url(#arrowR)"
+            />
+            <text
+              x="200"
+              y="36"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              18 m
+            </text>
+
+            <!-- Dimension labels - full height -->
+            <line
+              x1="22"
+              y1="60"
+              x2="22"
+              y2="320"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="16"
+              y="195"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+              transform="rotate(-90,16,195)"
+            >
+              12 m
+            </text>
+
+            <!-- Cutout width -->
+            <line
+              x1="188"
+              y1="52"
+              x2="360"
+              y2="52"
+              stroke="#b7791f"
+              stroke-width="1"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="274"
+              y="48"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              8 m
+            </text>
+
+            <!-- Cutout height -->
+            <line
+              x1="372"
+              y1="60"
+              x2="372"
+              y2="168"
+              stroke="#b7791f"
+              stroke-width="1"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="388"
+              y="118"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              5 m
+            </text>
+
+            <!-- Triangle flower bed -->
+            <polygon
+              points="80,240 140,240 110,200"
+              fill="#f48fb1"
+              stroke="#c2185b"
+              stroke-width="2"
+            />
+            <text
+              x="110"
+              y="232"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#c2185b"
+            >
+              Flower
+            </text>
+            <text
+              x="110"
+              y="256"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="600"
+              fill="#c2185b"
+            >
+              b=6m, h=4m
+            </text>
+
+            <!-- Decomposition guide: two rectangles -->
+            <rect
+              x="40"
+              y="340"
+              width="160"
+              height="80"
+              rx="4"
+              fill="#207a7a"
+              opacity="0.15"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="120"
+              y="375"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              Rectangle A
+            </text>
+            <text
+              x="120"
+              y="392"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+            >
+              10 m x 12 m
+            </text>
+
+            <rect
+              x="200"
+              y="380"
+              width="140"
+              height="40"
+              rx="4"
+              fill="#207a7a"
+              opacity="0.15"
+              stroke="#207a7a"
+              stroke-width="2"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="270"
+              y="405"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              Rectangle B
+            </text>
+            <text
+              x="270"
+              y="418"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+            >
+              8 m x 7 m
+            </text>
+
+            <!-- OR label -->
+            <text
+              x="190"
+              y="367"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Method: Decompose!
+            </text>
+
+            <!-- Arrow markers -->
+            <defs>
+              <marker
+                id="arrowL"
+                markerWidth="6"
+                markerHeight="6"
+                refX="3"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M6,0 L0,3 L6,6" fill="#23395d" />
+              </marker>
+              <marker
+                id="arrowR"
+                markerWidth="6"
+                markerHeight="6"
+                refX="3"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M0,0 L6,3 L0,6" fill="#23395d" />
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Investigation -->
+      <section class="section" id="investigation">
+        <h2>Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> Find the area of the L-shaped garden
+          plot (full rectangle is 18 m x 12 m with an 8 m x 5 m cutout). Then
+          find the area of the triangular flower bed (base = 6 m, height = 4 m).
+          Finally, calculate how much sod is needed: garden area minus the
+          flower bed area.
+        </div>
+
+        <h3>Visual Model: Decomposing the L-Shape</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 740 300"
+            width="740"
+            height="300"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Two methods for finding L-shaped area"
+          >
+            <!-- Method 1: Subtract -->
+            <rect
+              x="10"
+              y="10"
+              width="340"
+              height="280"
+              rx="8"
+              fill="#fff6df"
+              stroke="#ead39d"
+              stroke-width="1.5"
+            />
+            <text
+              x="180"
+              y="35"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              Method 1: Full Rectangle Minus Cutout
+            </text>
+
+            <!-- Full rect -->
+            <rect
+              x="40"
+              y="55"
+              width="180"
+              height="120"
+              rx="3"
+              fill="#c8e6c9"
+              stroke="#2e7d32"
+              stroke-width="2"
+            />
+            <text
+              x="130"
+              y="120"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#2e7d32"
+            >
+              18 x 12 = 216 m&sup2;
+            </text>
+
+            <!-- Minus sign -->
+            <text
+              x="240"
+              y="120"
+              text-anchor="middle"
+              font-size="28"
+              font-weight="900"
+              fill="#b42318"
+            >
+              &minus;
+            </text>
+
+            <!-- Cutout rect -->
+            <rect
+              x="260"
+              y="70"
+              width="75"
+              height="50"
+              rx="3"
+              fill="#fff"
+              stroke="#b7791f"
+              stroke-width="2"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="297"
+              y="100"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              8 x 5 = 40 m&sup2;
+            </text>
+
+            <!-- Result -->
+            <rect
+              x="40"
+              y="195"
+              width="290"
+              height="40"
+              rx="6"
+              fill="#207a7a"
+            />
+            <text
+              x="185"
+              y="220"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="800"
+              fill="#fff"
+            >
+              216 &minus; 40 = 176 m&sup2;
+            </text>
+
+            <!-- Minus triangle -->
+            <text
+              x="110"
+              y="260"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              Then subtract the flower bed:
+            </text>
+            <text
+              x="110"
+              y="280"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#c2185b"
+            >
+              &frac12; x 6 x 4 = 12 m&sup2;
+            </text>
+            <text
+              x="280"
+              y="270"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Sod = 176 &minus; 12 = 164 m&sup2;
+            </text>
+
+            <!-- Method 2: Compose -->
+            <rect
+              x="380"
+              y="10"
+              width="350"
+              height="280"
+              rx="8"
+              fill="#ecf8f6"
+              stroke="#a7d8d0"
+              stroke-width="1.5"
+            />
+            <text
+              x="555"
+              y="35"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              Method 2: Add Two Rectangles
+            </text>
+
+            <!-- Rect A -->
+            <rect
+              x="410"
+              y="55"
+              width="100"
+              height="120"
+              rx="3"
+              fill="#b2dfdb"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="460"
+              y="115"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#115e60"
+            >
+              A: 10 x 12
+            </text>
+            <text
+              x="460"
+              y="132"
+              text-anchor="middle"
+              font-size="11"
+              fill="#115e60"
+            >
+              = 120 m&sup2;
+            </text>
+
+            <!-- Plus sign -->
+            <text
+              x="530"
+              y="115"
+              text-anchor="middle"
+              font-size="28"
+              font-weight="900"
+              fill="#2f7d32"
+            >
+              +
+            </text>
+
+            <!-- Rect B -->
+            <rect
+              x="555"
+              y="85"
+              width="80"
+              height="70"
+              rx="3"
+              fill="#b2dfdb"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="595"
+              y="120"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#115e60"
+            >
+              B: 8 x 7
+            </text>
+            <text
+              x="595"
+              y="137"
+              text-anchor="middle"
+              font-size="11"
+              fill="#115e60"
+            >
+              = 56 m&sup2;
+            </text>
+
+            <!-- Result -->
+            <rect
+              x="410"
+              y="195"
+              width="290"
+              height="40"
+              rx="6"
+              fill="#207a7a"
+            />
+            <text
+              x="555"
+              y="220"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="800"
+              fill="#fff"
+            >
+              120 + 56 = 176 m&sup2;
+            </text>
+
+            <text
+              x="480"
+              y="260"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              Then subtract the flower bed:
+            </text>
+            <text
+              x="480"
+              y="280"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#c2185b"
+            >
+              &frac12; x 6 x 4 = 12 m&sup2;
+            </text>
+            <text
+              x="650"
+              y="270"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Sod = 176 &minus; 12 = 164 m&sup2;
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Sketch the L-shape.</strong> Draw the full 18 m x 12 m
+            rectangle on your paper. Then mark the cutout: 8 m wide and 5 m tall
+            in the upper-right corner. Label all sides.
+            <span class="guiding-q"
+              >How many sides does the L-shape have? Can you label every side
+              length?</span
+            >
+          </li>
+          <li>
+            <strong>Choose a decomposition method.</strong> You can either (a)
+            find the area of the full rectangle and subtract the cutout, or (b)
+            split the L into two smaller rectangles and add their areas.
+            <span class="guiding-q"
+              >Which method feels easier for your team? Do both methods give the
+              same answer?</span
+            >
+          </li>
+          <li>
+            <strong>Calculate the L-shape area.</strong> Method A: 18 x 12 = 216
+            m&sup2;, then 216 - (8 x 5) = 216 - 40 = 176 m&sup2;. Method B: find
+            the dimensions of each sub-rectangle, then add.
+            <span class="guiding-q"
+              >If you use Method B, how do you figure out the missing side
+              lengths of each rectangle?</span
+            >
+          </li>
+          <li>
+            <strong>Find the triangle area.</strong> Use the formula: Area =
+            &frac12; x base x height = &frac12; x 6 x 4 = 12 m&sup2;. The flower
+            bed takes up 12 square meters inside the garden.
+            <span class="guiding-q"
+              >Why do we multiply by &frac12;? What shape would it be without
+              the &frac12;?</span
+            >
+          </li>
+          <li>
+            <strong>Calculate the sod needed.</strong> Subtract the flower bed
+            from the L-shape: 176 - 12 = 164 m&sup2;. This is the area that
+            needs grass.
+            <span class="guiding-q"
+              >Why do we subtract the flower bed area instead of adding
+              it?</span
+            >
+          </li>
+          <li>
+            <strong>Verify with both methods.</strong> If you used Method A, try
+            Method B as a check. Both should give 176 m&sup2; for the L-shape.
+            <span class="guiding-q"
+              >Why do compose and decompose methods always give the same total
+              area?</span
+            >
+          </li>
+        </ol>
+
+        <!-- Language Box -->
+        <div class="language-box">
+          <h3>Language Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <strong>area</strong> &mdash; the amount of flat space inside a
+              shape, measured in square units (m&sup2;)
+            </div>
+            <div class="vocab-card">
+              <strong>compose</strong> &mdash; to put smaller shapes together to
+              make a bigger shape
+            </div>
+            <div class="vocab-card">
+              <strong>decompose</strong> &mdash; to break a big shape into
+              smaller shapes that are easier to measure
+            </div>
+            <div class="vocab-card">
+              <strong>base (b)</strong> &mdash; the bottom side of a shape that
+              you use in the area formula
+            </div>
+            <div class="vocab-card">
+              <strong>height (h)</strong> &mdash; the straight-up distance from
+              the base to the top, measured at a right angle
+            </div>
+            <div class="vocab-card">
+              <strong>polygon</strong> &mdash; a closed flat shape with straight
+              sides (triangle, rectangle, trapezoid)
+            </div>
+            <div class="vocab-card">
+              <strong>square meter (m&sup2;)</strong> &mdash; a unit for
+              measuring area; a square that is 1 meter on each side
+            </div>
+            <div class="vocab-card">
+              <strong>composite shape</strong> &mdash; a shape made of two or
+              more simpler shapes put together
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <h4 style="margin: 0 0 8px; color: var(--green)">
+              Sentence Frames
+            </h4>
+            <p>
+              "I decomposed the L-shape into _____ and _____, so the total area
+              is _____ + _____ = _____ m&sup2;."
+            </p>
+            <p>
+              "The area of the triangle is &frac12; x _____ x _____ = _____
+              m&sup2; because a triangle is half of a rectangle."
+            </p>
+            <p>
+              "The garden needs _____ m&sup2; of sod because _____ minus _____
+              equals _____."
+            </p>
+          </div>
+        </div>
+
+        <!-- Multiple Representations -->
+        <h3>Multiple Representations</h3>
+        <div class="rep-grid">
+          <div class="rep-card">
+            <h4>Labeled Diagram</h4>
+            <p>
+              Draw the L-shape on grid paper with 1 cm = 1 m. Label every side.
+              Shade the cutout differently. Count squares as a check: you should
+              count close to 176 shaded squares.
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: visualizing which part is garden and which is cutout
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Equation Chain</h4>
+            <p>
+              Full rectangle: 18 x 12 = 216 m&sup2;<br />
+              Cutout: 8 x 5 = 40 m&sup2;<br />
+              L-shape: 216 - 40 = 176 m&sup2;<br />
+              Flower bed: &frac12; x 6 x 4 = 12 m&sup2;<br />
+              Sod: 176 - 12 = 164 m&sup2;
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: showing the calculation order clearly
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Area Table</h4>
+            <p>
+              Make a table: Shape | Formula | Dimensions | Area. List the full
+              rectangle, cutout, L-shape (full minus cutout), triangle, and
+              final sod area in rows.
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: organizing all the parts in one place
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team Roles -->
+      <section class="section" id="roles">
+        <h2>Team Roles</h2>
+        <div class="role-grid">
+          <div class="role">
+            <strong>Facilitator</strong>
+            <span
+              >Keeps the group on track, watches the timer, makes sure everyone
+              speaks.</span
+            >
+            <span class="mission-task"
+              >Mission 10 task: Make sure the team finds the L-shape area,
+              triangle area, AND the final sod amount.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Model Builder</strong>
+            <span
+              >Draws the shapes, labels dimensions, and creates diagrams showing
+              decomposition.</span
+            >
+            <span class="mission-task"
+              >Mission 10 task: Draw the L-shape with labeled sides, show the
+              decomposition lines, and shade the flower bed triangle.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Precision Checker</strong>
+            <span
+              >Verifies formulas are correct, checks arithmetic, and confirms
+              units (m&sup2;).</span
+            >
+            <span class="mission-task"
+              >Mission 10 task: Use BOTH methods (subtract cutout and add
+              sub-rectangles) to verify the L-shape area is 176 m&sup2;. Check
+              that &frac12; x 6 x 4 = 12.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Reporter</strong>
+            <span
+              >Prepares the defense: claim, evidence, and one mistake the team
+              caught.</span
+            >
+            <span class="mission-task"
+              >Mission 10 task: Explain WHY the team decomposed the shape the
+              way they did and how they know the answer is correct.</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Timed Phases -->
+      <section class="section" id="phases">
+        <h2>Timed Lab Phases</h2>
+        <div class="timer-bar">
+          <div>
+            <strong id="activePhaseLabel">Ready</strong>
+            <div style="color: var(--muted); font-size: 0.9rem">
+              Click a phase, then press Start.
+            </div>
+          </div>
+          <div class="timer-display" id="timerDisplay" aria-live="polite">
+            03:00
+          </div>
+          <div class="timer-controls">
+            <button class="btn btn-primary" id="startTimer">Start</button>
+            <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+            <button class="btn btn-secondary" id="resetTimer">Reset</button>
+          </div>
+        </div>
+        <div class="phase-cards" id="phaseCards">
+          <article class="phase-card open" data-minutes="3">
+            <button class="phase-header" data-phase="0">
+              <span class="phase-time">3 min</span>
+              <span class="phase-name">Launch</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Read the scenario out loud.</strong> Assign roles.
+                Underline all dimensions: 18 m, 12 m, 8 m, 5 m, 6 m, 4 m.
+              </p>
+              <ul>
+                <li>
+                  Sketch a rough L-shape in the air or on paper. Where is the
+                  cutout?
+                </li>
+                <li>
+                  Which area formulas will you need? (rectangle, triangle)
+                </li>
+                <li>What does "decompose" mean in your own words?</li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: Every teammate can point to the cutout and name the
+                formula for rectangles and triangles.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="6">
+            <button class="phase-header" data-phase="1">
+              <span class="phase-time">6 min</span>
+              <span class="phase-name">Build</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Draw the L-shape with labels.</strong> Choose a
+                decomposition method and calculate the L-shape area.
+              </p>
+              <ul>
+                <li>Label every side of the L-shape with its measurement.</li>
+                <li>Draw lines showing how you split or subtract.</li>
+                <li>
+                  Calculate each sub-area and add/subtract to get the total.
+                </li>
+                <li>Write the area formula for the triangle flower bed.</li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: The team has a labeled diagram and the L-shape area
+                (176 m&sup2;).
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="5">
+            <button class="phase-header" data-phase="2">
+              <span class="phase-time">5 min</span>
+              <span class="phase-name">Solve</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong
+                  >Calculate the flower bed area and final sod needed.</strong
+                >
+                Then verify using the second method.
+              </p>
+              <ul>
+                <li>Triangle area: &frac12; x 6 x 4 = 12 m&sup2;</li>
+                <li>Sod needed: 176 - 12 = 164 m&sup2;</li>
+                <li>
+                  Verify: use the OTHER decomposition method. Do you still get
+                  176 m&sup2;?
+                </li>
+                <li>
+                  Does the answer make sense? Is 164 m&sup2; a reasonable amount
+                  of grass?
+                </li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: Both methods agree. The final answer is 164 m&sup2;
+                of sod.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="4">
+            <button class="phase-header" data-phase="3">
+              <span class="phase-time">4 min</span>
+              <span class="phase-name">Defend</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Prepare your presentation.</strong> Show both
+                decomposition methods, the triangle calculation, and the final
+                answer.
+              </p>
+              <ul>
+                <li>
+                  State your claim: "The garden needs 164 m&sup2; of sod."
+                </li>
+                <li>Point to your diagram as evidence.</li>
+                <li>Explain why compose and decompose both work.</li>
+                <li>
+                  Share one mistake your team caught (wrong dimension, forgot
+                  &frac12;, etc.).
+                </li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: The Reporter can walk through the full solution in
+                under 60 seconds.
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Challenge -->
+      <section class="section" id="challenge">
+        <h2>Challenge Zone</h2>
+        <div class="challenge-box">
+          <strong>Extension:</strong> The groundskeeper also wants to add a
+          parallelogram-shaped herb garden with a base of 5 m and a height of 3
+          m. Find the area of the herb garden. Now how much sod is needed?
+          (Hint: subtract the herb garden area too.)
+        </div>
+        <div class="whatif">
+          <strong>What If?</strong> What if the cutout were 10 m x 6 m instead
+          of 8 m x 5 m? How would the sod amount change? Would the L-shape still
+          look like an L, or would it become a different shape?
+        </div>
+        <div class="whatif">
+          <strong>Real-Life Connection:</strong> Think about the floor plan of
+          your home or school. Can you find an L-shaped room or hallway? How
+          would you measure the floor area to buy carpet or tile? Every
+          composite shape in real life uses the same decompose-and-add strategy.
+        </div>
+      </section>
+
+      <!-- Defense Preparation -->
+      <section class="section" id="defense">
+        <h2>Defense Preparation</h2>
+        <div class="defense-questions">
+          <h3>Questions Your Team Must Answer</h3>
+          <ol>
+            <li>
+              How did you decompose the L-shape? What sub-shapes did you use?
+            </li>
+            <li>
+              What is the area of the full L-shaped garden? Show the
+              calculation.
+            </li>
+            <li>
+              Why is the triangle formula &frac12; x base x height? What would
+              happen if you forgot the &frac12;?
+            </li>
+            <li>
+              How much sod does the groundskeeper need? What did you subtract
+              and why?
+            </li>
+            <li>
+              How do you know both decomposition methods give the same answer?
+            </li>
+          </ol>
+        </div>
+        <div class="sentence-starters">
+          <h3 style="margin-top: 0">Sentence Starters for Your Defense</h3>
+          <p>"We decomposed the L-shape by _____ because _____."</p>
+          <p>
+            "The total area is _____ m&sup2;, and we verified it using a second
+            method that also gave _____."
+          </p>
+          <p>
+            "The flower bed takes up _____ m&sup2;, so the sod area is _____
+            minus _____ equals _____ m&sup2;."
+          </p>
+          <p>"One mistake we caught was _____. We fixed it by _____."</p>
+        </div>
+        <div class="rubric-grid">
+          <div class="rubric-item">
+            <strong>Accuracy (4 pts)</strong>
+            All area calculations are correct with proper units (m&sup2;).
+            Triangle uses &frac12; x b x h.
+          </div>
+          <div class="rubric-item">
+            <strong>Diagram (4 pts)</strong>
+            L-shape is drawn with all dimensions labeled. Decomposition lines
+            are clearly shown.
+          </div>
+          <div class="rubric-item">
+            <strong>Reasoning (4 pts)</strong>
+            Team explains why decomposing works and why the triangle is
+            subtracted.
+          </div>
+          <div class="rubric-item">
+            <strong>Communication (4 pts)</strong>
+            Reporter uses vocabulary (area, compose, decompose, base, height)
+            and all teammates can explain.
+          </div>
+        </div>
+      </section>
+
+      <!-- Exit Product -->
+      <section class="section" id="exit">
+        <h2>Exit Product</h2>
+        <div class="exit-box">
+          <h3 style="margin-top: 0; color: var(--navy)">
+            Deliver: Garden Sod Order Report
+          </h3>
+          <p>Your team submits a one-page report that includes:</p>
+          <ul class="checklist">
+            <li>
+              A labeled diagram of the L-shaped garden with all dimensions
+            </li>
+            <li>The decomposition shown with lines on the diagram</li>
+            <li>Area calculation using Method 1 (subtract cutout)</li>
+            <li>
+              Area calculation using Method 2 (add sub-rectangles) as a check
+            </li>
+            <li>Triangle flower bed area calculation with formula shown</li>
+            <li>Final sod amount with units: _____ m&sup2;</li>
+            <li>
+              A 3-sentence defense: claim, evidence, and reasonableness check
+            </li>
+          </ul>
+          <h4 style="color: var(--navy); margin-top: 16px">Self-Assessment</h4>
+          <ul class="checklist">
+            <li>
+              I can decompose a composite shape into rectangles and triangles.
+            </li>
+            <li>I used the correct area formula for each shape.</li>
+            <li>I verified my answer using two different methods.</li>
+            <li>I included square units (m&sup2;) in my answer.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Print workspace -->
+      <section class="print-workspace">
+        <h2>Student Work Space</h2>
+        <p><strong>L-Shape Diagram (label all sides):</strong></p>
+        <div class="work-area"></div>
+        <p><strong>Method 1 Calculation (Subtract Cutout):</strong></p>
+        <div class="work-area"></div>
+        <p><strong>Method 2 Calculation (Add Sub-Rectangles):</strong></p>
+        <div class="work-area"></div>
+        <p><strong>Triangle Flower Bed Area:</strong></p>
+        <div class="work-area" style="min-height: 100px"></div>
+        <p><strong>Final Sod Calculation and Defense:</strong></p>
+        <div class="work-area"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var activePhase = 0,
+          remaining = phases[0].minutes * 60,
+          tid = null;
+        var display = document.getElementById("timerDisplay");
+        var label = document.getElementById("activePhaseLabel");
+        var cards = document.querySelectorAll(".phase-card");
+        function fmt(s) {
+          var m = Math.floor(s / 60),
+            r = s % 60;
+          return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+        }
+        function setPhase(i) {
+          activePhase = i;
+          remaining = phases[i].minutes * 60;
+          label.textContent = phases[i].name + " phase";
+          display.textContent = fmt(remaining);
+          cards.forEach(function (c, j) {
+            c.classList.toggle("open", j === i);
+          });
+        }
+        function stop() {
+          if (tid) {
+            clearInterval(tid);
+            tid = null;
+          }
+        }
+        document
+          .getElementById("phaseCards")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            stop();
+            setPhase(Number(h.dataset.phase));
+          });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (tid) return;
+            tid = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              display.textContent = fmt(remaining);
+              if (remaining === 0) {
+                stop();
+                label.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document.getElementById("pauseTimer").addEventListener("click", stop);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stop();
+            setPhase(activePhase);
+          });
+        setPhase(0);
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

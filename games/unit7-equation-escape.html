@@ -1,0 +1,1976 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equation Escape — Dungeon Escape</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0a0a;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <script>
+      // Equation Escape — Dungeon Escape
+      // Grade 6: 6.EE.5, 6.EE.7, 6.EE.8
+      // Neft Teacher
+
+      const W = 1024,
+        H = 768;
+      const LS_KEY = "equationEscape_highScore";
+
+      // --- SOUND ---
+      class SFX {
+        constructor() {
+          this.ctx = null;
+        }
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        }
+        tone(f, d, t = "sine", v = 0.1) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        }
+        noise(d, v = 0.05) {
+          if (!this.ctx) return;
+          try {
+            const bufSize = this.ctx.sampleRate * d;
+            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++)
+              data[i] = (Math.random() * 2 - 1) * v;
+            const src = this.ctx.createBufferSource();
+            const g = this.ctx.createGain();
+            src.buffer = buf;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            src.connect(g);
+            g.connect(this.ctx.destination);
+            src.start();
+          } catch (e) {}
+        }
+        unlock() {
+          this.tone(523, 0.1);
+          setTimeout(() => this.tone(659, 0.1), 80);
+          setTimeout(() => this.tone(784, 0.15), 160);
+          setTimeout(() => this.tone(1047, 0.2), 240);
+        }
+        trap() {
+          this.tone(200, 0.4, "sawtooth", 0.15);
+          setTimeout(() => this.tone(150, 0.3, "sawtooth", 0.12), 150);
+          this.noise(0.3, 0.08);
+        }
+        glassBreak() {
+          this.noise(0.5, 0.12);
+          this.tone(2000, 0.05, "sine", 0.08);
+          setTimeout(() => this.noise(0.3, 0.06), 100);
+          setTimeout(() => this.tone(1500, 0.04, "sine", 0.05), 150);
+        }
+        click() {
+          this.tone(600, 0.05);
+        }
+        hover() {
+          this.tone(800, 0.03, "sine", 0.04);
+        }
+        door() {
+          this.tone(200, 0.15, "square");
+          setTimeout(() => this.tone(300, 0.15, "square"), 100);
+          setTimeout(() => this.tone(400, 0.2, "square"), 200);
+        }
+        step() {
+          this.tone(100, 0.05, "triangle", 0.04);
+        }
+        boss() {
+          [523, 659, 784, 880, 1047].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.12), i * 80),
+          );
+        }
+        fail() {
+          [400, 300, 200, 150].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.2, "sawtooth"), i * 120),
+          );
+        }
+        key() {
+          this.tone(880, 0.1);
+          setTimeout(() => this.tone(1100, 0.15), 80);
+        }
+        streak3() {
+          [660, 880, 1100].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.1, "square", 0.08), i * 60),
+          );
+        }
+        streak5() {
+          [523, 659, 784, 1047, 1319].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.12, "square", 0.1), i * 50),
+          );
+        }
+        streak7() {
+          [523, 659, 784, 880, 1047, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "sine", 0.12), i * 45),
+          );
+        }
+        powerup() {
+          [400, 600, 800, 1200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.1, "sine", 0.1), i * 50),
+          );
+        }
+        phaseTransition() {
+          [300, 400, 500, 600, 800, 1000].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "triangle", 0.08), i * 70),
+          );
+        }
+        victory3Star() {
+          const melody = [523, 659, 784, 1047, 784, 1047, 1319, 1568];
+          melody.forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.2, "sine", 0.12), i * 100),
+          );
+        }
+        timeBonus() {
+          this.tone(1200, 0.08, "sine", 0.06);
+          setTimeout(() => this.tone(1500, 0.08, "sine", 0.06), 60);
+        }
+        ambientDungeon() {
+          for (let i = 0; i < 3; i++) {
+            setTimeout(
+              () => this.tone(80 + Math.random() * 40, 0.8, "sine", 0.015),
+              i * 300,
+            );
+          }
+        }
+      }
+      const sfx = new SFX();
+
+      // --- QUESTION GENERATION ---
+      function genQuestions() {
+        const qs = [];
+        function shuffle(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
+        }
+        function mkQ(text, correct, wrongs, explain, tier, room) {
+          const opts = shuffle([correct, ...wrongs]);
+          return { text, correct, options: opts, explain, tier, room };
+        }
+        // Tier 1: One-step add/sub
+        const rooms1 = ["Lab", "Lab", "Lab", "Lab", "Lab"];
+        for (let i = 0; i < 5; i++) {
+          const x = Phaser.Math.Between(3, 15),
+            b = Phaser.Math.Between(2, 12);
+          const ans = x - b;
+          if (Phaser.Math.Between(0, 1)) {
+            qs.push(
+              mkQ(
+                `Solve: x + ${b} = ${x}`,
+                `x = ${ans}`,
+                [`x = ${x + b}`, `x = ${b}`, `x = ${ans + 1}`],
+                `Subtract ${b} from both sides: x = ${x} - ${b} = ${ans}`,
+                1,
+                rooms1[i],
+              ),
+            );
+          } else {
+            const s = Phaser.Math.Between(2, 10),
+              r = s + Phaser.Math.Between(3, 12);
+            qs.push(
+              mkQ(
+                `Solve: x - ${s} = ${r - s}`,
+                `x = ${r}`,
+                [`x = ${r - 2 * s}`, `x = ${s}`, `x = ${r + 1}`],
+                `Add ${s} to both sides: x = ${r - s} + ${s} = ${r}`,
+                1,
+                rooms1[i],
+              ),
+            );
+          }
+        }
+        // Tier 2: Multiply/divide
+        const rooms2 = ["Castle", "Castle", "Castle", "Castle", "Castle"];
+        for (let i = 0; i < 5; i++) {
+          const c = Phaser.Math.Between(2, 9),
+            ans = Phaser.Math.Between(2, 12);
+          const prod = c * ans;
+          if (Phaser.Math.Between(0, 1)) {
+            qs.push(
+              mkQ(
+                `Solve: ${c}x = ${prod}`,
+                `x = ${ans}`,
+                [`x = ${prod + c}`, `x = ${c}`, `x = ${ans + 2}`],
+                `Divide both sides by ${c}: x = ${prod} / ${c} = ${ans}`,
+                2,
+                rooms2[i],
+              ),
+            );
+          } else {
+            const d = Phaser.Math.Between(2, 6),
+              q2 = Phaser.Math.Between(3, 10);
+            qs.push(
+              mkQ(
+                `Solve: x / ${d} = ${q2}`,
+                `x = ${d * q2}`,
+                [
+                  `x = ${q2 + d}`,
+                  `x = ${q2 - d > 0 ? q2 - d : q2}`,
+                  `x = ${d * q2 + d}`,
+                ],
+                `Multiply both sides by ${d}: x = ${q2} x ${d} = ${d * q2}`,
+                2,
+                rooms2[i],
+              ),
+            );
+          }
+        }
+        // Tier 3: Inequalities + word problems
+        for (let i = 0; i < 3; i++) {
+          const b2 = Phaser.Math.Between(3, 8),
+            target = b2 + Phaser.Math.Between(2, 6);
+          const boundary = target - b2;
+          const correct_val = boundary + Phaser.Math.Between(1, 5);
+          qs.push(
+            mkQ(
+              `Which value of x solves x + ${b2} > ${target}?`,
+              `x = ${correct_val}`,
+              [`x = ${boundary}`, `x = ${boundary - 1}`, `x = ${b2}`],
+              `x + ${b2} > ${target} means x > ${boundary}. Only x = ${correct_val} works.`,
+              3,
+              "Spaceship",
+            ),
+          );
+        }
+        qs.push(
+          mkQ(
+            "A number line shows an open circle at 5 with arrow pointing right. Which inequality?",
+            "x > 5",
+            ["x < 5", "x >= 5", "x <= 5"],
+            "Open circle = not included. Arrow right = greater than. So x > 5.",
+            3,
+            "Spaceship",
+          ),
+        );
+        qs.push(
+          mkQ(
+            "Sam earns $7/hour. He needs at least $49. Which inequality for hours (h)?",
+            "7h >= 49",
+            ["7 + h >= 49", "7h < 49", "h / 7 >= 49"],
+            "$7 per hour x h hours >= $49 needed. So 7h >= 49. h >= 7.",
+            3,
+            "Spaceship",
+          ),
+        );
+        return shuffle(qs).slice(0, 15);
+      }
+
+      // --- ROOM THEMES ---
+      const THEMES = {
+        Lab: {
+          bg: 0x1a1a2e,
+          wall: 0x16213e,
+          floor: 0x0f3460,
+          door: 0x533483,
+          accent: 0xe94560,
+          name: "Science Lab",
+          particleColor: [0x00ff88, 0x00ffcc, 0x88ff00],
+          ambientColor: 0x00ff88,
+        },
+        Castle: {
+          bg: 0x2d1b00,
+          wall: 0x4a2c0a,
+          floor: 0x3d2914,
+          door: 0x8b6914,
+          accent: 0xd4a017,
+          name: "Medieval Castle",
+          particleColor: [0xffd700, 0xff8c00, 0xffaa00],
+          ambientColor: 0xffd700,
+        },
+        Spaceship: {
+          bg: 0x0a0e27,
+          wall: 0x1a1f4e,
+          floor: 0x12163a,
+          door: 0x4361ee,
+          accent: 0x00d4ff,
+          name: "Space Station",
+          particleColor: [0x00d4ff, 0x4361ee, 0x8b5cf6],
+          ambientColor: 0x00d4ff,
+        },
+      };
+
+      // --- BOOT ---
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          this.scene.start("Title");
+        }
+      }
+
+      // --- TITLE ---
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          sfx.init();
+          const cx = W / 2,
+            cy = H / 2;
+          this.cameras.main.setBackgroundColor("#0a0a0a");
+
+          // Ambient floating dust particles
+          this.add.particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 3, max: 12 },
+            angle: { min: 250, max: 290 },
+            scale: { start: 0.15, end: 0 },
+            alpha: { start: 0.4, end: 0 },
+            lifespan: { min: 3000, max: 6000 },
+            tint: [0x4a5568, 0x718096, 0x2d3748],
+            quantity: 1,
+            frequency: 200,
+            blendMode: "ADD",
+          });
+
+          // Flickering torch particles
+          for (let i = 0; i < 4; i++) {
+            const tx = 150 + i * 250,
+              ty = 200;
+            this.add.rectangle(tx, ty + 30, 8, 40, 0x4a2c0a).setDepth(1);
+            this.add
+              .particles(tx, ty, "__WHITE", {
+                speed: { min: 10, max: 40 },
+                angle: { min: 260, max: 280 },
+                scale: { start: 0.5, end: 0 },
+                lifespan: 500,
+                tint: [0xff6600, 0xff9900, 0xffcc00],
+                quantity: 2,
+                frequency: 50,
+                blendMode: "ADD",
+              })
+              .setDepth(2);
+          }
+          // Stone wall background
+          for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 14; c++) {
+              const off = (r % 2) * 40;
+              this.add
+                .rectangle(off + c * 80 + 40, r * 50 + 20, 76, 46, 0x1e293b)
+                .setStrokeStyle(1, 0x334155, 0.3);
+            }
+          }
+
+          // Title with animated glow
+          const titleEq = this.add
+            .text(cx, 100, "EQUATION", {
+              fontSize: "58px",
+              fontFamily: "monospace",
+              color: "#e94560",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          const titleEsc = this.add
+            .text(cx, 165, "ESCAPE", {
+              fontSize: "68px",
+              fontFamily: "monospace",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          // Title pulse animation
+          this.tweens.add({
+            targets: titleEq,
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          this.tweens.add({
+            targets: titleEsc,
+            scaleX: 1.03,
+            scaleY: 1.03,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+            delay: 500,
+          });
+
+          this.add
+            .text(cx, 220, "Dungeon Escape", {
+              fontSize: "24px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 250, "6.EE.5 / 6.EE.7 / 6.EE.8 | Neft Teacher", {
+              fontSize: "13px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5);
+
+          // High score display
+          const highScore = parseInt(localStorage.getItem(LS_KEY) || "0");
+          if (highScore > 0) {
+            this.add
+              .text(cx, 275, `HIGH SCORE: ${highScore}`, {
+                fontSize: "14px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+          }
+
+          // Character
+          const hero = this.add.graphics().setPosition(cx, 370);
+          hero.fillStyle(0x3b82f6);
+          hero.fillRoundedRect(-20, -35, 40, 50, 6);
+          hero.fillStyle(0xfcd34d);
+          hero.fillCircle(0, -45, 18);
+          hero.fillStyle(0x1e3a5f);
+          hero.fillCircle(-6, -48, 3);
+          hero.fillCircle(6, -48, 3);
+          hero.fillStyle(0x475569);
+          hero.fillRect(-15, 15, 12, 25);
+          hero.fillRect(3, 15, 12, 25);
+          this.tweens.add({
+            targets: hero,
+            y: hero.y - 8,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          // Key icon
+          const keyG = this.add.graphics().setPosition(cx + 70, 350);
+          keyG.fillStyle(0xfbbf24);
+          keyG.fillCircle(0, 0, 10);
+          keyG.fillCircle(0, 0, 5);
+          keyG.fillRect(8, -3, 20, 6);
+          keyG.fillRect(22, -6, 4, 12);
+          keyG.fillRect(28, -6, 4, 12);
+          this.tweens.add({
+            targets: keyG,
+            angle: 15,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          // Room previews with hover animation
+          const rooms = [
+            { name: "Science Lab", color: 0xe94560, icon: "🔬" },
+            { name: "Castle", color: 0xd4a017, icon: "🏰" },
+            { name: "Space Station", color: 0x4361ee, icon: "🚀" },
+          ];
+          rooms.forEach((r, i) => {
+            const rx = cx - 280 + i * 280,
+              ry = 490;
+            const roomBox = this.add
+              .rectangle(rx, ry, 220, 80, 0x1e293b)
+              .setStrokeStyle(2, r.color);
+            this.add
+              .text(rx, ry - 15, r.icon, { fontSize: "28px" })
+              .setOrigin(0.5);
+            this.add
+              .text(rx, ry + 18, r.name, {
+                fontSize: "15px",
+                color: "#" + r.color.toString(16).padStart(6, "0"),
+              })
+              .setOrigin(0.5);
+            // Gentle float
+            this.tweens.add({
+              targets: roomBox,
+              y: ry - 3,
+              duration: 1500 + i * 300,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+          });
+          this.add
+            .text(
+              cx,
+              545,
+              "Navigate 3 themed rooms — solve equations to unlock doors!",
+              { fontSize: "14px", color: "#64748b" },
+            )
+            .setOrigin(0.5);
+
+          // Start button with glow
+          const btnGlow = this.add
+            .rectangle(cx, 620, 270, 68, 0xe94560, 0.3)
+            .setDepth(0);
+          this.tweens.add({
+            targets: btnGlow,
+            scaleX: 1.1,
+            scaleY: 1.15,
+            alpha: 0.15,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          const btn = this.add
+            .rectangle(cx, 620, 260, 60, 0xe94560)
+            .setStrokeStyle(2, 0xff6b81)
+            .setInteractive({ useHandCursor: true });
+          const btnText = this.add
+            .text(cx, 620, "BEGIN ESCAPE", {
+              fontSize: "24px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => {
+            btn.setFillStyle(0xff2e5b);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+            this.tweens.add({
+              targets: btnText,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+            sfx.hover();
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(0xe94560);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+            this.tweens.add({
+              targets: btnText,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+          btn.on("pointerdown", () => {
+            sfx.click();
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
+          });
+          this.add
+            .text(cx, 680, "Keys 1-4 or click to answer | Enter to confirm", {
+              fontSize: "12px",
+              color: "#475569",
+            })
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            }
+          });
+        }
+      }
+
+      // --- GAME ---
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        create() {
+          sfx.init();
+          this.questions = genQuestions();
+          this.qIndex = 0;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.bestStreak = 0;
+          this.comboMultiplier = 1;
+          this.totalQ = Math.min(15, this.questions.length);
+          this.answered = false;
+          this.startTime = Date.now();
+          this.questionStartTime = Date.now();
+          this.playerX = 100;
+          this.playerY = 500;
+          this.doorOpen = false;
+          this.lastRoom = "";
+          // Power-ups
+          this.powerUps = { fiftyFifty: 1, doublePoints: 1, extraTime: 0 };
+          this.doublePointsActive = false;
+          // Ambient sound interval
+          this.ambientTimer = this.time.addEvent({
+            delay: 5000,
+            callback: () => sfx.ambientDungeon(),
+            loop: true,
+          });
+
+          // Build room
+          this.buildRoom();
+          this.buildHUD();
+          this.loadQuestion();
+          this.input.keyboard.on("keydown", this.handleKey, this);
+        }
+
+        getTheme() {
+          const q = this.questions[this.qIndex];
+          return THEMES[q ? q.room : "Lab"] || THEMES.Lab;
+        }
+
+        // Floating score text popup
+        showFloatingText(x, y, text, color, size = "20px") {
+          const ft = this.add
+            .text(x, y, text, {
+              fontSize: size,
+              color: color,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(20)
+            .setAlpha(1);
+          this.tweens.add({
+            targets: ft,
+            y: y - 60,
+            alpha: 0,
+            scaleX: 1.5,
+            scaleY: 1.5,
+            duration: 1200,
+            ease: "Power2",
+            onComplete: () => ft.destroy(),
+          });
+        }
+
+        // Confetti burst for correct answers
+        spawnConfetti(x, y, count) {
+          const t = this.getTheme();
+          const colors = [
+            0xfbbf24,
+            0x22c55e,
+            0xe94560,
+            0x3b82f6,
+            0xff6600,
+            ...t.particleColor,
+          ];
+          const emitter = this.add.particles(x, y, "__WHITE", {
+            speed: { min: 100, max: 350 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 0.5, end: 0 },
+            lifespan: { min: 600, max: 1200 },
+            tint: colors,
+            quantity: count,
+            emitting: false,
+            blendMode: "ADD",
+          });
+          emitter.explode(count);
+          this.time.delayedCall(1500, () => emitter.destroy());
+        }
+
+        // Screen shake that scales with streak
+        streakShake() {
+          const intensity = Math.min(0.003 + this.streak * 0.002, 0.015);
+          const dur = Math.min(100 + this.streak * 30, 300);
+          this.cameras.main.shake(dur, intensity);
+        }
+
+        buildRoom() {
+          const t = this.getTheme();
+          // Clear previous room elements
+          if (this.roomGroup) this.roomGroup.destroy(true);
+          if (this.ambientParticles) this.ambientParticles.destroy();
+          this.roomGroup = this.add.group();
+          // Background
+          this.cameras.main.setBackgroundColor(t.bg);
+
+          // Ambient background particles
+          this.ambientParticles = this.add.particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 100, max: H },
+            speed: { min: 2, max: 8 },
+            angle: { min: 250, max: 290 },
+            scale: { start: 0.12, end: 0 },
+            alpha: { start: 0.3, end: 0 },
+            lifespan: { min: 4000, max: 8000 },
+            tint: t.ambientColor,
+            quantity: 1,
+            frequency: 300,
+            blendMode: "ADD",
+          });
+
+          // Walls (stone pattern)
+          for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 16; c++) {
+              const off = (r % 2) * 35;
+              const brick = this.add
+                .rectangle(off + c * 70 + 35, r * 45 + 80, 66, 41, t.wall)
+                .setStrokeStyle(1, t.floor, 0.4);
+              this.roomGroup.add(brick);
+            }
+          }
+          // Floor
+          for (let c = 0; c < 20; c++) {
+            const tile = this.add
+              .rectangle(c * 55 + 27, H - 60, 50, 100, t.floor)
+              .setStrokeStyle(1, t.wall, 0.3);
+            this.roomGroup.add(tile);
+          }
+          // Torches
+          for (let i = 0; i < 3; i++) {
+            const tx = 200 + i * 300;
+            const torch = this.add.rectangle(tx, 240, 6, 30, 0x8b4513);
+            this.roomGroup.add(torch);
+            this.add.particles(tx, 225, "__WHITE", {
+              speed: { min: 5, max: 25 },
+              angle: { min: 255, max: 285 },
+              scale: { start: 0.35, end: 0 },
+              lifespan: 400,
+              tint: [0xff6600, 0xff9900, 0xffcc00],
+              quantity: 1,
+              frequency: 80,
+              blendMode: "ADD",
+            });
+          }
+          // Door (right side)
+          this.doorBg = this.add
+            .rectangle(W - 80, 430, 80, 130, t.door)
+            .setStrokeStyle(3, t.accent);
+          this.doorLock = this.add
+            .circle(W - 60, 440, 12, 0x333333)
+            .setStrokeStyle(2, t.accent);
+          this.doorLabel = this.add
+            .text(W - 80, 380, "LOCKED", {
+              fontSize: "14px",
+              color: "#ef4444",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.roomGroup.add(this.doorBg);
+          this.roomGroup.add(this.doorLock);
+          this.roomGroup.add(this.doorLabel);
+          // Player character
+          if (this.player) this.player.destroy();
+          this.player = this.add
+            .graphics()
+            .setPosition(this.playerX, this.playerY)
+            .setDepth(5);
+          this.drawPlayer(this.player);
+          this.tweens.add({
+            targets: this.player,
+            y: this.playerY - 5,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          // Room label
+          this.roomLabel = this.add
+            .text(W / 2, 55, t.name.toUpperCase(), {
+              fontSize: "16px",
+              color: "#" + t.accent.toString(16).padStart(6, "0"),
+              fontStyle: "bold",
+              letterSpacing: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(6);
+          this.roomGroup.add(this.roomLabel);
+        }
+
+        drawPlayer(g) {
+          g.clear();
+          g.fillStyle(0x3b82f6);
+          g.fillRoundedRect(-16, -30, 32, 42, 5);
+          g.fillStyle(0xfcd34d);
+          g.fillCircle(0, -38, 15);
+          g.fillStyle(0x1e3a5f);
+          g.fillCircle(-5, -40, 3);
+          g.fillCircle(5, -40, 3);
+          g.fillStyle(0xfbbf24);
+          g.fillRect(-3, -32, 6, 3);
+          g.fillStyle(0x475569);
+          g.fillRect(-12, 12, 10, 22);
+          g.fillRect(2, 12, 10, 22);
+        }
+
+        buildHUD() {
+          this.hudBg = this.add
+            .rectangle(W / 2, 22, W, 44, 0x000000, 0.7)
+            .setDepth(10);
+          this.hudQ = this.add
+            .text(15, 10, "", {
+              fontSize: "15px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudScore = this.add
+            .text(180, 10, "", {
+              fontSize: "15px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudLives = this.add
+            .text(350, 10, "", { fontSize: "15px", color: "#ef4444" })
+            .setDepth(11);
+          this.hudStreak = this.add
+            .text(520, 10, "", { fontSize: "15px", color: "#f59e0b" })
+            .setDepth(11);
+          this.hudMultiplier = this.add
+            .text(680, 10, "", { fontSize: "15px", color: "#a78bfa" })
+            .setDepth(11);
+          this.hudTimer = this.add
+            .text(W - 100, 10, "", { fontSize: "15px", color: "#94a3b8" })
+            .setDepth(11);
+          // Progress bar
+          this.progBg = this.add
+            .rectangle(W / 2, 44, W - 20, 6, 0x334155)
+            .setDepth(10);
+          this.progFill = this.add
+            .rectangle(10, 44, 0, 6, 0xe94560)
+            .setOrigin(0, 0.5)
+            .setDepth(10);
+          // Question counter dots
+          this.progDots = [];
+          const dotSpacing = (W - 40) / this.totalQ;
+          for (let i = 0; i < this.totalQ; i++) {
+            const dot = this.add
+              .circle(20 + i * dotSpacing, 54, 3, 0x334155)
+              .setDepth(10);
+            this.progDots.push(dot);
+          }
+          // Speed indicator
+          this.speedIndicator = this.add
+            .text(W - 50, 55, "", { fontSize: "11px", color: "#22c55e" })
+            .setOrigin(0.5)
+            .setDepth(11);
+        }
+
+        loadQuestion() {
+          if (this.qIndex >= this.totalQ || this.lives <= 0) {
+            this.endGame();
+            return;
+          }
+          this.answered = false;
+          this.doorOpen = false;
+          this.selectedIdx = -1;
+          this.questionStartTime = Date.now();
+          this.doublePointsActive = false;
+
+          // Rebuild room if theme changed
+          const q = this.questions[this.qIndex];
+          const prevRoom = this.lastRoom;
+          if (q.room !== prevRoom || this.qIndex === 0) {
+            this.playerX = 100;
+            // Phase transition animation
+            if (this.qIndex > 0 && q.room !== prevRoom) {
+              this.showPhaseTransition(q.room);
+            }
+            this.buildRoom();
+          }
+          this.lastRoom = q.room;
+
+          this.doorLabel.setText("LOCKED").setColor("#ef4444");
+          this.doorLock.setFillStyle(0x333333);
+          this.updateHUD();
+
+          // Animated progress bar
+          this.tweens.add({
+            targets: this.progFill,
+            width: (this.qIndex / this.totalQ) * (W - 20),
+            duration: 300,
+            ease: "Power2",
+          });
+
+          // Question panel
+          if (this.qPanel) this.qPanel.destroy();
+          if (this.qTextObj) this.qTextObj.destroy();
+          if (this.tierLabel) this.tierLabel.destroy();
+          if (this.ansGroup) this.ansGroup.destroy(true);
+          if (this.fbObj) this.fbObj.destroy();
+          if (this.hintObj) this.hintObj.destroy();
+          if (this.powerUpGroup) this.powerUpGroup.destroy(true);
+
+          // Equation on door
+          const t = this.getTheme();
+          this.qPanel = this.add
+            .rectangle(W / 2, 330, 650, 60, 0x000000, 0.85)
+            .setStrokeStyle(2, t.accent)
+            .setDepth(6);
+          const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
+          const tierNames = ["Patrol", "Detective", "Chief"];
+          this.tierLabel = this.add
+            .text(W / 2 - 290, 318, tierNames[q.tier - 1], {
+              fontSize: "12px",
+              color: tierColors[q.tier - 1],
+              backgroundColor: "#1e293b",
+              padding: { x: 6, y: 2 },
+            })
+            .setDepth(7);
+          this.qTextObj = this.add
+            .text(W / 2, 330, q.text, {
+              fontSize: "20px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: 620 },
+            })
+            .setOrigin(0.5)
+            .setDepth(7);
+
+          // Question enter animation
+          this.qPanel.setAlpha(0);
+          this.qTextObj.setAlpha(0);
+          this.tweens.add({
+            targets: this.qPanel,
+            alpha: 1,
+            duration: 300,
+            ease: "Power2",
+          });
+          this.tweens.add({
+            targets: this.qTextObj,
+            alpha: 1,
+            duration: 300,
+            delay: 100,
+            ease: "Power2",
+          });
+
+          // Answer options (as buttons below)
+          this.ansGroup = this.add.group();
+          this.answerBtns = [];
+          q.options.forEach((opt, i) => {
+            const bx = 130 + i * 220,
+              by = H - 140;
+            const bg = this.add
+              .rectangle(bx, by, 190, 50, 0x1e293b, 0.9)
+              .setStrokeStyle(2, t.accent)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(7);
+            const num = this.add
+              .text(bx - 80, by - 8, String(i + 1), {
+                fontSize: "11px",
+                color: "#64748b",
+              })
+              .setDepth(8);
+            const txt = this.add
+              .text(bx, by, opt, {
+                fontSize: "17px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(8);
+
+            // Enter animation
+            bg.setAlpha(0).setScale(0.9);
+            txt.setAlpha(0);
+            num.setAlpha(0);
+            this.tweens.add({
+              targets: bg,
+              alpha: 1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 200,
+              delay: 150 + i * 50,
+              ease: "Back.easeOut",
+            });
+            this.tweens.add({
+              targets: [txt, num],
+              alpha: 1,
+              duration: 200,
+              delay: 200 + i * 50,
+            });
+
+            bg.on("pointerover", () => {
+              if (!this.answered) {
+                bg.setStrokeStyle(3, 0xfbbf24);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1.05,
+                  scaleY: 1.05,
+                  duration: 80,
+                });
+                this.tweens.add({
+                  targets: txt,
+                  scaleX: 1.05,
+                  scaleY: 1.05,
+                  duration: 80,
+                });
+                sfx.hover();
+              }
+            });
+            bg.on("pointerout", () => {
+              if (!this.answered && this.selectedIdx !== i) {
+                bg.setStrokeStyle(2, t.accent);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 80,
+                });
+                this.tweens.add({
+                  targets: txt,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 80,
+                });
+              }
+            });
+            bg.on("pointerdown", () => {
+              if (!this.answered) this.submitAnswer(i);
+            });
+            this.ansGroup.add(bg);
+            this.ansGroup.add(txt);
+            this.ansGroup.add(num);
+            this.answerBtns.push({ bg, txt, num, optText: opt });
+          });
+
+          // Power-up buttons
+          this.powerUpGroup = this.add.group();
+          this.buildPowerUpButtons();
+
+          // Feedback area
+          this.fbObj = this.add
+            .text(W / 2, H - 60, "", {
+              fontSize: "15px",
+              color: "#94a3b8",
+              align: "center",
+              wordWrap: { width: 700 },
+            })
+            .setOrigin(0.5)
+            .setDepth(8);
+          this.hintObj = this.add
+            .text(W / 2, H - 35, "", {
+              fontSize: "12px",
+              color: "#64748b",
+              align: "center",
+              wordWrap: { width: 700 },
+            })
+            .setOrigin(0.5)
+            .setDepth(8);
+          // Trap sprites (hidden)
+          if (this.trapGroup) this.trapGroup.destroy(true);
+          this.trapGroup = this.add.group();
+        }
+
+        buildPowerUpButtons() {
+          const puDefs = [
+            { key: "fiftyFifty", label: "50/50", color: 0x3b82f6, hotkey: "F" },
+            {
+              key: "doublePoints",
+              label: "2x PTS",
+              color: 0xa78bfa,
+              hotkey: "D",
+            },
+          ];
+          puDefs.forEach((pu, i) => {
+            if (this.powerUps[pu.key] <= 0) return;
+            const px = 30 + i * 100,
+              py = H - 195;
+            const bg = this.add
+              .rectangle(px + 35, py, 80, 28, pu.color, 0.3)
+              .setStrokeStyle(1, pu.color)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(9);
+            const txt = this.add
+              .text(px + 35, py, `${pu.label} (${pu.hotkey})`, {
+                fontSize: "11px",
+                color: "#fff",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(10);
+            const countTxt = this.add
+              .text(px + 70, py - 12, `x${this.powerUps[pu.key]}`, {
+                fontSize: "9px",
+                color: "#fbbf24",
+              })
+              .setDepth(10);
+
+            bg.on("pointerdown", () => this.usePowerUp(pu.key));
+            bg.on("pointerover", () => bg.setFillStyle(pu.color, 0.6));
+            bg.on("pointerout", () => bg.setFillStyle(pu.color, 0.3));
+
+            this.powerUpGroup.add(bg);
+            this.powerUpGroup.add(txt);
+            this.powerUpGroup.add(countTxt);
+          });
+        }
+
+        usePowerUp(key) {
+          if (this.answered || this.powerUps[key] <= 0) return;
+          const q = this.questions[this.qIndex];
+          if (key === "fiftyFifty") {
+            this.powerUps.fiftyFifty--;
+            sfx.powerup();
+            // Remove 2 wrong answers
+            let removed = 0;
+            this.answerBtns.forEach((b) => {
+              if (b.optText !== q.correct && removed < 2) {
+                b.bg.setAlpha(0.3);
+                b.txt.setAlpha(0.3);
+                b.bg.disableInteractive();
+                b.eliminated = true;
+                removed++;
+              }
+            });
+            this.showFloatingText(W / 2, H - 200, "50/50!", "#3b82f6", "18px");
+          } else if (key === "doublePoints") {
+            this.powerUps.doublePoints--;
+            this.doublePointsActive = true;
+            sfx.powerup();
+            this.showFloatingText(
+              W / 2,
+              H - 200,
+              "DOUBLE POINTS!",
+              "#a78bfa",
+              "18px",
+            );
+          }
+          // Rebuild power-up buttons
+          if (this.powerUpGroup) this.powerUpGroup.destroy(true);
+          this.powerUpGroup = this.add.group();
+          this.buildPowerUpButtons();
+        }
+
+        showPhaseTransition(newRoom) {
+          const t = THEMES[newRoom] || THEMES.Lab;
+          sfx.phaseTransition();
+
+          // Overlay
+          const overlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.9)
+            .setDepth(50);
+          const phaseText = this.add
+            .text(W / 2, H / 2 - 20, t.name.toUpperCase(), {
+              fontSize: "42px",
+              color: "#" + t.accent.toString(16).padStart(6, "0"),
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0)
+            .setScale(0.5);
+          const subText = this.add
+            .text(W / 2, H / 2 + 30, "ENTERING NEW AREA", {
+              fontSize: "16px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0);
+
+          this.tweens.add({
+            targets: phaseText,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 400,
+            ease: "Back.easeOut",
+          });
+          this.tweens.add({
+            targets: subText,
+            alpha: 1,
+            duration: 400,
+            delay: 200,
+          });
+          this.time.delayedCall(1200, () => {
+            this.tweens.add({
+              targets: [overlay, phaseText, subText],
+              alpha: 0,
+              duration: 400,
+              onComplete: () => {
+                overlay.destroy();
+                phaseText.destroy();
+                subText.destroy();
+              },
+            });
+          });
+        }
+
+        submitAnswer(idx) {
+          if (this.answered) return;
+          if (this.answerBtns[idx].eliminated) return;
+          this.answered = true;
+          const q = this.questions[this.qIndex];
+          const chosen = this.answerBtns[idx].optText;
+          const correct = chosen === q.correct;
+          const t = this.getTheme();
+          const elapsed = (Date.now() - this.questionStartTime) / 1000;
+          const fastAnswer = elapsed < 5;
+
+          if (correct) {
+            // Calculate score
+            let basePoints = q.tier * 15;
+            let streakBonus = Math.min(this.streak, 5) * 5;
+            let timeBonus = fastAnswer ? 10 : elapsed < 10 ? 5 : 0;
+            let subtotal = basePoints + streakBonus + timeBonus;
+            if (this.doublePointsActive) subtotal *= 2;
+
+            this.score += subtotal;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            this.comboMultiplier = Math.min(
+              1 + Math.floor(this.streak / 2) * 0.5,
+              4,
+            );
+
+            // Update progress dots
+            if (this.progDots[this.qIndex]) {
+              this.progDots[this.qIndex].setFillStyle(0x22c55e);
+            }
+
+            // Door opens!
+            this.doorOpen = true;
+            this.doorLabel.setText("UNLOCKED!").setColor("#22c55e");
+            this.doorLock.setFillStyle(0x22c55e);
+            this.answerBtns[idx].bg.setFillStyle(0x22c55e);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
+            sfx.unlock();
+
+            // Floating score text
+            this.showFloatingText(
+              130 + idx * 220,
+              H - 170,
+              `+${subtotal}`,
+              "#22c55e",
+            );
+            if (fastAnswer) {
+              sfx.timeBonus();
+              this.showFloatingText(
+                W / 2,
+                H - 200,
+                "SPEED BONUS!",
+                "#00d4ff",
+                "16px",
+              );
+            }
+            if (this.doublePointsActive) {
+              this.showFloatingText(
+                W / 2,
+                H - 220,
+                "DOUBLE!",
+                "#a78bfa",
+                "16px",
+              );
+            }
+
+            // Streak milestone effects
+            if (this.streak === 3) {
+              sfx.streak3();
+              this.showFloatingText(
+                W / 2,
+                280,
+                "STREAK x3!",
+                "#f59e0b",
+                "28px",
+              );
+              this.spawnConfetti(W / 2, 300, 30);
+            } else if (this.streak === 5) {
+              sfx.streak5();
+              this.showFloatingText(
+                W / 2,
+                280,
+                "STREAK x5!",
+                "#ff6600",
+                "32px",
+              );
+              this.spawnConfetti(W / 2, 300, 50);
+            } else if (this.streak === 7) {
+              sfx.streak7();
+              this.showFloatingText(
+                W / 2,
+                280,
+                "UNSTOPPABLE x7!",
+                "#ef4444",
+                "36px",
+              );
+              this.spawnConfetti(W / 2, 300, 80);
+              // Award extra power-up at streak 7
+              this.powerUps.fiftyFifty++;
+            }
+
+            this.fbObj.setText(
+              "DOOR UNLOCKED! +" +
+                subtotal +
+                " pts" +
+                (this.streak >= 3 ? " STREAK x" + this.streak + "!" : ""),
+            );
+            this.fbObj.setColor("#22c55e");
+
+            // Door open animation
+            this.tweens.add({
+              targets: this.doorBg,
+              scaleX: 0.1,
+              duration: 500,
+              ease: "Power2",
+            });
+
+            // Confetti burst at door
+            this.spawnConfetti(W - 80, 430, 15 + this.streak * 3);
+
+            // Screen shake scaled to streak
+            this.streakShake();
+
+            // Move player through door
+            this.tweens.add({
+              targets: this.player,
+              x: W - 80,
+              duration: 1200,
+              ease: "Power2",
+              delay: 400,
+              onComplete: () => {
+                this.cameras.main.flash(300, 0, 0, 0);
+                this.time.delayedCall(500, () => {
+                  this.qIndex++;
+                  this.playerX = 100;
+                  this.player.setPosition(100, this.playerY);
+                  this.loadQuestion();
+                });
+              },
+            });
+          } else {
+            this.lives--;
+            this.streak = 0;
+            this.comboMultiplier = 1;
+
+            // Update progress dots
+            if (this.progDots[this.qIndex]) {
+              this.progDots[this.qIndex].setFillStyle(0xef4444);
+            }
+
+            this.answerBtns[idx].bg.setFillStyle(0xef4444);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
+            // Show correct
+            const ci = this.answerBtns.findIndex(
+              (b) => b.optText === q.correct,
+            );
+            if (ci >= 0) {
+              this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
+              this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
+            }
+            sfx.trap();
+            sfx.glassBreak();
+
+            this.showFloatingText(
+              130 + idx * 220,
+              H - 170,
+              "WRONG!",
+              "#ef4444",
+              "22px",
+            );
+
+            this.fbObj.setText("TRAP! The answer was: " + q.correct);
+            this.fbObj.setColor("#ef4444");
+            this.hintObj.setText(q.explain);
+
+            // Trap animation — spikes!
+            for (let i = 0; i < 8; i++) {
+              const spike = this.add
+                .triangle(
+                  120 + i * 100,
+                  H - 100,
+                  0,
+                  0,
+                  10,
+                  -30,
+                  -10,
+                  -30,
+                  0xef4444,
+                  0.8,
+                )
+                .setDepth(6);
+              this.trapGroup.add(spike);
+              this.tweens.add({
+                targets: spike,
+                y: H - 140,
+                duration: 200,
+                yoyo: true,
+                delay: i * 30,
+                ease: "Power2",
+              });
+            }
+
+            // Heavy screen shake + red flash
+            this.cameras.main.shake(400, 0.025);
+            this.cameras.main.flash(300, 255, 0, 0, true);
+
+            // Player knockback
+            this.tweens.add({
+              targets: this.player,
+              x: Math.max(60, this.player.x - 40),
+              duration: 200,
+              yoyo: true,
+              ease: "Power2",
+            });
+
+            // Red vignette overlay
+            const vignette = this.add
+              .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
+              .setDepth(15);
+            this.tweens.add({
+              targets: vignette,
+              alpha: 0,
+              duration: 800,
+              onComplete: () => vignette.destroy(),
+            });
+
+            this.time.delayedCall(2500, () => {
+              this.qIndex++;
+              this.loadQuestion();
+            });
+          }
+          this.updateHUD();
+        }
+
+        handleKey(e) {
+          if (this.answered) return;
+          if (e.key >= "1" && e.key <= "4") {
+            const idx = parseInt(e.key) - 1;
+            if (
+              idx < this.answerBtns.length &&
+              !this.answerBtns[idx].eliminated
+            )
+              this.submitAnswer(idx);
+          }
+          if (e.key === "f" || e.key === "F") this.usePowerUp("fiftyFifty");
+          if (e.key === "d" || e.key === "D") this.usePowerUp("doublePoints");
+          if (e.key === "ArrowRight") {
+            this.selectedIdx = Math.min(
+              (this.selectedIdx || 0) + 1,
+              this.answerBtns.length - 1,
+            );
+            this.highlightSel();
+          }
+          if (e.key === "ArrowLeft") {
+            this.selectedIdx = Math.max((this.selectedIdx || 0) - 1, 0);
+            this.highlightSel();
+          }
+          if (e.key === "Enter" && this.selectedIdx >= 0)
+            this.submitAnswer(this.selectedIdx);
+        }
+
+        highlightSel() {
+          const t = this.getTheme();
+          this.answerBtns.forEach((b, i) => {
+            if (b.eliminated) return;
+            const sel = i === this.selectedIdx;
+            b.bg.setStrokeStyle(sel ? 3 : 2, sel ? 0xfbbf24 : t.accent);
+            if (sel) {
+              this.tweens.add({
+                targets: b.bg,
+                scaleX: 1.05,
+                scaleY: 1.05,
+                duration: 80,
+              });
+            } else {
+              this.tweens.add({
+                targets: b.bg,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 80,
+              });
+            }
+          });
+          sfx.click();
+        }
+
+        updateHUD() {
+          this.hudQ.setText(`ROOM ${this.qIndex + 1}/${this.totalQ}`);
+          this.hudScore.setText(`SCORE: ${this.score}`);
+          this.hudLives.setText(
+            "LIVES: " + "❤".repeat(this.lives) + "♡".repeat(3 - this.lives),
+          );
+
+          // Streak display with pulse
+          if (this.streak >= 2) {
+            this.hudStreak.setText(`STREAK: ${this.streak}x`);
+            if (this.streak >= 5) this.hudStreak.setColor("#ef4444");
+            else if (this.streak >= 3) this.hudStreak.setColor("#ff6600");
+            else this.hudStreak.setColor("#f59e0b");
+          } else {
+            this.hudStreak.setText("");
+          }
+
+          // Multiplier
+          if (this.comboMultiplier > 1) {
+            this.hudMultiplier.setText(`x${this.comboMultiplier}`);
+          } else {
+            this.hudMultiplier.setText("");
+          }
+
+          const el = Math.floor((Date.now() - this.startTime) / 1000);
+          const m = Math.floor(el / 60),
+            s = el % 60;
+          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+
+          // Speed indicator
+          if (!this.answered) {
+            const qEl = (Date.now() - this.questionStartTime) / 1000;
+            if (qEl < 5) {
+              this.speedIndicator.setText("FAST").setColor("#22c55e");
+            } else if (qEl < 10) {
+              this.speedIndicator.setText("OK").setColor("#fbbf24");
+            } else {
+              this.speedIndicator.setText("SLOW").setColor("#ef4444");
+            }
+          } else {
+            this.speedIndicator.setText("");
+          }
+        }
+
+        update() {
+          this.updateHUD();
+        }
+
+        endGame() {
+          if (this.ambientTimer) this.ambientTimer.remove();
+          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+          const correct =
+            this.score > 0 ? Math.round(this.qIndex - (3 - this.lives)) : 0;
+
+          // Save high score
+          const prevBest = parseInt(localStorage.getItem(LS_KEY) || "0");
+          const isNewHighScore = this.score > prevBest;
+          if (isNewHighScore) {
+            localStorage.setItem(LS_KEY, String(this.score));
+          }
+
+          const epCorrect = Math.max(0, correct);
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: epCorrect,
+                maxScore: this.totalQ,
+                problemsCorrect: epCorrect,
+                problemsAttempted: this.totalQ,
+                percent: this.totalQ
+                  ? Math.round((epCorrect / this.totalQ) * 100)
+                  : 0,
+              });
+          } catch (e) {}
+
+          this.cameras.main.fade(500, 0, 0, 0);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              total: this.totalQ,
+              correct: Math.max(0, correct),
+              bestStreak: this.bestStreak,
+              time: elapsed,
+              isNewHighScore: isNewHighScore,
+              prevBest: prevBest,
+            });
+          });
+        }
+      }
+
+      // --- RESULTS ---
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          sfx.init();
+          const d = this.d,
+            cx = W / 2;
+          this.cameras.main.setBackgroundColor("#0a0a0a");
+          this.cameras.main.fadeIn(500);
+
+          const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
+          const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+          // Ambient particles
+          this.add.particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 2, max: 8 },
+            angle: { min: 250, max: 290 },
+            scale: { start: 0.1, end: 0 },
+            alpha: { start: 0.3, end: 0 },
+            lifespan: { min: 3000, max: 6000 },
+            tint: stars >= 2 ? [0xfbbf24, 0xff6600] : [0x4a5568, 0x718096],
+            quantity: 1,
+            frequency: 200,
+            blendMode: "ADD",
+          });
+
+          if (stars >= 2) {
+            if (stars === 3) sfx.victory3Star();
+            else sfx.boss();
+            // Elaborate confetti
+            for (let i = 0; i < 6; i++) {
+              this.time.delayedCall(i * 200, () => {
+                const px = Phaser.Math.Between(100, W - 100);
+                this.add
+                  .particles(px, 0, "__WHITE", {
+                    speed: { min: 80, max: 300 },
+                    angle: { min: 60, max: 120 },
+                    scale: { start: 0.5, end: 0 },
+                    lifespan: 1500,
+                    tint: [0xfbbf24, 0xe94560, 0x22c55e, 0x3b82f6, 0xff6600],
+                    quantity: 20,
+                    emitting: false,
+                  })
+                  .explode(25);
+              });
+            }
+          } else sfx.fail();
+
+          const titles = [
+            "Keep Trying!",
+            "Good Effort!",
+            "Great Escape!",
+            "MASTER ESCAPIST!",
+          ];
+          const titleText = this.add
+            .text(cx, 70, titles[stars], {
+              fontSize: "42px",
+              color: stars >= 2 ? "#fbbf24" : "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5);
+          this.tweens.add({
+            targets: titleText,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 600,
+            ease: "Back.easeOut",
+          });
+
+          // Animated star fill
+          for (let i = 0; i < 3; i++) {
+            const filled = i < stars;
+            const starText = this.add
+              .text(cx - 60 + i * 60, 130, filled ? "★" : "☆", {
+                fontSize: "48px",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0)
+              .setScale(0);
+            this.tweens.add({
+              targets: starText,
+              alpha: 1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 400,
+              delay: 600 + i * 300,
+              ease: "Back.easeOut",
+              onStart: () => {
+                if (filled) sfx.key();
+              },
+            });
+            if (filled) {
+              // Star sparkle
+              this.time.delayedCall(700 + i * 300, () => {
+                this.add
+                  .particles(cx - 60 + i * 60, 130, "__WHITE", {
+                    speed: { min: 20, max: 60 },
+                    angle: { min: 0, max: 360 },
+                    scale: { start: 0.3, end: 0 },
+                    lifespan: 400,
+                    tint: 0xfbbf24,
+                    quantity: 8,
+                    emitting: false,
+                  })
+                  .explode(10);
+              });
+            }
+          }
+
+          // New high score
+          if (d.isNewHighScore) {
+            const hsText = this.add
+              .text(cx, 175, "NEW HIGH SCORE!", {
+                fontSize: "24px",
+                color: "#ff6600",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: hsText,
+              alpha: 1,
+              duration: 300,
+              delay: 1800,
+            });
+            this.tweens.add({
+              targets: hsText,
+              scaleX: 1.1,
+              scaleY: 1.1,
+              duration: 500,
+              yoyo: true,
+              repeat: -1,
+              delay: 1800,
+              ease: "Sine.easeInOut",
+            });
+          }
+
+          // Score circle
+          this.add.circle(cx, 240, 65, 0x1e293b).setStrokeStyle(4, 0xe94560);
+          const scoreText = this.add
+            .text(cx, 230, "0%", {
+              fontSize: "34px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 260, "Accuracy", { fontSize: "13px", color: "#64748b" })
+            .setOrigin(0.5);
+
+          // Animated counter
+          let counter = { val: 0 };
+          this.tweens.add({
+            targets: counter,
+            val: pct,
+            duration: 1500,
+            delay: 500,
+            ease: "Power2",
+            onUpdate: () => {
+              scoreText.setText(Math.round(counter.val) + "%");
+            },
+          });
+
+          const stats = [
+            { l: "Score", v: d.score, c: "#fbbf24" },
+            { l: "Correct", v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: "Best Streak", v: d.bestStreak, c: "#f59e0b" },
+            {
+              l: "Time",
+              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
+              c: "#94a3b8",
+            },
+          ];
+          stats.forEach((s, i) => {
+            const x = cx - 240 + i * 165,
+              y = 370;
+            const box = this.add
+              .rectangle(x, y, 135, 65, 0x1e293b)
+              .setStrokeStyle(1, 0x334155)
+              .setAlpha(0);
+            const val = this.add
+              .text(x, y - 10, String(s.v), {
+                fontSize: "22px",
+                color: s.c,
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            const label = this.add
+              .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: [box, val, label],
+              alpha: 1,
+              duration: 300,
+              delay: 800 + i * 150,
+            });
+          });
+
+          // Rooms cleared
+          const roomsCleared = Math.min(d.correct, 15);
+          this.add
+            .text(cx, 430, `Rooms Escaped: ${roomsCleared} of ${d.total}`, {
+              fontSize: "16px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+
+          // Previous best
+          if (d.prevBest > 0 && !d.isNewHighScore) {
+            this.add
+              .text(cx, 455, `Personal Best: ${d.prevBest}`, {
+                fontSize: "13px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+
+          // Buttons with hover effects
+          const btn1 = this.add
+            .rectangle(cx - 110, 510, 190, 50, 0xe94560)
+            .setStrokeStyle(2, 0xff6b81)
+            .setInteractive({ useHandCursor: true });
+          const btn1Text = this.add
+            .text(cx - 110, 510, "ESCAPE AGAIN", {
+              fontSize: "17px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn1.on("pointerdown", () => {
+            sfx.click();
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
+          });
+          btn1.on("pointerover", () => {
+            btn1.setFillStyle(0xff2e5b);
+            this.tweens.add({
+              targets: [btn1, btn1Text],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn1.on("pointerout", () => {
+            btn1.setFillStyle(0xe94560);
+            this.tweens.add({
+              targets: [btn1, btn1Text],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
+          const btn2 = this.add
+            .rectangle(cx + 110, 510, 190, 50, 0x334155)
+            .setStrokeStyle(2, 0x475569)
+            .setInteractive({ useHandCursor: true });
+          const btn2Text = this.add
+            .text(cx + 110, 510, "MAIN MENU", {
+              fontSize: "17px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn2.on("pointerdown", () => {
+            sfx.click();
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Title"));
+          });
+          btn2.on("pointerover", () => {
+            btn2.setFillStyle(0x475569);
+            this.tweens.add({
+              targets: [btn2, btn2Text],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn2.on("pointerout", () => {
+            btn2.setFillStyle(0x334155);
+            this.tweens.add({
+              targets: [btn2, btn2Text],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
+          this.add
+            .text(
+              cx,
+              H - 25,
+              "Equation Escape — Neft Teacher — 6.EE.5 / 6.EE.7 / 6.EE.8",
+              { fontSize: "11px", color: "#475569" },
+            )
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            }
+            if (e.key === "Escape") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Title"));
+            }
+          });
+        }
+      }
+
+      // --- CONFIG ---
+      new Phaser.Game({
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0a0a0a",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        input: { keyboard: true, mouse: true, touch: true },
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

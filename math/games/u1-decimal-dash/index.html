@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Decimal Dash — Lessons 1.4–1.7 Game | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Arcade review game for Grade 6 lessons 1.4–1.7: multi-digit division and decimal operations (6.NS.2, 6.NS.3)."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --teal: #0e8a7d;
+        --gold: #d4952a;
+        --coral: #c45a3c;
+        --green: #2d874b;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 18px 60px;
+      }
+      .ghero {
+        background: linear-gradient(135deg, #1a6fb5, #0e8a7d);
+        color: #fff;
+        text-align: center;
+        padding: 30px 20px 26px;
+      }
+      .ghero .deco {
+        font-size: 48px;
+      }
+      .ghero h1 {
+        margin: 8px 0 6px;
+        font-size: clamp(24px, 5vw, 34px);
+      }
+      .ghero p {
+        margin: 0 auto;
+        max-width: 520px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .breadcrumb {
+        font-size: 13px;
+        padding: 14px 0;
+        color: var(--muted);
+      }
+      .breadcrumb a {
+        color: var(--blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin: 18px 0;
+        font-weight: 800;
+        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
+      }
+      .hud .lbl {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        display: block;
+      }
+      .hud .val {
+        font-size: 22px;
+      }
+      .hearts {
+        color: var(--coral);
+        letter-spacing: 2px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 26px 22px;
+        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
+        text-align: center;
+      }
+      .mode-tag {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--teal);
+      }
+      .prompt {
+        font-size: clamp(22px, 5vw, 30px);
+        font-weight: 800;
+        margin: 8px 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 18px;
+      }
+      .opts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 460px) {
+        .opts {
+          grid-template-columns: 1fr;
+        }
+      }
+      .opt {
+        padding: 16px;
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        font-size: 20px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--ink);
+        transition:
+          transform 0.06s,
+          border-color 0.15s;
+      }
+      .opt:hover {
+        border-color: var(--blue);
+      }
+      .opt:active {
+        transform: scale(0.97);
+      }
+      .opt.right {
+        border-color: var(--green);
+        background: #e6f4eb;
+        color: var(--green);
+        animation: pop 0.3s;
+      }
+      .opt.wrong {
+        border-color: var(--coral);
+        background: #fdeee9;
+        color: var(--coral);
+        animation: shake 0.3s;
+      }
+      @keyframes pop {
+        50% {
+          transform: scale(1.06);
+        }
+      }
+      @keyframes shake {
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      .feedback {
+        min-height: 26px;
+        margin-top: 16px;
+        font-weight: 800;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+      .btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 26px;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 8px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.start {
+        background: var(--teal);
+        font-size: 18px;
+        padding: 15px 34px;
+      }
+      .bar {
+        height: 10px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+        margin: 14px 0 2px;
+      }
+      .bar > div {
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, var(--gold), var(--coral));
+        transition: width 0.25s linear;
+      }
+      .hidden {
+        display: none;
+      }
+      .big-score {
+        font-size: 52px;
+        font-weight: 900;
+        color: var(--blue);
+        margin: 6px 0;
+      }
+      .legend {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 18px;
+      }
+      .legend a {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      ul.modes {
+        text-align: left;
+        max-width: 430px;
+        margin: 14px auto;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="ghero">
+      <div class="deco">💨</div>
+      <h1>Decimal Dash</h1>
+      <p>
+        Race the clock on multi-digit division and decimal addition,
+        subtraction, multiplication, and division.
+      </p>
+    </header>
+    <div class="wrap">
+      <section class="card" id="startScreen">
+        <p class="mode-tag">Lessons 1.4–1.7 · 6.NS.2 · 6.NS.3</p>
+        <h2 style="margin: 6px 0">Ready to dash?</h2>
+        <ul class="modes">
+          <li>
+            <strong>Round 1 — Multi-Digit Division.</strong> Whole-number
+            quotients.
+          </li>
+          <li>
+            <strong>Round 2 — Add &amp; Subtract Decimals.</strong> Line up the
+            points.
+          </li>
+          <li>
+            <strong>Round 3 — Multiply &amp; Divide Decimals.</strong> Count the
+            places.
+          </li>
+        </ul>
+        <p class="sub">
+          You have <strong>3 ❤</strong> and a timer on each question. Build a
+          streak for bonus points!
+        </p>
+        <button class="btn start" id="startBtn" type="button">
+          Start Game ▶
+        </button>
+      </section>
+
+      <section id="playScreen" class="hidden">
+        <div class="hud">
+          <div>
+            <span class="lbl">Score</span><span class="val" id="score">0</span>
+          </div>
+          <div>
+            <span class="lbl">Streak</span
+            ><span class="val" id="streak">0</span>
+          </div>
+          <div>
+            <span class="lbl">Lives</span
+            ><span class="val hearts" id="lives">❤❤❤</span>
+          </div>
+          <div>
+            <span class="lbl">Question</span
+            ><span class="val" id="qnum">1</span>
+          </div>
+        </div>
+        <div class="bar"><div id="timebar"></div></div>
+        <div class="card" style="margin-top: 14px">
+          <span class="mode-tag" id="modeTag"></span>
+          <div class="prompt" id="prompt"></div>
+          <p class="sub" id="sub"></p>
+          <div class="opts" id="opts"></div>
+          <div class="feedback" id="feedback"></div>
+          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
+        </div>
+      </section>
+
+      <section class="card hidden" id="resultScreen">
+        <p class="mode-tag">Game Over</p>
+        <div class="big-score" id="finalScore">0</div>
+        <p id="resultMsg" style="font-weight: 700"></p>
+        <p class="sub" id="resultDetail"></p>
+        <button class="btn start" id="againBtn" type="button">
+          Play Again 🔁
+        </button>
+        <p class="legend">
+          More review:
+          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
+          <a href="/math/games/">All Games</a>
+        </p>
+      </section>
+    </div>
+
+    <script>
+      function rnd(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      function shuffle(a) {
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = a[i];
+          a[i] = a[j];
+          a[j] = t;
+        }
+        return a;
+      }
+      function round2(n) {
+        return Math.round(n * 100) / 100;
+      }
+      function money(n) {
+        return n.toFixed(2);
+      }
+
+      var TOTAL = 12,
+        TIME = 12;
+      var state = {};
+
+      function distinctOpts(correct, makeWrong, fmt) {
+        var set = {};
+        set[fmt(correct)] = true;
+        var opts = [fmt(correct)];
+        var guard = 0;
+        while (opts.length < 4 && guard < 50) {
+          guard++;
+          var w = makeWrong();
+          var k = fmt(w);
+          if (!set[k]) {
+            set[k] = true;
+            opts.push(k);
+          }
+        }
+        while (opts.length < 4) {
+          opts.push(fmt(correct + opts.length));
+        }
+        return { opts: shuffle(opts), correct: fmt(correct) };
+      }
+
+      function buildQuestion(i) {
+        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
+        if (round === 1) {
+          // multi-digit division with whole quotient
+          var q = rnd(12, 40),
+            d = rnd(3, 9),
+            dividend = q * d;
+          var o = distinctOpts(
+            q,
+            function () {
+              return q + rnd(-6, 6);
+            },
+            String,
+          );
+          return {
+            tag: "Multi-Digit Division",
+            prompt: dividend + " ÷ " + d + " = ?",
+            sub: "Divide to a whole-number quotient.",
+            opts: o.opts,
+            correct: o.correct,
+            why: dividend + " ÷ " + d + " = " + q + ".",
+          };
+        }
+        if (round === 2) {
+          // add or subtract decimals (tenths/hundredths)
+          var a = round2(rnd(15, 90) / 10 + rnd(0, 9) / 100),
+            b = round2(rnd(10, 60) / 10 + rnd(0, 9) / 100);
+          var add = Math.random() < 0.5;
+          if (!add && b > a) {
+            var t = a;
+            a = b;
+            b = t;
+          }
+          var ans = round2(add ? a + b : a - b);
+          var o = distinctOpts(
+            ans,
+            function () {
+              return round2(
+                ans + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
+              );
+            },
+            money,
+          );
+          return {
+            tag: "Add & Subtract Decimals",
+            prompt: money(a) + (add ? " + " : " − ") + money(b),
+            sub: "Line up the decimal points.",
+            opts: o.opts,
+            correct: o.correct,
+            why:
+              money(a) +
+              (add ? " + " : " − ") +
+              money(b) +
+              " = " +
+              money(ans) +
+              ".",
+          };
+        }
+        // round 3: multiply or divide decimals
+        var mul = Math.random() < 0.5;
+        if (mul) {
+          var x = round2(
+            rnd(2, 9) / 10 + (Math.random() < 0.5 ? rnd(1, 4) : 0),
+          ); // e.g., 0.5 or 2.5
+          var y = rnd(2, 9);
+          var ans3 = round2(x * y);
+          var o3 = distinctOpts(
+            ans3,
+            function () {
+              return round2(
+                ans3 + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
+              );
+            },
+            money,
+          );
+          return {
+            tag: "Multiply Decimals",
+            prompt: money(x) + " × " + y,
+            sub: "Count the decimal places.",
+            opts: o3.opts,
+            correct: o3.correct,
+            why: money(x) + " × " + y + " = " + money(ans3) + ".",
+          };
+        } else {
+          var quo = round2(rnd(11, 49) / 10); // 1.1 .. 4.9
+          var dv = rnd(2, 6);
+          var dividend3 = round2(quo * dv);
+          var o4 = distinctOpts(
+            quo,
+            function () {
+              return round2(
+                quo + (rnd(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
+              );
+            },
+            money,
+          );
+          return {
+            tag: "Divide Decimals",
+            prompt: money(dividend3) + " ÷ " + dv,
+            sub: "Divide; place the decimal carefully.",
+            opts: o4.opts,
+            correct: o4.correct,
+            why: money(dividend3) + " ÷ " + dv + " = " + money(quo) + ".",
+          };
+        }
+      }
+
+      function startGame() {
+        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
+        document.getElementById("startScreen").classList.add("hidden");
+        document.getElementById("resultScreen").classList.add("hidden");
+        document.getElementById("playScreen").classList.remove("hidden");
+        nextQuestion();
+      }
+      function nextQuestion() {
+        if (state.lives <= 0 || state.i >= TOTAL) {
+          return endGame();
+        }
+        state.locked = false;
+        state.q = buildQuestion(state.i);
+        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
+        document.getElementById("modeTag").textContent = state.q.tag;
+        document.getElementById("prompt").textContent = state.q.prompt;
+        document.getElementById("sub").textContent = state.q.sub;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+        document.getElementById("nextBtn").classList.add("hidden");
+        var box = document.getElementById("opts");
+        box.innerHTML = "";
+        state.q.opts.forEach(function (o) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "opt";
+          b.textContent = o;
+          b.onclick = function () {
+            answer(o, b);
+          };
+          box.appendChild(b);
+        });
+        startTimer();
+      }
+      function startTimer() {
+        var t = TIME,
+          bar = document.getElementById("timebar");
+        bar.style.width = "100%";
+        clearInterval(state.timer);
+        state.timer = setInterval(function () {
+          t -= 0.1;
+          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
+          if (t <= 0) {
+            clearInterval(state.timer);
+            if (!state.locked) {
+              timeUp();
+            }
+          }
+        }, 100);
+      }
+      function answer(choice, btn) {
+        if (state.locked) return;
+        state.locked = true;
+        clearInterval(state.timer);
+        var fb = document.getElementById("feedback"),
+          correct = choice === state.q.correct;
+        Array.prototype.forEach.call(
+          document.querySelectorAll(".opt"),
+          function (b) {
+            if (b.textContent === state.q.correct) b.classList.add("right");
+            else if (b === btn) b.classList.add("wrong");
+          },
+        );
+        if (correct) {
+          state.streak++;
+          state.score += 10 + Math.min(state.streak, 5) * 2;
+          fb.textContent =
+            "✓ Correct! " +
+            state.q.why +
+            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
+          fb.className = "feedback ok";
+        } else {
+          state.streak = 0;
+          state.lives--;
+          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
+          fb.className = "feedback no";
+        }
+        updateHud();
+        document.getElementById("nextBtn").classList.remove("hidden");
+      }
+      function timeUp() {
+        state.locked = true;
+        state.streak = 0;
+        state.lives--;
+        Array.prototype.forEach.call(
+          document.querySelectorAll(".opt"),
+          function (b) {
+            if (b.textContent === state.q.correct) b.classList.add("right");
+          },
+        );
+        var fb = document.getElementById("feedback");
+        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
+        fb.className = "feedback no";
+        updateHud();
+        document.getElementById("nextBtn").classList.remove("hidden");
+      }
+      function updateHud() {
+        document.getElementById("score").textContent = state.score;
+        document.getElementById("streak").textContent = state.streak;
+        document.getElementById("lives").textContent =
+          state.lives > 0 ? "❤".repeat(state.lives) : "—";
+      }
+      function endGame() {
+        clearInterval(state.timer);
+        document.getElementById("playScreen").classList.add("hidden");
+        document.getElementById("resultScreen").classList.remove("hidden");
+        document.getElementById("finalScore").textContent = state.score;
+        var msg;
+        if (state.score >= 180) msg = "🏆 Decimal Champion!";
+        else if (state.score >= 120) msg = "🌟 Fast and accurate!";
+        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
+        else msg = "💪 Try again to beat your score!";
+        document.getElementById("resultMsg").textContent = msg;
+        document.getElementById("resultDetail").textContent =
+          (state.lives <= 0
+            ? "Out of lives! "
+            : "You finished all " + TOTAL + " questions! ") +
+          "Final score: " +
+          state.score +
+          ".";
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.score,
+              problemsAttempted: state.i,
+              standard: "6.NS.2",
+            });
+        } catch (e) {}
+      }
+      document.getElementById("startBtn").onclick = startGame;
+      document.getElementById("againBtn").onclick = startGame;
+      document.getElementById("nextBtn").onclick = function () {
+        state.i++;
+        nextQuestion();
+      };
+    </script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

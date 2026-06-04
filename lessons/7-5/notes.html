@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Graph Inequalities — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Graph Inequalities · Standard 6.EE.8";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+}
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="7-5-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/7-5-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/7-5-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 7 · Standard 6.EE.8</p>
+    <h1>Graph Inequalities </h1>
+    <p class="meta">Lesson 7-5</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  
+  <section class="section vocab">
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/number-line.svg" alt="Illustration of Number line: A line with numbers in order. You use it to show answers." onerror="this.style.display='none'" />
+    <p class="vocab-caption">A horizontal line with marks at 0, 1, 2, 3, ... showing where values fall</p>
+  </div>
+  <h3 class="vocab-term">Number line</h3>
+  <p class="vocab-def">A line with numbers in order. You use it to show answers.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Open circle: An empty circle showing a number is NOT included." onerror="this.style.display='none'" />
+    <p class="vocab-caption">x &gt; 5: open circle at 5 means 5 itself is NOT a solution, but 5.1, 6, 7, ... are</p>
+  </div>
+  <h3 class="vocab-term">Open circle</h3>
+  <p class="vocab-def">An empty circle showing a number is NOT included.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Closed circle: A filled-in circle showing a number IS included." onerror="this.style.display='none'" />
+    <p class="vocab-caption">x ≥ 5: closed circle at 5 means 5 IS a solution, and so are 6, 7, 8, ...</p>
+  </div>
+  <h3 class="vocab-term">Closed circle</h3>
+  <p class="vocab-def">A filled-in circle showing a number IS included.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Solution set: All the numbers that make the inequality true." onerror="this.style.display='none'" />
+    <p class="vocab-caption">For x &gt; 3, the solution set includes 3.1, 4, 5, 10, 100 — any number greater than 3</p>
+  </div>
+  <h3 class="vocab-term">Solution set</h3>
+  <p class="vocab-def">All the numbers that make the inequality true.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Inequality: A math sentence comparing two amounts with &lt;, &gt;, ≤, or ≥." onerror="this.style.display='none'" />
+    <p class="vocab-caption">x ≥ 3 is an inequality; it is graphed as a closed circle on 3 with an arrow to the right.</p>
+  </div>
+  <h3 class="vocab-term">Inequality</h3>
+  <p class="vocab-def">A math sentence comparing two amounts with &lt;, &gt;, ≤, or ≥.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/cat-number.svg" alt="Illustration of Boundary point: The number on the number line where the solution set starts." onerror="this.style.display='none'" />
+    <p class="vocab-caption">For x &gt; 5, the boundary point is 5, shown with an open circle.</p>
+  </div>
+  <h3 class="vocab-term">Boundary point</h3>
+  <p class="vocab-def">The number on the number line where the solution set starts.</p>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can graph the solutions of an inequality on a number line.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">Detective Okafor is building a timeline.</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can graph the solutions of an inequality on a number line.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Number line</span><span class="notes-word-chip">Open circle</span><span class="notes-word-chip">Closed circle</span><span class="notes-word-chip">Solution set</span><span class="notes-word-chip">Inequality</span><span class="notes-word-chip">Boundary point</span></div>
+    </div></div>
+  <div class="think-block">
+    <h3>🤔 Think About It</h3>
+    <ul class="prompt-list"><li>What does 'no earlier than 2:00 PM' mean about the time?</li><li>Should 2:00 PM itself be included?</li><li>Which direction on the number line would you shade?</li></ul>
+  </div>
+  <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which graph represents x &lt; 5?</p>
+      <ol class="try-choices" type="A"><li>Open circle at 5, shaded left</li><li>Closed circle at 5, shaded left</li><li>Open circle at 5, shaded right</li><li>Closed circle at 5, shaded right</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> x &lt; 5 means 5 is NOT included (open circle) and values less than 5 are shaded (left).</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. Open circle at 5, shaded left</p>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which graph represents x ≥ 3?</p>
+      <ol class="try-choices" type="A"><li>Closed circle at 3, shaded right</li><li>Open circle at 3, shaded right</li><li>Closed circle at 3, shaded left</li><li>Open circle at 3, shaded left</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which graph represents x &gt; 8?</p>
+      <ol class="try-choices" type="A"><li>Open circle at 8, shaded right</li><li>Closed circle at 8, shaded right</li><li>Open circle at 8, shaded left</li><li>Closed circle at 8, shaded left</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+  </div>
+</section>
+  <section class="section turn-and-talk">
+  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
+  <div class="tt-card">
+  <span class="tt-phase">Launch</span>
+  <p class="tt-question">Detective Okafor knows the suspect arrived 'no earlier than 2:00 PM,' so t ≥ 2. On the timeline, should the mark at 2 be an open or closed circle, and which way should she shade?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Because 2:00 itself counts, I use a closed circle at 2.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;number line&quot; or &quot;open circle&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">I use a ___ circle at 2 because 2:00 ___ included.</span><span class="twr-es">Uso un círculo ___ en 2 porque las 2:00 ___ incluidas.</span></p><p class="twr-frame"><span class="twr-en">I shade ___ because the times can be ___.</span><span class="twr-es">Sombreo ___ porque las horas pueden ser ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">number line</span><span class="tt-word">open circle</span><span class="tt-word">closed circle</span><span class="tt-word">solution set</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students choose a closed circle at 2 (because 'no earlier than' includes 2) and shade to the right since later times satisfy t ≥ 2.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">How would the timeline look different if the clue were t &gt; 2 instead of t ≥ 2? Justify the change in the circle.</p>
+    <ul class="tt-extend-stems"><li>For t &gt; 2 I would use a ___ circle because ___.</li><li>The boundary value 2 would ___ in that case.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Explore</span>
+  <p class="tt-question">When you graphed x &gt; 4 and x ≤ 7, why did you use an open circle on one and a closed circle on the other?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Open circles exclude the boundary; closed circles include it.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;open circle&quot; or &quot;closed circle&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">I used a ___ circle because the symbol ___ means the boundary is ___.</span><span class="twr-es">Usé un círculo ___ porque el símbolo ___ significa que el límite ___.</span></p><p class="twr-frame"><span class="twr-en">I shaded ___ because the solution set includes ___.</span><span class="twr-es">Sombreé ___ porque el conjunto solución incluye ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">open circle</span><span class="tt-word">closed circle</span><span class="tt-word">number line</span><span class="tt-word">solution set</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students connect &gt; and &lt; to open circles (boundary not included) and ≥ and ≤ to closed circles, and shade toward the values in the solution set.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Why does the graph of x &gt; 4 represent infinitely many solutions even though it starts at one point? Explain using the solution set.</p>
+    <ul class="tt-extend-stems"><li>The graph shows infinitely many solutions because ___.</li><li>Every point in the shaded part is ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Connect</span>
+  <p class="tt-question">When would graphing an inequality show a real-life limit better than a single number?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A graph shows every value that fits a rule, not just one.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;number line&quot; or &quot;open circle&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">A graph shows a real limit like ___ because ___.</span><span class="twr-es">Una gráfica muestra un límite real como ___ porque ___.</span></p><p class="twr-frame"><span class="twr-en">The ___ circle shows whether the limit value ___ allowed.</span><span class="twr-es">El círculo ___ muestra si el valor límite ___ permitido.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">number line</span><span class="tt-word">open circle</span><span class="tt-word">closed circle</span><span class="tt-word">solution set</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students name a real limit (minimum age, max weight, earliest time) and explain the circle type shows whether the boundary value is allowed.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Critique: 'An open circle and a closed circle graph the same solution set.' Use x &gt; 5 and x ≥ 5 to show why this is wrong.</p>
+    <ul class="tt-extend-stems"><li>This is wrong because x ≥ 5 includes ___ but x &gt; 5 ___.</li><li>The two solution sets differ by ___.</li></ul>
+  </div>
+</div>
+</section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 7 Project — Equations &amp; Inequalities in Action</h3>
+      </div>
+      <p class="project-desc">Capstone project applying writing and solving equations and inequalities to real situations.</p>
+      <div class="project-links">
+        <a href="/math/unit-8/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🟢</span>
+        <h3 class="project-title">Neon Inequality Gatekeeper</h3>
+      </div>
+      <p class="project-desc">Graph inequalities on a number line to clear each neon gate.</p>
+      <div class="project-links">
+        <a href="/expressions-equations/neon-inequality/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain my graph using the words number line, open circle, closed circle, and solution set.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Boundary point is the number on the number line where the solution set starts.<span class="twr-es">Punto límite es el número en la recta numérica donde comienza el conjunto solución.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about boundary point. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre punto límite. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Boundary point matters in math<span class="twr-es">Punto límite importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Boundary point matters in math because ___.</span><span class="twr-es">Punto límite importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Boundary point matters in math, but ___.</span><span class="twr-es">Punto límite importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Boundary point matters in math, so ___.</span><span class="twr-es">Punto límite importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about boundary point.<span class="twr-es">Di un hecho verdadero sobre boundary point.</span></p>
+        <p class="twr-frame"><span class="twr-en">Boundary point ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about boundary point.<span class="twr-es">Haz una pregunta sobre boundary point.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about boundary point.<span class="twr-es">Muestra entusiasmo sobre boundary point.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with boundary point.<span class="twr-es">Dile a un compañero qué hacer con boundary point.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">I use a ___ circle at 2 because 2:00 ___ included.</span><span class="twr-es">Uso un círculo ___ en 2 porque las 2:00 ___ incluidas.</span></p><p class="twr-frame"><span class="twr-en">I shade ___ because the times can be ___.</span><span class="twr-es">Sombreo ___ porque las horas pueden ser ___.</span></p><p class="twr-frame"><span class="twr-en">I used a ___ circle because the symbol ___ means the boundary is ___.</span><span class="twr-es">Usé un círculo ___ porque el símbolo ___ significa que el límite ___.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. A graph shows a closed circle at -2 shaded to the right. Which inequality is it?</p>
+  <ol class="try-choices" type="A"><li>x ≥ -2</li><li>x &gt; -2</li><li>x ≤ -2</li><li>x &lt; -2</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. Which value is a solution to x &lt; 4?</p>
+  <ol class="try-choices" type="A"><li>3</li><li>4</li><li>5</li><li>6</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">A theme park has two rides. Ride A requires height h &gt; 48 inches. Ride B requires height h ≥ 48 inches. A child is exactly 48 inches tall. Which ride can they go on? Explain using number line graphs for both inequalities.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> For Ride A (h &gt; 48), the graph has a ___ circle at 48. Since 48 &gt; 48 is ___, the child ___ ride A. For Ride B (h ≥ 48), the graph has a ___ circle at 48. Since 48 ≥ 48 is ___, the child ___ ride B.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">How would you graph the inequality x ≥ 9?</p>
+  <ol class="try-choices" type="A"><li>Closed circle at 9, shaded right</li><li>Open circle at 9, shaded right</li><li>Closed circle at 9, shaded left</li><li>Open circle at 9, shaded left</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key &amp; Teacher Guide</h2>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. Closed circle at 3, shaded right <span class="ak-why">— x ≥ 3 means 3 IS included (closed circle) and values greater than or equal to 3 are shaded (right).</span></li><li><strong>You Try (notes):</strong> A. Open circle at 8, shaded right <span class="ak-why">— x &gt; 8 means 8 is NOT included (open circle) and values greater than 8 are shaded to the right.</span></li><li><strong>Try It 1:</strong> A. x ≥ -2 <span class="ak-why">— Closed circle means 'or equal to'; shaded right means greater: x ≥ -2.</span></li><li><strong>Try It 2:</strong> A. 3 <span class="ak-why">— Only 3 is less than 4.</span></li><li><strong>Exit Ticket:</strong> A. Closed circle at 9, shaded right <span class="ak-why">— x ≥ 9 means 9 is included (closed circle) and values are 9 or greater (shaded right).</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Boundary point is the number on the number line where the solution set starts.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-5 · Standard 6.EE.8</footer>
+</main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

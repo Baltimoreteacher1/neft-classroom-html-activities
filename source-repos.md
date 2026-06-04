@@ -18,34 +18,38 @@ This file maps classroom activity source repository names into the organized sta
 ## Unit 5 Geometry and Measurement
 | Source repository name | Target folder |
 | --- | --- |
-| `Unit5WorldarchitectureProjet` | `/unit-5/unit5worldarchitectureprojet/` |
+| `Unit5WorldarchitectureProjet` | `/unit-5/world-architect-project/` |
 | `Unit5PracticeHTML` | `/unit-5/unit5practicehtml/` |
 | `Unit5TestReview` | `/unit-5/unit5testreview/` |
 | `5.8InteractiveHtml` | `/unit-5/5-8interactivehtml/` |
 | `5.6Session1` | `/unit-5/5-6session1/` |
 | `NoamUnit5QuizBaseball` | `/unit-5/noamunit5quizbaseball/` |
 | `5.5SquareTriangle` | `/unit-5/5-5squaretriangle/` |
-| `5.5gemini` | `/unit-5/5-5gemini/` |
+| `5.5gemini` | `/unit-5/volume-scaffold-module/` |
 | `RectangularPrismStoryESL` | `/unit-5/rectangularprismstoryesl/` |
 | `RectangularPrismStory` | `/unit-5/rectangularprismstory/` |
 | `VolumeofRectangularPrism` | `/unit-5/volumeofrectangularprism/` |
 | `InteractiveAreaMission` | `/unit-5/interactiveareamission/` |
 | `5.1-5.3Practice` | `/unit-5/5-1-5-3practice/` |
-| `5.3RVTrapezoid` | `/unit-5/5-3rvtrapezoid/` |
-| `5.3ENVTrapezoidActivity` | `/unit-5/5-3envtrapezoidactivity/` |
+| `5.3RVTrapezoid` | `/unit-5/trapezoid-area-studio-rv/` |
+| `5.3ENVTrapezoidActivity` | `/unit-5/trapezoid-area-studio-env/` |
 | `Grade6Area5.1-2` | `/unit-5/grade6area5-1-2/` |
 | `Grade6Area5.1-2Language` | `/unit-5/grade6area5-1-2language/` |
 | `ParallelogramandRhombusGame` | `/unit-5/parallelogramandrhombusgame/` |
+| `SurfaceAreaReview` | `/surface-area-review/` |
+| `GeometryPrep` | `/geometry-prep/` |
+| `Unit5Practice` | `/unit-5-practice/` |
 
 ## Statistics and Data
 | Source repository name | Target folder |
 | --- | --- |
+| `Statsofmylife` | `/statistics-data/stats-of-my-life/` |
 | `Mean-Median-Mode-Game` | `/statistics-data/mean-median-mode-game/` |
 | `Mean-Median-ModeGalleryWalk` | `/statistics-data/mean-median-modegallerywalk/` |
 | `meanmedianmodesoccerandbracelets` | `/statistics-data/meanmedianmodesoccerandbracelets/` |
-| `MeanMedianModeIntrohtml` | `/statistics-data/meanmedianmodeintrohtml/` |
-| `Histogramhero` | `/statistics-data/histogramhero/` |
-| `2.2HistogramGraphicNovel` | `/statistics-data/2-2histogramgraphicnovel/` |
+| `MeanMedianModeIntrohtml` | `/statistics-data/mean-median-mode-intro/` |
+| `Histogramhero` | `/statistics-data/histogram-hero/` |
+| `2.2HistogramGraphicNovel` | `/statistics-data/histogram-graphic-novel/` |
 | `6.SP.A.1Game-` | `/statistics-data/6-sp-a-1game/` |
 | `6.SP.A.1Data-Lab-6.SP.A.1-Flagship` | `/statistics-data/6-sp-a-1data-lab-6-sp-a-1-flagship/` |
 | `6.sp.a.1Review2` | `/statistics-data/6-sp-a-1review2/` |
@@ -59,9 +63,9 @@ This file maps classroom activity source repository names into the organized sta
 | --- | --- |
 | `VariableExplorerESOL` | `/expressions-equations/variableexploreresol/` |
 | `VariableExplorer1` | `/expressions-equations/variableexplorer1/` |
-| `6eec9testproject` | `/expressions-equations/6eec9testproject/` |
+| `6eec9testproject` | `/expressions-equations/proportional-relationships-gallery/` |
 | `6.ee.c.9aftertest` | `/expressions-equations/6-ee-c-9aftertest/` |
-| `6eec9aftertest2` | `/expressions-equations/6eec9aftertest2/` |
+| `6eec9aftertest2` | `/expressions-equations/proportional-relationships-mission/` |
 | `6.ee.c.9VariableVelocityGame` | `/expressions-equations/6-ee-c-9variablevelocitygame/` |
 | `6.ee.c.9MartianGame` | `/expressions-equations/6-ee-c-9martiangame/` |
 | `6.ee.c.9Projectroblox` | `/expressions-equations/6-ee-c-9projectroblox/` |

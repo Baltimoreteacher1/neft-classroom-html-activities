@@ -1,0 +1,5441 @@
+<!doctype html>
+<html data-nt-level="1" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      Shopping Mall Mogul — Percents, Decimals &amp; Rates | Neft Teacher
+     — Level 1 (Support)</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ═══════════════════════════════════════════════════════
+   SHOPPING MALL MOGUL — Unit 4 Post-Test Project
+   Theme: Hot Pink / Gold / Dark Purple / Cream
+   ═══════════════════════════════════════════════════════ */
+      :root {
+        --mall-pink: #ec4899;
+        --mall-pink-dark: #be185d;
+        --mall-pink-light: #fce7f3;
+        --mall-gold: #eab308;
+        --mall-gold-dark: #a16207;
+        --mall-gold-light: #fef9c3;
+        --mall-purple: #581c87;
+        --mall-purple-light: #f3e8ff;
+        --mall-cream: #fdf4ff;
+        --mall-bg: #fdf4ff;
+        --mall-surface: #ffffff;
+        --mall-ink: #3b0764;
+        --mall-muted: #6b7280;
+        --mall-line: #e5e7eb;
+        --mall-success: #059669;
+        --mall-success-bg: #d1fae5;
+        --mall-error: #dc2626;
+        --mall-error-bg: #fee2e2;
+        --mall-radius: 16px;
+        --mall-shadow: 0 4px 24px rgba(236, 72, 153, 0.12);
+        --mall-shadow-lg: 0 12px 48px rgba(236, 72, 153, 0.18);
+        --mall-font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --mall-font-display: "Segoe UI", system-ui, sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--mall-font);
+        color: var(--mall-ink);
+        background: var(--mall-bg);
+        line-height: 1.6;
+        -webkit-text-size-adjust: 100%;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Print Styles */
+      @media print {
+        .no-print,
+        .progress-bar-container,
+        .hint-btn,
+        .phase-nav,
+        .fab-help,
+        #confetti-canvas {
+          display: none !important;
+        }
+        .phase-section {
+          break-inside: avoid;
+          page-break-inside: avoid;
+          border: 1px solid #ccc !important;
+          box-shadow: none !important;
+        }
+        body {
+          background: #fff;
+          font-size: 11pt;
+        }
+        .app-header {
+          background: #ec4899 !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+
+      /* ── HEADER ─────────────────────────────────────── */
+      .app-header {
+        background: linear-gradient(
+          135deg,
+          var(--mall-purple) 0%,
+          var(--mall-pink-dark) 40%,
+          var(--mall-pink) 100%
+        );
+        color: #fff;
+        padding: 2.5rem 1.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .app-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 20% 80%,
+            rgba(234, 179, 8, 0.3) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(236, 72, 153, 0.3) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+      .header-content {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 0.35rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .header-title {
+        font-family: var(--mall-font-display);
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+      .header-subtitle {
+        font-size: 1.05rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Floating shopping decorations */
+      .shop-floats {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .shop-float {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0.15;
+        animation: floatShop 6s ease-in-out infinite;
+      }
+      .shop-float:nth-child(1) {
+        left: 5%;
+        top: 20%;
+        animation-delay: 0s;
+      }
+      .shop-float:nth-child(2) {
+        left: 15%;
+        top: 60%;
+        animation-delay: 1s;
+        font-size: 2rem;
+      }
+      .shop-float:nth-child(3) {
+        left: 75%;
+        top: 15%;
+        animation-delay: 2s;
+      }
+      .shop-float:nth-child(4) {
+        left: 85%;
+        top: 55%;
+        animation-delay: 3s;
+        font-size: 1.8rem;
+      }
+      .shop-float:nth-child(5) {
+        left: 45%;
+        top: 10%;
+        animation-delay: 4s;
+      }
+      .shop-float:nth-child(6) {
+        left: 60%;
+        top: 70%;
+        animation-delay: 1.5s;
+        font-size: 2.2rem;
+      }
+
+      @keyframes floatShop {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(15deg);
+        }
+      }
+
+      /* ── PROGRESS BAR ───────────────────────────────── */
+      .progress-bar-container {
+        background: var(--mall-surface);
+        border-bottom: 1px solid var(--mall-line);
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+      .progress-inner {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--mall-muted);
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      .progress-track {
+        height: 10px;
+        background: var(--mall-pink-light);
+        border-radius: 99px;
+        overflow: hidden;
+        position: relative;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--mall-pink), var(--mall-gold));
+        border-radius: 99px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+      }
+      .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .progress-step:hover {
+        transform: translateY(-2px);
+      }
+      .step-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--mall-pink-light);
+        border: 2px solid var(--mall-line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--mall-muted);
+        transition: all 0.3s;
+      }
+      .step-dot.active {
+        background: var(--mall-pink);
+        border-color: var(--mall-pink);
+        color: #fff;
+      }
+      .step-dot.complete {
+        background: var(--mall-success);
+        border-color: var(--mall-success);
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--mall-muted);
+        text-align: center;
+        max-width: 80px;
+      }
+
+      /* ── MAIN LAYOUT ────────────────────────────────── */
+      .main-container {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      /* ── PHASE SECTIONS ─────────────────────────────── */
+      .phase-section {
+        background: var(--mall-surface);
+        border-radius: var(--mall-radius);
+        box-shadow: var(--mall-shadow);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out both;
+      }
+      .phase-section[hidden] {
+        display: none;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .phase-header {
+        padding: 1.75rem 2rem 1.5rem;
+        border-bottom: 1px solid var(--mall-line);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .phase-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .phase-icon.pink {
+        background: var(--mall-pink-light);
+        color: var(--mall-pink);
+      }
+      .phase-icon.gold {
+        background: var(--mall-gold-light);
+        color: var(--mall-gold-dark);
+      }
+      .phase-icon.purple {
+        background: var(--mall-purple-light);
+        color: var(--mall-purple);
+      }
+      .phase-icon.green {
+        background: var(--mall-success-bg);
+        color: var(--mall-success);
+      }
+
+      .phase-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .phase-desc {
+        font-size: 0.88rem;
+        color: var(--mall-muted);
+        margin-top: 0.15rem;
+      }
+      .phase-body {
+        padding: 2rem;
+      }
+
+      /* ── TASK CARDS ─────────────────────────────────── */
+      .task-card {
+        background: var(--mall-bg);
+        border: 1px solid var(--mall-line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+      .task-card:hover {
+        box-shadow: 0 4px 16px rgba(236, 72, 153, 0.08);
+        border-color: var(--mall-pink-light);
+      }
+      .task-card.completed {
+        border-left: 4px solid var(--mall-success);
+        background: var(--mall-success-bg);
+      }
+
+      .task-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--mall-pink);
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+      .task-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .task-instruction {
+        font-size: 0.92rem;
+        color: var(--mall-muted);
+        margin-bottom: 1rem;
+        line-height: 1.65;
+      }
+
+      /* Scenario box */
+      .scenario-box {
+        background: linear-gradient(
+          135deg,
+          var(--mall-pink-light),
+          var(--mall-gold-light)
+        );
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(236, 72, 153, 0.15);
+      }
+      .scenario-box h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--mall-purple);
+      }
+      .scenario-box p {
+        font-size: 0.92rem;
+        color: var(--mall-ink);
+        line-height: 1.65;
+      }
+
+      /* ── FORM ELEMENTS ──────────────────────────────── */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        color: var(--mall-ink);
+      }
+      .form-sublabel {
+        font-size: 0.78rem;
+        color: var(--mall-muted);
+        font-weight: 400;
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 2px solid var(--mall-line);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        background: var(--mall-surface);
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--mall-pink);
+        box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+      }
+      .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .form-input-sm {
+        max-width: 200px;
+      }
+      .form-input-inline {
+        display: inline-block;
+        width: 120px;
+        margin: 0 0.3rem;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      /* ── BUTTONS ────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--mall-pink);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--mall-pink-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--mall-shadow);
+      }
+      .btn-secondary {
+        background: var(--mall-pink-light);
+        color: var(--mall-pink);
+      }
+      .btn-secondary:hover {
+        background: #fbcfe8;
+      }
+      .btn-gold {
+        background: var(--mall-gold);
+        color: #fff;
+      }
+      .btn-gold:hover {
+        background: var(--mall-gold-dark);
+      }
+      .btn-success {
+        background: var(--mall-success);
+        color: #fff;
+      }
+      .btn-success:hover {
+        background: #047857;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--mall-pink);
+        color: var(--mall-pink);
+      }
+      .btn-outline:hover {
+        background: var(--mall-pink-light);
+      }
+      .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem;
+      }
+      .btn-lg {
+        padding: 0.85rem 2rem;
+        font-size: 1rem;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      /* ── INTERACTIVE TOOLS ──────────────────────────── */
+      .tool-panel {
+        background: linear-gradient(to bottom, #fdf4ff, #fce7f3);
+        border: 2px solid var(--mall-pink-light);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+      .tool-panel-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--mall-pink);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* Calculator display */
+      .calc-display {
+        background: var(--mall-purple);
+        color: #f9a8d4;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-family: "Courier New", monospace;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      /* ── DATA TABLE ─────────────────────────────────── */
+      .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--mall-line);
+        margin: 1rem 0;
+      }
+      .data-table th {
+        background: var(--mall-pink);
+        color: #fff;
+        padding: 0.65rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-align: left;
+      }
+      .data-table td {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--mall-line);
+      }
+      .data-table tr:nth-child(even) td {
+        background: #fdf2f8;
+      }
+      .data-table tr:hover td {
+        background: var(--mall-pink-light);
+      }
+
+      /* ── HINT SYSTEM ────────────────────────────────── */
+      .hint-container {
+        margin-top: 0.75rem;
+      }
+      .hint-btn {
+        background: none;
+        border: none;
+        color: var(--mall-pink);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0;
+      }
+      .hint-btn:hover {
+        text-decoration: underline;
+      }
+      .hint-content {
+        display: none;
+        background: var(--mall-gold-light);
+        border-left: 3px solid var(--mall-gold);
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.88rem;
+        color: var(--mall-ink);
+      }
+      .hint-content.visible {
+        display: block;
+        animation: fadeInUp 0.3s ease-out;
+      }
+
+      /* ── SUPPORT / CHALLENGE MODES ──────────────────── */
+      .mode-toggle-bar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        background: var(--mall-pink-light);
+        border-radius: 10px;
+        padding: 0.35rem;
+      }
+      .mode-btn {
+        flex: 1;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: transparent;
+        color: var(--mall-muted);
+        transition: all 0.2s;
+      }
+      .mode-btn.active {
+        background: var(--mall-surface);
+        color: var(--mall-pink);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .support-box {
+        background: #dbeafe;
+        border: 1px solid rgba(37, 99, 235, 0.2);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        font-size: 0.88rem;
+        display: none;
+      }
+      .support-box.visible {
+        display: block;
+      }
+      .challenge-box {
+        background: var(--mall-gold-light);
+        border: 1px solid rgba(234, 179, 8, 0.3);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        font-size: 0.88rem;
+        display: none;
+      }
+      .challenge-box.visible {
+        display: block;
+      }
+
+      /* ── ACHIEVEMENT BADGES ─────────────────────────── */
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .badge-card {
+        flex: 1;
+        min-width: 140px;
+        text-align: center;
+        padding: 1.25rem 1rem;
+        border-radius: 14px;
+        border: 2px solid var(--mall-line);
+        background: var(--mall-surface);
+        transition: all 0.3s;
+      }
+      .badge-card.earned {
+        border-color: var(--mall-gold);
+        background: var(--mall-gold-light);
+        box-shadow: 0 4px 16px rgba(234, 179, 8, 0.15);
+      }
+      .badge-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .badge-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── PHASE NAVIGATION ───────────────────────────── */
+      .phase-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-top: 1px solid var(--mall-line);
+        background: #fdf2f8;
+      }
+
+      /* ── RUBRIC ─────────────────────────────────────── */
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .rubric-cell {
+        border: 2px solid var(--mall-line);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .rubric-cell:hover {
+        border-color: var(--mall-pink-light);
+      }
+      .rubric-cell.selected {
+        border-color: var(--mall-pink);
+        background: var(--mall-pink-light);
+      }
+      .rubric-score {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--mall-pink);
+      }
+      .rubric-desc {
+        font-size: 0.82rem;
+        color: var(--mall-muted);
+        margin-top: 0.35rem;
+      }
+
+      /* ── SVG SCENES ─────────────────────────────────── */
+      .svg-scene {
+        display: flex;
+        justify-content: center;
+        margin: 1.5rem 0;
+      }
+      .svg-scene svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ── RESPONSIVE ─────────────────────────────────── */
+      @media (max-width: 768px) {
+        .phase-body {
+          padding: 1.25rem;
+        }
+        .phase-header {
+          padding: 1.25rem;
+        }
+        .task-card {
+          padding: 1.15rem;
+        }
+        .phase-nav {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .badge-row {
+          gap: 0.65rem;
+        }
+      }
+
+      /* ── GOOGLE CLASSROOM BTN ───────────────────────── */
+      .gc-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #1a73e8;
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .gc-btn:hover {
+        background: #1557b0;
+      }
+
+      /* Student info row */
+      .student-info-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      @media (max-width: 600px) {
+        .student-info-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Score display */
+      .score-display {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--mall-pink), var(--mall-gold));
+        color: #fff;
+        border-radius: 14px;
+        margin: 1.5rem 0;
+      }
+      .score-big {
+        font-size: 3.5rem;
+        font-weight: 800;
+      }
+      .score-label {
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+
+      /* Reference cards */
+      .ref-card {
+        background: var(--mall-surface);
+        border: 1px solid var(--mall-line);
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        align-items: start;
+        gap: 1rem;
+      }
+      .ref-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .ref-title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 0.25rem;
+      }
+      .ref-body {
+        font-size: 0.85rem;
+        color: var(--mall-muted);
+        line-height: 1.6;
+      }
+      .ref-code {
+        font-family: "Courier New", monospace;
+        background: var(--mall-pink-light);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+
+      /* Store card layout */
+      .store-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .store-card {
+        background: var(--mall-surface);
+        border: 2px solid var(--mall-line);
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-align: center;
+        transition: all 0.2s;
+      }
+      .store-card:hover {
+        border-color: var(--mall-pink-light);
+        box-shadow: var(--mall-shadow);
+      }
+      .store-card .store-emoji {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* ══ ENHANCEMENT: Animations ══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes statCountUp {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .phase-section:not([hidden]) .task-card {
+        animation: cardEntrance 0.5s ease-out both;
+      }
+      .phase-section:not([hidden]) .task-card:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .phase-section:not([hidden]) .task-card:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.98) !important;
+      }
+      .xp-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        margin-bottom: 14px;
+        background: var(--mall-surface);
+        border: 1px solid var(--mall-line);
+        border-radius: 12px;
+        box-shadow: var(--mall-shadow);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .xp-bar-container .xp-label {
+        color: var(--mall-pink);
+        white-space: nowrap;
+        min-width: 70px;
+      }
+      .xp-bar-track {
+        flex: 1;
+        height: 8px;
+        background: var(--mall-pink-light);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--mall-pink), var(--mall-gold));
+        border-radius: 99px;
+        transition: width 0.6s ease;
+        width: 0%;
+      }
+      .xp-bar-container .xp-value {
+        color: var(--mall-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        border: 1px dashed var(--mall-line);
+      }
+      .word-bank-title {
+        width: 100%;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--mall-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        padding: 4px 12px;
+        background: #fff;
+        border: 1px solid var(--mall-line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .word-chip:hover {
+        border-color: var(--mall-pink);
+        transform: translateY(-1px);
+      }
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--mall-gold-dark);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        margin-top: 6px;
+      }
+      .example-toggle:hover {
+        color: var(--mall-pink);
+      }
+      .example-box {
+        display: none;
+        margin-top: 8px;
+        padding: 14px;
+        background: rgba(0, 0, 0, 0.02);
+        border-left: 3px solid var(--mall-gold);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.9rem;
+        color: var(--mall-muted);
+      }
+      .example-box.visible {
+        display: block;
+        animation: cardEntrance 0.3s ease;
+      }
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border: 3px solid var(--mall-pink);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        animation: badgePop 0.5s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.08),
+          transparent 50%,
+          rgba(234, 179, 8, 0.06)
+        );
+        pointer-events: none;
+      }
+      .certificate-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--mall-pink);
+        margin-bottom: 4px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .cert-stat {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--mall-line);
+        animation: statCountUp 0.5s ease both;
+      }
+      .cert-stat:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .cert-stat:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .cert-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--mall-pink);
+      }
+      .cert-stat-label {
+        font-size: 0.75rem;
+        color: var(--mall-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 12px;
+        background: var(--mall-pink);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      @media (max-width: 500px) {
+        .cert-stats {
+          grid-template-columns: 1fr;
+        }
+        .certificate-card {
+          padding: 24px;
+        }
+      }
+      @media print {
+        .xp-bar-container,
+        .certificate-overlay,
+        .example-toggle,
+        .word-bank {
+          display: none !important;
+        }
+      }
+
+      /* Confetti canvas */
+      #confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+      }
+    </style>
+  <style id="nt-upgrade-styles">
+    /* ── Neft Teacher readability upgrade ── */
+    html { font-size: 112.5%; }            /* lift root so rem-based text grows */
+    body { line-height: 1.65; }
+    p, li, td, th, label, span, a, button, input, textarea, select,
+    .question, .task, .prompt, .instructions, figcaption, dd, dt {
+      font-size: max(1em, 17px);
+    }
+    /* Restore intentionally-large display text rather than shrink it */
+    h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); line-height: 1.2; }
+    h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.25; }
+    h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); line-height: 1.3; }
+    h4 { font-size: 1.18rem; }
+    /* Floor any element that set a tiny rem/px font inline or via class */
+    [style*="font-size:0.7"], [style*="font-size: 0.7"],
+    [style*="font-size:0.75"], [style*="font-size: 0.75"],
+    [style*="font-size:0.78"], [style*="font-size: 0.78"],
+    [style*="font-size:0.8"], [style*="font-size: 0.8"],
+    [style*="font-size:0.82"], [style*="font-size: 0.82"],
+    [style*="font-size:0.85"], [style*="font-size: 0.85"],
+    [style*="font-size:0.88"], [style*="font-size: 0.88"],
+    [style*="font-size:0.9"], [style*="font-size: 0.9"],
+    [style*="font-size:11px"], [style*="font-size: 11px"],
+    [style*="font-size:12px"], [style*="font-size: 12px"],
+    [style*="font-size:13px"], [style*="font-size: 13px"],
+    [style*="font-size:14px"], [style*="font-size: 14px"] {
+      font-size: 1rem !important;
+    }
+  
+    /* ── Neft Teacher help widgets ── */
+    .nt-level-banner {
+      position: sticky; top: 0; z-index: 9000;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 16px; font-size: 1rem; font-weight: 700;
+      color: #0b1f33; background: linear-gradient(90deg,#f2c15b,#1fa6a2);
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .nt-level-banner .nt-pill {
+      background: rgba(255,255,255,.92); color:#12355b; border-radius:999px;
+      padding: 3px 12px; font-size: .95rem;
+    }
+    .nt-level-banner .nt-sub { font-weight: 600; color:#06283d; font-size:.95rem; }
+
+    .nt-fab-wrap {
+      position: fixed; right: 18px; bottom: 18px; z-index: 9500;
+      display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    }
+    .nt-fab {
+      border: none; cursor: pointer; border-radius: 999px;
+      padding: 12px 18px; font-size: 1rem; font-weight: 700; color:#fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,.35); display:flex; gap:8px; align-items:center;
+    }
+    .nt-fab-help { background:#1fa6a2; }
+    .nt-fab-hint { background:#7c3aed; }
+    .nt-fab:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+
+    .nt-panel {
+      position: fixed; right: 18px; bottom: 90px; z-index: 9600;
+      width: min(340px, calc(100vw - 36px)); max-height: 70vh; overflow:auto;
+      background:#fff; color:#21313f; border-radius:16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.4); padding: 18px; display:none;
+      border: 2px solid #1fa6a2;
+    }
+    .nt-panel[data-open="true"] { display:block; }
+    .nt-panel h3 { margin:0 0 6px; color:#12355b; font-size:1.25rem; }
+    .nt-panel p.nt-lede { margin:0 0 12px; color:#5f6f80; font-size:1rem; }
+    .nt-panel h4 { margin:14px 0 6px; color:#12355b; font-size:1.05rem; }
+    .nt-panel ul { margin:0; padding-left: 18px; }
+    .nt-panel li { margin: 6px 0; font-size:1rem; }
+    .nt-panel a { color:#0f6f6b; font-weight:600; }
+    .nt-panel .nt-close {
+      float:right; border:none; background:#eef3f7; border-radius:8px;
+      cursor:pointer; font-size:1.1rem; line-height:1; padding:6px 10px; color:#12355b;
+    }
+    .nt-vocab { margin:0; padding:0; list-style:none; }
+    .nt-vocab li { padding:8px 0; border-bottom:1px solid #e6edf3; }
+    .nt-vocab b { color:#7c3aed; }
+
+    /* Hint pop-ups attached to tasks */
+    .nt-hint-btn {
+      display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+      border:1px solid #f2c15b; background:#fef7e0; color:#875f00;
+      border-radius:999px; padding:5px 12px; font-size:.95rem; font-weight:700;
+      margin: 6px 6px 6px 0;
+    }
+    .nt-hint-btn:focus-visible { outline:3px solid #7c3aed; outline-offset:2px; }
+    .nt-hint-body {
+      display:none; margin:6px 0 10px; padding:12px 14px; font-size:1rem;
+      background:#fef7e0; color:#5a4300; border-left:4px solid #f2c15b;
+      border-radius:0 10px 10px 0;
+    }
+    .nt-hint-body[data-open="true"] { display:block; }
+
+    /* Inline tooltips on key terms */
+    .nt-tip {
+      border-bottom:2px dotted #1fa6a2; cursor:help; position:relative;
+      color: inherit;
+    }
+    .nt-tip:focus-visible { outline:2px solid #1fa6a2; outline-offset:2px; }
+    .nt-tip[data-show="true"]::after, .nt-tip:hover::after {
+      content: attr(data-nt-tip);
+      position:absolute; left:0; bottom:calc(100% + 8px); z-index:9700;
+      width: max-content; max-width:260px; padding:8px 12px;
+      background:#12355b; color:#fff; border-radius:10px; font-size:.95rem;
+      font-weight:500; line-height:1.4; box-shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+
+    /* Level 1 scaffolding callouts */
+    .nt-scaffold {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#dff2ee; border:1px solid #1fa6a2; color:#0b4d4a; font-size:1rem;
+    }
+    html[data-nt-level="1"] .nt-scaffold { display:block; }
+    /* Level 2 enrichment callouts */
+    .nt-enrich {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#fef7e0; border:1px solid #f2c15b; color:#5a4300; font-size:1rem;
+    }
+    html[data-nt-level="2"] .nt-enrich { display:block; }
+    .nt-enrich b, .nt-scaffold b { display:block; margin-bottom:4px; }
+
+    @media (max-width: 520px) {
+      .nt-fab { padding:11px 15px; font-size:.95rem; }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+<div class="nt-level-banner"><span class="nt-pill">Level 1</span><span class="nt-sub">Support version — simpler language, smaller numbers, and step-by-step help.</span></div>
+
+<div class="nt-scaffold" role="note">
+  <b>🪜 Step-by-step support</b>
+  Take it one small step at a time. Use these word helpers and the 💡 Hint buttons whenever you need them. It is okay to go slowly.
+  <ul class="nt-vocab" style="margin-top:8px"><li><b>Percent:</b> A number out of 100. 25% means 25 out of 100.</li><li><b>Decimal:</b> Another way to show part of a whole using a decimal point, like 0.25.</li><li><b>Discount:</b> An amount taken off the original price.</li><li><b>Markup:</b> An amount added to the cost to set the selling price.</li><li><b>Equivalent:</b> Equal in value: 50% = 0.5 = 1/2.</li></ul>
+</div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ═══════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════ -->
+    <header class="app-header">
+      <div class="shop-floats">
+        <span class="shop-float">&#128092;</span>
+        <span class="shop-float">&#128176;</span>
+        <span class="shop-float">&#127991;</span>
+        <span class="shop-float">&#128179;</span>
+        <span class="shop-float">&#128722;</span>
+        <span class="shop-float">&#127915;</span>
+      </div>
+      <div class="header-content">
+        <div class="header-badge">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle
+              cx="8"
+              cy="8"
+              r="7"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M5 8l2 2 4-4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Unit 4 Post-Test Project
+        </div>
+        <h1 class="header-title">Shopping Mall Mogul</h1>
+        <p class="header-subtitle">
+          Use percents, decimals, and rates to build your retail business
+          empire!
+        </p>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════
+     PROGRESS BAR
+     ═══════════════════════════════════════════════ -->
+    <div class="progress-bar-container no-print">
+      <div class="progress-inner">
+        <div class="progress-label">
+          <span>Mall Empire Progress</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step" onclick="goToPhase(1)">
+            <div class="step-dot active" id="dot1">1</div>
+            <span class="step-label">Mission Briefing</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(2)">
+            <div class="step-dot" id="dot2">2</div>
+            <span class="step-label">Market Research</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(3)">
+            <div class="step-dot" id="dot3">3</div>
+            <span class="step-label">Store Planning</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(4)">
+            <div class="step-dot" id="dot4">4</div>
+            <span class="step-label">Grand Opening</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(5)">
+            <div class="step-dot" id="dot5">5</div>
+            <span class="step-label">Portfolio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════ -->
+    <main class="main-container">
+      <!-- Enhancement: XP Bar -->
+      <div class="xp-bar-container" id="xpBarContainer">
+        <span class="xp-label">Mogul XP</span>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill"></div>
+        </div>
+        <span class="xp-value" id="xpValue">0 / 500 XP</span>
+      </div>
+
+      <!-- Mode Toggle -->
+      <div class="mode-toggle-bar no-print">
+        <button class="mode-btn" id="modeSupport" onclick="setMode('support')">
+          &#128218; Support Mode
+        </button>
+        <button
+          class="mode-btn active"
+          id="modeStandard"
+          onclick="setMode('standard')"
+        >
+          &#128092; Standard
+        </button>
+        <button
+          class="mode-btn"
+          id="modeChallenge"
+          onclick="setMode('challenge')"
+        >
+          &#127775; Challenge Mode
+        </button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 1: MISSION BRIEFING
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase1">
+        <div class="phase-header">
+          <div class="phase-icon pink">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="8"
+                width="20"
+                height="14"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path d="M4 12h20" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M9 8V6a5 5 0 0 1 10 0v2"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 1: Mission Briefing</div>
+            <div class="phase-desc">
+              Welcome, future Mall Mogul! Learn about your mission.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Mall SVG Scene -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 600 280"
+              width="600"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fdf4ff" />
+                  <stop offset="100%" stop-color="#fce7f3" />
+                </linearGradient>
+              </defs>
+              <rect width="600" height="280" fill="url(#skyGrad)" rx="14" />
+              <!-- Mall building -->
+              <rect
+                x="80"
+                y="80"
+                width="440"
+                height="170"
+                rx="8"
+                fill="#581c87"
+                stroke="#ec4899"
+                stroke-width="2"
+              />
+              <rect
+                x="80"
+                y="60"
+                width="440"
+                height="30"
+                rx="6"
+                fill="#ec4899"
+              />
+              <text
+                x="300"
+                y="82"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="16"
+                font-weight="800"
+                font-family="sans-serif"
+              >
+                YOUR MALL NAME HERE
+              </text>
+              <!-- Entrance -->
+              <rect
+                x="240"
+                y="160"
+                width="120"
+                height="90"
+                rx="4"
+                fill="#fdf4ff"
+                stroke="#eab308"
+                stroke-width="2"
+              />
+              <rect
+                x="295"
+                y="160"
+                width="10"
+                height="90"
+                fill="#eab308"
+                opacity=".3"
+              />
+              <!-- Windows row 1 -->
+              <rect
+                x="110"
+                y="100"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fce7f3"
+                stroke="#f9a8d4"
+                stroke-width="1"
+              />
+              <rect
+                x="180"
+                y="100"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fef9c3"
+                stroke="#eab308"
+                stroke-width="1"
+              />
+              <rect
+                x="370"
+                y="100"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fce7f3"
+                stroke="#f9a8d4"
+                stroke-width="1"
+              />
+              <rect
+                x="440"
+                y="100"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fef9c3"
+                stroke="#eab308"
+                stroke-width="1"
+              />
+              <!-- Windows row 2 -->
+              <rect
+                x="110"
+                y="170"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fef9c3"
+                stroke="#eab308"
+                stroke-width="1"
+              />
+              <rect
+                x="180"
+                y="170"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fce7f3"
+                stroke="#f9a8d4"
+                stroke-width="1"
+              />
+              <rect
+                x="370"
+                y="170"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fef9c3"
+                stroke="#eab308"
+                stroke-width="1"
+              />
+              <rect
+                x="440"
+                y="170"
+                width="50"
+                height="40"
+                rx="4"
+                fill="#fce7f3"
+                stroke="#f9a8d4"
+                stroke-width="1"
+              />
+              <!-- Shopping bags -->
+              <rect
+                x="260"
+                y="220"
+                width="16"
+                height="20"
+                rx="2"
+                fill="#ec4899"
+              />
+              <path
+                d="M263 220v-6a5 5 0 0 1 10 0v6"
+                stroke="#be185d"
+                stroke-width="1.5"
+                fill="none"
+              />
+              <rect
+                x="325"
+                y="218"
+                width="14"
+                height="18"
+                rx="2"
+                fill="#eab308"
+              />
+              <path
+                d="M328 218v-5a4 4 0 0 1 8 0v5"
+                stroke="#a16207"
+                stroke-width="1.5"
+                fill="none"
+              />
+              <!-- Sparkles -->
+              <circle cx="150" cy="40" r="3" fill="#eab308" opacity=".6" />
+              <circle cx="300" cy="30" r="4" fill="#ec4899" opacity=".5" />
+              <circle cx="450" cy="42" r="3" fill="#eab308" opacity=".6" />
+            </svg>
+          </div>
+
+          <div class="scenario-box">
+            <h3>&#128092; Your Mission</h3>
+            <p>
+              Congratulations! You have been chosen to become the
+              <strong>Chief Retail Officer</strong> of a brand-new shopping
+              mall. Your job is to open stores, set prices, calculate discounts,
+              determine sales tax, and manage your entire retail empire. Every
+              decision requires <strong>percents, decimals, and rates</strong>.
+            </p>
+            <p style="margin-top: 0.75rem">
+              Your starting investment is <strong>$100,000</strong>. You will
+              use percent calculations to set markups, offer discounts, compute
+              tax, and analyze profit margins. Make smart mathematical decisions
+              to build the most profitable mall!
+            </p>
+          </div>
+
+          <!-- Task 1: Student Info -->
+          <div class="task-card">
+            <div class="task-number">1</div>
+            <div class="task-title">Mall Mogul Registration</div>
+            <div class="task-instruction">
+              Enter your information and name your shopping mall to begin!
+            </div>
+            <div class="student-info-row">
+              <div class="form-group">
+                <label class="form-label">Mogul Name (Your Name)</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="studentName"
+                  placeholder="First Last"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Period</label>
+                <select
+                  class="form-select"
+                  id="studentPeriod"
+                  onchange="autoSave()"
+                >
+                  <option value="">Select...</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                  <option>7</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  id="studentDate"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">&#127991; Name Your Mall</label>
+              <input
+                type="text"
+                class="form-input"
+                id="mallName"
+                placeholder='e.g., "Starlight Galleria" or "Golden Plaza Mall"'
+                oninput="
+                  autoSave();
+                  updateMallName();
+                "
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Describe your mall's brand and target audience in 2-3
+                sentences</label
+              >
+              <textarea
+                class="form-textarea"
+                id="mallTheme"
+                rows="3"
+                placeholder="What kind of stores? What vibe? Who shops here?"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 2: Percent Vocabulary Review -->
+          <div class="task-card">
+            <div class="task-number">2</div>
+            <div class="task-title">
+              Percent &amp; Decimal Vocabulary Review
+            </div>
+            <div class="task-instruction">
+              Before we start building your empire, review the key math
+              vocabulary you will use throughout this project.
+            </div>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin: 1rem 0;
+              "
+            >
+              <div class="ref-card">
+                <div class="ref-icon">&#128178;</div>
+                <div>
+                  <div class="ref-title">Percent</div>
+                  <div class="ref-body">
+                    A ratio out of 100. Example: 25% means 25 out of 100, or
+                    <span class="ref-code">0.25</span> as a decimal.
+                  </div>
+                </div>
+              </div>
+              <div class="ref-card">
+                <div class="ref-icon">&#128200;</div>
+                <div>
+                  <div class="ref-title">Markup</div>
+                  <div class="ref-body">
+                    The amount added to cost price. A 40% markup on $50 = $50 +
+                    <span class="ref-code">0.40 &times; 50</span> = $70.
+                  </div>
+                </div>
+              </div>
+              <div class="ref-card">
+                <div class="ref-icon">&#127991;</div>
+                <div>
+                  <div class="ref-title">Discount</div>
+                  <div class="ref-body">
+                    A percent taken off the price. 20% off $80 = $80 &minus;
+                    <span class="ref-code">0.20 &times; 80</span> = $64.
+                  </div>
+                </div>
+              </div>
+              <div class="ref-card">
+                <div class="ref-icon">&#129534;</div>
+                <div>
+                  <div class="ref-title">Sales Tax</div>
+                  <div class="ref-body">
+                    A percent added to a purchase. 7% tax on $64 = $64 +
+                    <span class="ref-code">0.07 &times; 64</span> = $68.48.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Convert these percents to decimals:</label
+              >
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label form-sublabel">45% = </label>
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_dec1"
+                  placeholder="0.??"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel">6% = </label>
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_dec2"
+                  placeholder="0.0?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel">125% = </label>
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_dec3"
+                  placeholder="?.??"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >A jacket costs $80. If it is 30% off, what is the sale price?
+                Show your work.</label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="vocab_practice"
+                placeholder="$80 - (0.30 x 80) = $80 - $24 = $56"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_vocab')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_vocab">
+                To convert a percent to a decimal, divide by 100 (or move the
+                decimal point 2 places left). 45% = 45 / 100 = 0.45. To find a
+                discount: multiply the price by the percent as a decimal, then
+                subtract from the original price.
+              </div>
+            </div>
+            <div class="support-box" id="support_vocab">
+              <strong>&#128218; Support:</strong> Think of percent as "per
+              hundred." 45% means 45 per 100. To change to a decimal, move the
+              dot two spots to the left: 45% becomes 0.45. For 6%, think of it
+              as 06% which becomes 0.06.
+            </div>
+          </div>
+
+          <!-- Task 3: Mall Budget Overview -->
+          <div class="task-card">
+            <div class="task-number">3</div>
+            <div class="task-title">Mall Budget Overview</div>
+            <div class="task-instruction">
+              Study the budget breakdown for your mall. You will use percents of
+              your $100,000 investment for each category.
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Percent of Budget</th>
+                  <th>Dollar Amount</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#127991; Store Buildout</td>
+                  <td>40%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="budget_buildout"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>Constructing store spaces</td>
+                </tr>
+                <tr>
+                  <td>&#128230; Inventory</td>
+                  <td>25%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="budget_inventory"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>Buying products to sell</td>
+                </tr>
+                <tr>
+                  <td>&#128227; Marketing</td>
+                  <td>15%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="budget_marketing"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>Advertising &amp; promotions</td>
+                </tr>
+                <tr>
+                  <td>&#128101; Staff</td>
+                  <td>12%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="budget_staff"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>Hiring employees</td>
+                </tr>
+                <tr>
+                  <td>&#128176; Emergency Fund</td>
+                  <td>8%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="budget_emergency"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>Unexpected expenses</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Do the 5 categories add up to 100%? Show your addition.</label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="budget_check"
+                placeholder="40% + 25% + 15% + 12% + 8% = ?"
+                oninput="autoSave()"
+              />
+            </div>
+
+            <div class="challenge-box" id="challenge_budget">
+              <strong>&#127775; Challenge:</strong> If the investor decides to
+              increase the budget to $150,000, what would each category's dollar
+              amount be? Calculate all five.
+              <textarea
+                class="form-textarea"
+                id="challenge_budget_answer"
+                rows="3"
+                placeholder="Store Buildout: 0.40 x $150,000 = $60,000..."
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_budget')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_budget">
+                To find a percent of a number, convert the percent to a decimal
+                and multiply. 40% of $100,000 = 0.40 &times; 100,000 = $40,000.
+              </div>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <div></div>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(2)">
+              Continue to Market Research &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 2: MARKET RESEARCH
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase2" hidden>
+        <div class="phase-header">
+          <div class="phase-icon gold">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="18"
+                y1="18"
+                x2="25"
+                y2="25"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 2: Market Research</div>
+            <div class="phase-desc">
+              Research pricing, discounts, and tax to make smart decisions.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Percent Calculator Tool -->
+          <div class="tool-panel">
+            <div class="tool-panel-title">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect
+                  x="1"
+                  y="1"
+                  width="16"
+                  height="16"
+                  rx="3"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="9"
+                  y="13"
+                  text-anchor="middle"
+                  fill="currentColor"
+                  font-size="10"
+                  font-weight="700"
+                >
+                  %
+                </text>
+              </svg>
+              Percent Calculator
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 0.5rem;
+                align-items: end;
+                margin-bottom: 0.75rem;
+              "
+            >
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Percent (%)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="calcPercent"
+                  placeholder="e.g., 25"
+                  min="0"
+                  max="999"
+                />
+              </div>
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">of Amount ($)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="calcAmount"
+                  placeholder="e.g., 80"
+                  min="0"
+                />
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="calcPercent()">
+                Calculate
+              </button>
+            </div>
+            <div class="calc-display" id="percentDisplay">
+              Enter values above to calculate...
+            </div>
+            <div style="font-size: 0.78rem; color: var(--mall-muted)">
+              Enter a percent and a dollar amount to find the percent of that
+              number. Great for markups, discounts, and tax!
+            </div>
+          </div>
+
+          <!-- Task 4: Pricing with Markups -->
+          <div class="task-card">
+            <div class="task-number">4</div>
+            <div class="task-title">Setting Prices with Markups</div>
+            <div class="task-instruction">
+              As a store owner, you buy products at
+              <strong>wholesale cost</strong> and sell them at a
+              <strong>retail price</strong> by adding a <strong>markup</strong>.
+              Calculate the selling price for each item using the given markup
+              percent.
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Wholesale Cost</th>
+                  <th>Markup %</th>
+                  <th>Markup Amount</th>
+                  <th>Selling Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#128085; Designer T-Shirt</td>
+                  <td>$12.00</td>
+                  <td>75%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_shirt_amt"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_shirt_price"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#128095; Sneakers</td>
+                  <td>$40.00</td>
+                  <td>120%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_shoes_amt"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_shoes_price"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#128187; Tablet Case</td>
+                  <td>$8.00</td>
+                  <td>150%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_case_amt"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_case_price"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127912; Art Print</td>
+                  <td>$5.50</td>
+                  <td>200%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_art_amt"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="markup_art_price"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Which product has the highest markup AMOUNT (in dollars)? Which
+                has the highest markup PERCENT? Explain why they might be
+                different.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="markup_explain"
+                rows="3"
+                placeholder="The highest markup amount is... The highest markup percent is... They differ because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_markup')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_markup">
+                Markup Amount = Wholesale Cost &times; Markup Percent (as
+                decimal). For the T-Shirt: $12.00 &times; 0.75 = $9.00 markup.
+                Selling Price = $12.00 + $9.00 = $21.00.
+              </div>
+            </div>
+            <div class="support-box" id="support_markup">
+              <strong>&#128218; Support:</strong> To find 75% of $12: First
+              change 75% to a decimal: 0.75. Then multiply: 0.75 &times; 12 = 9.
+              That is the markup amount ($9). Add it to the original cost: $12 +
+              $9 = $21 selling price.
+            </div>
+          </div>
+
+          <!-- Task 5: Discount Research -->
+          <div class="task-card">
+            <div class="task-number">5</div>
+            <div class="task-title">Discount Sale Research</div>
+            <div class="task-instruction">
+              Your competitor mall is running sales! Research what customers
+              actually pay after these discounts.
+            </div>
+
+            <!-- SVG: Sale tags -->
+            <div class="svg-scene">
+              <svg
+                viewBox="0 0 500 100"
+                width="500"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="500" height="100" rx="10" fill="#581c87" />
+                <rect
+                  x="20"
+                  y="15"
+                  width="90"
+                  height="70"
+                  rx="8"
+                  fill="#ec4899"
+                  opacity=".9"
+                />
+                <text
+                  x="65"
+                  y="45"
+                  text-anchor="middle"
+                  fill="#fff"
+                  font-size="20"
+                  font-weight="800"
+                >
+                  25%
+                </text>
+                <text
+                  x="65"
+                  y="65"
+                  text-anchor="middle"
+                  fill="#fce7f3"
+                  font-size="11"
+                  font-weight="600"
+                >
+                  OFF
+                </text>
+                <rect
+                  x="140"
+                  y="15"
+                  width="90"
+                  height="70"
+                  rx="8"
+                  fill="#eab308"
+                  opacity=".9"
+                />
+                <text
+                  x="185"
+                  y="45"
+                  text-anchor="middle"
+                  fill="#fff"
+                  font-size="20"
+                  font-weight="800"
+                >
+                  40%
+                </text>
+                <text
+                  x="185"
+                  y="65"
+                  text-anchor="middle"
+                  fill="#fef9c3"
+                  font-size="11"
+                  font-weight="600"
+                >
+                  OFF
+                </text>
+                <rect
+                  x="260"
+                  y="15"
+                  width="90"
+                  height="70"
+                  rx="8"
+                  fill="#ec4899"
+                  opacity=".9"
+                />
+                <text
+                  x="305"
+                  y="45"
+                  text-anchor="middle"
+                  fill="#fff"
+                  font-size="20"
+                  font-weight="800"
+                >
+                  15%
+                </text>
+                <text
+                  x="305"
+                  y="65"
+                  text-anchor="middle"
+                  fill="#fce7f3"
+                  font-size="11"
+                  font-weight="600"
+                >
+                  OFF
+                </text>
+                <rect
+                  x="380"
+                  y="15"
+                  width="100"
+                  height="70"
+                  rx="8"
+                  fill="#eab308"
+                  opacity=".9"
+                />
+                <text
+                  x="430"
+                  y="40"
+                  text-anchor="middle"
+                  fill="#fff"
+                  font-size="14"
+                  font-weight="800"
+                >
+                  BOGO
+                </text>
+                <text
+                  x="430"
+                  y="60"
+                  text-anchor="middle"
+                  fill="#fef9c3"
+                  font-size="9"
+                  font-weight="600"
+                >
+                  50% OFF
+                </text>
+                <text
+                  x="430"
+                  y="75"
+                  text-anchor="middle"
+                  fill="#fef9c3"
+                  font-size="9"
+                  font-weight="600"
+                >
+                  2ND ITEM
+                </text>
+              </svg>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Original Price</th>
+                  <th>Discount %</th>
+                  <th>Show Your Work</th>
+                  <th>Sale Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#128084; Jacket</td>
+                  <td>$95.00</td>
+                  <td>25% off</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_jacket_work"
+                      placeholder="95 x 0.25 = ..."
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_jacket"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#128095; Boots</td>
+                  <td>$120.00</td>
+                  <td>40% off</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_boots_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_boots"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#128188; Backpack</td>
+                  <td>$65.00</td>
+                  <td>15% off</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_bag_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_bag"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#128241; Phone Case</td>
+                  <td>$35.00</td>
+                  <td>50% off</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_phone_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="disc_phone"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Which item saves the customer the MOST money? Which saves the
+                LEAST? Explain using both the percent and the dollar
+                amount.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="discount_compare"
+                rows="3"
+                placeholder="The boots save the most because... The phone case saves the least because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="challenge-box" id="challenge_disc">
+              <strong>&#127775; Challenge:</strong> A store has a "double
+              discount" &mdash; first 20% off, then an additional 10% off the
+              already-reduced price. Is this the same as 30% off? Prove it using
+              a $100 item.
+              <textarea
+                class="form-textarea"
+                id="challenge_disc_answer"
+                rows="3"
+                placeholder="20% off $100 = $80. Then 10% off $80 = ..."
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 6: Sales Tax Research -->
+          <div class="task-card">
+            <div class="task-number">6</div>
+            <div class="task-title">Sales Tax Calculations</div>
+            <div class="task-instruction">
+              In your state, the sales tax rate is <strong>7%</strong>.
+              Calculate the total cost including tax for each purchase.
+              Remember: total = price + tax.
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+            >
+              <div class="form-group">
+                <label class="form-label">$45.00 shirt + 7% tax:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="tax_shirt"
+                  placeholder="Tax = $___. Total = $___"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">$89.99 sneakers + 7% tax:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="tax_sneakers"
+                  placeholder="Tax = $___. Total = $___"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                  >$250.00 gaming console + 7% tax:</label
+                >
+                <input
+                  type="text"
+                  class="form-input"
+                  id="tax_console"
+                  placeholder="Tax = $___. Total = $___"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">$14.50 book + 7% tax:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="tax_book"
+                  placeholder="Tax = $___. Total = $___"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >The total for a purchase (with 7% tax included) is $53.50. What
+                was the original price BEFORE tax? Show your work.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="tax_reverse"
+                rows="3"
+                placeholder="If the total is 107% of the original price, then... $53.50 / 1.07 = ..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_tax')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_tax">
+                Sales Tax = Price &times; Tax Rate (as decimal). For $45 at 7%:
+                Tax = $45 &times; 0.07 = $3.15. Total = $45 + $3.15 = $48.15.
+                For the reverse: Total = Original &times; 1.07, so Original =
+                Total / 1.07.
+              </div>
+            </div>
+            <div class="support-box" id="support_tax">
+              <strong>&#128218; Support:</strong> To find 7% tax: multiply the
+              price by 0.07. Example: $45 &times; 0.07 = $3.15 (that is the
+              tax). Then add tax to the price: $45 + $3.15 = $48.15 (that is the
+              total you pay).
+            </div>
+          </div>
+
+          <!-- Task 7: Tip Calculations -->
+          <div class="task-card">
+            <div class="task-number">7</div>
+            <div class="task-title">Food Court Tip Calculations</div>
+            <div class="task-instruction">
+              Your mall has a food court with sit-down restaurants. Customers
+              leave tips based on their bill total. Calculate the tip amount and
+              total for each scenario.
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Restaurant</th>
+                  <th>Bill Amount</th>
+                  <th>Tip %</th>
+                  <th>Tip Amount</th>
+                  <th>Total with Tip</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#127829; Pizza Palace</td>
+                  <td>$24.00</td>
+                  <td>15%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tip_pizza_amt"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tip_pizza_total"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127843; Sushi Spot</td>
+                  <td>$56.00</td>
+                  <td>20%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tip_sushi_amt"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tip_sushi_total"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127828; Burger Barn</td>
+                  <td>$18.50</td>
+                  <td>18%</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tip_burger_amt"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tip_burger_total"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >A family wants to leave exactly a $10 tip on their meal. If
+                they want that to be a 20% tip, what was their bill? Show your
+                work.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="tip_reverse"
+                rows="2"
+                placeholder="If 20% of the bill = $10, then the bill = $10 / 0.20 = ..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(1)">
+              &#8592; Back to Briefing
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(3)">
+              Continue to Store Planning &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 3: STORE PLANNING
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase3" hidden>
+        <div class="phase-header">
+          <div class="phase-icon purple">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="3"
+                y="6"
+                width="22"
+                height="16"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="14"
+                y1="6"
+                x2="14"
+                y2="22"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="3"
+                y1="14"
+                x2="25"
+                y2="14"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 3: Store Planning</div>
+            <div class="phase-desc">
+              Design your stores, set pricing strategies, and plan your
+              inventory.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Task 8: Store Design -->
+          <div class="task-card">
+            <div class="task-number">8</div>
+            <div class="task-title">Design Your Stores</div>
+            <div class="task-instruction">
+              Choose 4 stores for your mall. For each store, decide the type and
+              give it a name.
+            </div>
+
+            <div class="store-grid">
+              <div class="store-card">
+                <div class="store-emoji">&#128085;</div>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="store1_name"
+                  placeholder="Store 1 name"
+                  oninput="autoSave()"
+                  style="
+                    margin-bottom: 0.5rem;
+                    text-align: center;
+                    font-weight: 700;
+                  "
+                />
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="store1_type"
+                  placeholder="Type (clothing, tech...)"
+                  oninput="autoSave()"
+                  style="text-align: center"
+                />
+              </div>
+              <div class="store-card">
+                <div class="store-emoji">&#128095;</div>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="store2_name"
+                  placeholder="Store 2 name"
+                  oninput="autoSave()"
+                  style="
+                    margin-bottom: 0.5rem;
+                    text-align: center;
+                    font-weight: 700;
+                  "
+                />
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="store2_type"
+                  placeholder="Type (shoes, sports...)"
+                  oninput="autoSave()"
+                  style="text-align: center"
+                />
+              </div>
+              <div class="store-card">
+                <div class="store-emoji">&#127828;</div>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="store3_name"
+                  placeholder="Store 3 name"
+                  oninput="autoSave()"
+                  style="
+                    margin-bottom: 0.5rem;
+                    text-align: center;
+                    font-weight: 700;
+                  "
+                />
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="store3_type"
+                  placeholder="Type (food, games...)"
+                  oninput="autoSave()"
+                  style="text-align: center"
+                />
+              </div>
+              <div class="store-card">
+                <div class="store-emoji">&#128187;</div>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="store4_name"
+                  placeholder="Store 4 name"
+                  oninput="autoSave()"
+                  style="
+                    margin-bottom: 0.5rem;
+                    text-align: center;
+                    font-weight: 700;
+                  "
+                />
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="store4_type"
+                  placeholder="Type (electronics, books...)"
+                  oninput="autoSave()"
+                  style="text-align: center"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 9: Pricing Strategy -->
+          <div class="task-card">
+            <div class="task-number">9</div>
+            <div class="task-title">
+              Pricing Strategy &mdash; Markup &amp; Profit Margins
+            </div>
+            <div class="task-instruction">
+              For each of your 4 stores, pick one key product. Set the wholesale
+              cost and your markup percent, then calculate the selling price and
+              profit per item.
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-panel-title">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <rect
+                    x="1"
+                    y="1"
+                    width="16"
+                    height="16"
+                    rx="3"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <line
+                    x1="5"
+                    y1="9"
+                    x2="13"
+                    y2="9"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <line
+                    x1="9"
+                    y1="5"
+                    x2="9"
+                    y2="13"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                </svg>
+                Profit Margin Calculator
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr 1fr auto;
+                  gap: 0.5rem;
+                  align-items: end;
+                  margin-bottom: 0.75rem;
+                "
+              >
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label form-sublabel">Wholesale ($)</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    id="profitCost"
+                    placeholder="20"
+                    min="0"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label form-sublabel">Markup (%)</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    id="profitMarkup"
+                    placeholder="80"
+                    min="0"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label form-sublabel">Qty Sold</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    id="profitQty"
+                    placeholder="100"
+                    min="0"
+                  />
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="calcProfit()">
+                  Calculate
+                </button>
+              </div>
+              <div class="calc-display" id="profitDisplay">
+                Enter values to see profit analysis...
+              </div>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Store &amp; Product</th>
+                  <th>Wholesale</th>
+                  <th>Markup %</th>
+                  <th>Selling Price</th>
+                  <th>Profit Per Item</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod1_name"
+                      placeholder="Product 1"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod1_cost"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod1_markup"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod1_sell"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod1_profit"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod2_name"
+                      placeholder="Product 2"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod2_cost"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod2_markup"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod2_sell"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod2_profit"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod3_name"
+                      placeholder="Product 3"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod3_cost"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod3_markup"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod3_sell"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod3_profit"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod4_name"
+                      placeholder="Product 4"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod4_cost"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod4_markup"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod4_sell"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="prod4_profit"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Which product has the best profit margin (highest profit per
+                item relative to cost)? Explain your reasoning.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="margin_explain"
+                rows="3"
+                placeholder="The best profit margin is... because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 10: Unit Rate Comparison -->
+          <div class="task-card">
+            <div class="task-number">10</div>
+            <div class="task-title">Comparing Unit Prices</div>
+            <div class="task-instruction">
+              A smart mogul always finds the best deal! Compare unit prices to
+              decide which supplier to order from.
+            </div>
+
+            <div class="scenario-box">
+              <h3>&#128230; Supplier Comparison</h3>
+              <p>
+                You need to order phone cases for your tech store. Three
+                suppliers offer different deals. Find the
+                <strong>unit price</strong> (price per case) for each to
+                determine the best deal.
+              </p>
+            </div>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 1rem;
+              "
+            >
+              <div
+                style="
+                  background: var(--mall-pink-light);
+                  padding: 1rem;
+                  border-radius: 10px;
+                  text-align: center;
+                "
+              >
+                <div style="font-weight: 700; margin-bottom: 0.5rem">
+                  Supplier A
+                </div>
+                <div style="font-size: 0.9rem">24 cases for $168</div>
+                <div class="form-group" style="margin-top: 0.5rem">
+                  <label class="form-label form-sublabel">Unit price:</label>
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="unit_a"
+                    placeholder="$ per case"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+              <div
+                style="
+                  background: var(--mall-gold-light);
+                  padding: 1rem;
+                  border-radius: 10px;
+                  text-align: center;
+                "
+              >
+                <div style="font-weight: 700; margin-bottom: 0.5rem">
+                  Supplier B
+                </div>
+                <div style="font-size: 0.9rem">36 cases for $234</div>
+                <div class="form-group" style="margin-top: 0.5rem">
+                  <label class="form-label form-sublabel">Unit price:</label>
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="unit_b"
+                    placeholder="$ per case"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+              <div
+                style="
+                  background: var(--mall-purple-light);
+                  padding: 1rem;
+                  border-radius: 10px;
+                  text-align: center;
+                "
+              >
+                <div style="font-weight: 700; margin-bottom: 0.5rem">
+                  Supplier C
+                </div>
+                <div style="font-size: 0.9rem">50 cases for $300</div>
+                <div class="form-group" style="margin-top: 0.5rem">
+                  <label class="form-label form-sublabel">Unit price:</label>
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="unit_c"
+                    placeholder="$ per case"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem">
+              <label class="form-label"
+                >Which supplier offers the best deal? Which offers the worst?
+                Explain your reasoning.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="unit_explain"
+                rows="3"
+                placeholder="The best deal is Supplier ___ because the unit price is... The worst is..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="support-box" id="support_unit">
+              <strong>&#128218; Support:</strong> To find the unit price, divide
+              the total cost by the number of items. For Supplier A: $168 / 24
+              cases = $7.00 per case. The lowest unit price is the best deal!
+            </div>
+          </div>
+
+          <!-- Task 11: Decimal Operations -->
+          <div class="task-card">
+            <div class="task-number">11</div>
+            <div class="task-title">
+              Decimal Operations &mdash; Inventory Tracking
+            </div>
+            <div class="task-instruction">
+              Your stores need accurate decimal math for inventory and cash
+              register operations. Solve each problem.
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+            >
+              <div class="form-group">
+                <label class="form-label"
+                  >A customer buys items for $14.75, $8.50, and $23.99. What is
+                  the subtotal?</label
+                >
+                <input
+                  type="text"
+                  class="form-input"
+                  id="dec_add"
+                  placeholder="$14.75 + $8.50 + $23.99 = $"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                  >A customer pays with $50 for a $32.47 purchase. What is the
+                  change?</label
+                >
+                <input
+                  type="text"
+                  class="form-input"
+                  id="dec_sub"
+                  placeholder="$50.00 - $32.47 = $"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                  >You order 12 items at $6.75 each. What is the total
+                  cost?</label
+                >
+                <input
+                  type="text"
+                  class="form-input"
+                  id="dec_mult"
+                  placeholder="12 x $6.75 = $"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                  >3 friends split a $47.85 bill equally. How much does each
+                  person pay?</label
+                >
+                <input
+                  type="text"
+                  class="form-input"
+                  id="dec_div"
+                  placeholder="$47.85 / 3 = $"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_decimal')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_decimal">
+                Line up the decimal points when adding or subtracting. When
+                multiplying decimals, multiply as if whole numbers, then count
+                total decimal places. When dividing, move the decimal to make
+                the divisor whole.
+              </div>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(2)">
+              &#8592; Back to Research
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(4)">
+              Continue to Grand Opening &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 4: GRAND OPENING BUILD
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase4" hidden>
+        <div class="phase-header">
+          <div class="phase-icon pink">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M14 3l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 4: Grand Opening Build</div>
+            <div class="phase-desc">
+              Launch your mall with real sales scenarios and profit analysis!
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Grand Opening SVG -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 600 160"
+              width="600"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="600" height="160" rx="14" fill="#581c87" />
+              <rect
+                x="50"
+                y="20"
+                width="8"
+                height="8"
+                rx="1"
+                fill="#ec4899"
+                transform="rotate(30 54 24)"
+                opacity=".7"
+              />
+              <rect
+                x="120"
+                y="40"
+                width="6"
+                height="10"
+                rx="1"
+                fill="#eab308"
+                transform="rotate(-20 123 45)"
+                opacity=".6"
+              />
+              <rect
+                x="200"
+                y="15"
+                width="8"
+                height="6"
+                rx="1"
+                fill="#f9a8d4"
+                transform="rotate(45 204 18)"
+                opacity=".7"
+              />
+              <rect
+                x="350"
+                y="30"
+                width="10"
+                height="6"
+                rx="1"
+                fill="#eab308"
+                transform="rotate(-15 355 33)"
+                opacity=".6"
+              />
+              <rect
+                x="450"
+                y="20"
+                width="6"
+                height="8"
+                rx="1"
+                fill="#ec4899"
+                transform="rotate(60 453 24)"
+                opacity=".7"
+              />
+              <rect
+                x="520"
+                y="45"
+                width="8"
+                height="6"
+                rx="1"
+                fill="#f9a8d4"
+                transform="rotate(-40 524 48)"
+                opacity=".6"
+              />
+              <rect
+                x="100"
+                y="50"
+                width="400"
+                height="60"
+                rx="12"
+                fill="#ec4899"
+              />
+              <rect
+                x="105"
+                y="55"
+                width="390"
+                height="50"
+                rx="10"
+                fill="none"
+                stroke="rgba(255,255,255,0.3)"
+                stroke-width="2"
+              />
+              <text
+                x="300"
+                y="87"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="26"
+                font-weight="800"
+                font-family="sans-serif"
+              >
+                GRAND OPENING!
+              </text>
+              <line
+                x1="80"
+                y1="130"
+                x2="520"
+                y2="130"
+                stroke="#eab308"
+                stroke-width="4"
+              />
+              <circle
+                cx="300"
+                cy="130"
+                r="10"
+                fill="#eab308"
+                stroke="#a16207"
+                stroke-width="2"
+              />
+              <text
+                x="300"
+                y="135"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="10"
+                font-weight="800"
+              >
+                &#9733;
+              </text>
+            </svg>
+          </div>
+
+          <!-- Task 12: Grand Opening Sale -->
+          <div class="task-card">
+            <div class="task-number">12</div>
+            <div class="task-title">Grand Opening Sale Event</div>
+            <div class="task-instruction">
+              For your grand opening, you are running a
+              <strong>30% off everything</strong> sale! Calculate the sale
+              prices and total with 7% tax for each customer's purchase.
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-panel-title">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <rect
+                    x="1"
+                    y="1"
+                    width="16"
+                    height="16"
+                    rx="3"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="9"
+                    y="13"
+                    text-anchor="middle"
+                    fill="currentColor"
+                    font-size="8"
+                    font-weight="700"
+                  >
+                    $+%
+                  </text>
+                </svg>
+                Discount + Tax Calculator
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr 1fr auto;
+                  gap: 0.5rem;
+                  align-items: end;
+                  margin-bottom: 0.75rem;
+                "
+              >
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label form-sublabel"
+                    >Original Price ($)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-input"
+                    id="dtCalcPrice"
+                    placeholder="80"
+                    min="0"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label form-sublabel">Discount (%)</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    id="dtCalcDisc"
+                    placeholder="30"
+                    min="0"
+                    max="100"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label form-sublabel">Tax (%)</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    id="dtCalcTax"
+                    placeholder="7"
+                    min="0"
+                    max="50"
+                  />
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="calcDiscTax()">
+                  Calculate
+                </button>
+              </div>
+              <div class="calc-display" id="dtDisplay">
+                Enter values to calculate discount then tax...
+              </div>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Items (Original)</th>
+                  <th>After 30% Off</th>
+                  <th>7% Tax</th>
+                  <th>Final Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Customer A</td>
+                  <td>$75.00 jacket</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_a_disc"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_a_tax"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_a_total"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Customer B</td>
+                  <td>$120.00 sneakers</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_b_disc"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_b_tax"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_b_total"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Customer C</td>
+                  <td>$45.00 + $30.00</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_c_disc"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_c_tax"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_c_total"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Customer D</td>
+                  <td>$199.99 game system</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_d_disc"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_d_tax"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="go_d_total"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Task 13: Daily Sales Analysis -->
+          <div class="task-card">
+            <div class="task-number">13</div>
+            <div class="task-title">Daily Sales &amp; Profit Analysis</div>
+            <div class="task-instruction">
+              After your grand opening day, analyze each store's performance.
+              <strong>Profit = Revenue &minus; Cost of Goods</strong>.
+              <strong>Profit Margin = (Profit / Revenue) &times; 100</strong>.
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Store</th>
+                  <th>Revenue</th>
+                  <th>Cost of Goods</th>
+                  <th>Profit</th>
+                  <th>Profit Margin %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Store 1</td>
+                  <td>$3,200</td>
+                  <td>$1,800</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_profit1"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_margin1"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Store 2</td>
+                  <td>$5,600</td>
+                  <td>$3,500</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_profit2"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_margin2"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Store 3</td>
+                  <td>$2,100</td>
+                  <td>$900</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_profit3"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_margin3"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Store 4</td>
+                  <td>$4,400</td>
+                  <td>$2,600</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_profit4"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="daily_margin4"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Which store had the highest profit margin? Which had the most
+                total profit? Are they the same store? Explain.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="daily_analysis"
+                rows="3"
+                placeholder="The highest profit margin was Store ___ at ___%. The most total profit was Store ___ at $___."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_margin')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_margin">
+                Profit = Revenue &minus; Cost. Profit Margin = (Profit /
+                Revenue) &times; 100. For Store 1: Profit = $3,200 &minus;
+                $1,800 = $1,400. Margin = ($1,400 / $3,200) &times; 100 =
+                43.75%.
+              </div>
+            </div>
+            <div class="support-box" id="support_margin">
+              <strong>&#128218; Support:</strong> Profit margin tells you what
+              percent of your revenue is actual profit. To find it: (1) Subtract
+              cost from revenue to get profit. (2) Divide profit by revenue. (3)
+              Multiply by 100 to get the percent. Higher margin = more efficient
+              store!
+            </div>
+          </div>
+
+          <!-- Task 14: Monthly Projection -->
+          <div class="task-card">
+            <div class="task-number">14</div>
+            <div class="task-title">Monthly Revenue Projection</div>
+            <div class="task-instruction">
+              Based on your grand opening results, project monthly performance.
+              Use the daily totals and multiply to estimate 30-day revenue.
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
+            >
+              <div
+                style="
+                  background: var(--mall-success-bg);
+                  border-radius: 12px;
+                  padding: 1.25rem;
+                  border: 2px solid rgba(5, 150, 105, 0.2);
+                "
+              >
+                <div
+                  style="
+                    font-weight: 700;
+                    color: var(--mall-success);
+                    margin-bottom: 0.75rem;
+                  "
+                >
+                  &#128994; TOTAL DAILY REVENUE
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Add all 4 stores' revenue:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="total_daily_rev"
+                    placeholder="$"
+                    oninput="
+                      autoSave();
+                      updateMonthly();
+                    "
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Projected monthly (&times; 30):</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="total_monthly_rev"
+                    placeholder="$"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+              <div
+                style="
+                  background: var(--mall-error-bg);
+                  border-radius: 12px;
+                  padding: 1.25rem;
+                  border: 2px solid rgba(220, 38, 38, 0.2);
+                "
+              >
+                <div
+                  style="
+                    font-weight: 700;
+                    color: var(--mall-error);
+                    margin-bottom: 0.75rem;
+                  "
+                >
+                  &#128308; TOTAL DAILY COSTS
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Add all 4 stores' costs:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="total_daily_cost"
+                    placeholder="$"
+                    oninput="
+                      autoSave();
+                      updateMonthly();
+                    "
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Projected monthly costs (&times; 30):</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="total_monthly_cost"
+                    placeholder="$"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="monthlyResult"
+              style="
+                margin-top: 1.5rem;
+                padding: 1.25rem;
+                border-radius: 12px;
+                text-align: center;
+                font-size: 1.3rem;
+                font-weight: 800;
+                display: none;
+              "
+            ></div>
+
+            <div class="form-group" style="margin-top: 1.25rem">
+              <label class="form-label"
+                >At this rate, how many months will it take to earn back your
+                $100,000 investment? Show your calculation.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="payback_calc"
+                rows="3"
+                placeholder="Monthly profit = $___. $100,000 / monthly profit = ___ months."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="challenge-box" id="challenge_monthly">
+              <strong>&#127775; Challenge:</strong> If you could increase ALL
+              prices by 10% without losing customers, how would your monthly
+              profit change? Calculate the new monthly profit and compare.
+              <textarea
+                class="form-textarea"
+                id="challenge_monthly_answer"
+                rows="3"
+                placeholder="Original daily revenue: $___. With 10% increase: ___ x 1.10 = $___...."
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 15: Percent Change -->
+          <div class="task-card">
+            <div class="task-number">15</div>
+            <div class="task-title">Percent Increase &amp; Decrease</div>
+            <div class="task-instruction">
+              Compare your mall's performance week over week. Calculate the
+              percent change using:
+              <span class="ref-code"
+                >% Change = (New &minus; Original) / Original &times; 100</span
+              >
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Week 1</th>
+                  <th>Week 2</th>
+                  <th>Change</th>
+                  <th>% Change</th>
+                  <th>Direction</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Visitors</td>
+                  <td>2,400</td>
+                  <td>3,000</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_visitors_change"
+                      placeholder=""
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_visitors_pct"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_visitors_dir"
+                      placeholder="Increase/Decrease"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Revenue</td>
+                  <td>$15,300</td>
+                  <td>$18,360</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_rev_change"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_rev_pct"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_rev_dir"
+                      placeholder="Increase/Decrease"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Returns</td>
+                  <td>$1,200</td>
+                  <td>$900</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_ret_change"
+                      placeholder="$"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_ret_pct"
+                      placeholder="%"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="pct_ret_dir"
+                      placeholder="Increase/Decrease"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Is the decrease in returns a good thing or bad thing for your
+                mall? Explain using the numbers.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="pct_change_explain"
+                rows="2"
+                placeholder="The decrease in returns is... because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(3)">
+              &#8592; Back to Planning
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(5)">
+              Continue to Portfolio &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 5: MOGUL PORTFOLIO
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase5" hidden>
+        <div class="phase-header">
+          <div class="phase-icon green">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M14 3l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 5: Mogul Portfolio</div>
+            <div class="phase-desc">
+              Review your mall empire and submit your project.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Mall Poster SVG -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 400 260"
+              width="400"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="posterGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#ec4899" />
+                  <stop offset="50%" stop-color="#581c87" />
+                  <stop offset="100%" stop-color="#eab308" />
+                </linearGradient>
+              </defs>
+              <rect width="400" height="260" rx="16" fill="url(#posterGrad)" />
+              <rect
+                x="10"
+                y="10"
+                width="380"
+                height="240"
+                rx="12"
+                fill="none"
+                stroke="rgba(255,255,255,0.3)"
+                stroke-width="2"
+              />
+              <text
+                x="200"
+                y="55"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="11"
+                font-weight="600"
+                letter-spacing="4"
+                opacity=".8"
+              >
+                WELCOME TO
+              </text>
+              <text
+                x="200"
+                y="100"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="32"
+                font-weight="800"
+                font-family="sans-serif"
+                id="posterMallName"
+              >
+                YOUR MALL
+              </text>
+              <line
+                x1="100"
+                y1="115"
+                x2="300"
+                y2="115"
+                stroke="rgba(255,255,255,0.4)"
+                stroke-width="1"
+              />
+              <text
+                x="200"
+                y="140"
+                text-anchor="middle"
+                fill="#fef9c3"
+                font-size="13"
+                font-weight="600"
+              >
+                4 AMAZING STORES
+              </text>
+              <text
+                x="200"
+                y="165"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.7)"
+                font-size="11"
+              >
+                Shopping &bull; Dining &bull; Entertainment &bull; Style
+              </text>
+              <polygon
+                points="60,200 63,210 73,210 65,216 68,226 60,220 52,226 55,216 47,210 57,210"
+                fill="#eab308"
+                opacity=".7"
+              />
+              <polygon
+                points="200,190 203,200 213,200 205,206 208,216 200,210 192,216 195,206 187,200 197,200"
+                fill="#eab308"
+                opacity=".7"
+              />
+              <polygon
+                points="340,200 343,210 353,210 345,216 348,226 340,220 332,226 335,216 327,210 337,210"
+                fill="#eab308"
+                opacity=".7"
+              />
+              <text
+                x="200"
+                y="250"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.5)"
+                font-size="10"
+                id="posterOwner"
+              >
+                Owned by [Your Name]
+              </text>
+            </svg>
+          </div>
+
+          <!-- Score -->
+          <div class="score-display" id="scoreDisplay">
+            <div class="score-label">Mall Mogul Score</div>
+            <div class="score-big" id="scoreValue">--</div>
+            <div class="score-label">out of 100 points</div>
+          </div>
+
+          <!-- Badges -->
+          <div class="badge-row">
+            <div class="badge-card" id="badge1">
+              <div class="badge-icon">&#128178;</div>
+              <div class="badge-label">Percent Pro</div>
+            </div>
+            <div class="badge-card" id="badge2">
+              <div class="badge-icon">&#127991;</div>
+              <div class="badge-label">Discount Expert</div>
+            </div>
+            <div class="badge-card" id="badge3">
+              <div class="badge-icon">&#128176;</div>
+              <div class="badge-label">Tax Master</div>
+            </div>
+            <div class="badge-card" id="badge4">
+              <div class="badge-icon">&#128200;</div>
+              <div class="badge-label">Profit Analyst</div>
+            </div>
+            <div class="badge-card" id="badge5">
+              <div class="badge-icon">&#127775;</div>
+              <div class="badge-label">Mall Mogul</div>
+            </div>
+          </div>
+
+          <!-- Self-Assessment -->
+          <div class="task-card">
+            <div class="task-number">16</div>
+            <div class="task-title">Self-Assessment Rubric</div>
+            <div class="task-instruction">
+              Rate your own work on each skill. Click a score for each category.
+            </div>
+
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">
+                Finding Percent of a Number
+              </div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_percent', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">I struggled with percents</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_percent', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">I found some percents with help</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_percent', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">I calculated percents correctly</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_percent', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">
+                    I calculated percents confidently
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">
+                Discounts &amp; Markups
+              </div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_discount', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">I couldn't calculate discounts</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_discount', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">I calculated with some errors</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_discount', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">
+                    I calculated discounts accurately
+                  </div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_discount', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">
+                    I mastered discounts and markups
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">
+                Tax &amp; Tip Calculations
+              </div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_tax', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">I didn't understand tax/tips</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_tax', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">
+                    I calculated simple tax problems
+                  </div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_tax', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">I calculated tax accurately</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_tax', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">I handled complex tax scenarios</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">
+                Real-World Application
+              </div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">
+                    I didn't connect math to the mall
+                  </div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">I made some connections</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">
+                    I applied math well to decisions
+                  </div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">Every decision was math-driven</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reflection -->
+          <div class="task-card">
+            <div class="task-number">17</div>
+            <div class="task-title">Reflection Journal</div>
+            <div class="task-instruction">
+              Write thoughtful reflections about your learning.
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >1. What was the most challenging part of this project? How did
+                you overcome it?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect1"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >2. Give a real-world example (not from this project) where
+                someone uses percents, discounts, or tax.</label
+              ><textarea
+                class="form-textarea"
+                id="reflect2"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >3. Explain the difference between percent INCREASE and percent
+                DECREASE. Give an example of each.</label
+              ><textarea
+                class="form-textarea"
+                id="reflect3"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >4. If you could redesign your mall, what pricing or discount
+                strategy would you change and why?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect4"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Final Actions -->
+          <div class="task-card" style="text-align: center; padding: 2rem">
+            <div style="font-size: 2.5rem; margin-bottom: 0.75rem">
+              &#128092;
+            </div>
+            <h2
+              style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem"
+            >
+              Mall Empire Complete!
+            </h2>
+            <p style="color: var(--mall-muted); margin-bottom: 1.5rem">
+              Export and submit your project below.
+            </p>
+            <div
+              style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                justify-content: center;
+              "
+            >
+              <button class="btn btn-primary btn-lg" onclick="calculateScore()">
+                &#128202; Calculate Final Score
+              </button>
+            <button class="btn btn-primary" onclick="ntDownloadResultsCSV()">
+              &#128202; Download Results (CSV for teacher)
+            </button>
+              <button class="btn btn-gold btn-lg" onclick="printProject()">
+                &#128424; Print Project
+              </button>
+              <button
+                class="btn btn-success btn-lg"
+                onclick="downloadProject()"
+              >
+                &#128190; Download Summary
+              </button>
+              <button class="gc-btn" onclick="submitToClassroom()">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                  <path
+                    fill="#fff"
+                    d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm-4 30V14l14 10-14 10z"
+                  />
+                </svg>
+                Submit to Google Classroom
+              </button>
+              <button
+                class="btn btn-primary btn-lg"
+                onclick="showCertificate()"
+              >
+                &#128092; View Certificate
+              </button>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(4)">
+              &#8592; Back to Grand Opening
+            </button>
+            <div style="font-size: 0.82rem; color: var(--mall-muted)">
+              &#128274; Auto-saved to your browser
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════ -->
+    <script>
+      (function () {
+        "use strict";
+
+        var STORAGE_KEY = "neft_unit4_shopping_mall_v2";
+        var currentPhase = 1;
+        var currentMode = "standard";
+        var rubricScores = {};
+
+        window.goToPhase = function (n) {
+          document.querySelectorAll(".phase-section").forEach(function (s) {
+            s.hidden = true;
+          });
+          var target = document.getElementById("phase" + n);
+          if (target) {
+            target.hidden = false;
+            target.style.animation = "none";
+            target.offsetHeight;
+            target.style.animation = "fadeInUp .5s ease-out both";
+            currentPhase = n;
+            updateProgress();
+            window.scrollTo({ top: target.offsetTop - 80, behavior: "smooth" });
+            autoSave();
+          }
+        };
+
+        function updateProgress() {
+          var pct = Math.round(((currentPhase - 1) / 4) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("progressPct").textContent = pct + "%";
+          for (var i = 1; i <= 5; i++) {
+            var dot = document.getElementById("dot" + i);
+            dot.classList.remove("active", "complete");
+            if (i < currentPhase) dot.classList.add("complete");
+            else if (i === currentPhase) dot.classList.add("active");
+          }
+        }
+
+        window.setMode = function (mode) {
+          currentMode = mode;
+          document.querySelectorAll(".mode-btn").forEach(function (b) {
+            b.classList.remove("active");
+          });
+          document
+            .getElementById(
+              "mode" + mode.charAt(0).toUpperCase() + mode.slice(1),
+            )
+            .classList.add("active");
+          document.querySelectorAll(".support-box").forEach(function (el) {
+            el.classList.toggle("visible", mode === "support");
+          });
+          document.querySelectorAll(".challenge-box").forEach(function (el) {
+            el.classList.toggle("visible", mode === "challenge");
+          });
+          autoSave();
+        };
+
+        window.toggleHint = function (id) {
+          document.getElementById(id).classList.toggle("visible");
+        };
+
+        window.calcPercent = function () {
+          var pct =
+            parseFloat(document.getElementById("calcPercent").value) || 0;
+          var amt =
+            parseFloat(document.getElementById("calcAmount").value) || 0;
+          var result = (pct / 100) * amt;
+          document.getElementById("percentDisplay").innerHTML =
+            pct +
+            "% of $" +
+            amt.toFixed(2) +
+            ' = <strong style="color:#f9a8d4;font-size:1.3rem">$' +
+            result.toFixed(2) +
+            "</strong>";
+        };
+
+        window.calcProfit = function () {
+          var cost =
+            parseFloat(document.getElementById("profitCost").value) || 0;
+          var markup =
+            parseFloat(document.getElementById("profitMarkup").value) || 0;
+          var qty = parseFloat(document.getElementById("profitQty").value) || 0;
+          var markupAmt = cost * (markup / 100);
+          var sellPrice = cost + markupAmt;
+          var totalProfit = markupAmt * qty;
+          var margin =
+            sellPrice > 0 ? ((markupAmt / sellPrice) * 100).toFixed(1) : 0;
+          document.getElementById("profitDisplay").innerHTML =
+            "Sell: $" +
+            sellPrice.toFixed(2) +
+            " | Profit/item: $" +
+            markupAmt.toFixed(2) +
+            ' | Total Profit: <strong style="color:#f9a8d4;font-size:1.2rem">$' +
+            totalProfit.toFixed(2) +
+            "</strong> | Margin: " +
+            margin +
+            "%";
+        };
+
+        window.calcDiscTax = function () {
+          var price =
+            parseFloat(document.getElementById("dtCalcPrice").value) || 0;
+          var disc =
+            parseFloat(document.getElementById("dtCalcDisc").value) || 0;
+          var tax = parseFloat(document.getElementById("dtCalcTax").value) || 0;
+          var discAmt = price * (disc / 100);
+          var salePrice = price - discAmt;
+          var taxAmt = salePrice * (tax / 100);
+          var total = salePrice + taxAmt;
+          document.getElementById("dtDisplay").innerHTML =
+            "$" +
+            price.toFixed(2) +
+            " &minus; " +
+            disc +
+            "% = $" +
+            salePrice.toFixed(2) +
+            " + " +
+            tax +
+            "% tax ($" +
+            taxAmt.toFixed(2) +
+            ') = <strong style="color:#f9a8d4;font-size:1.2rem">$' +
+            total.toFixed(2) +
+            "</strong>";
+        };
+
+        window.updateMonthly = function () {
+          var rev =
+            parseFloat(
+              (document.getElementById("total_daily_rev").value || "0").replace(
+                /[$,]/g,
+                "",
+              ),
+            ) || 0;
+          var cost =
+            parseFloat(
+              (
+                document.getElementById("total_daily_cost").value || "0"
+              ).replace(/[$,]/g, ""),
+            ) || 0;
+          document.getElementById("total_monthly_rev").value =
+            "$" + (rev * 30).toLocaleString();
+          document.getElementById("total_monthly_cost").value =
+            "$" + (cost * 30).toLocaleString();
+          var monthlyProfit = (rev - cost) * 30;
+          var el = document.getElementById("monthlyResult");
+          el.style.display = "block";
+          if (monthlyProfit >= 0) {
+            el.style.background = "var(--mall-success-bg)";
+            el.style.color = "var(--mall-success)";
+            el.innerHTML =
+              "&#128994; MONTHLY PROFIT: $" + monthlyProfit.toLocaleString();
+          } else {
+            el.style.background = "var(--mall-error-bg)";
+            el.style.color = "var(--mall-error)";
+            el.innerHTML =
+              "&#128308; MONTHLY LOSS: -$" +
+              Math.abs(monthlyProfit).toLocaleString();
+          }
+          autoSave();
+        };
+
+        window.updateMallName = function () {
+          var name = document.getElementById("mallName").value || "YOUR MALL";
+          var el = document.getElementById("posterMallName");
+          if (el) el.textContent = name.toUpperCase();
+          var owner = document.getElementById("posterOwner");
+          if (owner)
+            owner.textContent =
+              "Owned by " +
+              (document.getElementById("studentName").value || "Your Name");
+        };
+
+        window.selectRubric = function (key, score, el) {
+          rubricScores[key] = score;
+          el.parentElement
+            .querySelectorAll(".rubric-cell")
+            .forEach(function (c) {
+              c.classList.remove("selected");
+            });
+          el.classList.add("selected");
+          autoSave();
+        };
+
+        window.calculateScore = function () {
+          var fields = document.querySelectorAll(
+            'input[type="text"], textarea, select',
+          );
+          var filled = 0;
+          fields.forEach(function (f) {
+            if (f.value && f.value.trim()) filled++;
+          });
+          var score = Math.round((filled / fields.length) * 80);
+          var rubricTotal = Object.values(rubricScores).reduce(function (a, b) {
+            return a + b;
+          }, 0);
+          score += Math.round((rubricTotal / 16) * 20);
+          score = Math.min(score, 100);
+          document.getElementById("scoreValue").textContent = score;
+          if (score >= 20)
+            document.getElementById("badge1").classList.add("earned");
+          if (score >= 40)
+            document.getElementById("badge2").classList.add("earned");
+          if (score >= 60)
+            document.getElementById("badge3").classList.add("earned");
+          if (score >= 80)
+            document.getElementById("badge4").classList.add("earned");
+          if (score >= 95)
+            document.getElementById("badge5").classList.add("earned");
+          if (score >= 70) launchConfetti();
+          autoSave();
+        };
+
+        window.printProject = function () {
+          window.print();
+        };
+
+        window.downloadProject = function () {
+          var name = document.getElementById("studentName").value || "Student";
+          var mallN = document.getElementById("mallName").value || "Mall";
+          var text =
+            "SHOPPING MALL MOGUL - PROJECT SUMMARY\n======================================\n\n";
+          text +=
+            "Mogul: " +
+            name +
+            "\nMall: " +
+            mallN +
+            "\nDate: " +
+            (document.getElementById("studentDate").value || "N/A") +
+            "\n\n";
+          text +=
+            "Score: " +
+            (document.getElementById("scoreValue").textContent ||
+              "Not calculated") +
+            "/100\n\n";
+          document.querySelectorAll(".task-card").forEach(function (card) {
+            var title = card.querySelector(".task-title");
+            if (title) text += "\n--- " + title.textContent + " ---\n";
+            card
+              .querySelectorAll("input, textarea, select")
+              .forEach(function (f) {
+                if (f.value && f.value.trim()) {
+                  var label =
+                    (f.previousElementSibling
+                      ? f.previousElementSibling.textContent
+                      : "") ||
+                    f.placeholder ||
+                    "";
+                  text += label.substring(0, 60) + ": " + f.value + "\n";
+                }
+              });
+          });
+          var blob = new Blob([text], { type: "text/plain" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "Mall_Mogul_" + name.replace(/\s+/g, "_") + ".txt";
+          a.click();
+        };
+
+        window.submitToClassroom = function () {
+          window.open(
+            "https://classroom.google.com/share?url=" +
+              encodeURIComponent(window.location.href),
+            "_blank",
+          );
+        };
+
+        function launchConfetti() {
+          var canvas = document.getElementById("confetti-canvas");
+          var ctx = canvas.getContext("2d");
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          var pieces = [];
+          var colors = [
+            "#ec4899",
+            "#eab308",
+            "#581c87",
+            "#f9a8d4",
+            "#fef9c3",
+            "#059669",
+          ];
+          for (var i = 0; i < 120; i++) {
+            pieces.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * -canvas.height,
+              w: Math.random() * 10 + 5,
+              h: Math.random() * 6 + 3,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              vy: Math.random() * 3 + 2,
+              vx: Math.random() * 2 - 1,
+              rot: Math.random() * 360,
+              vr: Math.random() * 6 - 3,
+            });
+          }
+          var frame = 0;
+          function animate() {
+            if (frame++ > 200) {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pieces.forEach(function (p) {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rot += p.vr;
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate((p.rot * Math.PI) / 180);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+            });
+            requestAnimationFrame(animate);
+          }
+          animate();
+        }
+
+        window.autoSave = function () {
+          var data = {
+            phase: currentPhase,
+            mode: currentMode,
+            rubric: rubricScores,
+            fields: {},
+          };
+          document
+            .querySelectorAll("input, textarea, select")
+            .forEach(function (el) {
+              if (el.id) data.fields[el.id] = el.value;
+            });
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          } catch (e) {}
+        };
+
+        function loadSave() {
+          try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            var data = JSON.parse(raw);
+            if (data.fields) {
+              Object.entries(data.fields).forEach(function (entry) {
+                var el = document.getElementById(entry[0]);
+                if (el) el.value = entry[1];
+              });
+            }
+            if (data.mode) setMode(data.mode);
+            if (data.rubric) rubricScores = data.rubric;
+            if (data.phase) goToPhase(data.phase);
+            updateMallName();
+          } catch (e) {}
+        }
+
+        loadSave();
+        updateProgress();
+        updateMallName();
+        if (!document.getElementById("studentDate").value) {
+          document.getElementById("studentDate").value = new Date()
+            .toISOString()
+            .split("T")[0];
+        }
+
+        // ══ ENHANCEMENT: XP System ══
+        var _xp = 0,
+          _xpMax = 500,
+          _fieldsAwarded = {};
+        function _addXP(a, id) {
+          if (id && _fieldsAwarded[id]) return;
+          if (id) _fieldsAwarded[id] = true;
+          _xp = Math.min(_xp + a, _xpMax);
+          _updateXPBar();
+          if (a > 0) _playSound("xp");
+          _saveEnhState();
+        }
+        function _updateXPBar() {
+          var b = document.getElementById("xpBarFill"),
+            v = document.getElementById("xpValue");
+          if (b) b.style.width = Math.round((_xp / _xpMax) * 100) + "%";
+          if (v) v.textContent = _xp + " / " + _xpMax + " XP";
+        }
+        document.addEventListener("input", function (e) {
+          var el = e.target;
+          if (!el.id) return;
+          if (el.value && el.value.trim().length > 2)
+            _addXP(5, "field_" + el.id);
+        });
+        var _origGTP2 = window.goToPhase;
+        window.goToPhase = function (n) {
+          var p = currentPhase;
+          _origGTP2(n);
+          if (n > p) _addXP(25, "phase_" + p);
+        };
+
+        // ══ ENHANCEMENT: Sound Effects ══
+        var _audioCtx2 = null;
+        function _getAC() {
+          if (!_audioCtx2)
+            try {
+              _audioCtx2 = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          return _audioCtx2;
+        }
+        function _playSound(t) {
+          var c = _getAC();
+          if (!c) return;
+          try {
+            var o = c.createOscillator(),
+              g = c.createGain();
+            o.connect(g);
+            g.connect(c.destination);
+            g.gain.value = 0.08;
+            if (t === "xp") {
+              o.frequency.value = 349;
+              o.type = "sine";
+              g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.15);
+              o.start(c.currentTime);
+              o.stop(c.currentTime + 0.15);
+            } else if (t === "complete") {
+              [1, 1.25, 1.5, 2].forEach(function (n, i) {
+                var o2 = c.createOscillator(),
+                  g2 = c.createGain();
+                o2.connect(g2);
+                g2.connect(c.destination);
+                o2.frequency.value = 349 * n;
+                o2.type = "sine";
+                g2.gain.value = 0.06;
+                g2.gain.exponentialRampToValueAtTime(
+                  0.01,
+                  c.currentTime + 0.15 * (i + 1) + 0.2,
+                );
+                o2.start(c.currentTime + 0.15 * i);
+                o2.stop(c.currentTime + 0.15 * (i + 1) + 0.2);
+              });
+              return;
+            }
+          } catch (e) {}
+        }
+
+        // ══ ENHANCEMENT: Certificate ══
+        window.toggleExample = function (id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.toggle("visible");
+        };
+        window.showCertificate = function () {
+          var n = document.getElementById("studentName");
+          n = n ? n.value || "Mogul" : "Mogul";
+          document.getElementById("certStudentName").textContent = n;
+          document.getElementById("certXP").textContent = _xp;
+          var fs = document.querySelectorAll('input[type="text"],textarea'),
+            f = 0;
+          fs.forEach(function (x) {
+            if (x.value && x.value.trim().length > 0) f++;
+          });
+          document.getElementById("certTasks").textContent = f;
+          document.getElementById("certAccuracy").textContent =
+            (fs.length > 0 ? Math.round((f / fs.length) * 100) : 0) + "%";
+          document
+            .getElementById("certificateOverlay")
+            .classList.add("visible");
+          _playSound("complete");
+          _addXP(50, "certificate_earned");
+        };
+
+        // ══ ENHANCEMENT: Save/Load ══
+        function _saveEnhState() {
+          try {
+            localStorage.setItem(
+              "neft_unit4_shopping_mall_v2_enhance",
+              JSON.stringify({ xp: _xp, fields: _fieldsAwarded }),
+            );
+          } catch (e) {}
+        }
+        function _loadEnhState() {
+          try {
+            var r = localStorage.getItem("neft_unit4_shopping_mall_v2_enhance");
+            if (r) {
+              var d = JSON.parse(r);
+              if (d.xp) _xp = d.xp;
+              if (d.fields) _fieldsAwarded = d.fields;
+              _updateXPBar();
+            }
+          } catch (e) {}
+        }
+        _loadEnhState();
+        _updateXPBar();
+      })();
+    </script>
+
+    <!-- Enhancement: Certificate Overlay -->
+    <div class="certificate-overlay" id="certificateOverlay">
+      <div class="certificate-card">
+        <div class="cert-badge">&#128092;</div>
+        <div class="cert-title">Mall Mogul Certificate</div>
+        <div class="cert-name" id="certStudentName">Mogul Name</div>
+        <p
+          style="
+            color: var(--mall-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+          "
+        >
+          Has demonstrated outstanding mathematical skills and earned the rank
+          of <strong>Mall Mogul</strong>.
+        </p>
+        <div class="cert-stats">
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certXP">0</div>
+            <div class="cert-stat-label">Total XP</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certTasks">0</div>
+            <div class="cert-stat-label">Tasks Done</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certAccuracy">0%</div>
+            <div class="cert-stat-label">Completion</div>
+          </div>
+        </div>
+        <button
+          class="cert-close"
+          onclick="
+            document
+              .getElementById('certificateOverlay')
+              .classList.remove('visible')
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  
+<!-- ── Neft Teacher help widgets ── -->
+<div class="nt-fab-wrap">
+  <button type="button" class="nt-fab nt-fab-hint" id="ntHintFab"
+    aria-expanded="false" aria-controls="ntHintPanel">💡 <span>Hints</span></button>
+  <button type="button" class="nt-fab nt-fab-help" id="ntHelpFab"
+    aria-expanded="false" aria-controls="ntHelpPanel">🛟 <span>Need help?</span></button>
+</div>
+
+<div class="nt-panel" id="ntHelpPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHelpTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHelpClose" aria-label="Close help panel">✕</button>
+  <h3 id="ntHelpTitle">Need help? Explore these</h3>
+  <p class="nt-lede">Trusted sites for <strong>Percents, Decimals & Rates</strong>. Each opens in a new tab.</p>
+  <h4>Vocabulary</h4>
+  <ul class="nt-vocab"><li><b>Percent:</b> A number out of 100. 25% means 25 out of 100.</li><li><b>Decimal:</b> Another way to show part of a whole using a decimal point, like 0.25.</li><li><b>Discount:</b> An amount taken off the original price.</li><li><b>Markup:</b> An amount added to the cost to set the selling price.</li><li><b>Equivalent:</b> Equal in value: 50% = 0.5 = 1/2.</li></ul>
+  <h4>Learn more</h4>
+  <ul><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-ratios-prop-topic/cc-6th-percents" target="_blank" rel="noopener noreferrer">Khan Academy: Percents</a></li><li><a href="https://www.khanacademy.org/math/arithmetic/arith-decimals" target="_blank" rel="noopener noreferrer">Khan Academy: Decimals</a></li><li><a href="https://www.mathsisfun.com/percentage.html" target="_blank" rel="noopener noreferrer">Math is Fun: Percents</a></li><li><a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer">Desmos Calculator</a></li></ul>
+</div>
+
+<div class="nt-panel" id="ntHintPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHintTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHintClose" aria-label="Close hints panel">✕</button>
+  <h3 id="ntHintTitle">Helpful hints</h3>
+  <p class="nt-lede">Stuck on a step? Try these tips for <strong>Percents, Decimals & Rates</strong>.</p>
+  <ul id="ntHintList"></ul>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var HINTS = ["To turn a percent into a decimal, move the decimal point two places left (25% = 0.25).","To find a percent of a number, multiply by its decimal form.","For a discount, multiply the price by the percent, then subtract from the original.","Estimate first: 10% is easy — just move the decimal one place left."];
+  var VOCAB = [["Percent","A number out of 100. 25% means 25 out of 100."],["Decimal","Another way to show part of a whole using a decimal point, like 0.25."],["Discount","An amount taken off the original price."],["Markup","An amount added to the cost to set the selling price."],["Equivalent","Equal in value: 50% = 0.5 = 1/2."]];
+
+  /* Build hint list */
+  var hl = document.getElementById("ntHintList");
+  if (hl) HINTS.forEach(function(h){ var li=document.createElement("li"); li.textContent=h; hl.appendChild(li); });
+
+  function wirePanel(fabId, panelId, closeId){
+    var fab=document.getElementById(fabId), panel=document.getElementById(panelId),
+        close=document.getElementById(closeId);
+    if(!fab||!panel) return;
+    function setOpen(o){
+      panel.setAttribute("data-open", o?"true":"false");
+      fab.setAttribute("aria-expanded", o?"true":"false");
+      if(o){ var f=panel.querySelector("a,button"); if(f) f.focus(); }
+    }
+    fab.addEventListener("click", function(){ setOpen(panel.getAttribute("data-open")!=="true"); });
+    if(close) close.addEventListener("click", function(){ setOpen(false); fab.focus(); });
+    panel.addEventListener("keydown", function(e){ if(e.key==="Escape"){ setOpen(false); fab.focus(); } });
+  }
+  wirePanel("ntHelpFab","ntHelpPanel","ntHelpClose");
+  wirePanel("ntHintFab","ntHintPanel","ntHintClose");
+
+  /* Auto-attach a Hint button to each task/question section */
+  var SEL = ".task, .question, .challenge-card, .mission-card, .activity, .problem, .qcard, .task-card, [data-task]";
+  var blocks = document.querySelectorAll(SEL);
+  var seen = 0;
+  blocks.forEach(function(b, i){
+    if (b.querySelector(".nt-hint-btn")) return;
+    if (seen >= 40) return; seen++;
+    var tip = HINTS[i % HINTS.length];
+    var btn = document.createElement("button");
+    btn.type="button"; btn.className="nt-hint-btn";
+    btn.setAttribute("aria-expanded","false");
+    btn.innerHTML='💡 Hint';
+    var body = document.createElement("div");
+    body.className="nt-hint-body"; body.setAttribute("data-open","false");
+    body.textContent = tip;
+    btn.addEventListener("click", function(){
+      var open = body.getAttribute("data-open")==="true";
+      body.setAttribute("data-open", open?"false":"true");
+      btn.setAttribute("aria-expanded", open?"false":"true");
+    });
+    b.appendChild(btn); b.appendChild(body);
+  });
+
+  /* Tooltip key terms in body text (first occurrence each) */
+  var done = {};
+  function tipify(node){
+    if(node.nodeType===3){
+      var txt=node.nodeValue; if(!txt||!txt.trim()) return;
+      for(var k=0;k<VOCAB.length;k++){
+        var term=VOCAB[k][0]; if(done[term]) continue;
+        var re=new RegExp("\\b("+term.replace(/[.*+?^${}()|[\]\\]/g,function(c){return "\\"+c;})+")\\b");
+        var m=re.exec(txt);
+        if(m){
+          var span=document.createElement("span");
+          span.className="nt-tip"; span.tabIndex=0;
+          span.setAttribute("data-nt-tip", VOCAB[k][1]);
+          span.setAttribute("role","note");
+          span.textContent=m[0];
+          var after=node.splitText(m.index);
+          after.nodeValue=after.nodeValue.substring(m[0].length);
+          node.parentNode.insertBefore(span, after);
+          done[term]=true;
+          span.addEventListener("focus",function(){this.setAttribute("data-show","true");});
+          span.addEventListener("blur",function(){this.removeAttribute("data-show");});
+          return;
+        }
+      }
+    } else if(node.nodeType===1){
+      var tn=node.tagName;
+      if(/^(SCRIPT|STYLE|BUTTON|A|INPUT|TEXTAREA|SELECT|SVG|H1)$/.test(tn)) return;
+      if(node.classList && (node.classList.contains("nt-tip")||node.classList.contains("nt-panel")||node.classList.contains("nt-level-banner")||node.classList.contains("nt-fab-wrap"))) return;
+      var kids=Array.prototype.slice.call(node.childNodes);
+      for(var i=0;i<kids.length;i++) tipify(kids[i]);
+    }
+  }
+  try { tipify(document.body); } catch(e){}
+})();
+</script>
+
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      /* nt-results wiring — reuses this game's real completion + self-rating tallies. */
+      function ntResultsTally() {
+        var sel = document.querySelectorAll(
+          '.form-input, .form-textarea, .form-select, input[type=text], textarea, select'
+        );
+        var total = 0, filled = 0, seen = {};
+        sel.forEach(function (el) {
+          if (seen[el]) return; seen[el] = 1;
+          var id = el.id || '';
+          if (/^calc/i.test(id)) return;            // skip calculator helper fields
+          if (/^rubric/i.test(el.name || '')) return;
+          if (el.type === 'radio' || el.type === 'checkbox') return;
+          total++;
+          if (el.value && String(el.value).trim()) filled++;
+        });
+        // Self-rating: radios named rubric* OR selected rubric-cells.
+        var rubric = 0, rubricMax = 0;
+        var radios = {};
+        document.querySelectorAll('input[name^=rubric]').forEach(function (r) {
+          radios[r.name] = Math.max(radios[r.name] || 0, parseInt(r.value, 10) || 0);
+        });
+        var radioNames = Object.keys(radios);
+        if (radioNames.length) {
+          radioNames.forEach(function (n) {
+            rubricMax += radios[n];
+            var c = document.querySelector('input[name="' + n + '"]:checked');
+            if (c) rubric += parseInt(c.value, 10) || 0;
+          });
+        } else {
+          var groups = {};
+          document.querySelectorAll('.rubric-cell').forEach(function (cell) {
+            var m = /selectRubric\(\s*['\"]([^'\"]+)['\"]\s*,\s*(\d+)/.exec(
+              cell.getAttribute('onclick') || ''
+            );
+            if (!m) return;
+            var key = m[1], val = parseInt(m[2], 10) || 0;
+            groups[key] = Math.max(groups[key] || 0, val);
+            if (cell.classList.contains('selected')) {
+              cell._sel = val;
+            }
+          });
+          Object.keys(groups).forEach(function (k) { rubricMax += groups[k]; });
+          document.querySelectorAll('.rubric-cell.selected').forEach(function (cell) {
+            var m = /,\s*(\d+)\s*,/.exec(cell.getAttribute('onclick') || '');
+            if (m) rubric += parseInt(m[1], 10) || 0;
+          });
+        }
+        return { filled: filled, total: total, rubric: rubric, rubricMax: rubricMax };
+      }
+      function ntDownloadResultsCSV() {
+        var nameEl = document.getElementById('studentName');
+        var student = (nameEl && nameEl.value && nameEl.value.trim()) || 'Student';
+        var t = ntResultsTally();
+        var sections = [
+          { name: 'Completion', correct: t.filled, total: t.total }
+        ];
+        if (t.rubricMax > 0)
+          sections.push({ name: 'Self-rating', correct: t.rubric, total: t.rubricMax });
+        NTResults.finish({
+          student: student,
+          assessment: 'Unit 4 Post-Test: Shopping Mall Mogul',
+          standard: '6.RP.3',
+        level: '1',
+          sections: sections,
+          correct: t.filled,
+          total: t.total,
+        });
+      }
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

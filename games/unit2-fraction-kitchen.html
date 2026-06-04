@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fraction Kitchen — Pour Master</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0a0a;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #game {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="game"></div>
+    <script>
+      // ───────────────────────────────────────────────────────────
+      // FRACTION KITCHEN — POUR MASTER  (Neft Teacher)
+      // Grade 6: 6.NS.A.1, 6.NS.B — fractions, equivalent fractions, division.
+      //
+      // REAL GAME: A physics pouring/timing game. Liquid streams into a
+      // graduated measuring jug at a steady rate. HOLD to pour, RELEASE to
+      // stop. Stop the rising liquid level EXACTLY on the target fraction
+      // line (e.g. 3/4 full). The jug is divided into the recipe's
+      // denominator, so the player is literally reasoning about fraction
+      // size as they aim. Equivalent-fraction twists (the line says 6/8 but
+      // the jug shows fourths) make them convert on the fly. Real fluid
+      // animation, a rising pour, combo scoring, and increasing difficulty.
+      // ───────────────────────────────────────────────────────────
+      const W = 1024,
+        H = 768;
+      const LS_KEY = "fractionkitchen_pour_hi";
+
+      class SFX {
+        constructor() {
+          this.ctx = null;
+        }
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        }
+        tone(f, d, t = "sine", v = 0.06) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        }
+        pour() {
+          this.tone(180 + Math.random() * 40, 0.04, "sawtooth", 0.02);
+        }
+        perfect() {
+          this.tone(659, 0.1, "sine");
+          setTimeout(() => this.tone(988, 0.16, "sine"), 80);
+        }
+        good() {
+          this.tone(523, 0.12, "sine");
+        }
+        spill() {
+          this.tone(140, 0.3, "sawtooth", 0.08);
+        }
+      }
+      const sfx = new SFX();
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+
+      function simplify(n, d) {
+        const g = gcd(n, d);
+        return [n / g, d / g];
+      }
+
+      // Build a recipe order: an exact target fraction of the jug. Sometimes
+      // it is shown as an EQUIVALENT fraction the player must convert against
+      // the jug's actual gradations.
+      function makeOrder(round) {
+        const dens = round < 3 ? [2, 4] : round < 6 ? [3, 4, 6] : [4, 6, 8, 5];
+        const jugDen = Phaser.Utils.Array.GetRandom(dens);
+        const targetNum = randInt(1, jugDen - 1); // proper fraction < 1
+        const [sn, sd] = simplify(targetNum, jugDen);
+
+        let shownNum = targetNum,
+          shownDen = jugDen,
+          equiv = false;
+        if (round >= 3 && Math.random() < 0.4) {
+          const mult = randInt(2, 3);
+          if (sd * mult !== jugDen) {
+            shownNum = sn * mult;
+            shownDen = sd * mult;
+            equiv = true;
+          }
+        }
+        const foods = [
+          "🥞 Pancakes",
+          "🍰 Cake",
+          "🥤 Smoothie",
+          "🍲 Soup",
+          "🧃 Juice",
+          "🍪 Cookies",
+          "🥛 Custard",
+        ];
+        return {
+          jugDen,
+          targetNum,
+          fraction: targetNum / jugDen,
+          shownNum,
+          shownDen,
+          equiv,
+          food: Phaser.Utils.Array.GetRandom(foods),
+        };
+      }
+
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          this.scene.start("Title");
+        }
+      }
+
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#1a1230");
+          this.add
+            .text(W / 2, 140, "FRACTION KITCHEN", {
+              fontFamily: "Segoe UI",
+              fontSize: "62px",
+              fontStyle: "900",
+              color: "#ffd166",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 208, "POUR MASTER", {
+              fontFamily: "Segoe UI",
+              fontSize: "28px",
+              fontStyle: "700",
+              color: "#ff7eb6",
+              letterSpacing: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              320,
+              "Each order needs a fraction of a jug, like 3/4.\nHOLD to pour. RELEASE the instant the liquid\nhits the target line. Stop too late and it spills!",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "21px",
+                color: "#f0e6ff",
+                align: "center",
+                lineSpacing: 8,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              440,
+              "HOLD  Space / Click / Tap  to pour    •    Watch for equivalent fractions!",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#b9a7d6",
+              },
+            )
+            .setOrigin(0.5);
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          this.add
+            .text(W / 2, 500, "Best service total: " + hi, {
+              fontFamily: "Segoe UI",
+              fontSize: "18px",
+              color: "#ffd43b",
+            })
+            .setOrigin(0.5);
+          const btn = this.add
+            .rectangle(W / 2, 600, 280, 70, 0xffd166)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(W / 2, 600, "OPEN KITCHEN", {
+              fontFamily: "Segoe UI",
+              fontSize: "28px",
+              fontStyle: "800",
+              color: "#1a1230",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: [btn, t],
+            scale: 1.05,
+            duration: 700,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.inOut",
+          });
+          const go = () => {
+            sfx.init();
+            this.scene.start("Game");
+          };
+          btn.on("pointerdown", go);
+          this.input.keyboard.once("keydown-ENTER", go);
+        }
+      }
+
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#241a3d");
+          this.score = 0;
+          this.round = 1;
+          this.lives = 3;
+          this.combo = 0;
+          this.pouring = false;
+          this.fill = 0; // 0..1 of jug
+          this.locked = false;
+
+          // Jug geometry
+          this.jugX = W / 2;
+          this.jugTop = 200;
+          this.jugBottom = 620;
+          this.jugH = this.jugBottom - this.jugTop;
+          this.jugW = 180;
+
+          this.add
+            .rectangle(
+              this.jugX,
+              (this.jugTop + this.jugBottom) / 2,
+              this.jugW,
+              this.jugH,
+              0x0e1428,
+              0.4,
+            )
+            .setStrokeStyle(4, 0xbcd0ff)
+            .setDepth(2);
+
+          this.liquid = this.add
+            .rectangle(this.jugX, this.jugBottom, this.jugW - 8, 0, 0xffd166)
+            .setOrigin(0.5, 1)
+            .setDepth(3);
+
+          this.stream = this.add
+            .rectangle(this.jugX, this.jugTop - 60, 10, 70, 0xffe08a, 0)
+            .setOrigin(0.5, 0)
+            .setDepth(4);
+          this.jug2 = this.add
+            .text(this.jugX, this.jugTop - 95, "🫗", { fontSize: "54px" })
+            .setOrigin(0.5)
+            .setDepth(4);
+
+          this.gradGroup = this.add.container(0, 0).setDepth(5);
+          this.targetBand = this.add
+            .rectangle(this.jugX, 0, this.jugW, 6, 0x51cf66, 0)
+            .setDepth(6);
+
+          // HUD
+          this.hud = this.add
+            .text(20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "700",
+              color: "#ffd166",
+            })
+            .setDepth(20);
+          this.orderText = this.add
+            .text(W / 2, 56, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "28px",
+              fontStyle: "800",
+              color: "#ffffff",
+              align: "center",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(20);
+          this.comboText = this.add
+            .text(W - 20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              color: "#ff7eb6",
+            })
+            .setOrigin(1, 0)
+            .setDepth(20);
+
+          const down = () => {
+            if (!this.locked) this.pouring = true;
+          };
+          const up = () => {
+            if (this.pouring && !this.locked) this.release();
+          };
+          this.input.on("pointerdown", down);
+          this.input.on("pointerup", up);
+          this.input.keyboard.on("keydown-SPACE", down);
+          this.input.keyboard.on("keyup-SPACE", up);
+
+          this.nextOrder();
+        }
+
+        nextOrder() {
+          this.order = makeOrder(this.round);
+          this.fill = 0;
+          this.pouring = false;
+          this.locked = false;
+          this.liquid.height = 0;
+
+          this.gradGroup.removeAll(true);
+          const den = this.order.jugDen;
+          for (let i = 1; i < den; i++) {
+            const y = this.jugBottom - (i / den) * this.jugH;
+            const line = this.add
+              .rectangle(this.jugX, y, this.jugW, 2, 0x7d8bb5, 0.8)
+              .setOrigin(0.5);
+            const lbl = this.add
+              .text(this.jugX - this.jugW / 2 - 14, y, `${i}/${den}`, {
+                fontFamily: "Consolas, monospace",
+                fontSize: "16px",
+                color: "#b9a7d6",
+              })
+              .setOrigin(1, 0.5);
+            this.gradGroup.add(line);
+            this.gradGroup.add(lbl);
+          }
+
+          const ty = this.jugBottom - this.order.fraction * this.jugH;
+          this.targetY = ty;
+          this.targetBand.y = ty;
+          this.targetBand.setFillStyle(0x51cf66, 0.9);
+          this.tweens.killTweensOf(this.targetBand);
+          this.tweens.add({
+            targets: this.targetBand,
+            alpha: { from: 0.4, to: 0.95 },
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+          });
+
+          const o = this.order;
+          let ask = `${o.food}   —   fill to  ${o.shownNum}/${o.shownDen}`;
+          if (o.equiv) ask += `\n(jug is in ${o.jugDen}ths — convert it!)`;
+          this.orderText.setText(ask);
+          this.updateHUD();
+        }
+
+        release() {
+          this.pouring = false;
+          this.locked = true;
+          this.stream.setAlpha(0);
+          this.jug2.angle = 0;
+          const err = Math.abs(this.fill - this.order.fraction);
+          const tol = 1 / this.order.jugDen;
+          let pts = 0,
+            label,
+            color;
+          if (err <= tol * 0.18) {
+            pts = 100 + this.combo * 20;
+            this.combo++;
+            label = "PERFECT POUR!";
+            color = "#51cf66";
+            sfx.perfect();
+          } else if (err <= tol * 0.5) {
+            pts = 50;
+            this.combo = 0;
+            label = "Close enough!";
+            color = "#a9e34b";
+            sfx.good();
+          } else {
+            pts = 0;
+            this.combo = 0;
+            label = "Off the line!";
+            color = "#ff922b";
+            sfx.spill();
+            this.lives--;
+          }
+          this.score += pts;
+          this.flashLabel(label, color, pts);
+          this.updateHUD();
+          this.time.delayedCall(1300, () => {
+            if (this.lives <= 0) return this.endGame(false);
+            this.round++;
+            if (this.round > 12) return this.endGame(true);
+            this.nextOrder();
+          });
+        }
+
+        spill() {
+          this.locked = true;
+          this.pouring = false;
+          this.stream.setAlpha(0);
+          this.jug2.angle = 0;
+          this.combo = 0;
+          this.lives--;
+          sfx.spill();
+          this.cameras.main.shake(200, 0.01);
+          this.flashLabel("SPILLED! 💦", "#ff6b6b", 0);
+          this.updateHUD();
+          this.time.delayedCall(1300, () => {
+            if (this.lives <= 0) return this.endGame(false);
+            this.round++;
+            if (this.round > 12) return this.endGame(true);
+            this.nextOrder();
+          });
+        }
+
+        flashLabel(text, color, pts) {
+          const t = this.add
+            .text(W / 2, 700, text + (pts ? "  +" + pts : ""), {
+              fontFamily: "Segoe UI",
+              fontSize: "34px",
+              fontStyle: "900",
+              color,
+              backgroundColor: "#1a1230",
+              padding: { x: 18, y: 8 },
+            })
+            .setOrigin(0.5)
+            .setDepth(30);
+          this.tweens.add({
+            targets: t,
+            y: 660,
+            alpha: 0,
+            duration: 1200,
+            ease: "Cubic.out",
+            onComplete: () => t.destroy(),
+          });
+        }
+
+        updateHUD() {
+          this.hud.setText(
+            `SCORE ${this.score}    ${"♥".repeat(Math.max(0, this.lives))}`,
+          );
+          this.comboText.setText(
+            "ORDER " +
+              this.round +
+              "/12" +
+              (this.combo > 1 ? "   x" + this.combo + " combo" : ""),
+          );
+        }
+
+        endGame(won) {
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          if (this.score > hi) localStorage.setItem(LS_KEY, this.score);
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.score,
+              });
+          } catch (e) {}
+          this.scene.start("Results", { score: this.score, won });
+        }
+
+        update(time, delta) {
+          if (this.locked) return;
+          if (this.pouring) {
+            const rate = (0.00028 + this.round * 0.00003) * delta;
+            this.fill += rate;
+            this.stream.setAlpha(0.85);
+            this.jug2.angle = -28;
+            sfx.pour();
+            if (this.fill >= 1) {
+              this.fill = 1;
+              this.liquid.height = this.jugH;
+              return this.spill();
+            }
+          } else {
+            this.jug2.angle = 0;
+            this.stream.setAlpha(0);
+          }
+          this.liquid.height = this.fill * this.jugH;
+        }
+      }
+
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(d) {
+          this.r = d || {};
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#241a3d");
+          const won = this.r.won;
+          this.add
+            .text(W / 2, 210, won ? "KITCHEN STAR! ⭐" : "SHIFT OVER", {
+              fontFamily: "Segoe UI",
+              fontSize: "56px",
+              fontStyle: "900",
+              color: won ? "#51cf66" : "#ff8787",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 300, "Score: " + (this.r.score || 0), {
+              fontFamily: "Segoe UI",
+              fontSize: "34px",
+              color: "#ffd166",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 360, "Best: " + localStorage.getItem(LS_KEY), {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              color: "#ff7eb6",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              430,
+              "A perfect pour means the liquid's fraction of the jug\nmatched the recipe exactly.",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#b9a7d6",
+                align: "center",
+                lineSpacing: 6,
+              },
+            )
+            .setOrigin(0.5);
+          const btn = this.add
+            .rectangle(W / 2, 540, 240, 64, 0xffd166)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 540, "COOK AGAIN", {
+              fontFamily: "Segoe UI",
+              fontSize: "26px",
+              fontStyle: "800",
+              color: "#1a1230",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerdown", () => this.scene.start("Title"));
+          this.input.keyboard.once("keydown-ENTER", () =>
+            this.scene.start("Title"),
+          );
+        }
+      }
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game",
+        backgroundColor: "#241a3d",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+      };
+      new Phaser.Game(config);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

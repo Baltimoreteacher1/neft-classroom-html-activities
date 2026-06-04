@@ -1,0 +1,2270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equation Architect - Creative Exploration | Unit 8 Post-Test</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #fafbfd;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.06);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --purple: #7c5cbf;
+        --purple-light: #f3eefa;
+        --rose: #d4708a;
+        --rose-light: #fdf0f4;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* Header - softer creative feel */
+      .header {
+        background: linear-gradient(
+          135deg,
+          #1a3a52 0%,
+          #2a5a7a 50%,
+          #0e8a7d 100%
+        );
+        color: #fff;
+        padding: 32px 24px 28px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        left: -60px;
+        bottom: -60px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -30px;
+        top: -30px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .header h1 {
+        font-size: clamp(22px, 4vw, 32px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .header p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.82);
+        margin: 0;
+        max-width: 620px;
+        line-height: 1.5;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      .creative-badge {
+        display: inline-block;
+        margin-top: 12px;
+        margin-left: 8px;
+        background: rgba(212, 149, 42, 0.25);
+        border: 1px solid rgba(212, 149, 42, 0.35);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      /* Level Toggle */
+      .level-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--card);
+        color: var(--navy);
+        box-shadow: 0 1px 4px rgba(15, 43, 60, 0.12);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--navy);
+      }
+      .level-desc {
+        font-size: 13px;
+        color: var(--faint);
+        margin-left: auto;
+      }
+
+      /* Part Navigation */
+      .part-nav {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .part-nav-btn {
+        border: 2px solid var(--line);
+        background: var(--card);
+        border-radius: 10px;
+        padding: 10px 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        line-height: 1.3;
+      }
+      .part-nav-btn.active {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: var(--teal-light);
+      }
+      .part-nav-btn:hover:not(.active) {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .part-nav-btn .part-num {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 2px;
+        opacity: 0.7;
+      }
+
+      /* Main Content */
+      .main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 24px 60px;
+      }
+
+      /* Part Sections */
+      .part-section {
+        display: none;
+      }
+      .part-section.active {
+        display: block;
+      }
+
+      /* Section Headers */
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 8px 0 20px;
+      }
+      .section-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .section-icon.design {
+        background: var(--teal);
+      }
+      .section-icon.gallery {
+        background: var(--purple);
+      }
+      .section-icon.lab {
+        background: var(--blue);
+      }
+      .section-icon.journal {
+        background: var(--gold);
+      }
+      .section-header h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0;
+      }
+      .section-header .subtitle {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+
+      /* Card */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+      }
+      .card-intro {
+        font-size: 15px;
+        color: var(--muted);
+        margin: 0 0 18px;
+        line-height: 1.55;
+      }
+      .card-intro strong {
+        color: var(--ink);
+      }
+
+      /* Scaffold (Level 1 only) */
+      .scaffold {
+        background: var(--teal-light);
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: #1a5c54;
+        line-height: 1.5;
+        display: none;
+      }
+      .scaffold strong {
+        color: var(--teal);
+      }
+      .scaffold .example {
+        display: block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-top: 10px;
+        font-style: italic;
+        color: #2a6b64;
+      }
+      .scaffold .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .scaffold .word-tag {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-weight: 700;
+        font-style: normal;
+        font-size: 13px;
+      }
+      body.level-1 .scaffold {
+        display: block;
+      }
+
+      /* Form Elements */
+      .form-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 6px;
+        display: block;
+      }
+      .form-sublabel {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+      }
+      .text-input {
+        width: 100%;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 15px;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .text-input:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgba(14, 138, 125, 0.1);
+      }
+      .text-area {
+        width: 100%;
+        min-height: 80px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 15px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.5;
+        transition: border-color 0.15s;
+      }
+      .text-area:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgba(14, 138, 125, 0.1);
+      }
+      .form-group {
+        margin-bottom: 18px;
+      }
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--teal);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+      .step-label {
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 8px;
+      }
+
+      /* Gallery */
+      .gallery-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .gallery-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        padding: 0;
+      }
+      .gallery-dot.active {
+        background: var(--purple);
+        border-color: var(--purple);
+        transform: scale(1.2);
+      }
+      .gallery-arrow {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        background: var(--card);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        font-size: 18px;
+        color: var(--muted);
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .gallery-arrow:hover {
+        border-color: var(--purple);
+        color: var(--purple);
+      }
+      .exhibit {
+        display: none;
+      }
+      .exhibit.active {
+        display: block;
+      }
+      .exhibit-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      .exhibit-art {
+        height: 160px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .exhibit-art.art-1 {
+        background: linear-gradient(
+          135deg,
+          var(--blue-light) 0%,
+          var(--teal-light) 100%
+        );
+      }
+      .exhibit-art.art-2 {
+        background: linear-gradient(
+          135deg,
+          var(--gold-light) 0%,
+          var(--coral-light) 100%
+        );
+      }
+      .exhibit-art.art-3 {
+        background: linear-gradient(
+          135deg,
+          var(--purple-light) 0%,
+          var(--rose-light) 100%
+        );
+      }
+      .exhibit-art.art-4 {
+        background: linear-gradient(
+          135deg,
+          var(--green-light) 0%,
+          var(--blue-light) 100%
+        );
+      }
+      /* CSS Art - geometric illustrations */
+      .art-scene {
+        position: relative;
+        width: 200px;
+        height: 120px;
+      }
+      /* Pizza scene */
+      .pizza-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--gold);
+        position: absolute;
+        left: 60px;
+        top: 20px;
+        box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.1);
+      }
+      .pizza-slice {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-bottom: 40px solid var(--coral);
+        left: 80px;
+        top: 24px;
+        transform: rotate(15deg);
+        opacity: 0.7;
+      }
+      .pizza-box {
+        width: 100px;
+        height: 16px;
+        background: var(--coral-light);
+        border: 2px solid var(--coral);
+        border-radius: 3px;
+        position: absolute;
+        left: 50px;
+        top: 90px;
+      }
+      /* Piggy bank scene */
+      .piggy-body {
+        width: 80px;
+        height: 56px;
+        background: var(--rose);
+        border-radius: 40px 40px 30px 30px;
+        position: absolute;
+        left: 60px;
+        top: 24px;
+      }
+      .piggy-snout {
+        width: 24px;
+        height: 18px;
+        background: var(--rose-light);
+        border: 2px solid var(--rose);
+        border-radius: 50%;
+        position: absolute;
+        left: 128px;
+        top: 44px;
+      }
+      .piggy-ear {
+        width: 20px;
+        height: 22px;
+        background: var(--rose);
+        border-radius: 50% 50% 0 0;
+        position: absolute;
+        left: 78px;
+        top: 6px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+      }
+      .piggy-leg {
+        width: 14px;
+        height: 16px;
+        background: var(--rose);
+        border-radius: 0 0 4px 4px;
+        position: absolute;
+        top: 76px;
+      }
+      .piggy-coin {
+        width: 20px;
+        height: 20px;
+        background: var(--gold);
+        border-radius: 50%;
+        position: absolute;
+        left: 92px;
+        top: 8px;
+        border: 2px solid #c48a20;
+        font-size: 10px;
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      /* Track scene */
+      .track-oval {
+        width: 140px;
+        height: 70px;
+        border: 6px solid var(--teal);
+        border-radius: 50%;
+        position: absolute;
+        left: 30px;
+        top: 24px;
+        opacity: 0.5;
+      }
+      .track-runner {
+        width: 16px;
+        height: 28px;
+        background: var(--blue);
+        border-radius: 8px 8px 4px 4px;
+        position: absolute;
+        left: 92px;
+        top: 18px;
+      }
+      .track-runner-head {
+        width: 12px;
+        height: 12px;
+        background: var(--gold);
+        border-radius: 50%;
+        position: absolute;
+        left: 94px;
+        top: 7px;
+      }
+      .track-flag {
+        width: 3px;
+        height: 30px;
+        background: var(--coral);
+        position: absolute;
+        left: 164px;
+        top: 32px;
+      }
+      .track-flag::after {
+        content: "";
+        width: 16px;
+        height: 10px;
+        background: var(--coral);
+        position: absolute;
+        left: 3px;
+        top: 0;
+        border-radius: 0 3px 3px 0;
+      }
+      /* Garden scene */
+      .garden-pot {
+        width: 40px;
+        height: 36px;
+        background: var(--coral);
+        border-radius: 0 0 8px 8px;
+        position: absolute;
+        top: 64px;
+      }
+      .garden-stem {
+        width: 4px;
+        height: 34px;
+        background: var(--green);
+        position: absolute;
+        top: 30px;
+      }
+      .garden-flower {
+        width: 22px;
+        height: 22px;
+        background: var(--gold);
+        border-radius: 50%;
+        position: absolute;
+        top: 12px;
+      }
+      .garden-leaf {
+        width: 16px;
+        height: 10px;
+        background: var(--green);
+        border-radius: 50%;
+        position: absolute;
+        top: 44px;
+      }
+
+      .exhibit-body {
+        padding: 22px;
+      }
+      .exhibit-label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--purple);
+        margin-bottom: 4px;
+      }
+      .exhibit-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0 0 10px;
+      }
+      .exhibit-story {
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.55;
+        margin-bottom: 14px;
+      }
+      .exhibit-equation {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-size: 22px;
+        text-align: center;
+        padding: 14px;
+        background: var(--purple-light);
+        border-radius: 10px;
+        margin-bottom: 14px;
+        color: var(--navy);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .exhibit-solution {
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 14px;
+        line-height: 1.5;
+      }
+      .exhibit-solution strong {
+        color: var(--ink);
+      }
+      .exhibit-whatif {
+        background: var(--gold-light);
+        border: 1px solid rgba(212, 149, 42, 0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #7a5a1a;
+      }
+      .exhibit-whatif strong {
+        color: var(--gold);
+      }
+
+      /* Gallery Rating */
+      .gallery-rate {
+        margin-top: 20px;
+      }
+      .star-row {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .star-btn {
+        width: 36px;
+        height: 36px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: var(--card);
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: grid;
+        place-items: center;
+        color: var(--line);
+      }
+      .star-btn:hover,
+      .star-btn.active {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: var(--gold-light);
+      }
+
+      /* What If Lab */
+      .lab-workspace {
+        background: var(--bg);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .lab-equation-display {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-size: 28px;
+        text-align: center;
+        padding: 20px;
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        color: var(--navy);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .lab-solution-display {
+        text-align: center;
+        padding: 14px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--teal);
+        background: var(--teal-light);
+        border-radius: 10px;
+        margin-bottom: 16px;
+        font-family: "Cambria Math", "Times New Roman", serif;
+      }
+      .slider-group {
+        margin-bottom: 14px;
+      }
+      .slider-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .slider-label span {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .slider-value {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--blue);
+        font-family: "Cambria Math", "Times New Roman", serif;
+        background: var(--blue-light);
+        padding: 2px 10px;
+        border-radius: 6px;
+      }
+      .slider {
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 8px;
+        border-radius: 4px;
+        background: var(--line);
+        outline: none;
+        transition: background 0.15s;
+      }
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--blue);
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(26, 111, 181, 0.3);
+        transition: transform 0.15s;
+      }
+      .slider::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+      }
+      .slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--blue);
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 6px rgba(26, 111, 181, 0.3);
+      }
+      .lab-input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        justify-content: center;
+      }
+      .lab-input {
+        width: 80px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 18px;
+        text-align: center;
+        font-weight: 700;
+        background: var(--card);
+        color: var(--ink);
+        outline: none;
+        font-family: "Cambria Math", "Times New Roman", serif;
+        transition: border-color 0.15s;
+      }
+      .lab-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.12);
+      }
+      .lab-symbol {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--navy);
+        font-family: "Cambria Math", "Times New Roman", serif;
+      }
+      .lab-question {
+        background: var(--blue-light);
+        border: 1px solid rgba(26, 111, 181, 0.15);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 14px;
+        font-size: 14px;
+        color: #1a4a6b;
+        line-height: 1.5;
+      }
+      .lab-question strong {
+        color: var(--blue);
+      }
+      .lab-mode-btns {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        justify-content: center;
+      }
+      .lab-mode-btn {
+        border: 2px solid var(--line);
+        background: var(--card);
+        border-radius: 10px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .lab-mode-btn.active {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+
+      /* Reflection Journal */
+      .journal-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+      .journal-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: var(--radius) 0 0 var(--radius);
+        background: var(--gold);
+      }
+      .journal-q {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 10px;
+        line-height: 1.4;
+      }
+      .journal-textarea {
+        width: 100%;
+        min-height: 100px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 15px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.5;
+        transition: border-color 0.15s;
+      }
+      .journal-textarea:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(212, 149, 42, 0.1);
+      }
+
+      /* Action Buttons */
+      .action-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .action-btn:hover {
+        transform: translateY(-1px);
+      }
+      .action-btn:active {
+        transform: scale(0.98);
+      }
+      .action-btn.primary {
+        background: var(--teal);
+        color: #fff;
+      }
+      .action-btn.primary:hover {
+        background: #0b7a6e;
+      }
+      .action-btn.secondary {
+        background: var(--bg);
+        color: var(--muted);
+        border: 2px solid var(--line);
+      }
+      .action-btn.secondary:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .action-btn.gold {
+        background: var(--gold);
+        color: #fff;
+      }
+      .action-btn.gold:hover {
+        background: #bf8524;
+      }
+      .btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      /* Encouragement Banner */
+      .encourage {
+        background: linear-gradient(
+          135deg,
+          var(--teal-light) 0%,
+          var(--blue-light) 100%
+        );
+        border: 1px solid rgba(14, 138, 125, 0.12);
+        border-radius: var(--radius);
+        padding: 20px 24px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .encourage p {
+        font-size: 15px;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .encourage strong {
+        color: var(--teal);
+      }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background: var(--line);
+        margin: 24px 0;
+      }
+
+      /* Next Part Button */
+      .next-part-row {
+        text-align: center;
+        margin-top: 28px;
+      }
+
+      /* Saved Toast */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--navy);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 4px 20px rgba(15, 43, 60, 0.25);
+        transition: transform 0.3s ease;
+        z-index: 100;
+      }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* Print Styles */
+      @media print {
+        .level-bar,
+        .part-nav,
+        .toast,
+        .action-btn,
+        .gallery-nav,
+        .gallery-arrow,
+        .gallery-dot,
+        .gallery-rate,
+        .lab-mode-btns,
+        .next-part-row,
+        .slider-group,
+        .slider {
+          display: none !important;
+        }
+        .part-section {
+          display: block !important;
+          page-break-before: always;
+        }
+        .part-section:first-child {
+          page-break-before: avoid;
+        }
+        body {
+          background: #fff;
+        }
+        .header {
+          background: var(--navy) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .card,
+        .journal-card,
+        .exhibit-card {
+          box-shadow: none;
+          border: 1px solid #ccc;
+          break-inside: avoid;
+        }
+        .text-area,
+        .journal-textarea,
+        .text-input {
+          border: 1px solid #ccc;
+          min-height: 60px;
+        }
+        .exhibit {
+          display: block !important;
+          margin-bottom: 20px;
+        }
+        .main {
+          padding: 16px 24px;
+        }
+        .scaffold {
+          display: none !important;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .header {
+          padding: 20px 16px 16px;
+        }
+        .level-bar {
+          padding: 12px 16px;
+        }
+        .part-nav {
+          padding: 0 16px;
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .main {
+          padding: 16px 16px 60px;
+        }
+        .card {
+          padding: 18px;
+        }
+        .journal-card {
+          padding: 18px;
+        }
+        .exhibit-body {
+          padding: 16px;
+        }
+        .level-desc {
+          display: none;
+        }
+        .lab-equation-display {
+          font-size: 22px;
+        }
+        .lab-input {
+          width: 60px;
+          font-size: 16px;
+        }
+        .lab-symbol {
+          font-size: 18px;
+        }
+        .gallery-arrow {
+          width: 34px;
+          height: 34px;
+          font-size: 16px;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="level-1">
+<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+<style>
+#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
+#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
+.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
+@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
+.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
+.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
+.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
+.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
+.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
+.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
+.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
+.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
+.vso-dot.active{background:#6366F1;transform:scale(1.25)}
+.vso-dot.seen{background:#A5B4FC}
+
+      /* ===== Level 0 (most-supported tier) ===== */
+      .level0-support { display:none; }
+      body.level-0 .level0-support {
+        display:block; max-width:860px; margin:14px auto 0; padding:14px 16px;
+        background:#fff7ed; border:1px solid #fdba74; border-radius:12px;
+        font-size:14px; color:#7c2d12; line-height:1.5;
+      }
+      body.level-0 .level0-support h3 { margin:0 0 8px; font-size:15px; color:#9a3412; }
+      body.level-0 .level0-support ul { margin:6px 0 0; padding-left:20px; }
+      body.level-0 .level0-support .l0-frames { margin-top:8px; font-style:italic; }
+      .read-aloud-btn {
+        border:1px solid #fdba74; background:#fff; color:#9a3412; border-radius:8px;
+        padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; margin-left:8px;
+      }
+      .read-aloud-btn:hover { background:#ffedd5; }
+      body:not(.level-0) .read-aloud-btn { display:none; }
+      body.level-0 [class*="hint"] { display:block !important; }
+      body.level-0.reading p, body.level-0.reading li, body.level-0.reading label { cursor:help; }
+
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<div id="vocabSlideshowOverlay">
+<div class="vso-card">
+  <div class="vso-progress" id="vsoProgress">Word 1 of 4</div>
+  <div class="vso-svg-wrap" id="vsoSvg"></div>
+  <div class="vso-word" id="vsoWord"></div>
+  <div class="vso-def" id="vsoDef"></div>
+  <div class="vso-nav">
+    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
+    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
+    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
+  </div>
+  <div class="vso-dots" id="vsoDots"></div>
+</div>
+</div>
+<script>
+(function(){
+const VSO_ITEMS=[
+  {word: 'Equation', def: 'A math sentence with an equal sign.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="20" y="100" width="120" height="80" rx="14" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="80" y="150" text-anchor="middle" font-size="32" font-weight="800" fill="#1E40AF" font-family="sans-serif">2x+3</text>   <text x="150" y="150" text-anchor="middle" font-size="40" font-weight="900" fill="#059669" font-family="sans-serif">=</text>   <rect x="160" y="100" width="120" height="80" rx="14" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>   <text x="220" y="150" text-anchor="middle" font-size="32" font-weight="800" fill="#065F46" font-family="sans-serif">11</text> </svg>'},
+  {word: 'Inequality', def: 'A math sentence using inequality symbols.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="160" x2="270" y2="160" stroke="#1E293B" stroke-width="3" marker-end="url(#arrIneq)"/>   <defs><marker id="arrIneq" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <circle cx="150" cy="160" r="10" fill="none" stroke="#DC2626" stroke-width="3"/>   <line x1="150" y1="155" x2="270" y2="155" stroke="#DC2626" stroke-width="6" opacity="0.3"/>   <text x="150" y="130" text-anchor="middle" font-size="36" font-weight="900" fill="#DC2626" font-family="sans-serif">x > 3</text> </svg>'},
+  {word: 'Solution', def: 'The value that makes an equation or inequality true.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="40" y="70" width="220" height="70" rx="14" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="150" y="115" text-anchor="middle" font-size="28" font-weight="800" fill="#1E40AF" font-family="sans-serif">x + 3 = 7</text>   <path d="M150,150 L150,180" stroke="#059669" stroke-width="4" marker-end="url(#arrSol)"/>   <defs><marker id="arrSol" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker></defs>   <rect x="80" y="185" width="140" height="50" rx="14" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>   <text x="150" y="218" text-anchor="middle" font-size="30" font-weight="900" fill="#059669" font-family="sans-serif">x = 4</text> </svg>'},
+  {word: 'Variable', def: 'A letter that stands for a number.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="60" y="80" width="180" height="140" rx="20" fill="#EEF2FF" stroke="#6366F1" stroke-width="4"/>   <text x="150" y="155" text-anchor="middle" font-size="72" font-weight="900" fill="#6366F1" font-family="sans-serif">x</text>   <text x="150" y="195" text-anchor="middle" font-size="28" font-weight="700" fill="#818CF8" font-family="sans-serif">= ?</text>   <circle cx="60" cy="80" r="12" fill="#F59E0B"/>   <circle cx="240" cy="80" r="12" fill="#10B981"/> </svg>'}
+];
+let vsoIdx=0,vsoSeen=new Set();
+function vsoRender(){
+  const it=VSO_ITEMS[vsoIdx];
+  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
+  document.getElementById('vsoWord').textContent=it.word;
+  document.getElementById('vsoDef').textContent=it.def;
+  document.getElementById('vsoSvg').innerHTML=it.svg;
+  vsoSeen.add(vsoIdx);
+  document.getElementById('vsoPrev').disabled=vsoIdx===0;
+  const isLast=vsoIdx===VSO_ITEMS.length-1;
+  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
+  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
+  const dots=document.getElementById('vsoDots');
+  dots.innerHTML='';
+  VSO_ITEMS.forEach(function(_,i){
+    const d=document.createElement('span');
+    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
+    d.onclick=function(){vsoIdx=i;vsoRender();};
+    dots.appendChild(d);
+  });
+}
+window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
+window.vsoClose=function(){
+  const el=document.getElementById('vocabSlideshowOverlay');
+  el.classList.add('vso-hidden');
+  setTimeout(function(){el.remove();},600);
+};
+vsoRender();
+})();
+</script>
+<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+
+
+    <header class="header">
+      <div class="header-inner">
+        <h1>Equation Architect</h1>
+        <p>
+          You finished the unit test -- now it is time to explore, create, and
+          have fun with equations and inequalities. No scores, no pressure. Just
+          mathematical creativity.
+        </p>
+        <span class="standard-badge"
+          >6.EE.B.5 &middot; 6.EE.B.7 &middot; 6.EE.B.8</span
+        >
+        <span class="creative-badge">Creative Exploration</span>
+      </div>
+    </header>
+
+    <div class="level-bar">
+      <span class="level-label">Level</span>
+      <div class="level-toggle">
+        <button class="level-btn" data-level="0">Level 0</button>
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+        <button id="readAloudBtn" class="read-aloud-btn" type="button">🔊 Read aloud</button>
+      </div>
+      <span class="level-desc" id="levelDesc"
+        >Extra examples, word banks, and sentence starters</span
+      >
+    </div>
+
+    <nav class="part-nav">
+      <button class="part-nav-btn active" data-part="1">
+        <span class="part-num">Part 1</span>
+        Design Your Scenario
+      </button>
+      <button class="part-nav-btn" data-part="2">
+        <span class="part-num">Part 2</span>
+        Equation Art Gallery
+      </button>
+      <button class="part-nav-btn" data-part="3">
+        <span class="part-num">Part 3</span>
+        "What If?" Lab
+      </button>
+      <button class="part-nav-btn" data-part="4">
+        <span class="part-num">Part 4</span>
+        Reflection Journal
+      </button>
+    </nav>
+
+    
+      <div class="level0-support" role="note" aria-label="Level 0 extra support">
+        <h3>🟠 Level 0 — Extra Support</h3>
+        <ul>
+          <li><strong>Watch first:</strong> the worked example and hints are already shown for you.</li>
+          <li><strong>One at a time:</strong> answer one question, check it, then go on.</li>
+          <li><strong>Read aloud:</strong> press 🔊 Read aloud, then click any sentence to hear it.</li>
+        </ul>
+        <div class="l0-frames"><strong>Sentence starters:</strong> “First, I…” · “The answer is… because…” · “I know this because…”</div>
+      </div>
+
+    <main class="main">
+      <!-- ===================== PART 1: DESIGN YOUR SCENARIO ===================== -->
+      <section class="part-section active" id="part1">
+        <div class="section-header">
+          <div class="section-icon design">1</div>
+          <div>
+            <h2>Design Your Scenario</h2>
+            <span class="subtitle">Become an Equation Architect</span>
+          </div>
+        </div>
+
+        <div class="encourage">
+          <p>
+            <strong>You are the architect.</strong> Think of a real-world
+            situation that involves an unknown quantity -- something you might
+            wonder about, measure, or figure out. Then model it with an equation
+            or inequality.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="scaffold">
+            <strong>Need ideas?</strong> Think about everyday situations where
+            you do not know a number yet:
+            <div class="word-bank">
+              <span class="word-tag">money saved</span>
+              <span class="word-tag">pieces of pizza</span>
+              <span class="word-tag">miles walked</span>
+              <span class="word-tag">hours of sleep</span>
+              <span class="word-tag">points scored</span>
+              <span class="word-tag">books read</span>
+              <span class="word-tag">songs on playlist</span>
+            </div>
+            <span class="example"
+              >Example: "I want to buy a video game that costs $45. I already
+              saved $20. How much more do I need?"</span
+            >
+          </div>
+
+          <div class="form-group">
+            <div class="step-label">
+              <span class="step-number">1</span> Describe your situation
+            </div>
+            <p class="form-sublabel">
+              What is happening? Paint a picture with words.
+            </p>
+            <textarea
+              class="text-area"
+              id="scenario-desc"
+              placeholder="Write about a real-world situation here..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <div class="step-label">
+              <span class="step-number">2</span> What is the unknown? Name your
+              variable.
+            </div>
+            <div class="scaffold">
+              <strong>A variable</strong> is a letter that stands for the number
+              you do not know yet. You can pick any letter!
+              <span class="example"
+                >Example: "Let m = the amount of money I still need."</span
+              >
+            </div>
+            <p class="form-sublabel">
+              Choose a letter and explain what it stands for.
+            </p>
+            <input
+              class="text-input"
+              id="scenario-var"
+              placeholder="Example: Let x = the number of..."
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="step-label">
+              <span class="step-number">3</span> Write your equation or
+              inequality
+            </div>
+            <div class="scaffold">
+              <strong>Equation</strong> uses = (equal sign).
+              <strong>Inequality</strong> uses &lt;, &gt;, &le;, or &ge;.
+              <span class="example"
+                >Example: 20 + m = 45 &nbsp; or &nbsp; x + 5 &gt; 12</span
+              >
+            </div>
+            <p class="form-sublabel">Use your variable from Step 2.</p>
+            <input
+              class="text-input"
+              id="scenario-eq"
+              placeholder="Example: 20 + m = 45"
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="step-label">
+              <span class="step-number">4</span> Solve it and explain what the
+              answer means
+            </div>
+            <div class="scaffold">
+              <strong>Sentence starter:</strong> "I solved my equation by ___.
+              The answer is ___ = ___. This means that in my situation, ___."
+            </div>
+            <p class="form-sublabel">
+              Show your thinking and connect the answer back to your story.
+            </p>
+            <textarea
+              class="text-area"
+              id="scenario-solve"
+              placeholder="I solved it by... The answer means..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="next-part-row">
+          <button class="action-btn primary" onclick="goToPart(2)">
+            Continue to Part 2 &rarr;
+          </button>
+        </div>
+      </section>
+
+      <!-- ===================== PART 2: EQUATION ART GALLERY ===================== -->
+      <section class="part-section" id="part2">
+        <div class="section-header">
+          <div class="section-icon gallery">2</div>
+          <div>
+            <h2>Equation Art Gallery</h2>
+            <span class="subtitle"
+              >Walk through the museum of equation stories</span
+            >
+          </div>
+        </div>
+
+        <div class="encourage">
+          <p>
+            Welcome to the gallery! Click through four equation stories. Each
+            one shows a <strong>real-world scenario</strong>, the equation that
+            models it, and a "What If?" question to stretch your thinking.
+          </p>
+        </div>
+
+        <div class="gallery-nav">
+          <button
+            class="gallery-arrow"
+            id="galleryPrev"
+            aria-label="Previous exhibit"
+          >
+            &larr;
+          </button>
+          <button class="gallery-dot active" data-exhibit="0"></button>
+          <button class="gallery-dot" data-exhibit="1"></button>
+          <button class="gallery-dot" data-exhibit="2"></button>
+          <button class="gallery-dot" data-exhibit="3"></button>
+          <button
+            class="gallery-arrow"
+            id="galleryNext"
+            aria-label="Next exhibit"
+          >
+            &rarr;
+          </button>
+        </div>
+
+        <!-- Exhibit 1: Pizza Party -->
+        <div class="exhibit active" data-exhibit="0">
+          <div class="exhibit-card">
+            <div class="exhibit-art art-1">
+              <div class="art-scene">
+                <div class="pizza-circle"></div>
+                <div class="pizza-slice"></div>
+                <div class="pizza-box"></div>
+              </div>
+            </div>
+            <div class="exhibit-body">
+              <div class="exhibit-label">Exhibit 1 of 4</div>
+              <h3 class="exhibit-title">The Pizza Party Problem</h3>
+              <p class="exhibit-story">
+                Marcus is ordering pizza for his class party. Each pizza has 8
+                slices and there are 24 students who each want at least 2
+                slices. How many pizzas does he need?
+              </p>
+              <div class="exhibit-equation">8p = 48</div>
+              <div class="exhibit-solution">
+                <strong>Solution:</strong> p = 6. Marcus needs 6 pizzas. Each
+                pizza gives 8 slices, and 6 &times; 8 = 48 slices total --
+                enough for 24 students to each get 2.
+              </div>
+              <div class="exhibit-whatif">
+                <strong>What if?</strong> What if 4 more students joined the
+                party? How would the equation change? What if each pizza had 10
+                slices instead of 8?
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exhibit 2: Savings Goal -->
+        <div class="exhibit" data-exhibit="1">
+          <div class="exhibit-card">
+            <div class="exhibit-art art-2">
+              <div class="art-scene">
+                <div class="piggy-body"></div>
+                <div class="piggy-snout"></div>
+                <div class="piggy-ear"></div>
+                <div class="piggy-leg" style="left: 72px"></div>
+                <div class="piggy-leg" style="left: 92px"></div>
+                <div class="piggy-leg" style="left: 112px"></div>
+                <div class="piggy-leg" style="left: 126px"></div>
+                <div class="piggy-coin">$</div>
+              </div>
+            </div>
+            <div class="exhibit-body">
+              <div class="exhibit-label">Exhibit 2 of 4</div>
+              <h3 class="exhibit-title">The Savings Goal</h3>
+              <p class="exhibit-story">
+                Amara has $35 saved and wants to buy a skateboard that costs
+                $89. She earns $9 per hour babysitting. How many hours does she
+                need to work?
+              </p>
+              <div class="exhibit-equation">35 + 9h &ge; 89</div>
+              <div class="exhibit-solution">
+                <strong>Solution:</strong> 9h &ge; 54, so h &ge; 6. Amara needs
+                to work at least 6 hours. After 6 hours she earns $54, giving
+                her 35 + 54 = $89 -- exactly enough!
+              </div>
+              <div class="exhibit-whatif">
+                <strong>What if?</strong> What if Amara already had $50 saved?
+                How would that change the number of hours? What if the
+                skateboard went on sale for $71?
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exhibit 3: Track Practice -->
+        <div class="exhibit" data-exhibit="2">
+          <div class="exhibit-card">
+            <div class="exhibit-art art-3">
+              <div class="art-scene">
+                <div class="track-oval"></div>
+                <div class="track-runner"></div>
+                <div class="track-runner-head"></div>
+                <div class="track-flag"></div>
+              </div>
+            </div>
+            <div class="exhibit-body">
+              <div class="exhibit-label">Exhibit 3 of 4</div>
+              <h3 class="exhibit-title">Track Practice</h3>
+              <p class="exhibit-story">
+                Jayden runs 3 laps every morning. After practice, his coach says
+                he has run a total of 15 laps this week. How many days has he
+                practiced so far?
+              </p>
+              <div class="exhibit-equation">3d = 15</div>
+              <div class="exhibit-solution">
+                <strong>Solution:</strong> d = 5. Jayden has practiced for 5
+                days. Since 3 &times; 5 = 15, that accounts for all 15 laps.
+              </div>
+              <div class="exhibit-whatif">
+                <strong>What if?</strong> What if Jayden wanted to run more than
+                20 laps this week? Write an inequality for how many days he
+                would need. What if he ran 4 laps per day instead?
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exhibit 4: Garden Project -->
+        <div class="exhibit" data-exhibit="3">
+          <div class="exhibit-card">
+            <div class="exhibit-art art-4">
+              <div class="art-scene">
+                <div class="garden-pot" style="left: 30px"></div>
+                <div class="garden-stem" style="left: 48px"></div>
+                <div class="garden-flower" style="left: 38px"></div>
+                <div class="garden-leaf" style="left: 54px"></div>
+                <div class="garden-pot" style="left: 90px"></div>
+                <div class="garden-stem" style="left: 108px"></div>
+                <div class="garden-flower" style="left: 98px"></div>
+                <div class="garden-leaf" style="left: 114px"></div>
+                <div class="garden-pot" style="left: 150px"></div>
+                <div class="garden-stem" style="left: 168px"></div>
+                <div class="garden-flower" style="left: 158px"></div>
+                <div class="garden-leaf" style="left: 174px"></div>
+              </div>
+            </div>
+            <div class="exhibit-body">
+              <div class="exhibit-label">Exhibit 4 of 4</div>
+              <h3 class="exhibit-title">The Garden Project</h3>
+              <p class="exhibit-story">
+                Ms. Rivera's class is planting a school garden. They have 36
+                seed packets and want to plant them equally in rows. Each row
+                needs at least 4 packets but no more than 9. How many rows could
+                they make?
+              </p>
+              <div class="exhibit-equation">4 &le; 36 &divide; r &le; 9</div>
+              <div class="exhibit-solution">
+                <strong>Solution:</strong> If each row gets 4 packets: 36
+                &divide; 4 = 9 rows. If each row gets 9 packets: 36 &divide; 9 =
+                4 rows. So they could make 4, 6, or 9 rows (r = 4, 6, or 9,
+                since 36 must divide evenly).
+              </div>
+              <div class="exhibit-whatif">
+                <strong>What if?</strong> What if they got 12 more seed packets?
+                How many row arrangements would be possible then? What if each
+                row needed exactly 6 packets?
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery Rating -->
+        <div class="card gallery-rate">
+          <p class="card-intro">
+            <strong>Which exhibit was your favorite?</strong> Pick one and
+            explain what you liked about it.
+          </p>
+          <div class="form-group">
+            <label class="form-label">My favorite exhibit:</label>
+            <div style="display: grid; gap: 6px">
+              <button class="fav-btn action-btn secondary" data-fav="1">
+                Exhibit 1: The Pizza Party
+              </button>
+              <button class="fav-btn action-btn secondary" data-fav="2">
+                Exhibit 2: The Savings Goal
+              </button>
+              <button class="fav-btn action-btn secondary" data-fav="3">
+                Exhibit 3: Track Practice
+              </button>
+              <button class="fav-btn action-btn secondary" data-fav="4">
+                Exhibit 4: The Garden Project
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Why did you choose this one?</label>
+            <div class="scaffold">
+              <strong>Sentence starters:</strong>
+              <span class="example"
+                >"I liked this exhibit because..." / "The equation was
+                interesting because..." / "I could relate to this scenario
+                because..."</span
+              >
+            </div>
+            <textarea
+              class="text-area"
+              id="gallery-reason"
+              placeholder="I chose this exhibit because..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="next-part-row">
+          <button class="action-btn secondary" onclick="goToPart(1)">
+            &larr; Back to Part 1
+          </button>
+          <button class="action-btn primary" onclick="goToPart(3)">
+            Continue to Part 3 &rarr;
+          </button>
+        </div>
+      </section>
+
+      <!-- ===================== PART 3: THE "WHAT IF?" LAB ===================== -->
+      <section class="part-section" id="part3">
+        <div class="section-header">
+          <div class="section-icon lab">3</div>
+          <div>
+            <h2>The "What If?" Lab</h2>
+            <span class="subtitle">Explore how equations change</span>
+          </div>
+        </div>
+
+        <div class="encourage">
+          <p>
+            <strong>Experiment time!</strong> Build an equation and then change
+            the numbers to see how the solution changes. There are no wrong
+            answers here -- just discovery.
+          </p>
+        </div>
+
+        <div class="card">
+          <p class="card-intro">
+            Choose an equation type, then use the sliders to change the numbers.
+            Watch what happens to the solution!
+          </p>
+
+          <div class="lab-mode-btns">
+            <button class="lab-mode-btn active" data-mode="add">
+              a + bx = c
+            </button>
+            <button class="lab-mode-btn" data-mode="mul">ax = b</button>
+            <button class="lab-mode-btn" data-mode="ineq">ax + b &gt; c</button>
+          </div>
+
+          <div class="lab-workspace">
+            <div class="lab-equation-display" id="labEquation">
+              <span id="labEqText"></span>
+            </div>
+            <div class="lab-solution-display" id="labSolution"></div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span id="sliderALabel">Coefficient (a)</span>
+                <span class="slider-value" id="sliderAValue">3</span>
+              </div>
+              <input
+                type="range"
+                class="slider"
+                id="sliderA"
+                min="1"
+                max="12"
+                value="3"
+              />
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span id="sliderBLabel">Constant (b)</span>
+                <span class="slider-value" id="sliderBValue">5</span>
+              </div>
+              <input
+                type="range"
+                class="slider"
+                id="sliderB"
+                min="0"
+                max="20"
+                value="5"
+              />
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span id="sliderCLabel">Result (c)</span>
+                <span class="slider-value" id="sliderCValue">17</span>
+              </div>
+              <input
+                type="range"
+                class="slider"
+                id="sliderC"
+                min="1"
+                max="50"
+                value="17"
+              />
+            </div>
+          </div>
+
+          <div class="lab-question" id="labQuestion">
+            <strong>Think about it:</strong> What happens to x when you make the
+            coefficient (a) bigger? Does x get bigger or smaller?
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="card-intro">
+            <strong>Your observations:</strong> What patterns did you notice
+            while experimenting?
+          </p>
+          <div class="scaffold">
+            <strong>Sentence starters:</strong>
+            <span class="example"
+              >"When I increased the coefficient, x got..." / "I noticed that
+              when the constant was bigger..." / "The solution changed
+              because..."</span
+            >
+          </div>
+          <textarea
+            class="text-area"
+            id="lab-observations"
+            placeholder="Write what you noticed here..."
+          ></textarea>
+        </div>
+
+        <div class="next-part-row">
+          <button class="action-btn secondary" onclick="goToPart(2)">
+            &larr; Back to Part 2
+          </button>
+          <button class="action-btn primary" onclick="goToPart(4)">
+            Continue to Part 4 &rarr;
+          </button>
+        </div>
+      </section>
+
+      <!-- ===================== PART 4: REFLECTION JOURNAL ===================== -->
+      <section class="part-section" id="part4">
+        <div class="section-header">
+          <div class="section-icon journal">4</div>
+          <div>
+            <h2>Reflection Journal</h2>
+            <span class="subtitle">Look back on what you learned</span>
+          </div>
+        </div>
+
+        <div class="encourage">
+          <p>
+            Take a moment to think about your journey through
+            <strong>Unit 8: Equations and Inequalities</strong>. Write honestly
+            -- this is your personal reflection.
+          </p>
+        </div>
+
+        <div class="journal-card">
+          <div class="journal-q">
+            What did you learn about equations and inequalities in this unit?
+          </div>
+          <div class="scaffold">
+            <strong>Think about:</strong> What is an equation? What is an
+            inequality? How do you solve them? What strategies helped you?
+            <span class="example"
+              >"Before this unit, I thought equations were... Now I know
+              that..."</span
+            >
+          </div>
+          <textarea
+            class="journal-textarea"
+            id="journal-1"
+            placeholder="In this unit, I learned..."
+          ></textarea>
+        </div>
+
+        <div class="journal-card">
+          <div class="journal-q">
+            Where do you see equations in your daily life?
+          </div>
+          <div class="scaffold">
+            <strong>Think about:</strong> Shopping, cooking, sports, time
+            management, games, sharing things equally.
+            <span class="example"
+              >"I use equations when I..." / "Equations show up in my life
+              when..."</span
+            >
+          </div>
+          <textarea
+            class="journal-textarea"
+            id="journal-2"
+            placeholder="I see equations in my life when..."
+          ></textarea>
+        </div>
+
+        <div class="journal-card">
+          <div class="journal-q">
+            What is one thing about equations or inequalities that you want to
+            remember?
+          </div>
+          <div class="scaffold">
+            <strong>This could be:</strong> A strategy, a vocabulary word, a
+            trick that helped you, something surprising, or advice you would
+            give a friend.
+            <span class="example"
+              >"One thing I never want to forget is..." / "My biggest takeaway
+              is..."</span
+            >
+          </div>
+          <textarea
+            class="journal-textarea"
+            id="journal-3"
+            placeholder="One thing I want to remember is..."
+          ></textarea>
+        </div>
+
+        <div class="btn-row" style="justify-content: center">
+          <button class="action-btn secondary" onclick="goToPart(3)">
+            &larr; Back to Part 3
+          </button>
+          <button class="action-btn gold" id="printBtn">
+            Print My Journal
+          </button>
+          <button class="action-btn primary" id="saveBtn">
+            Save My Responses
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      (function () {
+        /* ===== Level Toggle ===== */
+        const levelBtns = document.querySelectorAll(".level-btn");
+        const levelDesc = document.getElementById("levelDesc");
+        const descs = {
+          0: "Step-by-step support with read-aloud and worked examples",
+          1: "Extra examples, word banks, and sentence starters",
+          2: "Open-ended with minimal scaffolding",
+        };
+        levelBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            levelBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.body.className = (btn.dataset.level === "0") ? "level-0 level-1" : "level-" + btn.dataset.level;
+            levelDesc.textContent = descs[btn.dataset.level];
+          });
+        });
+
+        /* ===== Part Navigation ===== */
+        const partBtns = document.querySelectorAll(".part-nav-btn");
+        const partSections = document.querySelectorAll(".part-section");
+        window.goToPart = function (num) {
+          partBtns.forEach((b) => b.classList.remove("active"));
+          partSections.forEach((s) => s.classList.remove("active"));
+          document
+            .querySelector(`.part-nav-btn[data-part="${num}"]`)
+            .classList.add("active");
+          document.getElementById("part" + num).classList.add("active");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+        partBtns.forEach((btn) => {
+          btn.addEventListener("click", () => goToPart(btn.dataset.part));
+        });
+
+        /* ===== Gallery Navigation ===== */
+        const exhibits = document.querySelectorAll(".exhibit");
+        const dots = document.querySelectorAll(".gallery-dot");
+        let currentExhibit = 0;
+
+        function showExhibit(idx) {
+          if (idx < 0) idx = exhibits.length - 1;
+          if (idx >= exhibits.length) idx = 0;
+          currentExhibit = idx;
+          exhibits.forEach((e) => e.classList.remove("active"));
+          dots.forEach((d) => d.classList.remove("active"));
+          exhibits[idx].classList.add("active");
+          dots[idx].classList.add("active");
+        }
+
+        document
+          .getElementById("galleryPrev")
+          .addEventListener("click", () => showExhibit(currentExhibit - 1));
+        document
+          .getElementById("galleryNext")
+          .addEventListener("click", () => showExhibit(currentExhibit + 1));
+        dots.forEach((dot) => {
+          dot.addEventListener("click", () =>
+            showExhibit(parseInt(dot.dataset.exhibit)),
+          );
+        });
+
+        /* ===== Favorite Exhibit Buttons ===== */
+        document.querySelectorAll(".fav-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".fav-btn").forEach((b) => {
+              b.classList.remove("primary");
+              b.classList.add("secondary");
+            });
+            btn.classList.remove("secondary");
+            btn.classList.add("primary");
+          });
+        });
+
+        /* ===== What If Lab ===== */
+        const sliderA = document.getElementById("sliderA");
+        const sliderB = document.getElementById("sliderB");
+        const sliderC = document.getElementById("sliderC");
+        const sliderAVal = document.getElementById("sliderAValue");
+        const sliderBVal = document.getElementById("sliderBValue");
+        const sliderCVal = document.getElementById("sliderCValue");
+        const sliderALbl = document.getElementById("sliderALabel");
+        const sliderBLbl = document.getElementById("sliderBLabel");
+        const sliderCLbl = document.getElementById("sliderCLabel");
+        const labEqText = document.getElementById("labEqText");
+        const labSolution = document.getElementById("labSolution");
+        const labQuestion = document.getElementById("labQuestion");
+        const modeBtns = document.querySelectorAll(".lab-mode-btn");
+        let labMode = "add";
+
+        const labQuestions = {
+          add: [
+            "What happens to x when you make the coefficient bigger? Does x get bigger or smaller?",
+            "What if you increase the constant (b)? How does that change the solution?",
+            "Can you find settings where x equals exactly 1? What about exactly 10?",
+            "What happens to x when the result (c) is very large compared to the constant (b)?",
+          ],
+          mul: [
+            "When the coefficient (a) gets bigger, what happens to x?",
+            "Can you make x equal to 1? What does a have to equal?",
+            "What happens when you double the result (b)? Does x also double?",
+            "Try to find settings where x is a fraction. What makes that happen?",
+          ],
+          ineq: [
+            "How is the solution to an inequality different from an equation solution?",
+            "What happens to the range of solutions when you increase the coefficient?",
+            "When does x have to be greater than 10? What settings make that happen?",
+            "Can you create an inequality where x just has to be greater than 0?",
+          ],
+        };
+        let questionIdx = 0;
+
+        function updateLab() {
+          const a = parseInt(sliderA.value);
+          const b = parseInt(sliderB.value);
+          const c = parseInt(sliderC.value);
+          sliderAVal.textContent = a;
+          sliderBVal.textContent = b;
+          sliderCVal.textContent = c;
+
+          if (labMode === "add") {
+            sliderALbl.textContent = "Coefficient of x (a)";
+            sliderBLbl.textContent = "Constant (b)";
+            sliderCLbl.textContent = "Result (c)";
+            labEqText.textContent = b + " + " + a + "x = " + c;
+            const numerator = c - b;
+            if (a === 0) {
+              labSolution.textContent = "Cannot divide by 0";
+            } else if (numerator % a === 0) {
+              labSolution.textContent = "x = " + numerator / a;
+            } else {
+              labSolution.textContent =
+                "x = " +
+                numerator +
+                " ÷ " +
+                a +
+                " = " +
+                (numerator / a).toFixed(2);
+            }
+            if (numerator < 0) {
+              labSolution.textContent += "  (x is negative!)";
+            }
+          } else if (labMode === "mul") {
+            sliderALbl.textContent = "Coefficient (a)";
+            sliderBLbl.textContent = "Result (b)";
+            sliderCLbl.textContent = "(not used)";
+            sliderC.parentElement.style.display = "none";
+            labEqText.textContent = a + "x = " + b;
+            if (a === 0) {
+              labSolution.textContent = "Cannot divide by 0";
+            } else if (b % a === 0) {
+              labSolution.textContent = "x = " + b / a;
+            } else {
+              labSolution.textContent =
+                "x = " + b + " ÷ " + a + " = " + (b / a).toFixed(2);
+            }
+          } else {
+            sliderALbl.textContent = "Coefficient of x (a)";
+            sliderBLbl.textContent = "Constant (b)";
+            sliderCLbl.textContent = "Result (c)";
+            sliderC.parentElement.style.display = "";
+            labEqText.textContent = a + "x + " + b + " > " + c;
+            const numerator = c - b;
+            if (a === 0) {
+              labSolution.textContent =
+                b > c ? "Always true (any x works)" : "Never true (no x works)";
+            } else if (numerator <= 0) {
+              labSolution.textContent =
+                "x > " +
+                (numerator / a).toFixed(2) +
+                "  —  x can be any positive number!";
+            } else if (numerator % a === 0) {
+              labSolution.textContent = "x > " + numerator / a;
+            } else {
+              labSolution.textContent = "x > " + (numerator / a).toFixed(2);
+            }
+          }
+        }
+
+        function cycleQuestion() {
+          const qs = labQuestions[labMode];
+          questionIdx = (questionIdx + 1) % qs.length;
+          labQuestion.innerHTML =
+            "<strong>Think about it:</strong> " + qs[questionIdx];
+        }
+
+        sliderA.addEventListener("input", () => {
+          updateLab();
+          cycleQuestion();
+        });
+        sliderB.addEventListener("input", () => {
+          updateLab();
+          cycleQuestion();
+        });
+        sliderC.addEventListener("input", () => {
+          updateLab();
+          cycleQuestion();
+        });
+
+        modeBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            modeBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            labMode = btn.dataset.mode;
+            questionIdx = 0;
+            sliderC.parentElement.style.display =
+              labMode === "mul" ? "none" : "";
+            sliderA.value = 3;
+            sliderB.value = 5;
+            sliderC.value = 17;
+            labQuestion.innerHTML =
+              "<strong>Think about it:</strong> " + labQuestions[labMode][0];
+            updateLab();
+          });
+        });
+
+        updateLab();
+
+        /* ===== Toast Notification ===== */
+        function showToast(msg) {
+          const t = document.getElementById("toast");
+          t.textContent = msg;
+          t.classList.add("show");
+          setTimeout(() => t.classList.remove("show"), 2500);
+        }
+
+        /* ===== Save Responses ===== */
+        document.getElementById("saveBtn").addEventListener("click", () => {
+          const data = {
+            scenario: {
+              description: document.getElementById("scenario-desc").value,
+              variable: document.getElementById("scenario-var").value,
+              equation: document.getElementById("scenario-eq").value,
+              solution: document.getElementById("scenario-solve").value,
+            },
+            gallery: {
+              favorite:
+                document.querySelector(".fav-btn.primary")?.dataset.fav || "",
+              reason: document.getElementById("gallery-reason").value,
+            },
+            lab: {
+              observations: document.getElementById("lab-observations").value,
+            },
+            journal: {
+              q1: document.getElementById("journal-1").value,
+              q2: document.getElementById("journal-2").value,
+              q3: document.getElementById("journal-3").value,
+            },
+            savedAt: new Date().toISOString(),
+          };
+          try {
+            localStorage.setItem(
+              "eq-architect-responses",
+              JSON.stringify(data),
+            );
+            showToast("Responses saved!");
+          } catch (e) {
+            showToast("Could not save -- try again.");
+          }
+        });
+
+        /* ===== Load Saved Responses ===== */
+        try {
+          const saved = JSON.parse(
+            localStorage.getItem("eq-architect-responses"),
+          );
+          if (saved) {
+            if (saved.scenario) {
+              document.getElementById("scenario-desc").value =
+                saved.scenario.description || "";
+              document.getElementById("scenario-var").value =
+                saved.scenario.variable || "";
+              document.getElementById("scenario-eq").value =
+                saved.scenario.equation || "";
+              document.getElementById("scenario-solve").value =
+                saved.scenario.solution || "";
+            }
+            if (saved.gallery) {
+              document.getElementById("gallery-reason").value =
+                saved.gallery.reason || "";
+              if (saved.gallery.favorite) {
+                const fBtn = document.querySelector(
+                  `.fav-btn[data-fav="${saved.gallery.favorite}"]`,
+                );
+                if (fBtn) {
+                  document.querySelectorAll(".fav-btn").forEach((b) => {
+                    b.classList.remove("primary");
+                    b.classList.add("secondary");
+                  });
+                  fBtn.classList.remove("secondary");
+                  fBtn.classList.add("primary");
+                }
+              }
+            }
+            if (saved.lab) {
+              document.getElementById("lab-observations").value =
+                saved.lab.observations || "";
+            }
+            if (saved.journal) {
+              document.getElementById("journal-1").value =
+                saved.journal.q1 || "";
+              document.getElementById("journal-2").value =
+                saved.journal.q2 || "";
+              document.getElementById("journal-3").value =
+                saved.journal.q3 || "";
+            }
+          }
+        } catch (e) {
+          /* ignore */
+        }
+
+        /* ===== Print ===== */
+        document.getElementById("printBtn").addEventListener("click", () => {
+          window.print();
+        });
+      })();
+    
+        // ===== Level 0 read-aloud (click any text to hear it) =====
+        (function(){
+          var raBtn = document.getElementById("readAloudBtn");
+          if(!raBtn) return;
+          var on = false;
+          function speak(t){ try{ window.speechSynthesis.cancel();
+            var u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.speak(u);}catch(e){} }
+          raBtn.addEventListener("click", function(){
+            on=!on; document.body.classList.toggle("reading", on);
+            raBtn.textContent = on ? "🔊 Tap text to hear" : "🔊 Read aloud";
+            if(!on){ try{window.speechSynthesis.cancel();}catch(e){} }
+          });
+          document.addEventListener("click", function(e){
+            if(!on || !document.body.classList.contains("level-0")) return;
+            if(e.target.closest(".level-bar")) return;
+            var el = e.target.closest("p,li,h1,h2,h3,label,.question,.prompt,.q-text,.scaffold,.sentence-frame");
+            if(el && el.textContent.trim()){ speak(el.textContent.trim()); }
+          }, true);
+        })();
+
+      </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

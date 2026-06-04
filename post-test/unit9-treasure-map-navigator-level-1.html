@@ -1,0 +1,4700 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Treasure Map Navigator — Coordinate Plane | Level 1 | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Theme: Parchment / Ocean Blue / Gold / Dark Brown ── */
+      :root {
+        --map-parchment: #fef3c7;
+        --map-parchment-dark: #f5e6a3;
+        --map-ocean: #1e40af;
+        --map-ocean-light: #3b82f6;
+        --map-ocean-deep: #1e3a8a;
+        --map-gold: #d97706;
+        --map-gold-light: #f59e0b;
+        --map-brown: #451a03;
+        --map-brown-mid: #78350f;
+        --map-brown-light: #92400e;
+        --map-sand: #fde68a;
+        --map-surface: rgba(254, 243, 199, 0.92);
+        --map-card: rgba(254, 243, 199, 0.88);
+        --map-glass: rgba(30, 64, 175, 0.06);
+        --map-text: #451a03;
+        --map-muted: #78350f;
+        --map-line: rgba(69, 26, 3, 0.15);
+        --map-success: #15803d;
+        --map-warn: #d97706;
+        --map-error: #dc2626;
+        --map-teal: #0f766e;
+        --radius: 14px;
+        --shadow: 0 8px 32px rgba(69, 26, 3, 0.15);
+        --font: "Georgia", "Times New Roman", ui-serif, serif;
+        --font-ui:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--font-ui);
+        color: var(--map-text);
+        line-height: 1.6;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* ── Parchment Background ── */
+      .parchment-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse at 30% 20%,
+            rgba(253, 230, 138, 0.6),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 80%,
+            rgba(30, 64, 175, 0.08),
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 50% 50%,
+            rgba(217, 119, 6, 0.06),
+            transparent 60%
+          ),
+          linear-gradient(
+            180deg,
+            var(--map-parchment) 0%,
+            #fef9ef 40%,
+            var(--map-parchment-dark) 100%
+          );
+      }
+      .parchment-texture {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      /* ── Ocean Wave Decoration ── */
+      .ocean-waves {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .ocean-waves::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: -10%;
+        width: 120%;
+        height: 60px;
+        background: linear-gradient(
+          180deg,
+          rgba(30, 64, 175, 0.08),
+          rgba(30, 64, 175, 0.15)
+        );
+        border-radius: 50% 50% 0 0;
+        animation: waveFloat 8s ease-in-out infinite;
+      }
+      .ocean-waves::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: -5%;
+        width: 110%;
+        height: 40px;
+        background: linear-gradient(
+          180deg,
+          rgba(30, 64, 175, 0.05),
+          rgba(30, 64, 175, 0.12)
+        );
+        border-radius: 50% 50% 0 0;
+        animation: waveFloat 6s ease-in-out infinite reverse;
+      }
+      @keyframes waveFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+
+      /* ── Shell ── */
+      .app-shell {
+        position: relative;
+        z-index: 1;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+
+      /* ── Progress Bar ── */
+      .progress-bar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(254, 243, 199, 0.95);
+        border-bottom: 2px solid var(--map-line);
+        padding: 12px 24px;
+        border-radius: 0 0 var(--radius) var(--radius);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 16px rgba(69, 26, 3, 0.1);
+      }
+      .progress-bar .phase-dots {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+      }
+      .phase-dot {
+        width: 100%;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(69, 26, 3, 0.1);
+        transition: background 0.4s;
+      }
+      .phase-dot.completed {
+        background: var(--map-success);
+      }
+      .phase-dot.active {
+        background: var(--map-gold);
+        box-shadow: 0 0 12px rgba(217, 119, 6, 0.5);
+      }
+      .progress-label {
+        font-size: 0.82rem;
+        color: var(--map-muted);
+        white-space: nowrap;
+        font-weight: 700;
+      }
+
+      /* ── Mode Toggle ── */
+      .mode-bar {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        padding: 12px 0;
+        margin-bottom: 8px;
+      }
+      .mode-btn {
+        padding: 8px 20px;
+        border: 2px solid var(--map-line);
+        border-radius: 99px;
+        background: transparent;
+        color: var(--map-muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font-ui);
+      }
+      .mode-btn:hover {
+        border-color: var(--map-gold);
+        color: var(--map-gold);
+      }
+      .mode-btn.active {
+        background: var(--map-gold);
+        border-color: var(--map-gold);
+        color: #fff;
+      }
+      .challenge-only {
+        display: none;
+      }
+      .support-only {
+        display: none;
+      }
+      body.challenge-mode .challenge-only {
+        display: block;
+      }
+      body.support-mode .support-only {
+        display: block;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--map-card);
+        border: 2px solid var(--map-line);
+        border-radius: var(--radius);
+        padding: 32px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(8px);
+        position: relative;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--map-gold),
+          var(--map-ocean),
+          var(--map-gold)
+        );
+        border-radius: var(--radius) var(--radius) 0 0;
+      }
+      .card-glow {
+        border-color: rgba(30, 64, 175, 0.25);
+        box-shadow:
+          0 0 40px rgba(30, 64, 175, 0.08),
+          var(--shadow);
+      }
+      .card h2 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+        font-family: var(--font);
+        background: linear-gradient(135deg, var(--map-brown), var(--map-ocean));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .card h3 {
+        font-size: 1.15rem;
+        color: var(--map-ocean);
+        margin-bottom: 12px;
+        font-family: var(--font);
+      }
+      .card p,
+      .card li {
+        color: var(--map-text);
+        line-height: 1.7;
+      }
+
+      /* ── Phase Sections ── */
+      .phase {
+        display: none;
+        animation: fadeUp 0.5s ease;
+      }
+      .phase.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Phase Header ── */
+      .phase-header {
+        text-align: center;
+        padding: 40px 20px 32px;
+        position: relative;
+      }
+      .phase-header .phase-number {
+        display: inline-block;
+        padding: 6px 18px;
+        background: linear-gradient(135deg, var(--map-ocean), var(--map-gold));
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        color: #fff;
+      }
+      .phase-header h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        font-family: var(--font);
+        background: linear-gradient(135deg, var(--map-brown), var(--map-ocean));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .phase-header p {
+        color: var(--map-muted);
+        max-width: 640px;
+        margin: 0 auto;
+        font-size: 1.05rem;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font-ui);
+      }
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--map-ocean),
+          var(--map-ocean-deep)
+        );
+        color: #fff;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(30, 64, 175, 0.3);
+      }
+      .btn-gold {
+        background: linear-gradient(
+          135deg,
+          var(--map-gold),
+          var(--map-gold-light)
+        );
+        color: #fff;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(217, 119, 6, 0.3);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--map-line);
+        color: var(--map-text);
+      }
+      .btn-outline:hover {
+        border-color: var(--map-gold);
+        color: var(--map-gold);
+      }
+      .btn-sm {
+        padding: 8px 18px;
+        font-size: 0.85rem;
+      }
+      .btn-block {
+        width: 100%;
+        justify-content: center;
+      }
+      .btn-success {
+        background: linear-gradient(135deg, var(--map-success), #16a34a);
+        color: #fff;
+      }
+
+      /* ── Forms ── */
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--map-ocean);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid var(--map-line);
+        border-radius: var(--radius);
+        color: var(--map-text);
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        font-family: var(--font-ui);
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--map-ocean);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+      }
+      .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 640px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Task Cards ── */
+      .task {
+        background: rgba(255, 255, 255, 0.4);
+        border: 2px solid var(--map-line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+      }
+      .task.completed {
+        border-color: var(--map-success);
+      }
+      .task-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .task-number {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--map-ocean), var(--map-gold));
+        border-radius: 50%;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .task-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      .task-check {
+        margin-left: auto;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid var(--map-line);
+        display: grid;
+        place-items: center;
+        transition: all 0.3s;
+      }
+      .task.completed .task-check {
+        background: var(--map-success);
+        border-color: var(--map-success);
+      }
+
+      /* ── SVG Containers ── */
+      .svg-scene {
+        display: flex;
+        justify-content: center;
+        margin: 24px 0;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius);
+        border: 1px solid var(--map-line);
+        overflow-x: auto;
+      }
+      .svg-scene svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ── Coordinate Grid ── */
+      .grid-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: var(--radius);
+        border: 2px solid var(--map-line);
+      }
+      .grid-canvas {
+        cursor: crosshair;
+        border: 1px solid var(--map-line);
+        border-radius: 4px;
+        max-width: 100%;
+        touch-action: none;
+      }
+      .grid-controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        margin: 12px 0;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius);
+      }
+      .grid-info {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--map-muted);
+        margin-left: 8px;
+        font-weight: 600;
+      }
+      .coord-display {
+        display: inline-block;
+        padding: 4px 12px;
+        background: var(--map-ocean);
+        color: #fff;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        font-family: "Courier New", monospace;
+      }
+
+      /* ── Hint System ── */
+      .hint-box {
+        margin-top: 12px;
+        border: 1px dashed rgba(30, 64, 175, 0.3);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .hint-toggle {
+        width: 100%;
+        padding: 10px 16px;
+        background: rgba(30, 64, 175, 0.05);
+        border: none;
+        color: var(--map-ocean);
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-align: left;
+        font-family: var(--font-ui);
+      }
+      .hint-toggle:hover {
+        background: rgba(30, 64, 175, 0.1);
+      }
+      .hint-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        padding: 0 16px;
+        background: rgba(30, 64, 175, 0.03);
+      }
+      .hint-box.open .hint-content {
+        max-height: 500px;
+        padding: 12px 16px;
+      }
+      .hint-content p {
+        font-size: 0.9rem;
+        color: var(--map-muted);
+        margin-bottom: 0;
+      }
+
+      /* ── Interactive Tool Panels ── */
+      .tool-panel {
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid rgba(30, 64, 175, 0.15);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 20px 0;
+      }
+      .tool-panel h4 {
+        font-size: 1rem;
+        color: var(--map-ocean);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tool-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .tool-input {
+        padding: 8px 14px;
+        width: 80px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid var(--map-line);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--map-text);
+        font-family: "Courier New", monospace;
+      }
+      .tool-input:focus {
+        outline: none;
+        border-color: var(--map-ocean);
+      }
+      .tool-result {
+        padding: 12px 16px;
+        background: rgba(30, 64, 175, 0.05);
+        border-radius: 8px;
+        font-weight: 600;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* ── Layout Helpers ── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+      }
+      @media (max-width: 768px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+      .flex-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .mb-0 {
+        margin-bottom: 0;
+      }
+      .mt-20 {
+        margin-top: 20px;
+      }
+
+      /* ── Rubric ── */
+      .rubric-grid {
+        display: grid;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .rubric-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: center;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        border: 1px solid var(--map-line);
+      }
+      .rubric-row > label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: none;
+        color: var(--map-text);
+      }
+      .rubric-options {
+        display: flex;
+        gap: 6px;
+      }
+      .rubric-options input[type="radio"] {
+        display: none;
+      }
+      .rubric-options label {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid var(--map-line);
+        border-radius: 50%;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--map-text);
+      }
+      .rubric-options input[type="radio"]:checked + label {
+        background: var(--map-ocean);
+        border-color: var(--map-ocean);
+        color: #fff;
+      }
+
+      /* ── Results Badges ── */
+      .badge-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      /* ── Print Styles ── */
+      @media print {
+        .progress-bar,
+        .mode-bar,
+        .btn,
+        .hint-box,
+        .grid-controls,
+        .ocean-waves,
+        .no-print {
+          display: none !important;
+        }
+        body {
+          background: #fff !important;
+          color: #000 !important;
+        }
+        .parchment-bg,
+        .parchment-texture {
+          display: none !important;
+        }
+        .app-shell {
+          padding: 0;
+          max-width: 100%;
+        }
+        .card,
+        .task {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+          background: #fff;
+        }
+        .card h2,
+        .card h3,
+        .phase-header h1 {
+          -webkit-text-fill-color: initial;
+          background: none;
+          color: #000;
+        }
+        .phase {
+          display: block !important;
+        }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 1366px) {
+        .app-shell {
+          max-width: 960px;
+        }
+      }
+      @media (max-width: 768px) {
+        .app-shell {
+          padding: 16px 12px 60px;
+        }
+        .card {
+          padding: 20px;
+        }
+        .task {
+          padding: 16px;
+        }
+        .phase-header {
+          padding: 24px 12px 20px;
+        }
+      }
+
+      /* ═══ ENHANCEMENT: Visual Polish ═══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.15);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes countUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes badgeBounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.12);
+        }
+      }
+      .task {
+        animation: cardEntrance 0.4s ease-out both;
+      }
+      .task:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .task:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .btn:not(:disabled):hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+      .btn:not(:disabled):active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      .xp-bar-wrap {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: rgba(15, 15, 25, 0.92);
+        backdrop-filter: blur(10px);
+        padding: 6px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-top: 2px solid rgba(30, 64, 175, 0.3);
+        font-family: var(--font-ui);
+        transition: transform 0.3s;
+      }
+      .xp-bar-wrap.hidden {
+        transform: translateY(100%);
+      }
+      .xp-level {
+        color: #1e40af;
+        font-weight: 800;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+      .xp-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #1e40af, #d97706);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .xp-pts {
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+      .xp-toggle {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0 4px;
+      }
+      @media print {
+        .xp-bar-wrap {
+          display: none !important;
+        }
+      }
+
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1.5px solid rgba(30, 64, 175, 0.3);
+        background: rgba(30, 64, 175, 0.04);
+        color: #1e40af;
+        transition: all 0.2s;
+        margin-top: 6px;
+        font-family: var(--font-ui);
+      }
+      .example-toggle:hover {
+        background: rgba(30, 64, 175, 0.1);
+      }
+      .example-content {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 14px;
+        background: rgba(30, 64, 175, 0.05);
+        border-left: 3px solid #1e40af;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.85rem;
+        animation: slideInLeft 0.3s ease-out;
+      }
+      .example-content.visible {
+        display: block;
+      }
+
+      .word-bank {
+        margin: 8px 0;
+        padding: 8px 12px;
+        background: rgba(217, 119, 6, 0.04);
+        border: 1px dashed rgba(217, 119, 6, 0.3);
+        border-radius: 8px;
+        font-size: 0.82rem;
+      }
+      .word-bank-label {
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #d97706;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        display: inline-block;
+        padding: 2px 8px;
+        margin: 2px;
+        background: rgba(217, 119, 6, 0.1);
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .word-chip:hover {
+        background: rgba(217, 119, 6, 0.2);
+        transform: scale(1.05);
+      }
+
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px 32px;
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        animation: popIn 0.5s ease-out;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 4px solid rgba(30, 64, 175, 0.15);
+        border-radius: 20px;
+        margin: 8px;
+        pointer-events: none;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 8px;
+        animation: badgeBounce 2s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #451a03;
+        margin-bottom: 4px;
+      }
+      .cert-subtitle {
+        font-size: 0.92rem;
+        color: #6b7280;
+        margin-bottom: 16px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 4px;
+      }
+      .cert-score {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1e40af;
+        margin: 8px 0;
+        animation: countUp 0.6s ease-out;
+      }
+      .cert-xp {
+        font-size: 0.88rem;
+        color: #d97706;
+        font-weight: 600;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .cert-stat {
+        padding: 8px;
+        background: #f8fafc;
+        border-radius: 8px;
+      }
+      .cert-stat-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #1e40af;
+      }
+      .cert-stat-lbl {
+        font-size: 0.7rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 10px;
+        background: #1e40af;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        font-family: var(--font-ui);
+      }
+      .cert-close:hover {
+        filter: brightness(1.1);
+      }
+      @media print {
+        .certificate-overlay {
+          display: none !important;
+        }
+      }
+    </style>
+  
+    <style id="NEFT-UPGRADE-6-10-css">
+      /* === Neft Teacher readability + help upgrade (units 6-10) === */
+      html { font-size: 18px; }
+      body { line-height: 1.65; }
+      /* Scale up text-bearing elements without touching SVG labels */
+      p, li, td, th, label, input, textarea, select, button,
+      .ref-body, .ref-title, .ref-code, .slot-time, .slot-name,
+      .budget-label, .drag-chip, figcaption, .hint, .hint-content {
+        font-size: 1rem;
+      }
+      p, li, td, th, label, .ref-body { line-height: 1.65; }
+      h1 { line-height: 1.2; }
+      h2, h3, h4 { line-height: 1.3; }
+      /* Never enlarge inside SVG (chart labels stay as authored) */
+      svg, svg * { font-size: revert; }
+
+      /* === Glossary tooltips === */
+      .neft-term {
+        border-bottom: 2px dotted currentColor;
+        cursor: help;
+        position: relative;
+        font-weight: 600;
+      }
+      .neft-term:focus { outline: 3px solid #2563eb; outline-offset: 2px; border-radius: 3px; }
+      .neft-tip {
+        position: absolute;
+        left: 0; bottom: 125%;
+        z-index: 10050;
+        width: max-content;
+        max-width: 280px;
+        background: #1e1b4b;
+        color: #fff;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.15s;
+        pointer-events: none;
+      }
+      .neft-term:hover .neft-tip,
+      .neft-term:focus .neft-tip { opacity: 1; visibility: visible; }
+
+      /* === Level banner === */
+      .neft-level-banner {
+        max-width: 1000px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1.2rem;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      }
+      .neft-level-banner.lvl1 { background: #ecfdf5; color: #065f46; border: 2px solid #34d399; }
+      .neft-level-banner.lvl2 { background: #eef2ff; color: #3730a3; border: 2px solid #818cf8; }
+      .neft-level-banner .nb-icon { font-size: 1.4rem; line-height: 1; }
+
+      /* === Resource panel (Need help?) === */
+      .neft-help-panel {
+        max-width: 1000px;
+        margin: 1.5rem auto;
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      }
+      .neft-help-summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 1rem 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .neft-help-summary::-webkit-details-marker { display: none; }
+      .neft-help-summary:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; }
+      .neft-help-body { padding: 1rem 1.2rem 1.3rem; }
+      .neft-help-body p { margin: 0 0 0.6rem; }
+      .neft-help-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+      .neft-help-links a {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.7rem 0.9rem;
+        background: #f1f5f9;
+        border-radius: 10px;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .neft-help-links a:hover,
+      .neft-help-links a:focus-visible { background: #dbeafe; outline: none; }
+      .neft-glossary-list { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+      .neft-glossary-list li { margin-bottom: 0.35rem; }
+
+      @media (max-width: 600px) {
+        html { font-size: 17px; }
+        .neft-tip { max-width: 220px; }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="neft-level-banner lvl1" role="note">
+      <span class="nb-icon" aria-hidden="true">&#129504;</span>
+      <span><strong>Level 1 — Support version.</strong> This version uses simpler
+      language, smaller numbers, extra step-by-step hints, and vocabulary help with pictures.
+      Tap any <em>underlined word</em> for its meaning, and use the <strong>Show Hint</strong>
+      buttons whenever you get stuck.</span>
+    </div>
+
+    <div class="parchment-bg"></div>
+    <div class="parchment-texture"></div>
+    <div class="ocean-waves"></div>
+
+    <div class="app-shell">
+      <!-- ── Progress Bar ── -->
+      <div class="progress-bar">
+        <div class="phase-dots">
+          <div class="phase-dot active"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+        </div>
+        <span class="progress-label" id="progressLabel">Phase 1 of 5</span>
+      </div>
+
+      <!-- ── Mode Toggle ── -->
+      <div class="mode-bar no-print">
+        <button
+          class="mode-btn"
+          data-mode="support"
+          onclick="setMode('support')"
+        >
+          &#127758; Support Mode (Level 1)
+        </button>
+        <button
+          class="mode-btn active"
+          data-mode="standard"
+          onclick="setMode('standard')"
+        >
+          &#9881;&#65039; Standard
+        </button>
+        <button
+          class="mode-btn"
+          data-mode="challenge"
+          onclick="setMode('challenge')"
+        >
+          &#9876;&#65039; Challenge Mode
+        </button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 1: MISSION BRIEFING                       -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase active" id="phase1">
+        <div class="phase-header">
+          <div class="phase-number">Phase 1 of 5</div>
+          <h1>Mission Briefing</h1>
+          <p>
+            Welcome aboard, Navigator! Captain Meridian needs your coordinate
+            skills to find lost treasure across the Cartesian Seas.
+          </p>
+        </div>
+
+        <!-- Hero SVG -->
+        <div class="svg-scene">
+          <svg
+            viewBox="0 0 800 340"
+            width="800"
+            height="340"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fef3c7" />
+                <stop offset="100%" stop-color="#bfdbfe" />
+              </linearGradient>
+              <linearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3b82f6" />
+                <stop offset="100%" stop-color="#1e3a8a" />
+              </linearGradient>
+              <radialGradient id="sunGrad" cx="50%" cy="50%">
+                <stop offset="0%" stop-color="#fde68a" />
+                <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <rect width="800" height="200" fill="url(#skyGrad)" />
+            <circle
+              cx="680"
+              cy="60"
+              r="40"
+              fill="url(#sunGrad)"
+              opacity="0.8"
+            />
+            <circle cx="680" cy="60" r="22" fill="#f59e0b" />
+            <rect y="200" width="800" height="140" fill="url(#oceanGrad)" />
+            <path
+              d="M0 220 Q50 210 100 220 T200 220 T300 220 T400 220 T500 220 T600 220 T700 220 T800 220"
+              stroke="#60a5fa"
+              stroke-width="2"
+              fill="none"
+              opacity="0.5"
+            />
+            <path
+              d="M0 240 Q50 230 100 240 T200 240 T300 240 T400 240 T500 240 T600 240 T700 240 T800 240"
+              stroke="#93c5fd"
+              stroke-width="1.5"
+              fill="none"
+              opacity="0.3"
+            />
+            <!-- Island -->
+            <ellipse cx="600" cy="210" rx="80" ry="18" fill="#a16207" />
+            <ellipse cx="600" cy="208" rx="75" ry="14" fill="#ca8a04" />
+            <rect x="595" y="150" width="6" height="60" rx="2" fill="#78350f" />
+            <path
+              d="M598 155 Q580 130 555 140"
+              stroke="#15803d"
+              stroke-width="5"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M598 155 Q620 125 645 135"
+              stroke="#16a34a"
+              stroke-width="5"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path
+              d="M598 155 Q595 120 580 115"
+              stroke="#22c55e"
+              stroke-width="4"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <!-- Pirate Ship -->
+            <g transform="translate(150,140)">
+              <path
+                d="M-60 60 L-40 0 L120 0 L140 60 Z"
+                fill="#78350f"
+                stroke="#451a03"
+                stroke-width="2"
+              />
+              <path d="M-55 60 L-35 10 L115 10 L135 60 Z" fill="#92400e" />
+              <rect x="35" y="-100" width="6" height="100" fill="#451a03" />
+              <path
+                d="M41 -95 L41 -15 L100 -15 Z"
+                fill="#fef3c7"
+                stroke="#d97706"
+                stroke-width="1.5"
+              />
+              <path
+                d="M35 -95 L35 -15 L-20 -15 Z"
+                fill="#fef9ef"
+                stroke="#d97706"
+                stroke-width="1.5"
+              />
+              <rect
+                x="34"
+                y="-110"
+                width="30"
+                height="18"
+                rx="2"
+                fill="#1e40af"
+              />
+              <text
+                x="49"
+                y="-97"
+                text-anchor="middle"
+                fill="#fef3c7"
+                font-size="12"
+                font-weight="800"
+              >
+                &#9760;
+              </text>
+              <circle
+                cx="20"
+                cy="30"
+                r="8"
+                fill="#1e3a8a"
+                stroke="#d97706"
+                stroke-width="2"
+              />
+              <circle
+                cx="50"
+                cy="30"
+                r="8"
+                fill="#1e3a8a"
+                stroke="#d97706"
+                stroke-width="2"
+              />
+              <circle
+                cx="80"
+                cy="30"
+                r="8"
+                fill="#1e3a8a"
+                stroke="#d97706"
+                stroke-width="2"
+              />
+            </g>
+            <!-- Compass Rose -->
+            <g transform="translate(680,265)">
+              <circle
+                cx="0"
+                cy="0"
+                r="32"
+                fill="rgba(254,243,199,0.9)"
+                stroke="#d97706"
+                stroke-width="2"
+              />
+              <circle
+                cx="0"
+                cy="0"
+                r="27"
+                fill="none"
+                stroke="#d97706"
+                stroke-width="0.5"
+              />
+              <polygon points="0,-24 3,-7 -3,-7" fill="#dc2626" />
+              <polygon points="0,24 3,7 -3,7" fill="#451a03" />
+              <polygon points="-24,0 -7,3 -7,-3" fill="#451a03" />
+              <polygon points="24,0 7,3 7,-3" fill="#451a03" />
+              <text
+                x="0"
+                y="-15"
+                text-anchor="middle"
+                fill="#dc2626"
+                font-size="7"
+                font-weight="800"
+              >
+                N
+              </text>
+              <text
+                x="0"
+                y="22"
+                text-anchor="middle"
+                fill="#451a03"
+                font-size="7"
+                font-weight="800"
+              >
+                S
+              </text>
+              <text
+                x="-16"
+                y="3"
+                text-anchor="middle"
+                fill="#451a03"
+                font-size="7"
+                font-weight="800"
+              >
+                W
+              </text>
+              <text
+                x="16"
+                y="3"
+                text-anchor="middle"
+                fill="#451a03"
+                font-size="7"
+                font-weight="800"
+              >
+                E
+              </text>
+              <circle cx="0" cy="0" r="3" fill="#d97706" />
+            </g>
+            <!-- Treasure Chest on Island -->
+            <g transform="translate(570,185)">
+              <rect
+                x="0"
+                y="5"
+                width="22"
+                height="14"
+                rx="2"
+                fill="#d97706"
+                stroke="#451a03"
+                stroke-width="1"
+              />
+              <path
+                d="M0 5 Q11 -3 22 5"
+                fill="#92400e"
+                stroke="#451a03"
+                stroke-width="1"
+              />
+              <rect
+                x="9"
+                y="3"
+                width="4"
+                height="6"
+                rx="1"
+                fill="#fde68a"
+                stroke="#451a03"
+                stroke-width="0.5"
+              />
+            </g>
+            <text
+              x="400"
+              y="295"
+              text-anchor="middle"
+              fill="#fef3c7"
+              font-size="22"
+              font-weight="800"
+              font-family="Georgia, serif"
+              letter-spacing="2"
+            >
+              TREASURE MAP NAVIGATOR
+            </text>
+            <text
+              x="400"
+              y="320"
+              text-anchor="middle"
+              fill="rgba(254,243,199,0.7)"
+              font-size="12"
+              font-weight="600"
+              letter-spacing="4"
+            >
+              COORDINATE PLANE EXPEDITION
+            </text>
+          </svg>
+        </div>
+
+        <!-- Student Info -->
+        <div class="card">
+          <h2>Navigator Registration</h2>
+          <p>Enter your details to begin the expedition.</p>
+          <div class="form-row" style="margin-top: 16px">
+            <div class="form-group mb-0">
+              <label>Navigator Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="studentName"
+                placeholder="Your name"
+              />
+            </div>
+            <div class="form-group mb-0">
+              <label>Crew (Class Period)</label>
+              <select class="form-select" id="classPeriod">
+                <option value="">Select period...</option>
+                <option>Period 1</option>
+                <option>Period 2</option>
+                <option>Period 3</option>
+                <option>Period 4</option>
+                <option>Period 5</option>
+                <option>Period 6</option>
+                <option>Period 7</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label>Expedition Date</label>
+              <input type="date" class="form-input" id="activityDate" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Mission Overview -->
+        <div class="card">
+          <h2>Your Mission</h2>
+          <p>
+            Captain Meridian has discovered an ancient treasure map encoded with
+            coordinates. You must use the <strong>coordinate plane</strong> to
+            decode locations, calculate distances between islands, and reflect
+            hidden routes to uncover the treasure!
+          </p>
+          <div class="grid-2" style="margin-top: 20px">
+            <div
+              style="
+                padding: 16px;
+                background: rgba(30, 64, 175, 0.05);
+                border-radius: var(--radius);
+                border-left: 4px solid var(--map-ocean);
+              "
+            >
+              <strong style="color: var(--map-ocean)"
+                >Skills You'll Use:</strong
+              >
+              <ul
+                style="margin-top: 8px; padding-left: 20px; font-size: 0.95rem"
+              >
+                <li>Plotting ordered pairs (x, y)</li>
+                <li>All four quadrants</li>
+                <li>Distance between points</li>
+                <li>Reflections across axes</li>
+                <li>Midpoints of segments</li>
+              </ul>
+            </div>
+            <div
+              style="
+                padding: 16px;
+                background: rgba(217, 119, 6, 0.05);
+                border-radius: var(--radius);
+                border-left: 4px solid var(--map-gold);
+              "
+            >
+              <strong style="color: var(--map-gold)"
+                >Treasure Map Legend:</strong
+              >
+              <ul
+                style="margin-top: 8px; padding-left: 20px; font-size: 0.95rem"
+              >
+                <li>&#127758; Home Port = Origin (0, 0)</li>
+                <li>&#9875; Lighthouses = Positive coordinates</li>
+                <li>&#128163; Danger Zones = Negative coordinates</li>
+                <li>&#128176; Treasure = Reflected points</li>
+                <li>&#9201; Supply Stops = Midpoints</li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="support-only"
+            style="
+              margin-top: 16px;
+              padding: 16px;
+              background: rgba(15, 118, 110, 0.05);
+              border-radius: var(--radius);
+              border-left: 4px solid var(--map-teal);
+            "
+          >
+            <strong style="color: var(--map-teal)"
+              >Level 1 Support &#8212; Key Vocabulary:</strong
+            >
+            <ul style="margin-top: 8px; padding-left: 20px; font-size: 0.95rem">
+              <li>
+                <strong>Coordinate plane</strong> = a flat surface with two
+                number lines (x and y) crossing at the origin
+              </li>
+              <li>
+                <strong>Ordered pair</strong> = two numbers like (3, 5) that
+                show a location; x first, then y
+              </li>
+              <li>
+                <strong>Quadrant</strong> = one of the four sections of the
+                coordinate plane
+              </li>
+              <li>
+                <strong>Reflection</strong> = a mirror image; flipping a point
+                across a line
+              </li>
+              <li><strong>Distance</strong> = how far apart two points are</li>
+              <li>
+                <strong>Midpoint</strong> = the point exactly in the middle
+                between two points
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 20px">
+          <button class="btn btn-gold" onclick="goToPhase(2)">
+            &#9875; Begin Map Research &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 2: MAP RESEARCH                           -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase2">
+        <div class="phase-header">
+          <div class="phase-number">Phase 2 of 5</div>
+          <h1>Map Research</h1>
+          <p>
+            Study the coordinate plane and practice plotting locations for your
+            expedition.
+          </p>
+        </div>
+
+        <!-- Interactive Coordinate Grid -->
+        <div class="card card-glow">
+          <h2>Interactive Coordinate Grid</h2>
+          <p>
+            Click anywhere on the grid to plot a point. Use this tool throughout
+            your expedition!
+          </p>
+          <div class="grid-container">
+            <canvas
+              id="coordGrid"
+              class="grid-canvas"
+              width="560"
+              height="560"
+            ></canvas>
+          </div>
+          <div class="grid-controls no-print">
+            <button
+              class="btn btn-sm btn-primary"
+              onclick="clearPlottedPoints()"
+            >
+              Clear Points
+            </button>
+            <button class="btn btn-sm btn-outline" onclick="toggleGridLabels()">
+              Toggle Labels
+            </button>
+            <button class="btn btn-sm btn-outline" onclick="undoLastPoint()">
+              Undo Last
+            </button>
+            <span class="grid-info"
+              >Click grid to plot &#8226;
+              <span class="coord-display" id="coordDisplay">(?, ?)</span></span
+            >
+          </div>
+          <div
+            id="plottedList"
+            style="margin-top: 12px; font-size: 0.9rem; color: var(--map-muted)"
+          ></div>
+        </div>
+
+        <!-- Task 1 -->
+        <div class="task" id="task1">
+          <div class="task-header">
+            <div class="task-number">1</div>
+            <div class="task-title">Quadrant Identification</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Captain Meridian's map divides the ocean into four quadrants.
+            Identify which quadrant each island belongs to.
+          </p>
+          <div
+            class="support-only"
+            style="
+              margin: 12px 0;
+              padding: 12px;
+              background: rgba(15, 118, 110, 0.05);
+              border-radius: 8px;
+            "
+          >
+            <strong>Reminder:</strong> Quadrant I = (+, +) upper right &bull;
+            Quadrant II = (-, +) upper left &bull; Quadrant III = (-, -) lower
+            left &bull; Quadrant IV = (+, -) lower right
+          </div>
+          <div class="grid-2" style="margin-top: 16px">
+            <div class="form-group mb-0">
+              <label>Lighthouse Island at (5, 3) is in Quadrant:</label>
+              <select class="form-select" id="q1a">
+                <option value="">Select...</option>
+                <option value="I">Quadrant I</option>
+                <option value="II">Quadrant II</option>
+                <option value="III">Quadrant III</option>
+                <option value="IV">Quadrant IV</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label>Shipwreck Bay at (-4, 6) is in Quadrant:</label>
+              <select class="form-select" id="q1b">
+                <option value="">Select...</option>
+                <option value="I">Quadrant I</option>
+                <option value="II">Quadrant II</option>
+                <option value="III">Quadrant III</option>
+                <option value="IV">Quadrant IV</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label>Kraken Cave at (-7, -2) is in Quadrant:</label>
+              <select class="form-select" id="q1c">
+                <option value="">Select...</option>
+                <option value="I">Quadrant I</option>
+                <option value="II">Quadrant II</option>
+                <option value="III">Quadrant III</option>
+                <option value="IV">Quadrant IV</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label>Mermaid Cove at (8, -5) is in Quadrant:</label>
+              <select class="form-select" id="q1d">
+                <option value="">Select...</option>
+                <option value="I">Quadrant I</option>
+                <option value="II">Quadrant II</option>
+                <option value="III">Quadrant III</option>
+                <option value="IV">Quadrant IV</option>
+              </select>
+            </div>
+          </div>
+          <div class="hint-box" id="hint1">
+            <button class="hint-toggle" onclick="toggleHint('hint1')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Look at the signs of x and y. Positive x is right, positive y is
+                up. The quadrants go counterclockwise starting from the upper
+                right: I, II, III, IV.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task" id="task2">
+          <div class="task-header">
+            <div class="task-number">2</div>
+            <div class="task-title">Plot the Treasure Locations</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Use the interactive grid above to plot each treasure location, then
+            record the coordinates below.
+          </p>
+          <div class="form-group">
+            <label
+              >Gold Chest: Start at the origin, go right 6 units, up 4 units.
+              Coordinates:</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t2a"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Silver Doubloons: Start at origin, go left 3 units, up 7 units.
+              Coordinates:</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t2b"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Ruby Crown: Start at origin, go left 5 units, down 4 units.
+              Coordinates:</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t2c"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Emerald Ring: Start at origin, go right 2 units, down 8 units.
+              Coordinates:</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t2d"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="hint-box" id="hint2">
+            <button class="hint-toggle" onclick="toggleHint('hint2')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Right = positive x, Left = negative x, Up = positive y, Down =
+                negative y. Write as (x, y).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task" id="task3">
+          <div class="task-header">
+            <div class="task-number">3</div>
+            <div class="task-title">Map the Island Chain</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Captain Meridian discovered 6 islands. Plot them on the grid and
+            describe the shape they form when connected in order.
+          </p>
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 480 480"
+              width="480"
+              height="480"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="480" height="480" fill="rgba(30,64,175,0.03)" />
+              <!-- Grid lines -->
+              <g stroke="rgba(30,64,175,0.08)" stroke-width="0.5">
+                <line
+                  x1="0"
+                  y1="240"
+                  x2="480"
+                  y2="240"
+                  stroke="rgba(30,64,175,0.2)"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="240"
+                  y1="0"
+                  x2="240"
+                  y2="480"
+                  stroke="rgba(30,64,175,0.2)"
+                  stroke-width="1.5"
+                />
+                <line x1="0" y1="24" x2="480" y2="24" />
+                <line x1="0" y1="48" x2="480" y2="48" />
+                <line x1="0" y1="72" x2="480" y2="72" />
+                <line x1="0" y1="96" x2="480" y2="96" />
+                <line x1="0" y1="120" x2="480" y2="120" />
+                <line x1="0" y1="144" x2="480" y2="144" />
+                <line x1="0" y1="168" x2="480" y2="168" />
+                <line x1="0" y1="192" x2="480" y2="192" />
+                <line x1="0" y1="216" x2="480" y2="216" />
+                <line x1="0" y1="264" x2="480" y2="264" />
+                <line x1="0" y1="288" x2="480" y2="288" />
+                <line x1="0" y1="312" x2="480" y2="312" />
+                <line x1="0" y1="336" x2="480" y2="336" />
+                <line x1="0" y1="360" x2="480" y2="360" />
+                <line x1="0" y1="384" x2="480" y2="384" />
+                <line x1="0" y1="408" x2="480" y2="408" />
+                <line x1="0" y1="432" x2="480" y2="432" />
+                <line x1="0" y1="456" x2="480" y2="456" />
+                <line x1="24" y1="0" x2="24" y2="480" />
+                <line x1="48" y1="0" x2="48" y2="480" />
+                <line x1="72" y1="0" x2="72" y2="480" />
+                <line x1="96" y1="0" x2="96" y2="480" />
+                <line x1="120" y1="0" x2="120" y2="480" />
+                <line x1="144" y1="0" x2="144" y2="480" />
+                <line x1="168" y1="0" x2="168" y2="480" />
+                <line x1="192" y1="0" x2="192" y2="480" />
+                <line x1="216" y1="0" x2="216" y2="480" />
+                <line x1="264" y1="0" x2="264" y2="480" />
+                <line x1="288" y1="0" x2="288" y2="480" />
+                <line x1="312" y1="0" x2="312" y2="480" />
+                <line x1="336" y1="0" x2="336" y2="480" />
+                <line x1="360" y1="0" x2="360" y2="480" />
+                <line x1="384" y1="0" x2="384" y2="480" />
+                <line x1="408" y1="0" x2="408" y2="480" />
+                <line x1="432" y1="0" x2="432" y2="480" />
+                <line x1="456" y1="0" x2="456" y2="480" />
+              </g>
+              <!-- Scale -->
+              <text x="264" y="254" fill="#78350f" font-size="9">1</text>
+              <text x="288" y="254" fill="#78350f" font-size="9">2</text>
+              <text x="360" y="254" fill="#78350f" font-size="9">5</text>
+              <text x="210" y="254" fill="#78350f" font-size="9">-1</text>
+              <text x="120" y="254" fill="#78350f" font-size="9">-5</text>
+              <text x="244" y="216" fill="#78350f" font-size="9">1</text>
+              <text x="244" y="120" fill="#78350f" font-size="9">5</text>
+              <text x="244" y="268" fill="#78350f" font-size="9">-1</text>
+              <text x="244" y="372" fill="#78350f" font-size="9">-5</text>
+              <text
+                x="470"
+                y="236"
+                fill="#1e40af"
+                font-size="11"
+                font-weight="700"
+              >
+                x
+              </text>
+              <text
+                x="246"
+                y="14"
+                fill="#1e40af"
+                font-size="11"
+                font-weight="700"
+              >
+                y
+              </text>
+              <!-- Island hints (faint gold dots) -->
+              <!-- A(2,6) B(6,3) C(6,-3) D(2,-6) E(-2,-3) F(-2,3) -->
+              <g opacity="0.3">
+                <circle cx="288" cy="96" r="6" fill="#d97706" />
+                <circle cx="384" cy="168" r="6" fill="#d97706" />
+                <circle cx="384" cy="312" r="6" fill="#d97706" />
+                <circle cx="288" cy="384" r="6" fill="#d97706" />
+                <circle cx="192" cy="312" r="6" fill="#d97706" />
+                <circle cx="192" cy="168" r="6" fill="#d97706" />
+              </g>
+              <text
+                x="240"
+                y="470"
+                text-anchor="middle"
+                fill="#78350f"
+                font-size="10"
+                font-style="italic"
+              >
+                Plot the 6 islands and connect them in order
+              </text>
+            </svg>
+          </div>
+          <div class="form-group">
+            <label
+              >Islands: A(2,6), B(6,3), C(6,-3), D(2,-6), E(-2,-3), F(-2,3).
+              What shape do they form when connected?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t3a"
+              placeholder="Describe the shape these islands make when connected..."
+            ></textarea>
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: What is the area enclosed by this hexagon? Show your
+                work.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t3b"
+                placeholder="Break the shape into triangles or rectangles..."
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint3">
+            <button class="hint-toggle" onclick="toggleHint('hint3')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Connect the points in order:
+                A&#8594;B&#8594;C&#8594;D&#8594;E&#8594;F&#8594;A. Count the
+                sides. What regular polygon has 6 sides?
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task" id="task4">
+          <div class="task-header">
+            <div class="task-number">4</div>
+            <div class="task-title">Axes &amp; Origin Knowledge</div>
+            <div class="task-check"></div>
+          </div>
+          <p>Answer these navigation questions about the coordinate plane.</p>
+          <div class="form-group">
+            <label>What are the coordinates of the origin (Home Port)?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t4a"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>A point on the x-axis always has y = ___. Why?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t4b"
+              placeholder="y = ?"
+            />
+          </div>
+          <div class="form-group">
+            <label>A point on the y-axis always has x = ___. Why?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t4c"
+              placeholder="x = ?"
+            />
+          </div>
+          <div class="form-group">
+            <label>Which axis does the point (0, -7) lie on? Explain.</label>
+            <textarea
+              class="form-textarea"
+              id="t4d"
+              placeholder="This point lies on the..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint4">
+            <button class="hint-toggle" onclick="toggleHint('hint4')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                The origin is where the two axes cross. Points on the x-axis
+                have no vertical distance from center. Points on the y-axis have
+                no horizontal distance from center.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; padding: 20px"
+        >
+          <button class="btn btn-outline" onclick="goToPhase(1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-gold" onclick="goToPhase(3)">
+            Route Planning &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 3: ROUTE PLANNING                         -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase3">
+        <div class="phase-header">
+          <div class="phase-number">Phase 3 of 5</div>
+          <h1>Route Planning</h1>
+          <p>
+            Calculate distances, find midpoints, and plan the safest route to
+            the treasure.
+          </p>
+        </div>
+
+        <!-- Distance Calculator -->
+        <div class="card card-glow">
+          <h2>Distance Calculator</h2>
+          <p>
+            Enter two points to calculate the distance between them. Use this
+            tool for the tasks below!
+          </p>
+          <div class="tool-panel">
+            <h4>&#128207; Distance Between Two Points</h4>
+            <div class="tool-row">
+              <span style="font-weight: 700">Point 1:</span>
+              <span>(</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="distX1"
+                placeholder="x&#8321;"
+              />
+              <span>,</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="distY1"
+                placeholder="y&#8321;"
+              />
+              <span>)</span>
+            </div>
+            <div class="tool-row">
+              <span style="font-weight: 700">Point 2:</span>
+              <span>(</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="distX2"
+                placeholder="x&#8322;"
+              />
+              <span>,</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="distY2"
+                placeholder="y&#8322;"
+              />
+              <span>)</span>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="calcDistance()">
+              Calculate Distance
+            </button>
+            <div class="tool-result" id="distResult" style="margin-top: 12px">
+              Enter two points and click Calculate.
+            </div>
+          </div>
+          <div
+            class="support-only"
+            style="
+              margin-top: 12px;
+              padding: 12px;
+              background: rgba(15, 118, 110, 0.05);
+              border-radius: 8px;
+            "
+          >
+            <strong>How to find distance:</strong> If points share the same
+            x-value, subtract the y-values and use absolute value. If they share
+            the same y-value, subtract the x-values and use absolute value.
+          </div>
+        </div>
+
+        <!-- Midpoint Calculator -->
+        <div class="card">
+          <h2>Midpoint Calculator</h2>
+          <p>
+            Find the exact halfway point between two locations &#8212; perfect
+            for supply stops!
+          </p>
+          <div class="tool-panel">
+            <h4>&#128205; Find the Midpoint</h4>
+            <div class="tool-row">
+              <span style="font-weight: 700">Point A:</span>
+              <span>(</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="midX1"
+                placeholder="x&#8321;"
+              />
+              <span>,</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="midY1"
+                placeholder="y&#8321;"
+              />
+              <span>)</span>
+            </div>
+            <div class="tool-row">
+              <span style="font-weight: 700">Point B:</span>
+              <span>(</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="midX2"
+                placeholder="x&#8322;"
+              />
+              <span>,</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="midY2"
+                placeholder="y&#8322;"
+              />
+              <span>)</span>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="calcMidpoint()">
+              Find Midpoint
+            </button>
+            <div class="tool-result" id="midResult" style="margin-top: 12px">
+              Enter two points and click Find Midpoint.
+            </div>
+          </div>
+          <div
+            class="support-only"
+            style="
+              margin-top: 12px;
+              padding: 12px;
+              background: rgba(15, 118, 110, 0.05);
+              border-radius: 8px;
+            "
+          >
+            <strong>Midpoint formula:</strong> Add the x-values and divide by 2.
+            Add the y-values and divide by 2. Midpoint = ((x&#8321;+x&#8322;)/2,
+            (y&#8321;+y&#8322;)/2).
+          </div>
+        </div>
+
+        <!-- Task 5 -->
+        <div class="task" id="task5">
+          <div class="task-header">
+            <div class="task-number">5</div>
+            <div class="task-title">Distance Between Islands</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Calculate the distance between these island pairs. Show your method!
+          </p>
+          <div class="form-group">
+            <label
+              >Distance from Lighthouse (3, 7) to Watchtower (3, -2): (same
+              x-value)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t5a"
+              placeholder="distance = |7 - (-2)| = ?"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Distance from Dock (-4, 5) to Market (6, 5): (same
+              y-value)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t5b"
+              placeholder="distance = |6 - (-4)| = ?"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Distance from Fort (-3, -1) to Armory (-3, -9): (same
+              x-value)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t5c"
+              placeholder="distance = ?"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Distance from Harbor (0, 6) to Cove (0, -4): (on the
+              y-axis)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t5extra"
+              placeholder="distance = ?"
+            />
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: The pirate's route goes from (1, 2) to (4, 6). Use
+                the Pythagorean theorem: d = &#8730;((x&#8322;-x&#8321;)&#178; +
+                (y&#8322;-y&#8321;)&#178;)</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t5d"
+                placeholder="Show your calculation..."
+                style="min-height: 70px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint5">
+            <button class="hint-toggle" onclick="toggleHint('hint5')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                When points share the same x or y coordinate, distance =
+                |difference of the other coordinate|. The absolute value makes
+                it always positive!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="task" id="task6">
+          <div class="task-header">
+            <div class="task-number">6</div>
+            <div class="task-title">Supply Stop Midpoints</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            The crew needs supply stops at the midpoint between islands. Find
+            each midpoint.
+          </p>
+          <div class="form-group">
+            <label>Midpoint between Port (2, 8) and Cove (10, 8):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t6a"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Midpoint between Reef (-6, 4) and Lagoon (4, -2):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t6b"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Midpoint between Volcano (-8, -3) and Bay (2, 7):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t6c"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Midpoint between Shipwreck (-5, -9) and Lighthouse (5, 3):</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t6d"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="hint-box" id="hint6">
+            <button class="hint-toggle" onclick="toggleHint('hint6')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Midpoint formula: ((x&#8321;+x&#8322;)/2,
+                (y&#8321;+y&#8322;)/2). Add the two x-values and divide by 2. Do
+                the same for y-values.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 7 -->
+        <div class="task" id="task7">
+          <div class="task-header">
+            <div class="task-number">7</div>
+            <div class="task-title">Plan the Expedition Route</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Visit these 4 islands in order. Calculate the total distance
+            traveled (count grid squares).
+          </p>
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 500 400"
+              width="500"
+              height="400"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="500" height="400" fill="rgba(30,64,175,0.03)" />
+              <line
+                x1="250"
+                y1="0"
+                x2="250"
+                y2="400"
+                stroke="rgba(30,64,175,0.2)"
+                stroke-width="1.5"
+              />
+              <line
+                x1="0"
+                y1="200"
+                x2="500"
+                y2="200"
+                stroke="rgba(30,64,175,0.2)"
+                stroke-width="1.5"
+              />
+              <!-- Route -->
+              <polyline
+                points="350,100 450,200 350,300 150,200"
+                fill="none"
+                stroke="#d97706"
+                stroke-width="2"
+                stroke-dasharray="8,4"
+              />
+              <polyline
+                points="150,200 350,100"
+                fill="none"
+                stroke="#d97706"
+                stroke-width="2"
+                stroke-dasharray="8,4"
+                opacity="0.5"
+              />
+              <!-- Islands -->
+              <g>
+                <circle
+                  cx="350"
+                  cy="100"
+                  r="14"
+                  fill="#fde68a"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <text
+                  x="350"
+                  y="105"
+                  text-anchor="middle"
+                  fill="#451a03"
+                  font-size="11"
+                  font-weight="800"
+                >
+                  A
+                </text>
+                <text
+                  x="368"
+                  y="90"
+                  fill="#1e40af"
+                  font-size="10"
+                  font-weight="600"
+                >
+                  (4, 4)
+                </text>
+              </g>
+              <g>
+                <circle
+                  cx="450"
+                  cy="200"
+                  r="14"
+                  fill="#fde68a"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <text
+                  x="450"
+                  y="205"
+                  text-anchor="middle"
+                  fill="#451a03"
+                  font-size="11"
+                  font-weight="800"
+                >
+                  B
+                </text>
+                <text
+                  x="468"
+                  y="190"
+                  fill="#1e40af"
+                  font-size="10"
+                  font-weight="600"
+                >
+                  (8, 0)
+                </text>
+              </g>
+              <g>
+                <circle
+                  cx="350"
+                  cy="300"
+                  r="14"
+                  fill="#fde68a"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <text
+                  x="350"
+                  y="305"
+                  text-anchor="middle"
+                  fill="#451a03"
+                  font-size="11"
+                  font-weight="800"
+                >
+                  C
+                </text>
+                <text
+                  x="368"
+                  y="315"
+                  fill="#1e40af"
+                  font-size="10"
+                  font-weight="600"
+                >
+                  (4, -4)
+                </text>
+              </g>
+              <g>
+                <circle
+                  cx="150"
+                  cy="200"
+                  r="14"
+                  fill="#fde68a"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <text
+                  x="150"
+                  y="205"
+                  text-anchor="middle"
+                  fill="#451a03"
+                  font-size="11"
+                  font-weight="800"
+                >
+                  D
+                </text>
+                <text
+                  x="112"
+                  y="190"
+                  fill="#1e40af"
+                  font-size="10"
+                  font-weight="600"
+                >
+                  (-4, 0)
+                </text>
+              </g>
+              <!-- Compass -->
+              <g transform="translate(50,50)">
+                <circle
+                  r="18"
+                  fill="rgba(254,243,199,0.8)"
+                  stroke="#d97706"
+                  stroke-width="1.5"
+                />
+                <polygon points="0,-14 2,-4 -2,-4" fill="#dc2626" />
+                <polygon points="0,14 2,4 -2,4" fill="#451a03" />
+                <text
+                  x="0"
+                  y="-8"
+                  text-anchor="middle"
+                  fill="#dc2626"
+                  font-size="6"
+                  font-weight="800"
+                >
+                  N
+                </text>
+              </g>
+            </svg>
+          </div>
+          <div class="form-group">
+            <label>Distance A(4,4) to B(8,0):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t7a"
+              placeholder="horizontal change + vertical change..."
+            />
+          </div>
+          <div class="form-group">
+            <label>Distance B(8,0) to C(4,-4):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t7b"
+              placeholder="Calculate..."
+            />
+          </div>
+          <div class="form-group">
+            <label>Distance C(4,-4) to D(-4,0):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t7c"
+              placeholder="Calculate..."
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Total distance for the full route
+              (A&#8594;B&#8594;C&#8594;D&#8594;back to A):</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t7d"
+              placeholder="Add all legs together..."
+            />
+          </div>
+          <div class="hint-box" id="hint7">
+            <button class="hint-toggle" onclick="toggleHint('hint7')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                For each leg, count the horizontal and vertical distance on the
+                grid. From A(4,4) to B(8,0): horizontal = |8-4| = 4 and vertical
+                = |0-4| = 4.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; padding: 20px"
+        >
+          <button class="btn btn-outline" onclick="goToPhase(2)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-gold" onclick="goToPhase(4)">
+            Expedition Build &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 4: EXPEDITION BUILD                       -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase4">
+        <div class="phase-header">
+          <div class="phase-number">Phase 4 of 5</div>
+          <h1>Expedition Build</h1>
+          <p>
+            Use reflections, design treasure maps, and complete advanced
+            navigation challenges.
+          </p>
+        </div>
+
+        <!-- Reflection Tool -->
+        <div class="card card-glow">
+          <h2>Reflection Tool</h2>
+          <p>
+            Enter a point and see its reflection across the x-axis, y-axis, or
+            both!
+          </p>
+          <div class="tool-panel">
+            <h4>&#128260; Flip Across Axes</h4>
+            <div class="tool-row">
+              <span style="font-weight: 700">Original Point:</span>
+              <span>(</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="refX"
+                placeholder="x"
+              />
+              <span>,</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="refY"
+                placeholder="y"
+              />
+              <span>)</span>
+              <button class="btn btn-sm btn-primary" onclick="calcReflection()">
+                Reflect!
+              </button>
+            </div>
+            <div class="grid-3" style="margin-top: 16px">
+              <div
+                class="tool-result"
+                id="refXAxis"
+                style="
+                  text-align: center;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
+                <div style="font-size: 0.75rem; color: var(--map-muted)">
+                  ACROSS X-AXIS
+                </div>
+                <div
+                  style="
+                    font-size: 1rem;
+                    color: var(--map-ocean);
+                    margin-top: 4px;
+                  "
+                >
+                  &#8212;
+                </div>
+              </div>
+              <div
+                class="tool-result"
+                id="refYAxis"
+                style="
+                  text-align: center;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
+                <div style="font-size: 0.75rem; color: var(--map-muted)">
+                  ACROSS Y-AXIS
+                </div>
+                <div
+                  style="
+                    font-size: 1rem;
+                    color: var(--map-gold);
+                    margin-top: 4px;
+                  "
+                >
+                  &#8212;
+                </div>
+              </div>
+              <div
+                class="tool-result"
+                id="refBoth"
+                style="
+                  text-align: center;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
+                <div style="font-size: 0.75rem; color: var(--map-muted)">
+                  ACROSS BOTH
+                </div>
+                <div
+                  style="
+                    font-size: 1rem;
+                    color: var(--map-success);
+                    margin-top: 4px;
+                  "
+                >
+                  &#8212;
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="support-only"
+            style="
+              margin-top: 12px;
+              padding: 12px;
+              background: rgba(15, 118, 110, 0.05);
+              border-radius: 8px;
+            "
+          >
+            <strong>How reflections work:</strong>
+            <ul style="padding-left: 20px; margin-top: 8px">
+              <li>
+                <strong>Across x-axis:</strong> Keep x the same, flip the sign
+                of y. (3, 5) &#8594; (3, -5)
+              </li>
+              <li>
+                <strong>Across y-axis:</strong> Flip the sign of x, keep y the
+                same. (3, 5) &#8594; (-3, 5)
+              </li>
+              <li>
+                <strong>Across both:</strong> Flip both signs. (3, 5) &#8594;
+                (-3, -5)
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Task 8 -->
+        <div class="task" id="task8">
+          <div class="task-header">
+            <div class="task-number">8</div>
+            <div class="task-title">Mirror Island Reflections</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            The treasure map has mirror clues! Find the reflected coordinates
+            for each island.
+          </p>
+          <div class="form-group">
+            <label>Reflect Skull Rock (5, 3) across the x-axis:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8a"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Reflect Parrot Bay (-4, 7) across the y-axis:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8b"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Reflect Cannon Point (6, -2) across the x-axis:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8c"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Reflect Anchor Atoll (-3, -8) across the y-axis:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8d"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="hint-box" id="hint8">
+            <button class="hint-toggle" onclick="toggleHint('hint8')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Across x-axis: change the sign of y only. Across y-axis: change
+                the sign of x only. Think of it as folding the paper along that
+                axis.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 9 -->
+        <div class="task" id="task9">
+          <div class="task-header">
+            <div class="task-number">9</div>
+            <div class="task-title">Reflection Pattern Discovery</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Reflect the entire treasure triangle across both axes and describe
+            the pattern.
+          </p>
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 480 480"
+              width="480"
+              height="480"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="480" height="480" fill="rgba(254,243,199,0.3)" />
+              <line
+                x1="240"
+                y1="0"
+                x2="240"
+                y2="480"
+                stroke="rgba(30,64,175,0.3)"
+                stroke-width="2"
+              />
+              <line
+                x1="0"
+                y1="240"
+                x2="480"
+                y2="240"
+                stroke="rgba(30,64,175,0.3)"
+                stroke-width="2"
+              />
+              <!-- Quadrant labels -->
+              <text
+                x="360"
+                y="50"
+                fill="rgba(30,64,175,0.15)"
+                font-size="24"
+                font-weight="800"
+                text-anchor="middle"
+              >
+                I
+              </text>
+              <text
+                x="120"
+                y="50"
+                fill="rgba(30,64,175,0.15)"
+                font-size="24"
+                font-weight="800"
+                text-anchor="middle"
+              >
+                II
+              </text>
+              <text
+                x="120"
+                y="430"
+                fill="rgba(30,64,175,0.15)"
+                font-size="24"
+                font-weight="800"
+                text-anchor="middle"
+              >
+                III
+              </text>
+              <text
+                x="360"
+                y="430"
+                fill="rgba(30,64,175,0.15)"
+                font-size="24"
+                font-weight="800"
+                text-anchor="middle"
+              >
+                IV
+              </text>
+              <!-- Original triangle Q1 -->
+              <polygon
+                points="288,192 336,144 384,192"
+                fill="rgba(217,119,6,0.3)"
+                stroke="#d97706"
+                stroke-width="2"
+              />
+              <text
+                x="336"
+                y="182"
+                text-anchor="middle"
+                fill="#d97706"
+                font-size="10"
+                font-weight="700"
+              >
+                Original
+              </text>
+              <circle cx="288" cy="192" r="4" fill="#d97706" />
+              <circle cx="336" cy="144" r="4" fill="#d97706" />
+              <circle cx="384" cy="192" r="4" fill="#d97706" />
+              <text x="278" y="210" fill="#451a03" font-size="9">(2,2)</text>
+              <text x="326" y="136" fill="#451a03" font-size="9">(4,4)</text>
+              <text x="388" y="210" fill="#451a03" font-size="9">(6,2)</text>
+              <!-- Ghost triangles -->
+              <polygon
+                points="288,288 336,336 384,288"
+                fill="none"
+                stroke="rgba(30,64,175,0.3)"
+                stroke-width="2"
+                stroke-dasharray="6,3"
+              />
+              <text
+                x="336"
+                y="320"
+                text-anchor="middle"
+                fill="rgba(30,64,175,0.4)"
+                font-size="9"
+              >
+                x-axis reflection?
+              </text>
+              <polygon
+                points="96,192 144,144 192,192"
+                fill="none"
+                stroke="rgba(30,64,175,0.3)"
+                stroke-width="2"
+                stroke-dasharray="6,3"
+              />
+              <text
+                x="144"
+                y="182"
+                text-anchor="middle"
+                fill="rgba(30,64,175,0.4)"
+                font-size="9"
+              >
+                y-axis reflection?
+              </text>
+              <polygon
+                points="96,288 144,336 192,288"
+                fill="none"
+                stroke="rgba(30,64,175,0.3)"
+                stroke-width="2"
+                stroke-dasharray="6,3"
+              />
+              <text
+                x="144"
+                y="320"
+                text-anchor="middle"
+                fill="rgba(30,64,175,0.4)"
+                font-size="9"
+              >
+                both axes?
+              </text>
+            </svg>
+          </div>
+          <div class="form-group">
+            <label
+              >Triangle vertices: A(2,2), B(4,4), C(6,2). Write all 3 reflected
+              vertices across the x-axis:</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t9a"
+              placeholder="A'(?, ?), B'(?, ?), C'(?, ?)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Write all 3 reflected vertices across the y-axis:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t9b"
+              placeholder="A''(?, ?), B''(?, ?), C''(?, ?)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Write all 3 reflected vertices across BOTH axes:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t9c"
+              placeholder="A'''(?, ?), B'''(?, ?), C'''(?, ?)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Describe the pattern you notice about reflections:</label>
+            <textarea
+              class="form-textarea"
+              id="t9d"
+              placeholder="When reflecting across the x-axis, I noticed that..."
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint9">
+            <button class="hint-toggle" onclick="toggleHint('hint9')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                For x-axis: flip all y-signs. For y-axis: flip all x-signs. For
+                both: flip both signs. The shape stays the same size!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 10 -->
+        <div class="task" id="task10">
+          <div class="task-header">
+            <div class="task-number">10</div>
+            <div class="task-title">Design Your Own Treasure Map</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Create a treasure map with at least 5 locations. Use at least 3
+            different quadrants!
+          </p>
+          <div class="form-group">
+            <label>Location 1 &#8212; Name &amp; Coordinates:</label>
+            <div
+              style="display: grid; grid-template-columns: 1fr 120px; gap: 8px"
+            >
+              <input
+                type="text"
+                class="form-input"
+                id="t10a_name"
+                placeholder="Island name"
+              />
+              <input
+                type="text"
+                class="form-input"
+                id="t10a_coord"
+                placeholder="(x, y)"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Location 2 &#8212; Name &amp; Coordinates:</label>
+            <div
+              style="display: grid; grid-template-columns: 1fr 120px; gap: 8px"
+            >
+              <input
+                type="text"
+                class="form-input"
+                id="t10b_name"
+                placeholder="Island name"
+              />
+              <input
+                type="text"
+                class="form-input"
+                id="t10b_coord"
+                placeholder="(x, y)"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Location 3 &#8212; Name &amp; Coordinates:</label>
+            <div
+              style="display: grid; grid-template-columns: 1fr 120px; gap: 8px"
+            >
+              <input
+                type="text"
+                class="form-input"
+                id="t10c_name"
+                placeholder="Island name"
+              />
+              <input
+                type="text"
+                class="form-input"
+                id="t10c_coord"
+                placeholder="(x, y)"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Location 4 &#8212; Name &amp; Coordinates:</label>
+            <div
+              style="display: grid; grid-template-columns: 1fr 120px; gap: 8px"
+            >
+              <input
+                type="text"
+                class="form-input"
+                id="t10d_name"
+                placeholder="Island name"
+              />
+              <input
+                type="text"
+                class="form-input"
+                id="t10d_coord"
+                placeholder="(x, y)"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Location 5 &#8212; Name &amp; Coordinates:</label>
+            <div
+              style="display: grid; grid-template-columns: 1fr 120px; gap: 8px"
+            >
+              <input
+                type="text"
+                class="form-input"
+                id="t10e_name"
+                placeholder="Island name"
+              />
+              <input
+                type="text"
+                class="form-input"
+                id="t10e_coord"
+                placeholder="(x, y)"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Which quadrants did you use? (List them)</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t10f"
+              placeholder="Quadrants I, II, III, and/or IV"
+            />
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: Calculate the total perimeter of your treasure route
+                (sum of all distances between consecutive locations).</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t10g"
+                placeholder="Show distance calculations..."
+                style="min-height: 80px"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 11 -->
+        <div class="task" id="task11">
+          <div class="task-header">
+            <div class="task-number">11</div>
+            <div class="task-title">Treasure Path Tracer</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Follow the coded directions to find the treasure! Start at the
+            origin (0, 0).
+          </p>
+          <div
+            style="
+              padding: 16px;
+              background: rgba(217, 119, 6, 0.05);
+              border-radius: var(--radius);
+              margin-bottom: 16px;
+              border-left: 4px solid var(--map-gold);
+              font-family: &quot;Courier New&quot;, monospace;
+              font-size: 0.95rem;
+            "
+          >
+            <strong>Coded Route:</strong><br />
+            Step 1: Move right 3, up 4 &#8594; Record position<br />
+            Step 2: Move right 5, stay same height &#8594; Record position<br />
+            Step 3: Stay same spot left-right, move down 6 &#8594; Record
+            position<br />
+            Step 4: Move left 8, stay same height &#8594; Record position<br />
+            Step 5: Stay same spot left-right, move up 2 &#8594; TREASURE!
+          </div>
+          <div class="form-group">
+            <label>After Step 1, your position is:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t11a"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>After Step 2, your position is:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t11b"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>After Step 3, your position is:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t11c"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>After Step 4, your position is:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t11d"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>TREASURE location (after Step 5):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t11e"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label>What shape did your path trace? Describe it.</label>
+            <textarea
+              class="form-textarea"
+              id="t11f"
+              placeholder="The path looks like a..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint11">
+            <button class="hint-toggle" onclick="toggleHint('hint11')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Start at (0,0). "Right 3" means add 3 to x. "Up 4" means add 4
+                to y. Keep a running total of your (x, y) position after each
+                step.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 12 -->
+        <div class="task" id="task12">
+          <div class="task-header">
+            <div class="task-number">12</div>
+            <div class="task-title">Symmetry &amp; Reflection Challenge</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Captain Meridian hid treasure at points that are symmetric across
+            axes. Find the missing info!
+          </p>
+          <div class="form-group">
+            <label
+              >Point A is at (7, 3). Its x-axis reflection is at (7, -3). What
+              is the distance between them?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t12a"
+              placeholder="distance = ?"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Point B is at (-5, 4). Its y-axis reflection is at (5, 4). What
+              is the distance between them?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t12b"
+              placeholder="distance = ?"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Pattern: When you reflect a point across the x-axis, the distance
+              between the original and reflection equals ___.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t12c"
+              placeholder="The distance equals 2 times..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: If a point and its x-axis reflection are 12 units
+                apart, what could the original point be? Give 3 examples.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t12d"
+                placeholder="Example 1: (?, ?)  Example 2: ..."
+                style="min-height: 70px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint12">
+            <button class="hint-toggle" onclick="toggleHint('hint12')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                The distance between (x, y) and (x, -y) is |y - (-y)| = |2y|. So
+                the distance is always 2 times the absolute value of the
+                y-coordinate.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 13 -->
+        <div class="task" id="task13">
+          <div class="task-header">
+            <div class="task-number">13</div>
+            <div class="task-title">Coordinate Riddles</div>
+            <div class="task-check"></div>
+          </div>
+          <p>Solve each riddle by finding the mystery coordinates!</p>
+          <div class="form-group">
+            <label
+              >I am 5 units right of the origin and 3 units above the x-axis.
+              Who am I?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t13a"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >I am the reflection of (4, -6) across the y-axis. Who am
+              I?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t13b"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >I am the midpoint between (-8, 2) and (4, 2). Who am I?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t13c"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >I am on the x-axis, 6 units left of the origin. Who am I?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t13d"
+              placeholder="(x, y)"
+            />
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge Riddle: My x-coordinate is double my y-coordinate, I
+                am in Quadrant III, and the sum of my coordinates is -9. Who am
+                I?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t13e"
+                placeholder="Show your reasoning..."
+                style="min-height: 70px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint13">
+            <button class="hint-toggle" onclick="toggleHint('hint13')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Read each clue carefully. "Right of origin" means positive x.
+                "Above x-axis" means positive y. For the challenge: if x = 2y
+                and x + y = -9, substitute to get 2y + y = -9.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 14 -->
+        <div class="task" id="task14">
+          <div class="task-header">
+            <div class="task-number">14</div>
+            <div class="task-title">Captain's Map Design Challenge</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Create a coordinate art design! Plot at least 8 points that form a
+            recognizable picture when connected.
+          </p>
+          <div class="form-group">
+            <label
+              >List your ordered pairs in the order they should be
+              connected:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t14a"
+              placeholder="(x1, y1), (x2, y2), (x3, y3), ..."
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>What picture/shape do your points create?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t14b"
+              placeholder="My design looks like a..."
+            />
+          </div>
+          <div class="form-group">
+            <label>How many quadrants does your design span?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t14c"
+              placeholder="My design uses ___ quadrants"
+            />
+          </div>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; padding: 20px"
+        >
+          <button class="btn btn-outline" onclick="goToPhase(3)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-gold" onclick="goToPhase(5)">
+            Navigator Portfolio &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 5: NAVIGATOR PORTFOLIO                    -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase5">
+        <div class="phase-header">
+          <div class="phase-number">Phase 5 of 5</div>
+          <h1>Navigator Portfolio</h1>
+          <p>
+            Reflect on your expedition, assess your skills, and earn your
+            Navigator Certificate!
+          </p>
+        </div>
+
+        <!-- Task 15: Real-World Connections -->
+        <div class="task" id="task15">
+          <div class="task-header">
+            <div class="task-number">15</div>
+            <div class="task-title">Real-World Coordinates</div>
+            <div class="task-check"></div>
+          </div>
+          <p>Explain how coordinate planes are used in real life.</p>
+          <div class="form-group">
+            <label
+              >Name 3 real-world uses of coordinate planes (maps, games,
+              science, etc.):</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t15a"
+              placeholder="1. ... 2. ... 3. ..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Pick one of your examples and explain how x and y coordinates
+              work in that context:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t15b"
+              placeholder="In ___, the x-coordinate represents... and the y-coordinate represents..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="card">
+          <h2>Navigator Self-Assessment</h2>
+          <p>
+            Rate your mastery of each skill (1 = Still Learning, 4 = Expert
+            Navigator).
+          </p>
+          <div class="rubric-grid">
+            <div class="rubric-row">
+              <label>I can plot ordered pairs in all four quadrants.</label>
+              <div class="rubric-options">
+                <input type="radio" name="rubric1" value="1" id="r1a" /><label
+                  for="r1a"
+                  >1</label
+                >
+                <input type="radio" name="rubric1" value="2" id="r1b" /><label
+                  for="r1b"
+                  >2</label
+                >
+                <input type="radio" name="rubric1" value="3" id="r1c" /><label
+                  for="r1c"
+                  >3</label
+                >
+                <input type="radio" name="rubric1" value="4" id="r1d" /><label
+                  for="r1d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label
+                >I can calculate distances between points with shared
+                coordinates.</label
+              >
+              <div class="rubric-options">
+                <input type="radio" name="rubric2" value="1" id="r2a" /><label
+                  for="r2a"
+                  >1</label
+                >
+                <input type="radio" name="rubric2" value="2" id="r2b" /><label
+                  for="r2b"
+                  >2</label
+                >
+                <input type="radio" name="rubric2" value="3" id="r2c" /><label
+                  for="r2c"
+                  >3</label
+                >
+                <input type="radio" name="rubric2" value="4" id="r2d" /><label
+                  for="r2d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label>I can reflect points across the x-axis and y-axis.</label>
+              <div class="rubric-options">
+                <input type="radio" name="rubric3" value="1" id="r3a" /><label
+                  for="r3a"
+                  >1</label
+                >
+                <input type="radio" name="rubric3" value="2" id="r3b" /><label
+                  for="r3b"
+                  >2</label
+                >
+                <input type="radio" name="rubric3" value="3" id="r3c" /><label
+                  for="r3c"
+                  >3</label
+                >
+                <input type="radio" name="rubric3" value="4" id="r3d" /><label
+                  for="r3d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label>I can find midpoints between two points.</label>
+              <div class="rubric-options">
+                <input type="radio" name="rubric4" value="1" id="r4a" /><label
+                  for="r4a"
+                  >1</label
+                >
+                <input type="radio" name="rubric4" value="2" id="r4b" /><label
+                  for="r4b"
+                  >2</label
+                >
+                <input type="radio" name="rubric4" value="3" id="r4c" /><label
+                  for="r4c"
+                  >3</label
+                >
+                <input type="radio" name="rubric4" value="4" id="r4d" /><label
+                  for="r4d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label
+                >I understand the relationship between reflections and the
+                coordinate plane.</label
+              >
+              <div class="rubric-options">
+                <input type="radio" name="rubric5" value="1" id="r5a" /><label
+                  for="r5a"
+                  >1</label
+                >
+                <input type="radio" name="rubric5" value="2" id="r5b" /><label
+                  for="r5b"
+                  >2</label
+                >
+                <input type="radio" name="rubric5" value="3" id="r5c" /><label
+                  for="r5c"
+                  >3</label
+                >
+                <input type="radio" name="rubric5" value="4" id="r5d" /><label
+                  for="r5d"
+                  >4</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reflections -->
+        <div class="card">
+          <h2>Captain's Log &#8212; Reflection</h2>
+          <div class="form-group">
+            <label
+              >What was the most interesting thing you learned about the
+              coordinate plane?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect1"
+              placeholder="I found it interesting that..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Which task was the most challenging? How did you work through
+              it?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect2"
+              placeholder="The hardest task was..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Where do you see coordinates used in real life? Give at least 2
+              examples.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect3"
+              placeholder="Coordinates are used in..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >If you could add one more island to your treasure map, where
+              would it go and why?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect4"
+              placeholder="I would add an island at..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Portfolio -->
+        <div class="card card-glow" id="portfolioSummary">
+          <h2>Navigator Certificate</h2>
+          <div id="portfolioContent">
+            <p>
+              Click "Generate Certificate" to create your expedition summary and
+              Navigator Badge!
+            </p>
+          </div>
+          <div
+            style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px"
+          >
+            <button class="btn btn-gold" onclick="generatePortfolio()">
+              &#128220; Generate Certificate
+            </button>
+            <button class="btn btn-primary" onclick="ntDownloadResultsCSV()">
+              &#128202; Download Results (CSV for teacher)
+            </button>
+            <button class="btn btn-primary" onclick="copyPortfolio()">
+              &#128203; Copy to Clipboard
+            </button>
+            <button class="btn btn-outline" onclick="downloadPortfolio()">
+              &#128229; Download as Text
+            </button>
+            <button class="btn btn-outline" onclick="shareToClassroom()">
+              &#127891; Google Classroom
+            </button>
+            <button class="btn btn-outline" onclick="window.print()">
+              &#128424; Print
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end app-shell -->
+
+    <script>
+      /* ══════════════════════════════════════ */
+      /* TREASURE MAP NAVIGATOR — JS ENGINE    */
+      /* ══════════════════════════════════════ */
+
+      let currentPhase = 1;
+      let currentMode = "standard";
+      const STORAGE_KEY = "neft_treasure_map_v2";
+
+      // Coordinate Grid State
+      let plottedPoints = [];
+      let showLabels = true;
+      const GRID_SIZE = 560;
+      const GRID_UNITS = 20;
+      const UNIT_PX = GRID_SIZE / GRID_UNITS;
+
+      /* ── Phase Navigation ── */
+      function goToPhase(n) {
+        document
+          .querySelectorAll(".phase")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("phase" + n).classList.add("active");
+        currentPhase = n;
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        saveState();
+      }
+
+      function updateProgress() {
+        document.querySelectorAll(".phase-dot").forEach((dot, i) => {
+          dot.classList.remove("active", "completed");
+          if (i + 1 < currentPhase) dot.classList.add("completed");
+          if (i + 1 === currentPhase) dot.classList.add("active");
+        });
+        document.getElementById("progressLabel").textContent =
+          `Phase ${currentPhase} of 5`;
+      }
+
+      /* ── Mode ── */
+      function setMode(mode) {
+        currentMode = mode;
+        document.body.classList.remove("challenge-mode", "support-mode");
+        if (mode === "challenge") document.body.classList.add("challenge-mode");
+        if (mode === "support") document.body.classList.add("support-mode");
+        document.querySelectorAll(".mode-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.mode === mode);
+        });
+        saveState();
+      }
+
+      /* ── Hints ── */
+      function toggleHint(id) {
+        document.getElementById(id).classList.toggle("open");
+      }
+
+      /* ── Interactive Coordinate Grid ── */
+      function initGrid() {
+        const canvas = document.getElementById("coordGrid");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        drawGrid(ctx);
+
+        function getGridCoords(clientX, clientY) {
+          const rect = canvas.getBoundingClientRect();
+          const sx = canvas.width / rect.width;
+          const sy = canvas.height / rect.height;
+          const px = (clientX - rect.left) * sx;
+          const py = (clientY - rect.top) * sy;
+          return {
+            gx: Math.round((px - GRID_SIZE / 2) / UNIT_PX),
+            gy: Math.round((GRID_SIZE / 2 - py) / UNIT_PX),
+          };
+        }
+
+        canvas.addEventListener("click", function (e) {
+          const { gx, gy } = getGridCoords(e.clientX, e.clientY);
+          if (gx >= -10 && gx <= 10 && gy >= -10 && gy <= 10) {
+            plottedPoints.push({ x: gx, y: gy });
+            drawGrid(ctx);
+            document.getElementById("coordDisplay").textContent =
+              `(${gx}, ${gy})`;
+            updatePlottedList();
+            saveState();
+          }
+        });
+
+        canvas.addEventListener(
+          "touchstart",
+          function (e) {
+            e.preventDefault();
+            const t = e.touches[0];
+            const { gx, gy } = getGridCoords(t.clientX, t.clientY);
+            if (gx >= -10 && gx <= 10 && gy >= -10 && gy <= 10) {
+              plottedPoints.push({ x: gx, y: gy });
+              drawGrid(ctx);
+              document.getElementById("coordDisplay").textContent =
+                `(${gx}, ${gy})`;
+              updatePlottedList();
+              saveState();
+            }
+          },
+          { passive: false },
+        );
+
+        canvas.addEventListener("mousemove", function (e) {
+          const { gx, gy } = getGridCoords(e.clientX, e.clientY);
+          if (gx >= -10 && gx <= 10 && gy >= -10 && gy <= 10) {
+            document.getElementById("coordDisplay").textContent =
+              `(${gx}, ${gy})`;
+          }
+        });
+      }
+
+      function drawGrid(ctx) {
+        const w = GRID_SIZE,
+          h = GRID_SIZE,
+          cx = w / 2,
+          cy = h / 2;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "rgba(254,243,199,0.4)";
+        ctx.fillRect(0, 0, w, h);
+
+        // Grid lines
+        ctx.strokeStyle = "rgba(30,64,175,0.08)";
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i <= GRID_UNITS; i++) {
+          const pos = i * UNIT_PX;
+          ctx.beginPath();
+          ctx.moveTo(pos, 0);
+          ctx.lineTo(pos, h);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, pos);
+          ctx.lineTo(w, pos);
+          ctx.stroke();
+        }
+
+        // Axes
+        ctx.strokeStyle = "#1e40af";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, cy);
+        ctx.lineTo(w, cy);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx, 0);
+        ctx.lineTo(cx, h);
+        ctx.stroke();
+
+        // Arrows
+        ctx.fillStyle = "#1e40af";
+        ctx.beginPath();
+        ctx.moveTo(w - 2, cy - 5);
+        ctx.lineTo(w + 2, cy);
+        ctx.lineTo(w - 2, cy + 5);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(cx - 5, 2);
+        ctx.lineTo(cx, -2);
+        ctx.lineTo(cx + 5, 2);
+        ctx.fill();
+
+        if (showLabels) {
+          ctx.fillStyle = "#78350f";
+          ctx.font = "10px ui-sans-serif, system-ui, sans-serif";
+          ctx.textAlign = "center";
+          for (let i = -10; i <= 10; i++) {
+            if (i === 0) continue;
+            if (i % 2 === 0) {
+              ctx.fillText(String(i), cx + i * UNIT_PX, cy + 14);
+              ctx.textAlign = "right";
+              ctx.fillText(String(i), cx - 6, cy - i * UNIT_PX + 4);
+              ctx.textAlign = "center";
+            }
+          }
+          ctx.fillText("0", cx - 10, cy + 14);
+          ctx.font = "bold 12px ui-sans-serif, system-ui, sans-serif";
+          ctx.fillStyle = "#1e40af";
+          ctx.fillText("x", w - 10, cy - 8);
+          ctx.fillText("y", cx + 12, 14);
+        }
+
+        // Quadrant labels
+        ctx.font = "bold 14px ui-sans-serif, system-ui, sans-serif";
+        ctx.fillStyle = "rgba(30,64,175,0.08)";
+        ctx.fillText("I", cx + cx / 2, cy - cy / 2 + 5);
+        ctx.fillText("II", cx - cx / 2, cy - cy / 2 + 5);
+        ctx.fillText("III", cx - cx / 2, cy + cy / 2 + 5);
+        ctx.fillText("IV", cx + cx / 2, cy + cy / 2 + 5);
+
+        // Points
+        plottedPoints.forEach((pt) => {
+          const px = cx + pt.x * UNIT_PX,
+            py = cy - pt.y * UNIT_PX;
+          ctx.fillStyle = "rgba(217,119,6,0.3)";
+          ctx.beginPath();
+          ctx.arc(px, py, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#d97706";
+          ctx.beginPath();
+          ctx.arc(px, py, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#451a03";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = "#451a03";
+          ctx.font = "bold 10px Courier New, monospace";
+          ctx.textAlign = "left";
+          ctx.fillText(`(${pt.x},${pt.y})`, px + 8, py - 6);
+        });
+
+        // Connect
+        if (plottedPoints.length > 1) {
+          ctx.strokeStyle = "rgba(217,119,6,0.4)";
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          plottedPoints.forEach((pt, i) => {
+            const px = cx + pt.x * UNIT_PX,
+              py = cy - pt.y * UNIT_PX;
+            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+          });
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      function clearPlottedPoints() {
+        plottedPoints = [];
+        const c = document.getElementById("coordGrid");
+        if (c) drawGrid(c.getContext("2d"));
+        updatePlottedList();
+        document.getElementById("coordDisplay").textContent = "(?, ?)";
+        saveState();
+      }
+
+      function toggleGridLabels() {
+        showLabels = !showLabels;
+        const c = document.getElementById("coordGrid");
+        if (c) drawGrid(c.getContext("2d"));
+      }
+
+      function undoLastPoint() {
+        if (plottedPoints.length) {
+          plottedPoints.pop();
+          const c = document.getElementById("coordGrid");
+          if (c) drawGrid(c.getContext("2d"));
+          updatePlottedList();
+          saveState();
+        }
+      }
+
+      function updatePlottedList() {
+        const el = document.getElementById("plottedList");
+        if (!plottedPoints.length) {
+          el.textContent = "";
+          return;
+        }
+        el.innerHTML =
+          "<strong>Plotted:</strong> " +
+          plottedPoints
+            .map(
+              (p) =>
+                `<span class="coord-display" style="font-size:0.8rem;margin:2px">(${p.x}, ${p.y})</span>`,
+            )
+            .join(" ");
+      }
+
+      /* ── Distance Calculator ── */
+      function calcDistance() {
+        const vals = ["distX1", "distY1", "distX2", "distY2"].map((id) =>
+          parseFloat(document.getElementById(id).value),
+        );
+        const el = document.getElementById("distResult");
+        if (vals.some(isNaN)) {
+          el.innerHTML =
+            '<span style="color:var(--map-error)">Enter all four coordinates.</span>';
+          return;
+        }
+        const [x1, y1, x2, y2] = vals;
+        const dx = Math.abs(x2 - x1),
+          dy = Math.abs(y2 - y1);
+        if (x1 === x2) {
+          el.innerHTML = `<div>Same x-value! Distance = |${y2} &minus; ${y1 < 0 ? "(" + y1 + ")" : y1}| = <strong style="color:var(--map-ocean)">${dy} units</strong></div>`;
+        } else if (y1 === y2) {
+          el.innerHTML = `<div>Same y-value! Distance = |${x2} &minus; ${x1 < 0 ? "(" + x1 + ")" : x1}| = <strong style="color:var(--map-ocean)">${dx} units</strong></div>`;
+        } else {
+          const d = Math.sqrt(dx * dx + dy * dy);
+          el.innerHTML = `<div>Horizontal: ${dx} | Vertical: ${dy}<br>Straight-line: &radic;(${dx}&sup2; + ${dy}&sup2;) = <strong style="color:var(--map-ocean)">${d.toFixed(2)} units</strong></div>`;
+        }
+      }
+
+      /* ── Midpoint Calculator ── */
+      function calcMidpoint() {
+        const vals = ["midX1", "midY1", "midX2", "midY2"].map((id) =>
+          parseFloat(document.getElementById(id).value),
+        );
+        const el = document.getElementById("midResult");
+        if (vals.some(isNaN)) {
+          el.innerHTML =
+            '<span style="color:var(--map-error)">Enter all four coordinates.</span>';
+          return;
+        }
+        const [x1, y1, x2, y2] = vals;
+        const mx = (x1 + x2) / 2,
+          my = (y1 + y2) / 2;
+        el.innerHTML = `<div>Midpoint = ((${x1}+${x2})/2, (${y1}+${y2})/2) = <strong style="color:var(--map-ocean)">(${mx}, ${my})</strong></div>`;
+      }
+
+      /* ── Reflection Calculator ── */
+      function calcReflection() {
+        const x = parseFloat(document.getElementById("refX").value);
+        const y = parseFloat(document.getElementById("refY").value);
+        if (isNaN(x) || isNaN(y)) return;
+        document.getElementById("refXAxis").innerHTML =
+          `<div style="font-size:0.75rem;color:var(--map-muted)">ACROSS X-AXIS</div><div style="font-size:1.2rem;font-weight:800;color:var(--map-ocean);margin-top:4px">(${x}, ${-y})</div><div style="font-size:0.75rem;color:var(--map-muted)">y flips sign</div>`;
+        document.getElementById("refYAxis").innerHTML =
+          `<div style="font-size:0.75rem;color:var(--map-muted)">ACROSS Y-AXIS</div><div style="font-size:1.2rem;font-weight:800;color:var(--map-gold);margin-top:4px">(${-x}, ${y})</div><div style="font-size:0.75rem;color:var(--map-muted)">x flips sign</div>`;
+        document.getElementById("refBoth").innerHTML =
+          `<div style="font-size:0.75rem;color:var(--map-muted)">ACROSS BOTH</div><div style="font-size:1.2rem;font-weight:800;color:var(--map-success);margin-top:4px">(${-x}, ${-y})</div><div style="font-size:0.75rem;color:var(--map-muted)">both flip</div>`;
+      }
+
+      /* ── Portfolio ── */
+      function generatePortfolio() {
+        const name =
+          document.getElementById("studentName").value || "Unnamed Navigator";
+        const period = document.getElementById("classPeriod").value || "N/A";
+        const date =
+          document.getElementById("activityDate").value ||
+          new Date().toLocaleDateString();
+
+        const toolIds = [
+          "distX1",
+          "distY1",
+          "distX2",
+          "distY2",
+          "midX1",
+          "midY1",
+          "midX2",
+          "midY2",
+          "refX",
+          "refY",
+        ];
+        let filled = 0,
+          total = 0;
+        document
+          .querySelectorAll(".form-input, .form-textarea, .form-select")
+          .forEach((el) => {
+            if (toolIds.includes(el.id)) return;
+            total++;
+            if (el.value && el.value.trim()) filled++;
+          });
+        const pct = Math.round((filled / total) * 100);
+
+        const rubricScore = [1, 2, 3, 4, 5].reduce((s, i) => {
+          const c = document.querySelector(`input[name="rubric${i}"]:checked`);
+          return s + (c ? parseInt(c.value) : 0);
+        }, 0);
+
+        let badgeColor = "#dc2626",
+          badgeLabel = "Apprentice",
+          badgeIcon = "&#9875;";
+        if (pct >= 90) {
+          badgeColor = "#d97706";
+          badgeLabel = "Master Navigator";
+          badgeIcon = "&#128081;";
+        } else if (pct >= 70) {
+          badgeColor = "#1e40af";
+          badgeLabel = "Expert Explorer";
+          badgeIcon = "&#127758;";
+        } else if (pct >= 50) {
+          badgeColor = "#0f766e";
+          badgeLabel = "Skilled Sailor";
+          badgeIcon = "&#9973;";
+        }
+
+        document.getElementById("portfolioContent").innerHTML = `
+          <div style="text-align:center;margin-bottom:24px">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(69,26,3,0.1)" stroke-width="10"/>
+              <circle cx="80" cy="80" r="72" fill="none" stroke="${badgeColor}" stroke-width="10"
+                stroke-dasharray="${(pct / 100) * 452} 452" stroke-linecap="round" transform="rotate(-90 80 80)"/>
+              <text x="80" y="70" text-anchor="middle" fill="${badgeColor}" font-size="32" font-weight="800">${pct}%</text>
+              <text x="80" y="92" text-anchor="middle" fill="var(--map-muted)" font-size="11" font-weight="600">COMPLETE</text>
+            </svg>
+          </div>
+          <div class="badge-row">
+            <svg width="120" height="140" viewBox="0 0 120 140">
+              <polygon points="60,5 75,40 112,45 85,72 92,110 60,92 28,110 35,72 8,45 45,40" fill="${badgeColor}" stroke="#451a03" stroke-width="1.5"/>
+              <text x="60" y="65" text-anchor="middle" fill="#fff" font-size="28">${badgeIcon}</text>
+              <text x="60" y="130" text-anchor="middle" fill="var(--map-text)" font-size="10" font-weight="700">${badgeLabel}</text>
+            </svg>
+          </div>
+          <div class="grid-2" style="gap:16px;margin-bottom:20px">
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--map-muted)">NAVIGATOR</div>
+              <div style="font-weight:700;font-size:1.1rem">${name}</div>
+            </div>
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--map-muted)">CREW / DATE</div>
+              <div style="font-weight:700;font-size:1.1rem">${period} | ${date}</div>
+            </div>
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--map-muted)">TASKS COMPLETED</div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--map-ocean)">${filled} / ${total}</div>
+            </div>
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--map-muted)">SELF-ASSESSMENT</div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--map-gold)">${rubricScore} / 20</div>
+            </div>
+          </div>
+          <div style="padding:16px;background:rgba(217,119,6,0.05);border:2px solid rgba(217,119,6,0.2);border-radius:var(--radius)">
+            <strong style="color:var(--map-gold)">Expedition Status:</strong>
+            ${
+              pct >= 90
+                ? '<span style="color:var(--map-success)"> TREASURE FOUND! Outstanding navigation, Captain!</span>'
+                : pct >= 70
+                  ? '<span style="color:var(--map-ocean)"> EXPEDITION SUCCESSFUL! Great charting skills!</span>'
+                  : pct >= 50
+                    ? '<span style="color:var(--map-warn)"> EXPEDITION IN PROGRESS! Keep exploring!</span>'
+                    : '<span style="color:var(--map-error)"> NEED MORE NAVIGATION PRACTICE! Ask your Captain (teacher) for help.</span>'
+            }
+          </div>`;
+      }
+
+      function copyPortfolio() {
+        const name = document.getElementById("studentName").value || "Unnamed";
+        const period = document.getElementById("classPeriod").value || "N/A";
+        const toolIds = [
+          "distX1",
+          "distY1",
+          "distX2",
+          "distY2",
+          "midX1",
+          "midY1",
+          "midX2",
+          "midY2",
+          "refX",
+          "refY",
+        ];
+        let text = `TREASURE MAP NAVIGATOR — Portfolio\nNavigator: ${name} | Crew: ${period}\n\n`;
+        document
+          .querySelectorAll(".form-input, .form-textarea")
+          .forEach((el) => {
+            if (el.value && el.value.trim() && !toolIds.includes(el.id)) {
+              const lbl =
+                el.closest(".form-group")?.querySelector("label")
+                  ?.textContent || el.id;
+              text += `${lbl}: ${el.value}\n\n`;
+            }
+          });
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("Portfolio copied to clipboard!"));
+      }
+
+      function downloadPortfolio() {
+        const name = document.getElementById("studentName").value || "Unnamed";
+        const toolIds = [
+          "distX1",
+          "distY1",
+          "distX2",
+          "distY2",
+          "midX1",
+          "midY1",
+          "midX2",
+          "midY2",
+          "refX",
+          "refY",
+        ];
+        let text = `TREASURE MAP NAVIGATOR — Coordinate Plane\nNavigator: ${name}\n${"=".repeat(50)}\n\n`;
+        document.querySelectorAll(".task, .card").forEach((sec) => {
+          const h = sec.querySelector("h3, .task-title, h2");
+          if (h) text += `--- ${h.textContent} ---\n`;
+          sec.querySelectorAll(".form-input, .form-textarea").forEach((el) => {
+            if (el.value && el.value.trim() && !toolIds.includes(el.id)) {
+              const lbl =
+                el.closest(".form-group")?.querySelector("label")
+                  ?.textContent || el.id;
+              text += `${lbl}\n${el.value}\n\n`;
+            }
+          });
+        });
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Treasure_Map_Navigator_${name.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      function shareToClassroom() {
+        const name = document.getElementById("studentName").value || "Student";
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent("Treasure Map Navigator - " + name);
+        window.open(
+          `https://classroom.google.com/share?url=${url}&title=${title}`,
+          "_blank",
+        );
+      }
+
+      /* ── Auto-Save ── */
+      function saveState() {
+        const data = {
+          phase: currentPhase,
+          mode: currentMode,
+          fields: {},
+          points: plottedPoints,
+        };
+        document
+          .querySelectorAll(".form-input, .form-textarea, .form-select")
+          .forEach((el) => {
+            if (el.id) data.fields[el.id] = el.value;
+          });
+        document
+          .querySelectorAll('input[type="radio"]:checked')
+          .forEach((el) => {
+            data.fields[el.name] = el.value;
+          });
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (data.phase) goToPhase(data.phase);
+          if (data.mode) setMode(data.mode);
+          if (data.points) plottedPoints = data.points;
+          if (data.fields) {
+            Object.entries(data.fields).forEach(([id, val]) => {
+              const el = document.getElementById(id);
+              if (el) el.value = val;
+              if (!el && val) {
+                const r = document.querySelector(
+                  `input[name="${id}"][value="${val}"]`,
+                );
+                if (r) r.checked = true;
+              }
+            });
+          }
+        } catch (e) {}
+      }
+
+      document.addEventListener("input", () => {
+        clearTimeout(window._saveTimer);
+        window._saveTimer = setTimeout(saveState, 500);
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadState();
+        initGrid();
+        if (!document.getElementById("activityDate").value) {
+          document.getElementById("activityDate").value = new Date()
+            .toISOString()
+            .split("T")[0];
+        }
+
+        /* ═══════════════════════════════════════════════════
+           ENHANCEMENT MODULE — XP, Sound, Certificate
+           ═══════════════════════════════════════════════════ */
+        var _xp = parseInt(localStorage.getItem("neft_xp_u9_map") || "0");
+        var _xpPerLevel = 100;
+
+        // XP Bar
+        var bar = document.createElement("div");
+        bar.className = "xp-bar-wrap";
+        bar.innerHTML =
+          '<button class="xp-toggle" onclick="this.parentElement.classList.toggle(\'hidden\')" title="Toggle XP bar">&#9660;</button><span class="xp-level" id="xpLevelDisp">LVL 1</span><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><span class="xp-pts" id="xpPtsDisp">0 XP</span>';
+        document.body.appendChild(bar);
+
+        function _updateXPDisplay() {
+          var lvl = document.getElementById("xpLevelDisp");
+          var fill = document.getElementById("xpFill");
+          var pts = document.getElementById("xpPtsDisp");
+          if (!lvl) return;
+          var level = Math.floor(_xp / _xpPerLevel) + 1;
+          lvl.textContent = "LVL " + level;
+          fill.style.width = ((_xp % _xpPerLevel) / _xpPerLevel) * 100 + "%";
+          pts.textContent = _xp + " XP";
+        }
+        _updateXPDisplay();
+
+        var _audioCtx = null;
+        function _getAudio() {
+          if (!_audioCtx) {
+            try {
+              _audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          }
+          return _audioCtx;
+        }
+        function _playSound(type) {
+          var ctx = _getAudio();
+          if (!ctx) return;
+          try {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            if (type === "xp") {
+              osc.frequency.value = 880;
+              osc.type = "sine";
+              gain.gain.setValueAtTime(0.04, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.15,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.15);
+            } else if (type === "phase") {
+              osc.frequency.value = 440;
+              osc.type = "triangle";
+              gain.gain.setValueAtTime(0.06, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.2,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.2);
+            } else if (type === "complete") {
+              [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) {
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.frequency.value = f;
+                o.type = "sine";
+                g.gain.setValueAtTime(0.06, ctx.currentTime + i * 0.15);
+                g.gain.exponentialRampToValueAtTime(
+                  0.001,
+                  ctx.currentTime + i * 0.15 + 0.4,
+                );
+                o.start(ctx.currentTime + i * 0.15);
+                o.stop(ctx.currentTime + i * 0.15 + 0.4);
+              });
+            }
+          } catch (e) {}
+        }
+
+        function _addXP(pts, reason) {
+          _xp += pts;
+          try {
+            localStorage.setItem("neft_xp_u9_map", String(_xp));
+          } catch (e) {}
+          _updateXPDisplay();
+          _playSound("xp");
+          var toast = document.createElement("div");
+          toast.style.cssText =
+            "position:fixed;top:20px;right:20px;z-index:10001;padding:10px 18px;border-radius:10px;background:#1e40af;color:#fff;font-weight:700;font-size:0.88rem;animation:popIn 0.3s ease-out;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2)";
+          toast.textContent = "+" + pts + " XP — " + (reason || "Nice work!");
+          document.body.appendChild(toast);
+          setTimeout(function () {
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.4s";
+          }, 1800);
+          setTimeout(function () {
+            toast.remove();
+          }, 2400);
+        }
+
+        function _showCertificate(name, pct, xpTotal) {
+          var existing = document.getElementById("certOverlay");
+          if (existing) existing.remove();
+          var overlay = document.createElement("div");
+          overlay.id = "certOverlay";
+          overlay.className = "certificate-overlay visible";
+          var level = Math.floor(xpTotal / _xpPerLevel) + 1;
+          var badge =
+            pct >= 90
+              ? "\u{1F3C6}"
+              : pct >= 70
+                ? "⭐"
+                : pct >= 50
+                  ? "\u{1F4AA}"
+                  : "\u{1F331}";
+          var rank =
+            pct >= 90
+              ? "Outstanding"
+              : pct >= 70
+                ? "Excellent"
+                : pct >= 50
+                  ? "Good Work"
+                  : "Keep Growing";
+          overlay.innerHTML =
+            '<div class="certificate-card"><div class="cert-badge">' +
+            badge +
+            '</div><div class="cert-title">Certificate of Completion</div><div class="cert-subtitle">Treasure Map Navigator</div><div class="cert-name">' +
+            (name || "Navigator") +
+            '</div><div class="cert-score">' +
+            pct +
+            '%</div><div class="cert-xp">&#9875; ' +
+            rank +
+            " — Level " +
+            level +
+            " (" +
+            xpTotal +
+            ' XP)</div><div class="cert-stats"><div class="cert-stat"><div class="cert-stat-val">' +
+            level +
+            '</div><div class="cert-stat-lbl">Level</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            xpTotal +
+            '</div><div class="cert-stat-lbl">Total XP</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            pct +
+            '%</div><div class="cert-stat-lbl">Complete</div></div></div><button class="cert-close" onclick="document.getElementById(\'certOverlay\').classList.remove(\'visible\')">Close</button></div>';
+          document.body.appendChild(overlay);
+          _playSound("complete");
+        }
+
+        // Enhanced goToPhase
+        var _phasesVisited = {};
+        var _origGTP = goToPhase;
+        goToPhase = function (n) {
+          _origGTP(n);
+          if (!_phasesVisited[n] && n > 1) {
+            _phasesVisited[n] = true;
+            _addXP(15, "Phase " + n + " started!");
+          }
+          _playSound("phase");
+        };
+
+        // Enhanced generatePortfolio
+        var _origGenPort = generatePortfolio;
+        generatePortfolio = function () {
+          _origGenPort();
+          var name =
+            (document.getElementById("studentName") || {}).value || "Navigator";
+          var filled = 0,
+            total = 0;
+          document
+            .querySelectorAll(".form-input, .form-textarea, .form-select")
+            .forEach(function (el) {
+              total++;
+              if (el.value && el.value.trim()) filled++;
+            });
+          var pct = total > 0 ? Math.round((filled / total) * 100) : 0;
+          _addXP(
+            pct >= 90 ? 50 : pct >= 70 ? 30 : pct >= 50 ? 20 : 10,
+            "Portfolio generated!",
+          );
+          setTimeout(function () {
+            _showCertificate(name, pct, _xp);
+          }, 800);
+        };
+
+        // Auto-XP for fields
+        var _xpFieldsAwarded = {};
+        document.addEventListener("input", function (e) {
+          var el = e.target;
+          if (el.matches && el.matches(".form-input, .form-textarea")) {
+            clearTimeout(window._fxpT);
+            window._fxpT = setTimeout(function () {
+              if (!el.id || _xpFieldsAwarded[el.id]) return;
+              if (el.value && el.value.trim().length >= 3) {
+                _xpFieldsAwarded[el.id] = true;
+                _addXP(2, "Answer entered");
+              }
+            }, 1500);
+          }
+        });
+      });
+    </script>
+  
+    <details class="neft-help-panel" id="neftHelpPanel">
+      <summary class="neft-help-summary">
+        <span aria-hidden="true">&#128218;</span> Need help? Explore these resources
+      </summary>
+      <div class="neft-help-body">
+        <p>These trusted, free websites can help you review <strong>plotting points, finding distance, and reflecting on the coordinate plane</strong>.
+        They open in a new tab so you keep your work.</p>
+        <ul class="neft-help-links"><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topic/cc-6th-coordinate-plane" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Khan Academy: Coordinate plane</a></li><li><a href="https://www.mathsisfun.com/data/cartesian-coordinates.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: The Coordinate Plane</a></li><li><a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Desmos Graphing Calculator</a></li></ul>
+        
+        <p style="margin-top:1rem"><strong>Key vocabulary:</strong></p>
+        <ul class="neft-glossary-list"><li><strong>coordinate plane:</strong> A grid made by a horizontal and a vertical number line.</li><li><strong>ordered pair:</strong> Two numbers (x, y) that give the location of a point.</li><li><strong>origin:</strong> The point (0, 0) where the two axes cross.</li><li><strong>quadrant:</strong> One of the four regions of the coordinate plane.</li><li><strong>x-axis:</strong> The horizontal number line on the coordinate plane.</li><li><strong>y-axis:</strong> The vertical number line on the coordinate plane.</li><li><strong>reflection:</strong> A flip of a point or shape across an axis.</li></ul>
+      </div>
+    </details>
+  
+    <script id="NEFT-UPGRADE-6-10-js">
+    (function () {
+      var GLOSS = {"coordinate plane": "A grid made by a horizontal and a vertical number line.", "ordered pair": "Two numbers (x, y) that give the location of a point.", "origin": "The point (0, 0) where the two axes cross.", "quadrant": "One of the four regions of the coordinate plane.", "x-axis": "The horizontal number line on the coordinate plane.", "y-axis": "The vertical number line on the coordinate plane.", "reflection": "A flip of a point or shape across an axis."};
+      var keys = Object.keys(GLOSS).sort(function (a, b) { return b.length - a.length; });
+      var SKIP = { SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1, OPTION:1, BUTTON:1,
+                   svg:1, SVG:1, CODE:1, A:1, SUMMARY:1, H1:1 };
+      function inSkip(node) {
+        var p = node.parentNode;
+        while (p && p.nodeType === 1) {
+          if (SKIP[p.tagName] || (p.className && String(p.className).indexOf('neft-') === 0)) return true;
+          if (p.classList && p.classList.contains('neft-term')) return true;
+          p = p.parentNode;
+        }
+        return false;
+      }
+      function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+      function wrapTerm(term) {
+        var def = GLOSS[term];
+        var re = new RegExp('\\b(' + esc(term) + ')\\b', 'i');
+        var counted = 0, MAXPER = 1;
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+        var nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(function (node) {
+          if (counted >= MAXPER) return;
+          if (!node.nodeValue || !re.test(node.nodeValue)) return;
+          if (inSkip(node)) return;
+          var m = node.nodeValue.match(re);
+          if (!m) return;
+          var idx = m.index;
+          var before = node.nodeValue.slice(0, idx);
+          var word = node.nodeValue.slice(idx, idx + m[1].length);
+          var after = node.nodeValue.slice(idx + m[1].length);
+          var span = document.createElement('span');
+          span.className = 'neft-term';
+          span.setAttribute('tabindex', '0');
+          span.setAttribute('role', 'button');
+          span.setAttribute('aria-label', word + ': ' + def);
+          span.textContent = word;
+          var tip = document.createElement('span');
+          tip.className = 'neft-tip';
+          tip.setAttribute('role', 'tooltip');
+          tip.textContent = def;
+          span.appendChild(tip);
+          var frag = document.createDocumentFragment();
+          if (before) frag.appendChild(document.createTextNode(before));
+          frag.appendChild(span);
+          if (after) frag.appendChild(document.createTextNode(after));
+          node.parentNode.replaceChild(frag, node);
+          counted++;
+        });
+      }
+      function run() { keys.forEach(wrapTerm); }
+      if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', run);
+      else run();
+    })();
+    </script>
+  
+    <section class="neft-help-panel" aria-label="Level 1 study helper" style="border-color:#34d399">
+      <div class="neft-help-summary" style="background:#ecfdf5;cursor:default">
+        <span aria-hidden="true">&#129504;</span> How to work through this (Level 1)
+      </div>
+      <div class="neft-help-body">
+        <p>Take it one small step at a time:</p>
+        <ol style="padding-left:1.2rem;line-height:1.7">
+          <li><strong>Read slowly.</strong> Underlined words have a meaning bubble &mdash; tap them.</li>
+          <li><strong>Find the numbers</strong> in the problem and write them down.</li>
+          <li><strong>Pick the operation</strong> (+, &minus;, &times;, &divide;). Ask: am I joining, taking away, grouping, or sharing?</li>
+          <li><strong>Use the <span style="white-space:nowrap">&#128161; Show Hint</span> buttons</strong> any time you feel stuck.</li>
+          <li><strong>Check your answer.</strong> Does it make sense for the story?</li>
+        </ol>
+        <p style="margin-top:0.8rem;background:#f0fdf4;padding:0.7rem 0.9rem;border-radius:10px">
+          <strong>Tip:</strong> It is okay to use smaller, friendlier numbers to practice first.
+          The hints walk you through each step.</p>
+      </div>
+    </section>
+  
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      /* nt-results wiring — reuses this game's real completion + self-rating tallies. */
+      function ntResultsTally() {
+        var sel = document.querySelectorAll(
+          '.form-input, .form-textarea, .form-select, input[type=text], textarea, select'
+        );
+        var total = 0, filled = 0, seen = {};
+        sel.forEach(function (el) {
+          if (seen[el]) return; seen[el] = 1;
+          var id = el.id || '';
+          if (/^calc/i.test(id)) return;            // skip calculator helper fields
+          if (/^rubric/i.test(el.name || '')) return;
+          if (el.type === 'radio' || el.type === 'checkbox') return;
+          total++;
+          if (el.value && String(el.value).trim()) filled++;
+        });
+        // Self-rating: radios named rubric* OR selected rubric-cells.
+        var rubric = 0, rubricMax = 0;
+        var radios = {};
+        document.querySelectorAll('input[name^=rubric]').forEach(function (r) {
+          radios[r.name] = Math.max(radios[r.name] || 0, parseInt(r.value, 10) || 0);
+        });
+        var radioNames = Object.keys(radios);
+        if (radioNames.length) {
+          radioNames.forEach(function (n) {
+            rubricMax += radios[n];
+            var c = document.querySelector('input[name="' + n + '"]:checked');
+            if (c) rubric += parseInt(c.value, 10) || 0;
+          });
+        } else {
+          var groups = {};
+          document.querySelectorAll('.rubric-cell').forEach(function (cell) {
+            var m = /selectRubric\(\s*['\"]([^'\"]+)['\"]\s*,\s*(\d+)/.exec(
+              cell.getAttribute('onclick') || ''
+            );
+            if (!m) return;
+            var key = m[1], val = parseInt(m[2], 10) || 0;
+            groups[key] = Math.max(groups[key] || 0, val);
+            if (cell.classList.contains('selected')) {
+              cell._sel = val;
+            }
+          });
+          Object.keys(groups).forEach(function (k) { rubricMax += groups[k]; });
+          document.querySelectorAll('.rubric-cell.selected').forEach(function (cell) {
+            var m = /,\s*(\d+)\s*,/.exec(cell.getAttribute('onclick') || '');
+            if (m) rubric += parseInt(m[1], 10) || 0;
+          });
+        }
+        return { filled: filled, total: total, rubric: rubric, rubricMax: rubricMax };
+      }
+      function ntDownloadResultsCSV() {
+        var nameEl = document.getElementById('studentName');
+        var student = (nameEl && nameEl.value && nameEl.value.trim()) || 'Student';
+        var t = ntResultsTally();
+        var sections = [
+          { name: 'Completion', correct: t.filled, total: t.total }
+        ];
+        if (t.rubricMax > 0)
+          sections.push({ name: 'Self-rating', correct: t.rubric, total: t.rubricMax });
+        NTResults.finish({
+          student: student,
+          assessment: 'Unit 9 Post-Test: Treasure Map Navigator',
+          standard: '6.NS.6',
+        level: '1',
+          sections: sections,
+          correct: t.filled,
+          total: t.total,
+        });
+      }
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

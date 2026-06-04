@@ -1,0 +1,1945 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.EE.C.9 · Unit 10" data-standard="6.EE.C.9" data-unit="10" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 24: Patterns and Rules (6.EE.C.9) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #115e59;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #eef7ee;
+        --line: #d9e1e8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg);
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .mission-nav a:hover {
+        text-decoration: underline;
+      }
+      .mission-hero {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 28px;
+        align-items: center;
+        padding: clamp(28px, 5vw, 48px);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--navy);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 12px;
+        color: var(--navy);
+      }
+      .mission-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .standard-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-teal);
+        color: var(--teal-dark);
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-left: 6px;
+      }
+      .hero-scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-svg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+        border-bottom: 2px solid var(--soft-blue);
+        padding-bottom: 8px;
+      }
+      .panel h3 {
+        color: var(--teal-dark);
+        font-size: 1.12rem;
+        margin-top: 18px;
+        margin-bottom: 8px;
+      }
+      .problem-box {
+        padding: 18px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 1.05rem;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        display: block;
+        margin-top: 4px;
+      }
+      .language-box {
+        padding: 18px;
+        background: #f0faf9;
+        border: 2px dashed #8bbab3;
+        border-radius: 8px;
+        margin: 18px 0;
+      }
+      .language-box h3 {
+        color: var(--teal-dark);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .vocab-item .def {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .sentence-frames {
+        padding: 12px 16px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .sentence-frames p {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role-card {
+        padding: 14px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+        border-radius: 8px;
+      }
+      .role-card strong {
+        display: block;
+        color: #115e60;
+        margin-bottom: 4px;
+      }
+      .role-card .task {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .timer-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        min-height: 42px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn:focus-visible {
+        outline: 3px solid rgba(32, 122, 122, 0.35);
+        outline-offset: 2px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .phase-header {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 4px 14px 14px;
+        color: var(--muted);
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .challenge-box {
+        padding: 16px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        padding: 12px 16px;
+        background: var(--soft-blue);
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .sentence-starter {
+        display: block;
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+      .exit-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "☐";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .svg-container {
+        display: flex;
+        justify-content: center;
+        margin: 18px 0;
+      }
+      .svg-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .rep-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .rep-tab {
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .rep-tab.active {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .rep-content {
+        display: none;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .rep-content.active {
+        display: block;
+      }
+      .print-only {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-bar,
+        .timer-buttons,
+        .btn,
+        .rep-tabs {
+          display: none !important;
+        }
+        .panel,
+        .mission-hero {
+          box-shadow: none;
+          border-color: #999;
+          break-inside: avoid;
+        }
+        .phase-body,
+        .rep-content {
+          display: block !important;
+        }
+        .print-only {
+          display: block;
+        }
+        .content-grid {
+          display: block;
+        }
+        .content-grid > * {
+          margin-bottom: 18px;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero,
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          order: -1;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-23/">&#8592; Mission 23</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-25/">Mission 25 &#8594;</a>
+      </nav>
+
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <span class="mission-badge">Mission 24</span>
+          <span
+            class="mission-badge"
+            style="background: var(--soft-teal); color: var(--teal-dark)"
+            >Unit 9</span
+          >
+          <span class="standard-tag">6.EE.B.6 &middot; 6.EE.C.9</span>
+          <h1 id="hero-title">Patterns and Rules</h1>
+          <span class="mlm-standard">6.EE.C.9 &middot; Unit 10</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Write a rule that relates input and output values in a pattern.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="hero-scenario">
+            The school cafeteria is setting up tables for a big family night.
+            Each rectangular table seats <strong>4 people</strong>. When two
+            tables are pushed together end-to-end, the combined table seats
+            <strong>6 people</strong> (not 8, because 2 seats are lost where the
+            tables touch). Three tables in a row seat <strong>8 people</strong>.
+            The cafeteria has <strong>15 tables</strong>. Your team must find
+            the pattern, write a rule, and figure out how many people can sit at
+            all 15 tables pushed into one long row.
+          </p>
+        </div>
+        <div class="hero-svg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 380 420"
+            width="380"
+            height="420"
+            aria-label="Visual pattern showing tables pushed together with seats counted"
+          >
+            <rect width="380" height="420" rx="12" fill="#edf5ff" />
+            <text
+              x="190"
+              y="28"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Table Seating Pattern
+            </text>
+
+            <!-- 1 table = 4 seats -->
+            <text x="30" y="68" font-size="12" font-weight="800" fill="#207a7a">
+              1 table = 4 seats
+            </text>
+            <rect
+              x="110"
+              y="74"
+              width="80"
+              height="40"
+              rx="6"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <!-- seats as circles -->
+            <circle cx="130" cy="70" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="170" cy="70" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="130" cy="118" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="170" cy="118" r="8" fill="#207a7a" opacity="0.7" />
+            <text
+              x="220"
+              y="98"
+              font-size="20"
+              font-weight="900"
+              fill="#23395d"
+            >
+              = 4
+            </text>
+
+            <!-- 2 tables = 6 seats -->
+            <text
+              x="30"
+              y="162"
+              font-size="12"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              2 tables = 6 seats
+            </text>
+            <rect
+              x="110"
+              y="168"
+              width="80"
+              height="40"
+              rx="6"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <rect
+              x="190"
+              y="168"
+              width="80"
+              height="40"
+              rx="6"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <circle cx="130" cy="164" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="170" cy="164" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="230" cy="164" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="130" cy="212" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="170" cy="212" r="8" fill="#207a7a" opacity="0.7" />
+            <circle cx="230" cy="212" r="8" fill="#207a7a" opacity="0.7" />
+            <!-- X marks for lost seats -->
+            <text
+              x="210"
+              y="168"
+              font-size="12"
+              fill="#b42318"
+              font-weight="900"
+            >
+              X
+            </text>
+            <text
+              x="210"
+              y="216"
+              font-size="12"
+              fill="#b42318"
+              font-weight="900"
+            >
+              X
+            </text>
+            <text
+              x="290"
+              y="192"
+              font-size="20"
+              font-weight="900"
+              fill="#23395d"
+            >
+              = 6
+            </text>
+
+            <!-- 3 tables = 8 seats -->
+            <text
+              x="30"
+              y="256"
+              font-size="12"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              3 tables = 8 seats
+            </text>
+            <rect
+              x="70"
+              y="262"
+              width="70"
+              height="36"
+              rx="5"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <rect
+              x="140"
+              y="262"
+              width="70"
+              height="36"
+              rx="5"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <rect
+              x="210"
+              y="262"
+              width="70"
+              height="36"
+              rx="5"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <circle cx="88" cy="258" r="7" fill="#207a7a" opacity="0.7" />
+            <circle cx="122" cy="258" r="7" fill="#207a7a" opacity="0.7" />
+            <circle cx="175" cy="258" r="7" fill="#207a7a" opacity="0.7" />
+            <circle cx="245" cy="258" r="7" fill="#207a7a" opacity="0.7" />
+            <circle cx="88" cy="302" r="7" fill="#207a7a" opacity="0.7" />
+            <circle cx="122" cy="302" r="7" fill="#207a7a" opacity="0.7" />
+            <circle cx="175" cy="302" r="7" fill="#207a7a" opacity="0.7" />
+            <circle cx="245" cy="302" r="7" fill="#207a7a" opacity="0.7" />
+            <text
+              x="300"
+              y="284"
+              font-size="20"
+              font-weight="900"
+              fill="#23395d"
+            >
+              = 8
+            </text>
+
+            <!-- Pattern summary -->
+            <rect
+              x="30"
+              y="330"
+              width="320"
+              height="80"
+              rx="8"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <text
+              x="190"
+              y="355"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              Pattern Discovery
+            </text>
+            <g font-size="12" fill="#263242">
+              <text x="50" y="375">Tables: 1 → 2 → 3 → 4 → ... → t</text>
+              <text x="50" y="393">Seats: 4 → 6 → 8 → 10 → ... → ?</text>
+            </g>
+            <text
+              x="260"
+              y="393"
+              font-size="12"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              +2 each time!
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <section class="panel">
+            <h2>The Problem</h2>
+            <div class="problem-box">
+              <strong
+                >How many people can sit at 15 tables pushed into one long
+                row?</strong
+              >
+              Use the visual pattern to discover the rule. Then write an
+              equation using a variable. Verify your equation works for 1, 2, 3,
+              and 4 tables before predicting the answer for 15. Finally, explain
+              WHY the pattern works — where do the "lost seats" come from?
+            </div>
+
+            <h3>Visual Model: Growing Pattern</h3>
+            <div class="svg-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 520 240"
+                width="520"
+                height="240"
+                aria-label="Number pattern showing seats increasing by 2 for each additional table"
+              >
+                <rect width="520" height="240" rx="8" fill="#f8fffd" />
+                <text
+                  x="260"
+                  y="22"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  Finding the Rule
+                </text>
+                <!-- Visual pattern blocks -->
+                <g transform="translate(20,40)">
+                  <!-- t=1 -->
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="30"
+                    rx="4"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="2"
+                  />
+                  <text
+                    x="25"
+                    y="20"
+                    text-anchor="middle"
+                    font-size="11"
+                    font-weight="700"
+                    fill="#115e59"
+                  >
+                    T1
+                  </text>
+                  <text
+                    x="25"
+                    y="52"
+                    text-anchor="middle"
+                    font-size="16"
+                    font-weight="900"
+                    fill="#23395d"
+                  >
+                    4
+                  </text>
+                  <text
+                    x="25"
+                    y="68"
+                    text-anchor="middle"
+                    font-size="9"
+                    fill="#5b6573"
+                  >
+                    seats
+                  </text>
+
+                  <!-- arrow -->
+                  <text
+                    x="70"
+                    y="20"
+                    font-size="14"
+                    fill="#b7791f"
+                    font-weight="800"
+                  >
+                    +2
+                  </text>
+
+                  <!-- t=2 -->
+                  <rect
+                    x="100"
+                    y="0"
+                    width="50"
+                    height="30"
+                    rx="4"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="150"
+                    y="0"
+                    width="50"
+                    height="30"
+                    rx="4"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="2"
+                  />
+                  <text
+                    x="125"
+                    y="20"
+                    text-anchor="middle"
+                    font-size="11"
+                    font-weight="700"
+                    fill="#115e59"
+                  >
+                    T1
+                  </text>
+                  <text
+                    x="175"
+                    y="20"
+                    text-anchor="middle"
+                    font-size="11"
+                    font-weight="700"
+                    fill="#115e59"
+                  >
+                    T2
+                  </text>
+                  <text
+                    x="150"
+                    y="52"
+                    text-anchor="middle"
+                    font-size="16"
+                    font-weight="900"
+                    fill="#23395d"
+                  >
+                    6
+                  </text>
+                  <text
+                    x="150"
+                    y="68"
+                    text-anchor="middle"
+                    font-size="9"
+                    fill="#5b6573"
+                  >
+                    seats
+                  </text>
+
+                  <text
+                    x="220"
+                    y="20"
+                    font-size="14"
+                    fill="#b7791f"
+                    font-weight="800"
+                  >
+                    +2
+                  </text>
+
+                  <!-- t=3 -->
+                  <rect
+                    x="250"
+                    y="0"
+                    width="40"
+                    height="30"
+                    rx="4"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="290"
+                    y="0"
+                    width="40"
+                    height="30"
+                    rx="4"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="330"
+                    y="0"
+                    width="40"
+                    height="30"
+                    rx="4"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="2"
+                  />
+                  <text
+                    x="350"
+                    y="52"
+                    text-anchor="middle"
+                    font-size="16"
+                    font-weight="900"
+                    fill="#23395d"
+                  >
+                    8
+                  </text>
+                  <text
+                    x="350"
+                    y="68"
+                    text-anchor="middle"
+                    font-size="9"
+                    fill="#5b6573"
+                  >
+                    seats
+                  </text>
+
+                  <text
+                    x="390"
+                    y="20"
+                    font-size="14"
+                    fill="#b7791f"
+                    font-weight="800"
+                  >
+                    +2
+                  </text>
+
+                  <!-- t=4 -->
+                  <rect
+                    x="420"
+                    y="0"
+                    width="25"
+                    height="30"
+                    rx="3"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="445"
+                    y="0"
+                    width="25"
+                    height="30"
+                    rx="3"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="470"
+                    y="0"
+                    width="25"
+                    height="30"
+                    rx="3"
+                    fill="#ecf8f6"
+                    stroke="#207a7a"
+                    stroke-width="1.5"
+                  />
+                  <!-- simplified 4th -->
+                  <text
+                    x="457"
+                    y="52"
+                    text-anchor="middle"
+                    font-size="16"
+                    font-weight="900"
+                    fill="#23395d"
+                  >
+                    10
+                  </text>
+                  <text
+                    x="457"
+                    y="68"
+                    text-anchor="middle"
+                    font-size="9"
+                    fill="#5b6573"
+                  >
+                    seats
+                  </text>
+                </g>
+
+                <!-- Rule derivation -->
+                <rect
+                  x="20"
+                  y="90"
+                  width="480"
+                  height="130"
+                  rx="8"
+                  fill="#fff"
+                  stroke="#d9e1e8"
+                />
+                <text
+                  x="260"
+                  y="112"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  Two Ways to See the Rule
+                </text>
+
+                <!-- Method 1 -->
+                <rect
+                  x="30"
+                  y="120"
+                  width="220"
+                  height="90"
+                  rx="6"
+                  fill="#ecf8f6"
+                />
+                <text
+                  x="140"
+                  y="140"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#115e59"
+                >
+                  Method 1: Constant Rate + Start
+                </text>
+                <text
+                  x="140"
+                  y="160"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#263242"
+                >
+                  Starts at 4, adds 2 each time
+                </text>
+                <text
+                  x="140"
+                  y="178"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#263242"
+                >
+                  s = 2t + 2
+                </text>
+                <text
+                  x="140"
+                  y="196"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  Check: 2(1)+2=4, 2(2)+2=6, 2(3)+2=8
+                </text>
+
+                <!-- Method 2 -->
+                <rect
+                  x="270"
+                  y="120"
+                  width="220"
+                  height="90"
+                  rx="6"
+                  fill="#fff6df"
+                />
+                <text
+                  x="380"
+                  y="140"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  Method 2: Think About Sides
+                </text>
+                <text
+                  x="380"
+                  y="160"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#263242"
+                >
+                  Each table adds 2 sides, plus 2 ends
+                </text>
+                <text
+                  x="380"
+                  y="178"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#263242"
+                >
+                  s = 2t + 2
+                </text>
+                <text
+                  x="380"
+                  y="196"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  2 seats per table + 2 end seats
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Draw the pattern.</strong> Sketch 1 table (4 seats), 2
+                tables (6 seats), 3 tables (8 seats), and 4 tables (? seats).
+                Count the seats each time.
+                <span class="guiding-q"
+                  >How many seats does the 4th configuration have? Did you
+                  predict correctly?</span
+                >
+              </li>
+              <li>
+                <strong>Make a table of values.</strong> Tables (t): 1, 2, 3, 4,
+                5. Seats (s): 4, 6, 8, 10, 12. Calculate the change between each
+                row.
+                <span class="guiding-q"
+                  >What is the constant change? Why does it stay the same?</span
+                >
+              </li>
+              <li>
+                <strong>Find the rule.</strong> The seats go up by 2 each time.
+                If t=1 gives s=4, then s = 2t + 2. Verify: 2(1)+2=4, 2(2)+2=6,
+                2(3)+2=8. It works!
+                <span class="guiding-q"
+                  >What does the 2 in "2t" represent physically? What does the
+                  "+2" represent?</span
+                >
+              </li>
+              <li>
+                <strong>Explain why the rule works.</strong> Each table adds 2
+                long sides for seating. The +2 comes from the 2 end seats (one
+                on each end of the row).
+                <span class="guiding-q"
+                  >If you pushed tables into a ring instead of a row, would the
+                  rule change?</span
+                >
+              </li>
+              <li>
+                <strong>Predict for 15 tables.</strong> s = 2(15) + 2 = 32
+                people. Is this enough for 30 parents? For 35?
+                <span class="guiding-q"
+                  >What is the minimum number of tables needed to seat 40 people
+                  in a row?</span
+                >
+              </li>
+            </ol>
+
+            <div class="language-box">
+              <h3>Language Support: Key Vocabulary</h3>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Pattern</strong>
+                  <div class="def">
+                    Something that repeats or changes in a regular way. Here:
+                    seats go up by 2.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Rule / Equation</strong>
+                  <div class="def">
+                    A math sentence that tells you how to find the output from
+                    the input. s = 2t + 2.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Variable</strong>
+                  <div class="def">
+                    A letter that stands for a number that can change. t =
+                    tables, s = seats.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Constant</strong>
+                  <div class="def">
+                    A number that stays the same. The +2 (end seats) is constant
+                    no matter how many tables.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Rate of Change</strong>
+                  <div class="def">
+                    How much the output changes for each unit of input. Here: +2
+                    seats per table.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Verify</strong>
+                  <div class="def">
+                    To check that your rule gives the correct answer for known
+                    values.
+                  </div>
+                </div>
+              </div>
+              <div class="sentence-frames">
+                <strong>Sentence Frames:</strong>
+                <p>
+                  "I see a pattern: every time we add 1 table, we add ___
+                  seats."
+                </p>
+                <p>
+                  "The rule is s = ___ because each table contributes ___ seats,
+                  plus ___ end seats."
+                </p>
+                <p>"For 15 tables, I predict ___ seats because ___."</p>
+              </div>
+            </div>
+
+            <h3>Multiple Representations</h3>
+            <div class="rep-tabs" role="tablist">
+              <button
+                class="rep-tab active"
+                role="tab"
+                data-target="rep1"
+                aria-selected="true"
+              >
+                Visual Pattern
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep2"
+                aria-selected="false"
+              >
+                Table + Rule
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep3"
+                aria-selected="false"
+              >
+                Graph
+              </button>
+            </div>
+            <div class="rep-content active" id="rep1">
+              <p>
+                The visual pattern shows that each table contributes its 2 long
+                sides for seating. When tables are pushed together, the touching
+                ends are "lost." Only the 2 far ends of the entire row keep
+                their seats. So: <strong>s = 2t + 2</strong> (2 seats per table
+                for the sides + 2 end seats).
+              </p>
+            </div>
+            <div class="rep-content" id="rep2">
+              <table
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 0.95rem;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--soft-blue)">
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Tables (t)
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Seats (s)
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Change
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Rule Check: 2t+2
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      1
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      4
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      --
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2(1)+2=4
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      6
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      +2
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2(2)+2=6
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      8
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      +2
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2(3)+2=8
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      4
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      10
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      +2
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2(4)+2=10
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      12
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      +2
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2(5)+2=12
+                    </td>
+                  </tr>
+                  <tr style="background: var(--soft-gold); font-weight: 700">
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      15
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      32
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      --
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2(15)+2=32
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="rep-content" id="rep3">
+              <p>
+                If you plot (t, s) on a coordinate graph — (1,4), (2,6), (3,8),
+                (4,10), (5,12) — the points form a straight line. The line has a
+                slope of 2 (goes up 2 for every 1 to the right) and crosses the
+                s-axis at 2 (the "+2" in the equation). At t=15, reading the
+                graph gives s=32.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div>
+          <section class="panel">
+            <h2>Team Roles</h2>
+            <div class="role-grid">
+              <div class="role-card">
+                <strong>Facilitator</strong>
+                <div class="task">
+                  Read the problem. Guide the team to draw the first 4
+                  configurations before jumping to the equation. Ask: "Why do we
+                  lose 2 seats each time we add a table?"
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Model Builder</strong>
+                <div class="task">
+                  Draw the table configurations for 1-5 tables. Show the seats
+                  as circles. Mark the "lost" seats with an X. Create the data
+                  table.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Precision Checker</strong>
+                <div class="task">
+                  Verify the rule s = 2t + 2 works for ALL known values (t=1
+                  through t=5). Check the final answer for t=15.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Reporter</strong>
+                <div class="task">
+                  Prepare to explain WHERE the rule comes from (not just WHAT it
+                  is). Connect the 2t to "2 sides per table" and the +2 to "end
+                  seats."
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Timed Lab Phases</h2>
+            <div class="timer-bar">
+              <div>
+                <strong id="activePhaseLabel">Ready</strong>
+                <div style="font-size: 0.9rem; color: var(--muted)">
+                  Click a phase, then press Start.
+                </div>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">
+                03:00
+              </div>
+            </div>
+            <div class="timer-buttons">
+              <button class="btn btn-primary" id="startTimer">Start</button>
+              <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+              <button class="btn btn-secondary" id="resetTimer">Reset</button>
+            </div>
+            <div style="margin-top: 14px">
+              <article class="phase-card open">
+                <button class="phase-header" data-phase="0" data-minutes="3">
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Read the scenario. Draw 1 table with 4 seats.</li>
+                    <li>Assign roles.</li>
+                    <li>
+                      Predict: how many seats for 4 tables? Write your guess.
+                    </li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does everyone understand WHY
+                      seats are lost when tables touch?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="1" data-minutes="6">
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Draw configurations for 1-5 tables.</li>
+                    <li>Count seats carefully. Build the data table.</li>
+                    <li>Find the constant change (+2).</li>
+                    <li>Write the equation s = 2t + 2.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does your equation pass the
+                      "check all known values" test?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="2" data-minutes="5">
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Calculate seats for 15 tables: s = 2(15) + 2 = 32.</li>
+                    <li>Answer: can 30 parents sit? What about 35?</li>
+                    <li>Find the minimum tables needed for 40 people.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can you explain WHY the rule
+                      works using the physical model?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="3" data-minutes="4">
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>
+                      Reporter: practice explaining the rule AND where it comes
+                      from.
+                    </li>
+                    <li>Team: answer the defense questions.</li>
+                    <li>Revise any weak explanations.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can you explain the +2
+                      without just saying "because the table shows it"?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Challenge</h2>
+            <div class="challenge-box">
+              <strong>Extension:</strong> What if the tables were hexagonal (6
+              sides) instead of rectangular? Each hexagonal table seats 6 alone.
+              Two hexagons pushed together seat 10 (losing 2 at the joint). Find
+              the new rule and predict seating for 15 hexagonal tables.
+            </div>
+            <div class="whatif">
+              <strong>What If...?</strong>
+              <ul>
+                <li>
+                  What if you arranged the rectangular tables in a square (like
+                  a banquet) instead of a row? How would the pattern change?
+                </li>
+                <li>
+                  What if each table seated 6 instead of 4? Write the new rule.
+                </li>
+              </ul>
+            </div>
+            <p>
+              <strong>Real-Life Connection:</strong> Event planners use exactly
+              this kind of thinking. When a wedding planner arranges long
+              banquet tables, they use rules like s = 2t + 2 to figure out how
+              many tables to rent. Understanding patterns saves time and money.
+            </p>
+          </section>
+
+          <section class="panel">
+            <h2>Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                How did you find the rule from the pattern?<span
+                  class="sentence-starter"
+                  >"We noticed the seats increase by ___ each time, so we tried
+                  s = ___t + ___. We checked it for ___."</span
+                >
+              </li>
+              <li>
+                What does each part of s = 2t + 2 represent in real life?<span
+                  class="sentence-starter"
+                  >"The 2t represents ___ and the +2 represents ___."</span
+                >
+              </li>
+              <li>
+                How do you know your rule works for values you did not
+                draw?<span class="sentence-starter"
+                  >"We verified the rule for t = 1 through 5, and the pattern is
+                  ___. Since the rate of change is constant, we trust it
+                  continues."</span
+                >
+              </li>
+              <li>
+                What is the minimum number of tables to seat 40 people?<span
+                  class="sentence-starter"
+                  >"We solved 40 = 2t + 2, which gives t = ___. So we need at
+                  least ___ tables."</span
+                >
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 12px;
+                padding: 12px;
+                background: var(--soft-green);
+                border-radius: 6px;
+              "
+            >
+              <strong>Rubric Quick-Check:</strong>
+              <ul style="margin: 6px 0 0; padding-left: 18px">
+                <li>Visual pattern drawn for at least 3 configurations</li>
+                <li>Data table with at least 5 rows</li>
+                <li>Rule written as an equation with variables defined</li>
+                <li>Rule verified against all known values</li>
+                <li>Prediction for t=15 stated and explained</li>
+                <li>Physical explanation of WHY the rule works</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Exit Product</h2>
+            <div class="exit-box">
+              <strong>Submit a one-page Lab Report that includes:</strong>
+              <ul class="checklist">
+                <li>
+                  Drawings of at least 3 table configurations with seats labeled
+                </li>
+                <li>A data table showing t and s values</li>
+                <li>
+                  The equation s = 2t + 2 with a sentence explaining each part
+                </li>
+                <li>The answer for 15 tables with verification</li>
+                <li>
+                  An explanation of WHERE the rule comes from (not just WHAT it
+                  is)
+                </li>
+              </ul>
+            </div>
+            <div style="margin-top: 12px">
+              <strong>Self-Assessment:</strong>
+              <ul class="checklist">
+                <li>I can see a pattern in a growing visual model</li>
+                <li>I can write a rule using variables from a pattern</li>
+                <li>I can verify my rule against known data</li>
+                <li>I can explain WHY the rule works, not just state it</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="print-only">
+        <h2>Work Space</h2>
+        <p><strong>Pattern Drawing:</strong></p>
+        <br /><br />
+        <p><strong>Table and Rule:</strong></p>
+        <br /><br />
+        <p><strong>Prediction and Defense:</strong></p>
+        <br /><br />
+      </section>
+
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-23/">&#8592; Mission 23</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-25/">Mission 25 &#8594;</a>
+      </nav>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        document.querySelectorAll(".rep-tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            document.querySelectorAll(".rep-tab").forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            document.querySelectorAll(".rep-content").forEach(function (c) {
+              c.classList.remove("active");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            var target = document.getElementById(tab.dataset.target);
+            if (target) target.classList.add("active");
+          });
+        });
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0,
+          remainingSeconds = phases[0].minutes * 60,
+          timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay"),
+          activePhaseLabel = document.getElementById("activePhaseLabel");
+        function formatTime(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+        document.querySelectorAll(".phase-header").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.phase);
+            activePhaseIndex = idx;
+            remainingSeconds = parseInt(btn.dataset.minutes) * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent = phases[idx].title + " phase";
+            document.querySelectorAll(".phase-card").forEach(function (c, i) {
+              if (i === idx) c.classList.add("open");
+              else c.classList.remove("open");
+            });
+            stopTimer();
+          });
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stopTimer();
+            remainingSeconds = phases[activePhaseIndex].minutes * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent =
+              phases[activePhaseIndex].title + " phase";
+          });
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

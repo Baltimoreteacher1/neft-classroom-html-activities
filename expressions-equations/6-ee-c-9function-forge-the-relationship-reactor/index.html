@@ -3,35 +3,761 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.EE.C.9 Function Forge The Relationship Reactor classroom activity.">
-  <title>6.EE.C.9 Function Forge The Relationship Reactor</title>
+  <meta name="description" content="Publisher-grade interactive mathematics game. Solve algebraic equations to stabilize the Relationship Reactor core.">
+  <title>6.EE.C.9 Function Forge · The Relationship Reactor</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    :root {
+      --dark-space: #0b0f19;
+      --panel-bg: rgba(17, 24, 39, 0.7);
+      --border-neon: #10b981;
+      --border-neon-dim: rgba(16, 185, 129, 0.2);
+      --glow-mint: #34d399;
+      --amber-alert: #f59e0b;
+      --red-alert: #ef4444;
+      --text-glow: #e6fcf5;
+      --font-outfit: 'Outfit', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-outfit);
+      background: radial-gradient(circle at center, #111827 0%, var(--dark-space) 100%);
+      color: var(--text-glow);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .reactor-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .hud-header {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-neon-dim);
+      border-radius: 16px;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #a7f3d0 0%, var(--glow-mint) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title p {
+      margin: 2px 0 0 0;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--glow-mint);
+      opacity: 0.8;
+    }
+
+    .hud-metrics {
+      display: flex;
+      gap: 20px;
+    }
+
+    .metric-box {
+      border-left: 2px solid var(--border-neon);
+      padding-left: 12px;
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--glow-mint);
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+    }
+
+    .metric-lbl {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: var(--glow-mint);
+      opacity: 0.65;
+      letter-spacing: 0.04em;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .control-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-neon-dim);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+    }
+
+    .panel-heading {
+      border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+      padding-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-neon);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--glow-mint);
+    }
+
+    .status-badge.alert {
+      border-color: var(--amber-alert);
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--amber-alert);
+    }
+
+    .status-badge.danger {
+      border-color: var(--red-alert);
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--red-alert);
+    }
+
+    /* Core display */
+    .core-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .core-viewport {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-neon-dim);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reactor-core-svg {
+      transition: transform 0.5s ease;
+    }
+
+    .health-bar-container {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-neon-dim);
+      border-radius: 999px;
+      height: 16px;
+      margin-top: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .health-fill {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, var(--border-neon) 0%, var(--glow-mint) 100%);
+      transition: width 0.4s ease, background 0.4s;
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
+    }
+
+    /* Math Table */
+    .data-table-wrap {
+      width: 100%;
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    th {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--glow-mint);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 10px;
+      border-bottom: 2px solid rgba(16, 185, 129, 0.2);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Interactive keyboard input */
+    .formula-builder {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .formula-display {
+      background: #04060b;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.05em;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    .formula-display.active-blink::after {
+      content: "_";
+      animation: blink 0.8s infinite;
+      color: var(--glow-mint);
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .keyboard-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .key {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-glow);
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .key:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--border-neon);
+      transform: translateY(-1px);
+    }
+
+    .key:active {
+      transform: translateY(1px);
+    }
+
+    .key.operand {
+      color: var(--glow-mint);
+      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .key.control-key {
+      grid-column: span 2;
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      font-family: var(--font-outfit);
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .key.control-key:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: var(--red-alert);
+    }
+
+    .btn-submit {
+      width: 100%;
+      border: none;
+      background: linear-gradient(135deg, var(--border-neon) 0%, var(--glow-mint) 100%);
+      color: var(--dark-space);
+      font-family: var(--font-outfit);
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 16px rgba(52, 211, 153, 0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(52, 211, 153, 0.4);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+    }
+
+    .coach-feedback {
+      background: rgba(16, 185, 129, 0.04);
+      border: 1px solid var(--border-neon-dim);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      min-height: 60px;
+    }
+
+    .coach-feedback.error {
+      border-color: var(--red-alert);
+      background: rgba(239, 68, 68, 0.04);
+      color: #fca5a5;
+    }
+
+    /* Diagnostics panel */
+    .diag-panel {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background: rgba(5, 7, 12, 0.95);
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      color: #64748b;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions, Equations, and Variables</a><span>/</span><span>6.EE.C.9 Function Forge The Relationship Reactor</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.EE.C.9 Function Forge The Relationship Reactor</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <main class="reactor-shell">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions &amp; Equations</a><span>/</span><span>Relationship Reactor</span>
+    </nav>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.EE.C.9Function-Forge-The-Relationship-Reactor</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/expressions-equations/6-ee-c-9function-forge-the-relationship-reactor/</span></p>
+    <header class="hud-header">
+      <div class="brand-title">
+        <h1>☢️ The Relationship Reactor</h1>
+        <p>Dynamic Core Formula Stabilizer · Level 1 &amp; 2</p>
       </div>
-    </section>
+      <div class="hud-metrics">
+        <div class="metric-box">
+          <div class="metric-val" id="scoreVal">0</div>
+          <div class="metric-lbl">Score</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val" id="levelVal">1</div>
+          <div class="metric-lbl">Reactor Tier</div>
+        </div>
+      </div>
+    </header>
 
-    <div class="button-row">
-      <a class="primary-button" href="/expressions-equations/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+    <div class="main-grid">
+      <!-- Controls -->
+      <section class="control-panel">
+        <div class="panel-heading">
+          <h2>📊 Core Mathematical Signals</h2>
+          <span class="status-badge" id="reactorStatus">Stabilizing</span>
+        </div>
+
+        <p style="margin:0 0 10px 0; font-size: 0.92rem; color: #a1a1aa; line-height: 1.5;">
+          Deduce the equation expressing the relationship between the independent variable (<strong>x</strong>) and the dependent variable (<strong>y</strong>). Lock it in before the energy field collapses!
+        </p>
+
+        <div class="data-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Independent (x)</th>
+                <th>Dependent (y)</th>
+              </tr>
+            </thead>
+            <tbody id="signalTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="formula-builder">
+          <label style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--glow-mint); letter-spacing:0.04em;">Input Formula</label>
+          <div class="formula-display active-blink" id="inputDisplay">y = </div>
+          
+          <div class="keyboard-grid">
+            <button class="key operand" data-val="y">y</button>
+            <button class="key operand" data-val="=">=</button>
+            <button class="key operand" data-val="x">x</button>
+            <button class="key operand" data-val="+">+</button>
+            <button class="key operand" data-val="-">-</button>
+            <button class="key operand" data-val="*">*</button>
+
+            <button class="key" data-val="1">1</button>
+            <button class="key" data-val="2">2</button>
+            <button class="key" data-val="3">3</button>
+            <button class="key" data-val="4">4</button>
+            <button class="key" data-val="5">5</button>
+            <button class="key operand" data-val="/">/</button>
+
+            <button class="key" data-val="6">6</button>
+            <button class="key" data-val="7">7</button>
+            <button class="key" data-val="8">8</button>
+            <button class="key" data-val="9">9</button>
+            <button class="key" data-val="0">0</button>
+            <button class="key operand" data-val=".">.</button>
+
+            <button class="key control-key" id="clearBtn">Clear</button>
+            <button class="key control-key" id="backspaceBtn">Bksp</button>
+            <button class="key operand" data-val="(">(</button>
+            <button class="key operand" data-val=")">)</button>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="submitBtn">Synchronize Core Formula</button>
+      </section>
+
+      <!-- Reactor View -->
+      <div class="core-column">
+        <section class="core-viewport">
+          <!-- Premium Programmatic SVG Reactor Core -->
+          <svg class="reactor-core-svg" id="coreSvg" width="160" height="160" viewBox="0 0 160 160" style="background:transparent;">
+            <circle cx="80" cy="80" r="70" fill="none" stroke="#10b981" stroke-width="1" stroke-dasharray="4,6" />
+            <circle cx="80" cy="80" r="50" fill="none" stroke="#10b981" stroke-width="2" />
+            <!-- Glowing Orbiting Rings -->
+            <ellipse cx="80" cy="80" rx="42" ry="12" fill="none" stroke="#34d399" stroke-width="3" transform="rotate(30 80 80)">
+              <animateTransform attributeName="transform" type="rotate" values="30 80 80; 390 80 80" dur="8s" repeatCount="indefinite" />
+            </ellipse>
+            <ellipse cx="80" cy="80" rx="42" ry="12" fill="none" stroke="#34d399" stroke-width="3" transform="rotate(150 80 80)">
+              <animateTransform attributeName="transform" type="rotate" values="150 80 80; -210 80 80" dur="8s" repeatCount="indefinite" />
+            </ellipse>
+            <ellipse cx="80" cy="80" rx="42" ry="12" fill="none" stroke="#34d399" stroke-width="3" transform="rotate(90 80 80)">
+              <animateTransform attributeName="transform" type="rotate" values="90 80 80; 450 80 80" dur="12s" repeatCount="indefinite" />
+            </ellipse>
+            <!-- Heavy Center Mass -->
+            <circle cx="80" cy="80" r="16" fill="#0b0f19" stroke="#10b981" stroke-width="4" />
+            <circle cx="80" cy="80" r="6" fill="#34d399">
+              <animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite" />
+            </circle>
+          </svg>
+
+          <div class="health-bar-container">
+            <div class="health-fill" id="healthFill"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; width:100%; margin-top:8px; font-family:var(--font-mono); font-size:0.75rem; color:var(--glow-mint);">
+            <span>0% CRITICAL</span>
+            <span id="healthPct">50%</span>
+            <span>100% MAXIMUM</span>
+          </div>
+        </section>
+
+        <section class="coach-feedback" id="feedbackBox">
+          🤖 <strong>Systems Diagnostic:</strong> Awaiting Core Equation synchronization. Review the signal table, build your equation using variables x and y, and click Synchronize!
+        </section>
+
+        <div class="diag-panel">
+          <div>// CONSOLE DIAGNOSTIC READOUT</div>
+          <div id="diagText">> System listening. Level 1 algorithm active.</div>
+        </div>
+
+        <div class="button-row" style="margin-top:auto;">
+          <a class="primary-button" href="/expressions-equations/">Back to collection</a>
+          <a class="secondary-button" href="/">Back to homepage</a>
+        </div>
+      </div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
   </main>
+
   <script src="/assets/app.js" defer></script>
+  <script>
+    // Web Audio Synthesizer for Retro Game Tones
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq, type, duration) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // Formulas Registry
+    const database = {
+      level1: [
+        { desc: "Multiplicative scaling Rule", points: [[1, 3], [2, 6], [3, 9], [4, 12]], rule: "y=3*x", eval: (x) => 3*x, hints: "y is always three times greater than x." },
+        { desc: "Additive translation Rule", points: [[0, 5], [2, 7], [5, 10], [10, 15]], rule: "y=x+5", eval: (x) => x+5, hints: "y is always 5 more than x." },
+        { desc: "Doubling multiplicative Rule", points: [[1, 2], [3, 6], [5, 10], [10, 20]], rule: "y=2*x", eval: (x) => 2*x, hints: "y is double the value of x." },
+        { desc: "Additive offset Rule", points: [[1, 9], [2, 10], [5, 13], [9, 17]], rule: "y=x+8", eval: (x) => x+8, hints: "Every y value is exactly 8 units larger than x." },
+        { desc: "Rational scale Rule", points: [[2, 1], [4, 2], [6, 3], [10, 5]], rule: "y=x/2", eval: (x) => x/2, hints: "y is always half of x." }
+      ],
+      level2: [
+        { desc: "Conveyor Two-Step Rule", points: [[1, 6], [2, 11], [3, 16], [5, 26]], rule: "y=5*x+1", eval: (x) => 5*x+1, hints: "Try multiplying x by 5, then adding 1." },
+        { desc: "Two-Step additive offset", points: [[1, 5], [2, 7], [3, 9], [4, 11]], rule: "y=2*x+3", eval: (x) => 2*x+3, hints: "Multiply x by 2, then add 3." },
+        { desc: "Complex linear equation", points: [[1, 2], [2, 5], [3, 8], [5, 14]], rule: "y=3*x-1", eval: (x) => 3*x-1, hints: "Triple x, then subtract 1." },
+        { desc: "Two-step fractional rule", points: [[2, 5], [4, 6], [6, 7], [10, 9]], rule: "y=x/2+4", eval: (x) => x/2+4, hints: "Divide x by 2, then add 4." }
+      ]
+    };
+
+    let activeLevel = 1;
+    let score = 0;
+    let health = 50; // starts stable at 50%
+    let activeScenario = null;
+    let inputFormula = "y = ";
+
+    // Select components
+    const tableBody = document.getElementById("signalTableBody");
+    const inputDisplay = document.getElementById("inputDisplay");
+    const feedbackBox = document.getElementById("feedbackBox");
+    const scoreVal = document.getElementById("scoreVal");
+    const levelVal = document.getElementById("levelVal");
+    const healthFill = document.getElementById("healthFill");
+    const healthPct = document.getElementById("healthPct");
+    const diagText = document.getElementById("diagText");
+    const reactorStatus = document.getElementById("reactorStatus");
+    const coreSvg = document.getElementById("coreSvg");
+
+    function loadScenario() {
+      const pool = activeLevel === 1 ? database.level1 : database.level2;
+      const index = Math.floor(Math.random() * pool.length);
+      activeScenario = pool[index];
+      
+      // Populate Math Signal Table
+      tableBody.innerHTML = "";
+      activeScenario.points.forEach(([x, y]) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${x}</td><td>${y}</td>`;
+        tableBody.appendChild(tr);
+      });
+
+      // Clear input
+      inputFormula = "y = ";
+      inputDisplay.textContent = inputFormula;
+      inputDisplay.className = "formula-display active-blink";
+      
+      feedbackBox.className = "coach-feedback";
+      feedbackBox.innerHTML = `🤖 <strong>System Alert:</strong> New signals detected! Level ${activeLevel} matrix generated. Analyze the grid and Forge the Core Formula.`;
+      
+      diagText.textContent = `> Generated scenarios: "${activeScenario.desc}"\n> Awaiting formula synchronization...\n> Rule parameters: x -> [${activeScenario.points.map(p => p[0]).join(', ')}]`;
+    }
+
+    // Custom Keyboard Inputs
+    document.querySelectorAll(".key[data-val]").forEach(key => {
+      key.addEventListener("click", () => {
+        const val = key.getAttribute("data-val");
+        // Maintain initial "y = " structure for basic safety
+        if (inputFormula === "y = " && (val === "y" || val === "=")) return;
+        inputFormula += val;
+        inputDisplay.textContent = inputFormula;
+        beep(523.25, 'sine', 0.08); // high beep
+      });
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      inputFormula = "y = ";
+      inputDisplay.textContent = inputFormula;
+      beep(293.66, 'sawtooth', 0.1);
+    });
+
+    document.getElementById("backspaceBtn").addEventListener("click", () => {
+      if (inputFormula.length > 4) {
+        inputFormula = inputFormula.slice(0, -1);
+        inputDisplay.textContent = inputFormula;
+        beep(349.23, 'triangle', 0.08);
+      }
+    });
+
+    // Sanitization & Safe Evaluator
+    function cleanMathExpression(expr) {
+      // Remove whitespace
+      let s = expr.replace(/\s+/g, "");
+      // Split y=
+      const parts = s.split("=");
+      if (parts.length !== 2) return null;
+      let body = parts[1];
+      // Safely replace implied multiplication like "3x" to "3*x"
+      body = body.replace(/(\d+)(x)/g, "$1*$2");
+      return body;
+    }
+
+    function checkAnswer() {
+      const cleanExpr = cleanMathExpression(inputFormula);
+      if (!cleanExpr) {
+        feedbackBox.className = "coach-feedback error";
+        feedbackBox.innerHTML = `⚠️ <strong>Error:</strong> Formula format invalid. Ensure your formula starts with <strong>y =</strong> and expresses a rule in terms of x.`;
+        beep(150, 'sawtooth', 0.3);
+        return;
+      }
+
+      // Assert calculations on scenario points
+      let correct = true;
+      try {
+        // Create mathematical verification function safely
+        const evalFunc = new Function("x", `return ${cleanExpr.replace(/[^0-9x+\-*/().]/g, '')};`);
+        
+        for (const [x, y] of activeScenario.points) {
+          if (Math.abs(evalFunc(x) - y) > 0.001) {
+            correct = false;
+            break;
+          }
+        }
+      } catch (err) {
+        correct = false;
+      }
+
+      if (correct) {
+        // SUCCESS
+        score += 10 * activeLevel;
+        health = Math.min(100, health + 25);
+        scoreVal.textContent = score;
+        feedbackBox.className = "coach-feedback";
+        feedbackBox.innerHTML = `🎉 <strong>Core Stabilized!</strong> Equation successfully synchronized. Core energy is rising!`;
+        beep(880, 'sine', 0.25);
+        setTimeout(() => beep(1320, 'sine', 0.3), 150);
+        
+        // Progress Tiers
+        if (score >= 30 && activeLevel === 1) {
+          activeLevel = 2;
+          levelVal.textContent = activeLevel;
+          diagText.textContent += `\n> Tier upgrade! Level 2 algorithms authorized!`;
+        }
+
+        updateHUD();
+        setTimeout(loadScenario, 1500);
+      } else {
+        // FAIL
+        health = Math.max(0, health - 25);
+        feedbackBox.className = "coach-feedback error";
+        feedbackBox.innerHTML = `❌ <strong>Desynchronized!</strong> The input equation does not align with the signal coordinates. Hint: ${activeScenario.hints}`;
+        beep(180, 'sawtooth', 0.45);
+        updateHUD();
+      }
+    }
+
+    function updateHUD() {
+      // Health state visualization
+      healthPct.textContent = `${health}%`;
+      healthFill.style.width = `${health}%`;
+
+      if (health >= 75) {
+        healthFill.style.background = "linear-gradient(90deg, #10b981 0%, #34d399 100%)";
+        reactorStatus.textContent = "STABLE";
+        reactorStatus.className = "status-badge";
+        coreSvg.style.animation = "spin 1.5s linear infinite";
+      } else if (health >= 35) {
+        healthFill.style.background = "linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)";
+        reactorStatus.textContent = "WARNING";
+        reactorStatus.className = "status-badge alert";
+        coreSvg.style.animation = "spin 4s linear infinite";
+      } else {
+        healthFill.style.background = "linear-gradient(90deg, #ef4444 0%, #f87171 100%)";
+        reactorStatus.textContent = "CRITICAL COLLAPSE";
+        reactorStatus.className = "status-badge danger";
+        coreSvg.style.animation = "spin 8s linear infinite";
+      }
+
+      if (health <= 0) {
+        alert("Reactor Meltdown! Score system reset.");
+        score = 0;
+        activeLevel = 1;
+        health = 50;
+        scoreVal.textContent = score;
+        levelVal.textContent = activeLevel;
+        updateHUD();
+        loadScenario();
+      }
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", checkAnswer);
+
+    // Initial Load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadScenario();
+      updateHUD();
+    });
+  </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

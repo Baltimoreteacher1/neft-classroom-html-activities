@@ -598,7 +598,12 @@ table input[type="text"] { padding: 7px 9px; font-size: 13.5px }
   .chart { min-height: auto }
   input, textarea, select { border: 1px solid #999 }
 }
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="app">
@@ -1194,5 +1199,9 @@ window.addEventListener('beforeprint', beforePrintAll);
 window.addEventListener('afterprint', afterPrintRestore);
 window.addEventListener('DOMContentLoaded', init);
 </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

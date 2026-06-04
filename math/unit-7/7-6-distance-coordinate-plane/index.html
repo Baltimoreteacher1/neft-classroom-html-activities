@@ -1,0 +1,2276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lesson 7-6: Determine Distance on the Coordinate Plane</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .header h1 {
+        font-size: clamp(22px, 4vw, 30px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .header p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0;
+        max-width: 600px;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      /* Level Toggle */
+      .level-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--card);
+        color: var(--navy);
+        box-shadow: 0 1px 4px rgba(15, 43, 60, 0.12);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--navy);
+      }
+      .level-desc {
+        font-size: 13px;
+        color: var(--faint);
+        margin-left: auto;
+      }
+      .progress-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .progress-track {
+        height: 4px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--teal), var(--blue));
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+
+      /* Main Content */
+      .main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 20px 24px 80px;
+      }
+
+      /* Section Headers */
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 32px 0 16px;
+      }
+      .section-header:first-child {
+        margin-top: 8px;
+      }
+      .section-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .section-icon.warmup {
+        background: var(--gold);
+      }
+      .section-icon.practice {
+        background: var(--blue);
+      }
+      .section-icon.challenge {
+        background: var(--coral);
+      }
+      .section-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0;
+      }
+      .section-header .count {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+
+      /* Question Card */
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: border-color 0.2s;
+      }
+      .q-card.correct {
+        border-color: var(--green);
+      }
+      .q-card.incorrect {
+        border-color: var(--coral);
+      }
+      .q-card.correct .q-status {
+        display: flex;
+      }
+      .q-card.incorrect .q-status-wrong {
+        display: flex;
+      }
+      .q-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.45;
+      }
+      .q-prompt .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+      }
+
+      /* Scaffold (Level 1 only) */
+      .scaffold {
+        background: var(--teal-light);
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #1a5c54;
+        line-height: 1.45;
+        display: none;
+      }
+      .scaffold strong {
+        color: var(--teal);
+      }
+      .scaffold .vocab {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 700;
+        margin: 2px;
+      }
+      body.level-1 .scaffold {
+        display: block;
+      }
+
+      /* Multiple Choice */
+      .mc-options {
+        display: grid;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .mc-btn:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn .letter {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: var(--line);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mc-btn:hover .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn.selected .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .mc-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Fill-in */
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fill-input {
+        width: 100px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .fill-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.12);
+      }
+      .fill-input.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .fill-input.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .fill-text {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      /* True/False & Yes/No */
+      .tf-options {
+        display: flex;
+        gap: 8px;
+      }
+      .tf-btn {
+        flex: 1;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .tf-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .tf-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .tf-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .tf-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+      .tf-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Check Button */
+      .check-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .check-btn:hover {
+        background: #155fa0;
+        transform: translateY(-1px);
+      }
+      .check-btn:active {
+        transform: scale(0.98);
+      }
+      .check-btn:disabled {
+        background: var(--line);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+      }
+
+      /* Feedback */
+      .q-status,
+      .q-status-wrong {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .q-status {
+        background: var(--green-light);
+        color: #1a5c36;
+        border: 1px solid rgba(45, 135, 75, 0.15);
+      }
+      .q-status-wrong {
+        background: var(--coral-light);
+        color: #8a3322;
+        border: 1px solid rgba(196, 90, 60, 0.15);
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* Explain (Level 2 only) */
+      .explain-section {
+        display: none;
+        margin-top: 12px;
+      }
+      body.level-2 .explain-section {
+        display: block;
+      }
+      .explain-prompt {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .explain-input {
+        width: 100%;
+        min-height: 60px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.4;
+      }
+      .explain-input:focus {
+        border-color: var(--blue);
+      }
+
+      /* Sentence frame (Level 1) */
+      .sentence-frame {
+        display: none;
+      }
+      body.level-1 .sentence-frame {
+        display: block;
+      }
+      .sentence-frame p {
+        font-size: 13px;
+        color: var(--teal);
+        font-weight: 600;
+        margin: 6px 0 0;
+        font-style: italic;
+      }
+
+      /* Drag & Drop */
+      .drag-zone {
+        min-height: 52px;
+        border: 2px dashed var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        transition: border-color 0.15s;
+        background: var(--bg);
+      }
+      .drag-zone.over {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .drag-zone.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        border-style: solid;
+      }
+      .drag-zone.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        border-style: solid;
+      }
+      .drag-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: grab;
+        user-select: none;
+        transition: all 0.15s;
+        color: var(--ink);
+      }
+      .drag-item:active {
+        cursor: grabbing;
+        opacity: 0.7;
+      }
+      .drag-item.placed {
+        background: var(--blue-light);
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .drag-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .drop-grid {
+        display: grid;
+        gap: 10px;
+      }
+      .drop-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+      .drop-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      /* Coordinate Grid SVG */
+      .grid-wrap {
+        margin: 14px 0;
+        text-align: center;
+      }
+      .grid-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Score Footer */
+      .score-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        padding: 10px 24px;
+      }
+      .score-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .score-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-text span {
+        color: var(--teal);
+      }
+      .reset-btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .reset-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .header {
+          padding: 20px 16px 16px;
+        }
+        .level-bar {
+          padding: 12px 16px;
+        }
+        .main {
+          padding: 16px 16px 80px;
+        }
+        .q-card {
+          padding: 16px;
+        }
+        .drop-row {
+          grid-template-columns: 1fr;
+        }
+        .level-desc {
+          display: none;
+        }
+      }
+
+      /* Print */
+      @media print {
+        .score-bar,
+        .level-bar,
+        .progress-bar {
+          display: none;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="level-1">
+<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+<style>
+#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
+#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
+.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
+@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
+.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
+.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
+.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
+.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
+.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
+.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
+.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
+.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
+.vso-dot.active{background:#6366F1;transform:scale(1.25)}
+.vso-dot.seen{background:#A5B4FC}
+
+      /* ===== Level 0 (most-supported tier) ===== */
+      .level0-support { display:none; }
+      body.level-0 .level0-support {
+        display:block; max-width:860px; margin:14px auto 0; padding:14px 16px;
+        background:#fff7ed; border:1px solid #fdba74; border-radius:12px;
+        font-size:14px; color:#7c2d12; line-height:1.5;
+      }
+      body.level-0 .level0-support h3 { margin:0 0 8px; font-size:15px; color:#9a3412; }
+      body.level-0 .level0-support ul { margin:6px 0 0; padding-left:20px; }
+      body.level-0 .level0-support .l0-frames { margin-top:8px; font-style:italic; }
+      .read-aloud-btn {
+        border:1px solid #fdba74; background:#fff; color:#9a3412; border-radius:8px;
+        padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; margin-left:8px;
+      }
+      .read-aloud-btn:hover { background:#ffedd5; }
+      body:not(.level-0) .read-aloud-btn { display:none; }
+      body.level-0 [class*="hint"] { display:block !important; }
+      body.level-0.reading p, body.level-0.reading li, body.level-0.reading label { cursor:help; }
+
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<div id="vocabSlideshowOverlay">
+<div class="vso-card">
+  <div class="vso-progress" id="vsoProgress">Word 1 of 5</div>
+  <div class="vso-svg-wrap" id="vsoSvg"></div>
+  <div class="vso-word" id="vsoWord"></div>
+  <div class="vso-def" id="vsoDef"></div>
+  <div class="vso-nav">
+    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
+    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
+    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
+  </div>
+  <div class="vso-dots" id="vsoDots"></div>
+</div>
+</div>
+<script>
+(function(){
+const VSO_ITEMS=[
+  {word: 'Distance', def: 'How far apart two points are.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#D1D5DB" stroke-width="2"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#D1D5DB" stroke-width="2"/>   <circle cx="90" cy="100" r="8" fill="#DC2626"/><text x="70" y="95" font-size="14" font-weight="700" fill="#DC2626" font-family="sans-serif">A</text>   <circle cx="220" cy="200" r="8" fill="#3B82F6"/><text x="235" y="200" font-size="14" font-weight="700" fill="#3B82F6" font-family="sans-serif">B</text>   <line x1="90" y1="100" x2="220" y2="200" stroke="#F59E0B" stroke-width="3" stroke-dasharray="8,4"/>   <text x="155" y="135" text-anchor="middle" font-size="18" font-weight="800" fill="#F59E0B" font-family="sans-serif">distance</text> </svg>'},
+  {word: 'Absolute Value', def: 'The distance from zero. Used to find distance between points.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="180" x2="270" y2="180" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="180" r="6" fill="#059669"/>   <text x="150" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="80" cy="180" r="10" fill="#DC2626"/>   <text x="80" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-5</text>   <path d="M80,165 L150,165" stroke="#6366F1" stroke-width="4"/>   <text x="115" y="155" text-anchor="middle" font-size="18" font-weight="800" fill="#6366F1" font-family="sans-serif">5 units</text>   <text x="150" y="90" text-anchor="middle" font-size="36" font-weight="900" fill="#6366F1" font-family="sans-serif">|-5| = 5</text> </svg>'},
+  {word: 'Coordinate Plane', def: 'A grid made by two crossing number lines.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrCP)"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#1E293B" stroke-width="3" marker-end="url(#arrCP)"/>   <defs><marker id="arrCP" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <text x="260" y="170" font-size="16" font-weight="800" fill="#1E293B" font-family="sans-serif">x</text>   <text x="160" y="42" font-size="16" font-weight="800" fill="#1E293B" font-family="sans-serif">y</text>   <circle cx="210" cy="90" r="8" fill="#DC2626"/>   <text x="225" y="88" font-size="14" font-weight="700" fill="#DC2626" font-family="sans-serif">(2,3)</text> </svg>'},
+  {word: 'Horizontal Distance', def: 'How far apart two points are left to right.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#D1D5DB" stroke-width="2"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#D1D5DB" stroke-width="2"/>   <circle cx="90" cy="100" r="8" fill="#DC2626"/><text x="70" y="95" font-size="14" font-weight="700" fill="#DC2626" font-family="sans-serif">A</text>   <circle cx="220" cy="200" r="8" fill="#3B82F6"/><text x="235" y="200" font-size="14" font-weight="700" fill="#3B82F6" font-family="sans-serif">B</text>   <line x1="90" y1="100" x2="220" y2="200" stroke="#F59E0B" stroke-width="3" stroke-dasharray="8,4"/>   <text x="155" y="135" text-anchor="middle" font-size="18" font-weight="800" fill="#F59E0B" font-family="sans-serif">distance</text> </svg>'},
+  {word: 'Vertical Distance', def: 'How far apart two points are up and down.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#D1D5DB" stroke-width="2"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#D1D5DB" stroke-width="2"/>   <circle cx="90" cy="100" r="8" fill="#DC2626"/><text x="70" y="95" font-size="14" font-weight="700" fill="#DC2626" font-family="sans-serif">A</text>   <circle cx="220" cy="200" r="8" fill="#3B82F6"/><text x="235" y="200" font-size="14" font-weight="700" fill="#3B82F6" font-family="sans-serif">B</text>   <line x1="90" y1="100" x2="220" y2="200" stroke="#F59E0B" stroke-width="3" stroke-dasharray="8,4"/>   <text x="155" y="135" text-anchor="middle" font-size="18" font-weight="800" fill="#F59E0B" font-family="sans-serif">distance</text> </svg>'}
+];
+let vsoIdx=0,vsoSeen=new Set();
+function vsoRender(){
+  const it=VSO_ITEMS[vsoIdx];
+  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
+  document.getElementById('vsoWord').textContent=it.word;
+  document.getElementById('vsoDef').textContent=it.def;
+  document.getElementById('vsoSvg').innerHTML=it.svg;
+  vsoSeen.add(vsoIdx);
+  document.getElementById('vsoPrev').disabled=vsoIdx===0;
+  const isLast=vsoIdx===VSO_ITEMS.length-1;
+  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
+  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
+  const dots=document.getElementById('vsoDots');
+  dots.innerHTML='';
+  VSO_ITEMS.forEach(function(_,i){
+    const d=document.createElement('span');
+    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
+    d.onclick=function(){vsoIdx=i;vsoRender();};
+    dots.appendChild(d);
+  });
+}
+window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
+window.vsoClose=function(){
+  const el=document.getElementById('vocabSlideshowOverlay');
+  el.classList.add('vso-hidden');
+  setTimeout(function(){el.remove();},600);
+};
+vsoRender();
+})();
+</script>
+<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+
+
+    <header class="header">
+      <div class="header-inner">
+        <h1>Determine Distance on the Coordinate Plane</h1>
+        <p>
+          Find horizontal and vertical distances between points on the
+          coordinate plane using absolute value.
+        </p>
+        <span class="standard-badge">6.NS.C.8 · The Number System</span>
+      </div>
+    </header>
+
+    <div class="level-bar">
+      <span class="level-label">Level</span>
+      <div class="level-toggle">
+        <button class="level-btn" data-level="0">Level 0</button>
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+        <button id="readAloudBtn" class="read-aloud-btn" type="button">🔊 Read aloud</button>
+      </div>
+      <span class="level-desc" id="levelDesc"
+        >Guided practice with vocabulary support</span
+      >
+    </div>
+
+    
+      <div class="level0-support" role="note" aria-label="Level 0 extra support">
+        <h3>🟠 Level 0 — Extra Support</h3>
+        <ul>
+          <li><strong>Watch first:</strong> the worked example and hints are already shown for you.</li>
+          <li><strong>One at a time:</strong> answer one question, check it, then go on.</li>
+          <li><strong>Read aloud:</strong> press 🔊 Read aloud, then click any sentence to hear it.</li>
+        </ul>
+        <div class="l0-frames"><strong>Sentence starters:</strong> “First, I…” · “The answer is… because…” · “I know this because…”</div>
+      </div>
+
+    <div class="progress-bar">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- WARM-UP -->
+      <div class="section-header">
+        <div class="section-icon warmup">W</div>
+        <h2>Warm-Up</h2>
+        <span class="count">2 questions</span>
+      </div>
+
+      <!-- W1: MC -->
+      <article class="q-card" data-q="w1">
+        <div class="q-num">Warm-Up 1</div>
+        <div class="q-prompt">
+          What is the distance between the points <strong>(2, 3)</strong> and
+          <strong>(2, &minus;4)</strong> on the coordinate plane?
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong>
+          <span class="vocab">distance</span> is how far apart two points are
+          (always positive). When two points share the same x-coordinate, find
+          the distance by subtracting the y-coordinates and taking the
+          <span class="vocab">absolute value</span>.<br />
+          <strong>Formula reference:</strong> |3 &minus; (&minus;4)| = |3 + 4| =
+          7
+        </div>
+        <div class="grid-wrap">
+          <svg
+            viewBox="-60 -60 320 280"
+            width="320"
+            height="280"
+            aria-label="Coordinate grid showing points (2, 3) and (2, -4)"
+          >
+            <!-- grid lines -->
+            <g stroke="#e2e7ec" stroke-width="1">
+              <line x1="0" y1="-50" x2="0" y2="220" />
+              <line x1="40" y1="-50" x2="40" y2="220" />
+              <line x1="80" y1="-50" x2="80" y2="220" />
+              <line x1="120" y1="-50" x2="120" y2="220" />
+              <line x1="160" y1="-50" x2="160" y2="220" />
+              <line x1="200" y1="-50" x2="200" y2="220" />
+              <line x1="240" y1="-50" x2="240" y2="220" />
+              <line x1="-50" y1="0" x2="250" y2="0" />
+              <line x1="-50" y1="40" x2="250" y2="40" />
+              <line x1="-50" y1="80" x2="250" y2="80" />
+              <line x1="-50" y1="120" x2="250" y2="120" />
+              <line x1="-50" y1="160" x2="250" y2="160" />
+              <line x1="-50" y1="200" x2="250" y2="200" />
+            </g>
+            <!-- axes -->
+            <line
+              x1="-50"
+              y1="120"
+              x2="250"
+              y2="120"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <line
+              x1="80"
+              y1="-50"
+              x2="80"
+              y2="220"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <!-- axis labels -->
+            <text
+              x="244"
+              y="135"
+              font-size="12"
+              fill="#5e6e7e"
+              font-weight="700"
+            >
+              x
+            </text>
+            <text
+              x="86"
+              y="-40"
+              font-size="12"
+              fill="#5e6e7e"
+              font-weight="700"
+            >
+              y
+            </text>
+            <!-- tick labels x: origin at (80,120), 1 unit = 40px -->
+            <text
+              x="117"
+              y="135"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              1
+            </text>
+            <text
+              x="157"
+              y="135"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              2
+            </text>
+            <text
+              x="197"
+              y="135"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              3
+            </text>
+            <text
+              x="37"
+              y="135"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -1
+            </text>
+            <!-- tick labels y -->
+            <text x="72" y="84" font-size="10" fill="#8a97a5" text-anchor="end">
+              1
+            </text>
+            <text x="72" y="44" font-size="10" fill="#8a97a5" text-anchor="end">
+              2
+            </text>
+            <text x="72" y="4" font-size="10" fill="#8a97a5" text-anchor="end">
+              3
+            </text>
+            <text
+              x="72"
+              y="164"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              -1
+            </text>
+            <text
+              x="72"
+              y="204"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              -2
+            </text>
+            <!-- points: (2,3) => x=80+2*40=160, y=120-3*40=0; (2,-4) => x=160, y=120+4*40=280 but clipped, use y=200 for -2 visible -->
+            <!-- Adjust: show y range -4 to 4, origin at (80,160), 1 unit=30px -->
+            <!-- Let's redo with better scale: origin at x=80, y=130, scale=25px -->
+            <circle cx="160" cy="0" r="6" fill="#c45a3c" />
+            <text
+              x="170"
+              y="-2"
+              font-size="11"
+              fill="#c45a3c"
+              font-weight="700"
+            >
+              (2, 3)
+            </text>
+            <circle cx="160" cy="160" r="6" fill="#1a6fb5" />
+            <text
+              x="170"
+              y="175"
+              font-size="11"
+              fill="#1a6fb5"
+              font-weight="700"
+            >
+              (2, -4)
+            </text>
+            <!-- dashed line between -->
+            <line
+              x1="160"
+              y1="6"
+              x2="160"
+              y2="154"
+              stroke="#0e8a7d"
+              stroke-width="2"
+              stroke-dasharray="5,4"
+            />
+          </svg>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>3 units</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>4 units</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>7 units</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>1 unit</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! The points share x = 2, so distance = |3 &minus;
+            (&minus;4)| = |3 + 4| = 7 units.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Not quite. Both points have x = 2, so find the vertical distance:
+            |3 &minus; (&minus;4)| = |7| = <strong>7 units</strong> (answer
+            C).</span
+          >
+        </div>
+      </article>
+
+      <!-- W2: T/F -->
+      <article class="q-card" data-q="w2">
+        <div class="q-num">Warm-Up 2</div>
+        <div class="q-prompt">
+          True or False: To find the distance between two points on the same
+          <strong>horizontal</strong> line, you subtract the x-coordinates and
+          take the absolute value.
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong>
+          A <span class="vocab">horizontal line</span> goes left-right. Points
+          on the same horizontal line share the same y-coordinate.<br />
+          <span class="vocab">Absolute value</span> makes any number positive,
+          so distance is always positive.
+        </div>
+        <div class="tf-options">
+          <button class="tf-btn" data-val="true">True</button>
+          <button class="tf-btn" data-val="false">False</button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! On a horizontal line the y-coordinates are the same, so
+            you subtract the x-coordinates and use absolute value to get the
+            distance.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Actually, the statement is <strong>true</strong>. Points on the
+            same horizontal line share a y-coordinate, so distance = |x&#8322;
+            &minus; x&#8321;|.</span
+          >
+        </div>
+      </article>
+
+      <!-- PRACTICE -->
+      <div class="section-header">
+        <div class="section-icon practice">P</div>
+        <h2>Practice</h2>
+        <span class="count">5 questions</span>
+      </div>
+
+      <!-- P1: Fill-in -->
+      <article class="q-card" data-q="p1">
+        <div class="q-num">Practice 1</div>
+        <div class="q-prompt">
+          Find the distance between each pair of points.
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Check whether the points share the same
+          x-coordinate (<span class="vocab">vertical distance</span>) or the
+          same y-coordinate (<span class="vocab">horizontal distance</span>).
+          Then subtract and use <span class="vocab">absolute value</span>.<br />
+          <strong>Formula:</strong> distance = |coordinate&#8321; &minus;
+          coordinate&#8322;|
+        </div>
+        <div style="display: grid; gap: 14px">
+          <div class="fill-row">
+            <span class="fill-text"
+              ><strong>a.</strong> (5, 1) to (5, &minus;3) =</span
+            >
+            <input
+              class="fill-input"
+              data-answer="4"
+              placeholder="?"
+              aria-label="distance a"
+            />
+            <span class="fill-text">units</span>
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"
+              ><strong>b.</strong> (&minus;2, 4) to (6, 4) =</span
+            >
+            <input
+              class="fill-input"
+              data-answer="8"
+              placeholder="?"
+              aria-label="distance b"
+            />
+            <span class="fill-text">units</span>
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"
+              ><strong>c.</strong> (0, &minus;5) to (0, 3) =</span
+            >
+            <input
+              class="fill-input"
+              data-answer="8"
+              placeholder="?"
+              aria-label="distance c"
+            />
+            <span class="fill-text">units</span>
+          </div>
+        </div>
+        <button class="check-btn" id="p1-check">Check All</button>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The distance is ___ units because |___ &minus; ___|
+            = ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! a. |1 &minus; (&minus;3)| = 4, b. |&minus;2 &minus; 6|
+            = 8, c. |&minus;5 &minus; 3| = 8.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some answers need another look. Remember: subtract the coordinates
+            that differ and take the absolute value. a = 4, b = 8, c = 8.</span
+          >
+        </div>
+      </article>
+
+      <!-- P2: MC with SVG grid -->
+      <article class="q-card" data-q="p2">
+        <div class="q-num">Practice 2</div>
+        <div class="q-prompt">
+          What is the distance between the two points shown on the grid?
+        </div>
+        <div class="scaffold">
+          <strong>Hint:</strong> Both points are on the same
+          <span class="vocab">horizontal</span> line (same y-coordinate). Count
+          the spaces between them, or use |x&#8322; &minus; x&#8321;|.
+        </div>
+        <div class="grid-wrap">
+          <svg
+            viewBox="-100 -30 400 200"
+            width="400"
+            height="200"
+            aria-label="Coordinate grid showing points (-3, 2) and (4, 2)"
+          >
+            <!-- grid lines -->
+            <g stroke="#e2e7ec" stroke-width="1">
+              <line x1="-80" y1="0" x2="280" y2="0" />
+              <line x1="-80" y1="40" x2="280" y2="40" />
+              <line x1="-80" y1="80" x2="280" y2="80" />
+              <line x1="-80" y1="120" x2="280" y2="120" />
+              <line x1="-80" y1="160" x2="280" y2="160" />
+              <line x1="-80" y1="-20" x2="280" y2="-20" />
+              <line x1="-80" y1="0" x2="-80" y2="160" />
+              <line x1="-40" y1="-20" x2="-40" y2="160" />
+              <line x1="0" y1="-20" x2="0" y2="160" />
+              <line x1="40" y1="-20" x2="40" y2="160" />
+              <line x1="80" y1="-20" x2="80" y2="160" />
+              <line x1="120" y1="-20" x2="120" y2="160" />
+              <line x1="160" y1="-20" x2="160" y2="160" />
+              <line x1="200" y1="-20" x2="200" y2="160" />
+              <line x1="240" y1="-20" x2="240" y2="160" />
+              <line x1="280" y1="-20" x2="280" y2="160" />
+            </g>
+            <!-- axes: origin at (120, 80) => x=0 at 120, y=0 at 80, scale 40px/unit -->
+            <line
+              x1="-80"
+              y1="80"
+              x2="280"
+              y2="80"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <line
+              x1="120"
+              y1="-20"
+              x2="120"
+              y2="160"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <!-- x tick labels -->
+            <text
+              x="0"
+              y="96"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -3
+            </text>
+            <text
+              x="40"
+              y="96"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -2
+            </text>
+            <text
+              x="80"
+              y="96"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -1
+            </text>
+            <text
+              x="160"
+              y="96"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              1
+            </text>
+            <text
+              x="200"
+              y="96"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              2
+            </text>
+            <text
+              x="240"
+              y="96"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              3
+            </text>
+            <text
+              x="280"
+              y="96"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              4
+            </text>
+            <!-- y tick labels -->
+            <text x="112" y="4" font-size="10" fill="#8a97a5" text-anchor="end">
+              2
+            </text>
+            <text
+              x="112"
+              y="44"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              1
+            </text>
+            <text
+              x="112"
+              y="124"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              -1
+            </text>
+            <text
+              x="112"
+              y="164"
+              font-size="10"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              -2
+            </text>
+            <!-- point (-3,2) => x=120+(-3)*40=0, y=80-2*40=0 -->
+            <circle cx="0" cy="0" r="6" fill="#c45a3c" />
+            <text
+              x="-6"
+              y="-10"
+              font-size="11"
+              fill="#c45a3c"
+              font-weight="700"
+              text-anchor="end"
+            >
+              (-3, 2)
+            </text>
+            <!-- point (4,2) => x=120+4*40=280, y=0 -->
+            <circle cx="280" cy="0" r="6" fill="#1a6fb5" />
+            <text
+              x="274"
+              y="-10"
+              font-size="11"
+              fill="#1a6fb5"
+              font-weight="700"
+              text-anchor="end"
+            >
+              (4, 2)
+            </text>
+            <!-- dashed line between -->
+            <line
+              x1="6"
+              y1="0"
+              x2="274"
+              y2="0"
+              stroke="#0e8a7d"
+              stroke-width="2"
+              stroke-dasharray="5,4"
+            />
+          </svg>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>4 units</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>5 units</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>7 units</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>3 units</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="I found the distance by..."
+          ></textarea>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Both points have y = 2. Distance = |&minus;3 &minus; 4| =
+            |&minus;7| = 7 units.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >The points share y = 2, so find the horizontal distance: |&minus;3
+            &minus; 4| = |&minus;7| = <strong>7 units</strong> (answer C).</span
+          >
+        </div>
+      </article>
+
+      <!-- P3: Drag and Drop -->
+      <article class="q-card" data-q="p3">
+        <div class="q-num">Practice 3</div>
+        <div class="q-prompt">
+          Match each pair of points to the correct distance. Drag the distance
+          to the matching pair.
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> For each pair, check if the x- or
+          y-coordinates match. Then use
+          <span class="vocab">absolute value</span> to find the distance.<br />
+          <strong>Remember:</strong> distance is always
+          <span class="vocab">positive</span>.
+        </div>
+        <div class="drag-bank" id="p3-bank">
+          <div class="drag-item" draggable="true" data-id="d1" data-cat="z4">
+            10 units
+          </div>
+          <div class="drag-item" draggable="true" data-id="d2" data-cat="z1">
+            5 units
+          </div>
+          <div class="drag-item" draggable="true" data-id="d3" data-cat="z3">
+            9 units
+          </div>
+          <div class="drag-item" draggable="true" data-id="d4" data-cat="z2">
+            7 units
+          </div>
+        </div>
+        <div class="drop-grid">
+          <div class="drop-row">
+            <div class="drop-label">(1, 3) and (1, &minus;2)</div>
+            <div class="drag-zone" data-cat="z1" id="p3-z1"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">(&minus;4, 0) and (3, 0)</div>
+            <div class="drag-zone" data-cat="z2" id="p3-z2"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">(2, &minus;5) and (2, 4)</div>
+            <div class="drag-zone" data-cat="z3" id="p3-z3"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">(&minus;6, 1) and (4, 1)</div>
+            <div class="drag-zone" data-cat="z4" id="p3-z4"></div>
+          </div>
+        </div>
+        <button class="check-btn" id="p3-check">Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! |3 &minus; (&minus;2)| = 5, |&minus;4 &minus; 3| = 7,
+            |&minus;5 &minus; 4| = 9, |&minus;6 &minus; 4| = 10.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some matches are wrong. Find the shared coordinate, subtract the
+            other coordinates, and take the absolute value. Try again!</span
+          >
+        </div>
+      </article>
+
+      <!-- P4: T/F -->
+      <article class="q-card" data-q="p4">
+        <div class="q-num">Practice 4</div>
+        <div class="q-prompt">
+          True or False: The distance between <strong>(&minus;3, 1)</strong> and
+          <strong>(&minus;3, &minus;5)</strong> is
+          <strong>&minus;6 units</strong>.
+        </div>
+        <div class="scaffold">
+          <strong>Key idea:</strong>
+          <span class="vocab">Distance</span> is always
+          <span class="vocab">positive</span> (or zero). You can never have a
+          negative distance. Use absolute value: |1 &minus; (&minus;5)| = ?
+        </div>
+        <div class="tf-options">
+          <button class="tf-btn" data-val="true">True</button>
+          <button class="tf-btn" data-val="false">False</button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="The statement is false because..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The statement is ___ because distance is always
+            ___. The actual distance is |___ &minus; ___| = ___ units."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Distance is always positive. |1 &minus; (&minus;5)| = |6|
+            = 6 units, not &minus;6.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >The statement is <strong>false</strong>. Distance is always
+            positive. |1 &minus; (&minus;5)| = 6 units, not &minus;6
+            units.</span
+          >
+        </div>
+      </article>
+
+      <!-- P5: MC (real-world) -->
+      <article class="q-card" data-q="p5">
+        <div class="q-num">Practice 5</div>
+        <div class="q-prompt">
+          A rectangular park has two corners at
+          <strong>(&minus;3, 2)</strong> and <strong>(5, 2)</strong>. How long
+          is this side of the park?
+        </div>
+        <div class="scaffold">
+          <strong>Real-world connection:</strong> The two corners are on the
+          same <span class="vocab">horizontal</span> line (y = 2). Find the
+          <span class="vocab">horizontal distance</span> by subtracting the
+          x-coordinates and using absolute value.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>2 units</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>5 units</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>8 units</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>3 units</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="I found the length by..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The side is ___ units long because |___ &minus;
+            ___| = ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Both points share y = 2. Distance = |&minus;3 &minus; 5| =
+            |&minus;8| = 8 units.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >The y-coordinates match (y = 2), so subtract the x-coordinates:
+            |&minus;3 &minus; 5| = |&minus;8| = <strong>8 units</strong> (answer
+            C).</span
+          >
+        </div>
+      </article>
+
+      <!-- CHALLENGE -->
+      <div class="section-header">
+        <div class="section-icon challenge">&#9733;</div>
+        <h2>Challenge</h2>
+        <span class="count">1 question</span>
+      </div>
+
+      <!-- C1: Open response -->
+      <article class="q-card" data-q="c1">
+        <div class="q-num">Challenge</div>
+        <div class="q-prompt">
+          A map has a <strong>school</strong> at <strong>(&minus;4, 3)</strong>,
+          a <strong>library</strong> at <strong>(&minus;4, &minus;2)</strong>,
+          and a <strong>store</strong> at <strong>(3, &minus;2)</strong>. Find
+          the total walking distance going
+          <strong>school &rarr; library &rarr; store</strong>. Show your work.
+        </div>
+        <div class="scaffold">
+          <strong>Break it into two parts:</strong><br />
+          1. School to Library: same x-coordinate (&minus;4). Find the
+          <span class="vocab">vertical distance</span>: |3 &minus; (&minus;2)| =
+          ?<br />
+          2. Library to Store: same y-coordinate (&minus;2). Find the
+          <span class="vocab">horizontal distance</span>: |&minus;4 &minus; 3| =
+          ?<br />
+          3. Add the two distances together.
+        </div>
+        <div class="grid-wrap">
+          <svg
+            viewBox="-80 -30 400 280"
+            width="400"
+            height="280"
+            aria-label="Coordinate grid showing school at (-4,3), library at (-4,-2), and store at (3,-2)"
+          >
+            <g stroke="#e2e7ec" stroke-width="1">
+              <line x1="-60" y1="0" x2="300" y2="0" />
+              <line x1="-60" y1="30" x2="300" y2="30" />
+              <line x1="-60" y1="60" x2="300" y2="60" />
+              <line x1="-60" y1="90" x2="300" y2="90" />
+              <line x1="-60" y1="120" x2="300" y2="120" />
+              <line x1="-60" y1="150" x2="300" y2="150" />
+              <line x1="-60" y1="180" x2="300" y2="180" />
+              <line x1="-60" y1="210" x2="300" y2="210" />
+              <line x1="-60" y1="240" x2="300" y2="240" />
+              <line x1="-60" y1="0" x2="-60" y2="240" />
+              <line x1="-30" y1="0" x2="-30" y2="240" />
+              <line x1="0" y1="0" x2="0" y2="240" />
+              <line x1="30" y1="0" x2="30" y2="240" />
+              <line x1="60" y1="0" x2="60" y2="240" />
+              <line x1="90" y1="0" x2="90" y2="240" />
+              <line x1="120" y1="0" x2="120" y2="240" />
+              <line x1="150" y1="0" x2="150" y2="240" />
+              <line x1="180" y1="0" x2="180" y2="240" />
+              <line x1="210" y1="0" x2="210" y2="240" />
+              <line x1="240" y1="0" x2="240" y2="240" />
+              <line x1="270" y1="0" x2="270" y2="240" />
+              <line x1="300" y1="0" x2="300" y2="240" />
+            </g>
+            <!-- axes: origin at (120, 90), scale=30px/unit => x=-4 at 0, y=3 at 0, etc. -->
+            <line
+              x1="-60"
+              y1="90"
+              x2="300"
+              y2="90"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <line
+              x1="120"
+              y1="0"
+              x2="120"
+              y2="240"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <!-- x labels -->
+            <text
+              x="-60"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -6
+            </text>
+            <text
+              x="-30"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -5
+            </text>
+            <text
+              x="0"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -4
+            </text>
+            <text
+              x="30"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -3
+            </text>
+            <text
+              x="60"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -2
+            </text>
+            <text
+              x="90"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              -1
+            </text>
+            <text
+              x="150"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              1
+            </text>
+            <text
+              x="180"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              2
+            </text>
+            <text
+              x="210"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              3
+            </text>
+            <text
+              x="240"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              4
+            </text>
+            <text
+              x="270"
+              y="106"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="middle"
+            >
+              5
+            </text>
+            <!-- y labels -->
+            <text x="112" y="4" font-size="9" fill="#8a97a5" text-anchor="end">
+              3
+            </text>
+            <text x="112" y="34" font-size="9" fill="#8a97a5" text-anchor="end">
+              2
+            </text>
+            <text x="112" y="64" font-size="9" fill="#8a97a5" text-anchor="end">
+              1
+            </text>
+            <text
+              x="112"
+              y="124"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              -1
+            </text>
+            <text
+              x="112"
+              y="154"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              -2
+            </text>
+            <text
+              x="112"
+              y="184"
+              font-size="9"
+              fill="#8a97a5"
+              text-anchor="end"
+            >
+              -3
+            </text>
+            <!-- school (-4,3) => x=0, y=0 -->
+            <circle cx="0" cy="0" r="6" fill="#d4952a" />
+            <text x="6" y="-8" font-size="10" fill="#d4952a" font-weight="700">
+              School (-4, 3)
+            </text>
+            <!-- library (-4,-2) => x=0, y=150 -->
+            <circle cx="0" cy="150" r="6" fill="#1a6fb5" />
+            <text x="6" y="166" font-size="10" fill="#1a6fb5" font-weight="700">
+              Library (-4, -2)
+            </text>
+            <!-- store (3,-2) => x=210, y=150 -->
+            <circle cx="210" cy="150" r="6" fill="#c45a3c" />
+            <text
+              x="216"
+              y="166"
+              font-size="10"
+              fill="#c45a3c"
+              font-weight="700"
+            >
+              Store (3, -2)
+            </text>
+            <!-- path lines -->
+            <line
+              x1="0"
+              y1="6"
+              x2="0"
+              y2="144"
+              stroke="#d4952a"
+              stroke-width="2"
+              stroke-dasharray="5,4"
+            />
+            <line
+              x1="6"
+              y1="150"
+              x2="204"
+              y2="150"
+              stroke="#1a6fb5"
+              stroke-width="2"
+              stroke-dasharray="5,4"
+            />
+          </svg>
+        </div>
+        <div style="display: grid; gap: 10px">
+          <div>
+            <div class="explain-prompt">School to Library (show work):</div>
+            <textarea
+              class="explain-input c1-work"
+              placeholder="Same x-coordinate: -4. Distance = |3 - (-2)| = ..."
+            ></textarea>
+          </div>
+          <div>
+            <div class="explain-prompt">Library to Store (show work):</div>
+            <textarea
+              class="explain-input c1-work"
+              placeholder="Same y-coordinate: -2. Distance = |-4 - 3| = ..."
+            ></textarea>
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"
+              ><strong>Total walking distance =</strong></span
+            >
+            <input
+              class="fill-input c1-total"
+              data-answer="12"
+              placeholder="?"
+              aria-label="total distance"
+            />
+            <span class="fill-text">units</span>
+          </div>
+        </div>
+        <button class="check-btn" id="c1-check">Check</button>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "From school to library the distance is ___ units
+            because |___ &minus; ___| = ___. From library to store the distance
+            is ___ units because |___ &minus; ___| = ___. The total is ___ + ___
+            = ___ units."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! School to Library = |3 &minus; (&minus;2)| = 5 units.
+            Library to Store = |&minus;4 &minus; 3| = 7 units. Total = 5 + 7 =
+            12 units.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >The total is <strong>12 units</strong>. School &rarr; Library: |3
+            &minus; (&minus;2)| = 5. Library &rarr; Store: |&minus;4 &minus; 3|
+            = 7. Total: 5 + 7 = 12.</span
+          >
+        </div>
+      </article>
+    </main>
+
+    <footer class="score-bar">
+      <div class="score-inner">
+        <span class="score-text"
+          ><span id="scoreCount">0</span> of
+          <span id="scoreTotal">8</span> correct</span
+        >
+        <button class="reset-btn" id="resetBtn">Start Over</button>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const ANSWERS = {
+          w1: "c",
+          w2: "true",
+          p2: "c",
+          p4: "false",
+          p5: "c",
+        };
+
+        let score = 0;
+        let total = 0;
+        const totalQ = 8;
+
+        // Level toggle
+        const levelBtns = document.querySelectorAll(".level-btn");
+        const levelDesc = document.getElementById("levelDesc");
+        const descs = {
+          0: "Step-by-step support with read-aloud and worked examples",
+          1: "Guided practice with vocabulary support",
+          2: "Grade-level practice with explanations",
+        };
+        levelBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            levelBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.body.className = (btn.dataset.level === "0") ? "level-0 level-1" : "level-" + btn.dataset.level;
+            levelDesc.textContent = descs[btn.dataset.level];
+          });
+        });
+
+        function updateProgress() {
+          const pct = Math.round((total / totalQ) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("scoreCount").textContent = score;
+        }
+
+        // MC questions
+        document.querySelectorAll(".mc-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".mc-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".mc-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => {
+              b.classList.add("locked");
+              if (b.dataset.val === ANSWERS[qId]) b.classList.add("is-correct");
+            });
+            if (!correct) selected.classList.add("is-wrong");
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // TF questions
+        document.querySelectorAll(".tf-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".tf-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".tf-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => b.classList.add("locked"));
+            if (correct) {
+              selected.classList.add("is-correct");
+              score++;
+              card.classList.add("correct");
+            } else {
+              selected.classList.add("is-wrong");
+              btns.forEach((b) => {
+                if (b.dataset.val === ANSWERS[qId])
+                  b.classList.add("is-correct");
+              });
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // Drag and Drop (P3)
+        const bank = document.getElementById("p3-bank");
+        const zones = document.querySelectorAll(".drag-zone");
+        let draggedItem = null;
+
+        if (bank) {
+          bank.querySelectorAll(".drag-item").forEach((item) => {
+            item.addEventListener("dragstart", (e) => {
+              draggedItem = item;
+              e.dataTransfer.effectAllowed = "move";
+              setTimeout(() => (item.style.opacity = ".4"), 0);
+            });
+            item.addEventListener("dragend", () => {
+              item.style.opacity = "1";
+              draggedItem = null;
+            });
+            item.addEventListener(
+              "touchstart",
+              (e) => {
+                draggedItem = item;
+              },
+              { passive: true },
+            );
+          });
+
+          zones.forEach((zone) => {
+            zone.addEventListener("dragover", (e) => {
+              e.preventDefault();
+              zone.classList.add("over");
+            });
+            zone.addEventListener("dragleave", () =>
+              zone.classList.remove("over"),
+            );
+            zone.addEventListener("drop", (e) => {
+              e.preventDefault();
+              zone.classList.remove("over");
+              if (draggedItem) {
+                zone.appendChild(draggedItem);
+                draggedItem.classList.add("placed");
+              }
+            });
+            zone.addEventListener("click", (e) => {
+              const item = e.target.closest(".drag-item");
+              if (item) {
+                bank.appendChild(item);
+                item.classList.remove("placed");
+              }
+            });
+          });
+
+          // Click-to-place fallback
+          let selectedBankItem = null;
+          bank.addEventListener("click", (e) => {
+            const item = e.target.closest(".drag-item");
+            if (!item) return;
+            if (selectedBankItem === item) {
+              item.style.outline = "";
+              selectedBankItem = null;
+              return;
+            }
+            if (selectedBankItem) selectedBankItem.style.outline = "";
+            selectedBankItem = item;
+            item.style.outline = "2px solid var(--blue)";
+          });
+
+          zones.forEach((zone) => {
+            zone.addEventListener("click", (e) => {
+              if (e.target.closest(".drag-item")) return;
+              if (selectedBankItem) {
+                zone.appendChild(selectedBankItem);
+                selectedBankItem.classList.add("placed");
+                selectedBankItem.style.outline = "";
+                selectedBankItem = null;
+              }
+            });
+          });
+
+          document
+            .getElementById("p3-check")
+            .addEventListener("click", function () {
+              total++;
+              let allCorrect = true;
+              zones.forEach((zone) => {
+                const cat = zone.dataset.cat;
+                const items = zone.querySelectorAll(".drag-item");
+                if (items.length === 0) {
+                  allCorrect = false;
+                } else {
+                  items.forEach((item) => {
+                    if (item.dataset.cat !== cat) allCorrect = false;
+                  });
+                }
+              });
+              const card = this.closest(".q-card");
+              if (allCorrect) {
+                score++;
+                card.classList.add("correct");
+              } else {
+                card.classList.add("incorrect");
+              }
+              this.disabled = true;
+              bank.querySelectorAll(".drag-item").forEach((i) => {
+                i.draggable = false;
+                i.style.cursor = "default";
+              });
+              zones.forEach((z) => {
+                z.querySelectorAll(".drag-item").forEach((i) => {
+                  i.draggable = false;
+                  i.style.cursor = "default";
+                });
+              });
+              updateProgress();
+            });
+        }
+
+        // Fill-in (P1)
+        const p1Check = document.getElementById("p1-check");
+        if (p1Check) {
+          p1Check.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const inputs = card.querySelectorAll(".fill-input");
+            let allCorrect = true;
+            inputs.forEach((inp) => {
+              const val = inp.value.trim();
+              const ans = inp.dataset.answer;
+              if (val === ans) {
+                inp.classList.add("is-correct");
+              } else {
+                inp.classList.add("is-wrong");
+                allCorrect = false;
+              }
+              inp.readOnly = true;
+            });
+            total++;
+            if (allCorrect) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+
+        // Challenge (C1)
+        const c1Check = document.getElementById("c1-check");
+        if (c1Check) {
+          c1Check.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const totalInput = card.querySelector(".c1-total");
+            const val = totalInput.value.trim();
+            const ans = totalInput.dataset.answer;
+            total++;
+            if (val === ans) {
+              totalInput.classList.add("is-correct");
+              score++;
+              card.classList.add("correct");
+            } else {
+              totalInput.classList.add("is-wrong");
+              card.classList.add("incorrect");
+            }
+            totalInput.readOnly = true;
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+
+        // Reset
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          score = 0;
+          total = 0;
+          document.querySelectorAll(".q-card").forEach((card) => {
+            card.classList.remove("correct", "incorrect");
+          });
+          document.querySelectorAll(".mc-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".tf-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".fill-input").forEach((inp) => {
+            inp.classList.remove("is-correct", "is-wrong");
+            inp.value = "";
+            inp.readOnly = false;
+          });
+          document.querySelectorAll(".drag-item").forEach((item) => {
+            item.classList.remove("placed");
+            item.draggable = true;
+            item.style.cursor = "grab";
+            item.style.outline = "";
+            if (bank) bank.appendChild(item);
+          });
+          document.querySelectorAll(".drag-zone").forEach((z) => {
+            z.classList.remove("is-correct", "is-wrong");
+          });
+          document
+            .querySelectorAll(".check-btn")
+            .forEach((b) => (b.disabled = false));
+          document
+            .querySelectorAll(".explain-input")
+            .forEach((t) => (t.value = ""));
+
+          // Re-init MC/TF answered states
+          document.querySelectorAll(".mc-options").forEach((group) => {
+            const card = group.closest(".q-card");
+            const checkBtn = card.querySelector(".check-btn");
+            checkBtn.disabled = true;
+          });
+          document.querySelectorAll(".tf-options").forEach((group) => {
+            const card = group.closest(".q-card");
+            const checkBtn = card.querySelector(".check-btn");
+            checkBtn.disabled = true;
+          });
+
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          // Reinitialize event listeners by reloading
+          // Actually, we need to reset the answered closures. Easiest: reload.
+          location.reload();
+        });
+
+        updateProgress();
+      })();
+    
+        // ===== Level 0 read-aloud (click any text to hear it) =====
+        (function(){
+          var raBtn = document.getElementById("readAloudBtn");
+          if(!raBtn) return;
+          var on = false;
+          function speak(t){ try{ window.speechSynthesis.cancel();
+            var u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.speak(u);}catch(e){} }
+          raBtn.addEventListener("click", function(){
+            on=!on; document.body.classList.toggle("reading", on);
+            raBtn.textContent = on ? "🔊 Tap text to hear" : "🔊 Read aloud";
+            if(!on){ try{window.speechSynthesis.cancel();}catch(e){} }
+          });
+          document.addEventListener("click", function(e){
+            if(!on || !document.body.classList.contains("level-0")) return;
+            if(e.target.closest(".level-bar")) return;
+            var el = e.target.closest("p,li,h1,h2,h3,label,.question,.prompt,.q-text,.scaffold,.sentence-frame");
+            if(el && el.textContent.trim()){ speak(el.textContent.trim()); }
+          }, true);
+        })();
+
+      </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

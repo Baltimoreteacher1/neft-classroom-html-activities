@@ -1,0 +1,2099 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reveal Math Evidence Studio</title>
+    <link rel="stylesheet" href="/assets/reveal-math-tools.css" />
+    <style>
+      :root {
+        --studio-ink: #17212f;
+        --studio-muted: #5c6878;
+        --studio-panel: #ffffff;
+        --studio-bg: #f4f7fb;
+        --studio-line: #d8e1ec;
+        --studio-blue: #245ea8;
+        --studio-green: #19765c;
+        --studio-gold: #b26a00;
+        --studio-focus: #123d7a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--studio-bg);
+        color: var(--studio-ink);
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(18, 61, 122, 0.28);
+        outline-offset: 2px;
+      }
+
+      .studio-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 20px;
+      }
+
+      .eyebrow {
+        margin: 0 0 4px;
+        color: var(--studio-blue);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.75rem, 3vw, 2.65rem);
+        line-height: 1.05;
+      }
+
+      .lede {
+        max-width: 760px;
+        margin: 10px 0 0;
+        color: var(--studio-muted);
+        font-size: 1rem;
+      }
+
+      .home-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 8px 12px;
+        border: 1px solid var(--studio-line);
+        border-radius: 8px;
+        background: var(--studio-panel);
+        color: var(--studio-ink);
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--studio-line);
+        border-radius: 8px;
+        background: var(--studio-panel);
+        box-shadow: 0 14px 36px rgba(35, 58, 88, 0.08);
+      }
+
+      .panel-pad {
+        padding: 18px;
+      }
+
+      .selector {
+        position: sticky;
+        top: 12px;
+      }
+
+      label {
+        display: block;
+        margin: 0 0 7px;
+        font-weight: 800;
+      }
+
+      select,
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        border: 1px solid #c5d1df;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--studio-ink);
+      }
+
+      select,
+      input[type="text"] {
+        min-height: 46px;
+        padding: 10px 12px;
+      }
+
+      textarea {
+        min-height: 116px;
+        resize: vertical;
+        padding: 12px;
+      }
+
+      .hint {
+        margin: 8px 0 0;
+        color: var(--studio-muted);
+        font-size: 0.9rem;
+      }
+
+      .lesson-card {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--studio-line);
+      }
+
+      .lesson-title {
+        margin: 0 0 12px;
+        font-size: 1.35rem;
+        line-height: 1.2;
+      }
+
+      .meta-grid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .meta-item {
+        padding: 10px 12px;
+        border: 1px solid #dce5ef;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .meta-label {
+        display: block;
+        color: var(--studio-muted);
+        font-size: 0.74rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .meta-value {
+        display: block;
+        margin-top: 2px;
+        font-weight: 800;
+      }
+
+      .model-panel {
+        overflow: hidden;
+      }
+
+      .model-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--studio-line);
+      }
+
+      .model-header h2,
+      .section-title {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: #eaf2ff;
+        color: #184b8f;
+        font-size: 0.78rem;
+        font-weight: 900;
+      }
+
+      .model-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 0.64fr);
+        gap: 16px;
+        padding: 18px;
+      }
+
+      .svg-frame {
+        display: grid;
+        min-height: 280px;
+        place-items: center;
+        border: 1px solid #dce5ef;
+        border-radius: 8px;
+        background: #fbfdff;
+      }
+
+      .svg-frame svg {
+        width: min(100%, 520px);
+        height: auto;
+      }
+
+      .notice-list {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: var(--studio-muted);
+      }
+
+      .notice-list li + li {
+        margin-top: 8px;
+      }
+
+      .writing-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .field-card {
+        padding: 14px;
+        border: 1px solid var(--studio-line);
+        border-radius: 8px;
+        background: var(--studio-panel);
+      }
+
+      .field-card.full {
+        grid-column: 1 / -1;
+      }
+
+      .field-card p {
+        margin: 0 0 10px;
+        color: var(--studio-muted);
+        font-size: 0.9rem;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .action {
+        min-height: 42px;
+        border: 1px solid #b9c6d6;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--studio-ink);
+        cursor: pointer;
+        font-weight: 900;
+        padding: 9px 13px;
+      }
+
+      .action.primary {
+        border-color: var(--studio-blue);
+        background: var(--studio-blue);
+        color: #fff;
+      }
+
+      .action.warn {
+        border-color: #d2a34d;
+        color: #774600;
+      }
+
+      .action:hover {
+        filter: brightness(0.97);
+      }
+
+      .status {
+        min-height: 24px;
+        margin-top: 10px;
+        color: var(--studio-green);
+        font-weight: 800;
+      }
+
+      .empty-state {
+        padding: 18px;
+        border: 1px dashed #b9c6d6;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--studio-muted);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 900px) {
+        .workspace,
+        .model-stage,
+        .writing-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .selector {
+          position: static;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .studio-shell {
+          width: min(100% - 20px, 1180px);
+          padding-top: 18px;
+        }
+
+        .topbar,
+        .model-header {
+          display: block;
+        }
+
+        .home-link {
+          margin-top: 12px;
+        }
+
+        .model-header .badge {
+          margin-top: 10px;
+        }
+
+        .button-row .action {
+          flex: 1 1 145px;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .home-link,
+        .button-row,
+        .hint,
+        .status {
+          display: none !important;
+        }
+
+        .studio-shell {
+          width: 100%;
+          padding: 0;
+        }
+
+        .workspace,
+        .model-stage,
+        .writing-grid {
+          display: block;
+        }
+
+        .panel,
+        .field-card,
+        .svg-frame,
+        .meta-item {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+
+        .panel,
+        .field-card {
+          margin-bottom: 12px;
+        }
+
+        textarea,
+        input[type="text"] {
+          border: 1px solid #777;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="studio-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Reveal Math Student Tool</p>
+          <h1>Evidence Studio</h1>
+          <p class="lede">
+            Pick a lesson, study the model, then write a clear claim with
+            evidence, reasoning, and a reflection.
+          </p>
+        </div>
+        <a class="home-link" href="/">Classroom Home</a>
+      </header>
+
+      <div class="workspace">
+        <aside
+          class="panel panel-pad selector"
+          aria-labelledby="lesson-picker-title"
+        >
+          <h2 class="section-title" id="lesson-picker-title">Lesson Setup</h2>
+          <p class="hint">
+            Choose from the Reveal Math lesson list. Your draft saves on this
+            Chromebook browser.
+          </p>
+
+          <div style="margin-top: 16px">
+            <label for="lessonSelect">Lesson</label>
+            <select id="lessonSelect">
+              <option value="">Loading lessons...</option>
+            </select>
+          </div>
+
+          <section class="lesson-card" aria-live="polite">
+            <h3 class="lesson-title" id="lessonTitle">Choose a lesson</h3>
+            <div class="meta-grid" id="lessonMeta">
+              <div class="empty-state">
+                Lesson details will appear here after the shared Reveal Math
+                data loads.
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <section>
+          <article class="panel model-panel" aria-labelledby="model-title">
+            <div
+              class="model-header"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 16px 18px;
+                border-bottom: 1px solid var(--studio-line);
+                flex-wrap: wrap;
+              "
+            >
+              <h2 id="model-title" style="margin: 0">Model Inspector</h2>
+              <div
+                style="display: flex; align-items: center; gap: 8px"
+                class="no-print"
+              >
+                <label
+                  for="coachLang"
+                  style="
+                    margin: 0;
+                    font-size: 0.8rem;
+                    font-weight: 800;
+                    color: var(--studio-muted);
+                  "
+                  >Coach Language:</label
+                >
+                <select
+                  id="coachLang"
+                  style="
+                    min-height: 30px;
+                    padding: 2px 8px;
+                    font-size: 0.8rem;
+                    border-radius: 6px;
+                    width: auto;
+                    border-color: #b9c6d6;
+                    background: white;
+                    color: var(--studio-ink);
+                  "
+                  onchange="updateCoachLanguage()"
+                >
+                  <option value="en">🇺🇸 English</option>
+                  <option value="es">🇪🇸 Español</option>
+                  <option value="ar">🇸🇦 العربية</option>
+                  <option value="vi">🇻🇳 Tiếng Việt</option>
+                </select>
+              </div>
+              <span class="badge" id="modelKind">Model</span>
+            </div>
+            <div class="model-stage">
+              <div class="svg-frame" id="modelFrame" aria-live="polite"></div>
+              <div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <h3 class="section-title">What to Look For</h3>
+                  <button
+                    class="action-btn"
+                    type="button"
+                    onclick="speakPrompts()"
+                    style="
+                      background: none;
+                      border: none;
+                      cursor: pointer;
+                      font-size: 1.1rem;
+                      padding: 0 4px;
+                      margin-left: auto;
+                    "
+                    title="Speak prompts aloud"
+                  >
+                    🔊 Listen
+                  </button>
+                </div>
+                <ul class="notice-list" id="modelPrompts"></ul>
+                <div
+                  id="modelControls"
+                  class="no-print"
+                  style="
+                    margin-top: 16px;
+                    border-top: 1.5px dashed var(--studio-line);
+                    padding-top: 16px;
+                  "
+                ></div>
+              </div>
+            </div>
+          </article>
+
+          <form class="writing-grid" id="studioForm">
+            <section class="field-card full">
+              <label for="studentName">Name or initials</label>
+              <input
+                id="studentName"
+                autocomplete="name"
+                type="text"
+                placeholder="Optional"
+              />
+            </section>
+
+            <section class="field-card">
+              <label for="claim">Claim</label>
+              <p>What mathematical idea can you state from this lesson?</p>
+              <textarea
+                id="claim"
+                placeholder="I claim that..."
+                required
+              ></textarea>
+            </section>
+
+            <section class="field-card">
+              <label for="evidence">Evidence</label>
+              <p>What numbers, labels, model parts, or patterns support it?</p>
+              <textarea
+                id="evidence"
+                placeholder="My evidence is..."
+                required
+              ></textarea>
+            </section>
+
+            <section class="field-card">
+              <label for="reasoning">Reasoning</label>
+              <p>Explain how the evidence proves or supports your claim.</p>
+              <textarea
+                id="reasoning"
+                placeholder="This shows..."
+                required
+              ></textarea>
+            </section>
+
+            <section class="field-card">
+              <label for="reflection">Reflection</label>
+              <p>What do you understand better, or what question remains?</p>
+              <textarea
+                id="reflection"
+                placeholder="Now I understand..."
+              ></textarea>
+            </section>
+
+            <section class="field-card full" aria-labelledby="controls-title">
+              <h2 class="section-title" id="controls-title">Finish</h2>
+              <div class="button-row">
+                <button class="action primary" type="button" id="saveDraft">
+                  Save Draft
+                </button>
+                <button
+                  class="action"
+                  style="
+                    background: #2b579a;
+                    color: white;
+                    border-color: #2b579a;
+                  "
+                  type="button"
+                  id="downloadDocx"
+                >
+                  Download Blueprint
+                </button>
+                <button class="action" type="button" id="copyCard">
+                  Copy Card
+                </button>
+                <button class="action" type="button" id="printCard">
+                  Print
+                </button>
+                <button class="action warn" type="button" id="clearDraft">
+                  Clear
+                </button>
+              </div>
+              <div class="status" id="statusMessage" role="status"></div>
+            </section>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script src="/assets/reveal-math-data.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        // 1. CONFIGURATION
+        var CONFIG = {
+          theme: "navy-teal",
+          debug: true,
+        };
+
+        // 2. CONFIG VALIDATION
+        function validateConfig() {
+          console.log("=== Validating Evidence Studio Config ===");
+          if (typeof CONFIG !== "object" || CONFIG === null) {
+            console.error(
+              "Config validation failed: CONFIG object is missing or null.",
+            );
+            return false;
+          }
+          console.log("Evidence Studio Config: VALID");
+          return true;
+        }
+
+        // 3. DIAGNOSTICS SELF-TEST
+        function selfTest() {
+          console.log("=== Running Evidence Studio Diagnostics ===");
+          try {
+            var checkIds = [
+              "lessonSelect",
+              "lessonTitle",
+              "lessonMeta",
+              "modelKind",
+              "modelFrame",
+              "modelPrompts",
+              "claim",
+              "evidence",
+              "reasoning",
+              "reflection",
+              "downloadDocx",
+              "modelControls",
+            ];
+            checkIds.forEach(function (id) {
+              if (!document.getElementById(id)) {
+                throw new Error(
+                  "Self-Test Failed: DOM node #" + id + " missing.",
+                );
+              }
+            });
+            console.log("Evidence Studio Self-Test: 100% PASS");
+            return true;
+          } catch (e) {
+            console.error("Evidence Studio Self-Test Error: ", e.message);
+            return false;
+          }
+        }
+
+        var STORAGE_PREFIX = "revealEvidenceStudio:";
+        var FALLBACK_MODEL = {
+          kind: "comparison",
+          label: "Comparison Model",
+          prompts: [
+            "Notice what quantities are being compared.",
+            "Use labels from the model as evidence.",
+            "Connect the picture to a mathematical sentence.",
+          ],
+        };
+
+        var state = {
+          lessons: [],
+          units: [],
+          clusters: [],
+          lesson: null,
+          unit: null,
+          cluster: null,
+          // Custom interactive values
+          val1: 18,
+          val2: 24,
+          val3: 5,
+          val4: 2,
+          val5: 75,
+        };
+
+        var els = {
+          lessonSelect: document.getElementById("lessonSelect"),
+          lessonTitle: document.getElementById("lessonTitle"),
+          lessonMeta: document.getElementById("lessonMeta"),
+          modelKind: document.getElementById("modelKind"),
+          modelFrame: document.getElementById("modelFrame"),
+          modelPrompts: document.getElementById("modelPrompts"),
+          modelControls: document.getElementById("modelControls"),
+          form: document.getElementById("studioForm"),
+          studentName: document.getElementById("studentName"),
+          claim: document.getElementById("claim"),
+          evidence: document.getElementById("evidence"),
+          reasoning: document.getElementById("reasoning"),
+          reflection: document.getElementById("reflection"),
+          saveDraft: document.getElementById("saveDraft"),
+          downloadDocx: document.getElementById("downloadDocx"),
+          copyCard: document.getElementById("copyCard"),
+          printCard: document.getElementById("printCard"),
+          clearDraft: document.getElementById("clearDraft"),
+          status: document.getElementById("statusMessage"),
+        };
+
+        function asArray(value) {
+          if (Array.isArray(value)) return value;
+          if (value && typeof value === "object") return Object.values(value);
+          return [];
+        }
+
+        function firstText() {
+          for (var i = 0; i < arguments.length; i += 1) {
+            var value = arguments[i];
+            if (value !== undefined && value !== null && String(value).trim()) {
+              return String(value).trim();
+            }
+          }
+          return "";
+        }
+
+        function normalizeId(value) {
+          return firstText(value).toLowerCase().replace(/\s+/g, "-");
+        }
+
+        function lessonNumber(lesson) {
+          return firstText(
+            lesson.lesson,
+            lesson.lessonNumber,
+            lesson.number,
+            lesson.id,
+            lesson.slug,
+          );
+        }
+
+        function lessonLabel(lesson) {
+          var number = lessonNumber(lesson);
+          var title = firstText(lesson.title, lesson.name, lesson.topic);
+          if (number && title && title.indexOf(number) !== 0) {
+            return "Lesson " + number + ": " + title;
+          }
+          return title || (number ? "Lesson " + number : "Untitled Lesson");
+        }
+
+        function unitLabel(unit, lesson) {
+          var unitNumber = firstText(
+            unit && unit.unit,
+            unit && unit.number,
+            lesson && lesson.unit,
+            lesson && lesson.unitNumber,
+            lesson && lesson.unitId,
+          );
+          var title = firstText(
+            unit && unit.title,
+            unit && unit.name,
+            lesson && lesson.unitTitle,
+            lesson && lesson.unitName,
+          );
+          if (unitNumber && title && title.indexOf(unitNumber) !== 0) {
+            return "Unit " + unitNumber + ": " + title;
+          }
+          return title || (unitNumber ? "Unit " + unitNumber : "Unit");
+        }
+
+        function getStandard(lesson, cluster) {
+          return firstText(
+            lesson && lesson.standard,
+            lesson && lesson.standards,
+            lesson && lesson.ccss,
+            cluster && cluster.standard,
+            cluster && cluster.standards,
+          );
+        }
+
+        function getClusterName(lesson, cluster) {
+          return firstText(
+            cluster && cluster.title,
+            cluster && cluster.name,
+            lesson && lesson.cluster,
+            lesson && lesson.clusterTitle,
+            lesson && lesson.clusterName,
+            "Cluster",
+          );
+        }
+
+        function findUnit(lesson) {
+          var keys = [
+            lesson.unitId,
+            lesson.unit,
+            lesson.unitNumber,
+            lesson.unitSlug,
+          ].map(normalizeId);
+          return state.units.find(function (unit) {
+            var candidates = [
+              unit.id,
+              unit.slug,
+              unit.unit,
+              unit.number,
+              unit.unitNumber,
+            ].map(normalizeId);
+            return candidates.some(function (candidate) {
+              return candidate && keys.indexOf(candidate) !== -1;
+            });
+          });
+        }
+
+        function findCluster(lesson) {
+          var keys = [
+            lesson.clusterId,
+            lesson.cluster,
+            lesson.clusterSlug,
+            lesson.standard,
+            lesson.ccss,
+          ].map(normalizeId);
+          return state.clusters.find(function (cluster) {
+            var candidates = [
+              cluster.id,
+              cluster.slug,
+              cluster.cluster,
+              cluster.name,
+              cluster.title,
+              cluster.standard,
+              cluster.ccss,
+            ].map(normalizeId);
+            return candidates.some(function (candidate) {
+              return candidate && keys.indexOf(candidate) !== -1;
+            });
+          });
+        }
+
+        function modelInfo(cluster, lesson) {
+          var kind = firstText(
+            cluster && cluster.modelKind,
+            lesson && lesson.modelKind,
+            FALLBACK_MODEL.kind,
+          );
+          return {
+            kind: kind,
+            label:
+              firstText(
+                cluster && cluster.modelLabel,
+                lesson && lesson.modelLabel,
+              ) ||
+              kind.replace(/[-_]/g, " ").replace(/\b\w/g, function (letter) {
+                return letter.toUpperCase();
+              }),
+            prompts:
+              asArray(cluster && cluster.prompts).length > 0
+                ? asArray(cluster && cluster.prompts)
+                : asArray(lesson && lesson.prompts).length > 0
+                  ? asArray(lesson && lesson.prompts)
+                  : FALLBACK_MODEL.prompts,
+          };
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        function metaItem(label, value) {
+          return (
+            '<div class="meta-item"><span class="meta-label">' +
+            escapeHtml(label) +
+            '</span><span class="meta-value">' +
+            escapeHtml(value || "Not listed") +
+            "</span></div>"
+          );
+        }
+
+        function renderLessonPicker() {
+          if (!state.lessons.length) {
+            els.lessonSelect.innerHTML =
+              '<option value="">Shared lesson data not found</option>';
+            renderEmptyData();
+            return;
+          }
+
+          els.lessonSelect.innerHTML = state.lessons
+            .map(function (lesson, index) {
+              return (
+                '<option value="' +
+                index +
+                '">' +
+                escapeHtml(lessonLabel(lesson)) +
+                "</option>"
+              );
+            })
+            .join("");
+          setLesson(0);
+        }
+
+        function renderEmptyData() {
+          els.lessonTitle.textContent = "Shared data needed";
+          els.lessonMeta.innerHTML =
+            '<div class="empty-state">This page expects /assets/reveal-math-data.js to define window.REVEAL_MATH_LESSONS, window.REVEAL_MATH_UNITS, and window.REVEAL_MATH_CLUSTERS.</div>';
+          els.modelKind.textContent = "Model";
+          els.modelFrame.innerHTML = renderSvg("comparison");
+          els.modelPrompts.innerHTML = FALLBACK_MODEL.prompts
+            .map(function (prompt) {
+              return "<li>" + escapeHtml(prompt) + "</li>";
+            })
+            .join("");
+        }
+
+        function setLesson(index) {
+          state.lesson = state.lessons[index] || null;
+          state.unit = state.lesson ? findUnit(state.lesson) : null;
+          state.cluster = state.lesson ? findCluster(state.lesson) : null;
+          renderCurrentLesson();
+          loadDraft();
+        }
+
+        var TRANSLATIONS = {
+          es: {
+            "Notice what quantities are being compared.":
+              "Observe qué cantidades se están comparando.",
+            "Use labels from the model as evidence.":
+              "Utilice las etiquetas del modelo como evidencia.",
+            "Connect the picture to a mathematical sentence.":
+              "Conecte la imagen a una oración matemática.",
+            "GCF and LCM Venn Diagram": "Diagrama de Venn para MCD y MCM",
+            "Coordinate Plotter": "Graficador de coordenadas",
+            "Ratio tape diagram model": "Modelo de diagrama de cinta de razón",
+            "Geometry resizable model": "Modelo geométrico redimensionable",
+            comparison: "Comparación",
+            factor: "Factores",
+            decimal: "Decimales",
+            division: "División",
+            fraction: "Fracciones",
+            ratio: "Razón",
+            percent: "Porcentaje",
+            finance: "Finanzas",
+            area: "Área",
+            expression: "Expresiones",
+            equation: "Ecuaciones",
+            inequality: "Desigualdades",
+            data: "Datos",
+            coordinate: "Coordenadas",
+            volume: "Volumen",
+            surface: "Superficie",
+            "Big Idea of Focus:": "Idea principal de enfoque:",
+            "What to Look For": "¿Qué buscar?",
+            "Claim-Evidence-Reasoning Blueprint":
+              "Plano de Afirmación-Evidencia-Razonamiento",
+            "1. Claim": "1. Afirmación",
+            "2. Evidence (Mathematical Observations)":
+              "2. Evidencia (Observaciones matemáticas)",
+            "3. Reasoning (Mathematical Justification)":
+              "3. Razonamiento (Justificación matemática)",
+            "4. Student Reflection": "4. Reflexión del estudiante",
+            Unit: "Unidad",
+            Standard: "Estándar",
+            Cluster: "Grupo",
+            "Place Value Decimal Grid":
+              "Cuadrícula decimal de valor posicional",
+            "Decimal value": "Valor decimal",
+          },
+          ar: {
+            "Notice what quantities are being compared.":
+              "لاحظ الكميات التي يتم مقارنتها.",
+            "Use labels from the model as evidence.":
+              "استخدم التسميات من النموذج كدليل.",
+            "Connect the picture to a mathematical sentence.":
+              "قم بتوصيل الصورة بجملة رياضية.",
+            "GCF and LCM Venn Diagram":
+              "مخطط فين للقاسم المشترك الأكبر والمضاعف المشترك الأصغر",
+            "Coordinate Plotter": "راسم الإحداثيات",
+            "Ratio tape diagram model": "نموذج مخطط شريطي للنسبة",
+            "Geometry resizable model": "نموذج هندسي قابل لتغيير الحجم",
+            comparison: "مقارنة",
+            factor: "عوامل",
+            decimal: "عشري",
+            division: "قسمة",
+            fraction: "كسور",
+            ratio: "نسبة",
+            percent: "نسبة مئوية",
+            finance: "المالية",
+            area: "مساحة",
+            expression: "تعبيرات",
+            equation: "معادلات",
+            inequality: "متباينات",
+            data: "بيانات",
+            coordinate: "إحداثيات",
+            volume: "حجم",
+            surface: "مساحة السطح",
+            "Big Idea of Focus:": "الفكرة الكبرى للتركيز:",
+            "What to Look For": "ما الذي يجب البحث عنه",
+            "Claim-Evidence-Reasoning Blueprint":
+              "مخطط الادعاء والأدلة والتبرير",
+            "1. Claim": "1. الادعاء",
+            "2. Evidence (Mathematical Observations)":
+              "2. الأدلة (الملاحظات الرياضية)",
+            "3. Reasoning (Mathematical Justification)":
+              "3. التبرير (التبرير الرياضي)",
+            "4. Student Reflection": "4. تأمل الطالب",
+            Unit: "الوحدة",
+            Standard: "المعيار",
+            Cluster: "المجموعة",
+            "Place Value Decimal Grid": "شبكة القيمة المكانية العشرية",
+            "Decimal value": "القيمة العشرية",
+          },
+          vi: {
+            "Notice what quantities are being compared.":
+              "Lưu ý những đại lượng nào đang được so sánh.",
+            "Use labels from the model as evidence.":
+              "Sử dụng các nhãn từ mô hình làm bằng chứng.",
+            "Connect the picture to a mathematical sentence.":
+              "Kết nối hình ảnh với một câu toán học.",
+            "GCF and LCM Venn Diagram": "Sơ đồ Venn cho UCLN và BCNN",
+            "Coordinate Plotter": "Trình vẽ tọa độ",
+            "Ratio tape diagram model": "Mô hình sơ đồ băng tỷ số",
+            "Geometry resizable model":
+              "Mô hình hình học có thể thay đổi kích thước",
+            comparison: "So sánh",
+            factor: "Ước số",
+            decimal: "Thập phân",
+            division: "Phép chia",
+            fraction: "Phân số",
+            ratio: "Tỷ số",
+            percent: "Phần trăm",
+            finance: "Tài chính",
+            area: "Diện tích",
+            expression: "Biểu thức",
+            equation: "Phương trình",
+            inequality: "Bất đẳng thức",
+            data: "Dữ liệu",
+            coordinate: "Tọa độ",
+            volume: "Thể tích",
+            surface: "Diện tích bề mặt",
+            "Big Idea of Focus:": "Ý tưởng lớn trọng tâm:",
+            "What to Look For": "Những điều cần tìm kiếm",
+            "Claim-Evidence-Reasoning Blueprint":
+              "Bản thiết kế Khẳng định - Bằng chứng - Lập luận",
+            "1. Claim": "1. Khẳng định",
+            "2. Evidence (Mathematical Observations)":
+              "2. Bằng chứng (Quan sát toán học)",
+            "3. Reasoning (Mathematical Justification)":
+              "3. Lập luận (Giải thích toán học)",
+            "4. Student Reflection": "4. Phản ánh của học sinh",
+            Unit: "Bài học",
+            Standard: "Tiêu chuẩn",
+            Cluster: "Nhóm",
+            "Place Value Decimal Grid": "Lưới giá trị chữ số thập phân",
+            "Decimal value": "Giá trị thập phân",
+          },
+        };
+
+        function translateText(text, targetLang) {
+          if (!targetLang || targetLang === "en") return text;
+          if (TRANSLATIONS[targetLang] && TRANSLATIONS[targetLang][text]) {
+            return TRANSLATIONS[targetLang][text];
+          }
+          if (
+            text ===
+            "Prime factors, GCF, and LCM are different tools for organizing whole-number relationships."
+          ) {
+            if (targetLang === "es")
+              return "Los factores primos, MCD y MCM son herramientas diferentes para organizar las relaciones de números enteros.";
+            if (targetLang === "ar")
+              return "العوامل الأولية والقاسم المشترك الأكبر والمضاعف المشترك الأصغر هي أدوات مختلفة لتنظيم علاقات الأعداد الصحيحة.";
+            if (targetLang === "vi")
+              return "Các thừa số nguyên tố, UCLN và BCNN là các công cụ khác nhau để tổ chức các mối quan hệ số nguyên.";
+          }
+          return text;
+        }
+
+        window.updateCoachLanguage = function () {
+          renderCurrentLesson();
+        };
+
+        function renderCurrentLesson() {
+          if (!state.lesson) {
+            renderEmptyData();
+            return;
+          }
+
+          var lesson = state.lesson;
+          var unit = state.unit;
+          var cluster = state.cluster;
+          var info = modelInfo(cluster, lesson);
+          var lang = document.getElementById("coachLang")
+            ? document.getElementById("coachLang").value
+            : "en";
+
+          var bigIdeaText = cluster ? translateText(cluster.bigIdea, lang) : "";
+          var bigIdeaHtml = cluster
+            ? `
+            <div class="meta-item" style="grid-column: 1 / -1; background:#f0fdfa; border-color:#ccfbf1;">
+              <span class="meta-label" style="color:var(--studio-green)">${translateText("Big Idea of Focus:", lang)} <button class="action-btn" type="button" onclick="speakBigIdea()" style="background:none; border:none; cursor:pointer; font-size:1rem; padding:0 4px;" title="Listen to Big Idea">🔊 Listen</button></span>
+              <span class="meta-value" style="font-weight:600; color:#115e59;">${escapeHtml(bigIdeaText)}</span>
+            </div>
+          `
+            : "";
+
+          els.lessonTitle.textContent = lessonLabel(lesson);
+          els.lessonMeta.innerHTML =
+            metaItem(translateText("Unit", lang), unitLabel(unit, lesson)) +
+            metaItem(
+              translateText("Standard", lang),
+              getStandard(lesson, cluster),
+            ) +
+            metaItem(
+              translateText("Cluster", lang),
+              getClusterName(lesson, cluster),
+            ) +
+            bigIdeaHtml;
+
+          els.modelKind.textContent = translateText(info.label, lang);
+          els.modelFrame.innerHTML = renderSvg(info.kind);
+
+          els.modelPrompts.innerHTML = info.prompts
+            .map(function (prompt) {
+              return "<li>" + escapeHtml(translateText(prompt, lang)) + "</li>";
+            })
+            .join("");
+
+          renderModelControls(info.kind);
+        }
+
+        window.speakBigIdea = function () {
+          if (!window.speechSynthesis || !state.cluster) return;
+          window.speechSynthesis.cancel();
+          var lang = document.getElementById("coachLang")
+            ? document.getElementById("coachLang").value
+            : "en";
+          var text = translateText(state.cluster.bigIdea, lang);
+          var u = new SpeechSynthesisUtterance(text);
+          if (lang === "es") u.lang = "es-ES";
+          else if (lang === "ar") u.lang = "ar-SA";
+          else if (lang === "vi") u.lang = "vi-VN";
+          else u.lang = "en-US";
+          u.rate = 0.92;
+          window.speechSynthesis.speak(u);
+        };
+
+        window.speakPrompts = function () {
+          if (!window.speechSynthesis || !state.cluster) return;
+          window.speechSynthesis.cancel();
+          var lang = document.getElementById("coachLang")
+            ? document.getElementById("coachLang").value
+            : "en";
+          var info = modelInfo(state.cluster, state.lesson);
+          var translated = info.prompts.map(function (p) {
+            return translateText(p, lang);
+          });
+          var promptsText = translated.join(". ");
+          var u = new SpeechSynthesisUtterance(promptsText);
+          if (lang === "es") u.lang = "es-ES";
+          else if (lang === "ar") u.lang = "ar-SA";
+          else if (lang === "vi") u.lang = "vi-VN";
+          else u.lang = "en-US";
+          u.rate = 0.92;
+          window.speechSynthesis.speak(u);
+        };
+
+        function renderModelControls(kind) {
+          var cleanKind = normalizeId(kind);
+          var html = "";
+          if (cleanKind === "factor") {
+            html = `
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                  <label for="ctrl-val1" style="font-size:0.85rem;">Value A</label>
+                  <input type="number" id="ctrl-val1" value="${state.val1 || 18}" min="2" max="100" style="min-height:36px; padding:6px 8px;">
+                </div>
+                <div>
+                  <label for="ctrl-val2" style="font-size:0.85rem;">Value B</label>
+                  <input type="number" id="ctrl-val2" value="${state.val2 || 24}" min="2" max="100" style="min-height:36px; padding:6px 8px;">
+                </div>
+              </div>
+            `;
+          } else if (cleanKind === "decimal") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Tenths: <span id="lbl-val1">${state.val1 || 4}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 4}" min="0" max="9" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:8px;">Hundredths: <span id="lbl-val2">${state.val2 || 5}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="0" max="9" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "division") {
+            html = `
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                  <label for="ctrl-val1" style="font-size:0.85rem;">Dividend</label>
+                  <input type="number" id="ctrl-val1" value="${state.val1 || 120}" min="10" max="999" style="min-height:36px; padding:6px 8px;">
+                </div>
+                <div>
+                  <label for="ctrl-val2" style="font-size:0.85rem;">Divisor</label>
+                  <input type="number" id="ctrl-val2" value="${state.val2 || 12}" min="2" max="99" style="min-height:36px; padding:6px 8px;">
+                </div>
+              </div>
+            `;
+          } else if (cleanKind === "fraction") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Numerator: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="12" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:8px;">Denominator: <span id="lbl-val2">${state.val2 || 8}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 8}" min="1" max="12" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "ratio") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Term A: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="6" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Term B: <span id="lbl-val2">${state.val2 || 2}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 2}" min="1" max="6" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Scale Factor: <span id="lbl-val3">${state.val3 || 2}</span></label>
+                <input type="range" id="ctrl-val3" value="${state.val3 || 2}" min="1" max="4" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "percent") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Percent: <span id="lbl-val5">${state.val5 || 75}%</span></label>
+                <input type="range" id="ctrl-val5" value="${state.val5 || 75}" min="0" max="100" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "finance") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Principal ($): <span id="lbl-val1">${state.val1 || 100}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 100}" min="10" max="500" step="10" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Rate (%): <span id="lbl-val2">${state.val2 || 5}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="1" max="15" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "area") {
+            var selectedTri = state.val4 === "triangle" ? "selected" : "";
+            var selectedPara = state.val4 === "parallelogram" ? "selected" : "";
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Shape Type</label>
+                <select id="ctrl-val4" style="min-height:36px; padding:6px 8px; font-size:0.85rem; margin-bottom:8px;">
+                  <option value="triangle" ${selectedTri}>Triangle</option>
+                  <option value="parallelogram" ${selectedPara}>Parallelogram</option>
+                </select>
+                <label style="font-size:0.85rem;">Base: <span id="lbl-val1">${state.val1 || 18}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 18}" min="5" max="30" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Height: <span id="lbl-val2">${state.val2 || 8}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 8}" min="4" max="20" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "expression") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Variable x: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="10" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "equation") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Constant: <span id="lbl-val2">${state.val2 || 5}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="0" max="15" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "inequality") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Boundary value: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="5" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "data") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Interactive Dot Plot Builder</label>
+                <p style="font-size:0.78rem; color:var(--studio-muted); margin:4px 0 8px;">Displays student statistical scores spread visually.</p>
+              </div>
+            `;
+          } else if (cleanKind === "coordinate") {
+            html = `
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                  <label style="font-size:0.85rem;">Point X: <span id="lbl-val1">${state.val1 || 5}</span></label>
+                  <input type="range" id="ctrl-val1" value="${state.val1 || 5}" min="0" max="10" style="width:100%;">
+                </div>
+                <div>
+                  <label style="font-size:0.85rem;">Point Y: <span id="lbl-val2">${state.val2 || 5}</span></label>
+                  <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="0" max="10" style="width:100%;">
+                </div>
+              </div>
+            `;
+          } else if (cleanKind === "volume") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Width: <span id="lbl-val1">${state.val1 || 4}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 4}" min="1" max="6" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Height: <span id="lbl-val2">${state.val2 || 3}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 3}" min="1" max="5" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === "surface") {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Folding Angle: <span id="lbl-val1">${state.val1 || 45}&deg;</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 45}" min="0" max="90" style="width:100%;">
+              </div>
+            `;
+          }
+          els.modelControls.innerHTML = html;
+
+          [
+            "ctrl-val1",
+            "ctrl-val2",
+            "ctrl-val3",
+            "ctrl-val4",
+            "ctrl-val5",
+          ].forEach(function (id, idx) {
+            var el = document.getElementById(id);
+            if (el) {
+              var evType = el.tagName === "SELECT" ? "change" : "input";
+              el.addEventListener(evType, function () {
+                var val = el.tagName === "SELECT" ? el.value : Number(el.value);
+                state["val" + (idx + 1)] = val;
+
+                var lbl = document.getElementById("lbl-val" + (idx + 1));
+                if (lbl)
+                  lbl.textContent =
+                    val +
+                    (id === "ctrl-val5"
+                      ? "%"
+                      : id === "ctrl-val1" && cleanKind === "surface"
+                        ? "°"
+                        : "");
+
+                var info = modelInfo(state.cluster, state.lesson);
+                els.modelFrame.innerHTML = renderSvg(info.kind);
+              });
+            }
+          });
+        }
+
+        function getPrimeFactors(num) {
+          var factors = [];
+          var d = 2;
+          var temp = num;
+          while (temp > 1) {
+            while (temp % d === 0) {
+              factors.push(d);
+              temp /= d;
+            }
+            d++;
+            if (d * d > temp) {
+              if (temp > 1) factors.push(temp);
+              break;
+            }
+          }
+          return factors;
+        }
+
+        function renderSvg(kind) {
+          var cleanKind = normalizeId(kind);
+          if (
+            cleanKind.indexOf("number") !== -1 ||
+            cleanKind.indexOf("line") !== -1 ||
+            cleanKind === "inequality"
+          ) {
+            return numberLineSvg();
+          }
+          if (
+            cleanKind.indexOf("area") !== -1 ||
+            cleanKind.indexOf("array") !== -1 ||
+            cleanKind === "fraction" ||
+            cleanKind === "percent" ||
+            cleanKind === "decimal"
+          ) {
+            return areaSvg(cleanKind);
+          }
+          if (
+            cleanKind.indexOf("coordinate") !== -1 ||
+            cleanKind.indexOf("graph") !== -1
+          ) {
+            return coordinateSvg();
+          }
+          if (
+            cleanKind.indexOf("ratio") !== -1 ||
+            cleanKind.indexOf("tape") !== -1
+          ) {
+            return ratioSvg();
+          }
+          if (
+            cleanKind.indexOf("data") !== -1 ||
+            cleanKind.indexOf("plot") !== -1
+          ) {
+            return dataSvg();
+          }
+          if (
+            cleanKind.indexOf("geometry") !== -1 ||
+            cleanKind.indexOf("shape") !== -1 ||
+            cleanKind === "area"
+          ) {
+            return geometrySvg();
+          }
+          if (cleanKind === "factor") {
+            return factorSvg();
+          }
+          if (cleanKind === "finance") {
+            return financeSvg();
+          }
+          return comparisonSvg();
+        }
+
+        function svgShell(label, inner) {
+          return (
+            '<svg role="img" aria-label="' +
+            escapeHtml(label) +
+            '" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">' +
+            '<rect width="520" height="320" rx="18" fill="#f8fbff"/>' +
+            inner +
+            "</svg>"
+          );
+        }
+
+        function factorSvg() {
+          var valA = state.val1 || 18;
+          var valB = state.val2 || 24;
+          var primesA = getPrimeFactors(valA);
+          var primesB = getPrimeFactors(valB);
+
+          var intersection = [];
+          var tempB = primesB.slice();
+          primesA.forEach(function (p) {
+            var idx = tempB.indexOf(p);
+            if (idx !== -1) {
+              intersection.push(p);
+              tempB.splice(idx, 1);
+            }
+          });
+
+          var onlyA = primesA.slice();
+          intersection.forEach(function (p) {
+            var idx = onlyA.indexOf(p);
+            if (idx !== -1) onlyA.splice(idx, 1);
+          });
+          var onlyB = tempB;
+
+          var circles = `
+            <circle cx="200" cy="160" r="100" fill="rgba(36,94,168,0.15)" stroke="#245ea8" stroke-width="4"/>
+            <circle cx="320" cy="160" r="100" fill="rgba(25,118,92,0.15)" stroke="#19765c" stroke-width="4"/>
+            <text x="130" y="80" font-size="20" font-weight="800" fill="#245ea8">A: ${valA}</text>
+            <text x="390" y="80" font-size="20" font-weight="800" fill="#19765c">B: ${valB}</text>
+          `;
+
+          var bubbles = "";
+          onlyA.forEach(function (p, i) {
+            bubbles += `<circle cx="160" cy="${110 + i * 40}" r="16" fill="#245ea8"/><text x="160" y="${117 + i * 40}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff">${p}</text>`;
+          });
+          onlyB.forEach(function (p, i) {
+            bubbles += `<circle cx="360" cy="${110 + i * 40}" r="16" fill="#19765c"/><text x="360" y="${117 + i * 40}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff">${p}</text>`;
+          });
+          intersection.forEach(function (p, i) {
+            bubbles += `<circle cx="260" cy="${110 + i * 40}" r="16" fill="#d97706"/><text x="260" y="${117 + i * 40}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff">${p}</text>`;
+          });
+
+          var gcf = intersection.reduce(function (a, b) {
+            return a * b;
+          }, 1);
+          var lcm = (valA * valB) / gcf;
+
+          return svgShell(
+            "GCF and LCM Venn Diagram",
+            circles +
+              bubbles +
+              `
+              <text x="260" y="280" text-anchor="middle" font-size="18" font-weight="800" fill="#17212f">GCF = ${gcf}  |  LCM = ${lcm}</text>
+            `,
+          );
+        }
+
+        function financeSvg() {
+          var principal = state.val1 || 100;
+          var rate = state.val2 || 5;
+          var years = 3;
+          var interest = (principal * rate * years) / 100;
+          var total = principal + interest;
+
+          var pHeight = (principal / 500) * 180;
+          var iHeight = (interest / 500) * 180;
+
+          return svgShell(
+            "Financial simple interest bar graph",
+            `
+              <line x1="80" y1="240" x2="440" y2="240" stroke="#23364d" stroke-width="4"/>
+              <rect x="150" y="${240 - pHeight}" width="80" height="${pHeight}" fill="#245ea8" rx="4"/>
+              <rect x="290" y="${240 - (pHeight + iHeight)}" width="80" height="${pHeight + iHeight}" fill="#19765c" rx="4"/>
+              <rect x="290" y="${240 - (pHeight + iHeight)}" width="80" height="${iHeight}" fill="#d97706" rx="4"/>
+              <text x="190" y="265" text-anchor="middle" font-size="16" font-weight="800" fill="#245ea8">Principal: $${principal}</text>
+              <text x="330" y="265" text-anchor="middle" font-size="16" font-weight="800" fill="#19765c">Total: $${total}</text>
+              <text x="330" y="285" text-anchor="middle" font-size="14" font-weight="700" fill="#d97706">(Interest: $${interest})</text>
+              <text x="260" y="45" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">3-Year Simple Interest Accumulator</text>
+            `,
+          );
+        }
+
+        function numberLineSvg() {
+          var val = state.val1 || 3;
+          var dotPx = 64 + val * 78;
+          var lineShade = `
+            <line x1="${dotPx}" y1="172" x2="450" y2="172" stroke="#19765c" stroke-width="8" stroke-linecap="round"/>
+            <path d="M440 162 L454 172 L440 182" fill="none" stroke="#19765c" stroke-width="6" stroke-linejoin="round"/>
+          `;
+          return svgShell(
+            "Number line model",
+            '<line x1="64" y1="172" x2="456" y2="172" stroke="#23364d" stroke-width="5" stroke-linecap="round"/>' +
+              '<path d="M448 160 L464 172 L448 184" fill="none" stroke="#23364d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
+              lineShade +
+              [0, 1, 2, 3, 4, 5]
+                .map(function (index) {
+                  var x = 64 + index * 78;
+                  return (
+                    '<g><line x1="' +
+                    x +
+                    '" y1="154" x2="' +
+                    x +
+                    '" y2="190" stroke="#23364d" stroke-width="4"/><text x="' +
+                    x +
+                    '" y="224" text-anchor="middle" font-size="22" font-weight="700" fill="#17212f">' +
+                    index +
+                    "</text></g>"
+                  );
+                })
+                .join("") +
+              `<circle cx="${dotPx}" cy="172" r="12" fill="#19765c" stroke="#ffffff" stroke-width="3"/>` +
+              `<text x="260" y="80" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">Inequality: x &ge; ${val}</text>`,
+          );
+        }
+
+        function areaSvg(cleanKind) {
+          var cells = "";
+          var cols = 8;
+          var rows = 4;
+
+          if (cleanKind === "decimal") {
+            var tenths = state.val1 || 0;
+            var hundredths = state.val2 || 0;
+            var totalShaded = tenths * 10 + hundredths;
+            for (var row = 0; row < 10; row += 1) {
+              for (var col = 0; col < 10; col += 1) {
+                var cellNum = row * 10 + col;
+                var shaded = cellNum < totalShaded;
+                cells +=
+                  '<rect x="' +
+                  (110 + col * 28) +
+                  '" y="' +
+                  (40 + row * 22) +
+                  '" width="28" height="22" fill="' +
+                  (shaded ? "var(--studio-blue)" : "#ffffff") +
+                  '" stroke="#cbd5e1" stroke-width="1"/>';
+              }
+            }
+            return svgShell(
+              "Place Value Decimal Grid",
+              cells +
+                `<text x="260" y="295" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">Decimal value: 0.${tenths}${hundredths}</text>`,
+            );
+          }
+
+          if (cleanKind === "percent") {
+            var activePercent = state.val5 || 75;
+            for (var row = 0; row < 10; row += 1) {
+              for (var col = 0; col < 10; col += 1) {
+                var cellNum = row * 10 + col;
+                var shaded = cellNum < activePercent;
+                cells +=
+                  '<rect x="' +
+                  (110 + col * 28) +
+                  '" y="' +
+                  (40 + row * 22) +
+                  '" width="28" height="22" fill="' +
+                  (shaded ? "var(--studio-green)" : "#ffffff") +
+                  '" stroke="#24516f" stroke-width="1.5" style="transition: fill 0.15s ease;"/>';
+              }
+            }
+            return svgShell(
+              "Hundred grid percentage visualizer",
+              cells +
+                `<text x="260" y="295" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">Percent shaded: ${activePercent}%</text>`,
+            );
+          }
+
+          if (cleanKind === "fraction") {
+            var num = state.val1 || 3;
+            var den = state.val2 || 8;
+            for (var col = 0; col < den; col += 1) {
+              var shaded = col < num;
+              cells +=
+                '<rect x="' +
+                (80 + col * (360 / den)) +
+                '" y="' +
+                80 +
+                '" width="' +
+                360 / den +
+                '" height="120" fill="' +
+                (shaded ? "var(--studio-blue)" : "#ffffff") +
+                '" stroke="#24516f" stroke-width="3"/>';
+            }
+            return svgShell(
+              "Fraction area model resizer",
+              cells +
+                `<text x="260" y="260" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">Fraction: ${num} / ${den}</text>`,
+            );
+          }
+
+          for (var row = 0; row < rows; row += 1) {
+            for (var col = 0; col < cols; col += 1) {
+              cells +=
+                '<rect x="' +
+                (94 + col * 42) +
+                '" y="' +
+                (62 + row * 38) +
+                '" width="42" height="38" fill="' +
+                (row < 2 ? "#dcecff" : "#e8f6ef") +
+                '" stroke="#24516f" stroke-width="2"/>';
+            }
+          }
+          return svgShell(
+            "Area or array model",
+            cells +
+              '<text x="250" y="272" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">rows x columns</text>' +
+              '<path d="M94 42 H430" stroke="#245ea8" stroke-width="5" stroke-linecap="round"/>' +
+              '<path d="M74 62 V214" stroke="#19765c" stroke-width="5" stroke-linecap="round"/>',
+          );
+        }
+
+        function coordinateSvg() {
+          var gridLines = "";
+          for (var i = 0; i <= 10; i++) {
+            var pos = 60 + i * 20;
+            gridLines += `<line x1="${pos}" y1="40" x2="${pos}" y2="240" stroke="#cbd5e1" stroke-width="0.8"/>`;
+            gridLines += `<line x1="60" y1="${pos}" x2="260" y2="${pos}" stroke="#cbd5e1" stroke-width="0.8"/>`;
+          }
+
+          var pX = state.val1 || 5;
+          var pY = state.val2 || 5;
+          var cx = 60 + pX * 20;
+          var cy = 240 - pY * 20;
+
+          return svgShell(
+            "Coordinate plane plotter",
+            `
+              <g>${gridLines}</g>
+              <line x1="60" y1="240" x2="280" y2="240" stroke="#23364d" stroke-width="4"/>
+              <line x1="60" y1="40" x2="60" y2="240" stroke="#23364d" stroke-width="4"/>
+              <line x1="${cx}" y1="240" x2="${cx}" y2="${cy}" stroke="#245ea8" stroke-width="2" stroke-dasharray="4 4"/>
+              <line x1="60" y1="${cy}" x2="${cx}" y2="${cy}" stroke="#245ea8" stroke-width="2" stroke-dasharray="4 4"/>
+              <circle cx="${cx}" cy="${cy}" r="8" fill="#19765c"/>
+              <text x="${cx + 12}" y="${cy - 12}" font-size="18" font-weight="900" fill="#19765c">P(${pX}, ${pY})</text>
+              <text x="260" y="280" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">Coordinate Plotter</text>
+            `,
+          );
+        }
+
+        function ratioSvg() {
+          var termA = state.val1 || 3;
+          var termB = state.val2 || 2;
+          var scale = state.val3 || 2;
+
+          var blocks = "";
+          for (var i = 0; i < termA * scale; i++) {
+            blocks += `<rect x="${60 + i * (380 / (termA * scale))}" y="78" width="${380 / (termA * scale) - 4}" height="48" fill="#dcecff" stroke="#24516f" stroke-width="2.5"/>`;
+          }
+          for (var i = 0; i < termB * scale; i++) {
+            blocks += `<rect x="${60 + i * (380 / (termB * scale))}" y="160" width="${380 / (termB * scale) - 4}" height="48" fill="#e8f6ef" stroke="#24516f" stroke-width="2.5"/>`;
+          }
+
+          return svgShell(
+            "Ratio tape diagram model",
+            blocks +
+              `
+              <text x="35" y="110" text-anchor="middle" font-size="20" font-weight="900" fill="#245ea8">A</text>
+              <text x="35" y="192" text-anchor="middle" font-size="20" font-weight="900" fill="#19765c">B</text>
+              <text x="260" y="270" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">Equivalent scaled: ${termA * scale} : ${termB * scale}  (scale: ${scale}x)</text>
+            `,
+          );
+        }
+
+        function dataSvg() {
+          return svgShell(
+            "Data plot model",
+            '<line x1="76" y1="244" x2="454" y2="244" stroke="#23364d" stroke-width="5" stroke-linecap="round"/>' +
+              [90, 134, 178, 222, 266, 310, 354, 398, 442]
+                .map(function (x, index) {
+                  return (
+                    '<g><line x1="' +
+                    x +
+                    '" y1="232" x2="' +
+                    x +
+                    '" y2="256" stroke="#23364d" stroke-width="3"/><text x="' +
+                    x +
+                    '" y="286" text-anchor="middle" font-size="16" font-weight="800" fill="#17212f">' +
+                    (index + 1) +
+                    "</text></g>"
+                  );
+                })
+                .join("") +
+              '<circle cx="134" cy="220" r="8" fill="#245ea8"/><circle cx="178" cy="220" r="8" fill="#245ea8"/><circle cx="178" cy="196" r="8" fill="#245ea8"/><circle cx="222" cy="220" r="8" fill="#245ea8"/><circle cx="222" cy="196" r="8" fill="#245ea8"/><circle cx="222" cy="172" r="8" fill="#245ea8"/><circle cx="266" cy="220" r="8" fill="#19765c"/><circle cx="354" cy="220" r="8" fill="#b26a00"/><circle cx="398" cy="220" r="8" fill="#b26a00"/>' +
+              '<text x="258" y="76" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">statistical analysis visualizer</text>',
+          );
+        }
+
+        function geometrySvg() {
+          var base = state.val1 || 18;
+          var height = state.val2 || 8;
+          var shape = state.val4 || "triangle";
+
+          var bPx = 100 + base * 8;
+          var hPx = height * 10;
+
+          var polygon = "";
+          if (shape === "parallelogram") {
+            polygon = `<polygon points="100,220 ${bPx},220 ${bPx + 60},${220 - hPx} ${160},${220 - hPx}" fill="#dcecff" stroke="#24516f" stroke-width="5" stroke-linejoin="round"/>`;
+          } else {
+            polygon = `<polygon points="100,220 220,${220 - hPx} ${bPx},220" fill="#dcecff" stroke="#24516f" stroke-width="5" stroke-linejoin="round"/>`;
+          }
+
+          return svgShell(
+            "Geometry resizable model",
+            polygon +
+              `
+              <line x1="220" y1="${220 - hPx}" x2="220" y2="220" stroke="#19765c" stroke-width="5" stroke-dasharray="10 8"/>
+              <rect x="220" y="200" width="20" height="20" fill="none" stroke="#19765c" stroke-width="4"/>
+              <text x="252" y="${210 - hPx / 2}" font-size="20" font-weight="900" fill="#19765c">h: ${height}</text>
+              <text x="260" y="270" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">base: ${base}</text>
+            `,
+          );
+        }
+
+        function comparisonSvg() {
+          return svgShell(
+            "Comparison model",
+            '<rect x="82" y="88" width="316" height="48" rx="8" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
+              '<rect x="82" y="184" width="226" height="48" rx="8" fill="#e8f6ef" stroke="#24516f" stroke-width="3"/>' +
+              '<line x1="398" y1="88" x2="398" y2="232" stroke="#b26a00" stroke-width="5" stroke-dasharray="9 7"/>' +
+              '<line x1="308" y1="184" x2="308" y2="232" stroke="#b26a00" stroke-width="5" stroke-dasharray="9 7"/>' +
+              '<path d="M310 158 H396" stroke="#b26a00" stroke-width="5" stroke-linecap="round"/>' +
+              '<path d="M390 148 L404 158 L390 168" fill="none" stroke="#b26a00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
+              '<text x="62" y="120" text-anchor="middle" font-size="20" font-weight="900" fill="#245ea8">A</text>' +
+              '<text x="62" y="216" text-anchor="middle" font-size="20" font-weight="900" fill="#19765c">B</text>' +
+              '<text x="354" y="146" text-anchor="middle" font-size="20" font-weight="900" fill="#b26a00">difference</text>',
+          );
+        }
+
+        function draftKey() {
+          var id = state.lesson
+            ? firstText(
+                state.lesson.id,
+                state.lesson.slug,
+                lessonNumber(state.lesson),
+              )
+            : "no-lesson";
+          return STORAGE_PREFIX + id;
+        }
+
+        function formData() {
+          return {
+            studentName: els.studentName.value,
+            claim: els.claim.value,
+            evidence: els.evidence.value,
+            reasoning: els.reasoning.value,
+            reflection: els.reflection.value,
+          };
+        }
+
+        function setFormData(data) {
+          els.studentName.value = data.studentName || "";
+          els.claim.value = data.claim || "";
+          els.evidence.value = data.evidence || "";
+          els.reasoning.value = data.reasoning || "";
+          els.reflection.value = data.reflection || "";
+        }
+
+        function saveDraft(showMessage) {
+          if (!state.lesson) return;
+          localStorage.setItem(draftKey(), JSON.stringify(formData()));
+          if (showMessage) setStatus("Draft saved.");
+        }
+
+        function loadDraft() {
+          setFormData({});
+          if (!state.lesson) return;
+          var raw = localStorage.getItem(draftKey());
+          if (!raw) {
+            setStatus("");
+            return;
+          }
+          try {
+            setFormData(JSON.parse(raw));
+            setStatus("Saved draft loaded.");
+          } catch (error) {
+            setStatus("");
+          }
+        }
+
+        function clearDraft() {
+          if (!state.lesson) return;
+          localStorage.removeItem(draftKey());
+          setFormData({});
+          setStatus("Draft cleared.");
+          els.claim.focus();
+        }
+
+        function copyTextFallback(text) {
+          var area = document.createElement("textarea");
+          area.value = text;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.left = "-9999px";
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand("copy");
+          document.body.removeChild(area);
+        }
+
+        function cardText() {
+          var data = formData();
+          return [
+            "Reveal Math Evidence Studio",
+            lessonLabel(state.lesson || {}),
+            "Unit: " + unitLabel(state.unit, state.lesson),
+            "Standard: " + getStandard(state.lesson, state.cluster),
+            "Cluster: " + getClusterName(state.lesson, state.cluster),
+            "",
+            "Name: " + (data.studentName || ""),
+            "",
+            "Claim:",
+            data.claim || "",
+            "",
+            "Evidence:",
+            data.evidence || "",
+            "",
+            "Reasoning:",
+            data.reasoning || "",
+            "",
+            "Reflection:",
+            data.reflection || "",
+          ].join("\n");
+        }
+
+        function copyCard() {
+          var text = cardText();
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(text)
+              .then(function () {
+                setStatus("Evidence card copied.");
+              })
+              .catch(function () {
+                copyTextFallback(text);
+                setStatus("Evidence card copied.");
+              });
+          } else {
+            copyTextFallback(text);
+            setStatus("Evidence card copied.");
+          }
+        }
+
+        function downloadWordBlueprint() {
+          if (!state.lesson) {
+            setStatus("Please select a lesson first.");
+            return;
+          }
+          var data = formData();
+          if (!data.claim || !data.evidence || !data.reasoning) {
+            setStatus(
+              "Please fill in Claim, Evidence, and Reasoning before downloading.",
+            );
+            return;
+          }
+
+          var docHtml =
+            '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+            "<head>" +
+            '<meta charset="utf-8">' +
+            "<title>Reveal Math CER Lesson Blueprint</title>" +
+            "<style>" +
+            'body { font-family: "Calibri", "Arial", sans-serif; line-height: 1.5; color: #17212f; margin: 1in; }' +
+            'h1 { color: #245ea8; font-size: 22pt; border-bottom: 3px solid #245ea8; padding-bottom: 6px; font-family: "Georgia", serif; margin-bottom: 5pt; }' +
+            ".eyebrow { color: #5c6878; font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12pt; }" +
+            "h2 { color: #17212f; font-size: 14pt; margin-top: 18pt; border-bottom: 1px solid #d8e1ec; padding-bottom: 3px; }" +
+            ".metadata { font-size: 11pt; margin-bottom: 20pt; background-color: #f4f7fb; padding: 12px; border: 1px solid #d8e1ec; border-radius: 6px; }" +
+            ".meta-table { width: 100%; border-collapse: collapse; margin-top: 6px; }" +
+            ".meta-table td { padding: 4px 8px; vertical-align: top; font-size: 10.5pt; }" +
+            ".section-title { font-weight: bold; font-size: 12pt; color: #245ea8; margin-top: 16pt; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }" +
+            ".box { border: 1px solid #d8e1ec; padding: 14px; margin-bottom: 15px; background-color: #ffffff; border-radius: 6px; }" +
+            ".box-title { font-weight: bold; font-size: 11pt; color: #17212f; margin-bottom: 6px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 3px; }" +
+            ".box-content { font-size: 11pt; color: #23364d; white-space: pre-wrap; }" +
+            ".big-idea-box { background-color: #f0fdfa; border: 1px solid #ccfbf1; padding: 12px; border-radius: 6px; color: #115e59; font-size: 10.5pt; margin-bottom: 15px; }" +
+            ".footer { text-align: center; font-size: 9pt; color: #5c6878; margin-top: 40pt; border-top: 1px solid #d8e1ec; padding-top: 12px; }" +
+            "
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>" +
+            "</head>" +
+            "<body>" +
+            '<div class="eyebrow">Reveal Math Grade 6 • Student Lesson Blueprint</div>' +
+            "<h1>Mathematical CER Evidence Studio</h1>" +
+            '<div class="metadata">' +
+            '<table class="meta-table">' +
+            "<tr>" +
+            '<td style="width: 20%;"><strong>Student Name:</strong></td>' +
+            '<td style="width: 30%;">' +
+            escapeHtml(data.studentName || "Not Provided") +
+            "</td>" +
+            '<td style="width: 20%;"><strong>Date Created:</strong></td>' +
+            '<td style="width: 30%;">' +
+            new Date().toLocaleDateString() +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td><strong>Lesson:</strong></td>" +
+            "<td>" +
+            escapeHtml(lessonLabel(state.lesson || {})) +
+            "</td>" +
+            "<td><strong>Standard:</strong></td>" +
+            "<td>" +
+            escapeHtml(getStandard(state.lesson, state.cluster)) +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td><strong>Unit:</strong></td>" +
+            "<td>" +
+            escapeHtml(unitLabel(state.unit, state.lesson)) +
+            "</td>" +
+            "<td><strong>Cluster:</strong></td>" +
+            "<td>" +
+            escapeHtml(getClusterName(state.lesson, state.cluster)) +
+            "</td>" +
+            "</tr>" +
+            "</table>" +
+            "</div>" +
+            (state.cluster && state.cluster.bigIdea
+              ? '<div class="big-idea-box">' +
+                "<strong>Big Idea of Focus:</strong><br>" +
+                escapeHtml(state.cluster.bigIdea) +
+                "</div>"
+              : "") +
+            '<div class="section-title">Claim-Evidence-Reasoning Blueprint</div>' +
+            '<div class="box">' +
+            '<div class="box-title">1. Claim</div>' +
+            '<div class="box-content">' +
+            escapeHtml(data.claim) +
+            "</div>" +
+            "</div>" +
+            '<div class="box">' +
+            '<div class="box-title">2. Evidence (Mathematical Observations)</div>' +
+            '<div class="box-content">' +
+            escapeHtml(data.evidence) +
+            "</div>" +
+            "</div>" +
+            '<div class="box">' +
+            '<div class="box-title">3. Reasoning (Mathematical Justification)</div>' +
+            '<div class="box-content">' +
+            escapeHtml(data.reasoning) +
+            "</div>" +
+            "</div>" +
+            (data.reflection
+              ? '<div class="box">' +
+                '<div class="box-title">4. Student Reflection</div>' +
+                '<div class="box-content">' +
+                escapeHtml(data.reflection) +
+                "</div>" +
+                "</div>"
+              : "") +
+            '<div class="footer">' +
+            "<p>Generated dynamically by Neft Teacher Reveal Math Evidence Studio. All student progress processed completely offline in compliance with student data privacy standards.</p>" +
+            "</div>" +
+            "  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>" +
+            "</html>";
+
+          var blob = new Blob(["\ufeff" + docHtml], {
+            type: "application/msword",
+          });
+
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download =
+            "Math_CER_Blueprint_" +
+            normalizeId(lessonNumber(state.lesson)) +
+            "_" +
+            new Date().toISOString().slice(0, 10) +
+            ".doc";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          setStatus("Lesson blueprint document generated successfully!");
+        }
+
+        function setStatus(message) {
+          els.status.textContent = message;
+          if (message) {
+            window.clearTimeout(setStatus.timer);
+            setStatus.timer = window.setTimeout(function () {
+              els.status.textContent = "";
+            }, 3500);
+          }
+        }
+
+        function init() {
+          state.lessons = asArray(window.REVEAL_MATH_LESSONS);
+          state.units = asArray(window.REVEAL_MATH_UNITS);
+          state.clusters = asArray(window.REVEAL_MATH_CLUSTERS);
+
+          state.lessons.sort(function (a, b) {
+            return lessonNumber(a).localeCompare(lessonNumber(b), undefined, {
+              numeric: true,
+              sensitivity: "base",
+            });
+          });
+
+          renderLessonPicker();
+
+          els.lessonSelect.addEventListener("change", function () {
+            setLesson(Number(els.lessonSelect.value));
+          });
+          els.saveDraft.addEventListener("click", function () {
+            saveDraft(true);
+          });
+          els.downloadDocx.addEventListener("click", downloadWordBlueprint);
+          els.copyCard.addEventListener("click", copyCard);
+          els.printCard.addEventListener("click", function () {
+            saveDraft(false);
+            window.print();
+          });
+          els.clearDraft.addEventListener("click", clearDraft);
+          els.form.addEventListener("input", function () {
+            saveDraft(false);
+          });
+        }
+
+        init();
+      })();
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>

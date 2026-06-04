@@ -1,0 +1,3151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gemini Data Quest: An interactive AI adventure teaching 6th graders median, mode, and effective AI prompting strategies." />
+  <title>Gemini Data Quest: Median & Mode AI Adventure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ========== CONFIG TOKENS ========== */
+    :root {
+      --navy: #0f1a2e;
+      --navy-mid: #1a2d4a;
+      --blue: #2563eb;
+      --blue-light: #3b82f6;
+      --teal: #0d9488;
+      --teal-dark: #0f766e;
+      --mint: #d1fae5;
+      --mint-soft: #ecfdf5;
+      --cream: #fffbeb;
+      --cream-soft: #fef9ec;
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --amber: #d97706;
+      --orange: #ea580c;
+      --rose: #ffe4e6;
+      --rose-dark: #f43f5e;
+      --purple: #7c3aed;
+      --purple-soft: #ede9fe;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --line-light: #f1f5f9;
+      --card: #ffffff;
+      --success: #059669;
+      --success-bg: #d1fae5;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warn-bg: #fef3c7;
+      --body-bg: linear-gradient(170deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
+      --glass: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.1);
+      --glass-strong: rgba(255,255,255,0.12);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.12);
+      --shadow-md: 0 8px 30px rgba(0,0,0,0.2);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.3);
+      --shadow-glow: 0 0 40px rgba(37,99,235,0.15);
+      --radius: 20px;
+      --radius-sm: 14px;
+      --radius-xs: 10px;
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+      --fs-base: 1rem;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .high-contrast {
+      --navy: #000000;
+      --ink: #000000;
+      --muted: #333333;
+      --card: #ffffff;
+      --line: #000000;
+      --glass: rgba(255,255,255,0.15);
+      --glass-border: rgba(255,255,255,0.3);
+    }
+
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: var(--fs-base); }
+    .fs-large { --fs-base: 1.12rem; }
+    .fs-xlarge { --fs-base: 1.24rem; }
+
+    body {
+      font-family: var(--font-main);
+      color: #e2e8f0;
+      background: var(--body-bg);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--blue-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ========== PARTICLES CANVAS ========== */
+    #particles-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ========== APP SHELL ========== */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1200px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 20px 0 60px;
+    }
+
+    /* ========== HERO ========== */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f2847 40%, #0d3b66 70%, #0a4d68 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 40px 36px 36px;
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -120px; right: -100px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%);
+      animation: heroFloat 8s ease-in-out infinite;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      bottom: -80px; left: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13,148,136,0.15) 0%, transparent 70%);
+      animation: heroFloat 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes heroFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(20px, -15px) scale(1.05); }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      color: var(--gold-light);
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 800px;
+      color: #ffffff;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, var(--gold-light), var(--teal), var(--blue-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      max-width: 720px;
+      font-size: 1.15rem;
+      margin: 16px 0 0;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 28px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-stat {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      transition: transform var(--transition), background var(--transition);
+    }
+
+    .hero-stat:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 1.5rem;
+      font-family: var(--font-display);
+      color: #ffffff;
+    }
+
+    .hero-stat span {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* ========== TOOLBAR ========== */
+    .toolbar {
+      position: sticky;
+      top: 8px;
+      z-index: 50;
+      margin: 18px 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-wrap { flex: 1 1 200px; min-width: 180px; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 5px;
+      font-size: 0.88rem;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal), var(--blue-light), var(--gold-light));
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* XP Bar */
+    .xp-wrap { flex: 0 1 160px; text-align: center; }
+    .xp-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .xp-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(245,158,11,0.15);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .xp-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--gold), var(--orange));
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .xp-text {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+    }
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(234,88,12,0.15));
+      border: 1px solid rgba(245,158,11,0.3);
+      font-weight: 800;
+      font-size: 0.82rem;
+      color: var(--gold-light);
+      white-space: nowrap;
+    }
+
+    /* Toolbar controls */
+    .toolbar-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* ========== BUTTONS ========== */
+    button, .btn {
+      appearance: none;
+      border: 0;
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-family: var(--font-main);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), opacity var(--transition);
+      white-space: nowrap;
+    }
+
+    button:hover, .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    button:active, .btn:active { transform: translateY(0); }
+
+    button:focus-visible, .btn:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(245,158,11,0.7);
+      outline-offset: 2px;
+    }
+
+    .btn-primary { background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; }
+    .btn-gemini { background: linear-gradient(135deg, #4285f4, #7c3aed, #db4437); color: white; background-size: 200% 200%; animation: geminiGlow 4s ease infinite; }
+    @keyframes geminiGlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .btn-check { background: linear-gradient(135deg, var(--teal), var(--teal-dark)); color: white; }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.12); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.14); }
+    .btn-print { background: linear-gradient(135deg, var(--orange), #dc2626); color: white; }
+    .btn-ghost { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.12); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.06); }
+    .btn-success { background: linear-gradient(135deg, var(--success), var(--teal-dark)); color: white; }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), var(--amber)); color: var(--navy); }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; border-radius: var(--radius-xs); }
+    .btn-icon { padding: 8px 10px; min-width: 36px; }
+
+    /* ========== NAV CARDS ========== */
+    .nav-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .nav-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+      text-decoration: none;
+      color: rgba(255,255,255,0.9);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all var(--transition);
+    }
+
+    .nav-card:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+
+    .nav-card .nav-sub {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.78rem;
+    }
+
+    .nav-card.nav-active {
+      border-color: var(--blue-light);
+      background: rgba(37,99,235,0.1);
+    }
+
+    /* ========== SECTIONS ========== */
+    section {
+      margin: 20px 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      width: 56px; height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 1.7rem;
+      border: 2px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .section-heading h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.15;
+    }
+
+    .section-heading .section-desc {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .time-pill {
+      background: rgba(13,148,136,0.15);
+      color: var(--teal);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      border: 1px solid rgba(13,148,136,0.25);
+    }
+
+    /* AI Strategy Card */
+    .ai-strategy-card {
+      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(37,99,235,0.1));
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .ai-strategy-icon {
+      width: 50px; height: 50px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .ai-strategy-content h3 {
+      color: var(--purple);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 2px;
+      font-weight: 800;
+    }
+
+    .ai-strategy-content p {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* ========== GRIDS ========== */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    /* ========== CARDS ========== */
+    .card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.03);
+      padding: 20px;
+      transition: all var(--transition);
+    }
+
+    .card:hover { border-color: rgba(255,255,255,0.12); }
+
+    .card.card-mint { background: rgba(13,148,136,0.08); border-color: rgba(13,148,136,0.2); }
+    .card.card-cream { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.18); }
+    .card.card-rose { background: rgba(244,63,94,0.06); border-color: rgba(244,63,94,0.18); }
+    .card.card-purple { background: rgba(124,58,237,0.06); border-color: rgba(124,58,237,0.18); }
+    .card.card-blue { background: rgba(37,99,235,0.06); border-color: rgba(37,99,235,0.18); }
+
+    .card h3 {
+      font-family: var(--font-display);
+      color: #ffffff;
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+    }
+
+    .card p, .card li {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.95rem;
+    }
+
+    .card ul, .card ol { padding-left: 22px; margin: 8px 0; }
+    .card li { margin: 4px 0; }
+
+    /* ========== DATA CHIPS & DRAG/DROP ========== */
+    .data-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .num-chip {
+      min-width: 48px;
+      text-align: center;
+      background: rgba(37,99,235,0.12);
+      border: 2px solid rgba(37,99,235,0.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 1.3rem;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: #ffffff;
+      transition: all var(--transition);
+      user-select: none;
+    }
+
+    .num-chip.draggable {
+      cursor: grab;
+      position: relative;
+    }
+
+    .num-chip.draggable:hover {
+      background: rgba(37,99,235,0.2);
+      border-color: var(--blue-light);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+    }
+
+    .num-chip.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .num-chip.correct {
+      background: rgba(5,150,105,0.15);
+      border-color: var(--success);
+      box-shadow: 0 0 15px rgba(5,150,105,0.3);
+      animation: correctPulse 0.5s ease;
+    }
+
+    .num-chip.incorrect {
+      animation: shake 0.4s ease;
+      border-color: var(--danger);
+    }
+
+    @keyframes correctPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    .drop-zone {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 70px;
+      padding: 12px;
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.02);
+      margin: 10px 0;
+      transition: all var(--transition);
+      align-items: center;
+    }
+
+    .drop-zone.drag-over {
+      border-color: var(--blue-light);
+      background: rgba(37,99,235,0.06);
+      box-shadow: inset 0 0 20px rgba(37,99,235,0.1);
+    }
+
+    .drop-zone-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 600;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ========== CALLOUT ========== */
+    .callout {
+      border-left: 5px solid;
+      padding: 16px 18px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 16px 0;
+    }
+
+    .callout-gold { border-color: var(--gold); background: rgba(245,158,11,0.08); }
+    .callout-teal { border-color: var(--teal); background: rgba(13,148,136,0.08); }
+    .callout-purple { border-color: var(--purple); background: rgba(124,58,237,0.08); }
+    .callout-blue { border-color: var(--blue); background: rgba(37,99,235,0.08); }
+
+    .callout strong { color: #ffffff; }
+    .callout p { color: rgba(255,255,255,0.8); margin: 0; }
+
+    /* ========== FORM ELEMENTS ========== */
+    label {
+      display: block;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      margin: 14px 0 6px;
+      font-size: 0.95rem;
+    }
+
+    textarea, input[type="text"], input[type="number"], select {
+      width: 100%;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      background: rgba(255,255,255,0.04);
+      color: #e2e8f0;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+    textarea.short { min-height: 60px; }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    ::placeholder { color: rgba(255,255,255,0.3); }
+
+    /* ========== PROMPT CARD ========== */
+    .prompt-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .prompt-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .prompt-head strong {
+      color: #ffffff;
+      font-size: 1.02rem;
+    }
+
+    .prompt-text {
+      background: rgba(255,255,255,0.04);
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      white-space: pre-wrap;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .prompt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    /* ========== FEEDBACK ========== */
+    .check-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .feedback {
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      transition: all var(--transition);
+    }
+
+    .feedback.ok {
+      background: rgba(5,150,105,0.15);
+      color: #34d399;
+      border: 1px solid rgba(5,150,105,0.3);
+    }
+
+    .feedback.try {
+      background: rgba(245,158,11,0.12);
+      color: var(--gold-light);
+      border: 1px solid rgba(245,158,11,0.25);
+    }
+
+    /* ========== VOCABULARY TOOLTIP ========== */
+    .vocab {
+      position: relative;
+      border-bottom: 2px dotted var(--gold);
+      cursor: help;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+
+    .vocab .vocab-tip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) scale(0.95);
+      background: var(--navy);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-xs);
+      padding: 10px 14px;
+      width: 260px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .vocab .vocab-tip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--navy);
+    }
+
+    .vocab:hover .vocab-tip,
+    .vocab:focus .vocab-tip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .vocab-es { display: block; color: var(--teal); font-style: italic; margin-top: 4px; font-size: 0.82rem; }
+
+    /* ========== MINI TABLE ========== */
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .mini-table th, .mini-table td {
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 12px;
+      vertical-align: top;
+      font-size: 0.92rem;
+    }
+
+    .mini-table th {
+      background: rgba(255,255,255,0.06);
+      color: #ffffff;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .mini-table td {
+      color: rgba(255,255,255,0.75);
+    }
+
+    /* ========== STAMPS / BADGES ========== */
+    .stamp-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+    }
+
+    .stamp {
+      border-radius: var(--radius-sm);
+      padding: 14px 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+      font-weight: 800;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all var(--transition);
+    }
+
+    .stamp .stamp-icon { font-size: 1.4rem; }
+    .stamp .stamp-label { font-size: 0.78rem; color: var(--muted); }
+
+    .stamp.done {
+      background: rgba(5,150,105,0.1);
+      border-color: rgba(5,150,105,0.3);
+      color: #34d399;
+      animation: badgeEarn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes badgeEarn {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ========== FREQUENCY COUNTER ========== */
+    .freq-counter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .freq-btn {
+      min-width: 56px;
+      padding: 8px 12px;
+      border-radius: var(--radius-xs);
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.12);
+      color: #ffffff;
+      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .freq-btn:hover {
+      background: rgba(37,99,235,0.15);
+      border-color: var(--blue-light);
+    }
+
+    .freq-btn .freq-count {
+      font-size: 0.7rem;
+      color: var(--gold-light);
+      font-weight: 700;
+    }
+
+    .freq-btn.freq-max {
+      border-color: var(--gold);
+      background: rgba(245,158,11,0.12);
+      box-shadow: 0 0 12px rgba(245,158,11,0.2);
+    }
+
+    .freq-bar-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 100px;
+      margin: 12px 0;
+      padding: 0 4px;
+    }
+
+    .freq-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .freq-bar {
+      width: 100%;
+      max-width: 40px;
+      background: linear-gradient(to top, var(--blue), var(--teal));
+      border-radius: 6px 6px 0 0;
+      min-height: 0;
+      transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .freq-bar.freq-bar-max {
+      background: linear-gradient(to top, var(--gold), var(--orange));
+    }
+
+    .freq-bar-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ========== SVG NUMBER LINE ========== */
+    .number-line-container {
+      margin: 16px 0;
+      padding: 10px;
+      background: rgba(255,255,255,0.02);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow-x: auto;
+    }
+
+    .number-line-container svg text { font-family: var(--font-display); }
+
+    /* ========== FIBONACCI SPIRAL ========== */
+    .spiral-container {
+      display: flex;
+      justify-content: center;
+      margin: 16px 0;
+    }
+
+    .spiral-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ========== DICE ========== */
+    .dice-area {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .dice-svg {
+      width: 100px;
+      height: 100px;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+      transition: transform 0.1s ease;
+    }
+
+    .dice-svg.rolling {
+      animation: diceRoll 0.5s ease;
+    }
+
+    @keyframes diceRoll {
+      0% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(90deg) scale(0.9); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      75% { transform: rotate(270deg) scale(0.9); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .roll-history {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+
+    .roll-chip {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: grid;
+      place-items: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.8);
+      animation: fadeUp 0.3s ease;
+    }
+
+    /* ========== TEACHER KEY ========== */
+    .teacher-key {
+      border: 2px dashed rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* ========== DETAILS ========== */
+    details {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.02);
+      margin: 14px 0;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+
+    summary:hover { color: var(--blue-light); }
+
+    /* ========== CONFETTI CANVAS ========== */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    /* ========== TOAST ========== */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, var(--navy-mid), var(--navy));
+      border: 1px solid rgba(255,255,255,0.12);
+      color: white;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      z-index: 2000;
+      box-shadow: var(--shadow-lg);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ========== LANGUAGE TOGGLE ========== */
+    .lang-toggle {
+      display: inline-flex;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .lang-toggle button {
+      padding: 6px 14px;
+      border-radius: 0;
+      font-size: 0.8rem;
+      font-weight: 800;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      border: 0;
+    }
+
+    .lang-toggle button:hover { background: rgba(255,255,255,0.06); transform: none; box-shadow: none; }
+    .lang-toggle button.active { background: rgba(37,99,235,0.2); color: var(--blue-light); }
+
+    /* ========== ESOL SENTENCE FRAMES ========== */
+    .sentence-frame {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 3px;
+    }
+
+    /* ========== FOOTER ========== */
+    .footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 30px 20px 10px;
+      font-size: 0.88rem;
+    }
+
+    /* ========== HIDDEN & UTILITY ========== */
+    .hidden { display: none !important; }
+    .small-note { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
+    .text-center { text-align: center; }
+    .mt-1 { margin-top: 8px; }
+    .mt-2 { margin-top: 16px; }
+    .mt-3 { margin-top: 24px; }
+    .mb-1 { margin-bottom: 8px; }
+    .gap-sm { gap: 8px; }
+
+    /* ========== PRINT ========== */
+    @media print {
+      body { background: white; color: black; }
+      .toolbar, .nav-cards, .prompt-actions, .check-row button, .teacher-key, .no-print, #particles-canvas, #confetti-canvas, .ai-strategy-card { display: none !important; }
+      .app-shell { width: 100%; padding: 0; }
+      section { box-shadow: none; background: white; border: 1px solid #ccc; backdrop-filter: none; color: black; }
+      .section-heading h2, .card h3, h1, h2, h3, strong { color: black; }
+      .card p, .card li, .callout p, .section-heading .section-desc, td { color: #333; }
+      .hero { background: white; border: 1px solid #999; color: black; }
+      .hero h1, .hero h1 .gradient-text { color: black; -webkit-text-fill-color: black; }
+      .hero-subtitle, .eyebrow, .hero-stat span { color: #333; }
+      .hero-stat strong { color: black; }
+      .num-chip { background: #eee; color: black; border-color: #999; }
+      textarea, input, select { border: 1px solid #777; background: white; color: black; min-height: 50px; }
+      .prompt-text { border: 1px solid #aaa; background: #f9f9f9; color: #222; }
+      .callout { background: #f9f9f9; }
+      label { color: black; }
+      @page { margin: 0.5in; }
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 960px) {
+      .hero-grid { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .section-heading { grid-template-columns: auto 1fr; }
+      .time-pill { grid-column: 1 / -1; width: fit-content; }
+    }
+
+    @media (max-width: 600px) {
+      .app-shell { width: calc(100% - 16px); padding: 10px 0 40px; }
+      .hero { padding: 24px 20px; border-radius: 20px; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      section { padding: 18px 14px; border-radius: 18px; }
+      button, .btn { width: 100%; }
+      .toolbar { flex-direction: column; padding: 12px; }
+      .nav-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <canvas id="particles-canvas" aria-hidden="true"></canvas>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <div class="toast" id="toast-note" aria-live="polite"></div>
+
+  <main class="app-shell">
+    <!-- ===== HERO ===== -->
+    <header class="hero">
+      <div class="eyebrow">🧭 <span data-i18n="eyebrow">AI Data Quest • Median & Mode Adventure</span></div>
+      <h1>Gemini Data Quest:<br><span class="gradient-text" data-i18n="heroTitle">Rescue the Center of Data Island</span></h1>
+      <p class="hero-subtitle" data-i18n="heroSubtitle">You are a Data Explorer on a mission. Learn to use Gemini like a pro: master prompting strategies, verify AI responses, and unlock powerful math skills. Every mission teaches you a new AI superpower.</p>
+      <div class="hero-grid" aria-label="Activity overview">
+        <div class="hero-stat"><strong>70–80 min</strong><span data-i18n="heroStat1">Full adventure + exploration</span></div>
+        <div class="hero-stat"><strong data-i18n="heroStat2v">8 Missions</strong><span data-i18n="heroStat2">Median, mode, AI strategies, exploration</span></div>
+        <div class="hero-stat"><strong data-i18n="heroStat3v">AI Mastery</strong><span data-i18n="heroStat3">Learn 6 prompting strategies</span></div>
+        <div class="hero-stat"><strong data-i18n="heroStat4v">Export</strong><span data-i18n="heroStat4">Save as PDF or Word doc</span></div>
+      </div>
+    </header>
+
+    <!-- ===== TOOLBAR ===== -->
+    <div class="toolbar no-print" aria-label="Activity controls" id="toolbar">
+      <div class="progress-wrap">
+        <div class="progress-label"><span data-i18n="progress">Quest Progress</span><span id="progressText">0%</span></div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      </div>
+      <div class="xp-wrap">
+        <div class="xp-label">XP</div>
+        <div class="xp-track"><div class="xp-bar" id="xpBar"></div></div>
+        <div class="xp-text" id="xpText">0 / 1000 XP</div>
+      </div>
+      <div class="level-badge" id="levelBadge">⭐ Data Rookie</div>
+      <div class="toolbar-controls">
+        <div class="lang-toggle" aria-label="Language selection">
+          <button class="active" id="lang-en" onclick="window.setLang('en')">EN</button>
+          <button id="lang-es" onclick="window.setLang('es')">ES</button>
+        </div>
+        <button class="btn-sm btn-ghost btn-icon" onclick="window.changeFontSize(1)" title="Increase text size" aria-label="Increase text size">A+</button>
+        <button class="btn-sm btn-ghost btn-icon" onclick="window.changeFontSize(-1)" title="Decrease text size" aria-label="Decrease text size">A-</button>
+        <button class="btn-sm btn-ghost btn-icon" onclick="window.toggleContrast()" title="High contrast mode" aria-label="Toggle high contrast">◐</button>
+        <a class="btn btn-gemini btn-sm" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+        <button class="btn-secondary btn-sm" onclick="window.saveWork()">💾 <span data-i18n="save">Save</span></button>
+        <button class="btn-print btn-sm" onclick="window.print()">🖨 Print</button>
+        <button class="btn-sm btn-gold" onclick="window.downloadDoc()">📄 Download DOC</button>
+        <button class="btn-ghost btn-sm" onclick="window.clearSavedWork()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- ===== NAV ===== -->
+    <nav class="nav-cards no-print" aria-label="Adventure navigation" id="nav-cards">
+      <a class="nav-card" href="#mission0">🚀 Launch<span class="nav-sub" data-i18n="nav0">AI safety & rules</span></a>
+      <a class="nav-card" href="#mission1">⛰️ Median Mt.<span class="nav-sub" data-i18n="nav1">Sort, find center</span></a>
+      <a class="nav-card" href="#mission2">🌿 Mode Marsh<span class="nav-sub" data-i18n="nav2">Find repeats</span></a>
+      <a class="nav-card" href="#mission3">🧪 Prompt Lab<span class="nav-sub" data-i18n="nav3">Build better prompts</span></a>
+      <a class="nav-card" href="#mission4">🕵️ Error Cave<span class="nav-sub" data-i18n="nav4">Catch AI mistakes</span></a>
+      <a class="nav-card" href="#mission5">🐉 Boss Battle<span class="nav-sub" data-i18n="nav5">Solve & explain</span></a>
+      <a class="nav-card" href="#exploreA">🌀 Fibonacci<span class="nav-sub" data-i18n="navA">Golden spiral</span></a>
+      <a class="nav-card" href="#exploreB">🎲 Probability<span class="nav-sub" data-i18n="navB">Dice & chance</span></a>
+    </nav>
+
+    <!-- ============================================================ -->
+    <!-- ===== TEACHER SETUP ===== -->
+    <!-- ============================================================ -->
+    <section id="teacher-setup">
+      <div class="section-heading">
+        <div class="badge">🧑‍🏫</div>
+        <div>
+          <h2 data-i18n="teacherTitle">Teacher Launch Plan</h2>
+          <p class="section-desc" data-i18n="teacherDesc">Student-facing AI practice adventure. Students use Gemini, record thinking here, and learn effective prompting.</p>
+        </div>
+        <div class="time-pill" data-i18n="teacherTime">Before class</div>
+      </div>
+      <div class="grid-3">
+        <div class="card card-mint">
+          <h3 data-i18n="materialsTitle">Materials</h3>
+          <ul>
+            <li data-i18n="mat1">Student devices (Chromebook, tablet, or laptop)</li>
+            <li data-i18n="mat2">Access to Gemini or approved AI tool</li>
+            <li data-i18n="mat3">This activity page (HTML file)</li>
+            <li data-i18n="mat4">Headphones optional</li>
+          </ul>
+        </div>
+        <div class="card card-cream">
+          <h3 data-i18n="targetsTitle">Learning Targets</h3>
+          <ul>
+            <li data-i18n="lt1">I can find the <span class="vocab" tabindex="0">median<span class="vocab-tip">The middle value when data is sorted from least to greatest.<span class="vocab-es">La mediana: el valor del medio cuando los datos están ordenados.</span></span></span> by ordering data and locating the middle.</li>
+            <li data-i18n="lt2">I can find the <span class="vocab" tabindex="0">mode<span class="vocab-tip">The value that appears most often in a data set.<span class="vocab-es">La moda: el valor que aparece con más frecuencia.</span></span></span> by identifying the most frequent value(s).</li>
+            <li data-i18n="lt3">I can use AI as a learning coach by writing effective prompts.</li>
+            <li>I can verify AI responses using math reasoning.</li>
+          </ul>
+        </div>
+        <div class="card card-rose">
+          <h3 data-i18n="guardrailTitle">AI Guardrails</h3>
+          <ul>
+            <li data-i18n="gr1">No private student information (names, addresses, passwords).</li>
+            <li data-i18n="gr2">Ask Gemini to coach, not simply give answers.</li>
+            <li data-i18n="gr3">Always verify AI responses using math rules.</li>
+            <li data-i18n="gr4">Think first, then use AI to check or extend.</li>
+          </ul>
+        </div>
+      </div>
+      <details>
+        <summary data-i18n="pacingSummary">Suggested pacing for 70–80 minutes</summary>
+        <table class="mini-table">
+          <thead><tr><th>Time</th><th>Activity</th><th>Teacher Move</th></tr></thead>
+          <tbody>
+            <tr><td>0–5 min</td><td>Launch + AI safety pledge</td><td>Model how to ask Gemini for coaching, not answers.</td></tr>
+            <tr><td>5–18 min</td><td>Median Mountain</td><td>Circulate. Watch for sorting errors and even-count confusion.</td></tr>
+            <tr><td>18–30 min</td><td>Mode Marsh</td><td>Push students to explain no mode and multi-mode cases.</td></tr>
+            <tr><td>30–38 min</td><td>Prompt Lab</td><td>Have students improve one weak prompt into a stronger one.</td></tr>
+            <tr><td>38–48 min</td><td>Error Cave</td><td>Students critique AI-style mistakes and correct them.</td></tr>
+            <tr><td>48–58 min</td><td>Boss Battle + Reflection</td><td>Students submit/export evidence.</td></tr>
+            <tr><td>58–70 min</td><td>Exploration A or B</td><td>Choice board: Fibonacci or Probability (or both if time).</td></tr>
+            <tr><td>70–80 min</td><td>Exit Ticket + Save</td><td>Collect PDF/DOC evidence.</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== MISSION 0: LAUNCH ===== -->
+    <!-- ============================================================ -->
+    <section id="mission0" data-progress="Launch complete">
+      <div class="section-heading">
+        <div class="badge">🚀</div>
+        <div>
+          <h2 data-i18n="m0Title">Mission 0: Launch Code</h2>
+          <p class="section-desc" data-i18n="m0Desc">Before using AI, set the rules. Gemini is your coach — you are the mathematician.</p>
+        </div>
+        <div class="time-pill">5 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">🎯</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: The Setup Prompt</h3>
+          <p data-i18n="m0Strategy">Tell AI exactly what role to play and what rules to follow — before you ask anything else.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 data-i18n="rulesTitle">AI Adventure Rules</h3>
+          <ol>
+            <li><strong data-i18n="rule1h">Ask for coaching first.</strong> <span data-i18n="rule1">Try: "Do not give me the answer yet."</span></li>
+            <li><strong data-i18n="rule2h">Ask clarifying questions.</strong> <span data-i18n="rule2">Try: "What should I do first?"</span></li>
+            <li><strong data-i18n="rule3h">Show your work.</strong> <span data-i18n="rule3">Gemini can help check, but your math must make sense.</span></li>
+            <li><strong data-i18n="rule4h">Verify everything.</strong> <span data-i18n="rule4">AI can make mistakes — always double-check.</span></li>
+            <li><strong data-i18n="rule5h">No private info.</strong> <span data-i18n="rule5">Never type names, addresses, or personal details.</span></li>
+          </ol>
+        </div>
+        <div class="card card-cream">
+          <h3 data-i18n="pledgeTitle">Your Explorer Pledge</h3>
+          <p data-i18n="pledgeDesc">Write your pledge in your own words.</p>
+          <label for="pledge" data-i18n="pledgeLabel">I will use Gemini as a learning coach by...</label>
+          <div class="sentence-frame" data-i18n="pledgeFrame">Sentence frame: "I promise to use AI by _____ and always _____ before I _____."</div>
+          <textarea id="pledge" class="work-field" data-label="Launch Pledge" placeholder="Example: asking for steps, checking my work, and explaining my thinking instead of copying answers."></textarea>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><strong data-i18n="m0PromptTitle">Copy this first Gemini prompt to start your quest</strong><span class="small-note">Setup Prompt Strategy</span></div>
+        <div class="prompt-text" id="prompt-launch">I am a 6th-grade student practicing median and mode. Please act like a friendly math coach. Do not just give me final answers. Ask me one clarifying question when needed, explain steps in simple language, and help me check my work after I try. If I make a mistake, give me a hint first before correcting me.</div>
+        <div class="prompt-actions">
+          <button class="btn-primary" onclick="window.copyPrompt('prompt-launch')">📋 Copy Prompt</button>
+          <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+        </div>
+      </div>
+
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'mission0')">✅ Mark Mission 0 Complete</button>
+        <span class="feedback" id="mission0-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== MISSION 1: MEDIAN MOUNTAIN ===== -->
+    <!-- ============================================================ -->
+    <section id="mission1" data-progress="Median complete">
+      <div class="section-heading">
+        <div class="badge">⛰️</div>
+        <div>
+          <h2 data-i18n="m1Title">Mission 1: Median Mountain</h2>
+          <p class="section-desc" data-i18n="m1Desc">The bridge is locked! To cross, find the center of each data set. Drag the numbers into the correct order.</p>
+        </div>
+        <div class="time-pill">12 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">🧑‍🏫</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: The Coaching Request</h3>
+          <p data-i18n="m1Strategy">Ask AI to guide you step-by-step instead of giving the answer. Try: "Coach me through this — don't give the final answer yet."</p>
+        </div>
+      </div>
+
+      <div class="callout callout-gold">
+        <strong><span class="vocab" tabindex="0">Median<span class="vocab-tip">The middle value when numbers are sorted from least to greatest. If there are two middle numbers, find the average of both.<span class="vocab-es">La mediana: el valor del medio en datos ordenados.</span></span></span> Reminder:</strong>
+        <p data-i18n="m1Reminder">Put the numbers in order from least to greatest. If there is one middle number, that is the median. If there are two middle numbers, find the number halfway between them (add them and divide by 2).</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Challenge A: Odd count -->
+        <div class="card">
+          <h3 data-i18n="m1aTitle">Challenge A: Odd Number of Values</h3>
+          <p data-i18n="m1aContext">Data set: minutes students read last night</p>
+          <div class="data-set" id="drag-source-1a" aria-label="Data set 4, 9, 2, 12, 7">
+            <span class="num-chip draggable" draggable="true" data-value="4">4</span>
+            <span class="num-chip draggable" draggable="true" data-value="9">9</span>
+            <span class="num-chip draggable" draggable="true" data-value="2">2</span>
+            <span class="num-chip draggable" draggable="true" data-value="12">12</span>
+            <span class="num-chip draggable" draggable="true" data-value="7">7</span>
+          </div>
+          <label data-i18n="m1aDragLabel">Drag numbers here in order (least → greatest):</label>
+          <div class="drop-zone" id="drop-zone-1a" aria-label="Drop zone for sorting">
+            <span class="drop-zone-label" data-i18n="dropHint">Drag numbers here in order</span>
+          </div>
+          <button class="btn-sm btn-ghost mt-1" onclick="window.resetDrag('1a')">↺ Reset Order</button>
+          <div id="numberline-1a" class="number-line-container hidden"></div>
+          <label for="m1a-median">Median</label>
+          <input id="m1a-median" class="work-field" data-label="Mission 1A Median" type="text" placeholder="Type the median" />
+          <label for="m1a-explain" data-i18n="m1aExplainLabel">Explain how you found it.</label>
+          <div class="sentence-frame" data-i18n="m1aFrame">Frame: "I sorted the numbers to get _____. The middle number is _____ because _____."</div>
+          <textarea id="m1a-explain" class="work-field short" data-label="Mission 1A Explanation" placeholder="I found the median by..."></textarea>
+          <div class="check-row">
+            <button class="btn-check" onclick="window.validateMedian('m1a-median', 7, 'm1a-feedback', '1a')">Check Median</button>
+            <span class="feedback" id="m1a-feedback"></span>
+          </div>
+        </div>
+
+        <!-- Challenge B: Even count -->
+        <div class="card">
+          <h3 data-i18n="m1bTitle">Challenge B: Even Number of Values</h3>
+          <p data-i18n="m1bContext">Data set: points scored in mini-games</p>
+          <div class="data-set" id="drag-source-1b" aria-label="Data set 6, 3, 11, 10, 8, 4">
+            <span class="num-chip draggable" draggable="true" data-value="6">6</span>
+            <span class="num-chip draggable" draggable="true" data-value="3">3</span>
+            <span class="num-chip draggable" draggable="true" data-value="11">11</span>
+            <span class="num-chip draggable" draggable="true" data-value="10">10</span>
+            <span class="num-chip draggable" draggable="true" data-value="8">8</span>
+            <span class="num-chip draggable" draggable="true" data-value="4">4</span>
+          </div>
+          <label data-i18n="m1bDragLabel">Drag numbers here in order (least → greatest):</label>
+          <div class="drop-zone" id="drop-zone-1b" aria-label="Drop zone for sorting">
+            <span class="drop-zone-label" data-i18n="dropHint2">Drag numbers here in order</span>
+          </div>
+          <button class="btn-sm btn-ghost mt-1" onclick="window.resetDrag('1b')">↺ Reset Order</button>
+          <div id="numberline-1b" class="number-line-container hidden"></div>
+          <label for="m1b-middle" data-i18n="m1bMiddleLabel">What are the two middle numbers?</label>
+          <input id="m1b-middle" class="work-field" data-label="Mission 1B Middle Numbers" type="text" placeholder="Type both middle numbers (e.g. 6 and 8)" />
+          <label for="m1b-median">Median</label>
+          <input id="m1b-median" class="work-field" data-label="Mission 1B Median" type="text" placeholder="Type the median" />
+          <div class="check-row">
+            <button class="btn-check" onclick="window.validateMedian('m1b-median', 7, 'm1b-feedback', '1b')">Check Median</button>
+            <span class="feedback" id="m1b-feedback"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><strong data-i18n="m1PromptTitle">Gemini Coaching Prompt: Median Help</strong><span class="small-note">Use after you try first</span></div>
+        <div class="prompt-text" id="prompt-median">I tried finding the median for a data set. Please coach me instead of just answering. First, ask me whether I sorted the numbers. Then help me check if I found the correct middle number or middle pair. Use simple 6th-grade language. If I'm wrong, give me a hint — don't just correct me.</div>
+        <div class="prompt-actions">
+          <button class="btn-primary" onclick="window.copyPrompt('prompt-median')">📋 Copy Prompt</button>
+          <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+        </div>
+      </div>
+
+      <label for="m1-gemini-help" data-i18n="m1ReflectLabel">What did Gemini say that helped you understand median better?</label>
+      <div class="sentence-frame" data-i18n="m1ReflectFrame">Frame: "Gemini helped me understand _____ by _____. I didn't know that _____ before."</div>
+      <textarea id="m1-gemini-help" class="work-field" data-label="Gemini Median Help Reflection" placeholder="Gemini helped me by..."></textarea>
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'mission1')">✅ Mark Mission 1 Complete</button>
+        <span class="feedback" id="mission1-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== MISSION 2: MODE MARSH ===== -->
+    <!-- ============================================================ -->
+    <section id="mission2" data-progress="Mode complete">
+      <div class="section-heading">
+        <div class="badge">🌿</div>
+        <div>
+          <h2 data-i18n="m2Title">Mission 2: Mode Marsh</h2>
+          <p class="section-desc" data-i18n="m2Desc">The marsh has repeating clues. Tap each number to count it, then find the value that appears most often.</p>
+        </div>
+        <div class="time-pill">12 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">🔍</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: The Verification Loop</h3>
+          <p data-i18n="m2Strategy">After you solve a problem, ask AI to verify your reasoning step-by-step — don't just ask "is this right?"</p>
+        </div>
+      </div>
+
+      <div class="callout callout-teal">
+        <strong><span class="vocab" tabindex="0">Mode<span class="vocab-tip">The number that appears most often in a data set. A set can have one mode, more than one mode, or no mode at all.<span class="vocab-es">La moda: el número que aparece con más frecuencia en un conjunto de datos.</span></span></span> Reminder:</strong>
+        <p data-i18n="m2Reminder">The mode is the number that appears most often. A data set can have one mode, more than one mode (if there's a tie for the most frequent), or no mode (if every number appears the same number of times).</p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Challenge C: One mode -->
+        <div class="card">
+          <h3 data-i18n="m2cTitle">Challenge C: One Mode</h3>
+          <p class="small-note" data-i18n="m2cInstr">Tap each number below to count how many times it appears:</p>
+          <div class="freq-counter" id="freq-counter-c" data-values="8,5,8,4,6,8,5"></div>
+          <div class="freq-bar-container" id="freq-bars-c"></div>
+          <label for="m2c-mode" data-i18n="m2cModeLabel">Mode</label>
+          <input id="m2c-mode" class="work-field" data-label="Mission 2C Mode" type="text" placeholder="Type the mode" />
+          <label for="m2c-evidence" data-i18n="m2cEvLabel">How do you know?</label>
+          <div class="sentence-frame">Frame: "The mode is _____ because it appears _____ times, which is more than any other number."</div>
+          <textarea id="m2c-evidence" class="work-field short" data-label="Mission 2C Evidence" placeholder="I know because..."></textarea>
+          <div class="check-row">
+            <button class="btn-check" onclick="window.validateMode('m2c-mode', ['8'], 'm2c-feedback')">Check Mode</button>
+            <span class="feedback" id="m2c-feedback"></span>
+          </div>
+        </div>
+
+        <!-- Challenge D: No mode -->
+        <div class="card">
+          <h3 data-i18n="m2dTitle">Challenge D: No Mode</h3>
+          <p class="small-note" data-i18n="m2dInstr">Tap each number to count:</p>
+          <div class="freq-counter" id="freq-counter-d" data-values="2,4,6,8"></div>
+          <div class="freq-bar-container" id="freq-bars-d"></div>
+          <label for="m2d-mode">Mode</label>
+          <input id="m2d-mode" class="work-field" data-label="Mission 2D Mode" type="text" placeholder="Mode or no mode?" />
+          <label for="m2d-evidence">How do you know?</label>
+          <div class="sentence-frame">Frame: "There is no mode because _____."</div>
+          <textarea id="m2d-evidence" class="work-field short" data-label="Mission 2D Evidence" placeholder="I know because..."></textarea>
+          <div class="check-row">
+            <button class="btn-check" onclick="window.validateNoMode('m2d-mode', 'm2d-feedback')">Check Mode</button>
+            <span class="feedback" id="m2d-feedback"></span>
+          </div>
+        </div>
+
+        <!-- Challenge E: Multiple modes -->
+        <div class="card">
+          <h3 data-i18n="m2eTitle">Challenge E: More Than One Mode</h3>
+          <p class="small-note">Tap each number to count:</p>
+          <div class="freq-counter" id="freq-counter-e" data-values="1,2,2,3,3,4"></div>
+          <div class="freq-bar-container" id="freq-bars-e"></div>
+          <label for="m2e-mode">Mode(s)</label>
+          <input id="m2e-mode" class="work-field" data-label="Mission 2E Modes" type="text" placeholder="Type all modes" />
+          <label for="m2e-evidence">How do you know?</label>
+          <div class="sentence-frame">Frame: "The modes are _____ and _____ because they both appear _____ times."</div>
+          <textarea id="m2e-evidence" class="work-field short" data-label="Mission 2E Evidence" placeholder="I know because..."></textarea>
+          <div class="check-row">
+            <button class="btn-check" onclick="window.validateMode('m2e-mode', ['2','3'], 'm2e-feedback')">Check Modes</button>
+            <span class="feedback" id="m2e-feedback"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><strong>Gemini Verification Prompt: Mode Help</strong><span class="small-note">Verification Loop Strategy</span></div>
+        <div class="prompt-text" id="prompt-mode">I just solved a mode problem. Here is my work: [paste your answer]. Please verify my reasoning step by step. First check: Did I count how many times each number appears? Then check: Did I pick the number(s) that appear MOST often? If I made a mistake, ask me a guiding question instead of just telling me the answer.</div>
+        <div class="prompt-actions">
+          <button class="btn-primary" onclick="window.copyPrompt('prompt-mode')">📋 Copy Prompt</button>
+          <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+        </div>
+      </div>
+
+      <label for="m2-gemini-help" data-i18n="m2ReflectLabel">What is one mode rule Gemini helped you remember?</label>
+      <textarea id="m2-gemini-help" class="work-field" data-label="Gemini Mode Help Reflection" placeholder="One rule I remembered is..."></textarea>
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'mission2')">✅ Mark Mission 2 Complete</button>
+        <span class="feedback" id="mission2-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== MISSION 3: PROMPT LAB ===== -->
+    <!-- ============================================================ -->
+    <section id="mission3" data-progress="Prompt Lab complete">
+      <div class="section-heading">
+        <div class="badge">🧪</div>
+        <div>
+          <h2 data-i18n="m3Title">Mission 3: Prompt Lab</h2>
+          <p class="section-desc" data-i18n="m3Desc">Strong prompts get stronger help. Build a prompt, test it, then improve it based on what Gemini gives back.</p>
+        </div>
+        <div class="time-pill">8 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">⚙️</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: Prompt Engineering</h3>
+          <p data-i18n="m3Strategy">A great prompt has 4 parts: (1) Who you are, (2) What you need, (3) How to help, (4) What NOT to do. Master these and AI becomes 10x more useful.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 data-i18n="m3BuildTitle">Build Your AI Prompt</h3>
+          <label for="promptGoal" data-i18n="m3GoalLabel">What do you want Gemini to do?</label>
+          <select id="promptGoal" class="work-field" data-label="Prompt Lab Goal">
+            <option value="steps">Teach me the steps without giving the answer first.</option>
+            <option value="clarify">Ask me clarifying questions because I am confused.</option>
+            <option value="check">Check my work and explain any mistake.</option>
+            <option value="practice">Create a similar practice problem for me.</option>
+            <option value="explain">Help me explain my answer in a complete sentence.</option>
+            <option value="analogy">Explain using a real-world example or analogy.</option>
+          </select>
+          <label for="promptDataset" data-i18n="m3DataLabel">Data set or problem you are working on</label>
+          <input id="promptDataset" class="work-field" data-label="Prompt Lab Data Set" type="text" placeholder="Example: 4, 9, 2, 12, 7" />
+          <label for="promptQuestion" data-i18n="m3QuestionLabel">Your specific question for Gemini</label>
+          <textarea id="promptQuestion" class="work-field short" data-label="Prompt Lab Student Question" placeholder="Example: I sorted the data, but I'm not sure which number is the median."></textarea>
+          <div class="prompt-actions">
+            <button class="btn-primary" onclick="window.buildPrompt()">🔨 Build My Prompt</button>
+            <button class="btn-secondary" onclick="window.copyBuiltPrompt()">📋 Copy Built Prompt</button>
+            <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+          </div>
+        </div>
+        <div class="card card-cream">
+          <h3 data-i18n="m3ResultTitle">Your Built Prompt</h3>
+          <div class="prompt-text" id="builtPrompt" data-i18n="m3ResultDefault">Fill in the boxes, then click "Build My Prompt."</div>
+          <label for="promptLabReflection" data-i18n="m3ReflectLabel">After using your prompt, what changed in your understanding?</label>
+          <div class="sentence-frame">Frame: "At first I thought _____. After using my prompt, now I understand _____."</div>
+          <textarea id="promptLabReflection" class="work-field" data-label="Prompt Lab Reflection" placeholder="At first I thought... Now I understand..."></textarea>
+        </div>
+      </div>
+
+      <h3 class="mt-2" style="color:#fff;" data-i18n="m3CompareTitle">Compare Prompt Levels</h3>
+      <div class="grid-3 mt-1">
+        <div class="card card-rose">
+          <h3>❌ Weak Prompt</h3>
+          <p>"What's the answer?"</p>
+          <p class="small-note" data-i18n="m3Weak">Problem: Skips your thinking entirely. You learn nothing.</p>
+        </div>
+        <div class="card card-cream">
+          <h3>🔶 Better Prompt</h3>
+          <p>"Coach me through the first step. Don't give the final answer yet."</p>
+          <p class="small-note" data-i18n="m3Better">Better: Protects your learning by slowing AI down.</p>
+        </div>
+        <div class="card card-mint">
+          <h3>✅ Best Prompt</h3>
+          <p>"Here is my work: [paste work]. Check it, ask one clarifying question, and explain any mistake with a hint."</p>
+          <p class="small-note" data-i18n="m3Best">Best: Uses YOUR work as evidence. AI verifies instead of solving.</p>
+        </div>
+      </div>
+
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'mission3')">✅ Mark Mission 3 Complete</button>
+        <span class="feedback" id="mission3-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== MISSION 4: ERROR CAVE ===== -->
+    <!-- ============================================================ -->
+    <section id="mission4" data-progress="Error Cave complete">
+      <div class="section-heading">
+        <div class="badge">🕵️</div>
+        <div>
+          <h2 data-i18n="m4Title">Mission 4: Error Cave</h2>
+          <p class="section-desc" data-i18n="m4Desc">A fake AI answer is trying to trick you! Your job: find every mistake, fix it, then use Gemini to verify YOUR correction.</p>
+        </div>
+        <div class="time-pill">10 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">🛡️</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: Critical Evaluation</h3>
+          <p data-i18n="m4Strategy">AI is not always right. A strong student checks AI responses against known rules and catches errors — then asks AI to verify the CORRECTION.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-rose">
+          <h3 data-i18n="m4FakeTitle">🚨 Fake AI Answer to Investigate</h3>
+          <p><strong>Data set:</strong></p>
+          <div class="data-set">
+            <span class="num-chip">9</span><span class="num-chip">2</span><span class="num-chip">7</span><span class="num-chip">7</span><span class="num-chip">4</span><span class="num-chip">10</span>
+          </div>
+          <div class="callout callout-gold">
+            <strong>Fake AI says:</strong>
+            <p>"The median is 7.5 because the middle numbers are 7 and 8. There is no mode because all numbers are different."</p>
+          </div>
+          <p class="small-note" data-i18n="m4Hint">🔎 Hint: This fake AI made TWO mistakes. Can you find both?</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="m4DetectiveTitle">Your Detective Work</h3>
+          <label for="m4-sort">1. Sort the data correctly.</label>
+          <input id="m4-sort" class="work-field" data-label="Mission 4 Sorted Data" type="text" placeholder="Least to greatest" />
+          <label for="m4-median">2. Correct median</label>
+          <input id="m4-median" class="work-field" data-label="Mission 4 Correct Median" type="text" placeholder="Type the correct median" />
+          <label for="m4-mode">3. Correct mode</label>
+          <input id="m4-mode" class="work-field" data-label="Mission 4 Correct Mode" type="text" placeholder="Type the correct mode" />
+          <label for="m4-error">4. Explain the fake AI's mistake(s).</label>
+          <div class="sentence-frame">Frame: "The AI made a mistake because it said _____, but the correct answer is _____ because _____."</div>
+          <textarea id="m4-error" class="work-field" data-label="Mission 4 Error Explanation" placeholder="The fake AI made a mistake because..."></textarea>
+          <div class="check-row">
+            <button class="btn-check" onclick="window.validateMedian('m4-median', 7, 'm4-feedback')">Check Median</button>
+            <button class="btn-check" onclick="window.validateMode('m4-mode', ['7'], 'm4-feedback2')">Check Mode</button>
+            <span class="feedback" id="m4-feedback"></span>
+            <span class="feedback" id="m4-feedback2"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><strong>Gemini Verification Prompt</strong><span class="small-note">Critical Evaluation Strategy</span></div>
+        <div class="prompt-text" id="prompt-error">I found a mistake in an AI response about median and mode. Here is my correction: [paste your corrected answers]. Please verify MY correction step by step. Check: Did I sort correctly? Did I find the correct middle value? Did I count repeated values correctly? If my correction has a mistake too, give me a hint.</div>
+        <div class="prompt-actions">
+          <button class="btn-primary" onclick="window.copyPrompt('prompt-error')">📋 Copy Prompt</button>
+          <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+        </div>
+      </div>
+
+      <label for="m4-ai-check">After checking with Gemini, what did you confirm or revise?</label>
+      <textarea id="m4-ai-check" class="work-field" data-label="Mission 4 Gemini Verification" placeholder="I confirmed/revised..."></textarea>
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'mission4')">✅ Mark Mission 4 Complete</button>
+        <span class="feedback" id="mission4-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== MISSION 5: BOSS BATTLE ===== -->
+    <!-- ============================================================ -->
+    <section id="mission5" data-progress="Boss Battle complete">
+      <div class="section-heading">
+        <div class="badge">🐉</div>
+        <div>
+          <h2 data-i18n="m5Title">Mission 5: Boss Battle — The Data Dragon</h2>
+          <p class="section-desc" data-i18n="m5Desc">The final challenge. Solve it, explain it, then have a MULTI-TURN conversation with Gemini to make your explanation even better.</p>
+        </div>
+        <div class="time-pill">10 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">🔄</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: Multi-Turn Conversation</h3>
+          <p data-i18n="m5Strategy">Don't just send one message! Build on AI's response with follow-up questions. Each reply makes the conversation smarter. Try: "Can you explain that differently?" or "What if the data set was bigger?"</p>
+        </div>
+      </div>
+
+      <div class="card card-cream">
+        <h3 data-i18n="m5DataTitle">Final Data Set: Snack Survey Votes</h3>
+        <p>Students voted for how many snack tickets they wanted for a classroom reward day.</p>
+        <div class="data-set" id="drag-source-5" aria-label="Data: 3, 5, 4, 4, 6, 7, 4, 6, 8, 5, 6">
+          <span class="num-chip draggable" draggable="true" data-value="3">3</span>
+          <span class="num-chip draggable" draggable="true" data-value="5">5</span>
+          <span class="num-chip draggable" draggable="true" data-value="4">4</span>
+          <span class="num-chip draggable" draggable="true" data-value="4">4</span>
+          <span class="num-chip draggable" draggable="true" data-value="6">6</span>
+          <span class="num-chip draggable" draggable="true" data-value="7">7</span>
+          <span class="num-chip draggable" draggable="true" data-value="4">4</span>
+          <span class="num-chip draggable" draggable="true" data-value="6">6</span>
+          <span class="num-chip draggable" draggable="true" data-value="8">8</span>
+          <span class="num-chip draggable" draggable="true" data-value="5">5</span>
+          <span class="num-chip draggable" draggable="true" data-value="6">6</span>
+        </div>
+        <label>Drag numbers here in order (least → greatest):</label>
+        <div class="drop-zone" id="drop-zone-5" aria-label="Drop zone for boss battle sorting">
+          <span class="drop-zone-label">Drag numbers here in order</span>
+        </div>
+        <button class="btn-sm btn-ghost mt-1" onclick="window.resetDrag('5')">↺ Reset Order</button>
+        <div id="numberline-5" class="number-line-container hidden"></div>
+      </div>
+
+      <div class="grid-2 mt-2">
+        <div class="card">
+          <h3>Boss Battle Work</h3>
+          <label for="m5-median">Median</label>
+          <input id="m5-median" class="work-field" data-label="Boss Battle Median" type="text" placeholder="Median" />
+          <label for="m5-mode">Mode(s)</label>
+          <input id="m5-mode" class="work-field" data-label="Boss Battle Mode(s)" type="text" placeholder="Mode or modes" />
+          <div class="check-row">
+            <button class="btn-check" onclick="window.validateMedian('m5-median', 5, 'm5-feedback')">Check Median</button>
+            <button class="btn-check" onclick="window.validateMode('m5-mode', ['4','6'], 'm5-feedback2')">Check Modes</button>
+            <span class="feedback" id="m5-feedback"></span>
+            <span class="feedback" id="m5-feedback2"></span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Boss Battle Explanation</h3>
+          <label for="m5-explain" data-i18n="m5ExplainLabel">Explain your final answer in complete sentences.</label>
+          <div class="sentence-frame">Frame: "The median is _____ because when I sort the data, the middle value is _____. The mode(s) are _____ because they each appear _____ times."</div>
+          <textarea id="m5-explain" class="work-field" data-label="Boss Battle Explanation" placeholder="The median is... because... The mode(s) are... because..."></textarea>
+          <label for="m5-gemini-revision" data-i18n="m5RevisionLabel">After a multi-turn conversation with Gemini, improve your explanation.</label>
+          <textarea id="m5-gemini-revision" class="work-field" data-label="Boss Battle Revised Explanation" placeholder="My improved explanation after talking with Gemini..."></textarea>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><strong>Gemini Boss Battle Prompt</strong><span class="small-note">Multi-Turn Strategy</span></div>
+        <div class="prompt-text" id="prompt-boss">I solved a median and mode problem. My data set is: 3, 5, 4, 4, 6, 7, 4, 6, 8, 5, 6. Here is my work: [paste your answers]. Please check my work like a math coach. Don't just say correct or incorrect — verify each step. After you check, I will ask you follow-up questions to improve my explanation. Ready?</div>
+        <div class="prompt-actions">
+          <button class="btn-primary" onclick="window.copyPrompt('prompt-boss')">📋 Copy Prompt</button>
+          <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+        </div>
+      </div>
+
+      <div class="callout callout-purple mt-2">
+        <strong>🔄 Multi-Turn Challenge:</strong>
+        <p>After Gemini responds, send at least TWO follow-up messages. Try these:
+          <br>• "Can you explain the median part in a different way?"
+          <br>• "What would happen if I added the number 5 to this data set?"
+          <br>• "Can you give me a real-world example of when median is more useful than mode?"</p>
+      </div>
+
+      <label for="m5-followup">What follow-up questions did you ask? What did you learn?</label>
+      <textarea id="m5-followup" class="work-field" data-label="Boss Battle Follow-ups" placeholder="I asked Gemini: '...' and learned that..."></textarea>
+
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'mission5')">✅ Mark Mission 5 Complete</button>
+        <span class="feedback" id="mission5-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== EXPLORATION A: FIBONACCI / GOLDEN RATIO ===== -->
+    <!-- ============================================================ -->
+    <section id="exploreA" data-progress="Fibonacci exploration complete">
+      <div class="section-heading">
+        <div class="badge">🌀</div>
+        <div>
+          <h2 data-i18n="exATitle">Exploration A: The Golden Spiral Observatory</h2>
+          <p class="section-desc" data-i18n="exADesc">Nature has a secret code hidden in flowers, seashells, hurricanes, and galaxies. Can you discover it — with Gemini's help?</p>
+        </div>
+        <div class="time-pill">10–15 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">🎨</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: The Analogy Request</h3>
+          <p data-i18n="exAStrategy">Ask AI to explain hard concepts using real-world comparisons and examples you already understand. Try: "Explain this like I'm looking at something in nature."</p>
+        </div>
+      </div>
+
+      <!-- Activity 1: Pattern Discovery -->
+      <div class="card card-purple mt-2">
+        <h3>🔢 Activity 1: Discover the Secret Pattern</h3>
+        <p>Look at this sequence of numbers. Each number follows a rule. Can you figure out the pattern and fill in the missing numbers?</p>
+        <div class="data-set mt-1">
+          <span class="num-chip">1</span>
+          <span class="num-chip">1</span>
+          <span class="num-chip">2</span>
+          <span class="num-chip">3</span>
+          <span class="num-chip">5</span>
+          <span class="num-chip">8</span>
+          <span class="num-chip" style="background:rgba(245,158,11,0.2);border-color:var(--gold);">?</span>
+          <span class="num-chip" style="background:rgba(245,158,11,0.2);border-color:var(--gold);">?</span>
+          <span class="num-chip" style="background:rgba(245,158,11,0.2);border-color:var(--gold);">?</span>
+        </div>
+        <label for="fib-guess">What are the next 3 numbers? What's the pattern rule?</label>
+        <div class="sentence-frame">Frame: "The next numbers are _____, _____, _____. The rule is _____."</div>
+        <input id="fib-guess" class="work-field" data-label="Fibonacci Pattern Guess" type="text" placeholder="Next 3 numbers (e.g., 13, 21, 34)" />
+        <div class="check-row">
+          <button class="btn-check" onclick="window.checkFibonacci()">Check Pattern</button>
+          <span class="feedback" id="fib-feedback"></span>
+        </div>
+
+        <div class="prompt-card mt-2">
+          <div class="prompt-head"><strong>Gemini Analogy Prompt</strong><span class="small-note">Don't use until you guess first!</span></div>
+          <div class="prompt-text" id="prompt-fib1">I see a number pattern: 1, 1, 2, 3, 5, 8, ?, ?, ?. I think the rule might be [your guess]. Don't tell me if I'm right yet! Instead, give me a hint by describing where this pattern appears in NATURE. Use an example a 6th grader would think is cool.</div>
+          <div class="prompt-actions">
+            <button class="btn-primary" onclick="window.copyPrompt('prompt-fib1')">📋 Copy Prompt</button>
+            <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity 2: Golden Ratio Calculator -->
+      <div class="card card-blue mt-2">
+        <h3>📐 Activity 2: The Golden Ratio Mystery</h3>
+        <p>Something magical happens when you divide each Fibonacci number by the one before it. Try it!</p>
+        <div class="grid-2 mt-1">
+          <div>
+            <table class="mini-table" id="ratio-table">
+              <thead><tr><th>Division</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>1 ÷ 1</td><td><input type="text" class="work-field" data-label="Ratio 1÷1" id="ratio-1" style="width:100px" placeholder="?"/></td></tr>
+                <tr><td>2 ÷ 1</td><td><input type="text" class="work-field" data-label="Ratio 2÷1" id="ratio-2" style="width:100px" placeholder="?"/></td></tr>
+                <tr><td>3 ÷ 2</td><td><input type="text" class="work-field" data-label="Ratio 3÷2" id="ratio-3" style="width:100px" placeholder="?"/></td></tr>
+                <tr><td>5 ÷ 3</td><td><input type="text" class="work-field" data-label="Ratio 5÷3" id="ratio-4" style="width:100px" placeholder="?"/></td></tr>
+                <tr><td>8 ÷ 5</td><td><input type="text" class="work-field" data-label="Ratio 8÷5" id="ratio-5" style="width:100px" placeholder="?"/></td></tr>
+                <tr><td>13 ÷ 8</td><td><input type="text" class="work-field" data-label="Ratio 13÷8" id="ratio-6" style="width:100px" placeholder="?"/></td></tr>
+                <tr><td>21 ÷ 13</td><td><input type="text" class="work-field" data-label="Ratio 21÷13" id="ratio-7" style="width:100px" placeholder="?"/></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div id="spiral-viz" class="spiral-container"></div>
+            <p class="small-note text-center">The ratios get closer and closer to a special number: <strong style="color:var(--gold-light)">1.618...</strong> called the <span class="vocab" tabindex="0">Golden Ratio<span class="vocab-tip">A special number (≈1.618) found by dividing consecutive Fibonacci numbers. It appears in nature, art, and architecture.<span class="vocab-es">La proporción áurea: un número especial que aparece en la naturaleza y el arte.</span></span></span>!</p>
+          </div>
+        </div>
+        <label for="ratio-notice">What do you notice about these ratios as the numbers get bigger?</label>
+        <textarea id="ratio-notice" class="work-field short" data-label="Golden Ratio Observation" placeholder="I notice that the ratios..."></textarea>
+      </div>
+
+      <!-- Activity 3: Gemini Art Director -->
+      <div class="card mt-2">
+        <h3>🎨 Activity 3: Gemini Art Director Challenge</h3>
+        <p>Now use the <strong>Analogy Request</strong> strategy to learn something amazing. Ask Gemini where the Golden Ratio appears in the real world!</p>
+        <div class="prompt-card">
+          <div class="prompt-head"><strong>Gemini Analogy Prompt: Golden Ratio</strong><span class="small-note">Iterative Prompting Required!</span></div>
+          <div class="prompt-text" id="prompt-golden">I just learned about the Golden Ratio (1.618...) and the Fibonacci sequence. Explain where this shows up in 3 real-world places that a 6th grader would think are AMAZING. Use descriptive, vivid language. For each example, explain WHY the golden ratio appears there. Don't use complicated math — use comparisons I can picture.</div>
+          <div class="prompt-actions">
+            <button class="btn-primary" onclick="window.copyPrompt('prompt-golden')">📋 Copy Prompt</button>
+            <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+          </div>
+        </div>
+        <div class="callout callout-purple">
+          <strong>🔄 Iterative Prompting Challenge:</strong>
+          <p>After Gemini responds, refine your prompt! Try:
+            <br>• "That was cool! Now explain one more example, but this time use it to explain how it connects to the Fibonacci sequence."
+            <br>• "Can you explain the sunflower example in even simpler words?"
+            <br>• "What's the MOST surprising place the golden ratio has been found?"</p>
+        </div>
+        <label for="golden-discoveries">What 3 amazing things did you learn from Gemini? (Paste or summarize)</label>
+        <textarea id="golden-discoveries" class="work-field" data-label="Golden Ratio Discoveries" placeholder="1. I learned that...&#10;2. I also found out...&#10;3. The most amazing thing was..."></textarea>
+        <label for="golden-followup">What follow-up prompt did you use to get even better answers?</label>
+        <textarea id="golden-followup" class="work-field short" data-label="Golden Ratio Follow-up Prompt" placeholder="I refined my prompt by asking..."></textarea>
+      </div>
+
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'exploreA')">✅ Mark Exploration A Complete</button>
+        <span class="feedback" id="exploreA-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== EXPLORATION B: PROBABILITY PLAYGROUND ===== -->
+    <!-- ============================================================ -->
+    <section id="exploreB" data-progress="Probability exploration complete">
+      <div class="section-heading">
+        <div class="badge">🎲</div>
+        <div>
+          <h2 data-i18n="exBTitle">Exploration B: The Probability Playground</h2>
+          <p class="section-desc" data-i18n="exBDesc">Is anything truly random? Can math predict the future? Let's run experiments and find out — with Gemini as your lab assistant.</p>
+        </div>
+        <div class="time-pill">10–15 min</div>
+      </div>
+
+      <div class="ai-strategy-card">
+        <div class="ai-strategy-icon">🧬</div>
+        <div class="ai-strategy-content">
+          <h3>AI Skill Unlocked: The Experiment Designer</h3>
+          <p data-i18n="exBStrategy">Ask AI to help you DESIGN an experiment step by step. Don't ask for the answer — ask it to help you figure out HOW to find the answer. Try: "Help me set up an experiment to test this."</p>
+        </div>
+      </div>
+
+      <!-- Activity 1: Dice Experiment -->
+      <div class="card card-blue mt-2">
+        <h3>🎲 Activity 1: The Great Dice Experiment</h3>
+        <p data-i18n="exB1Intro">If you roll a die 30 times, which number will show up most often? Will any number be the clear "mode"? Let's find out!</p>
+
+        <div class="dice-area">
+          <svg class="dice-svg" id="dice-svg" viewBox="0 0 100 100" aria-label="Dice" style="background:white; border-radius:16px;">
+            <rect x="5" y="5" width="90" height="90" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
+            <text x="50" y="60" text-anchor="middle" font-size="36" font-weight="900" fill="#1e293b" font-family="Inter, sans-serif">?</text>
+          </svg>
+          <div>
+            <button class="btn-primary" id="roll-btn" onclick="window.rollDice()">🎲 Roll the Die!</button>
+            <p class="small-note mt-1" id="roll-count-display">Rolls: 0 / 30</p>
+          </div>
+        </div>
+
+        <h4 style="color:#fff; margin-top:16px;">Roll History</h4>
+        <div class="roll-history" id="roll-history"></div>
+
+        <h4 style="color:#fff; margin-top:16px;">Frequency Chart</h4>
+        <div class="freq-bar-container" id="dice-freq-bars" style="height:120px;"></div>
+        <div style="display:flex; gap:6px; justify-content:space-around; padding:0 4px;">
+          <span class="small-note">1</span><span class="small-note">2</span><span class="small-note">3</span><span class="small-note">4</span><span class="small-note">5</span><span class="small-note">6</span>
+        </div>
+
+        <label for="dice-mode">After 30 rolls, what is the mode of your results?</label>
+        <input id="dice-mode" class="work-field" data-label="Dice Mode" type="text" placeholder="The mode of my rolls is..." />
+        <label for="dice-prediction">Did the results match what you expected? Why or why not?</label>
+        <div class="sentence-frame">Frame: "I expected _____ but actually _____. I think this happened because _____."</div>
+        <textarea id="dice-prediction" class="work-field short" data-label="Dice Prediction Reflection" placeholder="I expected... but actually..."></textarea>
+
+        <div class="prompt-card mt-2">
+          <div class="prompt-head"><strong>Gemini Experiment Prompt: Dice Probability</strong><span class="small-note">Experiment Designer Strategy</span></div>
+          <div class="prompt-text" id="prompt-dice">I rolled a die 30 times and got these results: [paste your roll history]. The mode was [your mode]. Help me understand: Was this expected? What SHOULD mathematically happen if the die is perfectly fair? Don't just tell me — walk me through the reasoning step by step. Use simple language for a 6th grader.</div>
+          <div class="prompt-actions">
+            <button class="btn-primary" onclick="window.copyPrompt('prompt-dice')">📋 Copy Prompt</button>
+            <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+          </div>
+        </div>
+        <label for="dice-gemini-learn">What did Gemini help you understand about probability and dice?</label>
+        <textarea id="dice-gemini-learn" class="work-field" data-label="Dice Gemini Learning" placeholder="Gemini helped me understand that..."></textarea>
+      </div>
+
+      <!-- Activity 2: The Birthday Paradox -->
+      <div class="card card-cream mt-2">
+        <h3>🎂 Activity 2: The Birthday Paradox</h3>
+        <p data-i18n="exB2Intro">Here's a mind-bending question: <strong>How many people do you need in a room before there's a 50% chance that two people share a birthday?</strong></p>
+        <p>Most people guess way too high. The real answer will surprise you!</p>
+
+        <label for="birthday-guess">Your guess: How many people?</label>
+        <input id="birthday-guess" class="work-field" data-label="Birthday Paradox Guess" type="text" placeholder="I think you need ___ people" />
+
+        <div class="prompt-card mt-2">
+          <div class="prompt-head"><strong>Gemini Step-by-Step Prompt: Birthday Paradox</strong><span class="small-note">Multi-step reasoning</span></div>
+          <div class="prompt-text" id="prompt-birthday">I'm trying to figure out the Birthday Paradox. I guessed that you need [your guess] people in a room before there's a 50% chance two share a birthday. Help me think through this step by step. Start with just 2 people — what's the chance they DON'T share a birthday? Then add a 3rd person. Keep going slowly. Don't skip ahead! Use simple 6th-grade math. Let me follow along.</div>
+          <div class="prompt-actions">
+            <button class="btn-primary" onclick="window.copyPrompt('prompt-birthday')">📋 Copy Prompt</button>
+            <a class="btn btn-gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">✦ Open Gemini</a>
+          </div>
+        </div>
+
+        <label for="birthday-answer">What's the actual answer? Were you surprised?</label>
+        <div class="sentence-frame">Frame: "The actual answer is _____ people. I was surprised because _____. Gemini helped me understand this by _____."</div>
+        <textarea id="birthday-answer" class="work-field" data-label="Birthday Paradox Discovery" placeholder="The actual answer is... I was surprised because..."></textarea>
+      </div>
+
+      <!-- Activity 3: Design Your Own Experiment -->
+      <div class="card card-purple mt-2">
+        <h3>🔬 Activity 3: Design Your Own Probability Experiment</h3>
+        <p>Now it's YOUR turn to think like a scientist. Pick a probability question and use Gemini to help you investigate it.</p>
+        <div class="grid-3 mt-1">
+          <div class="card card-mint">
+            <p><strong>Option A:</strong> "If I flip a coin 50 times, will I get exactly 25 heads?"</p>
+          </div>
+          <div class="card card-cream">
+            <p><strong>Option B:</strong> "If I pick a random card from a deck, what are the chances it's a face card?"</p>
+          </div>
+          <div class="card card-rose">
+            <p><strong>Option C:</strong> Make up your own probability question!</p>
+          </div>
+        </div>
+        <label for="exp-question">Your probability question:</label>
+        <input id="exp-question" class="work-field" data-label="Custom Experiment Question" type="text" placeholder="My probability question is..." />
+        <label for="exp-prompt">Write a Gemini prompt using the Experiment Designer strategy:</label>
+        <div class="sentence-frame">Template: "I want to investigate: [question]. Help me design a step-by-step experiment. What should I test? How many trials? How do I record results? Don't give me the answer — help me figure out HOW to find it."</div>
+        <textarea id="exp-prompt" class="work-field" data-label="Custom Experiment Prompt" placeholder="My Gemini prompt for this experiment..."></textarea>
+        <label for="exp-results">What did you discover?</label>
+        <textarea id="exp-results" class="work-field" data-label="Custom Experiment Results" placeholder="After talking with Gemini, I discovered that..."></textarea>
+      </div>
+
+      <div class="check-row">
+        <button class="btn-check" onclick="window.markComplete(this, 'exploreB')">✅ Mark Exploration B Complete</button>
+        <span class="feedback" id="exploreB-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== EXIT TICKET + SAVE ===== -->
+    <!-- ============================================================ -->
+    <section id="mission6" data-progress="Reflection complete">
+      <div class="section-heading">
+        <div class="badge">🏆</div>
+        <div>
+          <h2 data-i18n="m6Title">Exit Ticket + Save Your Quest</h2>
+          <p class="section-desc" data-i18n="m6Desc">Reflect on what you learned, then save your work as evidence.</p>
+        </div>
+        <div class="time-pill">5 min</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-mint">
+          <h3 data-i18n="exitTitle">Exit Ticket</h3>
+          <label for="exit1" data-i18n="exit1">1. What is the first thing you must do before finding the median?</label>
+          <textarea id="exit1" class="work-field short" data-label="Exit Ticket 1" placeholder="Before finding the median, I must..."></textarea>
+          <label for="exit2" data-i18n="exit2">2. How can a data set have more than one mode?</label>
+          <textarea id="exit2" class="work-field short" data-label="Exit Ticket 2" placeholder="A data set has more than one mode when..."></textarea>
+          <label for="exit3" data-i18n="exit3">3. Name TWO AI prompting strategies you learned today and explain when to use each one.</label>
+          <textarea id="exit3" class="work-field" data-label="Exit Ticket 3" placeholder="Two strategies I learned are: 1) _____ which is useful when _____. 2) _____ which is useful when _____."></textarea>
+          <label for="exit4">4. What is one thing AI got wrong (or could get wrong) and how would you check it?</label>
+          <textarea id="exit4" class="work-field short" data-label="Exit Ticket 4" placeholder="AI could get wrong... I would check by..."></textarea>
+        </div>
+        <div class="card card-cream">
+          <h3 data-i18n="saveTitle">Save Your Work</h3>
+          <ol style="color:rgba(255,255,255,0.75);">
+            <li>Click <strong>Save</strong> if you need to pause and come back.</li>
+            <li>Click <strong>Print</strong> and choose "Save as PDF."</li>
+            <li>Or click <strong>Download DOC</strong> to download a Word file.</li>
+            <li>Submit your PDF or DOC the way your teacher asks.</li>
+          </ol>
+          <div class="prompt-actions mt-2">
+            <button class="btn-secondary" onclick="window.saveWork()">💾 Save on This Device</button>
+            <button class="btn-print" onclick="window.print()">🖨 Print / Save PDF</button>
+            <button class="btn-gold" onclick="window.downloadDoc()">📄 Download DOC</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="mt-2" style="color:#fff;">Quest Badges</h3>
+      <div class="stamp-row mt-1" aria-label="Quest badge tracker">
+        <div class="stamp" id="stamp-mission0"><span class="stamp-icon">🚀</span>Launch<span class="stamp-label">AI rules</span></div>
+        <div class="stamp" id="stamp-mission1"><span class="stamp-icon">⛰️</span>Median<span class="stamp-label">center found</span></div>
+        <div class="stamp" id="stamp-mission2"><span class="stamp-icon">🌿</span>Mode<span class="stamp-label">repeats found</span></div>
+        <div class="stamp" id="stamp-mission3"><span class="stamp-icon">🧪</span>Prompts<span class="stamp-label">better questions</span></div>
+        <div class="stamp" id="stamp-mission4"><span class="stamp-icon">🕵️</span>Errors<span class="stamp-label">AI checked</span></div>
+        <div class="stamp" id="stamp-mission5"><span class="stamp-icon">🐉</span>Boss<span class="stamp-label">data dragon</span></div>
+        <div class="stamp" id="stamp-exploreA"><span class="stamp-icon">🌀</span>Fibonacci<span class="stamp-label">golden spiral</span></div>
+        <div class="stamp" id="stamp-exploreB"><span class="stamp-icon">🎲</span>Probability<span class="stamp-label">dice & chance</span></div>
+      </div>
+
+      <div class="check-row mt-2">
+        <button class="btn-check" onclick="window.markComplete(this, 'mission6')">✅ Mark Reflection Complete</button>
+        <span class="feedback" id="mission6-feedback"></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ===== TEACHER ANSWER KEY ===== -->
+    <!-- ============================================================ -->
+    <section class="teacher-key">
+      <details>
+        <summary>🔑 Teacher Answer Key / Quick Check</summary>
+        <table class="mini-table mt-1">
+          <thead><tr><th>Item</th><th>Expected Answer</th><th>Common Misconception</th></tr></thead>
+          <tbody>
+            <tr><td>Mission 1A</td><td>Sorted: 2, 4, 7, 9, 12 → median = 7</td><td>Not sorting before choosing middle.</td></tr>
+            <tr><td>Mission 1B</td><td>Sorted: 3, 4, 6, 8, 10, 11 → middle = 6 & 8 → median = 7</td><td>Choosing 6 or 8 instead of the average.</td></tr>
+            <tr><td>Mission 2C</td><td>Mode = 8 (appears 3 times)</td><td>Choosing 5 (appears twice, but not most).</td></tr>
+            <tr><td>Mission 2D</td><td>No mode (all appear once)</td><td>Picking largest number or saying every number is mode.</td></tr>
+            <tr><td>Mission 2E</td><td>Modes = 2 and 3 (each appears twice)</td><td>Thinking there can only be one mode.</td></tr>
+            <tr><td>Mission 4</td><td>Sorted: 2, 4, 7, 7, 9, 10 → median = 7 → mode = 7</td><td>Fake AI invented "8" and missed the repeated 7.</td></tr>
+            <tr><td>Boss Battle</td><td>Sorted: 3, 4, 4, 4, 5, 5, 6, 6, 6, 7, 8 → median = 5 → modes = 4 and 6</td><td>Missing the tie for mode.</td></tr>
+            <tr><td>Fibonacci</td><td>Next 3: 13, 21, 34. Rule: add previous two numbers.</td><td>Multiplying instead of adding.</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </section>
+
+    <div class="footer">Gemini Data Quest • Median & Mode AI Adventure • Student work saves locally unless reset. • Built for ESOL accessibility.</div>
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- ===== JAVASCRIPT ENGINE ===== -->
+  <!-- ============================================================ -->
+  <script>
+    /* ======================================== */
+    /*  CONFIG                                  */
+    /* ======================================== */
+    const CONFIG = {
+      STORAGE_KEY: 'gemini-data-quest-v2',
+      COMPLETE_KEY: 'gemini-data-quest-complete-v2',
+      XP_KEY: 'gemini-data-quest-xp-v2',
+      MISSIONS: ['mission0','mission1','mission2','mission3','mission4','mission5','mission6','exploreA','exploreB'],
+      XP_MISSION: 100,
+      XP_CORRECT_FIRST: 50,
+      XP_REFLECTION: 25,
+      XP_EXPLORE: 150,
+      MAX_XP: 1000,
+      LEVELS: [
+        { min: 0, title: '⭐ Data Rookie' },
+        { min: 200, title: '🌟 Data Explorer' },
+        { min: 400, title: '🔧 Prompt Engineer' },
+        { min: 600, title: '🔬 Data Scientist' },
+        { min: 800, title: '🏆 AI Master' }
+      ],
+      ANSWERS: {
+        'm1a-median': 7, 'm1b-median': 7, 'm4-median': 7, 'm5-median': 5
+      },
+      DICE_MAX_ROLLS: 30
+    };
+
+    function validateConfig() {
+      if (!CONFIG.MISSIONS.length) throw new Error('CONFIG: No missions defined');
+      if (!CONFIG.LEVELS.length) throw new Error('CONFIG: No levels defined');
+      return true;
+    }
+
+    function selfTest() {
+      const results = [];
+      results.push({ test: 'Config valid', pass: validateConfig() });
+      results.push({ test: 'DOM missions exist', pass: CONFIG.MISSIONS.every(m => document.getElementById(m) || m === 'mission6') });
+      results.push({ test: 'Progress bar exists', pass: !!byId('progressBar') });
+      results.push({ test: 'XP bar exists', pass: !!byId('xpBar') });
+      console.table(results);
+      return results.every(r => r.pass);
+    }
+
+    /* ======================================== */
+    /*  UTILITIES                               */
+    /* ======================================== */
+    function byId(id) { return document.getElementById(id); }
+
+    function escapeHtml(t) {
+      return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/\n/g,'<br>');
+    }
+
+    /* ======================================== */
+    /*  TOAST                                   */
+    /* ======================================== */
+    let toastTimer = null;
+    function toast(message) {
+      const el = byId('toast-note');
+      el.textContent = message;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+    }
+    window.toast = toast;
+
+    /* ======================================== */
+    /*  SOUND (Web Audio)                       */
+    /* ======================================== */
+    let audioCtx = null;
+    function playSound(freq, dur, type='sine') {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch(e) {}
+    }
+
+    function playCorrect() { playSound(523, 0.15); setTimeout(()=>playSound(659, 0.15), 100); setTimeout(()=>playSound(784, 0.2), 200); }
+    function playWrong() { playSound(200, 0.3, 'square'); }
+    function playLevelUp() { [523,659,784,1047].forEach((f,i) => setTimeout(()=>playSound(f, 0.2), i*120)); }
+
+    /* ======================================== */
+    /*  CONFETTI                                */
+    /* ======================================== */
+    function launchConfetti() {
+      const canvas = byId('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const particles = [];
+      const colors = ['#f59e0b','#3b82f6','#10b981','#f43f5e','#7c3aed','#06b6d4'];
+
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height * 0.3 - canvas.height * 0.1,
+          vx: (Math.random() - 0.5) * 6,
+          vy: Math.random() * 4 + 2,
+          w: Math.random() * 8 + 4,
+          h: Math.random() * 6 + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI * 2,
+          vr: (Math.random() - 0.5) * 0.2,
+          life: 1
+        });
+      }
+
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        particles.forEach(p => {
+          if (p.life <= 0) return;
+          alive = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.12;
+          p.rot += p.vr;
+          p.life -= 0.008;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        });
+        frame++;
+        if (alive && frame < 200) requestAnimationFrame(animate);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      animate();
+    }
+
+    /* ======================================== */
+    /*  PARTICLES BACKGROUND                    */
+    /* ======================================== */
+    (function initParticles() {
+      const canvas = byId('particles-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h;
+      const dots = [];
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      for (let i = 0; i < 50; i++) {
+        dots.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          r: Math.random() * 2 + 1,
+          alpha: Math.random() * 0.3 + 0.05
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        dots.forEach(d => {
+          d.x += d.vx;
+          d.y += d.vy;
+          if (d.x < 0 || d.x > w) d.vx *= -1;
+          if (d.y < 0 || d.y > h) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(59, 130, 246, ${d.alpha})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    /* ======================================== */
+    /*  COPY PROMPT                             */
+    /* ======================================== */
+    function copyPrompt(id) {
+      const text = byId(id).innerText.trim();
+      copyText(text);
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => toast('📋 Prompt copied! Open Gemini and paste it.'));
+      } else {
+        const t = document.createElement('textarea');
+        t.value = text;
+        document.body.appendChild(t);
+        t.select();
+        document.execCommand('copy');
+        document.body.removeChild(t);
+        toast('📋 Prompt copied! Open Gemini and paste it.');
+      }
+    }
+
+    window.copyPrompt = copyPrompt;
+
+    /* ======================================== */
+    /*  FEEDBACK                                */
+    /* ======================================== */
+    function setFeedback(id, message, ok) {
+      const el = byId(id);
+      if (!el) return;
+      el.textContent = message;
+      el.className = 'feedback ' + (ok ? 'ok' : 'try');
+    }
+
+    /* ======================================== */
+    /*  XP SYSTEM                               */
+    /* ======================================== */
+    function getXP() {
+      try { return parseInt(localStorage.getItem(CONFIG.XP_KEY)) || 0; } catch { return 0; }
+    }
+
+    function addXP(amount) {
+      let xp = Math.min(getXP() + amount, CONFIG.MAX_XP);
+      localStorage.setItem(CONFIG.XP_KEY, xp);
+      updateXPDisplay(xp);
+      return xp;
+    }
+
+    function updateXPDisplay(xp) {
+      if (xp === undefined) xp = getXP();
+      const bar = byId('xpBar');
+      const text = byId('xpText');
+      const badge = byId('levelBadge');
+      if (bar) bar.style.width = `${(xp / CONFIG.MAX_XP) * 100}%`;
+      if (text) text.textContent = `${xp} / ${CONFIG.MAX_XP} XP`;
+      // Find current level
+      let level = CONFIG.LEVELS[0];
+      for (const l of CONFIG.LEVELS) {
+        if (xp >= l.min) level = l;
+      }
+      if (badge) {
+        const prev = badge.textContent;
+        badge.textContent = level.title;
+        if (prev !== level.title && prev !== '⭐ Data Rookie') {
+          playLevelUp();
+          toast(`🎉 Level Up! You are now: ${level.title}`);
+        }
+      }
+    }
+
+    /* ======================================== */
+    /*  VALIDATION                              */
+    /* ======================================== */
+    function parseNumber(text) {
+      const cleaned = String(text).trim().replace(/[^0-9.\-]/g, '');
+      return Number(cleaned);
+    }
+
+    function validateMedian(inputId, expected, feedbackId, dragId) {
+      const value = parseNumber(byId(inputId).value);
+      const ok = Math.abs(value - expected) < 0.01;
+      if (ok) {
+        setFeedback(feedbackId, '✅ Correct! Median unlocked!', true);
+        playCorrect();
+        addXP(CONFIG.XP_CORRECT_FIRST);
+        if (dragId) showNumberLine(dragId, expected);
+      } else {
+        setFeedback(feedbackId, '🔄 Try again. Sort first, then find the center.', false);
+        playWrong();
+      }
+      autoSave();
+    }
+    window.validateMedian = validateMedian;
+
+    function normalizeModeInput(text) {
+      return String(text).toLowerCase()
+        .replace(/modes?/g, '')
+        .replace(/and/g, ',')
+        .replace(/;/g, ',')
+        .split(',')
+        .map(x => x.trim())
+        .filter(Boolean)
+        .map(x => x.replace(/[^0-9.\-a-z ]/g, '').trim());
+    }
+
+    function validateMode(inputId, expected, feedbackId) {
+      const tokens = normalizeModeInput(byId(inputId).value);
+      const got = [...new Set(tokens.map(x => x.replace(/\s+/g, '')))].filter(x => x !== '').sort();
+      const exp = [...expected].map(String).sort();
+      const ok = got.length === exp.length && got.every((x, i) => x === exp[i]);
+      if (ok) {
+        setFeedback(feedbackId, '✅ Correct! Mode clue unlocked!', true);
+        playCorrect();
+        addXP(CONFIG.XP_CORRECT_FIRST);
+      } else {
+        setFeedback(feedbackId, '🔄 Try again. Count which value appears most often.', false);
+        playWrong();
+      }
+      autoSave();
+    }
+    window.validateMode = validateMode;
+
+    function validateNoMode(inputId, feedbackId) {
+      const text = String(byId(inputId).value).toLowerCase().trim();
+      const ok = ['no mode','none','no','there is no mode','no modes'].some(x => text.includes(x));
+      if (ok) {
+        setFeedback(feedbackId, '✅ Correct! No value repeats most often.', true);
+        playCorrect();
+        addXP(CONFIG.XP_CORRECT_FIRST);
+      } else {
+        setFeedback(feedbackId, '🔄 Try again. Does any value appear more than others?', false);
+        playWrong();
+      }
+      autoSave();
+    }
+    window.validateNoMode = validateNoMode;
+
+    /* ======================================== */
+    /*  FIBONACCI CHECK                         */
+    /* ======================================== */
+    function checkFibonacci() {
+      const val = byId('fib-guess').value.trim();
+      const nums = val.replace(/[^0-9,\s]/g,'').split(/[,\s]+/).map(Number).filter(n => !isNaN(n));
+      const ok = nums.length >= 3 && nums[0] === 13 && nums[1] === 21 && nums[2] === 34;
+      if (ok) {
+        setFeedback('fib-feedback', '✅ Correct! 8+5=13, 13+8=21, 21+13=34. The Fibonacci sequence!', true);
+        playCorrect();
+        addXP(CONFIG.XP_CORRECT_FIRST);
+        drawSpiral();
+      } else {
+        setFeedback('fib-feedback', '🔄 Hint: Each number is the sum of the two before it. Try again!', false);
+        playWrong();
+      }
+      autoSave();
+    }
+    window.checkFibonacci = checkFibonacci;
+
+    /* ======================================== */
+    /*  SVG FIBONACCI SPIRAL                    */
+    /* ======================================== */
+    function drawSpiral() {
+      const container = byId('spiral-viz');
+      if (!container) return;
+      const fibs = [1,1,2,3,5,8,13];
+      const scale = 12;
+      const w = 380, h = 260;
+      let svg = `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" style="background:rgba(255,255,255,0.03);border-radius:14px;">`;
+      // Draw golden spiral approximation using quarter arcs
+      const cx = w/2, cy = h/2;
+      let x = cx, y = cy;
+      const dirs = [[1,0],[0,1],[-1,0],[0,-1]]; // right, down, left, up
+      fibs.forEach((f, i) => {
+        const s = f * scale;
+        const d = dirs[i % 4];
+        const color = `hsl(${40 + i*35}, 80%, 60%)`;
+        // Draw rectangle
+        let rx, ry;
+        if (i % 4 === 0) { rx = x; ry = y - s; }
+        else if (i % 4 === 1) { rx = x; ry = y; }
+        else if (i % 4 === 2) { rx = x - s; ry = y; }
+        else { rx = x - s; ry = y - s; }
+        svg += `<rect x="${rx}" y="${ry}" width="${s}" height="${s}" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.6" rx="2"/>`;
+        svg += `<text x="${rx + s/2}" y="${ry + s/2 + 4}" text-anchor="middle" fill="${color}" font-size="${Math.max(8, s/4)}" font-weight="700">${f}</text>`;
+        // Move to next corner
+        if (i % 4 === 0) x += s;
+        else if (i % 4 === 1) y += s;
+        else if (i % 4 === 2) x -= s;
+        else y -= s;
+      });
+      svg += `</svg>`;
+      container.innerHTML = svg;
+    }
+
+    /* ======================================== */
+    /*  NUMBER LINE SVG                         */
+    /* ======================================== */
+    function showNumberLine(dragId, median) {
+      const container = byId('numberline-' + dragId);
+      if (!container) return;
+      container.classList.remove('hidden');
+      const dropZone = byId('drop-zone-' + dragId);
+      const chips = dropZone.querySelectorAll('.num-chip');
+      const values = Array.from(chips).map(c => parseFloat(c.dataset.value));
+      if (!values.length) return;
+
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = max - min || 1;
+      const w = 500, h = 80, pad = 50;
+
+      let svg = `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="background:transparent;">`;
+      // Line
+      svg += `<line x1="${pad}" y1="50" x2="${w-pad}" y2="50" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>`;
+      // Ticks and values
+      values.forEach((v, i) => {
+        const x = pad + ((v - min) / range) * (w - 2*pad);
+        const isMedian = Math.abs(v - median) < 0.01;
+        svg += `<line x1="${x}" y1="42" x2="${x}" y2="58" stroke="${isMedian ? '#f59e0b' : 'rgba(255,255,255,0.4)'}" stroke-width="${isMedian ? 3 : 1.5}"/>`;
+        svg += `<circle cx="${x}" cy="50" r="${isMedian ? 8 : 5}" fill="${isMedian ? '#f59e0b' : '#3b82f6'}" opacity="0.9"/>`;
+        svg += `<text x="${x}" y="28" text-anchor="middle" fill="${isMedian ? '#fbbf24' : 'rgba(255,255,255,0.7)'}" font-size="${isMedian ? 14 : 11}" font-weight="${isMedian ? 900 : 600}">${v}</text>`;
+      });
+      // Median label
+      const mx = pad + ((median - min) / range) * (w - 2*pad);
+      svg += `<text x="${mx}" y="75" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="800">MEDIAN = ${median}</text>`;
+      svg += `</svg>`;
+      container.innerHTML = svg;
+    }
+
+    /* ======================================== */
+    /*  DRAG AND DROP SORTING                   */
+    /* ======================================== */
+    const dragState = {};
+
+    function initDragDrop() {
+      document.querySelectorAll('[id^="drag-source-"]').forEach(source => {
+        const id = source.id.replace('drag-source-', '');
+        const dropZone = byId('drop-zone-' + id);
+        if (!dropZone) return;
+
+        const chips = source.querySelectorAll('.num-chip.draggable');
+        dragState[id] = { source, dropZone, originalChips: Array.from(chips).map(c => c.cloneNode(true)) };
+
+        chips.forEach(chip => {
+          chip.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', chip.dataset.value);
+            e.dataTransfer.effectAllowed = 'move';
+            chip.classList.add('dragging');
+            window._dragChip = chip;
+          });
+          chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+
+          // Touch support
+          chip.addEventListener('touchstart', e => {
+            window._touchChip = chip;
+            chip.classList.add('dragging');
+          }, { passive: true });
+        });
+
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', e => {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+          const label = dropZone.querySelector('.drop-zone-label');
+          if (label) label.remove();
+          if (window._dragChip) {
+            dropZone.appendChild(window._dragChip);
+            window._dragChip.classList.remove('dragging');
+            window._dragChip = null;
+          }
+        });
+
+        // Touch drop support
+        dropZone.addEventListener('touchend', e => {
+          if (window._touchChip) {
+            const label = dropZone.querySelector('.drop-zone-label');
+            if (label) label.remove();
+            dropZone.appendChild(window._touchChip);
+            window._touchChip.classList.remove('dragging');
+            window._touchChip = null;
+          }
+        });
+
+        // Click-to-move fallback for accessibility
+        chips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            if (chip.parentElement === source) {
+              const label = dropZone.querySelector('.drop-zone-label');
+              if (label) label.remove();
+              dropZone.appendChild(chip);
+            } else {
+              source.appendChild(chip);
+            }
+          });
+        });
+      });
+    }
+
+    function resetDrag(id) {
+      const state = dragState[id];
+      if (!state) return;
+      const { source, dropZone, originalChips } = state;
+      source.innerHTML = '';
+      dropZone.innerHTML = `<span class="drop-zone-label">Drag numbers here in order</span>`;
+      originalChips.forEach(c => {
+        const clone = c.cloneNode(true);
+        // Re-attach event listeners
+        clone.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', clone.dataset.value);
+          clone.classList.add('dragging');
+          window._dragChip = clone;
+        });
+        clone.addEventListener('dragend', () => clone.classList.remove('dragging'));
+        clone.addEventListener('click', () => {
+          if (clone.parentElement === source) {
+            const label = dropZone.querySelector('.drop-zone-label');
+            if (label) label.remove();
+            dropZone.appendChild(clone);
+          } else {
+            source.appendChild(clone);
+          }
+        });
+        source.appendChild(clone);
+      });
+      const nl = byId('numberline-' + id);
+      if (nl) { nl.innerHTML = ''; nl.classList.add('hidden'); }
+    }
+    window.resetDrag = resetDrag;
+
+    /* ======================================== */
+    /*  FREQUENCY COUNTER (MODE)                */
+    /* ======================================== */
+    function initFreqCounters() {
+      document.querySelectorAll('.freq-counter').forEach(container => {
+        const id = container.id;
+        const barsId = id.replace('freq-counter', 'freq-bars');
+        const values = container.dataset.values.split(',').map(Number);
+        const unique = [...new Set(values)].sort((a,b) => a-b);
+        const counts = {};
+        unique.forEach(v => counts[v] = 0);
+
+        container.innerHTML = '';
+        unique.forEach(v => {
+          const btn = document.createElement('button');
+          btn.className = 'freq-btn';
+          btn.innerHTML = `${v}<span class="freq-count">×${counts[v]}</span>`;
+          btn.onclick = () => {
+            counts[v]++;
+            btn.querySelector('.freq-count').textContent = `×${counts[v]}`;
+            updateFreqBars(barsId, unique, counts);
+            playSound(300 + v * 60, 0.1);
+          };
+          container.appendChild(btn);
+        });
+
+        // Reset button
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'btn-sm btn-ghost';
+        resetBtn.textContent = '↺';
+        resetBtn.title = 'Reset counts';
+        resetBtn.onclick = () => {
+          unique.forEach(v => counts[v] = 0);
+          container.querySelectorAll('.freq-count').forEach((el, i) => el.textContent = `×0`);
+          container.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('freq-max'));
+          updateFreqBars(barsId, unique, counts);
+        };
+        container.appendChild(resetBtn);
+
+        // Initialize bars
+        initFreqBars(barsId, unique);
+      });
+    }
+
+    function initFreqBars(barsId, unique) {
+      const container = byId(barsId);
+      if (!container) return;
+      container.innerHTML = '';
+      unique.forEach(v => {
+        const col = document.createElement('div');
+        col.className = 'freq-bar-col';
+        col.innerHTML = `<div class="freq-bar" data-val="${v}" style="height:0%"></div><span class="freq-bar-num">${v}</span>`;
+        container.appendChild(col);
+      });
+    }
+
+    function updateFreqBars(barsId, unique, counts) {
+      const container = byId(barsId);
+      if (!container) return;
+      const maxCount = Math.max(1, ...Object.values(counts));
+      const bars = container.querySelectorAll('.freq-bar');
+
+      // Find max values
+      const maxVal = Math.max(...Object.values(counts));
+
+      bars.forEach(bar => {
+        const v = parseInt(bar.dataset.val);
+        const c = counts[v] || 0;
+        const pct = (c / Math.max(maxCount, 5)) * 100;
+        bar.style.height = `${pct}%`;
+        bar.classList.toggle('freq-bar-max', c === maxVal && c > 0);
+      });
+
+      // Highlight max in buttons
+      const counterContainer = byId(barsId.replace('freq-bars', 'freq-counter'));
+      if (counterContainer) {
+        counterContainer.querySelectorAll('.freq-btn').forEach(btn => {
+          const v = parseInt(btn.textContent);
+          const c = counts[v] || 0;
+          btn.classList.toggle('freq-max', c === maxVal && c > 0);
+        });
+      }
+    }
+
+    /* ======================================== */
+    /*  DICE ROLLER                             */
+    /* ======================================== */
+    const diceState = { rolls: [], counts: {1:0,2:0,3:0,4:0,5:0,6:0} };
+
+    function rollDice() {
+      if (diceState.rolls.length >= CONFIG.DICE_MAX_ROLLS) {
+        toast('You already rolled 30 times! Check your results.');
+        return;
+      }
+
+      const result = Math.floor(Math.random() * 6) + 1;
+      diceState.rolls.push(result);
+      diceState.counts[result]++;
+
+      // Animate dice
+      const diceSvg = byId('dice-svg');
+      diceSvg.classList.add('rolling');
+      setTimeout(() => {
+        diceSvg.classList.remove('rolling');
+        // Draw dice face
+        drawDiceFace(diceSvg, result);
+      }, 500);
+
+      // Update roll history
+      const history = byId('roll-history');
+      const chip = document.createElement('span');
+      chip.className = 'roll-chip';
+      chip.textContent = result;
+      history.appendChild(chip);
+
+      // Update count display
+      byId('roll-count-display').textContent = `Rolls: ${diceState.rolls.length} / ${CONFIG.DICE_MAX_ROLLS}`;
+
+      // Update frequency bars
+      updateDiceFreqBars();
+
+      playSound(400 + result * 80, 0.1);
+
+      if (diceState.rolls.length >= CONFIG.DICE_MAX_ROLLS) {
+        byId('roll-btn').textContent = '🎲 Done! (30/30)';
+        byId('roll-btn').disabled = true;
+        toast('30 rolls complete! Now find the mode and analyze with Gemini.');
+        addXP(25);
+      }
+
+      autoSave();
+    }
+    window.rollDice = rollDice;
+
+    function drawDiceFace(svg, n) {
+      const dotPositions = {
+        1: [[50,50]],
+        2: [[30,30],[70,70]],
+        3: [[30,30],[50,50],[70,70]],
+        4: [[30,30],[70,30],[30,70],[70,70]],
+        5: [[30,30],[70,30],[50,50],[30,70],[70,70]],
+        6: [[30,30],[70,30],[30,50],[70,50],[30,70],[70,70]]
+      };
+      let html = `<rect x="5" y="5" width="90" height="90" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>`;
+      dotPositions[n].forEach(([x,y]) => {
+        html += `<circle cx="${x}" cy="${y}" r="7" fill="#1e293b"/>`;
+      });
+      svg.innerHTML = html;
+    }
+
+    function updateDiceFreqBars() {
+      const container = byId('dice-freq-bars');
+      if (!container) return;
+      if (!container.children.length) {
+        for (let i = 1; i <= 6; i++) {
+          const col = document.createElement('div');
+          col.className = 'freq-bar-col';
+          col.innerHTML = `<div class="freq-bar" data-val="${i}" style="height:0%"></div><span class="freq-bar-num">${diceState.counts[i]}</span>`;
+          container.appendChild(col);
+        }
+      }
+      const maxCount = Math.max(1, ...Object.values(diceState.counts));
+      container.querySelectorAll('.freq-bar-col').forEach((col, i) => {
+        const val = i + 1;
+        const c = diceState.counts[val];
+        const bar = col.querySelector('.freq-bar');
+        const num = col.querySelector('.freq-bar-num');
+        bar.style.height = `${(c / Math.max(maxCount, 5)) * 100}%`;
+        num.textContent = c;
+        const isMax = c === Math.max(...Object.values(diceState.counts)) && c > 0;
+        bar.classList.toggle('freq-bar-max', isMax);
+      });
+    }
+
+    /* ======================================== */
+    /*  MISSION COMPLETION                      */
+    /* ======================================== */
+    function markComplete(button, missionId) {
+      const feedbackId = `${missionId}-feedback`;
+      setFeedback(feedbackId, '🏆 Mission complete! Badge earned!', true);
+      playCorrect();
+
+      const completed = getCompleted();
+      if (!completed[missionId]) {
+        completed[missionId] = true;
+        localStorage.setItem(CONFIG.COMPLETE_KEY, JSON.stringify(completed));
+        const isExplore = missionId.startsWith('explore');
+        addXP(isExplore ? CONFIG.XP_EXPLORE : CONFIG.XP_MISSION);
+        launchConfetti();
+      }
+
+      updateProgress();
+      const stamp = byId('stamp-' + missionId);
+      if (stamp) stamp.classList.add('done');
+      autoSave();
+    }
+    window.markComplete = markComplete;
+
+    function getCompleted() {
+      try { return JSON.parse(localStorage.getItem(CONFIG.COMPLETE_KEY)) || {}; }
+      catch { return {}; }
+    }
+
+    function updateProgress() {
+      const completed = getCompleted();
+      const count = CONFIG.MISSIONS.filter(m => completed[m]).length;
+      const percent = Math.round((count / CONFIG.MISSIONS.length) * 100);
+      const pb = byId('progressText');
+      const bar = byId('progressBar');
+      if (pb) pb.textContent = `${percent}%`;
+      if (bar) bar.style.width = `${percent}%`;
+      CONFIG.MISSIONS.forEach(m => {
+        const stamp = byId('stamp-' + m);
+        if (stamp && completed[m]) stamp.classList.add('done');
+      });
+    }
+
+    /* ======================================== */
+    /*  PROMPT BUILDER                          */
+    /* ======================================== */
+    function buildPrompt() {
+      const goal = byId('promptGoal').value;
+      const dataset = byId('promptDataset').value.trim() || '[type my data set here]';
+      const question = byId('promptQuestion').value.trim() || '[type my question here]';
+      const goalText = {
+        steps: 'teach me the steps without giving the final answer first',
+        clarify: 'ask me clarifying questions because I am confused',
+        check: 'check my work and explain any mistake using hints first',
+        practice: 'create a similar practice problem after I understand this one',
+        explain: 'help me explain my answer in a complete 6th-grade sentence',
+        analogy: 'explain using a real-world analogy or example that a 6th grader would find interesting'
+      }[goal];
+      const prompt = `I am a 6th-grade student practicing median and mode. My data set or problem is: ${dataset}\n\nMy question is: ${question}\n\nPlease ${goalText}. Act like a friendly math coach. Do not just give me the final answer first. Ask one clarifying question if needed, use simple steps, and help me verify my thinking.`;
+      byId('builtPrompt').textContent = prompt;
+      playSound(500, 0.1);
+      autoSave();
+    }
+    window.buildPrompt = buildPrompt;
+
+    function copyBuiltPrompt() {
+      const text = byId('builtPrompt').innerText.trim();
+      if (!text || text.startsWith('Fill in')) {
+        toast('Build your prompt first!');
+        return;
+      }
+      copyText(text);
+    }
+    window.copyBuiltPrompt = copyBuiltPrompt;
+
+    /* ======================================== */
+    /*  SAVE / RESTORE / EXPORT                 */
+    /* ======================================== */
+    function getWorkData() {
+      const data = {};
+      document.querySelectorAll('.work-field').forEach(f => { data[f.id] = f.value; });
+      data._diceRolls = JSON.stringify(diceState.rolls);
+      data._diceCounts = JSON.stringify(diceState.counts);
+      return data;
+    }
+
+    function saveWork() {
+      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(getWorkData()));
+      toast('💾 Work saved on this device!');
+      updateProgress();
+    }
+    window.saveWork = saveWork;
+
+    function autoSave() {
+      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(getWorkData()));
+    }
+
+    function restoreWork() {
+      try {
+        const data = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY)) || {};
+        Object.entries(data).forEach(([id, value]) => {
+          if (id.startsWith('_')) return;
+          const el = byId(id);
+          if (el) el.value = value;
+        });
+        // Restore dice state
+        if (data._diceRolls) {
+          try {
+            diceState.rolls = JSON.parse(data._diceRolls);
+            diceState.counts = JSON.parse(data._diceCounts);
+            const history = byId('roll-history');
+            if (history) {
+              diceState.rolls.forEach(r => {
+                const chip = document.createElement('span');
+                chip.className = 'roll-chip';
+                chip.textContent = r;
+                history.appendChild(chip);
+              });
+            }
+            byId('roll-count-display').textContent = `Rolls: ${diceState.rolls.length} / ${CONFIG.DICE_MAX_ROLLS}`;
+            if (diceState.rolls.length >= CONFIG.DICE_MAX_ROLLS) {
+              byId('roll-btn').textContent = '🎲 Done! (30/30)';
+              byId('roll-btn').disabled = true;
+            }
+            if (diceState.rolls.length > 0) {
+              updateDiceFreqBars();
+              drawDiceFace(byId('dice-svg'), diceState.rolls[diceState.rolls.length - 1]);
+            }
+          } catch(e) {}
+        }
+      } catch {}
+      updateProgress();
+      updateXPDisplay();
+    }
+
+    function clearSavedWork() {
+      if (!confirm('Reset this entire activity? This clears all responses, badges, and XP.')) return;
+      localStorage.removeItem(CONFIG.STORAGE_KEY);
+      localStorage.removeItem(CONFIG.COMPLETE_KEY);
+      localStorage.removeItem(CONFIG.XP_KEY);
+      document.querySelectorAll('.work-field').forEach(f => f.value = '');
+      document.querySelectorAll('.feedback').forEach(el => { el.textContent = ''; el.className = 'feedback'; });
+      document.querySelectorAll('.stamp').forEach(el => el.classList.remove('done'));
+      byId('builtPrompt').textContent = 'Fill in the boxes, then click "Build My Prompt."';
+      // Reset dice
+      diceState.rolls = [];
+      diceState.counts = {1:0,2:0,3:0,4:0,5:0,6:0};
+      byId('roll-history').innerHTML = '';
+      byId('roll-count-display').textContent = 'Rolls: 0 / 30';
+      byId('roll-btn').textContent = '🎲 Roll the Die!';
+      byId('roll-btn').disabled = false;
+      byId('dice-freq-bars').innerHTML = '';
+      byId('dice-svg').innerHTML = '<rect x="5" y="5" width="90" height="90" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/><text x="50" y="60" text-anchor="middle" font-size="36" font-weight="900" fill="#1e293b" font-family="Inter, sans-serif">?</text>';
+      // Reset number lines
+      document.querySelectorAll('.number-line-container').forEach(c => { c.innerHTML = ''; c.classList.add('hidden'); });
+      // Reset drag zones
+      Object.keys(dragState).forEach(id => resetDrag(id));
+      // Reset freq counters
+      initFreqCounters();
+      updateProgress();
+      updateXPDisplay(0);
+      toast('Activity reset!');
+    }
+    window.clearSavedWork = clearSavedWork;
+
+    /* ======================================== */
+    /*  DOC EXPORT                              */
+    /* ======================================== */
+    function collectWorkHtml() {
+      const date = new Date().toLocaleString();
+      let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Gemini Data Quest Student Work</title><style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.3;color:#111;max-width:800px;margin:0 auto;padding:20px;} h1{font-size:20pt;color:#15233b;} h2{font-size:14pt;color:#15233b;border-bottom:2px solid #111;padding-bottom:4px;margin-top:24px;} table{border-collapse:collapse;width:100%;margin:8px 0 16px;} td,th{border:2px solid #111;padding:8px;vertical-align:top;} th{background:#e9eef5;text-align:left;} .label{font-weight:bold;width:35%;} .xp{background:#fffbeb;padding:8px;border-radius:8px;font-weight:bold;}</style></head><body>`;
+      html += `<h1>Gemini Data Quest: Median & Mode AI Adventure</h1>`;
+      html += `<p><strong>Saved:</strong> ${escapeHtml(date)}</p>`;
+      html += `<p class="xp"><strong>XP Earned:</strong> ${getXP()} / ${CONFIG.MAX_XP}</p>`;
+
+      const grouped = {};
+      document.querySelectorAll('.work-field').forEach(field => {
+        const section = field.closest('section');
+        const title = section ? section.querySelector('h2')?.innerText || 'Student Work' : 'Student Work';
+        if (!grouped[title]) grouped[title] = [];
+        grouped[title].push({ label: field.dataset.label || field.id, value: field.value || '' });
+      });
+      Object.entries(grouped).forEach(([section, rows]) => {
+        html += `<h2>${escapeHtml(section)}</h2><table><tbody>`;
+        rows.forEach(row => {
+          html += `<tr><td class="label">${escapeHtml(row.label)}</td><td>${escapeHtml(row.value)}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+      });
+
+      // Add dice results if any
+      if (diceState.rolls.length > 0) {
+        html += `<h2>Dice Experiment Results</h2>`;
+        html += `<p><strong>All rolls:</strong> ${diceState.rolls.join(', ')}</p>`;
+        html += `<p><strong>Counts:</strong> ${Object.entries(diceState.counts).map(([k,v])=>`${k}: ${v} times`).join(', ')}</p>`;
+      }
+
+      html += `<p style="margin-top:20px;"><strong>AI Use Reflection:</strong> I used AI as a coach and verified the math myself.</p>`;
+      html += `  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body></html>`;
+      return html;
+    }
+
+    function downloadDoc() {
+      saveWork();
+      const html = collectWorkHtml();
+      const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Gemini_Data_Quest_AI_Adventure_Student_Work.doc';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast('📄 DOC downloaded!');
+    }
+    window.downloadDoc = downloadDoc;
+
+    /* ======================================== */
+    /*  LANGUAGE TOGGLE (EN / ES)               */
+    /* ======================================== */
+    const translations = {
+      es: {
+        eyebrow: 'Búsqueda de Datos con IA • Mediana y Moda',
+        heroTitle: 'Rescata el Centro de la Isla de Datos',
+        heroSubtitle: 'Eres un Explorador de Datos en una misión. Aprende a usar Gemini como un profesional: domina las estrategias de preguntas, verifica respuestas de IA y desbloquea habilidades matemáticas poderosas.',
+        heroStat1: 'Aventura completa + exploración',
+        heroStat2v: '8 Misiones',
+        heroStat2: 'Mediana, moda, estrategias de IA',
+        heroStat3v: 'Dominio de IA',
+        heroStat3: 'Aprende 6 estrategias de preguntas',
+        heroStat4v: 'Exportar',
+        heroStat4: 'Guardar como PDF o Word',
+        progress: 'Progreso de la Búsqueda',
+        save: 'Guardar',
+        nav0: 'Seguridad y reglas de IA',
+        nav1: 'Ordenar, encontrar centro',
+        nav2: 'Encontrar repeticiones',
+        nav3: 'Mejorar preguntas',
+        nav4: 'Atrapar errores de IA',
+        nav5: 'Resolver y explicar',
+        navA: 'Espiral dorada',
+        navB: 'Dados y probabilidad',
+        m0Title: 'Misión 0: Código de Lanzamiento',
+        m0Desc: 'Antes de usar IA, establece las reglas. Gemini es tu entrenador — tú eres el matemático.',
+        m1Title: 'Misión 1: Montaña de la Mediana',
+        m1Desc: '¡El puente está cerrado! Para cruzar, encuentra el centro de cada conjunto de datos.',
+        m2Title: 'Misión 2: Pantano de la Moda',
+        m2Desc: 'El pantano tiene pistas repetidas. Toca cada número para contarlo.',
+        m3Title: 'Misión 3: Laboratorio de Preguntas',
+        m3Desc: 'Preguntas fuertes obtienen ayuda más fuerte. Construye una pregunta y pruébala.',
+        m4Title: 'Misión 4: Cueva de Errores',
+        m4Desc: '¡Una respuesta falsa de IA intenta engañarte! Encuentra cada error y corrígelo.',
+        m5Title: 'Misión 5: Batalla Final — El Dragón de Datos',
+        m5Desc: 'El desafío final. Resuélvelo, explícalo, y ten una conversación de varios turnos con Gemini.',
+        m6Title: 'Boleto de Salida + Guardar tu Búsqueda',
+        exATitle: 'Exploración A: El Observatorio de la Espiral Dorada',
+        exADesc: 'La naturaleza tiene un código secreto escondido en flores, caracoles y galaxias.',
+        exBTitle: 'Exploración B: El Patio de Probabilidad',
+        exBDesc: '¿Es algo verdaderamente aleatorio? ¿Pueden las matemáticas predecir el futuro?',
+        teacherTitle: 'Plan de Lanzamiento para Maestros',
+        materialsTitle: 'Materiales',
+        targetsTitle: 'Objetivos de Aprendizaje',
+        guardrailTitle: 'Reglas de Seguridad de IA',
+        rulesTitle: 'Reglas de la Aventura con IA',
+        pledgeTitle: 'Tu Promesa de Explorador'
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+      document.documentElement.lang = lang;
+
+      if (lang === 'en') {
+        // Restore original English text (stored in data-original)
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          if (el.dataset.original) el.textContent = el.dataset.original;
+        });
+      } else if (translations[lang]) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.dataset.i18n;
+          if (!el.dataset.original) el.dataset.original = el.textContent;
+          if (translations[lang][key]) el.textContent = translations[lang][key];
+        });
+      }
+    }
+    window.setLang = setLang;
+
+    /* ======================================== */
+    /*  FONT SIZE & CONTRAST                    */
+    /* ======================================== */
+    let fontLevel = 0;
+    function changeFontSize(dir) {
+      fontLevel = Math.max(-1, Math.min(2, fontLevel + dir));
+      document.documentElement.classList.remove('fs-large', 'fs-xlarge');
+      if (fontLevel >= 1) document.documentElement.classList.add('fs-large');
+      if (fontLevel >= 2) document.documentElement.classList.add('fs-xlarge');
+      toast(fontLevel > 0 ? `Text size: +${fontLevel}` : 'Text size: default');
+    }
+    window.changeFontSize = changeFontSize;
+
+    function toggleContrast() {
+      document.documentElement.classList.toggle('high-contrast');
+      toast(document.documentElement.classList.contains('high-contrast') ? 'High contrast ON' : 'High contrast OFF');
+    }
+    window.toggleContrast = toggleContrast;
+
+    /* ======================================== */
+    /*  INIT                                    */
+    /* ======================================== */
+    document.querySelectorAll('.work-field').forEach(f => {
+      f.addEventListener('input', autoSave);
+    });
+
+    initDragDrop();
+    initFreqCounters();
+    restoreWork();
+    validateConfig();
+
+    // Draw initial spiral placeholder
+    drawSpiral();
+
+    // Keyboard shortcut for diagnostics
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        console.log('=== SELF TEST ===');
+        selfTest();
+        console.log('XP:', getXP());
+        console.log('Completed:', getCompleted());
+        console.log('Dice rolls:', diceState.rolls);
+        toast('Diagnostics logged to console (Ctrl+Shift+I)');
+      }
+    });
+  </script>
+</body>
+</html>

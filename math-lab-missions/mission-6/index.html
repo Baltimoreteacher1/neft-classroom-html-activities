@@ -1,0 +1,2169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.RP.A.2 · Unit 3" data-standard="6.RP.A.2" data-unit="3" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 6: Unit Rates (6.RP.A.2) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+      .language-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .language-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid,
+        .vocab-grid,
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a href="../mission-5/">Previous Mission</a>
+          <a href="../mission-7/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 6 &middot; Unit 3</p>
+          <h1 id="mission-title">Unit Rates</h1>
+          <span class="standards">6.RP.A.2 &middot; Unit 3</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Find and compare unit rates to solve real-world problems.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="scenario">
+            The 6th-grade teachers are ordering T-shirts for the end-of-year
+            trip. They found three online stores with different deals:<br />
+            <strong>Store A:</strong> 5 shirts for $60<br />
+            <strong>Store B:</strong> 8 shirts for $88<br />
+            <strong>Store C:</strong> 12 shirts for $150<br />
+            They need <strong>30 shirts</strong> total. Your team must find the
+            unit rate (price per shirt) for each store, decide which store is
+            the best deal, and calculate the total cost for 30 shirts from each
+            store.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 360 420"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Three store price tags with T-shirts showing different prices per shirt"
+          >
+            <rect width="360" height="420" rx="16" fill="#edf5ff" />
+            <text
+              x="180"
+              y="30"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#23395d"
+            >
+              T-Shirt Price Comparison
+            </text>
+            <text
+              x="180"
+              y="50"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              Which store gives the best price per shirt?
+            </text>
+
+            <!-- Store A -->
+            <rect
+              x="20"
+              y="70"
+              width="100"
+              height="140"
+              rx="8"
+              fill="#fff"
+              stroke="#e57373"
+              stroke-width="2.5"
+            />
+            <text
+              x="70"
+              y="92"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="900"
+              fill="#c62828"
+            >
+              STORE A
+            </text>
+            <!-- T-shirt icon -->
+            <path
+              d="M45 110 L55 100 L65 105 L75 100 L95 110 L85 118 L85 145 L55 145 L55 118 Z"
+              fill="#e57373"
+              stroke="#c62828"
+              stroke-width="1.5"
+            />
+            <text
+              x="70"
+              y="165"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#23395d"
+            >
+              5 for $60
+            </text>
+            <rect
+              x="35"
+              y="172"
+              width="70"
+              height="22"
+              rx="11"
+              fill="#c62828"
+            />
+            <text
+              x="70"
+              y="187"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#fff"
+            >
+              $? / shirt
+            </text>
+
+            <!-- Store B -->
+            <rect
+              x="130"
+              y="70"
+              width="100"
+              height="140"
+              rx="8"
+              fill="#fff"
+              stroke="#207a7a"
+              stroke-width="2.5"
+            />
+            <text
+              x="180"
+              y="92"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="900"
+              fill="#135f60"
+            >
+              STORE B
+            </text>
+            <path
+              d="M155 110 L165 100 L175 105 L185 100 L205 110 L195 118 L195 145 L165 145 L165 118 Z"
+              fill="#80cbc4"
+              stroke="#207a7a"
+              stroke-width="1.5"
+            />
+            <text
+              x="180"
+              y="165"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#23395d"
+            >
+              8 for $88
+            </text>
+            <rect
+              x="145"
+              y="172"
+              width="70"
+              height="22"
+              rx="11"
+              fill="#207a7a"
+            />
+            <text
+              x="180"
+              y="187"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#fff"
+            >
+              $? / shirt
+            </text>
+
+            <!-- Store C -->
+            <rect
+              x="240"
+              y="70"
+              width="100"
+              height="140"
+              rx="8"
+              fill="#fff"
+              stroke="#b7791f"
+              stroke-width="2.5"
+            />
+            <text
+              x="290"
+              y="92"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="900"
+              fill="#b7791f"
+            >
+              STORE C
+            </text>
+            <path
+              d="M265 110 L275 100 L285 105 L295 100 L315 110 L305 118 L305 145 L275 145 L275 118 Z"
+              fill="#ffe082"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text
+              x="290"
+              y="165"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#23395d"
+            >
+              12 for $150
+            </text>
+            <rect
+              x="255"
+              y="172"
+              width="70"
+              height="22"
+              rx="11"
+              fill="#b7791f"
+            />
+            <text
+              x="290"
+              y="187"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#fff"
+            >
+              $? / shirt
+            </text>
+
+            <!-- Double number line preview -->
+            <text
+              x="180"
+              y="230"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Double Number Line: Store B
+            </text>
+
+            <!-- Shirts line -->
+            <line
+              x1="30"
+              y1="260"
+              x2="330"
+              y2="260"
+              stroke="#207a7a"
+              stroke-width="2.5"
+            />
+            <text
+              x="15"
+              y="255"
+              text-anchor="end"
+              font-size="10"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              Shirts
+            </text>
+            <line
+              x1="30"
+              y1="253"
+              x2="30"
+              y2="267"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="30"
+              y="249"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              0
+            </text>
+            <line
+              x1="67.5"
+              y1="255"
+              x2="67.5"
+              y2="265"
+              stroke="#207a7a"
+              stroke-width="1.5"
+            />
+            <text
+              x="67.5"
+              y="249"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              1
+            </text>
+            <line
+              x1="105"
+              y1="255"
+              x2="105"
+              y2="265"
+              stroke="#207a7a"
+              stroke-width="1.5"
+            />
+            <text
+              x="105"
+              y="249"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              2
+            </text>
+            <line
+              x1="330"
+              y1="253"
+              x2="330"
+              y2="267"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <text
+              x="330"
+              y="249"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              8
+            </text>
+            <text
+              x="180"
+              y="249"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+            >
+              ...
+            </text>
+
+            <!-- Dollars line -->
+            <line
+              x1="30"
+              y1="290"
+              x2="330"
+              y2="290"
+              stroke="#b7791f"
+              stroke-width="2.5"
+            />
+            <text
+              x="15"
+              y="300"
+              text-anchor="end"
+              font-size="10"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              $
+            </text>
+            <line
+              x1="30"
+              y1="283"
+              x2="30"
+              y2="297"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <text
+              x="30"
+              y="310"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              $0
+            </text>
+            <line
+              x1="67.5"
+              y1="285"
+              x2="67.5"
+              y2="295"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text
+              x="67.5"
+              y="310"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              $11
+            </text>
+            <line
+              x1="105"
+              y1="285"
+              x2="105"
+              y2="295"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text
+              x="105"
+              y="310"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              $22
+            </text>
+            <line
+              x1="330"
+              y1="283"
+              x2="330"
+              y2="297"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <text
+              x="330"
+              y="310"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              $88
+            </text>
+            <text
+              x="180"
+              y="305"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+            >
+              ...
+            </text>
+
+            <!-- Unit rate highlight -->
+            <rect
+              x="42"
+              y="254"
+              width="50"
+              height="42"
+              rx="4"
+              fill="#207a7a"
+              opacity="0.1"
+              stroke="#207a7a"
+              stroke-width="1.5"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="67"
+              y="280"
+              text-anchor="middle"
+              font-size="9"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              1 shirt = $11
+            </text>
+
+            <!-- Comparison bar chart -->
+            <text
+              x="180"
+              y="340"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Unit Rate Comparison
+            </text>
+            <!-- Bar A -->
+            <rect x="60" y="355" width="60" height="50" rx="4" fill="#e57373" />
+            <text
+              x="90"
+              y="395"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="900"
+              fill="#fff"
+            >
+              $12
+            </text>
+            <text
+              x="90"
+              y="415"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#c62828"
+            >
+              Store A
+            </text>
+            <!-- Bar B -->
+            <rect
+              x="150"
+              y="360"
+              width="60"
+              height="45"
+              rx="4"
+              fill="#80cbc4"
+            />
+            <text
+              x="180"
+              y="395"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="900"
+              fill="#fff"
+            >
+              $11
+            </text>
+            <text
+              x="180"
+              y="415"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              Store B
+            </text>
+            <!-- Bar C -->
+            <rect
+              x="240"
+              y="347"
+              width="60"
+              height="58"
+              rx="4"
+              fill="#ffe082"
+            />
+            <text
+              x="270"
+              y="390"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="900"
+              fill="#23395d"
+            >
+              $12.50
+            </text>
+            <text
+              x="270"
+              y="415"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Store C
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the T-shirt problem aloud, assigns one store per
+                  calculator (if available), and makes sure all three unit rates
+                  are found before comparing.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Draws a double number line for at least one store, builds a
+                  comparison table showing all three stores, and labels the unit
+                  rate for each.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Verifies each division (price / shirts = unit rate), checks
+                  that 30-shirt totals are correct, and confirms the cheapest
+                  store is labeled right.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: states each unit rate, shows the
+                  comparison table, explains the recommendation, and discusses
+                  one surprise the team found.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>Three stores sell T-shirts at different rates:</p>
+              <ul>
+                <li><strong>Store A:</strong> 5 shirts for $60</li>
+                <li><strong>Store B:</strong> 8 shirts for $88</li>
+                <li><strong>Store C:</strong> 12 shirts for $150</li>
+              </ul>
+              <p>The teachers need <strong>30 shirts</strong>.</p>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>Find the unit rate (price per 1 shirt) for each store.</li>
+                <li>
+                  Draw a double number line for one store to show how unit rate
+                  works.
+                </li>
+                <li>Build a comparison table with all three stores.</li>
+                <li>Calculate the cost of 30 shirts from each store.</li>
+                <li>Recommend the best deal and defend your choice.</li>
+              </ol>
+            </div>
+
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 580 260"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Double number line for Store A showing shirts on top and dollars on bottom, with the unit rate circled at 1 shirt equals 12 dollars"
+              >
+                <text
+                  x="290"
+                  y="22"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  Double Number Line: Store A (5 shirts = $60)
+                </text>
+
+                <!-- Shirts number line -->
+                <text
+                  x="45"
+                  y="60"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  Shirts
+                </text>
+                <line
+                  x1="80"
+                  y1="65"
+                  x2="540"
+                  y2="65"
+                  stroke="#23395d"
+                  stroke-width="2.5"
+                />
+                <!-- Ticks: 0,1,2,3,4,5 -->
+                <line
+                  x1="80"
+                  y1="58"
+                  x2="80"
+                  y2="72"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="80"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#23395d"
+                >
+                  0
+                </text>
+                <line
+                  x1="172"
+                  y1="58"
+                  x2="172"
+                  y2="72"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="172"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#23395d"
+                >
+                  1
+                </text>
+                <line
+                  x1="264"
+                  y1="58"
+                  x2="264"
+                  y2="72"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="264"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#23395d"
+                >
+                  2
+                </text>
+                <line
+                  x1="356"
+                  y1="58"
+                  x2="356"
+                  y2="72"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="356"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#23395d"
+                >
+                  3
+                </text>
+                <line
+                  x1="448"
+                  y1="58"
+                  x2="448"
+                  y2="72"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="448"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#23395d"
+                >
+                  4
+                </text>
+                <line
+                  x1="540"
+                  y1="58"
+                  x2="540"
+                  y2="72"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="540"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#23395d"
+                >
+                  5
+                </text>
+
+                <!-- Dollars number line -->
+                <text
+                  x="45"
+                  y="102"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  Dollars
+                </text>
+                <line
+                  x1="80"
+                  y1="98"
+                  x2="540"
+                  y2="98"
+                  stroke="#b7791f"
+                  stroke-width="2.5"
+                />
+                <line
+                  x1="80"
+                  y1="91"
+                  x2="80"
+                  y2="105"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="80"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#b7791f"
+                >
+                  $0
+                </text>
+                <line
+                  x1="172"
+                  y1="91"
+                  x2="172"
+                  y2="105"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="172"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#b7791f"
+                >
+                  $12
+                </text>
+                <line
+                  x1="264"
+                  y1="91"
+                  x2="264"
+                  y2="105"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="264"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#b7791f"
+                >
+                  $24
+                </text>
+                <line
+                  x1="356"
+                  y1="91"
+                  x2="356"
+                  y2="105"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="356"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#b7791f"
+                >
+                  $36
+                </text>
+                <line
+                  x1="448"
+                  y1="91"
+                  x2="448"
+                  y2="105"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="448"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#b7791f"
+                >
+                  $48
+                </text>
+                <line
+                  x1="540"
+                  y1="91"
+                  x2="540"
+                  y2="105"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="540"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#b7791f"
+                >
+                  $60
+                </text>
+
+                <!-- Unit rate circle -->
+                <circle
+                  cx="172"
+                  cy="82"
+                  r="24"
+                  fill="none"
+                  stroke="#207a7a"
+                  stroke-width="2.5"
+                  stroke-dasharray="5,3"
+                />
+                <text
+                  x="172"
+                  y="148"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="900"
+                  fill="#207a7a"
+                >
+                  Unit Rate: $12/shirt
+                </text>
+
+                <!-- Comparison table -->
+                <text
+                  x="290"
+                  y="180"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  Comparison Table
+                </text>
+                <rect
+                  x="100"
+                  y="188"
+                  width="380"
+                  height="65"
+                  rx="6"
+                  fill="#fff"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="100"
+                  y="188"
+                  width="380"
+                  height="22"
+                  rx="6"
+                  fill="#23395d"
+                />
+                <text
+                  x="195"
+                  y="204"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  Store
+                </text>
+                <text
+                  x="290"
+                  y="204"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  Unit Rate
+                </text>
+                <text
+                  x="385"
+                  y="204"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  30-Shirt Cost
+                </text>
+                <line
+                  x1="240"
+                  y1="188"
+                  x2="240"
+                  y2="253"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <line
+                  x1="338"
+                  y1="188"
+                  x2="338"
+                  y2="253"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <text
+                  x="195"
+                  y="226"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#c62828"
+                  font-weight="700"
+                >
+                  A
+                </text>
+                <text
+                  x="290"
+                  y="226"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#23395d"
+                >
+                  $60/5 = $12.00
+                </text>
+                <text
+                  x="385"
+                  y="226"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#23395d"
+                >
+                  $360
+                </text>
+                <line
+                  x1="100"
+                  y1="233"
+                  x2="480"
+                  y2="233"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <text
+                  x="195"
+                  y="248"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  B
+                </text>
+                <text
+                  x="290"
+                  y="248"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#207a7a"
+                  font-weight="800"
+                >
+                  $88/8 = $11.00 &#9733;
+                </text>
+                <text
+                  x="385"
+                  y="248"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#207a7a"
+                  font-weight="800"
+                >
+                  $330 &#9733;
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Find the unit rate for Store A</strong>
+                Divide the total cost by the number of shirts: $60 / 5 shirts =
+                $__ per shirt. This is the unit rate: the cost for exactly 1
+                shirt.
+                <p class="guiding-q">
+                  What does "per" mean in "dollars per shirt"? What are the two
+                  units in this rate?
+                </p>
+              </li>
+              <li>
+                <strong>Find the unit rate for Store B</strong>
+                $88 / 8 shirts = $__ per shirt. Is this more or less than Store
+                A? By how much?
+                <p class="guiding-q">
+                  Why is dividing the key step to find a unit rate?
+                </p>
+              </li>
+              <li>
+                <strong>Find the unit rate for Store C</strong>
+                $150 / 12 shirts = $__ per shirt. This one does not come out as
+                a whole number. Round to the nearest cent.
+                <p class="guiding-q">
+                  When you get a decimal in the unit rate, how do you decide how
+                  many places to round?
+                </p>
+              </li>
+              <li>
+                <strong>Draw a double number line</strong>
+                Pick any store. Draw one line for shirts (0, 1, 2, 3...) and one
+                line for dollars ($0, unit rate, 2x unit rate...). Mark equal
+                jumps. Circle the unit rate at 1 shirt.
+                <p class="guiding-q">
+                  Why is a double number line helpful for seeing the unit rate?
+                </p>
+              </li>
+              <li>
+                <strong>Calculate 30-shirt cost for each store</strong>
+                Multiply: unit rate x 30 shirts. Store A: $12 x 30 = $___. Store
+                B: $11 x 30 = $___. Store C: $12.50 x 30 = $___.
+                <p class="guiding-q">
+                  How much money does the school save by choosing the cheapest
+                  store vs. the most expensive?
+                </p>
+              </li>
+              <li>
+                <strong>Make a recommendation</strong>
+                Which store is the best deal? Is the cheapest store always the
+                best choice? (Consider: does Store C offer free shipping? Better
+                quality?) Write your recommendation with math evidence.
+                <p class="guiding-q">
+                  Are there real-life reasons to pick a more expensive option
+                  sometimes?
+                </p>
+              </li>
+            </ol>
+
+            <!-- Language SUPPORT -->
+            <div class="language-box">
+              <h3>Language Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Unit rate:</strong> A rate where the second quantity
+                  is 1 (like $12 per 1 shirt)
+                </div>
+                <div class="vocab-item">
+                  <strong>Rate:</strong> A ratio that compares two different
+                  units (dollars and shirts)
+                </div>
+                <div class="vocab-item">
+                  <strong>Per:</strong> For each one ("per shirt" means "for
+                  each shirt")
+                </div>
+                <div class="vocab-item">
+                  <strong>Better buy:</strong> The option with the lower unit
+                  rate (costs less per item)
+                </div>
+                <div class="vocab-item">
+                  <strong>Double number line:</strong> Two number lines lined up
+                  to show how two quantities relate
+                </div>
+                <div class="vocab-item">
+                  <strong>Compare:</strong> Look at two or more things to see
+                  which is greater, lesser, or equal
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "The unit rate for Store ___ is $___ per shirt because $__
+                  divided by __ shirts = $__."
+                </li>
+                <li>
+                  "Store ___ is the better buy because its unit rate of $___ is
+                  the lowest."
+                </li>
+                <li>
+                  "For 30 shirts, Store ___ costs $___ because $__ per shirt
+                  times 30 = $__."
+                </li>
+                <li>
+                  "The school saves $___ by choosing Store ___ instead of Store
+                  ___."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>Double Number Line</h4>
+                <p>
+                  Two aligned lines showing shirts and dollars. Unit rate is at
+                  1 shirt.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Comparison Table</h4>
+                <p>
+                  Columns for store, original rate, unit rate, and 30-shirt
+                  cost.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Division Equation</h4>
+                <p>
+                  Total price / number of shirts = price per shirt. Then unit
+                  rate x 30.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Launch phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  03:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="3"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the T-shirt problem aloud. Assign roles. Underline the
+                    three prices and the question. Predict: which store LOOKS
+                    cheapest before calculating?
+                  </p>
+                  <p class="guiding-q">
+                    Can you tell which store is cheapest without dividing? Why
+                    or why not?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: every team member knows the three store
+                    deals and what a unit rate means.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Calculate all three unit rates. Model Builder draws a double
+                    number line for one store. Build a comparison table with
+                    columns: Store, Deal, Unit Rate, 30-Shirt Cost.
+                  </p>
+                  <p class="guiding-q">
+                    Which division was hardest? How did you handle the decimal
+                    for Store C?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: three unit rates found and double number
+                    line drawn.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Calculate 30-shirt cost for each store. Find the savings
+                    (most expensive - cheapest). Precision Checker verifies all
+                    multiplication. Write the recommendation.
+                  </p>
+                  <p class="guiding-q">
+                    How much does the school save with the best deal vs. the
+                    worst? Is it worth the effort to compare?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: all costs calculated, savings found, and
+                    recommendation written.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares: state each unit rate, show the comparison
+                    table, point to the double number line, and explain the
+                    savings and recommendation.
+                  </p>
+                  <p class="guiding-q">
+                    If Store C offered free shipping (saving $20), would your
+                    recommendation change?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: Reporter can present in under 60 seconds
+                    with the table visible.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                Store B offers a bulk discount: if you buy
+                <strong>24 or more shirts</strong>, the price drops to
+                <strong>$10 per shirt</strong>. Store A offers
+                <strong>buy 5 get 1 free</strong> (so 6 shirts for $60).
+                Recalculate: which store is now the best deal for 30 shirts?
+                Show all your work.
+              </p>
+            </div>
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                you needed 50 shirts instead of 30? Would the same store still
+                be cheapest?
+              </li>
+              <li>
+                Store C had a 20% off coupon? What would the new unit rate be?
+              </li>
+              <li>
+                the schools wanted to compare miles per gallon for buses instead
+                of price per shirt? How would the setup change?
+              </li>
+            </ul>
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Shoppers compare unit rates in the grocery store every day. When
+              one box of cereal is $4.50 for 15 oz and another is $5.40 for 20
+              oz, unit rate ($0.30/oz vs. $0.27/oz) reveals the true better buy
+              -- even though the first box looks cheaper.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>What is the unit rate for each store? Show your division.</li>
+              <li>
+                Explain your double number line. Where is the unit rate marked?
+              </li>
+              <li>How much do 30 shirts cost from each store?</li>
+              <li>
+                How much money does the school save by choosing the best deal?
+              </li>
+              <li>
+                Could there ever be a reason to choose a more expensive store?
+              </li>
+            </ol>
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>"The unit rate for Store ___ is $__ per shirt because..."</li>
+              <li>
+                "Store ___ is the best deal because its unit rate is the lowest
+                at $__."
+              </li>
+              <li>
+                "For 30 shirts, the school would pay $___ at Store ___ and save
+                $___ compared to Store ___."
+              </li>
+              <li>
+                "On the double number line, you can see the unit rate at..."
+              </li>
+            </ul>
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Unit Rates</strong>All three calculated correctly with
+                division shown
+              </div>
+              <div class="rubric-item">
+                <strong>Models</strong>Double number line and comparison table
+                are accurate
+              </div>
+              <div class="rubric-item">
+                <strong>Recommendation</strong>Best deal identified with savings
+                explained
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>Unit rate for all three stores with division shown</li>
+                <li>Double number line for one store</li>
+                <li>
+                  Comparison table (store, deal, unit rate, 30-shirt cost)
+                </li>
+                <li>Total savings calculation (most expensive - cheapest)</li>
+                <li>Written recommendation with reasoning</li>
+                <li>
+                  Three-sentence defense: claim, evidence, and real-world
+                  reasoning
+                </li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Unit Rate Calculations:</strong></p>
+        <p>Store A: $60 / 5 =</p>
+        <p>Store B: $88 / 8 =</p>
+        <p>Store C: $150 / 12 =</p>
+        <br />
+        <p><strong>Double Number Line:</strong></p>
+        <br /><br /><br />
+        <p><strong>30-Shirt Costs:</strong></p>
+        <br />
+        <p><strong>Recommendation and Defense:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var ai = 0,
+          rs = phases[0].minutes * 60,
+          tid = null;
+        var td = document.getElementById("timerDisplay"),
+          al = document.getElementById("activePhaseLabel"),
+          pl = document.getElementById("phaseList");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stop() {
+          if (tid) {
+            clearInterval(tid);
+            tid = null;
+          }
+        }
+        function sel(i) {
+          stop();
+          ai = i;
+          rs = phases[i].minutes * 60;
+          al.textContent = phases[i].title + " phase";
+          td.textContent = fmt(rs);
+          pl.querySelectorAll(".phase").forEach(function (a, x) {
+            a.classList.toggle("is-open", x === i);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              x === i ? "true" : "false",
+            );
+          });
+        }
+        pl.addEventListener("click", function (e) {
+          var t = e.target.closest(".phase-toggle");
+          if (t) sel(Number(t.dataset.phase));
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (tid) return;
+            tid = setInterval(function () {
+              rs = Math.max(0, rs - 1);
+              td.textContent = fmt(rs);
+              if (rs === 0) {
+                stop();
+                al.textContent = phases[ai].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+        document.getElementById("pauseTimer").addEventListener("click", stop);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            sel(ai);
+          });
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

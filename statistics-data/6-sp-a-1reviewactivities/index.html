@@ -3,35 +3,462 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.SP.A.1 Reviewactivities classroom activity.">
-  <title>6.SP.A.1 Reviewactivities</title>
+  <meta name="description" content="Publisher-grade interactive statistics game. Analyze case questions to master statistical vs non-statistical queries (6.SP.A.1).">
+  <title>6.SP.A.1 Statistical Question Detective</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    :root {
+      --bg: #11141a;
+      --paper: #fcfbf7;
+      --gold-accent: #d97706;
+      --gold-glow: rgba(217, 119, 6, 0.2);
+      --ink: #1a1a24;
+      --teal: #0f766e;
+      --border-soft: #e2e8f0;
+      --font-outfit: 'Outfit', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-outfit);
+      background: radial-gradient(circle at center, #1e222b 0%, var(--bg) 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detective-shell {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .detective-hq {
+      background: #181d26;
+      border: 2.5px solid var(--gold-accent);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 2px 10px rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .hq-marquee {
+      background: #0d1015;
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      border-radius: 12px;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(217, 119, 6, 0.15);
+    }
+
+    .hq-marquee h1 {
+      margin: 0;
+      font-size: 1.65rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge-score {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .case-desk {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0f1218;
+      border: 1.5px dashed rgba(217, 119, 6, 0.2);
+      border-radius: 20px;
+      padding: 24px;
+      min-height: 320px;
+      position: relative;
+    }
+
+    .case-file-card {
+      background: var(--paper);
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      min-height: 200px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      color: var(--ink);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .case-file-card::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 20px;
+      width: 80px;
+      height: 8px;
+      background: #e2c07d;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .case-meta {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 0.72rem;
+      color: #78350f;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .case-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .desk-controls {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 20px;
+    }
+
+    .btn-sort {
+      flex: 1;
+      border: none;
+      font-family: var(--font-outfit);
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.15s ease;
+    }
+
+    .btn-sort.stat {
+      background: var(--teal);
+      color: #fff;
+    }
+
+    .btn-sort.stat:hover {
+      background: #115e59;
+      transform: translateY(-1px);
+    }
+
+    .btn-sort.non-stat {
+      background: #991b1b;
+      color: #fff;
+    }
+
+    .btn-sort.non-stat:hover {
+      background: #7f1d1d;
+      transform: translateY(-1px);
+    }
+
+    /* Checklist indicators */
+    .checklist-board {
+      background: #1a202c;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1.5px solid rgba(255,255,255,0.06);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      color: #94a3b8;
+    }
+
+    .checklist-item.checked {
+      background: rgba(16, 185, 129, 0.05);
+      border-color: #10b981;
+      color: #a7f3d0;
+    }
+
+    .checklist-item.crossed {
+      background: rgba(239, 68, 68, 0.05);
+      border-color: #ef4444;
+      color: #fecdd3;
+    }
+
+    .check-icon {
+      font-size: 1.25rem;
+      font-weight: 900;
+    }
+
+    .coach-feedback {
+      background: rgba(217, 119, 6, 0.04);
+      border: 1px solid rgba(217, 119, 6, 0.2);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .coach-feedback.success {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.04);
+      color: #a7f3d0;
+    }
+
+    .coach-feedback.error {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.04);
+      color: #fecdd3;
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>6.SP.A.1 Reviewactivities</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.SP.A.1 Reviewactivities</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <main class="detective-shell">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics &amp; Data</a><span>/</span><span>Question Detective</span>
+    </nav>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.SP.A.1Reviewactivities</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/6-sp-a-1reviewactivities/</span></p>
+    <div class="detective-hq">
+      <div class="hq-marquee">
+        <h1>🔍 Statistical Question Detective</h1>
+        <div class="badge-score">Cases Solved: <span id="solvedVal">0</span> · Case: <span id="caseCountVal">1</span>/6</div>
       </div>
-    </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+      <div class="main-grid">
+        <!-- Interactive Desk -->
+        <section class="case-desk">
+          <div class="case-file-card" id="caseCard">
+            <!-- Case populated dynamically -->
+          </div>
+
+          <div class="desk-controls">
+            <button class="btn-sort stat" id="sortStatBtn">📊 Statistical</button>
+            <button class="btn-sort non-stat" id="sortNonStatBtn">🚫 Non-Statistical</button>
+          </div>
+        </section>
+
+        <!-- Rules Checklist -->
+        <section class="checklist-board">
+          <h2 style="margin:0 0 6px 0; font-size:1.2rem; font-weight:700; color:#fbbf24;">🔎 Case Diagnostic checklist</h2>
+          <p style="margin:0 0 10px 0; font-size:0.85rem; color:#94a3b8; line-height:1.5;">
+            An active query is mathematically **Statistical** if it satisfies both requirements:
+          </p>
+
+          <div class="checklist-item" id="checkGroup">
+            <span class="check-icon" id="checkGroupIcon">⚪</span>
+            <div>
+              <strong style="display:block; color:#fff; font-size:0.9rem;">1. Group-Targeted</strong>
+              The question must ask about a collection of individuals, rather than a single specific person.
+            </div>
+          </div>
+
+          <div class="checklist-item" id="checkVariability">
+            <span class="check-icon" id="checkVariabilityIcon">⚪</span>
+            <div>
+              <strong style="display:block; color:#fff; font-size:0.9rem;">2. Anticipates Variability</strong>
+              The answers from the group are expected to vary, generating a spread of different data points.
+            </div>
+          </div>
+
+          <div class="coach-feedback" id="coachFeedback">
+            🕵️‍♂️ <strong>Diagnostic Log:</strong> Case file loaded. Inspect the question, check it against the two core rules, and declare your findings!
+          </div>
+        </section>
+      </div>
+
+      <div class="button-row">
+        <button class="secondary-button" id="resetBtn">Reset Archive</button>
+        <a class="primary-button" href="/statistics-data/">Back to collection</a>
+        <a class="secondary-button" href="/">Back to homepage</a>
+      </div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
   </main>
+
   <script src="/assets/app.js" defer></script>
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq, type, duration) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    const initialCases = [
+      { id: 1, type: "non-stat", group: false, var: false, text: "How many hours of sleep did Noam get last night?", exp: "This is non-statistical. It asks about a single individual (Noam) and has only one exact numeric answer." },
+      { id: 2, type: "stat", group: true, var: true, text: "How many hours of sleep did students in our class get last night?", exp: "This is statistical! It targets a group (our class) and the answers will vary from student to student." },
+      { id: 3, type: "non-stat", group: false, var: false, text: "What is Mr. Neft's favorite school lunch food?", exp: "This is non-statistical. It targets only one single teacher's preference." },
+      { id: 4, type: "stat", group: true, var: true, text: "What is the favorite school lunch food of 6th-grade students?", exp: "This is statistical! It targets a group of students and expects many different answers." },
+      { id: 5, type: "stat", group: true, var: true, text: "How many pets does each student in the math club own?", exp: "This is statistical! It asks about a group (math club members) and their pet counts will vary." },
+      { id: 6, type: "non-stat", group: false, var: false, text: "How many chemical elements are on the periodic table?", exp: "This is non-statistical. It is a factual scientific constant with only one single correct answer." }
+    ];
+
+    let cases = [];
+    let activeIndex = 0;
+    let solvedCount = 0;
+
+    const caseCard = document.getElementById("caseCard");
+    const solvedVal = document.getElementById("solvedVal");
+    const caseCountVal = document.getElementById("caseCountVal");
+    const checkGroup = document.getElementById("checkGroup");
+    const checkGroupIcon = document.getElementById("checkGroupIcon");
+    const checkVariability = document.getElementById("checkVariability");
+    const checkVariabilityIcon = document.getElementById("checkVariabilityIcon");
+    const coachFeedback = document.getElementById("coachFeedback");
+
+    function initGame() {
+      cases = [...initialCases];
+      activeIndex = 0;
+      solvedCount = 0;
+      solvedVal.textContent = solvedCount;
+      caseCountVal.textContent = activeIndex + 1;
+      
+      resetChecklist();
+      loadCase();
+    }
+
+    function resetChecklist() {
+      checkGroup.className = "checklist-item";
+      checkGroupIcon.textContent = "⚪";
+      checkVariability.className = "checklist-item";
+      checkVariabilityIcon.textContent = "⚪";
+    }
+
+    function loadCase() {
+      if (activeIndex >= cases.length) {
+        caseCard.innerHTML = `
+          <div style="text-align:center;">
+            <span style="font-size:2.5rem; display:block; margin-bottom:10px;">🏆</span>
+            <h3 style="color:var(--gold-accent); font-weight:800; font-size:1.15rem; margin:0 0 6px 0;">ARCHIVE CLEARED</h3>
+            <p style="font-size:0.9rem; margin:0; line-height:1.5;">All case files resolved successfully! You are officially a Master Statistical Question Detective.</p>
+          </div>
+        `;
+        beep(880, 'sine', 0.25);
+        setTimeout(() => beep(1320, 'sine', 0.3), 150);
+        return;
+      }
+
+      const activeCase = cases[activeIndex];
+      caseCountVal.textContent = activeIndex + 1;
+
+      caseCard.innerHTML = `
+        <div class="case-meta">
+          <span>Case File #${activeCase.id}</span>
+          <span>Pending investigation</span>
+        </div>
+        <p class="case-text">"${activeCase.text}"</p>
+        <div style="font-size:0.68rem; font-family:var(--font-mono); color:#94a3b8; text-transform:uppercase; letter-spacing:0.04em;">Neft Detective Agency</div>
+      `;
+
+      resetChecklist();
+      coachFeedback.className = "coach-feedback";
+      coachFeedback.innerHTML = `🕵️‍♂️ <strong>Diagnostic Log:</strong> Case loaded. Read the query carefully. Is it targeting a group? Will answers vary? Make your classification.`;
+    }
+
+    function classify(choice) {
+      if (activeIndex >= cases.length) return;
+
+      const activeCase = cases[activeIndex];
+      const correct = activeCase.type === choice;
+
+      // Update checklist visual status
+      if (activeCase.group) {
+        checkGroup.className = "checklist-item checked";
+        checkGroupIcon.textContent = "🟢";
+      } else {
+        checkGroup.className = "checklist-item crossed";
+        checkGroupIcon.textContent = "🔴";
+      }
+
+      if (activeCase.var) {
+        checkVariability.className = "checklist-item checked";
+        checkVariabilityIcon.textContent = "🟢";
+      } else {
+        checkVariability.className = "checklist-item crossed";
+        checkVariabilityIcon.textContent = "🔴";
+      }
+
+      if (correct) {
+        solvedCount++;
+        solvedVal.textContent = solvedCount;
+        beep(523.25, 'sine', 0.15);
+        setTimeout(() => beep(783.99, 'sine', 0.2), 100);
+
+        coachFeedback.className = "coach-feedback success";
+        coachFeedback.innerHTML = `🎉 <strong>Case Resolved!</strong> Correct classification. ${activeCase.exp}`;
+
+        activeIndex++;
+        setTimeout(loadCase, 2200);
+      } else {
+        beep(140, 'triangle', 0.45);
+        coachFeedback.className = "coach-feedback error";
+        coachFeedback.innerHTML = `❌ <strong>Diagnostic Error!</strong> Incorrect classification. Check the rule checklist to see why this question does or does not meet statistical parameters.`;
+      }
+    }
+
+    document.getElementById("sortStatBtn").addEventListener("click", () => classify("stat"));
+    document.getElementById("sortNonStatBtn").addEventListener("click", () => classify("non-stat"));
+    document.getElementById("resetBtn").addEventListener("click", initGame);
+
+    window.addEventListener("DOMContentLoaded", initGame);
+  </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

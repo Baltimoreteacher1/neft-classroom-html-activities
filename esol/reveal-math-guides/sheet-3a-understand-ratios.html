@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>3A Understand Ratios Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input,
+      .practice-problem textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus,
+      .practice-problem textarea:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      .ratio-ways {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 0.75rem 0;
+      }
+      .ratio-ways div {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>⚖️ 3A | Understand Ratios Study Guide</h1>
+        <div class="guide-meta">
+          Unit 3: Ratios &amp; Proportions &bull; Lesson 3.1 &bull; Standard:
+          6.RP.1
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>📘 Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Ratio</strong> &mdash; a comparison of two quantities. It
+          tells you "for every ___ of one thing, there are ___ of another."
+          <span class="spanish">(raz&oacute;n / proporci&oacute;n)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Part-to-Part</strong> &mdash; a ratio that compares one part
+          of a group to another part of the same group.
+          <span class="spanish">(parte a parte)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Part-to-Whole</strong> &mdash; a ratio that compares one part
+          of a group to the entire group (the total).
+          <span class="spanish">(parte al total)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Comparison</strong> &mdash; looking at two or more things to
+          see how they are the same or different.
+          <span class="spanish">(comparaci&oacute;n)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Equivalent Ratio</strong> &mdash; two ratios that represent
+          the same comparison (like 1:2 and 2:4).
+          <span class="spanish">(raz&oacute;n equivalente)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>🖼️ Visual Example &mdash; Three Ways to Write a Ratio</h2>
+        <p>
+          There are <strong>3 red apples</strong> and
+          <strong>5 green apples</strong> in a basket.
+        </p>
+        <div class="ratio-ways">
+          <div>
+            3 : 5<br /><span style="font-size: 0.8rem; font-weight: 400"
+              >with a colon</span
+            >
+          </div>
+          <div>
+            3 to 5<br /><span style="font-size: 0.8rem; font-weight: 400"
+              >with words</span
+            >
+          </div>
+          <div>
+            3/5<br /><span style="font-size: 0.8rem; font-weight: 400"
+              >as a fraction</span
+            >
+          </div>
+        </div>
+        <div class="example-box">
+          <strong>Part-to-Part:</strong> red to green = 3 : 5 &mdash; comparing
+          one part to another part.<br /><br />
+          <strong>Part-to-Whole:</strong> red to total = 3 : 8 &mdash; comparing
+          one part to the whole group (3 + 5 = 8 total).
+        </div>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>🔢 Step-by-Step &mdash; Writing Ratios</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> <strong>Read</strong> the problem.
+            What two quantities are being compared?
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <strong>Decide the order.</strong> The first thing mentioned goes
+            first in the ratio.
+          </li>
+          <li>
+            <span class="step-num">3</span> <strong>Decide the type:</strong> Is
+            it part-to-part or part-to-whole?
+          </li>
+          <li>
+            <span class="step-num">4</span> <strong>Write</strong> the ratio in
+            any of the three forms (colon, words, or fraction).
+          </li>
+          <li>
+            <span class="step-num">5</span> <strong>Simplify</strong> if
+            possible (divide both parts by the GCF).
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Example:</strong> A class has 12 boys and 18 girls. Write the
+          ratio of boys to girls.<br /><br />
+          Part-to-Part: 12 : 18<br />
+          Simplify (GCF = 6): 12 &divide; 6 = 2 and 18 &divide; 6 = 3<br />
+          Answer: <strong>2 : 3</strong> (or "2 to 3" or "2/3")
+        </div>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>📐 Formula Box</h2>
+        <div class="formula-highlight">Part-to-Part Ratio: Part A : Part B</div>
+        <div class="formula-highlight">
+          Part-to-Whole Ratio: Part A : (Part A + Part B)
+        </div>
+        <div class="formula-highlight">
+          Simplify: Divide both parts by their GCF
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>⚠️ Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>Order matters!</strong> The ratio 3:5 is NOT the same as
+            5:3. Always match the order the problem asks for.
+          </li>
+          <li>
+            <strong>Part-to-Part vs. Part-to-Whole:</strong> If a problem says
+            "ratio of boys to girls," that is part-to-part. If it says "ratio of
+            boys to all students," that is part-to-whole.
+          </li>
+          <li>
+            <strong>A ratio is NOT a fraction in every context.</strong> A ratio
+            of 3:5 compares two things; the fraction 3/5 is just one way to
+            write it.
+          </li>
+          <li>
+            <strong>Always simplify if possible.</strong> 6:10 should be written
+            as 3:5.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>✏️ Practice Problems</h2>
+        <p style="margin-bottom: 0.75rem; color: var(--guide-muted)">
+          Write your ratio using a colon, like 3:5. Simplify your answer.
+        </p>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> A bag has 4 red marbles and 6 blue marbles. What
+            is the ratio of red to blue marbles? (Simplify.)
+          </p>
+          <input
+            type="text"
+            id="q1"
+            placeholder="Type your ratio (e.g. 2:3)..."
+          />
+          <button class="check-btn" onclick="checkRatio('q1', 2, 3, 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> There are 10 cats and 15 dogs at a shelter. What
+            is the ratio of cats to the <strong>total</strong> number of
+            animals? (Simplify.)
+          </p>
+          <input type="text" id="q2" placeholder="Type your ratio..." />
+          <button class="check-btn" onclick="checkRatio('q2', 2, 5, 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> A recipe uses 2 cups of flour for every 3 cups
+            of milk. If you use 6 cups of flour, how many cups of milk do you
+            need?
+          </p>
+          <input type="text" id="q3" placeholder="Type the number of cups..." />
+          <button class="check-btn" onclick="checkAnswer('q3', '9', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> In a class of 30 students, 12 are wearing
+            sneakers. Write the ratio of students wearing sneakers to students
+            NOT wearing sneakers. (Simplify.)
+          </p>
+          <input type="text" id="q4" placeholder="Type your ratio..." />
+          <button class="check-btn" onclick="checkRatio('q4', 2, 3, 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "✓ Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkRatio(inputId, correctA, correctB, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "");
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+          return;
+        }
+        /* Accept colon, "to", or slash */
+        var parts = val.split(/[:\/]|to/i);
+        if (parts.length === 2) {
+          var a = parseInt(parts[0]),
+            b = parseInt(parts[1]);
+          if (
+            !isNaN(a) &&
+            !isNaN(b) &&
+            b !== 0 &&
+            a * correctB === correctA * b
+          ) {
+            feedback.className = "feedback correct";
+            feedback.textContent = "✓ Correct! Great work!";
+            return;
+          }
+        }
+        feedback.className = "feedback incorrect";
+        feedback.textContent =
+          "Not quite. Remember to simplify and check the order of your ratio!";
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

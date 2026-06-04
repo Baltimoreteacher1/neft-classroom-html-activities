@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 3 Study Guide — Ratios &amp; Rates | Neft Teacher</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f6f7f2;
+        color: #17202a;
+        line-height: 1.6;
+      }
+      .shell {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      .breadcrumb {
+        color: #5b6773;
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+      }
+      .breadcrumb a {
+        color: #0f766e;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 6px;
+      }
+      .subtitle {
+        color: #5b6773;
+        margin-bottom: 28px;
+        font-size: 1.05rem;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #d8dfdc;
+        padding-bottom: 8px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px 8px 0 0;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #5b6773;
+        transition: all 0.15s;
+      }
+      .tab.active {
+        background: #0f766e;
+        color: #fff;
+        border-color: #0f766e;
+      }
+      .tab:hover:not(.active) {
+        background: #eef4f3;
+      }
+      .lesson {
+        display: none;
+        animation: fadeIn 0.3s;
+      }
+      .lesson.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .lesson-header {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-top: 4px solid #0f766e;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(23, 32, 42, 0.08);
+      }
+      .lesson-header h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .lesson-header p {
+        color: #5b6773;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+        color: #0f766e;
+      }
+      .example {
+        background: #eef4f3;
+        border-left: 4px solid #b7791f;
+        padding: 14px 18px;
+        border-radius: 0 8px 8px 0;
+        margin: 12px 0;
+        font-size: 1rem;
+      }
+      .example strong {
+        color: #b7791f;
+      }
+      .number-line {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 12px 0;
+        text-align: center;
+        font-family: monospace;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+      }
+      .quiz h3 {
+        margin-bottom: 12px;
+      }
+      .question {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+      .question p {
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .opt {
+        padding: 10px 14px;
+        border: 2px solid #d8dfdc;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.15s;
+        background: #fff;
+      }
+      .opt:hover {
+        border-color: #0f766e;
+        background: #eef4f3;
+      }
+      .opt.correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+        pointer-events: none;
+      }
+      .opt.wrong {
+        border-color: #dc2626;
+        background: #fef2f2;
+        pointer-events: none;
+      }
+      .feedback {
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .feedback.wrong {
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .score-bar {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .score-bar .label {
+        font-weight: 700;
+        color: #0f766e;
+      }
+      .score-fill {
+        flex: 1;
+        height: 10px;
+        background: #d8dfdc;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .score-fill span {
+        display: block;
+        height: 100%;
+        background: #0f766e;
+        border-radius: 99px;
+        transition: width 0.4s;
+      }
+      .score-text {
+        font-weight: 700;
+        min-width: 50px;
+        text-align: right;
+      }
+      .vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .vocab-card {
+        background: #eef4f3;
+        border: 1px solid rgba(15, 118, 110, 0.18);
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .vocab-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.1);
+      }
+      .vocab-card .term {
+        font-weight: 800;
+        color: #0f766e;
+        font-size: 0.95rem;
+      }
+      .vocab-card .def {
+        color: #5b6773;
+        font-size: 0.85rem;
+        margin-top: 4px;
+        display: none;
+      }
+      .vocab-card.flipped .def {
+        display: block;
+      }
+      .vocab-card.flipped {
+        background: #fff;
+      }
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+      }
+      .nav-btn {
+        padding: 10px 20px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f766e;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .nav-btn:hover {
+        background: #0f766e;
+        color: #fff;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      @media (max-width: 600px) {
+        .tabs {
+          gap: 4px;
+        }
+        .tab {
+          padding: 6px 10px;
+          font-size: 0.8rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+      @media print {
+        body {
+          background: #fff !important;
+          color: #000 !important;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 11pt;
+          line-height: 1.4;
+        }
+        .shell {
+          max-width: 100%;
+          padding: 0;
+        }
+        .breadcrumb,
+        .tabs {
+          display: none !important;
+        }
+        .lesson {
+          display: block !important;
+          page-break-inside: avoid;
+          margin-bottom: 18pt;
+        }
+        .card,
+        .example,
+        .quiz {
+          border: 1pt solid #999;
+          box-shadow: none !important;
+          page-break-inside: avoid;
+        }
+        a[href]::after {
+          content: " (" attr(href) ")";
+          font-size: 9pt;
+          color: #666;
+        }
+        @page {
+          margin: 0.75in;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+    <style>
+      #vocabSlideshowOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Nunito", Arial, Helvetica, sans-serif;
+        transition: opacity 0.5s;
+      }
+      #vocabSlideshowOverlay.vso-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .vso-card {
+        background: #fff;
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 680px;
+        width: 92%;
+        padding: 40px 36px 32px;
+        text-align: center;
+        animation: vsoIn 0.4s ease-out;
+      }
+      @keyframes vsoIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .vso-progress {
+        font-size: 14px;
+        font-weight: 700;
+        color: #8b5cf6;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+      }
+      .vso-word {
+        font-size: clamp(42px, 8vw, 68px);
+        font-weight: 900;
+        color: #1e293b;
+        margin: 10px 0 8px;
+        line-height: 1.1;
+      }
+      .vso-def {
+        font-size: clamp(17px, 3vw, 22px);
+        color: #475569;
+        font-weight: 600;
+        line-height: 1.5;
+        margin-bottom: 18px;
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .vso-svg-wrap {
+        margin: 0 auto 20px;
+        max-width: 300px;
+      }
+      .vso-svg-wrap svg {
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+      }
+      .vso-nav {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .vso-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 50px;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #fff;
+      }
+      .vso-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+      }
+      .vso-btn-prev {
+        background: #94a3b8;
+      }
+      .vso-btn-next {
+        background: #6366f1;
+      }
+      .vso-btn-start {
+        background: #10b981;
+        font-size: 18px;
+        padding: 14px 36px;
+      }
+      .vso-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+        transform: none;
+      }
+      .vso-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .vso-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        transition: all 0.3s;
+      }
+      .vso-dot.active {
+        background: #6366f1;
+        transform: scale(1.25);
+      }
+      .vso-dot.seen {
+        background: #a5b4fc;
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <div id="vocabSlideshowOverlay">
+      <div class="vso-card">
+        <div class="vso-progress" id="vsoProgress">Word 1 of 8</div>
+        <div class="vso-svg-wrap" id="vsoSvg"></div>
+        <div class="vso-word" id="vsoWord"></div>
+        <div class="vso-def" id="vsoDef"></div>
+        <div class="vso-nav">
+          <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">
+            &#8592; Previous
+          </button>
+          <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">
+            Next &#8594;
+          </button>
+          <button
+            class="vso-btn vso-btn-start"
+            id="vsoStart"
+            style="display: none"
+            onclick="vsoClose()"
+          >
+            Start Activities &#8594;
+          </button>
+        </div>
+        <div class="vso-dots" id="vsoDots"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const VSO_ITEMS = [
+          {
+            word: "Ratio",
+            def: "A comparison of two quantities.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="80" cy="120" r="30" fill="#F87171"/><circle cx="130" cy="120" r="30" fill="#F87171"/><circle cx="180" cy="120" r="30" fill="#F87171"/>   <circle cx="100" cy="200" r="30" fill="#60A5FA"/><circle cx="160" cy="200" r="30" fill="#60A5FA"/>   <text x="150" y="270" text-anchor="middle" font-size="28" font-weight="800" fill="#1E293B" font-family="sans-serif">3 : 2</text> </svg>',
+          },
+          {
+            word: "Rate",
+            def: "A ratio comparing two different units.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="50" y="80" width="200" height="50" rx="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="150" y="115" text-anchor="middle" font-size="26" font-weight="800" fill="#1E40AF" font-family="sans-serif">120 miles</text>   <line x1="50" y1="150" x2="250" y2="150" stroke="#1E293B" stroke-width="4"/>   <rect x="50" y="160" width="200" height="50" rx="12" fill="#FEF3C7" stroke="#F59E0B" stroke-width="3"/>   <text x="150" y="195" text-anchor="middle" font-size="26" font-weight="800" fill="#92400E" font-family="sans-serif">2 hours</text> </svg>',
+          },
+          {
+            word: "Unit Rate",
+            def: "A rate with a denominator of 1.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="50" y="80" width="200" height="50" rx="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="150" y="115" text-anchor="middle" font-size="26" font-weight="800" fill="#1E40AF" font-family="sans-serif">60 miles</text>   <line x1="50" y1="150" x2="250" y2="150" stroke="#1E293B" stroke-width="4"/>   <rect x="50" y="160" width="200" height="50" rx="12" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>   <text x="150" y="195" text-anchor="middle" font-size="26" font-weight="800" fill="#065F46" font-family="sans-serif">1 hour</text>   <circle cx="250" cy="110" r="20" fill="#10B981"/><text x="250" y="116" text-anchor="middle" font-size="16" font-weight="900" fill="#fff" font-family="sans-serif">1</text> </svg>',
+          },
+          {
+            word: "Equivalent Ratio",
+            def: "A ratio that names the same comparison.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="90" width="100" height="60" rx="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="80" y="128" text-anchor="middle" font-size="24" font-weight="800" fill="#1E40AF" font-family="sans-serif">2 : 3</text>   <text x="150" y="128" text-anchor="middle" font-size="30" font-weight="900" fill="#059669" font-family="sans-serif">=</text>   <rect x="170" y="90" width="100" height="60" rx="12" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>   <text x="220" y="128" text-anchor="middle" font-size="24" font-weight="800" fill="#065F46" font-family="sans-serif">4 : 6</text>   <text x="150" y="200" text-anchor="middle" font-size="18" font-weight="700" fill="#6366F1" font-family="sans-serif">x2     x2</text> </svg>',
+          },
+          {
+            word: "Proportion",
+            def: "An equation that shows two ratios are equal.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="20" y="90" width="120" height="80" rx="14" fill="#FEF3C7" stroke="#F59E0B" stroke-width="3"/>   <text x="80" y="125" text-anchor="middle" font-size="22" font-weight="800" fill="#92400E" font-family="sans-serif">3</text>   <line x1="40" y1="133" x2="120" y2="133" stroke="#92400E" stroke-width="3"/>   <text x="80" y="160" text-anchor="middle" font-size="22" font-weight="800" fill="#92400E" font-family="sans-serif">4</text>   <text x="150" y="140" text-anchor="middle" font-size="36" font-weight="900" fill="#059669" font-family="sans-serif">=</text>   <rect x="160" y="90" width="120" height="80" rx="14" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="220" y="125" text-anchor="middle" font-size="22" font-weight="800" fill="#1E40AF" font-family="sans-serif">6</text>   <line x1="180" y1="133" x2="260" y2="133" stroke="#1E40AF" stroke-width="3"/>   <text x="220" y="160" text-anchor="middle" font-size="22" font-weight="800" fill="#1E40AF" font-family="sans-serif">8</text> </svg>',
+          },
+          {
+            word: "Percent",
+            def: "A ratio that compares a number to 100.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="50" y="60" width="200" height="30" rx="15" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>   <rect x="50" y="60" width="150" height="30" rx="15" fill="#6366F1"/>   <text x="150" y="140" text-anchor="middle" font-size="64" font-weight="900" fill="#6366F1" font-family="sans-serif">75%</text>   <text x="150" y="175" text-anchor="middle" font-size="20" font-weight="700" fill="#9CA3AF" font-family="sans-serif">= 75 out of 100</text> </svg>',
+          },
+          {
+            word: "Conversion Factor",
+            def: "A ratio used to change one unit to another.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="100" width="100" height="60" rx="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="80" y="138" text-anchor="middle" font-size="20" font-weight="800" fill="#1E40AF" font-family="sans-serif">feet</text>   <path d="M140,130 L170,130" stroke="#F59E0B" stroke-width="4" marker-end="url(#arrConv)"/>   <defs><marker id="arrConv" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#F59E0B"/></marker></defs>   <rect x="170" y="100" width="100" height="60" rx="12" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>   <text x="220" y="138" text-anchor="middle" font-size="20" font-weight="800" fill="#065F46" font-family="sans-serif">inches</text>   <text x="150" y="200" text-anchor="middle" font-size="16" font-weight="700" fill="#F59E0B" font-family="sans-serif">x 12</text> </svg>',
+          },
+          {
+            word: "Constant of Proportionality",
+            def: "The number that relates two proportional quantities.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="20" y="90" width="120" height="80" rx="14" fill="#FEF3C7" stroke="#F59E0B" stroke-width="3"/>   <text x="80" y="125" text-anchor="middle" font-size="22" font-weight="800" fill="#92400E" font-family="sans-serif">3</text>   <line x1="40" y1="133" x2="120" y2="133" stroke="#92400E" stroke-width="3"/>   <text x="80" y="160" text-anchor="middle" font-size="22" font-weight="800" fill="#92400E" font-family="sans-serif">4</text>   <text x="150" y="140" text-anchor="middle" font-size="36" font-weight="900" fill="#059669" font-family="sans-serif">=</text>   <rect x="160" y="90" width="120" height="80" rx="14" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="220" y="125" text-anchor="middle" font-size="22" font-weight="800" fill="#1E40AF" font-family="sans-serif">6</text>   <line x1="180" y1="133" x2="260" y2="133" stroke="#1E40AF" stroke-width="3"/>   <text x="220" y="160" text-anchor="middle" font-size="22" font-weight="800" fill="#1E40AF" font-family="sans-serif">8</text> </svg>',
+          },
+        ];
+        let vsoIdx = 0,
+          vsoSeen = new Set();
+        function vsoRender() {
+          const it = VSO_ITEMS[vsoIdx];
+          document.getElementById("vsoProgress").textContent =
+            "Word " + (vsoIdx + 1) + " of " + VSO_ITEMS.length;
+          document.getElementById("vsoWord").textContent = it.word;
+          document.getElementById("vsoDef").textContent = it.def;
+          document.getElementById("vsoSvg").innerHTML = it.svg;
+          vsoSeen.add(vsoIdx);
+          document.getElementById("vsoPrev").disabled = vsoIdx === 0;
+          const isLast = vsoIdx === VSO_ITEMS.length - 1;
+          document.getElementById("vsoNext").style.display = isLast
+            ? "none"
+            : "inline-block";
+          document.getElementById("vsoStart").style.display =
+            vsoSeen.size === VSO_ITEMS.length ? "inline-block" : "none";
+          const dots = document.getElementById("vsoDots");
+          dots.innerHTML = "";
+          VSO_ITEMS.forEach(function (_, i) {
+            const d = document.createElement("span");
+            d.className =
+              "vso-dot" +
+              (i === vsoIdx ? " active" : "") +
+              (vsoSeen.has(i) ? " seen" : "");
+            d.onclick = function () {
+              vsoIdx = i;
+              vsoRender();
+            };
+            dots.appendChild(d);
+          });
+        }
+        window.vsoGo = function (dir) {
+          vsoIdx = Math.max(0, Math.min(VSO_ITEMS.length - 1, vsoIdx + dir));
+          vsoRender();
+        };
+        window.vsoClose = function () {
+          const el = document.getElementById("vocabSlideshowOverlay");
+          el.classList.add("vso-hidden");
+          setTimeout(function () {
+            el.remove();
+          }, 600);
+        };
+        vsoRender();
+      })();
+    </script>
+    <!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+
+    <div class="shell">
+      <h1>Ratios &amp; Rates</h1>
+      <p class="subtitle">
+        Interactive study guide — Reveal Math Unit 3 · Standard 6.RP
+      </p>
+
+      <div class="tabs" id="tabs"></div>
+
+      <!-- LESSON 1 -->
+      <div class="lesson" data-lesson="1">
+        <div class="lesson-header">
+          <h2>3.1–3.2 — Understand Ratios &amp; Unit Rates</h2>
+          <p>
+            Write ratios in three forms, identify part-to-part vs. part-to-whole
+            relationships, and calculate unit rates.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            A <strong>ratio</strong> compares two quantities. It can be written
+            three ways: <strong>a : b</strong>, <strong>a to b</strong>, or
+            <strong>a/b</strong>.
+          </p>
+          <p>
+            A <strong>part-to-part</strong> ratio compares one part of a group
+            to another part (e.g., red marbles to blue marbles). A
+            <strong>part-to-whole</strong> ratio compares one part to the total
+            (e.g., red marbles to all marbles).
+          </p>
+          <p>
+            A <strong>unit rate</strong> is a rate with a denominator of 1.
+            Divide to find it.
+          </p>
+          <div class="example">
+            <strong>Ratio example:</strong> A bag has 3 red and 4 blue
+            marbles.<br />
+            Part-to-part: 3 : 4 (red to blue)<br />
+            Part-to-whole: 3 : 7 (red to total)
+          </div>
+          <div class="example">
+            <strong>Unit rate example:</strong> $15 for 3 notebooks<br />
+            $15 ÷ 3 = <strong>$5 per notebook</strong>
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="2">
+            <p>
+              A class has 12 boys and 18 girls. What is the ratio of boys to
+              girls in simplest form?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">12 : 18</div>
+              <div class="opt" data-idx="1">3 : 2</div>
+              <div class="opt" data-idx="2">2 : 3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>You drive 150 miles in 3 hours. What is the unit rate?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">3 miles per hour</div>
+              <div class="opt" data-idx="1">50 miles per hour</div>
+              <div class="opt" data-idx="2">450 miles per hour</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>
+              A bag has 5 red and 8 blue marbles. What is the part-to-whole
+              ratio of red marbles to total marbles?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">5 : 13</div>
+              <div class="opt" data-idx="1">5 : 8</div>
+              <div class="opt" data-idx="2">8 : 13</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 2 -->
+      <div class="lesson" data-lesson="2">
+        <div class="lesson-header">
+          <h2>3.3 — Equivalent Ratios</h2>
+          <p>
+            Generate equivalent ratios using multiplication and division, and
+            verify with cross products.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            <strong>Equivalent ratios</strong> are ratios that express the same
+            relationship. Multiply or divide both terms by the same number to
+            find them.
+          </p>
+          <p>
+            A <strong>ratio table</strong> organizes equivalent ratios in rows
+            or columns. A <strong>double number line</strong> shows two
+            quantities lined up at equivalent values.
+          </p>
+          <p>
+            <strong>Cross products</strong> can verify equivalence: if a/b =
+            c/d, then a × d = b × c.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> 4 : 5 → multiply both by 2 → 8 : 10<br />
+            Check: 4 × 10 = 40 and 5 × 8 = 40 — cross products are equal, so 4 :
+            5 = 8 : 10
+          </div>
+          <div class="example">
+            <strong>Ratio table:</strong><br />
+            Apples: 2, 4, 6, 8<br />
+            Oranges: 3, 6, 9, 12<br />
+            Every pair is equivalent to 2 : 3
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>Which ratio is equivalent to 3 : 5?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">6 : 8</div>
+              <div class="opt" data-idx="1">9 : 15</div>
+              <div class="opt" data-idx="2">5 : 3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>
+              In a ratio table, if the first row is 4 and 10, what pair comes
+              next when you multiply by 2?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">8 and 20</div>
+              <div class="opt" data-idx="1">6 and 12</div>
+              <div class="opt" data-idx="2">8 and 10</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>Are 6 : 9 and 10 : 15 equivalent? Use cross products.</p>
+            <div class="options">
+              <div class="opt" data-idx="0">No, because 6 × 15 = 80</div>
+              <div class="opt" data-idx="1">No, because 9 × 10 = 100</div>
+              <div class="opt" data-idx="2">
+                Yes, because 6 × 15 = 90 and 9 × 10 = 90
+              </div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 3 -->
+      <div class="lesson" data-lesson="3">
+        <div class="lesson-header">
+          <h2>3.4 — Graph Ratio Relationships</h2>
+          <p>
+            Plot equivalent ratios on a coordinate plane, interpret the slope as
+            a unit rate, and connect graphs to tables and equations.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            Each equivalent ratio can be plotted as an ordered pair (x, y) on
+            the coordinate plane. All equivalent ratios form a
+            <strong>straight line through the origin</strong>.
+          </p>
+          <p>
+            The <strong>slope</strong> (steepness) of the line equals the
+            <strong>unit rate</strong>. In the equation <strong>y = kx</strong>,
+            k is the constant of proportionality (unit rate).
+          </p>
+          <div class="example">
+            <strong>Example:</strong> A car travels at 1.5 miles per minute.<br />
+            Equation: y = 1.5x<br />
+            Table: (1, 1.5), (2, 3), (4, 6)<br />
+            All three points lie on the same line through (0, 0).
+          </div>
+          <div class="example">
+            <strong>Reading a graph:</strong> If the point (4, 10) is on the
+            line, the unit rate is 10 ÷ 4 = <strong>2.5</strong>.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="0">
+            <p>
+              A graph of equivalent ratios always passes through which point?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">(0, 0)</div>
+              <div class="opt" data-idx="1">(1, 1)</div>
+              <div class="opt" data-idx="2">(0, 1)</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>
+              The equation y = 3x represents a proportional relationship. What
+              is the unit rate?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">1/3</div>
+              <div class="opt" data-idx="1">x</div>
+              <div class="opt" data-idx="2">3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>
+              The point (6, 9) is on a proportional line through the origin.
+              What is the constant of proportionality?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">6</div>
+              <div class="opt" data-idx="1">1.5</div>
+              <div class="opt" data-idx="2">54</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 4 -->
+      <div class="lesson" data-lesson="4">
+        <div class="lesson-header">
+          <h2>3.5 — Compare Ratios &amp; Percents</h2>
+          <p>
+            Compare rates to find better buys, understand percents as ratios per
+            100, and convert between fractions, decimals, and percents.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            To find the <strong>better buy</strong>, calculate the unit rate for
+            each option and compare.
+          </p>
+          <p>
+            A <strong>percent</strong> means "per 100." It is a ratio that
+            compares a number to 100.
+          </p>
+          <p>
+            <strong>Converting:</strong> Fraction → Decimal → Percent<br />
+            Divide numerator by denominator to get a decimal, then multiply by
+            100 to get a percent.
+          </p>
+          <div class="example">
+            <strong>Better buy:</strong> Store A: $6 for 4 apples ($1.50 each).
+            Store B: $10 for 8 apples ($1.25 each).<br />
+            Store B is the better buy.
+          </div>
+          <div class="example">
+            <strong>Percent conversion:</strong> 25% = 25/100 = 0.25<br />
+            3/4 = 0.75 = 75%
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>
+              Pack A: 6 pencils for $3. Pack B: 10 pencils for $4. Which is the
+              better buy?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">Pack A ($0.50 each)</div>
+              <div class="opt" data-idx="1">Pack B ($0.40 each)</div>
+              <div class="opt" data-idx="2">They cost the same</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>What is 40% written as a fraction in simplest form?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">2/5</div>
+              <div class="opt" data-idx="1">4/5</div>
+              <div class="opt" data-idx="2">40/10</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>Convert 3/8 to a percent.</p>
+            <div class="options">
+              <div class="opt" data-idx="0">38%</div>
+              <div class="opt" data-idx="1">30%</div>
+              <div class="opt" data-idx="2">37.5%</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 5 -->
+      <div class="lesson" data-lesson="5">
+        <div class="lesson-header">
+          <h2>3.6 — Measurement Conversions</h2>
+          <p>
+            Convert units within and between measurement systems using ratio
+            reasoning and conversion factors.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            A <strong>conversion factor</strong> is a ratio equal to 1 that
+            relates two units (e.g., 12 inches / 1 foot).
+          </p>
+          <p>
+            Multiply by the conversion factor so the unwanted unit cancels out.
+            For multi-step conversions, chain conversion factors.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> Convert 48 inches to feet.<br />
+            48 in × (1 ft / 12 in) = <strong>4 feet</strong>
+          </div>
+          <div class="example">
+            <strong>Multi-step:</strong> Convert 3 yards to inches.<br />
+            3 yd × (3 ft / 1 yd) = 9 ft<br />
+            9 ft × (12 in / 1 ft) = <strong>108 inches</strong>
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="0">
+            <p>How many feet are in 36 inches?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">3 feet</div>
+              <div class="opt" data-idx="1">4 feet</div>
+              <div class="opt" data-idx="2">6 feet</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>Convert 5 kilometers to meters. (1 km = 1,000 m)</p>
+            <div class="options">
+              <div class="opt" data-idx="0">500 meters</div>
+              <div class="opt" data-idx="1">50 meters</div>
+              <div class="opt" data-idx="2">5,000 meters</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>
+              How many inches are in 2 yards? (1 yard = 3 feet, 1 foot = 12
+              inches)
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">36 inches</div>
+              <div class="opt" data-idx="1">72 inches</div>
+              <div class="opt" data-idx="2">24 inches</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="lesson" data-lesson="vocab">
+        <div class="lesson-header">
+          <h2>Vocabulary</h2>
+          <p>Tap a card to reveal the definition.</p>
+        </div>
+        <div class="vocab">
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Ratio</div>
+            <div class="def">
+              A comparison of two quantities, written as a : b, a to b, or a/b.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Rate</div>
+            <div class="def">
+              A ratio that compares two quantities with different units, such as
+              miles per hour or dollars per item.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Unit Rate</div>
+            <div class="def">
+              A rate with a denominator of 1. Found by dividing both terms so
+              the second quantity equals 1.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Equivalent Ratio</div>
+            <div class="def">
+              Ratios that express the same relationship. Found by multiplying or
+              dividing both terms by the same number.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Proportion</div>
+            <div class="def">
+              An equation that states two ratios are equal. Example: 2/3 = 4/6.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Percent</div>
+            <div class="def">
+              A ratio that compares a number to 100. The symbol % means "per
+              hundred."
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Conversion Factor</div>
+            <div class="def">
+              A ratio equal to 1 used to convert from one unit to another.
+              Example: 12 in / 1 ft.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Constant of Proportionality</div>
+            <div class="def">
+              The constant value k in the equation y = kx. It is the unit rate
+              in a proportional relationship.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Double Number Line</div>
+            <div class="def">
+              A diagram that shows two number lines aligned so that
+              corresponding values represent equivalent ratios.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Tape Diagram</div>
+            <div class="def">
+              A visual model using rectangular bars to represent parts of a
+              ratio or relationship between quantities.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
+        <button class="nav-btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const lessons = document.querySelectorAll(".lesson");
+        const tabsEl = document.getElementById("tabs");
+        const names = [
+          "3.1–3.2 Ratios",
+          "3.3 Equivalent",
+          "3.4 Graphing",
+          "3.5 Compare",
+          "3.6 Conversions",
+          "Vocabulary",
+        ];
+        let current = 0;
+
+        names.forEach((n, i) => {
+          const t = document.createElement("div");
+          t.className = "tab" + (i === 0 ? " active" : "");
+          t.textContent = n;
+          t.onclick = () => show(i);
+          tabsEl.appendChild(t);
+        });
+
+        function show(idx) {
+          current = idx;
+          lessons.forEach((l, i) => l.classList.toggle("active", i === idx));
+          tabsEl
+            .querySelectorAll(".tab")
+            .forEach((t, i) => t.classList.toggle("active", i === idx));
+          document.getElementById("prevBtn").disabled = idx === 0;
+          document.getElementById("nextBtn").disabled =
+            idx === lessons.length - 1;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.getElementById("prevBtn").onclick = () => {
+          if (current > 0) show(current - 1);
+        };
+        document.getElementById("nextBtn").onclick = () => {
+          if (current < lessons.length - 1) show(current + 1);
+        };
+
+        document.querySelectorAll(".question").forEach((q) => {
+          const correct = parseInt(q.dataset.correct);
+          const fb = q.querySelector(".feedback");
+          q.querySelectorAll(".opt").forEach((opt) => {
+            opt.onclick = () => {
+              const idx = parseInt(opt.dataset.idx);
+              q.querySelectorAll(".opt").forEach(
+                (o) => (o.style.pointerEvents = "none"),
+              );
+              if (idx === correct) {
+                opt.classList.add("correct");
+                fb.textContent = "Correct!";
+                fb.className = "feedback show correct";
+              } else {
+                opt.classList.add("wrong");
+                q.querySelectorAll(".opt")[correct].classList.add("correct");
+                fb.textContent = "Not quite — check the correct answer above.";
+                fb.className = "feedback show wrong";
+              }
+              updateScore(q.closest(".lesson"));
+            };
+          });
+        });
+
+        function updateScore(lesson) {
+          const qs = lesson.querySelectorAll(".question");
+          const answered = lesson.querySelectorAll(".opt.correct").length;
+          const bar = lesson.querySelector(".score-bar");
+          if (!bar) return;
+          const pct = Math.round((answered / qs.length) * 100);
+          bar.querySelector(".score-fill span").style.width = pct + "%";
+          bar.querySelector(".score-text").textContent =
+            answered + "/" + qs.length;
+        }
+
+        show(0);
+      })();
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

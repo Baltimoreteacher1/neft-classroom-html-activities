@@ -1,0 +1,2455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Factor Frenzy — Brick Breaker | Unit 1</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0a0a2e;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #game-container {
+        margin: 0 auto;
+        position: relative;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // ── FACTOR FRENZY — Brick Breaker (GCF & LCM) ──
+      // Phaser 3 single-file game for Grade 6 Math
+      // Enhanced with particle systems, streak mechanics, star ratings, high scores
+
+      // ── localStorage keys ──
+      const LS_KEY = "factorFrenzy_highScores";
+      function getHighScore(diff) {
+        try {
+          const d = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+          return d[diff] || 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function setHighScore(diff, score) {
+        try {
+          const d = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+          d[diff] = score;
+          localStorage.setItem(LS_KEY, JSON.stringify(d));
+        } catch (e) {}
+      }
+
+      // ── Sound synthesizer ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        play(type, freq, dur, vol = 0.3) {
+          this.init();
+          const c = this.ctx,
+            o = c.createOscillator(),
+            g = c.createGain();
+          if (type === "noise") {
+            // White noise via buffer
+            const bufSize = c.sampleRate * dur;
+            const buf = c.createBuffer(1, bufSize, c.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const src = c.createBufferSource();
+            src.buffer = buf;
+            const gn = c.createGain();
+            gn.gain.setValueAtTime(vol, c.currentTime);
+            gn.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+            src.connect(gn);
+            gn.connect(c.destination);
+            src.start();
+            src.stop(c.currentTime + dur);
+            return;
+          }
+          o.type = type;
+          o.frequency.value = freq;
+          g.gain.setValueAtTime(vol, c.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+          o.connect(g);
+          g.connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + dur);
+        },
+        hit() {
+          this.play("square", 440, 0.08, 0.2);
+        },
+        correct() {
+          this.play("sine", 660, 0.12);
+          this.play("sine", 880, 0.15);
+        },
+        wrong() {
+          this.play("sawtooth", 180, 0.25, 0.2);
+          this.play("noise", 100, 0.15, 0.12);
+        },
+        glassBreak() {
+          this.play("noise", 3000, 0.12, 0.2);
+          this.play("noise", 5000, 0.08, 0.15);
+          this.play("square", 100, 0.2, 0.1);
+        },
+        powerup() {
+          this.play("sine", 523, 0.1);
+          this.play("sine", 659, 0.1);
+          this.play("sine", 784, 0.15);
+        },
+        explode() {
+          this.play("noise", 100, 0.3, 0.15);
+        },
+        launch() {
+          this.play("triangle", 330, 0.15, 0.2);
+        },
+        combo() {
+          this.play("sine", 784, 0.08);
+          this.play("sine", 988, 0.1);
+          this.play("sine", 1175, 0.15);
+        },
+        streak3() {
+          [784, 988, 1175].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.12, 0.25), i * 60),
+          );
+        },
+        streak5() {
+          [784, 988, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.1, 0.3), i * 50),
+          );
+        },
+        streak7() {
+          [523, 659, 784, 988, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.1, 0.35), i * 40),
+          );
+        },
+        phaseTransition() {
+          [330, 440, 550, 660].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.15, 0.2), i * 100),
+          );
+        },
+        boss() {
+          this.play("square", 120, 0.5, 0.25);
+        },
+        win() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.2, 0.3), i * 120),
+          );
+        },
+        win3Star() {
+          [523, 659, 784, 880, 1047, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.2, 0.35), i * 80),
+          );
+        },
+        newHighScore() {
+          [1047, 1319, 1568, 1047, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.15, 0.3), i * 100),
+          );
+        },
+        lose() {
+          [400, 350, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.2), i * 200),
+          );
+        },
+        doublePoints() {
+          this.play("sine", 880, 0.1, 0.2);
+          this.play("sine", 1100, 0.12, 0.25);
+        },
+        fiftyFifty() {
+          this.play("triangle", 600, 0.1, 0.2);
+          this.play("triangle", 800, 0.12, 0.2);
+        },
+        extraTime() {
+          this.play("sine", 440, 0.1, 0.2);
+          this.play("sine", 660, 0.15, 0.25);
+        },
+      };
+
+      // ── Math utilities ──
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+      function lcm(a, b) {
+        return (a * b) / gcd(a, b);
+      }
+      function getFactors(n) {
+        const f = [];
+        for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
+        return f;
+      }
+      function isPrime(n) {
+        if (n < 2) return false;
+        for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
+        return true;
+      }
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // ── Question generator ──
+      function generateQuestions(difficulty) {
+        const qs = [];
+        const numQs = 20;
+
+        for (let i = 0; i < numQs; i++) {
+          const type = randInt(0, 4);
+          let q;
+          if (type === 0 || type === 1) {
+            // Factor identification
+            const n =
+              difficulty === "easy"
+                ? randInt(6, 20)
+                : difficulty === "medium"
+                  ? randInt(12, 36)
+                  : randInt(20, 60);
+            const factors = getFactors(n);
+            const target = factors[randInt(0, factors.length - 1)];
+            const brickNums = [];
+            const usedFactors = shuffle(factors).slice(
+              0,
+              Math.min(4, factors.length),
+            );
+            usedFactors.forEach((f) =>
+              brickNums.push({ val: f, isCorrect: true }),
+            );
+            while (brickNums.length < 8) {
+              let r = randInt(2, n + 10);
+              if (n % r !== 0 && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "factors",
+              target: n,
+              prompt: `Break the FACTORS of ${n}`,
+              bricks: shuffle(brickNums),
+            };
+          } else if (type === 2) {
+            // GCF
+            const a = difficulty === "easy" ? randInt(4, 18) : randInt(12, 48);
+            const b = difficulty === "easy" ? randInt(4, 18) : randInt(12, 48);
+            const ans = gcd(a, b);
+            const brickNums = [{ val: ans, isCorrect: true }];
+            while (brickNums.length < 8) {
+              let r = randInt(1, Math.max(a, b));
+              if (r !== ans && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "gcf",
+              target: `GCF(${a},${b})=${ans}`,
+              prompt: `Hit the GCF of ${a} and ${b}`,
+              bricks: shuffle(brickNums),
+              answer: ans,
+            };
+          } else if (type === 3) {
+            // LCM
+            const a = difficulty === "easy" ? randInt(2, 8) : randInt(4, 15);
+            const b = difficulty === "easy" ? randInt(2, 8) : randInt(4, 15);
+            const ans = lcm(a, b);
+            const brickNums = [{ val: ans, isCorrect: true }];
+            while (brickNums.length < 8) {
+              let r = randInt(ans - 15, ans + 20);
+              if (r > 0 && r !== ans && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "lcm",
+              target: `LCM(${a},${b})=${ans}`,
+              prompt: `Hit the LCM of ${a} and ${b}`,
+              bricks: shuffle(brickNums),
+              answer: ans,
+            };
+          } else {
+            // Multiples
+            const base = difficulty === "easy" ? randInt(2, 6) : randInt(3, 12);
+            const brickNums = [];
+            const mults = [];
+            for (let m = 1; m <= 12; m++) mults.push(base * m);
+            const chosen = shuffle(mults).slice(0, 4);
+            chosen.forEach((m) => brickNums.push({ val: m, isCorrect: true }));
+            while (brickNums.length < 8) {
+              let r = randInt(base + 1, base * 13);
+              if (r % base !== 0 && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "multiples",
+              target: base,
+              prompt: `Break MULTIPLES of ${base}`,
+              bricks: shuffle(brickNums),
+            };
+          }
+          qs.push(q);
+        }
+        return qs;
+      }
+
+      // ── Phaser Config ──
+      const W = 800,
+        H = 600;
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        backgroundColor: "#0a0a2e",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        physics: {
+          default: "arcade",
+          arcade: {
+            debug: false,
+            checkCollision: { up: true, down: false, left: true, right: true },
+          },
+        },
+        scene: [
+          BootScene,
+          TitleScene,
+          DifficultyScene,
+          TransitionScene,
+          GameScene,
+          BossScene,
+          ResultScene,
+        ],
+      };
+
+      // ── BOOT SCENE ──
+      function BootScene() {
+        return new Phaser.Scene("Boot");
+      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+
+        // Paddle
+        g.clear();
+        g.fillStyle(0x00ccff);
+        g.fillRoundedRect(0, 0, 120, 18, 8);
+        g.generateTexture("paddle", 120, 18);
+        g.clear();
+
+        // Ball
+        g.fillStyle(0xffffff);
+        g.fillCircle(8, 8, 8);
+        g.generateTexture("ball", 16, 16);
+        g.clear();
+
+        // Ball trail particle
+        g.fillStyle(0x00ccff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("ball_trail", 8, 8);
+        g.clear();
+
+        // Brick
+        g.fillStyle(0xff6644);
+        g.fillRoundedRect(0, 0, 80, 30, 4);
+        g.generateTexture("brick", 80, 30);
+        g.clear();
+
+        // Correct brick
+        g.fillStyle(0x22cc66);
+        g.fillRoundedRect(0, 0, 80, 30, 4);
+        g.generateTexture("brick_correct", 80, 30);
+        g.clear();
+
+        // Wrong brick
+        g.fillStyle(0xcc3333);
+        g.fillRoundedRect(0, 0, 80, 30, 4);
+        g.generateTexture("brick_wrong", 80, 30);
+        g.clear();
+
+        // Disabled brick (50/50)
+        g.fillStyle(0x333344);
+        g.fillRoundedRect(0, 0, 80, 30, 4);
+        g.generateTexture("brick_disabled", 80, 30);
+        g.clear();
+
+        // Boss brick
+        g.fillStyle(0xff00ff);
+        g.fillRoundedRect(0, 0, 160, 50, 8);
+        g.generateTexture("boss_brick", 160, 50);
+        g.clear();
+
+        // Power-up
+        g.fillStyle(0xffdd00);
+        g.fillCircle(10, 10, 10);
+        g.generateTexture("powerup", 20, 20);
+        g.clear();
+
+        // Power-up 50/50
+        g.fillStyle(0x00ddff);
+        g.fillCircle(10, 10, 10);
+        g.generateTexture("powerup_5050", 20, 20);
+        g.clear();
+
+        // Power-up Double
+        g.fillStyle(0xff8800);
+        g.fillCircle(10, 10, 10);
+        g.generateTexture("powerup_double", 20, 20);
+        g.clear();
+
+        // Power-up Time
+        g.fillStyle(0x44ff44);
+        g.fillCircle(10, 10, 10);
+        g.generateTexture("powerup_time", 20, 20);
+        g.clear();
+
+        // Particle
+        g.fillStyle(0xffffff);
+        g.fillCircle(3, 3, 3);
+        g.generateTexture("particle", 6, 6);
+        g.clear();
+
+        // Star particle
+        g.fillStyle(0xffdd00);
+        g.fillCircle(2, 2, 2);
+        g.generateTexture("star_particle", 4, 4);
+        g.clear();
+
+        // Confetti (rectangle)
+        g.fillStyle(0xff4488);
+        g.fillRect(0, 0, 6, 10);
+        g.generateTexture("confetti", 6, 10);
+        g.clear();
+
+        // Ambient dust
+        g.fillStyle(0x4488ff);
+        g.fillCircle(2, 2, 2);
+        g.generateTexture("dust", 4, 4);
+        g.clear();
+
+        // Star (for rating)
+        g.fillStyle(0xffdd00);
+        g.fillCircle(16, 16, 16);
+        g.generateTexture("star_big", 32, 32);
+        g.clear();
+
+        // Star outline
+        g.lineStyle(2, 0xffdd00);
+        g.strokeCircle(16, 16, 16);
+        g.generateTexture("star_empty", 32, 32);
+        g.clear();
+
+        // Progress bar bg
+        g.fillStyle(0x222244);
+        g.fillRoundedRect(0, 0, 200, 8, 4);
+        g.generateTexture("progbar_bg", 200, 8);
+        g.clear();
+
+        // Progress bar fill
+        g.fillStyle(0x00ccff);
+        g.fillRoundedRect(0, 0, 200, 8, 4);
+        g.generateTexture("progbar_fill", 200, 8);
+        g.clear();
+
+        // Red flash overlay
+        g.fillStyle(0xff0000);
+        g.fillRect(0, 0, W, H);
+        g.generateTexture("red_flash", W, H);
+        g.clear();
+
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE SCENE ──
+      function TitleScene() {
+        return new Phaser.Scene("Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2,
+          cy = H / 2;
+
+        // Ambient background particles (floating dust)
+        this.ambientParticles = this.add.particles(0, 0, "dust", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 5, max: 20 },
+          scale: { start: 0.5, end: 0, min: 0.3, max: 1 },
+          alpha: { start: 0.4, end: 0 },
+          lifespan: { min: 4000, max: 8000 },
+          frequency: 200,
+          quantity: 1,
+          tint: [0x4488ff, 0x00ccff, 0x6644ff, 0x2266aa],
+          angle: { min: -30, max: 30 },
+        });
+
+        // Starfield background
+        for (let i = 0; i < 80; i++) {
+          const s = this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.5 + 0.3,
+          );
+          this.tweens.add({
+            targets: s,
+            alpha: { from: 0.2, to: 1 },
+            duration: randInt(1000, 3000),
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        // Title with animated entrance
+        const titleFactor = this.add
+          .text(cx, 80, "FACTOR", {
+            fontSize: "72px",
+            fontFamily: "Impact, sans-serif",
+            color: "#00ccff",
+            stroke: "#003366",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleFactor,
+          alpha: 1,
+          scale: 1,
+          duration: 600,
+          ease: "Back.easeOut",
+          delay: 200,
+        });
+
+        const titleFrenzy = this.add
+          .text(cx, 150, "FRENZY", {
+            fontSize: "72px",
+            fontFamily: "Impact, sans-serif",
+            color: "#ff6644",
+            stroke: "#660000",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleFrenzy,
+          alpha: 1,
+          scale: 1,
+          duration: 600,
+          ease: "Back.easeOut",
+          delay: 400,
+        });
+
+        // Pulsing glow effect on title
+        this.tweens.add({
+          targets: titleFactor,
+          scaleX: { from: 1, to: 1.03 },
+          scaleY: { from: 1, to: 1.03 },
+          duration: 1500,
+          yoyo: true,
+          repeat: -1,
+          delay: 1000,
+        });
+        this.tweens.add({
+          targets: titleFrenzy,
+          scaleX: { from: 1, to: 1.03 },
+          scaleY: { from: 1, to: 1.03 },
+          duration: 1500,
+          yoyo: true,
+          repeat: -1,
+          delay: 1200,
+        });
+
+        const subtitle = this.add
+          .text(cx, 200, "BRICK BREAKER", {
+            fontSize: "20px",
+            color: "#aaccff",
+            letterSpacing: 8,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+        this.tweens.add({
+          targets: subtitle,
+          alpha: 1,
+          duration: 500,
+          delay: 700,
+        });
+
+        // Animated paddle + ball
+        const paddle = this.add.image(cx, 380, "paddle");
+        const ball = this.add.image(cx, 360, "ball");
+        this.tweens.add({
+          targets: paddle,
+          x: { from: cx - 100, to: cx + 100 },
+          duration: 2000,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+        this.tweens.add({
+          targets: ball,
+          x: { from: cx - 80, to: cx + 80 },
+          y: { from: 340, to: 280 },
+          duration: 1000,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+
+        // Floating bricks with entrance animation
+        for (let i = 0; i < 5; i++) {
+          const bx = 100 + i * 150;
+          const by = 270;
+          const b = this.add.image(bx, by, "brick").setAlpha(0).setScale(0);
+          const label = this.add
+            .text(bx, by, String(randInt(2, 36)), {
+              fontSize: "14px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: [b, label],
+            alpha: { from: 0, to: 0.6 },
+            scale: { from: 0, to: 0.8 },
+            duration: 400,
+            delay: 600 + i * 100,
+            ease: "Back.easeOut",
+          });
+          this.tweens.add({
+            targets: b,
+            y: by + 10,
+            duration: randInt(800, 1500),
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+            delay: 1200,
+          });
+        }
+
+        // Instructions
+        this.add
+          .text(cx, 440, "GCF  |  LCM  |  Factors  |  Multiples", {
+            fontSize: "16px",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 470, "Break the correct bricks with math!", {
+            fontSize: "14px",
+            color: "#6688aa",
+          })
+          .setOrigin(0.5);
+
+        // Start button with hover effects
+        const startBtn = this.add
+          .rectangle(cx, 530, 240, 56, 0x00ccff, 1)
+          .setInteractive({ useHandCursor: true });
+        const startTxt = this.add
+          .text(cx, 530, "START GAME", {
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#001133",
+          })
+          .setOrigin(0.5);
+
+        // Button glow
+        const btnGlow = this.add.rectangle(cx, 530, 250, 66, 0x00ccff, 0.3);
+        this.tweens.add({
+          targets: btnGlow,
+          alpha: { from: 0.1, to: 0.4 },
+          scaleX: { from: 1, to: 1.08 },
+          scaleY: { from: 1, to: 1.08 },
+          duration: 1000,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        startBtn.on("pointerover", () => {
+          this.tweens.add({
+            targets: [startBtn, startTxt],
+            scaleX: 1.08,
+            scaleY: 1.08,
+            duration: 150,
+            ease: "Back.easeOut",
+          });
+          startBtn.setFillStyle(0x33ddff);
+        });
+        startBtn.on("pointerout", () => {
+          this.tweens.add({
+            targets: [startBtn, startTxt],
+            scaleX: 1,
+            scaleY: 1,
+            duration: 150,
+          });
+          startBtn.setFillStyle(0x00ccff);
+        });
+
+        startBtn.on("pointerdown", () => {
+          SFX.init();
+          SFX.launch();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("Difficulty"));
+        });
+
+        // Keyboard
+        this.input.keyboard.on("keydown-SPACE", () => {
+          SFX.init();
+          SFX.launch();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("Difficulty"));
+        });
+
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── DIFFICULTY SCENE ──
+      function DifficultyScene() {
+        return new Phaser.Scene("Difficulty");
+      }
+      DifficultyScene.prototype = Object.create(Phaser.Scene.prototype);
+      DifficultyScene.prototype.constructor = DifficultyScene;
+      DifficultyScene.prototype.create = function () {
+        const cx = W / 2;
+
+        // Ambient particles
+        this.add.particles(0, 0, "dust", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 5, max: 15 },
+          scale: { start: 0.4, end: 0 },
+          alpha: { start: 0.3, end: 0 },
+          lifespan: 5000,
+          frequency: 300,
+          quantity: 1,
+          tint: [0x4488ff, 0x00ccff],
+        });
+
+        for (let i = 0; i < 40; i++) {
+          this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.3 + 0.2,
+          );
+        }
+
+        this.add
+          .text(cx, 80, "SELECT DIFFICULTY", {
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: "#00ccff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 120, "Choose how tough the math gets!", {
+            fontSize: "16px",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5);
+
+        const diffs = [
+          {
+            key: "easy",
+            label: "EASY",
+            sub: "Small numbers, basic factors",
+            color: 0x22cc66,
+            y: 220,
+            hs: getHighScore("easy"),
+          },
+          {
+            key: "medium",
+            label: "MEDIUM",
+            sub: "Bigger numbers, GCF & LCM",
+            color: 0xffaa00,
+            y: 330,
+            hs: getHighScore("medium"),
+          },
+          {
+            key: "hard",
+            label: "HARD",
+            sub: "Large numbers, boss rounds!",
+            color: 0xff4444,
+            y: 440,
+            hs: getHighScore("hard"),
+          },
+        ];
+
+        diffs.forEach((d, idx) => {
+          const btn = this.add
+            .rectangle(cx, d.y, 320, 80, d.color, 0.9)
+            .setInteractive({ useHandCursor: true })
+            .setAlpha(0)
+            .setScale(0.8);
+          const labelTxt = this.add
+            .text(cx, d.y - 16, d.label, {
+              fontSize: "28px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          const subTxt = this.add
+            .text(cx, d.y + 10, d.sub, { fontSize: "14px", color: "#ffffffcc" })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          const hsTxt = this.add
+            .text(cx, d.y + 28, d.hs > 0 ? `Best: ${d.hs}` : "", {
+              fontSize: "12px",
+              color: "#ffffffaa",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+
+          // Entrance animation
+          this.tweens.add({
+            targets: [btn, labelTxt, subTxt, hsTxt],
+            alpha: 1,
+            scale: 1,
+            duration: 400,
+            delay: idx * 150,
+            ease: "Back.easeOut",
+          });
+
+          btn.on("pointerover", () => {
+            btn.setFillStyle(d.color, 1);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 120,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(d.color, 0.9);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 120,
+            });
+          });
+          btn.on("pointerdown", () => {
+            SFX.launch();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () =>
+              this.scene.start("Transition", {
+                difficulty: d.key,
+                text: `LEVEL: ${d.label}`,
+              }),
+            );
+          });
+        });
+
+        this.cameras.main.fadeIn(400);
+      };
+
+      // ── TRANSITION SCENE (phase/level transitions) ──
+      function TransitionScene() {
+        return new Phaser.Scene("Transition");
+      }
+      TransitionScene.prototype = Object.create(Phaser.Scene.prototype);
+      TransitionScene.prototype.constructor = TransitionScene;
+      TransitionScene.prototype.init = function (data) {
+        this.transData = data;
+      };
+      TransitionScene.prototype.create = function () {
+        const cx = W / 2,
+          cy = H / 2;
+        const data = this.transData;
+
+        SFX.phaseTransition();
+
+        // Zoom in text
+        const mainText = this.add
+          .text(cx, cy - 20, data.text || "GET READY", {
+            fontSize: "48px",
+            fontFamily: "Impact, sans-serif",
+            color: "#00ccff",
+            stroke: "#003366",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(3);
+
+        const subText = this.add
+          .text(cx, cy + 40, "Break the right bricks!", {
+            fontSize: "18px",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Zoom in then hold then fade out
+        this.tweens.add({
+          targets: mainText,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+        });
+        this.tweens.add({
+          targets: subText,
+          alpha: 1,
+          duration: 400,
+          delay: 300,
+        });
+
+        // Burst particles
+        this.time.delayedCall(200, () => {
+          const p = this.add.particles(0, 0, "star_particle", {
+            speed: { min: 80, max: 250 },
+            scale: { start: 2, end: 0 },
+            lifespan: 600,
+            quantity: 20,
+            tint: [0x00ccff, 0xff6644, 0xffdd00],
+          });
+          p.emitParticleAt(cx, cy);
+        });
+
+        // Proceed to Game
+        this.time.delayedCall(1200, () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () => {
+            this.scene.start("Game", { difficulty: data.difficulty });
+          });
+        });
+
+        this.cameras.main.fadeIn(300);
+      };
+
+      // ── MAIN GAME SCENE ──
+      function GameScene() {
+        return new Phaser.Scene("Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function (data) {
+        this.difficulty = data.difficulty || "easy";
+        this.questions = generateQuestions(this.difficulty);
+        this.currentQ = 0;
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.lives = 3;
+        this.level = 1;
+        this.totalCorrect = 0;
+        this.totalWrong = 0;
+        this.ballLaunched = false;
+        this.activePowerUps = [];
+        this.doublePointsActive = false;
+        this.streakMilestoneShown = 0;
+        this.questionsAnsweredThisLevel = 0;
+      };
+
+      GameScene.prototype.create = function () {
+        const scene = this;
+
+        // Background
+        this.add.rectangle(W / 2, H / 2, W, H, 0x0a0a2e);
+        for (let i = 0; i < 50; i++) {
+          const s = this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.3 + 0.1,
+          );
+          this.tweens.add({
+            targets: s,
+            alpha: { from: 0.1, to: 0.6 },
+            duration: randInt(2000, 5000),
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        // Ambient floating particles
+        this.ambientParticles = this.add.particles(0, 0, "dust", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 3, max: 12 },
+          scale: { start: 0.4, end: 0 },
+          alpha: { start: 0.25, end: 0 },
+          lifespan: { min: 5000, max: 10000 },
+          frequency: 400,
+          quantity: 1,
+          tint: [0x2244aa, 0x4466cc, 0x00ccff, 0x6644ff],
+          angle: { min: 260, max: 280 },
+        });
+
+        // Red flash overlay (hidden)
+        this.redFlash = this.add
+          .image(W / 2, H / 2, "red_flash")
+          .setAlpha(0)
+          .setDepth(100);
+
+        // Walls (invisible physics boundaries)
+        this.physics.world.setBoundsCollision(true, true, true, false);
+
+        // Paddle
+        this.paddle = this.physics.add
+          .image(W / 2, H - 40, "paddle")
+          .setImmovable(true);
+        this.paddle.body.allowGravity = false;
+        this.paddle.setCollideWorldBounds(true);
+
+        // Ball
+        this.ball = this.physics.add.image(W / 2, H - 60, "ball");
+        this.ball.setCollideWorldBounds(true);
+        this.ball.setBounce(1);
+        this.ball.body.allowGravity = false;
+
+        // Ball trail
+        this.ballTrail = this.add.particles(0, 0, "ball_trail", {
+          speed: 0,
+          scale: { start: 0.6, end: 0 },
+          alpha: { start: 0.3, end: 0 },
+          lifespan: 200,
+          frequency: 30,
+          follow: this.ball,
+          tint: [0x00ccff, 0x4488ff],
+        });
+
+        // Bricks group
+        this.bricks = this.physics.add.staticGroup();
+
+        // Power-ups group
+        this.powerUps = this.physics.add.group();
+
+        // Particle emitter for brick hits
+        this.particles = this.add.particles(0, 0, "particle", {
+          speed: { min: 50, max: 200 },
+          scale: { start: 1, end: 0 },
+          lifespan: 400,
+          emitting: false,
+          quantity: 8,
+          tint: [0x00ccff, 0xff6644, 0x22cc66, 0xffdd00],
+        });
+
+        this.starParticles = this.add.particles(0, 0, "star_particle", {
+          speed: { min: 30, max: 150 },
+          scale: { start: 1.5, end: 0 },
+          lifespan: 600,
+          emitting: false,
+          quantity: 12,
+          tint: [0xffdd00, 0xff8800],
+        });
+
+        // Confetti emitter (for streaks)
+        this.confettiParticles = this.add.particles(0, 0, "confetti", {
+          speed: { min: 100, max: 350 },
+          scale: { start: 1.2, end: 0.2 },
+          lifespan: 1000,
+          emitting: false,
+          quantity: 25,
+          angle: { min: -120, max: -60 },
+          rotate: { min: 0, max: 360 },
+          tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00, 0xff8844, 0xdd44ff],
+          gravityY: 200,
+        });
+
+        // HUD
+        this.scoreText = this.add.text(16, 10, "Score: 0", {
+          fontSize: "20px",
+          color: "#00ccff",
+          fontStyle: "bold",
+        });
+        this.comboText = this.add.text(16, 35, "", {
+          fontSize: "16px",
+          color: "#ffdd00",
+        });
+        this.livesText = this.add
+          .text(W - 16, 10, "", { fontSize: "20px", color: "#ff4444" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(W / 2, 10, "Level 1", { fontSize: "18px", color: "#aaccff" })
+          .setOrigin(0.5, 0);
+        this.promptText = this.add
+          .text(W / 2, 52, "", {
+            fontSize: "22px",
+            color: "#ffffff",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 3,
+            align: "center",
+          })
+          .setOrigin(0.5, 0);
+
+        // Streak counter (visual, center-right)
+        this.streakContainer = this.add.container(W - 70, 70);
+        this.streakBg = this.add.circle(0, 0, 30, 0xffdd00, 0.15);
+        this.streakLabel = this.add
+          .text(0, -8, "", {
+            fontSize: "28px",
+            fontStyle: "bold",
+            color: "#ffdd00",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5);
+        this.streakSub = this.add
+          .text(0, 18, "STREAK", {
+            fontSize: "9px",
+            color: "#ffdd00",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+        this.streakContainer.add([
+          this.streakBg,
+          this.streakLabel,
+          this.streakSub,
+        ]);
+        this.streakContainer.setAlpha(0);
+
+        // Progress bar
+        this.progBg = this.add.image(W / 2, H - 8, "progbar_bg");
+        this.progFill = this.add
+          .image(W / 2 - 100, H - 8, "progbar_fill")
+          .setOrigin(0, 0.5);
+        this.progFill.setDisplaySize(0, 8);
+        this.progLabel = this.add
+          .text(W / 2, H - 20, "", { fontSize: "10px", color: "#88aacc" })
+          .setOrigin(0.5);
+
+        // Power-up indicator (shows active power-ups)
+        this.puIndicator = this.add.text(16, 58, "", {
+          fontSize: "13px",
+          color: "#ffdd00",
+        });
+
+        this.updateHUD();
+
+        // Collisions
+        this.physics.add.collider(
+          this.ball,
+          this.paddle,
+          this.hitPaddle,
+          null,
+          this,
+        );
+        this.physics.add.collider(
+          this.ball,
+          this.bricks,
+          this.hitBrick,
+          null,
+          this,
+        );
+        this.physics.add.overlap(
+          this.paddle,
+          this.powerUps,
+          this.collectPowerUp,
+          null,
+          this,
+        );
+
+        // Input
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.spaceKey = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.SPACE,
+        );
+
+        // Touch/mouse
+        this.input.on("pointermove", (pointer) => {
+          this.paddle.x = Phaser.Math.Clamp(pointer.x, 60, W - 60);
+          if (!this.ballLaunched) this.ball.x = this.paddle.x;
+        });
+
+        this.input.on("pointerdown", () => {
+          if (!this.ballLaunched) this.launchBall();
+        });
+
+        // Load first question
+        this.loadQuestion();
+
+        this.cameras.main.fadeIn(500);
+      };
+
+      GameScene.prototype.launchBall = function () {
+        if (this.ballLaunched) return;
+        this.ballLaunched = true;
+        const speed = 300 + (this.level - 1) * 20;
+        const angle = Phaser.Math.Between(-60, -120);
+        this.physics.velocityFromAngle(angle, speed, this.ball.body.velocity);
+        SFX.launch();
+      };
+
+      GameScene.prototype.loadQuestion = function () {
+        if (this.currentQ >= this.questions.length || this.lives <= 0) {
+          // Check if boss round
+          if (
+            this.lives > 0 &&
+            this.difficulty !== "easy" &&
+            this.level % 3 === 0
+          ) {
+            this.scene.start("Boss", {
+              difficulty: this.difficulty,
+              score: this.score,
+              combo: this.maxCombo,
+              lives: this.lives,
+              level: this.level,
+              totalCorrect: this.totalCorrect,
+              totalWrong: this.totalWrong,
+              questions: this.questions,
+              currentQ: this.currentQ,
+            });
+            return;
+          }
+          this.scene.start("Results", {
+            score: this.score,
+            maxCombo: this.maxCombo,
+            lives: this.lives,
+            totalCorrect: this.totalCorrect,
+            totalWrong: this.totalWrong,
+            difficulty: this.difficulty,
+            level: this.level,
+          });
+          return;
+        }
+
+        const q = this.questions[this.currentQ];
+        this.promptText.setText(q.prompt);
+        this.currentBrickData = q.bricks;
+
+        // Clear old bricks
+        this.bricks.clear(true, true);
+
+        // Layout bricks
+        const cols = 4,
+          rows = 2;
+        const brickW = 90,
+          brickH = 36,
+          padX = 10,
+          padY = 8;
+        const totalW = cols * (brickW + padX) - padX;
+        const startX = (W - totalW) / 2 + brickW / 2;
+        const startY = 90;
+
+        q.bricks.forEach((bd, idx) => {
+          const col = idx % cols,
+            row = Math.floor(idx / cols);
+          const x = startX + col * (brickW + padX);
+          const y = startY + row * (brickH + padY);
+          const brick = this.bricks
+            .create(x, y, "brick")
+            .setDisplaySize(brickW, brickH);
+          brick.brickData = bd;
+          brick.refreshBody();
+
+          // Entrance animation
+          brick.setAlpha(0).setScale(0.5);
+          this.tweens.add({
+            targets: brick,
+            alpha: 1,
+            scaleX: brickW / 80,
+            scaleY: brickH / 30,
+            duration: 250,
+            delay: idx * 40,
+            ease: "Back.easeOut",
+          });
+
+          // Number label on brick
+          const label = this.add
+            .text(x, y, String(bd.val), {
+              fontSize: "16px",
+              color: "#fff",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: label,
+            alpha: 1,
+            duration: 200,
+            delay: idx * 40 + 100,
+          });
+          brick.label = label;
+        });
+
+        // Update progress bar
+        const pct = this.currentQ / this.questions.length;
+        this.progFill.setDisplaySize(200 * pct, 8);
+        this.progLabel.setText(
+          `Q${this.currentQ + 1}/${this.questions.length}`,
+        );
+
+        // Reset ball
+        this.ballLaunched = false;
+        this.ball.setPosition(this.paddle.x, H - 60);
+        this.ball.setVelocity(0, 0);
+      };
+
+      GameScene.prototype.hitPaddle = function (ball, paddle) {
+        SFX.hit();
+        let diff = ball.x - paddle.x;
+        let normalizedDiff = diff / 60;
+        let angle = -70 + normalizedDiff * 50;
+        const speed = ball.body.speed || 320;
+        this.physics.velocityFromAngle(angle, speed, ball.body.velocity);
+
+        this.cameras.main.shake(50, 0.003);
+      };
+
+      GameScene.prototype.hitBrick = function (ball, brick) {
+        const bd = brick.brickData;
+        if (!bd) return; // disabled brick
+        const q = this.questions[this.currentQ];
+
+        // Particles
+        this.particles.emitParticleAt(brick.x, brick.y);
+
+        let isCorrect = bd.isCorrect;
+
+        if (isCorrect) {
+          SFX.correct();
+          this.combo++;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+          this.totalCorrect++;
+
+          let pts = 100 * Math.min(this.combo, 5);
+          if (this.doublePointsActive) pts *= 2;
+          this.score += pts;
+
+          // Flash brick green briefly
+          brick.setTexture("brick_correct");
+          this.time.delayedCall(100, () => {
+            if (brick.label) brick.label.destroy();
+            brick.destroy();
+          });
+
+          // Streak counter update
+          this.streakContainer.setAlpha(1);
+          this.streakLabel.setText(`${this.combo}`);
+          this.streakSub.setAlpha(1);
+
+          // Pulse streak counter
+          this.tweens.add({
+            targets: this.streakContainer,
+            scaleX: { from: 1.4, to: 1 },
+            scaleY: { from: 1.4, to: 1 },
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+
+          // Screen shake scales with streak
+          const shakeIntensity = Math.min(0.003 + this.combo * 0.002, 0.02);
+          const shakeDuration = Math.min(80 + this.combo * 20, 300);
+          this.cameras.main.shake(shakeDuration, shakeIntensity);
+
+          // Streak milestone effects
+          if (this.combo === 3 && this.streakMilestoneShown < 3) {
+            this.streakMilestoneShown = 3;
+            SFX.streak3();
+            this.showStreakMilestone("STREAK x3!", 0xffdd00);
+            this.confettiParticles.emitParticleAt(W / 2, H / 2);
+          } else if (this.combo === 5 && this.streakMilestoneShown < 5) {
+            this.streakMilestoneShown = 5;
+            SFX.streak5();
+            this.showStreakMilestone("STREAK x5!", 0xff8800);
+            this.confettiParticles.emitParticleAt(W / 4, H / 2);
+            this.confettiParticles.emitParticleAt((3 * W) / 4, H / 2);
+          } else if (this.combo === 7 && this.streakMilestoneShown < 7) {
+            this.streakMilestoneShown = 7;
+            SFX.streak7();
+            this.showStreakMilestone("STREAK x7! UNSTOPPABLE!", 0xff4444);
+            this.confettiParticles.emitParticleAt(W / 4, H / 3);
+            this.confettiParticles.emitParticleAt(W / 2, H / 3);
+            this.confettiParticles.emitParticleAt((3 * W) / 4, H / 3);
+          } else if (this.combo >= 3) {
+            SFX.combo();
+          }
+
+          // Combo text
+          if (this.combo >= 3) {
+            this.comboText.setText(`COMBO x${this.combo}!`);
+            this.tweens.add({
+              targets: this.comboText,
+              scale: { from: 1.3, to: 1 },
+              duration: 300,
+            });
+            this.starParticles.emitParticleAt(brick.x, brick.y);
+          }
+
+          // Score popup with varied text
+          let popupText = `+${pts}`;
+          let popupColor = "#22cc66";
+          let popupSize = "18px";
+          if (this.doublePointsActive) {
+            popupText = `+${pts} 2X!`;
+            popupColor = "#ff8800";
+            popupSize = "22px";
+          }
+          if (this.combo >= 5) {
+            popupSize = "24px";
+            popupColor = "#ffdd00";
+          }
+
+          const popup = this.add
+            .text(brick.x, brick.y, popupText, {
+              fontSize: popupSize,
+              color: popupColor,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: popup,
+            y: popup.y - 50,
+            alpha: 0,
+            scale: { from: 1, to: 1.5 },
+            duration: 700,
+            onComplete: () => popup.destroy(),
+          });
+
+          // Drop power-up chance (higher with streak)
+          const puChance =
+            0.12 + (this.combo >= 3 ? 0.05 : 0) + (this.combo >= 5 ? 0.05 : 0);
+          if (Math.random() < puChance) this.spawnPowerUp(brick.x, brick.y);
+
+          // Check if all correct bricks destroyed
+          const remaining = this.bricks
+            .getChildren()
+            .filter((b) => b.brickData && b.brickData.isCorrect);
+          if (remaining.length === 0) {
+            this.currentQ++;
+            this.questionsAnsweredThisLevel++;
+            this.time.delayedCall(600, () => this.loadQuestion());
+          }
+        } else {
+          // WRONG answer — dramatic punishment
+          SFX.wrong();
+          SFX.glassBreak();
+          this.combo = 0;
+          this.streakMilestoneShown = 0;
+          this.comboText.setText("");
+          this.lives--;
+          this.totalWrong++;
+
+          // Hide streak counter
+          this.tweens.add({
+            targets: this.streakContainer,
+            alpha: 0,
+            duration: 300,
+          });
+
+          // Flash brick red
+          brick.setTexture("brick_wrong");
+
+          // Red flash overlay
+          this.redFlash.setAlpha(0.3);
+          this.tweens.add({
+            targets: this.redFlash,
+            alpha: 0,
+            duration: 400,
+          });
+
+          // Dramatic camera shake
+          this.cameras.main.shake(300, 0.018);
+
+          // Show X on wrong brick
+          const xMark = this.add
+            .text(brick.x, brick.y, "X", {
+              fontSize: "32px",
+              color: "#ff0000",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: xMark,
+            alpha: 0,
+            scale: 3,
+            duration: 600,
+            onComplete: () => xMark.destroy(),
+          });
+
+          // Wrong answer popup
+          const wrongPopup = this.add
+            .text(brick.x, brick.y + 20, "WRONG!", {
+              fontSize: "16px",
+              color: "#ff4444",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: wrongPopup,
+            y: wrongPopup.y - 30,
+            alpha: 0,
+            duration: 800,
+            onComplete: () => wrongPopup.destroy(),
+          });
+
+          if (brick.label) brick.label.destroy();
+          brick.destroy();
+
+          if (this.lives <= 0) {
+            SFX.lose();
+            this.time.delayedCall(1000, () => {
+              this.scene.start("Results", {
+                score: this.score,
+                maxCombo: this.maxCombo,
+                lives: 0,
+                totalCorrect: this.totalCorrect,
+                totalWrong: this.totalWrong,
+                difficulty: this.difficulty,
+                level: this.level,
+              });
+            });
+          }
+        }
+
+        this.updateHUD();
+      };
+
+      GameScene.prototype.showStreakMilestone = function (text, color) {
+        const milestone = this.add
+          .text(W / 2, H / 2 - 40, text, {
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: Phaser.Display.Color.IntegerToColor(color).rgba,
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.3)
+          .setDepth(50);
+
+        this.tweens.add({
+          targets: milestone,
+          alpha: 1,
+          scale: 1.2,
+          duration: 400,
+          ease: "Back.easeOut",
+          onComplete: () => {
+            this.tweens.add({
+              targets: milestone,
+              alpha: 0,
+              scale: 1.5,
+              y: milestone.y - 30,
+              duration: 500,
+              delay: 400,
+              onComplete: () => milestone.destroy(),
+            });
+          },
+        });
+      };
+
+      GameScene.prototype.spawnPowerUp = function (x, y) {
+        const types = ["wide", "multi", "slow", "5050", "double"];
+        const type = types[randInt(0, types.length - 1)];
+        const textures = {
+          wide: "powerup",
+          multi: "powerup",
+          slow: "powerup",
+          5050: "powerup_5050",
+          double: "powerup_double",
+        };
+        const pu = this.powerUps.create(x, y, textures[type] || "powerup");
+        pu.puType = type;
+        pu.setVelocityY(120);
+        pu.body.allowGravity = false;
+
+        const labels = {
+          wide: "W",
+          multi: "M",
+          slow: "S",
+          5050: "50",
+          double: "2X",
+        };
+        const puLabel = this.add
+          .text(x, y, labels[type], {
+            fontSize: "10px",
+            color: "#000",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        pu.puLabel = puLabel;
+
+        // Glow effect
+        this.tweens.add({
+          targets: pu,
+          scaleX: { from: 1, to: 1.3 },
+          scaleY: { from: 1, to: 1.3 },
+          duration: 400,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        this.time.addEvent({
+          delay: 16,
+          repeat: 300,
+          callback: () => {
+            if (pu.active) puLabel.setPosition(pu.x, pu.y);
+            else puLabel.destroy();
+          },
+        });
+      };
+
+      GameScene.prototype.collectPowerUp = function (paddle, pu) {
+        SFX.powerup();
+        const type = pu.puType;
+        if (pu.puLabel) pu.puLabel.destroy();
+        pu.destroy();
+
+        const puNames = {
+          wide: "WIDE PADDLE!",
+          multi: "MULTI-BALL!",
+          slow: "SLOW MOTION!",
+          5050: "50/50 — Wrong bricks removed!",
+          double: "DOUBLE POINTS!",
+        };
+        const puColors = {
+          wide: "#ffdd00",
+          multi: "#ffdd00",
+          slow: "#ffdd00",
+          5050: "#00ddff",
+          double: "#ff8800",
+        };
+
+        const popup = this.add
+          .text(paddle.x, paddle.y - 30, puNames[type] || "POWER UP!", {
+            fontSize: "16px",
+            color: puColors[type] || "#ffdd00",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 2,
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: popup,
+          y: popup.y - 40,
+          alpha: 0,
+          duration: 800,
+          onComplete: () => popup.destroy(),
+        });
+
+        if (type === "wide") {
+          this.paddle.setDisplaySize(180, 18);
+          this.time.delayedCall(8000, () => {
+            if (this.paddle.active) this.paddle.setDisplaySize(120, 18);
+          });
+        } else if (type === "slow") {
+          this.physics.world.timeScale = 2;
+          this.time.delayedCall(5000, () => {
+            this.physics.world.timeScale = 1;
+          });
+        } else if (type === "multi") {
+          const extra = this.physics.add.image(
+            this.ball.x,
+            this.ball.y,
+            "ball",
+          );
+          extra.setCollideWorldBounds(true).setBounce(1);
+          extra.body.allowGravity = false;
+          extra.setVelocity(
+            -this.ball.body.velocity.x,
+            this.ball.body.velocity.y,
+          );
+          this.physics.add.collider(extra, this.paddle, (b, p) => {
+            SFX.hit();
+          });
+          this.physics.add.collider(extra, this.bricks, (b, brick) => {
+            this.hitBrick(b, brick);
+          });
+          this.time.delayedCall(10000, () => {
+            if (extra.active) extra.destroy();
+          });
+        } else if (type === "5050") {
+          SFX.fiftyFifty();
+          // Remove half the wrong bricks
+          const wrongBricks = this.bricks
+            .getChildren()
+            .filter((b) => b.brickData && !b.brickData.isCorrect);
+          const toRemove = shuffle(wrongBricks).slice(
+            0,
+            Math.ceil(wrongBricks.length / 2),
+          );
+          toRemove.forEach((b) => {
+            b.setTexture("brick_disabled");
+            b.brickData = null; // Make it inert
+            if (b.label) {
+              b.label.setAlpha(0.3);
+              b.label.setText("--");
+            }
+            this.tweens.add({ targets: b, alpha: 0.3, duration: 300 });
+          });
+        } else if (type === "double") {
+          SFX.doublePoints();
+          this.doublePointsActive = true;
+          this.puIndicator.setText("2X POINTS ACTIVE");
+          this.time.delayedCall(10000, () => {
+            this.doublePointsActive = false;
+            this.puIndicator.setText("");
+          });
+        }
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText(`Score: ${this.score}`);
+        this.livesText.setText(
+          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
+        );
+        this.levelText.setText(
+          `Level ${this.level} - Q${this.currentQ + 1}/${this.questions.length}`,
+        );
+      };
+
+      GameScene.prototype.update = function () {
+        // Paddle keyboard movement
+        const speed = 500;
+        if (this.cursors.left.isDown) {
+          this.paddle.x = Math.max(
+            60,
+            this.paddle.x - (speed * this.game.loop.delta) / 1000,
+          );
+        } else if (this.cursors.right.isDown) {
+          this.paddle.x = Math.min(
+            W - 60,
+            this.paddle.x + (speed * this.game.loop.delta) / 1000,
+          );
+        }
+        this.paddle.body.updateFromGameObject();
+
+        // Ball follows paddle before launch
+        if (!this.ballLaunched) {
+          this.ball.x = this.paddle.x;
+          this.ball.y = H - 60;
+          if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) this.launchBall();
+        }
+
+        // Ball out of bounds
+        if (this.ball.y > H + 20 && this.ballLaunched) {
+          this.ballLaunched = false;
+          this.ball.setPosition(this.paddle.x, H - 60);
+          this.ball.setVelocity(0, 0);
+        }
+
+        // Ensure ball speed doesn't go too slow or too fast
+        if (this.ballLaunched) {
+          const spd = this.ball.body.speed;
+          if (spd > 0 && spd < 200) {
+            const factor = 250 / spd;
+            this.ball.body.velocity.x *= factor;
+            this.ball.body.velocity.y *= factor;
+          }
+          if (spd > 600) {
+            const factor = 500 / spd;
+            this.ball.body.velocity.x *= factor;
+            this.ball.body.velocity.y *= factor;
+          }
+        }
+
+        // Remove power-ups that fall off screen
+        this.powerUps.getChildren().forEach((p) => {
+          if (p.y > H + 20) {
+            if (p.puLabel) p.puLabel.destroy();
+            p.destroy();
+          }
+        });
+      };
+
+      // ── BOSS SCENE ──
+      function BossScene() {
+        return new Phaser.Scene("Boss");
+      }
+      BossScene.prototype = Object.create(Phaser.Scene.prototype);
+      BossScene.prototype.constructor = BossScene;
+
+      BossScene.prototype.init = function (data) {
+        this.gameData = data;
+      };
+
+      BossScene.prototype.create = function () {
+        const scene = this;
+        const cx = W / 2;
+
+        // Background
+        this.add.rectangle(cx, H / 2, W, H, 0x1a0033);
+        for (let i = 0; i < 30; i++) {
+          this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 3),
+            0xff00ff,
+            Math.random() * 0.3,
+          );
+        }
+
+        // Ambient particles
+        this.add.particles(0, 0, "dust", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 5, max: 20 },
+          scale: { start: 0.5, end: 0 },
+          alpha: { start: 0.3, end: 0 },
+          lifespan: 4000,
+          frequency: 200,
+          tint: [0xff00ff, 0xaa00ff, 0xff44ff],
+        });
+
+        SFX.boss();
+
+        // Boss entrance animation
+        const bossTitle = this.add
+          .text(cx, 40, "BOSS ROUND", {
+            fontSize: "40px",
+            fontStyle: "bold",
+            color: "#ff00ff",
+            stroke: "#330033",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(2);
+        this.tweens.add({
+          targets: bossTitle,
+          alpha: 1,
+          scale: 1,
+          duration: 600,
+          ease: "Back.easeOut",
+        });
+
+        // Generate boss question
+        const a = randInt(12, 48),
+          b = randInt(12, 48);
+        const isgcf = Math.random() < 0.5;
+        const answer = isgcf ? gcd(a, b) : lcm(a, b);
+        const qText = isgcf
+          ? `What is the GCF of ${a} and ${b}?`
+          : `What is the LCM of ${a} and ${b}?`;
+
+        this.add
+          .text(cx, 120, qText, {
+            fontSize: "26px",
+            color: "#ffffff",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5);
+
+        // Boss brick
+        const boss = this.add.image(cx, 220, "boss_brick");
+        this.add
+          .text(cx, 220, "???", {
+            fontSize: "24px",
+            color: "#fff",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: boss,
+          scaleX: { from: 1, to: 1.1 },
+          scaleY: { from: 1, to: 1.1 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        // Health bar for boss
+        const hpBg = this.add.rectangle(cx, 270, 300, 16, 0x333333);
+        const hpBar = this.add
+          .rectangle(cx - 150, 270, 300, 16, 0xff00ff)
+          .setOrigin(0, 0.5);
+        let bossHP = 3;
+
+        // Answer choices with hover states
+        const choices = [answer];
+        while (choices.length < 4) {
+          const wrong = answer + randInt(-10, 10);
+          if (wrong > 0 && wrong !== answer && !choices.includes(wrong))
+            choices.push(wrong);
+        }
+        const shuffled = shuffle(choices);
+
+        shuffled.forEach((c, i) => {
+          const x = 140 + i * 150;
+          const btn = this.add
+            .rectangle(x, 380, 120, 50, 0x4400aa)
+            .setInteractive({ useHandCursor: true });
+          const txt = this.add
+            .text(x, 380, String(c), {
+              fontSize: "22px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          // Keyboard shortcuts (1-4)
+          const keyNames = ["ONE", "TWO", "THREE", "FOUR"];
+          this.input.keyboard.on(`keydown-${keyNames[i]}`, () => {
+            btn.emit("pointerdown");
+          });
+
+          btn.on("pointerover", () => {
+            btn.setFillStyle(0x6600cc);
+            this.tweens.add({
+              targets: [btn, txt],
+              scaleX: 1.08,
+              scaleY: 1.08,
+              duration: 100,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(0x4400aa);
+            this.tweens.add({
+              targets: [btn, txt],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+          btn.on("pointerdown", () => {
+            if (c === answer) {
+              SFX.correct();
+              bossHP--;
+              hpBar.setDisplaySize(100 * bossHP, 16);
+              this.cameras.main.shake(300, 0.02);
+
+              if (bossHP <= 0) {
+                SFX.win();
+                this.gameData.score += 500;
+
+                // Big explosion
+                const confetti = this.add.particles(0, 0, "confetti", {
+                  speed: { min: 100, max: 400 },
+                  scale: { start: 1.5, end: 0.2 },
+                  lifespan: 1200,
+                  quantity: 40,
+                  tint: [0xff00ff, 0xffdd00, 0x00ccff, 0x22cc66],
+                  rotate: { min: 0, max: 360 },
+                  gravityY: 200,
+                });
+                confetti.emitParticleAt(cx, 220);
+
+                const starBurst = this.add.particles(0, 0, "star_particle", {
+                  speed: { min: 100, max: 400 },
+                  scale: { start: 2, end: 0 },
+                  lifespan: 800,
+                  quantity: 30,
+                  tint: [0xff00ff, 0xffdd00, 0x00ccff],
+                });
+                starBurst.emitParticleAt(cx, 220);
+
+                const winText = this.add
+                  .text(cx, 220, "BOSS DEFEATED!\n+500 POINTS", {
+                    fontSize: "32px",
+                    color: "#ffdd00",
+                    fontStyle: "bold",
+                    align: "center",
+                    stroke: "#000",
+                    strokeThickness: 3,
+                  })
+                  .setOrigin(0.5)
+                  .setAlpha(0);
+                this.tweens.add({
+                  targets: winText,
+                  alpha: 1,
+                  scale: { from: 0.5, to: 1 },
+                  duration: 500,
+                });
+
+                boss.destroy();
+
+                this.time.delayedCall(2000, () => {
+                  this.scene.start("Results", {
+                    score: this.gameData.score,
+                    maxCombo: this.gameData.combo,
+                    lives: this.gameData.lives,
+                    totalCorrect: this.gameData.totalCorrect + 1,
+                    totalWrong: this.gameData.totalWrong,
+                    difficulty: this.gameData.difficulty,
+                    level: this.gameData.level,
+                    bossDefeated: true,
+                  });
+                });
+              } else {
+                btn.setFillStyle(0x22cc66);
+                txt.setText("✓");
+              }
+            } else {
+              SFX.wrong();
+              SFX.glassBreak();
+              btn.setFillStyle(0xff0000);
+              this.cameras.main.shake(300, 0.02);
+
+              // Red flash
+              const flash = this.add
+                .image(W / 2, H / 2, "red_flash")
+                .setAlpha(0.3)
+                .setDepth(100);
+              this.tweens.add({
+                targets: flash,
+                alpha: 0,
+                duration: 400,
+                onComplete: () => flash.destroy(),
+              });
+
+              this.gameData.lives--;
+              this.gameData.totalWrong++;
+              if (this.gameData.lives <= 0) {
+                this.time.delayedCall(1000, () => {
+                  this.scene.start("Results", {
+                    score: this.gameData.score,
+                    maxCombo: this.gameData.combo,
+                    lives: 0,
+                    totalCorrect: this.gameData.totalCorrect,
+                    totalWrong: this.gameData.totalWrong,
+                    difficulty: this.gameData.difficulty,
+                    level: this.gameData.level,
+                  });
+                });
+              }
+            }
+          });
+        });
+
+        // Hint
+        this.add
+          .text(cx, 450, "Click the correct answer to damage the boss!", {
+            fontSize: "14px",
+            color: "#cc88ff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 475, `Lives: ${"♥".repeat(this.gameData.lives)}`, {
+            fontSize: "18px",
+            color: "#ff4444",
+          })
+          .setOrigin(0.5);
+
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── RESULTS SCENE ──
+      function ResultScene() {
+        return new Phaser.Scene("Results");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+
+      ResultScene.prototype.init = function (data) {
+        this.data = data;
+      };
+
+      ResultScene.prototype.create = function () {
+        const cx = W / 2,
+          d = this.data;
+
+        // Background
+        this.add.rectangle(cx, H / 2, W, H, 0x0a0a2e);
+        for (let i = 0; i < 50; i++) {
+          this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.3 + 0.1,
+          );
+        }
+
+        const won = d.lives > 0;
+        const pct =
+          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: d.totalCorrect,
+              maxScore: d.totalCorrect + d.totalWrong,
+              stars: stars,
+              problemsCorrect: d.totalCorrect,
+              problemsAttempted: d.totalCorrect + d.totalWrong,
+              percent: Math.round(pct),
+            });
+        } catch (e) {}
+
+        // Check high score
+        const prevBest = getHighScore(d.difficulty);
+        const isNewHighScore = d.score > prevBest;
+        if (isNewHighScore) setHighScore(d.difficulty, d.score);
+
+        // SFX based on stars
+        if (won) {
+          if (stars === 3) SFX.win3Star();
+          else SFX.win();
+          if (isNewHighScore)
+            this.time.delayedCall(800, () => SFX.newHighScore());
+        } else {
+          SFX.lose();
+        }
+
+        // Victory/defeat particles
+        if (won) {
+          for (let i = 0; i < 5; i++) {
+            this.time.delayedCall(i * 400, () => {
+              const p = this.add.particles(0, 0, "star_particle", {
+                speed: { min: 50, max: 200 },
+                scale: { start: 1.5, end: 0 },
+                lifespan: 800,
+                quantity: 15,
+                tint: [0xffdd00, 0x00ccff, 0x22cc66],
+              });
+              p.emitParticleAt(randInt(100, W - 100), randInt(100, 300));
+              this.time.delayedCall(1000, () => p.destroy());
+            });
+          }
+
+          if (stars === 3) {
+            // Extra confetti for 3-star
+            for (let i = 0; i < 3; i++) {
+              this.time.delayedCall(i * 600, () => {
+                const c = this.add.particles(0, 0, "confetti", {
+                  speed: { min: 80, max: 300 },
+                  scale: { start: 1, end: 0.2 },
+                  lifespan: 1200,
+                  quantity: 20,
+                  tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00],
+                  rotate: { min: 0, max: 360 },
+                  gravityY: 150,
+                });
+                c.emitParticleAt(randInt(100, W - 100), 50);
+                this.time.delayedCall(1500, () => c.destroy());
+              });
+            }
+          }
+        }
+
+        // Title
+        const titleText = this.add
+          .text(cx, 40, won ? "LEVEL COMPLETE!" : "GAME OVER", {
+            fontSize: "42px",
+            fontStyle: "bold",
+            color: won ? "#22cc66" : "#ff4444",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleText,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+        });
+
+        if (d.bossDefeated) {
+          this.add
+            .text(cx, 80, "BOSS DEFEATED!", {
+              fontSize: "22px",
+              color: "#ff00ff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+        }
+
+        // Star rating
+        const starY = 95;
+        for (let i = 0; i < 3; i++) {
+          const sx = cx - 50 + i * 50;
+          const starImg = this.add
+            .image(sx, starY, "star_empty")
+            .setScale(1.2)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: starImg,
+            alpha: 1,
+            duration: 300,
+            delay: 400 + i * 200,
+          });
+
+          if (i < stars) {
+            const filledStar = this.add
+              .image(sx, starY, "star_big")
+              .setScale(0)
+              .setAlpha(0)
+              .setDepth(1);
+            this.tweens.add({
+              targets: filledStar,
+              alpha: 1,
+              scale: 1.2,
+              duration: 400,
+              delay: 600 + i * 300,
+              ease: "Back.easeOut",
+              onStart: () => {
+                // Star burst particles
+                const sp = this.add.particles(0, 0, "star_particle", {
+                  speed: { min: 30, max: 100 },
+                  scale: { start: 1, end: 0 },
+                  lifespan: 500,
+                  quantity: 8,
+                  tint: [0xffdd00, 0xff8800],
+                });
+                sp.emitParticleAt(sx, starY);
+                this.time.delayedCall(600, () => sp.destroy());
+              },
+            });
+          }
+        }
+
+        // NEW HIGH SCORE banner
+        if (isNewHighScore && d.score > 0) {
+          const hsText = this.add
+            .text(cx, 130, "NEW HIGH SCORE!", {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffdd00",
+              stroke: "#885500",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: hsText,
+            alpha: 1,
+            duration: 500,
+            delay: 1800,
+          });
+          this.tweens.add({
+            targets: hsText,
+            scaleX: { from: 1, to: 1.05 },
+            scaleY: { from: 1, to: 1.05 },
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            delay: 2000,
+          });
+        }
+
+        // Stats
+        const statsStartY = isNewHighScore && d.score > 0 ? 160 : 140;
+        const stats = [
+          { label: "Final Score", value: String(d.score), color: "#00ccff" },
+          {
+            label: "Best Score",
+            value: String(Math.max(d.score, prevBest)),
+            color: "#ffdd00",
+          },
+          {
+            label: "Correct Hits",
+            value: String(d.totalCorrect),
+            color: "#22cc66",
+          },
+          {
+            label: "Wrong Hits",
+            value: String(d.totalWrong),
+            color: "#ff4444",
+          },
+          { label: "Max Combo", value: `x${d.maxCombo}`, color: "#ffdd00" },
+          {
+            label: "Difficulty",
+            value: d.difficulty.toUpperCase(),
+            color: "#aaccff",
+          },
+        ];
+
+        stats.forEach((s, i) => {
+          const y = statsStartY + i * 48;
+          this.add.rectangle(cx, y, 350, 38, 0x1a2a4a, 0.8);
+          this.add
+            .text(cx - 140, y, s.label, { fontSize: "16px", color: "#88aacc" })
+            .setOrigin(0, 0.5);
+          const valText = this.add
+            .text(cx + 140, y, s.value, {
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: s.color,
+            })
+            .setOrigin(1, 0.5);
+          valText.setAlpha(0);
+          this.tweens.add({
+            targets: valText,
+            alpha: 1,
+            x: { from: cx + 180, to: cx + 140 },
+            duration: 400,
+            delay: i * 150,
+          });
+        });
+
+        // Grade
+        const grade =
+          pct >= 90
+            ? "A+"
+            : pct >= 80
+              ? "A"
+              : pct >= 70
+                ? "B"
+                : pct >= 60
+                  ? "C"
+                  : "D";
+        const gradeColor =
+          pct >= 80 ? "#22cc66" : pct >= 60 ? "#ffaa00" : "#ff4444";
+
+        const gradeY = statsStartY + stats.length * 48 + 25;
+        const gradeText = this.add
+          .text(cx, gradeY, grade, {
+            fontSize: "52px",
+            fontStyle: "bold",
+            color: gradeColor,
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.3);
+        this.tweens.add({
+          targets: gradeText,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          delay: stats.length * 150 + 200,
+          ease: "Back.easeOut",
+        });
+        this.add
+          .text(cx, gradeY + 35, `${Math.round(pct)}% Accuracy`, {
+            fontSize: "16px",
+            color: "#aaccff",
+          })
+          .setOrigin(0.5);
+
+        // Buttons with hover effects
+        const btnY = gradeY + 75;
+        const retryBtn = this.add
+          .rectangle(cx - 90, btnY, 160, 46, 0x00ccff)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx - 90, btnY, "PLAY AGAIN", {
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#001133",
+          })
+          .setOrigin(0.5);
+
+        retryBtn.on("pointerover", () => {
+          retryBtn.setFillStyle(0x33ddff);
+          this.tweens.add({
+            targets: retryBtn,
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 100,
+          });
+        });
+        retryBtn.on("pointerout", () => {
+          retryBtn.setFillStyle(0x00ccff);
+          this.tweens.add({
+            targets: retryBtn,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 100,
+          });
+        });
+        retryBtn.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () =>
+            this.scene.start("Transition", {
+              difficulty: d.difficulty,
+              text: "ROUND 2!",
+            }),
+          );
+        });
+
+        const menuBtn = this.add
+          .rectangle(cx + 90, btnY, 160, 46, 0x334466)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 90, btnY, "MAIN MENU", {
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#aaccff",
+          })
+          .setOrigin(0.5);
+        menuBtn.on("pointerover", () => {
+          menuBtn.setFillStyle(0x445577);
+          this.tweens.add({
+            targets: menuBtn,
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 100,
+          });
+        });
+        menuBtn.on("pointerout", () => {
+          menuBtn.setFillStyle(0x334466);
+          this.tweens.add({
+            targets: menuBtn,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 100,
+          });
+        });
+        menuBtn.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () => this.scene.start("Title"));
+        });
+
+        this.cameras.main.fadeIn(600);
+      };
+
+      // ── Launch ──
+      const game = new Phaser.Game(config);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

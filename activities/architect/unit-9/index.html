@@ -1,0 +1,2105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 9 — City Grid Engineer | Integers &amp; the Coordinate Plane
+      (6.NS.C.5–8)
+    </title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px 16px 72px;
+      }
+
+      /* ── Learning target ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #e9f6ff;
+        background:
+          radial-gradient(
+            1100px 280px at 82% -40%,
+            rgba(56, 189, 248, 0.45),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #0c2237, #050d1a);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+      }
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #7fd9f5;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #bfe6f6;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #eaf6ff;
+      }
+
+      /* ── Design-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #d6ecfb;
+        background: rgba(56, 189, 248, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7fd9f5;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
+        font-weight: 700;
+        color: #eaf6ff;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #33d6a6, #38bdf8);
+        transition: width 0.3s ease;
+      }
+
+      /* ── Cards / tasks ── */
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+      }
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Blueprint / map ── */
+      .bp {
+        background: #061327;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #7fd9f5;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      /* grid + axes */
+      .ax-grid {
+        stroke: rgba(127, 217, 245, 0.16);
+        stroke-width: 1;
+      }
+      .ax-axis {
+        stroke: #cfe9ff;
+        stroke-width: 2;
+      }
+      .ax-tick {
+        fill: #9fc6e0;
+        font:
+          600 9px ui-monospace,
+          monospace;
+      }
+      .ax-qlabel {
+        fill: rgba(127, 217, 245, 0.55);
+        font:
+          700 13px ui-monospace,
+          monospace;
+      }
+      .ax-arrow {
+        fill: #cfe9ff;
+      }
+      .pt {
+        stroke: #061327;
+        stroke-width: 1.5;
+      }
+      .pt-a {
+        fill: #33d6a6;
+      }
+      .pt-b {
+        fill: #38bdf8;
+      }
+      .pt-c {
+        fill: #fbbf24;
+      }
+      .pt-d {
+        fill: #f472b6;
+      }
+      .pt-label {
+        fill: #eaf6ff;
+        font:
+          700 12px system-ui,
+          sans-serif;
+      }
+      .pt-sub {
+        fill: #b9d6ea;
+        font:
+          600 10px ui-monospace,
+          monospace;
+      }
+      .dist-line {
+        stroke: #fbbf24;
+        stroke-width: 2.5;
+        stroke-dasharray: 6 4;
+      }
+      .mirror-line {
+        stroke: #f472b6;
+        stroke-width: 1.6;
+        stroke-dasharray: 4 4;
+      }
+
+      /* ── Number line ── */
+      .nl-axis {
+        stroke: #cfe9ff;
+        stroke-width: 2;
+      }
+      .nl-tick {
+        stroke: rgba(207, 233, 255, 0.5);
+        stroke-width: 1;
+      }
+      .nl-num {
+        fill: #9fc6e0;
+        font:
+          600 11px ui-monospace,
+          monospace;
+      }
+      .nl-pt {
+        stroke: #061327;
+        stroke-width: 1.5;
+      }
+      .nl-lab {
+        fill: #eaf6ff;
+        font:
+          700 11px system-ui,
+          sans-serif;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 130px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q input.short {
+        width: 92px;
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(155, 108, 255, 0.12);
+        border: 1px solid rgba(155, 108, 255, 0.45);
+      }
+      .lvl2 .pill {
+        background: #7b4fd0;
+      }
+      .lvl3 {
+        background: rgba(56, 189, 248, 0.14);
+        border: 1px solid rgba(56, 189, 248, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Placement / chooser pad ── */
+      .padgrid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
+      }
+      @media (max-width: 560px) {
+        .padgrid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .padcard {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      .padcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+      }
+      .padcard b {
+        font-size: 15px;
+      }
+      .padcard small {
+        color: var(--nt-muted);
+        display: block;
+      }
+
+      /* ── Readout + table ── */
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+      table.bt {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      table.bt th,
+      table.bt td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
+        text-align: left;
+        font-size: 15px;
+      }
+      table.bt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+      table.bt input {
+        font: inherit;
+        width: 110px;
+        font-weight: 700;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        margin-top: 6px;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 480px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      #ntkit {
+        margin-top: 18px;
+      }
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      @media print {
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn {
+          display: none !important;
+        }
+        .wrap {
+          padding-bottom: 0;
+        }
+        .card {
+          break-inside: avoid;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+
+  <body class="nt-theme-aware">
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <div class="wrap">
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>
+            I can plot and name points with integer and rational coordinates in
+            all four quadrants of the coordinate plane.
+          </li>
+          <li>
+            I can compare and order positive and negative numbers (like
+            elevations) and explain what the order means in a real situation.
+          </li>
+          <li>
+            I can use absolute value to describe size or distance from zero
+            (such as depth below sea level).
+          </li>
+          <li>
+            I can find the distance between two points that share the same x- or
+            y-coordinate by using coordinates and absolute value.
+          </li>
+          <li>
+            I can reflect a point across the x-axis or y-axis and predict how
+            the signs of its coordinates change.
+          </li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standards: CCSS 6.NS.C.5–8</span>
+          <span>Time: ~45 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief." Anchor the map
+              scale: "1 grid square = 1 city block, and (0, 0) is City Hall."
+              Model naming one landmark by reading across (x) then up/down (y).
+            </li>
+            <li>
+              <strong>Design work (30–35 min):</strong> Students complete Task 1
+              → 5 in order. Task 5 (Sign-off) summarizes the plan; Tasks 2–4 can
+              be checked as they go.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Discuss why subway distance
+              uses absolute value, and how a reflection across an axis flips
+              exactly one sign.
+            </li>
+          </ul>
+          <h3>Differentiation</h3>
+          <ul>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and
+              bilingual (EN/ES) prompts. Provide a printed four-quadrant grid.
+              Encourage "right/left first, then up/down" finger tracing.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Have students justify the
+              elevation ordering with a number line, generalize the reflection
+              rule in words, and find a route distance that requires two
+              same-line segments (an L-shaped subway path).
+            </li>
+          </ul>
+          <h3>STEM Connection</h3>
+          <ul>
+            <li>
+              This is an authentic GIS / urban-planning task: city planners,
+              surveyors, and transit engineers locate everything on a coordinate
+              grid (like latitude/longitude or a city block grid), record
+              elevations as signed numbers, and compute straight-line block
+              distances with coordinates — exactly the workflow students use
+              here.
+            </li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag"
+          >Unit 9 · Math Architect · Integers &amp; the Coordinate Plane
+          (6.NS.C.5–8)</span
+        >
+        <h1>Design Challenge: City Grid Engineer</h1>
+        <p class="lede">
+          You are the lead planner for <strong>Gridport</strong>, a new smart
+          city. Every street, park, and station is mapped on a four-quadrant
+          coordinate grid centered on City Hall at <strong>(0, 0)</strong>. Use
+          coordinates, integers, absolute value, distance, and reflections to
+          lay out the city, log elevations, route the subway, and mirror a
+          matching district — then sign off your master plan.
+        </p>
+        <div class="badges">
+          <span class="badge">Standard 6.NS.C.5–8</span>
+          <span class="badge">Four Quadrants</span>
+          <span class="badge">Absolute Value</span>
+          <span class="badge">Distance on the Plane</span>
+          <span class="badge">Reflections</span>
+        </div>
+        <div class="cycle">
+          <div>
+            <b>1 · Locate</b>Name landmark coordinates in all 4 quadrants.
+          </div>
+          <div><b>2 · Rank</b>Order elevations &amp; use absolute value.</div>
+          <div><b>3 · Route</b>Measure subway distance with coordinates.</div>
+          <div><b>4 · Mirror</b>Reflect a district across an axis.</div>
+          <div><b>5 · Sign off</b>Summarize the master plan.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Plan checks approved: <span id="pcount">0</span> / 11
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="11"
+            aria-label="Plan checks approved"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          The city engineering office handed you the official Gridport site map.
+          Read every coordinate the same way:
+        </p>
+        <p class="scale">
+          MAP RULE&nbsp; (x, y) = (blocks right/left, blocks up/down) from City
+          Hall (0, 0)&nbsp; ·&nbsp; 1 grid square = 1 city block
+        </p>
+        <div class="grid3">
+          <div class="lvl lvl1" style="margin-top: 0">
+            <b>Deliverable 1</b><br />Name &amp; plot landmark coordinates
+            across all four quadrants.
+          </div>
+          <div class="lvl lvl2" style="margin-top: 0">
+            <b>Deliverable 2</b><br />Order elevations and route the subway with
+            distance + absolute value.
+          </div>
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 3</b><br />Reflect the matching district and sign off
+            the master plan.
+          </div>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            A coordinate <strong>(x, y)</strong> tells you two moves from the
+            center. The <strong>x</strong> tells you right (+) or left (−). The
+            <strong>y</strong> tells you up (+) or down (−). Always do the
+            x-move first, then the y-move.
+          </p>
+          <span class="es"
+            >Español: Una coordenada <strong>(x, y)</strong> da dos movimientos
+            desde el centro. La <strong>x</strong> va a la derecha (+) o
+            izquierda (−). La <strong>y</strong> va arriba (+) o abajo (−).
+            Muévete primero en x, luego en y.</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ TASK 1 · LOCATE LANDMARKS ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · Locate the Landmarks
+          <span class="tag-shape">Four quadrants</span>
+        </h2>
+        <p>
+          Four key landmarks are already marked on the city map. Read each
+          point's coordinates straight off the grid and record them. Watch the
+          signs in each quadrant.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 360"
+              role="img"
+              aria-label="Four-quadrant coordinate grid from negative 8 to positive 8 on both axes. Green Park is at left 5, up 4 in Quadrant 2. Blue Station is at right 6, up 3 in Quadrant 1. Gold Stadium is at right 4, down 5 in Quadrant 4. Pink Market is at left 3, down 6 in Quadrant 3."
+            >
+              <!-- grid lines every 20px = 1 block; center at 180,180; 8 blocks each way -->
+              <g class="ax-grid" id="gridLines1"></g>
+              <!-- axes -->
+              <line x1="20" y1="180" x2="340" y2="180" class="ax-axis" />
+              <line x1="180" y1="20" x2="180" y2="340" class="ax-axis" />
+              <polygon points="340,180 330,175 330,185" class="ax-arrow" />
+              <polygon points="180,20 175,30 185,30" class="ax-arrow" />
+              <text x="332" y="172" class="ax-tick">x</text>
+              <text x="186" y="32" class="ax-tick">y</text>
+              <!-- quadrant labels -->
+              <text x="250" y="100" class="ax-qlabel">I</text>
+              <text x="104" y="100" class="ax-qlabel">II</text>
+              <text x="104" y="266" class="ax-qlabel">III</text>
+              <text x="250" y="266" class="ax-qlabel">IV</text>
+              <!-- a few axis numbers -->
+              <text x="216" y="176" class="ax-tick">2</text>
+              <text x="256" y="176" class="ax-tick">4</text>
+              <text x="296" y="176" class="ax-tick">6</text>
+              <text x="132" y="176" class="ax-tick">-2</text>
+              <text x="92" y="176" class="ax-tick">-4</text>
+              <text x="184" y="146" class="ax-tick">2</text>
+              <text x="184" y="106" class="ax-tick">4</text>
+              <text x="184" y="226" class="ax-tick">-2</text>
+              <text x="184" y="266" class="ax-tick">-4</text>
+              <!-- Green Park (-5, 4) → x=180-100=80, y=180-80=100 -->
+              <circle cx="80" cy="100" r="7" class="pt pt-a" />
+              <text x="90" y="96" class="pt-label">Park</text>
+              <text x="90" y="110" class="pt-sub">Quadrant II</text>
+              <!-- Blue Station (6, 3) → x=180+120=300, y=180-60=120 -->
+              <circle cx="300" cy="120" r="7" class="pt pt-b" />
+              <text x="252" y="116" class="pt-label">Station</text>
+              <text x="262" y="130" class="pt-sub">Quad I</text>
+              <!-- Gold Stadium (4, -5) → x=180+80=260, y=180+100=280 -->
+              <circle cx="260" cy="280" r="7" class="pt pt-c" />
+              <text x="270" y="284" class="pt-label">Stadium</text>
+              <text x="270" y="298" class="pt-sub">Quad IV</text>
+              <!-- Pink Market (-3, -6) → x=180-60=120, y=180+120=300 -->
+              <circle cx="120" cy="300" r="7" class="pt pt-d" />
+              <text x="40" y="304" class="pt-label">Market</text>
+              <text x="40" y="318" class="pt-sub">Quad III</text>
+            </svg>
+            <div class="bp-cap">
+              <span>Gridport official site map</span
+              ><span>1 square = 1 block</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="park">
+              <p class="lbl">
+                Q1.1 — Coordinates of <strong>Green Park</strong>
+              </p>
+              <div class="row">
+                <span class="unit">(</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-park-x"
+                  data-ans="-5"
+                  aria-label="Park x-coordinate"
+                />
+                <span class="unit">,</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-park-y"
+                  data-ans="4"
+                  aria-label="Park y-coordinate"
+                />
+                <span class="unit">)</span>
+                <button type="button" class="btn" data-check="park">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="park">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-park"></p>
+            </div>
+            <div class="q" data-q="stadium">
+              <p class="lbl">
+                Q1.2 — Coordinates of <strong>Gold Stadium</strong>
+              </p>
+              <div class="row">
+                <span class="unit">(</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-stadium-x"
+                  data-ans="4"
+                  aria-label="Stadium x-coordinate"
+                />
+                <span class="unit">,</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-stadium-y"
+                  data-ans="-5"
+                  aria-label="Stadium y-coordinate"
+                />
+                <span class="unit">)</span>
+                <button type="button" class="btn" data-check="stadium">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="stadium">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-stadium"></p>
+            </div>
+            <div class="q" data-q="quad">
+              <p class="lbl">
+                Q1.3 — <strong>Pink Market</strong> is at (−3, −6). Which
+                quadrant is it in? (Type the number: 1, 2, 3, or 4.)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-quad"
+                  data-ans="3"
+                  aria-label="Quadrant number for Pink Market"
+                />
+                <button type="button" class="btn" data-check="quad">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="quad">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-quad"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Find each point by counting from the center. Right is +x, left
+                is −x. Up is +y, down is −y. Quadrants are numbered
+                counter-clockwise starting from the top-right:
+                <strong>I</strong> (+,+), <strong>II</strong> (−,+),
+                <strong>III</strong> (−,−), <strong>IV</strong> (+,−).
+              </p>
+              <span class="es"
+                >Español: Cuenta desde el centro. Derecha = +x, izquierda = −x,
+                arriba = +y, abajo = −y. Cuadrantes: I (+,+), II (−,+), III
+                (−,−), IV (+,−).</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 2 · ELEVATION ORDERING + ABSOLUTE VALUE ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · Elevation Survey
+          <span class="tag-shape">Compare · order · |absolute value|</span>
+        </h2>
+        <p>
+          Your survey crew logged the elevation of four sites in meters, where
+          <strong>0 = sea level</strong>. Positive means above sea level;
+          negative means below. Read the number line, then order them and use
+          absolute value.
+        </p>
+        <div class="bp" style="margin-bottom: 8px">
+          <svg
+            viewBox="0 0 720 130"
+            role="img"
+            aria-label="A number line from negative 8 to positive 8. Riverside Docks at negative 6. Old Harbor at negative 2. City Hall plaza at positive 1. Hilltop Reservoir at positive 5."
+          >
+            <line x1="40" y1="70" x2="680" y2="70" class="nl-axis" />
+            <polygon points="680,70 670,65 670,75" class="ax-arrow" />
+            <polygon points="40,70 50,65 50,75" class="ax-arrow" />
+            <g id="nlTicks"></g>
+            <!-- Docks -6 -->
+            <circle cx="160" cy="70" r="6" class="nl-pt pt-d" />
+            <text x="160" y="44" text-anchor="middle" class="nl-lab">
+              Docks
+            </text>
+            <text x="160" y="100" text-anchor="middle" class="nl-num">−6</text>
+            <!-- Harbor -2 -->
+            <circle cx="320" cy="70" r="6" class="nl-pt pt-a" />
+            <text x="320" y="44" text-anchor="middle" class="nl-lab">
+              Harbor
+            </text>
+            <text x="320" y="100" text-anchor="middle" class="nl-num">−2</text>
+            <!-- City Hall +1 -->
+            <circle cx="440" cy="70" r="6" class="nl-pt pt-b" />
+            <text x="440" y="44" text-anchor="middle" class="nl-lab">
+              Plaza
+            </text>
+            <text x="440" y="100" text-anchor="middle" class="nl-num">+1</text>
+            <!-- Reservoir +5 -->
+            <circle cx="600" cy="70" r="6" class="nl-pt pt-c" />
+            <text x="600" y="44" text-anchor="middle" class="nl-lab">
+              Reservoir
+            </text>
+            <text x="600" y="100" text-anchor="middle" class="nl-num">+5</text>
+          </svg>
+          <div class="bp-cap">
+            <span>Elevation survey · 0 = sea level</span><span>meters</span>
+          </div>
+        </div>
+        <div class="grid2">
+          <div>
+            <table class="bt" aria-label="Site elevation log">
+              <thead>
+                <tr>
+                  <th>Site</th>
+                  <th>Elevation (m)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Riverside Docks</td>
+                  <td>−6</td>
+                </tr>
+                <tr>
+                  <td>Old Harbor</td>
+                  <td>−2</td>
+                </tr>
+                <tr>
+                  <td>City Hall Plaza</td>
+                  <td>+1</td>
+                </tr>
+                <tr>
+                  <td>Hilltop Reservoir</td>
+                  <td>+5</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                On a number line, <strong>left is less</strong> and
+                <strong>right is more</strong>. So −6 &lt; −2 &lt; 1 &lt; 5.
+                <strong>Absolute value</strong> |n| is the distance from 0 — it
+                is never negative. |−6| = 6 because the Docks are 6 meters from
+                sea level.
+              </p>
+              <span class="es"
+                >Español: En la recta numérica, izquierda = menor, derecha =
+                mayor. El <strong>valor absoluto</strong> |n| es la distancia
+                desde 0 y nunca es negativo. |−6| = 6.</span
+              >
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="lowest">
+              <p class="lbl">
+                Q2.1 — Which site has the <strong>lowest</strong> elevation?
+                Type its elevation number (with sign).
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-lowest"
+                  data-ans="-6"
+                  aria-label="Lowest elevation"
+                />
+                <span class="unit">m</span>
+                <button type="button" class="btn" data-check="lowest">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="lowest">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-lowest"></p>
+            </div>
+            <div class="q" data-q="absdocks">
+              <p class="lbl">
+                Q2.2 — The Docks sit at −6 m. How far is that from sea level?
+                Find <strong>|−6|</strong>.
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-absdocks"
+                  data-ans="6"
+                  aria-label="Absolute value of negative six"
+                />
+                <span class="unit">m</span>
+                <button type="button" class="btn" data-check="absdocks">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="absdocks">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-absdocks"></p>
+            </div>
+            <div class="q" data-q="deeper">
+              <p class="lbl">
+                Q2.3 — A diver says "the Docks are <em>deeper below</em> sea
+                level than the Harbor." Compare distances: |−6| ___ |−2|. Type
+                the symbol <strong>&gt;</strong>, <strong>&lt;</strong>, or
+                <strong>=</strong>.
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  class="short"
+                  id="q-deeper"
+                  data-ans=">"
+                  aria-label="Compare absolute values"
+                />
+                <button type="button" class="btn" data-check="deeper">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="deeper">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-deeper"></p>
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Careful: −6 is <em>less than</em> −2 (it is colder / lower), but
+                |−6| is <em>greater than</em> |−2| (it is farther from sea
+                level). In one sentence, explain how a number can be smaller yet
+                have a larger absolute value.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 3 · SUBWAY ROUTE DISTANCE ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · Route the Subway
+          <span class="tag-shape">Distance on the plane</span>
+        </h2>
+        <p>
+          The new subway runs in straight blocks. Find how many blocks long each
+          straight segment is by using the coordinates — when two stops share an
+          x- or a y-value, the distance is the absolute value of the difference
+          of the <em>other</em> coordinates.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 360"
+              role="img"
+              aria-label="Coordinate grid. North Station at left 4, up 6. East Station at right 5, up 6, on the same horizontal line. South Station at right 5, down 3, straight below East Station. A dashed line shows the horizontal subway segment and another shows the vertical segment."
+            >
+              <g class="ax-grid" id="gridLines3"></g>
+              <line x1="20" y1="180" x2="340" y2="180" class="ax-axis" />
+              <line x1="180" y1="20" x2="180" y2="340" class="ax-axis" />
+              <polygon points="340,180 330,175 330,185" class="ax-arrow" />
+              <polygon points="180,20 175,30 185,30" class="ax-arrow" />
+              <text x="332" y="172" class="ax-tick">x</text>
+              <text x="186" y="32" class="ax-tick">y</text>
+              <text x="216" y="176" class="ax-tick">2</text>
+              <text x="296" y="176" class="ax-tick">6</text>
+              <text x="92" y="176" class="ax-tick">-4</text>
+              <text x="184" y="106" class="ax-tick">4</text>
+              <text x="184" y="246" class="ax-tick">-3</text>
+              <!-- North (-4, 6): x=180-80=100, y=180-120=60 -->
+              <!-- East (5, 6):  x=180+100=280, y=60  (same y) -->
+              <!-- South (5, -3): x=280, y=180+60=240 (same x as East) -->
+              <line x1="100" y1="60" x2="280" y2="60" class="dist-line" />
+              <line x1="280" y1="60" x2="280" y2="240" class="dist-line" />
+              <circle cx="100" cy="60" r="7" class="pt pt-a" />
+              <text x="20" y="56" class="pt-label">North</text>
+              <text x="20" y="70" class="pt-sub">(−4, 6)</text>
+              <circle cx="280" cy="60" r="7" class="pt pt-b" />
+              <text x="288" y="56" class="pt-label">East</text>
+              <text x="288" y="70" class="pt-sub">(5, 6)</text>
+              <circle cx="280" cy="240" r="7" class="pt pt-c" />
+              <text x="288" y="244" class="pt-label">South</text>
+              <text x="288" y="258" class="pt-sub">(5, −3)</text>
+            </svg>
+            <div class="bp-cap">
+              <span>Subway plan · straight-block segments</span
+              ><span>1 square = 1 block</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="seg1">
+              <p class="lbl">
+                Q3.1 — <strong>North (−4, 6) → East (5, 6)</strong>. Same y, so
+                distance = |5 − (−4)|. How many blocks?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-seg1"
+                  data-ans="9"
+                  aria-label="North to East distance"
+                />
+                <span class="unit">blocks</span>
+                <button type="button" class="btn" data-check="seg1">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="seg1">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-seg1"></p>
+            </div>
+            <div class="q" data-q="seg2">
+              <p class="lbl">
+                Q3.2 — <strong>East (5, 6) → South (5, −3)</strong>. Same x, so
+                distance = |6 − (−3)|. How many blocks?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-seg2"
+                  data-ans="9"
+                  aria-label="East to South distance"
+                />
+                <span class="unit">blocks</span>
+                <button type="button" class="btn" data-check="seg2">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="seg2">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-seg2"></p>
+            </div>
+            <div class="q" data-q="route">
+              <p class="lbl">
+                Q3.3 — Total subway length = segment 1 + segment 2. How many
+                blocks of track in all?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-route"
+                  data-ans="18"
+                  aria-label="Total subway length"
+                />
+                <span class="unit">blocks</span>
+                <button type="button" class="btn" data-check="route">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="route">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-route"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Same row (same y)? Subtract the x-values and take the absolute
+                value. Same column (same x)? Subtract the y-values and take the
+                absolute value. Subtracting a negative is the same as adding: 5
+                − (−4) = 5 + 4 = 9.
+              </p>
+              <span class="es"
+                >Español: Misma fila (misma y): resta las x y toma el valor
+                absoluto. Misma columna (misma x): resta las y. Restar un
+                negativo es sumar: 5 − (−4) = 9.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                A rider wants to go straight from North (−4, 6) to South (5,
+                −3), but no diagonal track exists. Why must the train ride both
+                segments (9 + 9 = 18 blocks) instead of a shorter diagonal?
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 4 · REFLECT THE DISTRICT ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · Mirror the District
+          <span class="tag-shape">Reflections</span>
+        </h2>
+        <p>
+          The Riverside district sits at <strong>R = (3, 5)</strong>. The plan
+          calls for a twin district that is its <strong>mirror image</strong>.
+          Reflect the point, then check the picture. Pick the axis on the pad,
+          see the reflection update, and answer the coordinate questions.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 360"
+              role="img"
+              aria-label="Coordinate grid showing Riverside district at right 3, up 5 in Quadrant 1, and its reflected twin which moves when you choose an axis."
+            >
+              <g class="ax-grid" id="gridLines4"></g>
+              <line
+                x1="20"
+                y1="180"
+                x2="340"
+                y2="180"
+                class="ax-axis"
+                id="xAxisLine"
+              />
+              <line
+                x1="180"
+                y1="20"
+                x2="180"
+                y2="340"
+                class="ax-axis"
+                id="yAxisLine"
+              />
+              <polygon points="340,180 330,175 330,185" class="ax-arrow" />
+              <polygon points="180,20 175,30 185,30" class="ax-arrow" />
+              <text x="332" y="172" class="ax-tick">x</text>
+              <text x="186" y="32" class="ax-tick">y</text>
+              <!-- mirror highlight line (set by JS) -->
+              <line
+                id="mirrorLine"
+                class="mirror-line"
+                x1="180"
+                y1="20"
+                x2="180"
+                y2="340"
+              />
+              <!-- R (3,5): x=180+60=240, y=180-100=80 -->
+              <circle cx="240" cy="80" r="7" class="pt pt-b" />
+              <text x="248" y="76" class="pt-label">R (3, 5)</text>
+              <!-- reflected point, positioned by JS -->
+              <circle id="rImg" cx="120" cy="80" r="7" class="pt pt-d" />
+              <text id="rImgLabel" x="40" y="76" class="pt-label">R′</text>
+            </svg>
+            <div class="bp-cap">
+              <span>Riverside &amp; its mirror twin</span
+              ><span>1 square = 1 block</span>
+            </div>
+          </div>
+          <div>
+            <h3>Choose the mirror axis</h3>
+            <div
+              class="padgrid"
+              id="axisPad"
+              role="group"
+              aria-label="Reflection axis options"
+              style="grid-template-columns: 1fr 1fr"
+            >
+              <button
+                type="button"
+                class="padcard"
+                data-axis="y"
+                aria-pressed="true"
+              >
+                <b>Reflect across y-axis</b>
+                <small>flips left ↔ right (x changes sign)</small>
+              </button>
+              <button
+                type="button"
+                class="padcard"
+                data-axis="x"
+                aria-pressed="false"
+              >
+                <b>Reflect across x-axis</b>
+                <small>flips up ↔ down (y changes sign)</small>
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Original R</span><br /><span class="v"
+                  >(3, 5)</span
+                >
+              </div>
+              <div>
+                <span class="k">Mirror axis</span><br /><span
+                  class="v"
+                  id="axisName"
+                  >y-axis</span
+                >
+              </div>
+              <div>
+                <span class="k">Image R′</span><br /><span
+                  class="v"
+                  id="rImgRead"
+                  >(−3, 5)</span
+                >
+              </div>
+            </div>
+
+            <div class="q" data-q="reflectY">
+              <p class="lbl">
+                Q4.1 — Reflect R = (3, 5) across the <strong>y-axis</strong>.
+                What are the coordinates of R′? (Format: x, y)
+              </p>
+              <div class="row">
+                <span class="unit">(</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-reflectY-x"
+                  data-ans="-3"
+                  aria-label="Reflected x across y-axis"
+                />
+                <span class="unit">,</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-reflectY-y"
+                  data-ans="5"
+                  aria-label="Reflected y across y-axis"
+                />
+                <span class="unit">)</span>
+                <button type="button" class="btn" data-check="reflectY">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="reflectY">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-reflectY"></p>
+            </div>
+            <div class="q" data-q="reflectX">
+              <p class="lbl">
+                Q4.2 — Now reflect R = (3, 5) across the <strong>x-axis</strong>
+                instead. What are the coordinates of R′? (Format: x, y)
+              </p>
+              <div class="row">
+                <span class="unit">(</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-reflectX-x"
+                  data-ans="3"
+                  aria-label="Reflected x across x-axis"
+                />
+                <span class="unit">,</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  class="short"
+                  id="q-reflectX-y"
+                  data-ans="-5"
+                  aria-label="Reflected y across x-axis"
+                />
+                <span class="unit">)</span>
+                <button type="button" class="btn" data-check="reflectX">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="reflectX">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-reflectX"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                A reflection flips a point to the opposite side of the mirror
+                line. Across the <strong>y-axis</strong>: keep y, change the
+                sign of x. Across the <strong>x-axis</strong>: keep x, change
+                the sign of y. Only one number changes sign.
+              </p>
+              <span class="es"
+                >Español: Reflejar sobre el eje y: conserva la y, cambia el
+                signo de la x. Sobre el eje x: conserva la x, cambia el signo de
+                la y. Solo un número cambia de signo.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Reflect R across the y-axis, then reflect that image across the
+                x-axis. Where does R end up, and what single move from (3, 5)
+                would get there in one step?
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 5 · MASTER PLAN SIGN-OFF ══ -->
+      <section class="card" aria-labelledby="t5h">
+        <h2 id="t5h">
+          Task 5 · Master Plan Summary
+          <span class="tag-shape">Pull it together</span>
+        </h2>
+        <p>
+          Fill in the official summary line so the city council can read your
+          plan at a glance. Use your earlier answers.
+        </p>
+        <div class="readout">
+          <div>
+            <span class="k">Lowest site</span><br /><span
+              class="v big"
+              id="sumLow"
+              >—</span
+            >
+          </div>
+          <div>
+            <span class="k">Subway track</span><br /><span
+              class="v big"
+              id="sumRoute"
+              >—</span
+            >
+          </div>
+          <div>
+            <span class="k">Mirror twin (y-axis)</span><br /><span
+              class="v big"
+              id="sumMirror"
+              >—</span
+            >
+          </div>
+        </div>
+        <p class="muted" style="margin-bottom: 0">
+          Check your work in Tasks 2–4, then press
+          <strong>Update summary</strong> to fill this board before you submit.
+        </p>
+        <button
+          type="button"
+          class="btn"
+          id="summaryBtn"
+          style="margin-top: 10px"
+        >
+          Update summary
+        </button>
+      </section>
+
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Engineer sign-off">
+        <h2>City Engineer's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When every plan check is approved, file your master plan with the
+          city. Enter your name in the field below, then press
+          <strong>Submit plan &amp; grade</strong> to save your score as a PDF
+          or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit plan &amp; grade
+        </button>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — City Grid Engineer (6.NS.C.5–8)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>10–11 / 11</td>
+                <td>
+                  Names coordinates in all four quadrants, orders signed
+                  elevations and applies absolute value correctly, computes
+                  same-line distances, and reflects across both axes. Can
+                  explain the difference between order and absolute value and
+                  generalize the reflection rule.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>8–9 / 11</td>
+                <td>
+                  Correctly handles most plan checks with at most two sign or
+                  arithmetic slips. Completes the route and at least one
+                  reflection accurately.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>5–7 / 11</td>
+                <td>
+                  Plots and names simple points but mixes up quadrant signs, or
+                  confuses "less than" with absolute value, or changes both
+                  signs in a reflection. Partial distance work.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–4 / 11</td>
+                <td>
+                  Few correct coordinates. Misreads signs or the grid. Needs
+                  reteaching on plotting, integers, and absolute value.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
+        }
+        function clean(s) {
+          return String(s == null ? "" : s).trim();
+        }
+        function numEq(a, b) {
+          var x = parseFloat(String(a).replace(/[\s,]/g, ""));
+          var y = parseFloat(String(b).replace(/[\s,]/g, ""));
+          return !isNaN(x) && !isNaN(y) && x === y;
+        }
+
+        /* ── Draw grid lines for each map (8 blocks each way, 20px/block) ── */
+        function buildGrid(id) {
+          var g = document.getElementById(id);
+          if (!g) return;
+          var parts = "";
+          for (var i = 1; i <= 8; i++) {
+            var off = i * 20;
+            // vertical lines right & left
+            parts +=
+              '<line x1="' +
+              (180 + off) +
+              '" y1="20" x2="' +
+              (180 + off) +
+              '" y2="340"/>';
+            parts +=
+              '<line x1="' +
+              (180 - off) +
+              '" y1="20" x2="' +
+              (180 - off) +
+              '" y2="340"/>';
+            // horizontal lines up & down
+            parts +=
+              '<line x1="20" y1="' +
+              (180 - off) +
+              '" x2="340" y2="' +
+              (180 - off) +
+              '"/>';
+            parts +=
+              '<line x1="20" y1="' +
+              (180 + off) +
+              '" x2="340" y2="' +
+              (180 + off) +
+              '"/>';
+          }
+          g.innerHTML = parts;
+        }
+        ["gridLines1", "gridLines3", "gridLines4"].forEach(buildGrid);
+
+        /* ── Number-line ticks for Task 2 ── */
+        (function buildNL() {
+          var g = document.getElementById("nlTicks");
+          if (!g) return;
+          var parts = "";
+          // line spans 40..680 px = -8..+8 → 40px per unit; 0 at x=400
+          // hardcoded SVG labels (-6, -2, +1, +5) already annotate the points;
+          // here we only draw scale ticks (major every 2 units, minor every 1).
+          for (var v = -8; v <= 8; v++) {
+            var x = 400 + v * 40;
+            var major = v % 2 === 0;
+            parts +=
+              '<line x1="' +
+              x +
+              '" y1="' +
+              (major ? 61 : 65) +
+              '" x2="' +
+              x +
+              '" y2="79" class="nl-tick"/>';
+          }
+          g.innerHTML = parts;
+        })();
+
+        /* ── Auto-graded problems ── */
+        // Each problem: id, list of input ids + expected answers, skill, prompt, why
+        var problems = [
+          {
+            id: "park",
+            inputs: ["q-park-x", "q-park-y"],
+            skill: "Plotting in four quadrants",
+            prompt: "Green Park coordinates",
+            ans: "(-5, 4)",
+            why: "Green Park is 5 left, 4 up → (−5, 4), Quadrant II.",
+          },
+          {
+            id: "stadium",
+            inputs: ["q-stadium-x", "q-stadium-y"],
+            skill: "Plotting in four quadrants",
+            prompt: "Gold Stadium coordinates",
+            ans: "(4, -5)",
+            why: "Gold Stadium is 4 right, 5 down → (4, −5), Quadrant IV.",
+          },
+          {
+            id: "quad",
+            inputs: ["q-quad"],
+            skill: "Identifying quadrants",
+            prompt: "Quadrant of (−3, −6)",
+            ans: "3",
+            why: "(−3, −6) is left and down → Quadrant III.",
+            compare: "num",
+          },
+          {
+            id: "lowest",
+            inputs: ["q-lowest"],
+            skill: "Ordering signed numbers",
+            prompt: "Lowest elevation",
+            ans: "-6",
+            why: "−6 is farthest left on the number line, so it is the lowest.",
+            compare: "num",
+          },
+          {
+            id: "absdocks",
+            inputs: ["q-absdocks"],
+            skill: "Absolute value",
+            prompt: "|−6|",
+            ans: "6",
+            why: "|−6| = 6 meters from sea level.",
+            compare: "num",
+          },
+          {
+            id: "deeper",
+            inputs: ["q-deeper"],
+            skill: "Absolute value comparison",
+            prompt: "Compare |−6| and |−2|",
+            ans: ">",
+            why: "|−6| = 6 and |−2| = 2, so |−6| > |−2|.",
+            compare: "sym",
+          },
+          {
+            id: "seg1",
+            inputs: ["q-seg1"],
+            skill: "Distance on the coordinate plane",
+            prompt: "North to East distance |5 − (−4)|",
+            ans: "9",
+            why: "Same y. |5 − (−4)| = |9| = 9 blocks.",
+            compare: "num",
+          },
+          {
+            id: "seg2",
+            inputs: ["q-seg2"],
+            skill: "Distance on the coordinate plane",
+            prompt: "East to South distance |6 − (−3)|",
+            ans: "9",
+            why: "Same x. |6 − (−3)| = |9| = 9 blocks.",
+            compare: "num",
+          },
+          {
+            id: "route",
+            inputs: ["q-route"],
+            skill: "Distance on the coordinate plane",
+            prompt: "Total subway track",
+            ans: "18",
+            why: "9 + 9 = 18 blocks of track.",
+            compare: "num",
+          },
+          {
+            id: "reflectY",
+            inputs: ["q-reflectY-x", "q-reflectY-y"],
+            skill: "Reflections across the y-axis",
+            prompt: "Reflect (3, 5) across y-axis",
+            ans: "(-3, 5)",
+            why: "Across the y-axis, keep y and change x's sign → (−3, 5).",
+          },
+          {
+            id: "reflectX",
+            inputs: ["q-reflectX-x", "q-reflectX-y"],
+            skill: "Reflections across the x-axis",
+            prompt: "Reflect (3, 5) across x-axis",
+            ans: "(3, -5)",
+            why: "Across the x-axis, keep x and change y's sign → (3, −5).",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+
+        function fields(p) {
+          return p.inputs.map(function (id) {
+            return document.getElementById(id);
+          });
+        }
+        function checkCorrect(p) {
+          var els = fields(p);
+          if (
+            els.some(function (e) {
+              return !e;
+            })
+          )
+            return false;
+          for (var i = 0; i < els.length; i++) {
+            var want = els[i].getAttribute("data-ans");
+            var got = clean(els[i].value);
+            if (p.compare === "sym") {
+              if (got !== want) return false;
+            } else {
+              if (!numEq(got, want)) return false;
+            }
+          }
+          return true;
+        }
+
+        function studentAnswer(p) {
+          var els = fields(p);
+          var vals = els.map(function (e) {
+            return clean(e.value);
+          });
+          if (els.length === 2) return "(" + vals[0] + ", " + vals[1] + ")";
+          return vals[0];
+        }
+
+        function paint() {
+          var n = 0;
+          problems.forEach(function (p) {
+            if (correct[p.id]) n++;
+          });
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width =
+            (n / problems.length) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var els = fields(p);
+          var fb = document.getElementById("fb-" + id);
+          var ok = checkCorrect(p);
+          els.forEach(function (e) {
+            if (!e) return;
+            e.classList.toggle("ok", ok);
+            e.classList.toggle("bad", !ok);
+          });
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Approved — " + p.why
+              : "✗ Not yet. Re-read the map, watch each sign, then try again.";
+          }
+          correct[id] = ok;
+          live(ok ? "Plan check approved." : "Not correct yet, try again.");
+          paint();
+        }
+
+        /* Hints */
+        var hints = {
+          park: "Count from the center: how many blocks left, then how many up? Left is negative x.",
+          stadium:
+            "Right is positive x; down is negative y. Read across first, then down.",
+          quad: "Both coordinates are negative. That corner is the bottom-left.",
+          lowest:
+            "On the number line, the lowest elevation is the one farthest to the left.",
+          absdocks:
+            "Absolute value is the distance from 0. How far is −6 from 0?",
+          deeper: "Compare 6 and 2 (the absolute values), not −6 and −2.",
+          seg1: "Same y-value, so distance is |5 − (−4)|. Remember 5 − (−4) = 5 + 4.",
+          seg2: "Same x-value, so distance is |6 − (−3)|. Remember 6 − (−3) = 6 + 3.",
+          route: "Add your two segment lengths together.",
+          reflectY: "Across the y-axis: keep y, flip the sign of x only.",
+          reflectX: "Across the x-axis: keep x, flip the sign of y only.",
+        };
+
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var fb = document.getElementById("fb-" + id);
+            if (fb && hints[id]) {
+              fb.className = "fb";
+              fb.textContent = "Hint: " + hints[id];
+            }
+          }
+        });
+
+        // Enter key checks the problem the input belongs to
+        problems.forEach(function (p) {
+          fields(p).forEach(function (el) {
+            if (!el) return;
+            el.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                check(p.id);
+              }
+            });
+          });
+        });
+
+        /* ── Task 4: reflection visual ── */
+        var R = { x: 3, y: 5 };
+        var axisPad = document.getElementById("axisPad");
+        var axisName = document.getElementById("axisName");
+        var rImgRead = document.getElementById("rImgRead");
+        var rImg = document.getElementById("rImg");
+        var rImgLabel = document.getElementById("rImgLabel");
+        var mirrorLine = document.getElementById("mirrorLine");
+
+        function px(x) {
+          return 180 + x * 20;
+        }
+        function py(y) {
+          return 180 - y * 20;
+        }
+
+        function setAxis(axis) {
+          var img;
+          if (axis === "y") {
+            img = { x: -R.x, y: R.y };
+            axisName.textContent = "y-axis";
+            mirrorLine.setAttribute("x1", 180);
+            mirrorLine.setAttribute("y1", 20);
+            mirrorLine.setAttribute("x2", 180);
+            mirrorLine.setAttribute("y2", 340);
+          } else {
+            img = { x: R.x, y: -R.y };
+            axisName.textContent = "x-axis";
+            mirrorLine.setAttribute("x1", 20);
+            mirrorLine.setAttribute("y1", 180);
+            mirrorLine.setAttribute("x2", 340);
+            mirrorLine.setAttribute("y2", 180);
+          }
+          rImgRead.textContent = "(" + img.x + ", " + img.y + ")";
+          rImg.setAttribute("cx", px(img.x));
+          rImg.setAttribute("cy", py(img.y));
+          var lx = px(img.x) + (img.x < 0 ? -50 : 10);
+          rImgLabel.setAttribute("x", lx);
+          rImgLabel.setAttribute("y", py(img.y) - 4);
+          rImgLabel.textContent = "R′ (" + img.x + ", " + img.y + ")";
+          live("Mirror image is now (" + img.x + ", " + img.y + ").");
+        }
+
+        if (axisPad) {
+          axisPad.querySelectorAll(".padcard").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              axisPad.querySelectorAll(".padcard").forEach(function (b) {
+                b.setAttribute("aria-pressed", "false");
+              });
+              btn.setAttribute("aria-pressed", "true");
+              setAxis(btn.getAttribute("data-axis"));
+            });
+          });
+        }
+        setAxis("y");
+
+        /* ── Task 5: summary board ── */
+        document
+          .getElementById("summaryBtn")
+          .addEventListener("click", function () {
+            var low = document.getElementById("q-lowest");
+            var route = document.getElementById("q-route");
+            var rx = document.getElementById("q-reflectY-x");
+            var ry = document.getElementById("q-reflectY-y");
+            document.getElementById("sumLow").textContent = clean(low.value)
+              ? clean(low.value) + " m"
+              : "—";
+            document.getElementById("sumRoute").textContent = clean(route.value)
+              ? clean(route.value) + " blocks"
+              : "—";
+            document.getElementById("sumMirror").textContent =
+              clean(rx.value) && clean(ry.value)
+                ? "(" + clean(rx.value) + ", " + clean(ry.value) + ")"
+                : "—";
+            live("Master plan summary updated.");
+          });
+
+        /* ── Mount NTKit + grade on submit ── */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var items = problems.map(function (p) {
+              return {
+                prompt: p.prompt,
+                studentAnswer: studentAnswer(p),
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
+            });
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-9",
+                activityTitle:
+                  "Unit 9 · Math Architect — City Grid Engineer (Integers & the Coordinate Plane)",
+                standard: "6.NS.C.5-8",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              alert("Plan submitted.");
+            }
+          });
+
+        paint();
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

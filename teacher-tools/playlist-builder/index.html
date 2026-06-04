@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neft Teacher Assignment / Playlist Builder</title>
+    <meta
+      name="description"
+      content="Local-first teacher tool: bundle chosen activities into a daily or weekly playlist and share one no-login student link that opens an ordered, clickable, check-off playlist."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="badge info"
+            >Local-first · no login · shareable link works offline</span
+          >
+          <h1 id="topTitle">Neft Teacher Playlist Builder</h1>
+          <p id="topSub">
+            Pick activities, put them in order, and get one student link. No
+            accounts, no student data leaves the device.
+          </p>
+        </div>
+        <button class="btn ghost" id="themeBtn" type="button">Theme</button>
+      </header>
+
+      <main class="main">
+        <!-- ====================== BUILDER (teacher) ====================== -->
+        <div id="builderRoot">
+          <section class="card">
+            <h2 class="card-title">1 · Name your playlist</h2>
+            <div class="meta-grid">
+              <div class="field">
+                <label class="field-label" for="plTitle">Playlist title</label>
+                <input
+                  type="text"
+                  id="plTitle"
+                  placeholder="e.g. Monday — Unit 5 Warm-up + Practice"
+                />
+              </div>
+              <div class="field">
+                <label class="field-label" for="plDate">Date (optional)</label>
+                <input type="date" id="plDate" />
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="plNote"
+                >Note for students (optional)</label
+              >
+              <textarea
+                id="plNote"
+                rows="2"
+                placeholder="e.g. Do these in order. Finish the game before the exit ticket."
+              ></textarea>
+            </div>
+          </section>
+
+          <div class="builder-grid">
+            <!-- ---- Catalog ---- -->
+            <section class="card">
+              <h2 class="card-title">2 · Add activities</h2>
+              <div class="field" style="margin-bottom: 10px">
+                <label class="field-label" for="search">Search</label>
+                <input
+                  type="search"
+                  id="search"
+                  placeholder="Search by title, type, unit, or standard…"
+                  aria-label="Search activities"
+                />
+              </div>
+              <div
+                class="tabs"
+                id="tabs"
+                role="tablist"
+                aria-label="Activity categories"
+              ></div>
+              <ul
+                class="catalog-list"
+                id="catalogList"
+                aria-label="Activity catalog"
+              ></ul>
+              <p
+                class="muted small"
+                id="catalogStatus"
+                style="margin: 8px 2px 0"
+              ></p>
+            </section>
+
+            <!-- ---- Current playlist ---- -->
+            <section class="card playlist-panel">
+              <h2 class="card-title">3 · Your playlist</h2>
+              <ul
+                class="playlist-items"
+                id="playlistItems"
+                aria-live="polite"
+              ></ul>
+              <p class="muted small" id="playlistEmpty">
+                No activities yet. Click “Add” on the left to build your
+                playlist.
+              </p>
+
+              <div class="share-box" id="shareBox" hidden>
+                <label class="field-label" for="shareLink"
+                  >Shareable student link</label
+                >
+                <input
+                  type="text"
+                  id="shareLink"
+                  readonly
+                  aria-label="Shareable student link"
+                />
+                <div class="row">
+                  <button class="btn primary" id="copyBtn" type="button">
+                    Copy link
+                  </button>
+                  <button class="btn" id="previewBtn" type="button">
+                    Preview student view
+                  </button>
+                  <button class="btn ghost" id="printBtn" type="button">
+                    Print
+                  </button>
+                  <span class="copied-flash" id="copiedFlash" hidden
+                    >Copied!</span
+                  >
+                </div>
+                <p class="muted small">
+                  The whole playlist is encoded in the link itself — no server,
+                  no login. Anyone with the link sees the ordered activities.
+                </p>
+              </div>
+
+              <div class="row" style="margin-top: 12px">
+                <button class="btn ghost" id="clearBtn" type="button">
+                  Clear playlist
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- ====================== STUDENT VIEW ====================== -->
+        <div id="studentRoot" hidden>
+          <section class="student-progress card">
+            <div
+              class="progress-track"
+              role="progressbar"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+              id="progressBar"
+            >
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p class="progress-label" id="progressLabel">0 of 0 done</p>
+          </section>
+          <div class="note-banner" id="studentNote" hidden></div>
+          <ol
+            class="student-list"
+            id="studentList"
+            aria-label="Your playlist"
+          ></ol>
+          <div
+            class="row no-print"
+            style="justify-content: center; margin-top: 22px"
+          >
+            <button class="btn ghost" id="resetProgressBtn" type="button">
+              Reset my check-offs
+            </button>
+          </div>
+        </div>
+      </main>
+
+      <footer class="foot">
+        Neft Teacher · Local-first playlist builder · No login · No student data
+        leaves this device
+      </footer>
+    </div>
+
+    <script src="./app.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>

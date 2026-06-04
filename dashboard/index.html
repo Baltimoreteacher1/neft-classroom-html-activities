@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neft Teacher Dashboard</title>
+    <link rel="icon" href="/assets/favicon.svg" />
+    <meta property="og:title" content="Neft Teacher Dashboard" />
+    <meta
+      property="og:description"
+      content="Neft Teacher dashboard — student progress and results across Grade 6 math activities."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Neft Teacher" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Neft Teacher Dashboard" />
+    <meta
+      name="twitter:description"
+      content="Neft Teacher dashboard — student progress and results across Grade 6 math activities."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #f8fafc;
+        --surface: #fff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --blue: #2563eb;
+        --green: #059669;
+        --purple: #7c3aed;
+        --orange: #ea580c;
+        --rose: #e11d48;
+        --teal: #0d9488;
+        --amber: #d97706;
+        --radius: 16px;
+      }
+      body {
+        font-family: Inter, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .header {
+        background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+        color: #fff;
+        padding: 2.5rem 1.5rem 2rem;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem 4rem;
+      }
+
+      .quick-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+      }
+      .quick-link {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.1rem;
+        text-decoration: none;
+        color: var(--text);
+        transition:
+          box-shadow 0.15s,
+          transform 0.15s;
+      }
+      .quick-link:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+      }
+      .quick-link .icon {
+        font-size: 1.6rem;
+        flex-shrink: 0;
+      }
+      .quick-link .label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+      .quick-link .sub {
+        font-size: 0.68rem;
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      .section {
+        margin-bottom: 2rem;
+      }
+      .section h2 {
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .section h2 .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 0.65rem;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.1rem;
+        text-decoration: none;
+        color: var(--text);
+        transition:
+          box-shadow 0.15s,
+          transform 0.15s;
+        display: block;
+      }
+      .card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+      }
+      .card h3 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 0.15rem;
+      }
+      .card p {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .card .tag {
+        display: inline-block;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.15rem 0.4rem;
+        border-radius: 5px;
+        margin-bottom: 0.4rem;
+      }
+
+      .tag-cf {
+        background: #fff7ed;
+        color: var(--orange);
+      }
+      .tag-tool {
+        background: #eff6ff;
+        color: var(--blue);
+      }
+      .tag-data {
+        background: #ecfdf5;
+        color: var(--green);
+      }
+      .tag-family {
+        background: #fdf2f8;
+        color: var(--rose);
+      }
+      .tag-activity {
+        background: #f5f3ff;
+        color: var(--purple);
+      }
+      .tag-engine {
+        background: #f0fdfa;
+        color: var(--teal);
+      }
+
+      .link-list {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .link-list a {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.35rem 0.7rem;
+        border-radius: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        text-decoration: none;
+        transition:
+          background 0.12s,
+          color 0.12s;
+      }
+      .link-list a:hover {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue);
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.7rem;
+        padding: 2rem 0;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+      }
+
+      @media (max-width: 600px) {
+        .quick-bar {
+          grid-template-columns: 1fr 1fr;
+        }
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Neft Teacher Dashboard</h1>
+      <p>Your one page for everything. Bookmark this.</p>
+    </div>
+
+    <div class="wrap">
+      <!-- QUICK ACCESS BAR -->
+      <div class="quick-bar">
+        <a
+          class="quick-link"
+          href="https://neft-classroom-html-activities.pages.dev"
+        >
+          <span class="icon">&#127979;</span>
+          <div>
+            <div class="label">Classroom Hub</div>
+            <div class="sub">All student activities</div>
+          </div>
+        </a>
+        <a class="quick-link" href="https://neft-teacher-app-library.pages.dev">
+          <span class="icon">&#128218;</span>
+          <div>
+            <div class="label">App Library</div>
+            <div class="sub">Student notebooks</div>
+          </div>
+        </a>
+        <a
+          class="quick-link"
+          href="https://neft-classroom-html-activities.pages.dev"
+        >
+          <span class="icon">&#9881;&#65039;</span>
+          <div>
+            <div class="label">Neft Teacher</div>
+            <div class="sub">Lesson plan pipeline</div>
+          </div>
+        </a>
+        <a class="quick-link" href="https://data-studio-3cb.pages.dev">
+          <span class="icon">&#128200;</span>
+          <div>
+            <div class="label">Data Studio</div>
+            <div class="sub">Classroom analytics</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- DEPLOYED SITES -->
+      <div class="section">
+        <h2>
+          <span class="dot" style="background: var(--orange)"></span> All
+          Deployed Sites
+        </h2>
+        <div class="card-grid">
+          <a
+            class="card"
+            href="https://neft-classroom-html-activities.pages.dev"
+          >
+            <span class="tag tag-cf">Cloudflare</span>
+            <h3>Classroom Hub</h3>
+            <p>
+              100+ math, language, and classroom activities organized by unit.
+            </p>
+          </a>
+          <a class="card" href="https://neft-teacher-app-library.pages.dev">
+            <span class="tag tag-cf">Cloudflare</span>
+            <h3>App Library</h3>
+            <p>Student notebook and assignment library.</p>
+          </a>
+          <a
+            class="card"
+            href="https://neft-classroom-html-activities.pages.dev"
+          >
+            <span class="tag tag-cf">Cloudflare</span>
+            <h3>Neft Teacher Pipeline</h3>
+            <p>Lesson plan and notebook generation engine.</p>
+          </a>
+          <a class="card" href="https://data-studio-3cb.pages.dev">
+            <span class="tag tag-cf">Cloudflare</span>
+            <h3>Data Studio</h3>
+            <p>Classroom data analysis and visualization.</p>
+          </a>
+          <a class="card" href="https://unit5worldarchitectureprojet.pages.dev">
+            <span class="tag tag-cf">Cloudflare</span>
+            <h3>World Architecture Project</h3>
+            <p>Unit 5 world architecture math project.</p>
+          </a>
+          <a class="card" href="https://fix-it-design-challenge.pages.dev">
+            <span class="tag tag-cf">Cloudflare</span>
+            <h3>Fix-It Design Challenge</h3>
+            <p>Design thinking challenge activity.</p>
+          </a>
+          <a class="card" href="https://widaaccess25-26.pages.dev">
+            <span class="tag tag-cf">Cloudflare</span>
+            <h3>WIDA ACCESS 25-26</h3>
+            <p>WIDA ACCESS test prep for multilingual learners.</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- TEACHER TOOLS -->
+      <div class="section">
+        <h2>
+          <span class="dot" style="background: var(--blue)"></span> Teacher
+          Tools &amp; Repos
+        </h2>
+        <div class="card-grid">
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/Teacherdatadashboard"
+          >
+            <span class="tag tag-data">Data</span>
+            <h3>Teacher Data Dashboard</h3>
+            <p>Student performance tracking dashboard.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/Quiz-Warmup-Engine"
+          >
+            <span class="tag tag-engine">Engine</span>
+            <h3>Quiz &amp; Warmup Engine</h3>
+            <p>Generate quizzes and warmup activities.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/student-practice-engine"
+          >
+            <span class="tag tag-engine">Engine</span>
+            <h3>Student Practice Engine</h3>
+            <p>Practice activity generation and delivery.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/math-explorer"
+          >
+            <span class="tag tag-tool">Tool</span>
+            <h3>Math Explorer</h3>
+            <p>Advanced math exploration tool.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/ESOLReading"
+          >
+            <span class="tag tag-activity">Activity</span>
+            <h3>Reading</h3>
+            <p>Reading comprehension activities.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/CorrelationPlayground"
+          >
+            <span class="tag tag-activity">Activity</span>
+            <h3>Correlation Playground</h3>
+            <p>Interactive scatter plot and correlation activity.</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- FAMILY -->
+      <div class="section">
+        <h2>
+          <span class="dot" style="background: var(--rose)"></span> Family
+          Projects
+        </h2>
+        <div class="card-grid">
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/EcologyNoam"
+          >
+            <span class="tag tag-family">Noam</span>
+            <h3>Ecology Study</h3>
+            <p>Ecology study activities.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/Noamsciencestudy"
+          >
+            <span class="tag tag-family">Noam</span>
+            <h3>Science Study</h3>
+            <p>Science study and review.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/Shaifractionssoccer"
+          >
+            <span class="tag tag-family">Shai</span>
+            <h3>Fractions Soccer</h3>
+            <p>Soccer-themed fractions game.</p>
+          </a>
+          <a
+            class="card"
+            href="https://github.com/Baltimoreteacher1/Leiaslpengine"
+          >
+            <span class="tag tag-family">Leia</span>
+            <h3>SLP Practice Engine</h3>
+            <p>Speech-language pathology practice.</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- ADMIN LINKS -->
+      <div class="section">
+        <h2>
+          <span class="dot" style="background: var(--muted)"></span> Admin Quick
+          Links
+        </h2>
+        <ul class="link-list">
+          <li>
+            <a
+              href="https://github.com/Baltimoreteacher1?tab=repositories&type=source&sort=pushed"
+              >GitHub Repos (active)</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/Baltimoreteacher1?tab=repositories&type=archived"
+              >GitHub Repos (archived)</a
+            >
+          </li>
+          <li>
+            <a href="https://dash.cloudflare.com">Cloudflare Dashboard</a>
+          </li>
+          <li><a href="https://vercel.com/dashboard">Vercel Dashboard</a></li>
+          <li>
+            <a
+              href="https://github.com/Baltimoreteacher1/neft-classroom-html-activities"
+              >Hub Repo (edit activities)</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/Baltimoreteacher1/neft-hub"
+              >App Library Repo</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/Baltimoreteacher1/neft-classroom-html-activities"
+              >Pipeline Repo</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer">
+        Neft Teacher Dashboard &middot; Bookmark
+        <strong>neft-classroom-html-activities.pages.dev/dashboard/</strong>
+      </div>
+    </div>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-chrome.js" defer></script>
+  </body>
+</html>

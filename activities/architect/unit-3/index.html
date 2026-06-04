@@ -1,0 +1,1964 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 3 — GreenLine Transit | Ratio Reasoning Design Challenge (6.RP)
+    </title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px 16px 72px;
+      }
+
+      /* ── Learning target ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #eafff5;
+        background:
+          radial-gradient(
+            1100px 280px at 82% -40%,
+            rgba(51, 214, 166, 0.45),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #0c2c2a, #07201c);
+        border: 1px solid rgba(51, 214, 166, 0.35);
+      }
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #79e8c4;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #bff0de;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #eafff5;
+      }
+
+      /* ── Design-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #d0f3e6;
+        background: rgba(51, 214, 166, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #79e8c4;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
+        font-weight: 700;
+        color: #eafff5;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #33d6a6, #6c8cff);
+        transition: width 0.3s ease;
+      }
+
+      /* ── Cards / tasks ── */
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+      }
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Blueprint / data panel ── */
+      .bp {
+        background: #07201c;
+        border: 1px solid rgba(51, 214, 166, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-grid {
+        stroke: rgba(51, 214, 166, 0.22);
+      }
+      .bp-axis {
+        stroke: #bff0de;
+        stroke-width: 2;
+      }
+      .bp-line {
+        fill: none;
+        stroke: #ffcc66;
+        stroke-width: 3;
+      }
+      .bp-line2 {
+        fill: none;
+        stroke: #6c8cff;
+        stroke-width: 3;
+        stroke-dasharray: 7 5;
+      }
+      .bp-dot {
+        fill: #33d6a6;
+        stroke: #07201c;
+        stroke-width: 2;
+      }
+      .bp-dot2 {
+        fill: #6c8cff;
+        stroke: #07201c;
+        stroke-width: 2;
+      }
+      .bp-axislabel {
+        fill: #bff0de;
+        font:
+          700 12px system-ui,
+          sans-serif;
+      }
+      .bp-tick {
+        fill: #8fd9c2;
+        font:
+          600 10px ui-monospace,
+          monospace;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #79e8c4;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .bp-label {
+        fill: #eafff5;
+        font:
+          700 13px system-ui,
+          sans-serif;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 130px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(155, 108, 255, 0.12);
+        border: 1px solid rgba(155, 108, 255, 0.45);
+      }
+      .lvl2 .pill {
+        background: #7b4fd0;
+      }
+      .lvl3 {
+        background: rgba(255, 204, 102, 0.14);
+        border: 1px solid rgba(255, 204, 102, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Ratio table ── */
+      table.rt {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      table.rt th,
+      table.rt td {
+        padding: 9px 8px;
+        border: 1px solid var(--nt-border);
+        text-align: center;
+        font-size: 16px;
+      }
+      table.rt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        background: var(--nt-bg);
+      }
+      table.rt td.given {
+        background: rgba(51, 214, 166, 0.1);
+        font-weight: 800;
+      }
+      table.rt input {
+        font: inherit;
+        width: 78px;
+        font-weight: 700;
+        padding: 7px 6px;
+        border-radius: 8px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        text-align: center;
+      }
+      table.rt input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      table.rt input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+      .rt-note {
+        font-size: 13px;
+        color: var(--nt-muted);
+        margin-top: 6px;
+      }
+
+      /* ── Compare / option cards ── */
+      .optgrid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
+      }
+      @media (max-width: 560px) {
+        .optgrid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .optcard {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      .optcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.22);
+      }
+      .optcard b {
+        font-size: 15px;
+        display: block;
+      }
+      .optcard small {
+        color: var(--nt-muted);
+        display: block;
+        margin-top: 2px;
+      }
+      .optcard .rate {
+        font:
+          800 17px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        margin-top: 6px;
+        display: block;
+      }
+
+      /* ── Readout ── */
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+
+      /* ── Paint mixer swatch ── */
+      .swatch {
+        height: 64px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        margin-top: 10px;
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        margin-top: 6px;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 480px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      #ntkit {
+        margin-top: 18px;
+      }
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      @media print {
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn {
+          display: none !important;
+        }
+        .wrap {
+          padding-bottom: 0;
+        }
+        .card {
+          break-inside: avoid;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+
+  <body class="nt-theme-aware">
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <div class="wrap">
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>
+            I can build a ratio table and use equivalent ratios to find missing
+            values.
+          </li>
+          <li>
+            I can plot pairs from a ratio table on a coordinate graph and read
+            new values off the line.
+          </li>
+          <li>
+            I can find a unit rate and use it to compare two ratios and decide
+            which is the better deal.
+          </li>
+          <li>
+            I can use ratios to mix colors and scale a plan up or down so the
+            mix stays the same.
+          </li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.RP.A.1–3</span>
+          <span>Time: ~40 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief." Anchor the core
+              ratio: <em>3 buses : 240 riders</em>, i.e. 80 riders per bus.
+              Model completing one column of the ratio table by scaling.
+            </li>
+            <li>
+              <strong>Design work (25–30 min):</strong> Students complete Task 1
+              (ratio table) → Task 2 (graph the line, read a point) → Task 3
+              (compare unit rates to pick a vendor) → Task 4 (paint mix +
+              scale-up). Tasks build on the same ratio.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Discuss why all table pairs
+              fall on one straight line through the origin, and how unit rate
+              makes "which is the better deal?" a fair comparison.
+            </li>
+          </ul>
+          <h3>Differentiation</h3>
+          <ul>
+            <li>
+              <strong>Level 1 (support):</strong> Green callouts + bilingual
+              (EN/ES) prompts. Provide a printed multiplication grid. Let
+              students fill the ratio table by repeated addition before scaling.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Have students write the
+              equation y = 80x for the line, justify why the graph passes
+              through (0,0), and prove the cheaper vendor with unit cost to the
+              cent.
+            </li>
+          </ul>
+          <h3>STEM Connection</h3>
+          <ul>
+            <li>
+              This is real transportation &amp; data engineering. Transit
+              planners size fleets with riders-per-bus ratios, read service
+              levels off ridership graphs, compare vendor bids by unit cost, and
+              color-code routes with fixed paint-mix ratios so every sign
+              matches.
+            </li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag"
+          >Unit 3 · Math Architect · Ratio Reasoning (6.RP)</span
+        >
+        <h1>Design Challenge: The GreenLine Transit Network</h1>
+        <p class="lede">
+          You are a <strong>transit systems engineer</strong> at GreenLine, the
+          city's new electric bus network. Use ratio tables, graphs, and unit
+          rates to size the fleet, plot the ridership line, pick the best
+          vendor, and mix the official route color — so the whole system runs on
+          one steady ratio.
+        </p>
+        <div class="badges">
+          <span class="badge">Standard 6.RP.A.1–3</span>
+          <span class="badge">Ratio Tables</span>
+          <span class="badge">Graphing Ratios</span>
+          <span class="badge">Unit Rate</span>
+          <span class="badge">Compare Ratios</span>
+        </div>
+        <div class="cycle">
+          <div><b>1 · Define</b>Read the core ratio &amp; service goal.</div>
+          <div>
+            <b>2 · Tabulate</b>Build the ratio table with equivalent ratios.
+          </div>
+          <div><b>3 · Graph</b>Plot the pairs &amp; read the line.</div>
+          <div><b>4 · Compare</b>Use unit rate to pick the best vendor.</div>
+          <div><b>5 · Brand</b>Mix &amp; scale the route color.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Specs approved: <span id="pcount">0</span> / 10
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="10"
+            aria-label="Specs approved"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          GreenLine's pilot route moved <strong>240 riders</strong> using
+          <strong>3 buses</strong>. Every part of your design must keep that
+          same ratio of riders to buses so service stays even and on time.
+        </p>
+        <p class="scale">
+          CORE RATIO&nbsp; 3 buses : 240 riders &nbsp;·&nbsp; that is
+          <strong>80 riders per bus</strong> (the unit rate)
+        </p>
+        <div class="grid3">
+          <div class="lvl lvl1" style="margin-top: 0">
+            <b>Deliverable 1</b><br />Complete the ridership ratio table and
+            graph the line.
+          </div>
+          <div class="lvl lvl2" style="margin-top: 0">
+            <b>Deliverable 2</b><br />Compare two vendor offers by unit cost and
+            pick the better deal.
+          </div>
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 3</b><br />Mix the route color in the right ratio and
+            scale it up for a full batch.
+          </div>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            A <strong>ratio</strong> compares two amounts, like 3 buses to 240
+            riders. <strong>Equivalent ratios</strong> are the same comparison
+            scaled up or down (×2, ×3, …). A <strong>unit rate</strong> is the
+            amount for just one (riders for 1 bus = 240 ÷ 3 = 80).
+          </p>
+          <span class="es"
+            >Español: Una <strong>razón</strong> compara dos cantidades, como 3
+            autobuses a 240 pasajeros. Las <strong>razones equivalentes</strong>
+            son la misma comparación escalada (×2, ×3, …). Una
+            <strong>tasa unitaria</strong> es la cantidad para uno solo (240 ÷ 3
+            = 80 pasajeros por autobús).</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ TASK 1 · RATIO TABLE ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · Size the Fleet
+          <span class="tag-shape">Ratio table · equivalent ratios</span>
+        </h2>
+        <p>
+          Fill in the missing riders for each bus count. Every column must keep
+          the same ratio: <strong>80 riders per bus</strong>. The shaded "Pilot
+          data" column (3 buses, 240 riders) is given — use it to scale each new
+          column. Then answer Q1.4 to find the unit rate.
+        </p>
+        <div class="grid2">
+          <div>
+            <table class="rt" aria-label="Ridership ratio table">
+              <thead>
+                <tr>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Pilot data</th>
+                  <th scope="col">Q1.1</th>
+                  <th scope="col">Q1.2</th>
+                  <th scope="col">Q1.3</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Buses</th>
+                  <td class="given">3</td>
+                  <td class="given">5</td>
+                  <td class="given">9</td>
+                  <td class="given">12</td>
+                </tr>
+                <tr>
+                  <th scope="row">Riders</th>
+                  <td class="given">240</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      id="q-rt-riders5"
+                      data-ans="400"
+                      data-tol="0"
+                      data-why="5 buses × 80 = 400 riders."
+                      aria-label="Riders for 5 buses"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      id="q-rt-riders9"
+                      data-ans="720"
+                      data-tol="0"
+                      data-why="9 buses × 80 = 720 riders."
+                      aria-label="Riders for 9 buses"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      id="q-rt-riders12"
+                      data-ans="960"
+                      data-tol="0"
+                      data-why="12 buses × 80 = 960 riders."
+                      aria-label="Riders for 12 buses"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="rt-note">
+              Tip: each bus carries the same 80 riders. Multiply the bus count
+              by 80, or scale the whole 3 : 240 column.
+            </p>
+            <div class="row" style="display: flex; gap: 10px; margin-top: 10px">
+              <button type="button" class="btn" id="checkTableBtn">
+                Check table
+              </button>
+              <button type="button" class="btn ghost" data-hint="rt">
+                Hint
+              </button>
+            </div>
+            <p class="fb" id="fb-rt"></p>
+          </div>
+          <div>
+            <div class="q" data-q="unit-rate">
+              <p class="lbl">
+                Q1.4 — Unit rate: how many riders does
+                <strong>1 bus</strong> carry? (Hint: 240 ÷ 3)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-unit-rate"
+                  data-ans="80"
+                  data-tol="0"
+                  data-why="240 ÷ 3 = 80 riders per bus."
+                  aria-label="Riders per one bus"
+                />
+                <span class="unit">riders / bus</span>
+                <button type="button" class="btn" data-check="unit-rate">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="unit-rate">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-unit-rate"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                To find the unit rate, divide riders by buses: 240 ÷ 3. To fill
+                a column, multiply the number of buses by that unit rate.
+              </p>
+              <span class="es"
+                >Español: Para la tasa unitaria, divide pasajeros entre
+                autobuses: 240 ÷ 3. Para llenar una columna, multiplica los
+                autobuses por esa tasa.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Write an equation that gives riders <em>y</em> for any number of
+                buses <em>x</em>. Use your unit rate. (You will graph this line
+                in Task 2.)
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 2 · GRAPH THE LINE ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · Graph the Ridership Line
+          <span class="tag-shape">Plot &amp; read a graph</span>
+        </h2>
+        <p>
+          Every (buses, riders) pair from your ratio table lands on
+          <strong>one straight line through the origin</strong>. The graph below
+          plots that line with three labeled points. Drag the blue point along
+          the line, then use the dashed guide lines to read off values for Q2.1
+          and Q2.2.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              id="rideSvg"
+              viewBox="0 0 360 300"
+              role="img"
+              aria-label="Interactive coordinate graph. The horizontal axis is buses from 0 to 10. The vertical axis is riders from 0 to 800. A straight line through the origin passes through points (1,80), (3,240), and (5,400). Drag the blue point left or right along the line to read off how many riders any number of buses can carry. One grid square across is one bus; one grid square up is 80 riders."
+            >
+              <defs>
+                <pattern
+                  id="g30"
+                  width="30"
+                  height="24"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M30 0H0V24"
+                    fill="none"
+                    class="bp-grid"
+                    stroke-width="1"
+                  />
+                </pattern>
+              </defs>
+              <!-- plot area: x 40..340 (10 buses), y 250..10 (riders 0..800) -->
+              <rect x="40" y="10" width="300" height="240" fill="url(#g30)" />
+              <!-- axes -->
+              <line x1="40" y1="250" x2="340" y2="250" class="bp-axis" />
+              <line x1="40" y1="250" x2="40" y2="10" class="bp-axis" />
+              <!-- the ratio line: (0,0) -> (10 buses, 800 riders) => x40,y250 to x340,y10 -->
+              <line x1="40" y1="250" x2="340" y2="10" class="bp-line" />
+              <!-- plotted points: scale x = 40 + buses*30 ; y = 250 - riders*0.3 -->
+              <!-- (1,80): x70 y226 -->
+              <circle cx="70" cy="226" r="5" class="bp-dot" />
+              <!-- (3,240): x130 y178 -->
+              <circle cx="130" cy="178" r="5" class="bp-dot" />
+              <!-- (5,400): x190 y130 -->
+              <circle cx="190" cy="130" r="5" class="bp-dot" />
+              <!-- draggable point on the line; JS positions it (starts at 7 buses, 560 riders) -->
+              <line
+                id="rideVLine"
+                x1="250"
+                y1="82"
+                x2="250"
+                y2="250"
+                class="bp-line2"
+                stroke-width="1.6"
+              />
+              <line
+                id="rideHLine"
+                x1="40"
+                y1="82"
+                x2="250"
+                y2="82"
+                class="bp-line2"
+                stroke-width="1.6"
+              />
+              <circle
+                id="rideDot"
+                cx="250"
+                cy="82"
+                r="8"
+                class="bp-dot2"
+                style="cursor: grab"
+              />
+              <text id="rideLabel" x="256" y="74" class="bp-label">
+                7 → 560
+              </text>
+              <!-- x ticks -->
+              <text x="70" y="266" text-anchor="middle" class="bp-tick">1</text>
+              <text x="130" y="266" text-anchor="middle" class="bp-tick">
+                3
+              </text>
+              <text x="190" y="266" text-anchor="middle" class="bp-tick">
+                5
+              </text>
+              <text x="250" y="266" text-anchor="middle" class="bp-tick">
+                7
+              </text>
+              <text x="340" y="266" text-anchor="middle" class="bp-tick">
+                10
+              </text>
+              <!-- y ticks -->
+              <text x="34" y="230" text-anchor="end" class="bp-tick">80</text>
+              <text x="34" y="182" text-anchor="end" class="bp-tick">240</text>
+              <text x="34" y="134" text-anchor="end" class="bp-tick">400</text>
+              <text x="34" y="86" text-anchor="end" class="bp-tick">560</text>
+              <!-- axis labels -->
+              <text x="190" y="290" text-anchor="middle" class="bp-axislabel">
+                Buses (x)
+              </text>
+              <text
+                x="14"
+                y="130"
+                text-anchor="middle"
+                class="bp-axislabel"
+                transform="rotate(-90 14 130)"
+              >
+                Riders (y)
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Drag the blue point along the line</span>
+              <span>1 right = 1 bus · 1 up = 80 riders</span>
+            </div>
+            <p class="scale" id="rideReadout" style="margin: 8px 0 0">
+              At <strong>7 buses</strong> the line reads
+              <strong>560 riders</strong> &nbsp;(7 × 80).
+            </p>
+          </div>
+          <div>
+            <div class="q" data-q="graph-read">
+              <p class="lbl">
+                Q2.1 — Follow the dashed lines to the blue point at x = 7 buses.
+                How many riders is that?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-graph-read"
+                  data-ans="560"
+                  data-tol="0"
+                  data-why="At x = 7 buses, the line is at y = 7 × 80 = 560 riders."
+                  aria-label="Riders at 7 buses"
+                />
+                <span class="unit">riders</span>
+                <button type="button" class="btn" data-check="graph-read">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="graph-read">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-graph-read"></p>
+            </div>
+            <div class="q" data-q="graph-buses">
+              <p class="lbl">
+                Q2.2 — Demand jumps to 800 riders. Reading the line, how many
+                buses does GreenLine need?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-graph-buses"
+                  data-ans="10"
+                  data-tol="0"
+                  data-why="800 ÷ 80 = 10 buses (the far end of the line)."
+                  aria-label="Buses for 800 riders"
+                />
+                <span class="unit">buses</span>
+                <button type="button" class="btn" data-check="graph-buses">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="graph-buses">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-graph-buses"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                To read a graph: go up from the bus number until you hit the
+                line, then go left to the riders axis. Each step right is 1 bus;
+                each step up is 80 riders.
+              </p>
+              <span class="es"
+                >Español: Para leer la gráfica: sube desde el número de
+                autobuses hasta la línea, luego ve a la izquierda hasta el eje
+                de pasajeros. Cada paso a la derecha = 1 autobús; cada paso
+                arriba = 80 pasajeros.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Why does this line have to pass through (0, 0)? Explain using
+                the idea that 0 buses can carry 0 riders, and why that makes the
+                graph a proportional relationship.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 3 · COMPARE VENDORS (UNIT RATE) ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · Pick the Best Charger Vendor
+          <span class="tag-shape">Compare ratios · unit rate</span>
+        </h2>
+        <p>
+          Two vendors bid to supply fast chargers. They quote different bundles,
+          so compare the <strong>unit cost</strong> (price for one charger) to
+          find the better deal. Tap the vendor you would choose.
+        </p>
+        <div class="grid2">
+          <div>
+            <div
+              class="optgrid"
+              id="vendorChooser"
+              role="group"
+              aria-label="Charger vendor options"
+              style="grid-template-columns: 1fr 1fr"
+            >
+              <button
+                type="button"
+                class="optcard"
+                data-vendor="VoltEdge"
+                data-best="false"
+                aria-pressed="false"
+              >
+                <b>VoltEdge</b>
+                <small>6 chargers for $7,200</small>
+                <span class="rate" id="rateA">$? / charger</span>
+              </button>
+              <button
+                type="button"
+                class="optcard"
+                data-vendor="AmpWorks"
+                data-best="true"
+                aria-pressed="false"
+              >
+                <b>AmpWorks</b>
+                <small>8 chargers for $9,200</small>
+                <span class="rate" id="rateB">$? / charger</span>
+              </button>
+            </div>
+            <p class="muted" style="margin-top: 12px">
+              Find each unit cost first, then choose. The card you pick is
+              checked when you submit.
+            </p>
+          </div>
+          <div>
+            <div class="q" data-q="unitA">
+              <p class="lbl">Q3.1 — VoltEdge unit cost ($7,200 ÷ 6 chargers)</p>
+              <div class="row">
+                <span class="unit">$</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-unitA"
+                  data-ans="1200"
+                  data-tol="0"
+                  data-why="$7,200 ÷ 6 = $1,200 per charger."
+                  aria-label="VoltEdge unit cost"
+                />
+                <span class="unit">/ charger</span>
+                <button type="button" class="btn" data-check="unitA">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="unitA">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-unitA"></p>
+            </div>
+            <div class="q" data-q="unitB">
+              <p class="lbl">Q3.2 — AmpWorks unit cost ($9,200 ÷ 8 chargers)</p>
+              <div class="row">
+                <span class="unit">$</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-unitB"
+                  data-ans="1150"
+                  data-tol="0"
+                  data-why="$9,200 ÷ 8 = $1,150 per charger."
+                  aria-label="AmpWorks unit cost"
+                />
+                <span class="unit">/ charger</span>
+                <button type="button" class="btn" data-check="unitB">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="unitB">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-unitB"></p>
+            </div>
+            <p class="fb" id="fb-vendor" style="font-size: 15px"></p>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                <strong>Unit cost</strong> = total price ÷ number of items. The
+                cheaper unit cost is the better deal, even if the total price is
+                bigger.
+              </p>
+              <span class="es"
+                >Español: <strong>Costo unitario</strong> = precio total ÷
+                número de artículos. El menor costo unitario es la mejor oferta,
+                aunque el precio total sea mayor.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                GreenLine needs 24 chargers. How much would the whole order cost
+                from the cheaper vendor, and how much do you save versus the
+                other vendor for 24 chargers?
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 4 · PAINT MIX + SCALE ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · Mix the GreenLine Route Color
+          <span class="tag-shape">Equivalent ratios · scale up</span>
+        </h2>
+        <p>
+          Every GreenLine sign uses the same official color: a paint mixed in
+          the ratio <strong>3 parts teal to 2 parts white</strong>. Build one
+          batch, watch the swatch update, then scale it up so the mix stays
+          identical.
+        </p>
+        <div class="grid2">
+          <div>
+            <h3>Live mixer — keep the ratio 3 : 2</h3>
+            <div class="row" style="gap: 18px">
+              <label>
+                <span class="k" style="font-weight: 700">Teal parts</span><br />
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="mixTeal"
+                  value="3"
+                  style="
+                    width: 90px;
+                    font:
+                      700 18px ui-monospace,
+                      monospace;
+                    padding: 9px 12px;
+                    border-radius: 10px;
+                    border: 2px solid var(--nt-border);
+                    background: var(--nt-surface);
+                    color: var(--nt-text);
+                  "
+                  aria-label="Teal parts"
+                />
+              </label>
+              <label>
+                <span class="k" style="font-weight: 700">White parts</span
+                ><br />
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="mixWhite"
+                  value="2"
+                  style="
+                    width: 90px;
+                    font:
+                      700 18px ui-monospace,
+                      monospace;
+                    padding: 9px 12px;
+                    border-radius: 10px;
+                    border: 2px solid var(--nt-border);
+                    background: var(--nt-surface);
+                    color: var(--nt-text);
+                  "
+                  aria-label="White parts"
+                />
+              </label>
+            </div>
+            <div class="swatch" id="mixSwatch" aria-hidden="true"></div>
+            <div class="readout">
+              <div>
+                <span class="k">Mix ratio</span><br /><span
+                  class="v"
+                  id="mixRatio"
+                  >3 : 2</span
+                >
+              </div>
+              <div>
+                <span class="k">Matches official?</span><br /><span
+                  class="v"
+                  id="mixMatch"
+                  >—</span
+                >
+              </div>
+            </div>
+            <p class="muted" style="margin-bottom: 0">
+              The swatch only matches the official GreenLine color when your mix
+              is <strong>equivalent</strong> to 3 : 2 (like 6 : 4 or 9 : 6).
+            </p>
+          </div>
+          <div>
+            <div class="q" data-q="scale-white">
+              <p class="lbl">
+                Q4.1 — A big job uses <strong>15 parts teal</strong>. To keep
+                the 3 : 2 ratio, how many parts white?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-scale-white"
+                  data-ans="10"
+                  data-tol="0"
+                  data-why="3 : 2 scaled ×5 is 15 : 10, so 10 parts white."
+                  aria-label="White parts for 15 teal"
+                />
+                <span class="unit">parts white</span>
+                <button type="button" class="btn" data-check="scale-white">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="scale-white">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-scale-white"></p>
+            </div>
+            <div class="q" data-q="scale-total">
+              <p class="lbl">
+                Q4.2 — How many total parts of paint is that full batch (teal +
+                white)?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-scale-total"
+                  data-ans="25"
+                  data-tol="0"
+                  data-why="15 teal + 10 white = 25 total parts."
+                  aria-label="Total parts"
+                />
+                <span class="unit">parts</span>
+                <button type="button" class="btn" data-check="scale-total">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="scale-total">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-scale-total"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Scaling a mix: multiply <em>both</em> parts by the same number.
+                If teal goes from 3 to 15 (×5), white must also go ×5: 2 × 5 =
+                10.
+              </p>
+              <span class="es"
+                >Español: Para escalar una mezcla, multiplica
+                <em>las dos</em> partes por el mismo número. Si el verde azulado
+                va de 3 a 15 (×5), el blanco también: 2 × 5 = 10.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                What fraction of the whole batch is teal? Write it as a fraction
+                and as a percent, and explain why that percent never changes no
+                matter how big the batch is.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Engineer sign-off">
+        <h2>Engineer's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When the table, graph, vendor pick, and color mix all check out,
+          submit your network plan to the city. Enter your name in the field
+          below, then press <strong>Submit plan &amp; grade</strong> to save
+          your score as a PDF or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit plan &amp; grade
+        </button>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — GreenLine Transit Network (6.RP.A.1–3)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>10 / 10</td>
+                <td>
+                  Builds the ratio table from equivalent ratios, reads the
+                  ridership graph both directions, computes both vendor unit
+                  costs and picks the cheaper option, and scales the paint mix
+                  correctly. Can explain why all table pairs fall on one line
+                  through the origin.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>8–9 / 10</td>
+                <td>
+                  Completes the table and unit rate, reads the graph accurately,
+                  and picks the cheaper vendor with at most one arithmetic slip.
+                  Scales the mix correctly.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>5–7 / 10</td>
+                <td>
+                  Finds simple equivalent ratios but struggles to read the graph
+                  or to compare by unit cost (e.g., compares totals instead of
+                  unit rates). Partial scaling or table.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–4 / 10</td>
+                <td>
+                  Few correct values. Confuses the parts of a ratio or does not
+                  keep the ratio constant when scaling. Needs reteaching on unit
+                  rate and equivalent ratios.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
+        }
+        function money(n) {
+          return "$" + Number(n || 0).toLocaleString("en-US");
+        }
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
+        }
+
+        /* Auto-graded problems (string-compared by NTKit) */
+        var problems = [
+          {
+            id: "rt-riders5",
+            ans: "400",
+            skill: "Equivalent ratios in a table",
+            prompt: "Ratio table: riders for 5 buses (5 × 80)",
+          },
+          {
+            id: "rt-riders9",
+            ans: "720",
+            skill: "Equivalent ratios in a table",
+            prompt: "Ratio table: riders for 9 buses (9 × 80)",
+          },
+          {
+            id: "rt-riders12",
+            ans: "960",
+            skill: "Equivalent ratios in a table",
+            prompt: "Ratio table: riders for 12 buses (12 × 80)",
+          },
+          {
+            id: "unit-rate",
+            ans: "80",
+            skill: "Find a unit rate",
+            prompt: "Unit rate: riders per bus (240 ÷ 3)",
+          },
+          {
+            id: "graph-read",
+            ans: "560",
+            skill: "Read a ratio graph",
+            prompt: "Graph: riders at x = 7 buses",
+          },
+          {
+            id: "graph-buses",
+            ans: "10",
+            skill: "Read a ratio graph",
+            prompt: "Graph: buses needed for 800 riders",
+          },
+          {
+            id: "unitA",
+            ans: "1200",
+            skill: "Unit cost to compare ratios",
+            prompt: "VoltEdge unit cost ($7,200 ÷ 6)",
+          },
+          {
+            id: "unitB",
+            ans: "1150",
+            skill: "Unit cost to compare ratios",
+            prompt: "AmpWorks unit cost ($9,200 ÷ 8)",
+          },
+          {
+            id: "scale-white",
+            ans: "10",
+            skill: "Scale a ratio (equivalent ratios)",
+            prompt: "Paint mix: white parts for 15 teal (3 : 2)",
+          },
+          {
+            id: "scale-total",
+            ans: "25",
+            skill: "Scale a ratio (equivalent ratios)",
+            prompt: "Paint mix: total parts (15 + 10)",
+          },
+        ];
+        var TOTAL_SPECS = problems.length; /* 10 */
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
+        }
+        function isCorrectInput(inp) {
+          if (!inp) return false;
+          var got = num(inp.value);
+          var want = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol"));
+          if (isNaN(tol)) tol = 0;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
+        }
+        function isCorrect(id) {
+          return isCorrectInput(inputFor(id));
+        }
+
+        function paint() {
+          var n = 0;
+          problems.forEach(function (p) {
+            if (correct[p.id]) n++;
+          });
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width =
+            (n / TOTAL_SPECS) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+
+        function markInput(inp, ok) {
+          if (!inp) return;
+          inp.classList.toggle("ok", ok);
+          inp.classList.toggle("bad", !ok);
+        }
+
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var inp = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          markInput(inp, ok);
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Approved — " + inp.getAttribute("data-why")
+              : "✗ Not yet. Set up the ratio, then scale or divide step by step.";
+          }
+          correct[id] = ok;
+          live(ok ? "Spec approved." : "Not correct yet, try again.");
+          paint();
+        }
+
+        /* Task 1: check whole ratio table at once */
+        function checkTable() {
+          var ids = ["rt-riders5", "rt-riders9", "rt-riders12"];
+          var allOk = true;
+          ids.forEach(function (id) {
+            var inp = inputFor(id);
+            var ok = isCorrectInput(inp);
+            markInput(inp, ok);
+            correct[id] = ok;
+            if (!ok) allOk = false;
+          });
+          var fb = document.getElementById("fb-rt");
+          if (fb) {
+            fb.className = "fb " + (allOk ? "ok" : "bad");
+            fb.textContent = allOk
+              ? "✓ Table approved — every column keeps 80 riders per bus."
+              : "✗ Check each column: buses × 80 = riders. Keep the ratio steady.";
+          }
+          live(allOk ? "Ratio table approved." : "Table not correct yet.");
+          paint();
+        }
+        document
+          .getElementById("checkTableBtn")
+          .addEventListener("click", checkTable);
+
+        /* Hints */
+        var hints = {
+          rt: "Each bus carries 80 riders. Multiply the bus count in each column by 80.",
+          "unit-rate":
+            "Unit rate means 'for one.' Divide riders by buses: 240 ÷ 3.",
+          "graph-read":
+            "Go up from 7 buses to the line, then left to the riders axis. Or compute 7 × 80.",
+          "graph-buses":
+            "Find 800 on the riders axis, slide right to the line, then down. Or compute 800 ÷ 80.",
+          unitA: "Unit cost = total ÷ number of chargers: 7200 ÷ 6.",
+          unitB: "Unit cost = total ÷ number of chargers: 9200 ÷ 8.",
+          "scale-white":
+            "From 3 to 15 teal is × 5. Multiply white by the same: 2 × 5.",
+          "scale-total": "Add your teal parts and white parts: 15 + 10.",
+        };
+
+        /* Event delegation for Check / Hint buttons */
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var fbId = id === "rt" ? "fb-rt" : "fb-" + id;
+            var fb = document.getElementById(fbId);
+            if (fb && hints[id]) {
+              fb.className = "fb";
+              fb.textContent = "Hint: " + hints[id];
+            }
+          }
+        });
+
+        /* Enter key checks the field */
+        problems.forEach(function (p) {
+          var inp = inputFor(p.id);
+          if (inp)
+            inp.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (p.id.indexOf("rt-") === 0) checkTable();
+                else check(p.id);
+              }
+            });
+        });
+
+        /* Task 3: vendor chooser */
+        var chosenVendor = null;
+        document
+          .querySelectorAll("#vendorChooser .optcard")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll("#vendorChooser .optcard")
+                .forEach(function (b) {
+                  b.setAttribute("aria-pressed", "false");
+                });
+              btn.setAttribute("aria-pressed", "true");
+              chosenVendor = btn.getAttribute("data-vendor");
+              var best = btn.getAttribute("data-best") === "true";
+              var fb = document.getElementById("fb-vendor");
+              fb.className = "fb " + (best ? "ok" : "bad");
+              fb.textContent = best
+                ? "✓ Good call — AmpWorks is $1,150/charger vs. VoltEdge $1,200/charger."
+                : "Hmm — compare unit costs first. $1,200 vs $1,150 per charger: which is cheaper?";
+              live(best ? "Best vendor chosen." : "Reconsider the vendor.");
+            });
+          });
+        /* Reveal the computed unit rates once both are checked correctly */
+        function maybeRevealRates() {
+          if (isCorrect("unitA"))
+            document.getElementById("rateA").textContent = "$1,200 / charger";
+          if (isCorrect("unitB"))
+            document.getElementById("rateB").textContent = "$1,150 / charger";
+        }
+        ["unitA", "unitB"].forEach(function (id) {
+          var inp = inputFor(id);
+          if (inp) inp.addEventListener("input", maybeRevealRates);
+        });
+        /* also reveal after a Check click via delegation already calls check();
+           hook the rate reveal onto those too */
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          if (
+            e.target.closest('[data-check="unitA"]') ||
+            e.target.closest('[data-check="unitB"]')
+          )
+            maybeRevealRates();
+        });
+
+        /* Task 4: live paint mixer */
+        var TEAL = [34, 168, 142]; /* #22a88e */
+        var WHITE = [240, 245, 244];
+        function mix() {
+          var t = num(document.getElementById("mixTeal").value);
+          var w = num(document.getElementById("mixWhite").value);
+          if (isNaN(t) || isNaN(w) || t < 0 || w < 0 || t + w === 0) {
+            document.getElementById("mixSwatch").style.background =
+              "var(--nt-bg)";
+            document.getElementById("mixRatio").textContent = "—";
+            document.getElementById("mixMatch").textContent = "—";
+            return;
+          }
+          var total = t + w;
+          var ft = t / total,
+            fw = w / total;
+          var r = Math.round(TEAL[0] * ft + WHITE[0] * fw);
+          var g = Math.round(TEAL[1] * ft + WHITE[1] * fw);
+          var b = Math.round(TEAL[2] * ft + WHITE[2] * fw);
+          document.getElementById("mixSwatch").style.background =
+            "rgb(" + r + "," + g + "," + b + ")";
+          document.getElementById("mixRatio").textContent = t + " : " + w;
+          /* equivalent to 3:2 means t/w === 3/2 */
+          var match = w !== 0 && t * 2 === w * 3;
+          var m = document.getElementById("mixMatch");
+          m.textContent = match ? "✓ Yes" : "✗ No";
+          m.style.color = match ? "#0f9d6b" : "#d23f54";
+        }
+        ["mixTeal", "mixWhite"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener("input", mix);
+        });
+
+        /* Mount NTKit + grade on submit */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            /* sync correctness for table inputs before grading */
+            ["rt-riders5", "rt-riders9", "rt-riders12"].forEach(function (id) {
+              correct[id] = isCorrect(id);
+            });
+
+            var items = problems.map(function (p) {
+              var inp = inputFor(p.id);
+              return {
+                prompt: p.prompt,
+                studentAnswer: inp ? String(num(inp.value)) : "",
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
+            });
+
+            /* vendor decision as a graded item */
+            items.push({
+              prompt: "Best vendor by unit cost (cheaper $ per charger)",
+              studentAnswer: chosenVendor || "(none)",
+              correctAnswer: "AmpWorks",
+              points: 1,
+              skill: "Compare ratios to decide",
+            });
+
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-3",
+                activityTitle:
+                  "Unit 3 · Math Architect — GreenLine Transit (Ratio Reasoning Design Challenge)",
+                standard: "6.RP.A.1-3",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return (
+                  String(x.studentAnswer).trim() ===
+                  String(x.correctAnswer).trim()
+                );
+              }).length;
+              alert(
+                "Plan submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " specs correct.",
+              );
+            }
+          });
+
+        /* ── Interactive: drag a point along the proportional ridership line ── */
+        (function () {
+          var svg = document.getElementById("rideSvg");
+          if (!svg) return;
+          var dot = document.getElementById("rideDot");
+          var vLine = document.getElementById("rideVLine");
+          var hLine = document.getElementById("rideHLine");
+          var label = document.getElementById("rideLabel");
+          var readout = document.getElementById("rideReadout");
+          /* plot: x = 40 + buses*30 (0..10 buses), y = 250 - riders*0.3 */
+          var RATE = 80; /* riders per bus */
+          var dragging = false;
+
+          function clientXToBuses(clientX) {
+            var rect = svg.getBoundingClientRect();
+            var px = ((clientX - rect.left) / rect.width) * 360; /* viewBox w */
+            var buses = (px - 40) / 30;
+            buses = Math.round(buses); /* snap to whole buses */
+            return Math.max(0, Math.min(10, buses));
+          }
+          function place(buses) {
+            var riders = buses * RATE;
+            var x = 40 + buses * 30;
+            var y = 250 - riders * 0.3;
+            dot.setAttribute("cx", x);
+            dot.setAttribute("cy", y);
+            vLine.setAttribute("x1", x);
+            vLine.setAttribute("x2", x);
+            vLine.setAttribute("y1", y);
+            hLine.setAttribute("x2", x);
+            hLine.setAttribute("y1", y);
+            hLine.setAttribute("y2", y);
+            label.setAttribute("x", x + 8 > 320 ? x - 56 : x + 8);
+            label.setAttribute("y", y - 8 < 14 ? y + 18 : y - 8);
+            label.textContent = buses + " → " + riders;
+            if (readout) {
+              readout.innerHTML =
+                "At <strong>" +
+                buses +
+                (buses === 1 ? " bus</strong> " : " buses</strong> ") +
+                "the line reads <strong>" +
+                riders +
+                " riders</strong> &nbsp;(" +
+                buses +
+                " × 80).";
+            }
+          }
+          function startDrag(e) {
+            dragging = true;
+            dot.style.cursor = "grabbing";
+            e.preventDefault();
+          }
+          function moveDrag(e) {
+            if (!dragging) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var b = clientXToBuses(cx);
+            place(b);
+            live(b + " buses can carry " + b * RATE + " riders.");
+            if (e.cancelable) e.preventDefault();
+          }
+          function endDrag() {
+            dragging = false;
+            dot.style.cursor = "grab";
+          }
+          dot.addEventListener("mousedown", startDrag);
+          dot.addEventListener("touchstart", startDrag, { passive: false });
+          window.addEventListener("mousemove", moveDrag);
+          window.addEventListener("touchmove", moveDrag, { passive: false });
+          window.addEventListener("mouseup", endDrag);
+          window.addEventListener("touchend", endDrag);
+
+          place(7);
+        })();
+
+        paint();
+        mix();
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

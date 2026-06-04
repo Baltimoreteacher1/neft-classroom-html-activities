@@ -1,1033 +1,1434 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equation Quest - 6.EE.9 Mastery</title>
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equation Leap | Neft.Alba v2</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #00ff88;
-            --secondary: #ff006e;
-            --tertiary: #00d4ff;
-            --dark-bg: #0a0e27;
-            --card-bg: #1a1f3a;
-            --text: #ffffff;
-            --correct: #00ff88;
-            --incorrect: #ff4444;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
-            color: var(--text);
-            overflow-x: hidden;
-            font-size: 16px;
-        }
-
-        body.high-contrast {
-            --dark-bg: #000000;
-            --card-bg: #1a1a1a;
-            --text: #ffff00;
-            --primary: #ffff00;
-            --secondary: #ffffff;
-            --tertiary: #00ffff;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .title {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--primary);
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            background: var(--secondary);
-            color: var(--text);
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 0, 110, 0.7);
-        }
-
-        button.small {
-            padding: 8px 12px;
-            font-size: 12px;
-        }
-
-        /* Stats Bar */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px solid var(--tertiary);
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 0.9em;
-            opacity: 0.7;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        /* Level Grid */
-        .level-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .level-btn {
-            background: var(--card-bg);
-            border: 2px solid var(--tertiary);
-            padding: 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text);
-            text-align: center;
-            position: relative;
-        }
-
-        .level-btn:hover:not(:disabled) {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
-            border-color: var(--primary);
-        }
-
-        .level-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .level-num {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .level-desc {
-            font-size: 0.75em;
-            opacity: 0.7;
-            margin-top: 8px;
-        }
-
-        .level-stars {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 0.9em;
-        }
-
-        /* Game Screen */
-        .game-screen {
-            display: none;
-        }
-
-        .game-screen.active {
-            display: block;
-        }
-
-        .equation-display {
-            background: var(--card-bg);
-            border: 3px solid var(--primary);
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .equation-text {
-            font-size: 2em;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .progress-info {
-            font-size: 0.9em;
-            opacity: 0.7;
-        }
-
-        /* Solving Interface */
-        .solving-interface {
-            background: var(--card-bg);
-            border: 2px solid var(--tertiary);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .solve-method {
-            margin-bottom: 20px;
-        }
-
-        .solve-label {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .input-row input {
-            flex: 1;
-            min-width: 100px;
-            padding: 12px;
-            border: 2px solid var(--tertiary);
-            background: var(--dark-bg);
-            color: var(--primary);
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: bold;
-        }
-
-        .input-row input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
-        }
-
-        /* Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn-hint {
-            background: var(--tertiary);
-            flex: 1;
-            min-width: 100px;
-        }
-
-        .btn-submit {
-            background: var(--primary);
-            color: var(--dark-bg);
-            flex: 1;
-            min-width: 100px;
-            font-weight: bold;
-        }
-
-        .btn-submit:hover {
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.7);
-        }
-
-        /* Feedback */
-        .feedback {
-            background: var(--card-bg);
-            border: 2px solid var(--tertiary);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .feedback.show {
-            display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .feedback.correct {
-            border-color: var(--correct);
-            background: rgba(0, 255, 136, 0.1);
-        }
-
-        .feedback.incorrect {
-            border-color: var(--incorrect);
-            background: rgba(255, 68, 68, 0.1);
-        }
-
-        .feedback-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .feedback.correct .feedback-title {
-            color: var(--correct);
-        }
-
-        .feedback.incorrect .feedback-title {
-            color: var(--incorrect);
-        }
-
-        .hint-text {
-            opacity: 0.8;
-            margin-top: 10px;
-            font-size: 0.95em;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid var(--primary);
-            max-width: 500px;
-            text-align: center;
-            animation: popIn 0.4s ease-out;
-        }
-
-        .modal-title {
-            font-size: 2em;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .stars {
-            font-size: 3em;
-            margin: 20px 0;
-            letter-spacing: 10px;
-        }
-
-        .modal-stats {
-            text-align: left;
-            margin: 20px 0;
-            opacity: 0.8;
-        }
-
-        .modal-stats div {
-            margin: 10px 0;
-        }
-
-        /* Animations */
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8); }
-        }
-
-        .pulse {
-            animation: pulse 0.6s ease-in-out;
-        }
-
-        @keyframes particle {
-            0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
-        }
-
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            animation: particle 0.8s ease-out forwards;
-        }
-
-        /* Accessibility */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
-
-        .language-toggle {
-            display: flex;
-            gap: 5px;
-        }
-
-        .lang-btn {
-            padding: 8px 12px;
-            font-size: 12px;
-            background: var(--card-bg);
-            border: 2px solid var(--tertiary);
-        }
-
-        .lang-btn.active {
-            background: var(--primary);
-            color: var(--dark-bg);
-            border-color: var(--primary);
-        }
-
-        /* Step Indicator */
-        .step-indicator {
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 4px solid var(--tertiary);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-        }
-
-        .step-title {
-            font-weight: bold;
-            color: var(--tertiary);
-            font-size: 0.9em;
-            margin-bottom: 8px;
-        }
-
-        .step-content {
-            font-size: 0.95em;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 600px) {
-            .title {
-                font-size: 1.8em;
-            }
-
-            .equation-text {
-                font-size: 1.5em;
-            }
-
-            .level-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0e27;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+      }
     </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
-<body>
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1 class="title">⚡ Equation Quest</h1>
-            <div class="controls">
-                <div class="language-toggle">
-                    <button class="lang-btn active" data-lang="en">EN</button>
-                    <button class="lang-btn" data-lang="es">ES</button>
-                </div>
-                <button class="small" id="audioToggle">🔊 Sound</button>
-                <button class="small" id="contrastToggle">◐ Contrast</button>
-                <button class="small" id="resetBtn">↺ Reset</button>
-            </div>
-        </div>
-
-        <!-- Level Select Screen -->
-        <div id="levelSelect" class="active">
-            <!-- Stats -->
-            <div class="stats-bar">
-                <div class="stat-card">
-                    <div class="stat-label">Total Score</div>
-                    <div class="stat-value" id="totalScore">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Streak</div>
-                    <div class="stat-value" id="streakCount">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Levels Complete</div>
-                    <div class="stat-value" id="levelsComplete">0/6</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Accuracy</div>
-                    <div class="stat-value" id="accuracy">--</div>
-                </div>
-            </div>
-
-            <!-- Level Grid -->
-            <div class="level-grid" id="levelGrid"></div>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="gameScreen" class="game-screen">
-            <!-- Back Button -->
-            <div style="margin-bottom: 20px;">
-                <button id="backBtn" style="background: var(--tertiary);">← Back to Levels</button>
-            </div>
-
-            <!-- Equation Display -->
-            <div class="equation-display">
-                <div id="levelTitle" style="font-size: 1.2em; opacity: 0.8; margin-bottom: 15px;"></div>
-                <div class="equation-text" id="equationText"></div>
-                <div class="progress-info">
-                    <span id="progressText"></span>
-                </div>
-            </div>
-
-            <!-- Solving Interface -->
-            <div class="solving-interface">
-                <div id="hintBox" class="step-indicator" style="display: none;">
-                    <div class="step-title" id="hintTitle"></div>
-                    <div class="step-content" id="hintContent"></div>
-                </div>
-
-                <div id="inputArea"></div>
-
-                <div class="action-buttons">
-                    <button class="btn-hint" id="hintBtn">💡 Hint</button>
-                    <button class="btn-submit" id="submitBtn">Check Answer</button>
-                </div>
-            </div>
-
-            <!-- Feedback -->
-            <div id="feedback" class="feedback"></div>
-
-            <!-- Next/Continue -->
-            <div id="nextContainer" style="display: none;">
-                <button id="nextBtn" style="width: 100%; background: var(--primary); color: var(--dark-bg);">Next Equation →</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div id="levelCompleteModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-title" id="modalTitle">Level Complete!</div>
-            <div class="stars" id="modalStars"></div>
-            <div class="modal-stats" id="modalStats"></div>
-            <button id="modalBtn" style="width: 100%; margin-top: 20px;">Continue</button>
-        </div>
-    </div>
-
-    <!-- Canvas for particles -->
-    <canvas id="particleCanvas" style="position: fixed; top: 0; left: 0; pointer-events: none;"></canvas>
-
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
-        // ========== DATA & CONFIG ==========
-        const LEVELS = [
-            {
-                id: 1,
-                title: 'One-Step: Add/Subtract',
-                desc: 'x + 3 = 8',
-                equations: [
-                    { eq: 'x + 3 = 8', answer: 5, hints: ['Subtract 3 from both sides', 'x = 8 - 3', 'x = 5'] },
-                    { eq: 'x - 2 = 7', answer: 9, hints: ['Add 2 to both sides', 'x = 7 + 2', 'x = 9'] },
-                    { eq: '5 = x + 1', answer: 4, hints: ['Subtract 1 from both sides', 'x = 5 - 1', 'x = 4'] },
-                    { eq: 'x - 4 = 6', answer: 10, hints: ['Add 4 to both sides', 'x = 6 + 4', 'x = 10'] },
-                ]
-            },
-            {
-                id: 2,
-                title: 'One-Step: Multiply/Divide',
-                desc: '2x = 10',
-                equations: [
-                    { eq: '2x = 10', answer: 5, hints: ['Divide both sides by 2', 'x = 10 ÷ 2', 'x = 5'] },
-                    { eq: '3x = 15', answer: 5, hints: ['Divide both sides by 3', 'x = 15 ÷ 3', 'x = 5'] },
-                    { eq: 'x ÷ 4 = 2', answer: 8, hints: ['Multiply both sides by 4', 'x = 2 × 4', 'x = 8'] },
-                    { eq: '5x = 25', answer: 5, hints: ['Divide both sides by 5', 'x = 25 ÷ 5', 'x = 5'] },
-                ]
-            },
-            {
-                id: 3,
-                title: 'Two-Step Equations',
-                desc: '2x + 3 = 11',
-                equations: [
-                    { eq: '2x + 3 = 11', answer: 4, hints: ['Subtract 3 from both sides: 2x = 8', 'Divide by 2: x = 4', 'x = 4'] },
-                    { eq: '3x - 2 = 10', answer: 4, hints: ['Add 2 to both sides: 3x = 12', 'Divide by 3: x = 4', 'x = 4'] },
-                    { eq: '4x + 5 = 21', answer: 4, hints: ['Subtract 5: 4x = 16', 'Divide by 4: x = 4', 'x = 4'] },
-                    { eq: '5x - 7 = 3', answer: 2, hints: ['Add 7: 5x = 10', 'Divide by 5: x = 2', 'x = 2'] },
-                ]
-            },
-            {
-                id: 4,
-                title: 'Variables Both Sides',
-                desc: '2x + 3 = x + 8',
-                equations: [
-                    { eq: '2x + 3 = x + 8', answer: 5, hints: ['Get x terms on left: 2x - x + 3 = 8', 'Simplify: x + 3 = 8', 'Subtract 3: x = 5'] },
-                    { eq: '3x - 2 = x + 6', answer: 4, hints: ['Subtract x from both sides: 2x - 2 = 6', 'Add 2: 2x = 8', 'Divide by 2: x = 4'] },
-                    { eq: '5x + 1 = 3x + 9', answer: 4, hints: ['Subtract 3x: 2x + 1 = 9', 'Subtract 1: 2x = 8', 'Divide by 2: x = 4'] },
-                    { eq: '4x - 5 = 2x + 3', answer: 4, hints: ['Subtract 2x: 2x - 5 = 3', 'Add 5: 2x = 8', 'Divide by 2: x = 4'] },
-                ]
-            },
-            {
-                id: 5,
-                title: 'Mixed: Distributive & Fractions',
-                desc: '2(x + 1) = 10',
-                equations: [
-                    { eq: '2(x + 1) = 10', answer: 4, hints: ['Distribute: 2x + 2 = 10', 'Subtract 2: 2x = 8', 'Divide by 2: x = 4'] },
-                    { eq: '3(x - 2) = 9', answer: 5, hints: ['Distribute: 3x - 6 = 9', 'Add 6: 3x = 15', 'Divide by 3: x = 5'] },
-                    { eq: '2x + 3(x - 1) = 12', answer: 3, hints: ['Distribute: 2x + 3x - 3 = 12', 'Combine: 5x - 3 = 12', 'Add 3: 5x = 15, x = 3'] },
-                    { eq: '4(x + 2) - 3 = 21', answer: 4, hints: ['Distribute: 4x + 8 - 3 = 21', 'Simplify: 4x + 5 = 21', 'Subtract 5: 4x = 16, x = 4'] },
-                ]
-            },
-            {
-                id: 6,
-                title: 'Real-World Applications',
-                desc: 'Solve word problems',
-                equations: [
-                    { eq: 'Maria has x books. After buying 5 more, she has 23. How many did she start with?', problem: 'x + 5 = 23', answer: 18, hints: ['Set up: x + 5 = 23', 'Subtract 5 from both sides', 'x = 18'] },
-                    { eq: 'A shirt costs $15. With tax, it\'s 1.5 times the price. What\'s the tax coefficient?', problem: '1.5x = 15', answer: 10, hints: ['Solve 1.5x = 15', 'Divide by 1.5', 'x = 10'] },
-                    { eq: 'Tony has twice as many coins as Sofia. Together they have 30. Sofia has x.', problem: '2x + x = 30', answer: 10, hints: ['Set up: 2x + x = 30', 'Combine: 3x = 30', 'Divide by 3: x = 10'] },
-                    { eq: 'Length is 3 more than width. Perimeter is 26. Width is x.', problem: '2x + 2(x + 3) = 26', answer: 5, hints: ['Expand: 2x + 2x + 6 = 26', 'Combine: 4x + 6 = 26', 'Solve: x = 5'] },
-                ]
-            }
-        ];
-
-        const TRANSLATIONS = {
-            en: {
-                hint: '💡 Hint',
-                submit: 'Check Answer',
-                next: 'Next Equation →',
-                correct: '✓ Correct!',
-                incorrect: '✗ Try Again',
-                levelTitle: (num) => `Level ${num}`,
-                complete: 'Level Complete!',
-                streak: 'Streak',
-                accuracy: 'Accuracy',
-                score: 'Score',
-                equation_label: 'Solve for x:'
-            },
-            es: {
-                hint: '💡 Pista',
-                submit: 'Verificar Respuesta',
-                next: 'Siguiente Ecuación →',
-                correct: '✓ ¡Correcto!',
-                incorrect: '✗ Intenta de Nuevo',
-                levelTitle: (num) => `Nivel ${num}`,
-                complete: '¡Nivel Completado!',
-                streak: 'Racha',
-                accuracy: 'Precisión',
-                score: 'Puntuación',
-                equation_label: 'Resuelve para x:'
-            }
-        };
-
-        // ========== STATE ==========
-        const state = {
-            currentLevel: null,
-            currentEquationIndex: 0,
-            levelProgress: {},
-            totalScore: 0,
-            streak: 0,
-            maxStreak: 0,
-            totalAttempts: 0,
-            correctAnswers: 0,
-            hints: [],
-            attemptsOnQuestion: 0,
-            language: 'en',
-            audioEnabled: true,
-            highContrast: false
-        };
-
-        // Load from localStorage
-        function loadState() {
-            const saved = localStorage.getItem('equationQuestState');
-            if (saved) {
-                Object.assign(state, JSON.parse(saved));
-            }
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
-
-        function saveState() {
-            localStorage.setItem('equationQuestState', JSON.stringify(state));
-        }
-
-        // ========== AUDIO ==========
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            if (!state.audioEnabled) return;
-
-            const now = audioContext.currentTime;
-            const osc = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-
-            osc.connect(gain);
-            gain.connect(audioContext.destination);
-
-            if (type === 'correct') {
-                osc.frequency.setValueAtTime(523, now);
-                osc.frequency.setValueAtTime(659, now + 0.1);
-                osc.frequency.setValueAtTime(784, now + 0.2);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            } else if (type === 'incorrect') {
-                osc.frequency.setValueAtTime(200, now);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                osc.start(now);
-                osc.stop(now + 0.2);
-            }
-        }
-
-        // ========== PARTICLES ==========
-        function createParticles(x, y, count = 8) {
-            const canvas = document.getElementById('particleCanvas');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            for (let i = 0; i < count; i++) {
-                const angle = (Math.PI * 2 * i) / count;
-                const velocity = 3 + Math.random() * 2;
-                const tx = Math.cos(angle) * velocity * 100;
-                const ty = Math.sin(angle) * velocity * 100;
-
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.innerHTML = '★';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-                particle.style.color = '#00ff88';
-                particle.style.setProperty('--tx', tx + 'px');
-                particle.style.setProperty('--ty', ty + 'px');
-                document.body.appendChild(particle);
-
-                setTimeout(() => particle.remove(), 800);
-            }
-        }
-
-        // ========== RENDER LEVEL SELECT ==========
-        function renderLevelSelect() {
-            const grid = document.getElementById('levelGrid');
-            grid.innerHTML = '';
-
-            LEVELS.forEach(level => {
-                const progress = state.levelProgress[level.id] || { completed: false, stars: 0, score: 0 };
-                const btn = document.createElement('button');
-                btn.className = 'level-btn';
-                btn.innerHTML = `
-                    <div class="level-stars">${'★'.repeat(progress.stars)}${'☆'.repeat(3 - progress.stars)}</div>
-                    <div class="level-num">L${level.id}</div>
-                    <div class="level-desc">${level.desc}</div>
-                `;
-                btn.onclick = () => startLevel(level.id);
-                grid.appendChild(btn);
-            });
-
-            updateStats();
-        }
-
-        function updateStats() {
-            const completed = Object.values(state.levelProgress).filter(p => p.completed).length;
-            const accuracy = state.totalAttempts > 0
-                ? Math.round((state.correctAnswers / state.totalAttempts) * 100)
-                : 0;
-
-            document.getElementById('totalScore').textContent = state.totalScore;
-            document.getElementById('streakCount').textContent = state.streak;
-            document.getElementById('levelsComplete').textContent = `${completed}/6`;
-            document.getElementById('accuracy').textContent = accuracy + '%';
-        }
-
-        // ========== START LEVEL ==========
-        function startLevel(levelId) {
-            state.currentLevel = levelId;
-            state.currentEquationIndex = 0;
-            state.hints = [];
-            state.attemptsOnQuestion = 0;
-            document.getElementById('levelSelect').classList.remove('active');
-            document.getElementById('gameScreen').classList.add('active');
-            showEquation();
-        }
-
-        // ========== SHOW EQUATION ==========
-        function showEquation() {
-            const level = LEVELS[state.currentLevel - 1];
-            const equation = level.equations[state.currentEquationIndex];
-
-            const levelTitle = document.getElementById('levelTitle');
-            levelTitle.textContent = level.title;
-
-            const equationText = document.getElementById('equationText');
-            if (equation.problem) {
-                equationText.textContent = `"${equation.eq}"`;
-            } else {
-                equationText.textContent = equation.eq;
-            }
-
-            document.getElementById('progressText').textContent =
-                `Equation ${state.currentEquationIndex + 1} of ${level.equations.length}`;
-
-            state.hints = equation.hints || [];
-            state.attemptsOnQuestion = 0;
-
-            renderInputArea();
-            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
-            document.getElementById('nextContainer').style.display = 'none';
-            document.getElementById('hintBox').style.display = 'none';
-            document.getElementById('submitBtn').style.display = 'block';
-            document.getElementById('hintBtn').disabled = false;
-        }
-
-        function renderInputArea() {
-            const inputArea = document.getElementById('inputArea');
-            inputArea.innerHTML = `
-                <div class="solve-method">
-                    <div class="solve-label">Answer: x = </div>
-                    <div class="input-row">
-                        <input type="number" id="answerInput" placeholder="Type your answer" step="any">
-                    </div>
-                </div>
-            `;
-            document.getElementById('answerInput').focus();
-            document.getElementById('answerInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') checkAnswer();
-            });
-        }
-
-        // ========== HINT SYSTEM ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('hintBtn').addEventListener('click', () => {
-                if (state.hints.length > 0 && state.hints.length > state.attemptsOnQuestion) {
-                    const hint = state.hints[state.attemptsOnQuestion];
-                    const hintBox = document.getElementById('hintBox');
-                    document.getElementById('hintTitle').textContent = `Hint ${state.attemptsOnQuestion + 1}:`;
-                    document.getElementById('hintContent').textContent = hint;
-                    hintBox.style.display = 'block';
-                    state.attemptsOnQuestion++;
-                }
-            });
-        });
-
-        // ========== CHECK ANSWER ==========
-        function checkAnswer() {
-            const level = LEVELS[state.currentLevel - 1];
-            const equation = level.equations[state.currentEquationIndex];
-            const input = document.getElementById('answerInput');
-            const userAnswer = parseFloat(input.value);
-
-            if (isNaN(userAnswer)) {
-                alert('Please enter a number');
-                return;
-            }
-
-            state.totalAttempts++;
-            const isCorrect = Math.abs(userAnswer - equation.answer) < 0.0001;
-
-            const feedback = document.getElementById('feedback');
-            feedback.classList.add('show');
-
-            if (isCorrect) {
-                playSound('correct');
-                state.correctAnswers++;
-                state.streak++;
-                state.totalScore += (10 - state.attemptsOnQuestion);
-                state.maxStreak = Math.max(state.maxStreak, state.streak);
-                createParticles(window.innerWidth / 2, window.innerHeight / 2);
-
-                feedback.classList.add('correct');
-                feedback.classList.remove('incorrect');
-                feedback.innerHTML = `
-                    <div class="feedback-title">${TRANSLATIONS[state.language].correct}</div>
-                    <div class="hint-text">Great work! You earned ${10 - state.attemptsOnQuestion} points!</div>
-                `;
-
-                document.getElementById('submitBtn').style.display = 'none';
-                document.getElementById('nextContainer').style.display = 'block';
-            } else {
-                playSound('incorrect');
-                state.streak = 0;
-                feedback.classList.add('incorrect');
-                feedback.classList.remove('correct');
-
-                const misconception = identifyMisconception(userAnswer, equation.answer);
-                feedback.innerHTML = `
-                    <div class="feedback-title">${TRANSLATIONS[state.language].incorrect}</div>
-                    <div class="hint-text">${misconception}</div>
-                `;
-                input.value = '';
-                input.focus();
-            }
-
-            document.getElementById('hintBtn').disabled = state.attemptsOnQuestion >= state.hints.length;
-            saveState();
-        }
-
-        function identifyMisconception(userAnswer, correctAnswer) {
-            const diff = userAnswer - correctAnswer;
-            if (Math.abs(diff) === 1) return 'Check: Did you forget to add or subtract one more step?';
-            if (userAnswer === -correctAnswer) return 'Check: Remember, we\'re solving for x, not its opposite!';
-            if (userAnswer === correctAnswer * 2) return 'Check: Did you forget to divide?';
-            if (userAnswer === correctAnswer / 2) return 'Check: Did you forget to multiply?';
-            return 'Not quite. Try using a hint or working through the steps carefully.';
-        }
-
-        // ========== NEXT EQUATION ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('nextBtn').addEventListener('click', () => {
-                const level = LEVELS[state.currentLevel - 1];
-                state.currentEquationIndex++;
-
-                if (state.currentEquationIndex < level.equations.length) {
-                    showEquation();
-                } else {
-                    completeLevel();
-                }
-            });
-        });
-
-        // ========== COMPLETE LEVEL ==========
-        function completeLevel() {
-            const accuracy = Math.round((state.correctAnswers / state.totalAttempts) * 100);
-            let stars = 0;
-            if (accuracy >= 90) stars = 3;
-            else if (accuracy >= 70) stars = 2;
-            else if (accuracy >= 50) stars = 1;
-
-            state.levelProgress[state.currentLevel] = {
-                completed: true,
-                stars: stars,
-                score: state.totalScore
-            };
-
-            saveState();
-
-            document.getElementById('modalTitle').textContent = TRANSLATIONS[state.language].complete;
-            document.getElementById('modalStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
-            document.getElementById('modalStats').innerHTML = `
-                <div>Accuracy: ${accuracy}%</div>
-                <div>Points Earned: ${state.totalScore}</div>
-                <div>Current Streak: ${state.streak}</div>
-            `;
-
-            document.getElementById('levelCompleteModal').classList.add('active');
-            document.getElementById('modalBtn').onclick = () => {
-                document.getElementById('levelCompleteModal').classList.remove('active');
-                document.getElementById('gameScreen').classList.remove('active');
-                document.getElementById('levelSelect').classList.add('active');
-                renderLevelSelect();
-            };
-        }
-
-        // ========== CONTROLS ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('backBtn').addEventListener('click', () => {
-                document.getElementById('gameScreen').classList.remove('active');
-                document.getElementById('levelSelect').classList.add('active');
-                renderLevelSelect();
-            });
-
-            document.getElementById('submitBtn').addEventListener('click', checkAnswer);
-
-            document.getElementById('audioToggle').addEventListener('click', function() {
-                state.audioEnabled = !state.audioEnabled;
-                this.textContent = state.audioEnabled ? '🔊 Sound' : '🔇 Sound';
-                saveState();
-            });
-
-            document.getElementById('contrastToggle').addEventListener('click', function() {
-                state.highContrast = !state.highContrast;
-                document.body.classList.toggle('high-contrast');
-                saveState();
-            });
-
-            document.getElementById('resetBtn').addEventListener('click', () => {
-                if (confirm('Reset all progress? This cannot be undone.')) {
-                    localStorage.removeItem('equationQuestState');
-                    location.reload();
-                }
-            });
-
-            // Language toggle
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    state.language = e.target.dataset.lang;
-                    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    saveState();
-                    if (state.currentLevel) {
-                        showEquation();
-                    } else {
-                        renderLevelSelect();
-                    }
-                });
-            });
-        });
-
-        // ========== INIT ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            loadState();
-            renderLevelSelect();
-
-            // Restore language selection
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.dataset.lang === state.language) {
-                    btn.classList.add('active');
-                }
-            });
-
-            // Restore audio/contrast toggles
-            if (!state.audioEnabled) {
-                document.getElementById('audioToggle').textContent = '🔇 Sound';
-            }
-            if (state.highContrast) {
-                document.body.classList.add('high-contrast');
-                document.getElementById('contrastToggle').classList.add('active');
-            }
-        });
+      });
     </script>
+    <script>
+      // ============================================================
+      //  EQUATION LEAP — Puzzle Platformer  (6.EE.C.9)
+      //  Jump between platforms, collect matching equation halves
+      // ============================================================
+
+      const W = 800,
+        H = 600;
+
+      // ---------- MATH CONTENT (from original Equation Quest) ----------
+      const ALL_PAIRS = [
+        // Level 1 — One-Step Add/Sub
+        { left: "x + 3 = 8", right: "x = 5", tier: 1 },
+        { left: "x - 2 = 7", right: "x = 9", tier: 1 },
+        { left: "5 = x + 1", right: "x = 4", tier: 1 },
+        { left: "x - 4 = 6", right: "x = 10", tier: 1 },
+        // Level 2 — One-Step Mult/Div
+        { left: "2x = 10", right: "x = 5", tier: 2 },
+        { left: "3x = 15", right: "x = 5", tier: 2 },
+        { left: "x ÷ 4 = 2", right: "x = 8", tier: 2 },
+        { left: "5x = 25", right: "x = 5", tier: 2 },
+        // Level 3 — Two-Step
+        { left: "2x + 3 = 11", right: "x = 4", tier: 3 },
+        { left: "3x - 2 = 10", right: "x = 4", tier: 3 },
+        { left: "4x + 5 = 21", right: "x = 4", tier: 3 },
+        { left: "5x - 7 = 3", right: "x = 2", tier: 3 },
+        // Level 4 — Variables Both Sides
+        { left: "2x + 3 = x + 8", right: "x = 5", tier: 4 },
+        { left: "3x - 2 = x + 6", right: "x = 4", tier: 4 },
+        { left: "5x + 1 = 3x + 9", right: "x = 4", tier: 4 },
+        { left: "4x - 5 = 2x + 3", right: "x = 4", tier: 4 },
+        // Level 5 — Distributive
+        { left: "2(x+1) = 10", right: "x = 4", tier: 5 },
+        { left: "3(x-2) = 9", right: "x = 5", tier: 5 },
+        { left: "2x+3(x-1)=12", right: "x = 3", tier: 5 },
+        { left: "4(x+2)-3=21", right: "x = 4", tier: 5 },
+        // Level 6 — Word Problems (simplified labels)
+        { left: "Books: x+5=23", right: "x = 18", tier: 6 },
+        { left: "Coins: 3x = 30", right: "x = 10", tier: 6 },
+        { left: "Width: 4x+6=26", right: "x = 5", tier: 6 },
+        { left: "Age: 2x-4 = 12", right: "x = 8", tier: 6 },
+      ];
+
+      // ============================================================
+      //  BOOT SCENE — Generate all textures programmatically
+      // ============================================================
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("BootScene");
+        }
+        create() {
+          const g = this.make.graphics({ x: 0, y: 0, add: false });
+
+          // Player — green square character with eyes
+          g.clear();
+          g.fillStyle(0x00ff88);
+          g.fillRoundedRect(2, 4, 28, 28, 4);
+          g.fillStyle(0xffffff);
+          g.fillCircle(10, 14, 4);
+          g.fillCircle(22, 14, 4);
+          g.fillStyle(0x0a0e27);
+          g.fillCircle(11, 14, 2);
+          g.fillCircle(23, 14, 2);
+          g.generateTexture("player", 32, 32);
+          g.clear();
+
+          // Platform
+          g.fillStyle(0x1a1f3a);
+          g.fillRect(0, 0, 96, 16);
+          g.fillStyle(0x00d4ff);
+          g.fillRect(0, 0, 96, 3);
+          g.generateTexture("platform", 96, 16);
+          g.clear();
+
+          // Equation gem (left half — blue)
+          g.fillStyle(0x00d4ff);
+          g.fillRect(2, 2, 28, 28);
+          g.fillStyle(0x0088cc);
+          g.fillRect(4, 4, 24, 24);
+          g.lineStyle(2, 0x00d4ff);
+          g.strokeRect(2, 2, 28, 28);
+          g.generateTexture("gemLeft", 32, 32);
+          g.clear();
+
+          // Solution gem (right half — green)
+          g.fillStyle(0x00ff88);
+          g.fillRect(2, 2, 28, 28);
+          g.fillStyle(0x00aa55);
+          g.fillRect(4, 4, 24, 24);
+          g.lineStyle(2, 0x00ff88);
+          g.strokeRect(2, 2, 28, 28);
+          g.generateTexture("gemRight", 32, 32);
+          g.clear();
+
+          // Wrong gem — red
+          g.fillStyle(0xff4444);
+          g.fillRect(2, 2, 28, 28);
+          g.fillStyle(0xcc2222);
+          g.fillRect(4, 4, 24, 24);
+          g.lineStyle(2, 0xff4444);
+          g.strokeRect(2, 2, 28, 28);
+          g.generateTexture("gemWrong", 32, 32);
+          g.clear();
+
+          // Star particle
+          g.fillStyle(0xffd166);
+          g.fillCircle(4, 4, 4);
+          g.generateTexture("star", 8, 8);
+          g.clear();
+
+          // Spark
+          g.fillStyle(0x00ff88);
+          g.fillCircle(3, 3, 3);
+          g.generateTexture("spark", 6, 6);
+          g.clear();
+
+          // Heart
+          g.fillStyle(0xff006e);
+          g.fillCircle(6, 6, 6);
+          g.fillCircle(14, 6, 6);
+          g.fillTriangle(0, 8, 20, 8, 10, 18);
+          g.generateTexture("heart", 20, 20);
+          g.clear();
+
+          // Coin
+          g.fillStyle(0xffd166);
+          g.fillCircle(8, 8, 8);
+          g.fillStyle(0xffaa00);
+          g.fillCircle(8, 8, 5);
+          g.generateTexture("coin", 16, 16);
+          g.clear();
+
+          // Background tile
+          g.fillStyle(0x0a0e27);
+          g.fillRect(0, 0, 64, 64);
+          g.lineStyle(1, 0x151a3a);
+          g.strokeRect(0, 0, 64, 64);
+          g.generateTexture("bgTile", 64, 64);
+          g.clear();
+
+          // Spike
+          g.fillStyle(0xff006e);
+          g.fillTriangle(0, 16, 8, 0, 16, 16);
+          g.generateTexture("spike", 16, 16);
+          g.clear();
+
+          // Portal
+          g.lineStyle(3, 0xff006e);
+          g.strokeCircle(16, 16, 14);
+          g.lineStyle(2, 0x00d4ff);
+          g.strokeCircle(16, 16, 10);
+          g.lineStyle(1, 0x00ff88);
+          g.strokeCircle(16, 16, 6);
+          g.generateTexture("portal", 32, 32);
+          g.clear();
+
+          g.destroy();
+          this.scene.start("TitleScene");
+        }
+      }
+
+      // ============================================================
+      //  AUDIO HELPER
+      // ============================================================
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        play(type) {
+          this.init();
+          const c = this.ctx,
+            t = c.currentTime,
+            o = c.createOscillator(),
+            g = c.createGain();
+          o.connect(g);
+          g.connect(c.destination);
+          g.gain.setValueAtTime(0.12, t);
+          if (type === "jump") {
+            o.frequency.setValueAtTime(300, t);
+            o.frequency.linearRampToValueAtTime(600, t + 0.1);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            o.start(t);
+            o.stop(t + 0.15);
+          } else if (type === "collect") {
+            o.frequency.setValueAtTime(523, t);
+            o.frequency.setValueAtTime(659, t + 0.08);
+            o.frequency.setValueAtTime(784, t + 0.16);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+            o.start(t);
+            o.stop(t + 0.25);
+          } else if (type === "match") {
+            o.frequency.setValueAtTime(523, t);
+            o.frequency.setValueAtTime(784, t + 0.1);
+            o.frequency.setValueAtTime(1047, t + 0.2);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            o.start(t);
+            o.stop(t + 0.35);
+          } else if (type === "wrong") {
+            o.type = "sawtooth";
+            o.frequency.setValueAtTime(200, t);
+            o.frequency.linearRampToValueAtTime(100, t + 0.2);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+            o.start(t);
+            o.stop(t + 0.25);
+          } else if (type === "hurt") {
+            o.type = "square";
+            o.frequency.setValueAtTime(150, t);
+            o.frequency.linearRampToValueAtTime(80, t + 0.3);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            o.start(t);
+            o.stop(t + 0.35);
+          } else if (type === "portal") {
+            o.type = "sine";
+            o.frequency.setValueAtTime(400, t);
+            o.frequency.linearRampToValueAtTime(1200, t + 0.4);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            o.start(t);
+            o.stop(t + 0.5);
+          } else if (type === "levelUp") {
+            const o2 = c.createOscillator(),
+              g2 = c.createGain();
+            o2.connect(g2);
+            g2.connect(c.destination);
+            g2.gain.setValueAtTime(0.1, t);
+            o.frequency.setValueAtTime(523, t);
+            o2.frequency.setValueAtTime(659, t);
+            o.frequency.setValueAtTime(784, t + 0.15);
+            o2.frequency.setValueAtTime(1047, t + 0.15);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            g2.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            o.start(t);
+            o.stop(t + 0.5);
+            o2.start(t);
+            o2.stop(t + 0.5);
+          }
+        },
+      };
+
+      // ============================================================
+      //  TITLE SCENE
+      // ============================================================
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("TitleScene");
+        }
+        create() {
+          // Background
+          for (let x = 0; x < W; x += 64)
+            for (let y = 0; y < H; y += 64)
+              this.add.image(x + 32, y + 32, "bgTile");
+
+          // Floating platforms for decoration
+          const deco = [
+            [150, 400],
+            [350, 300],
+            [550, 350],
+            [650, 250],
+          ];
+          deco.forEach(([x, y]) => {
+            const p = this.add.image(x, y, "platform");
+            this.tweens.add({
+              targets: p,
+              y: y - 8,
+              duration: 1500 + Math.random() * 1000,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+          });
+
+          // Floating gems
+          [200, 400, 600].forEach((x, i) => {
+            const gem = this.add.image(
+              x,
+              200 + i * 30,
+              i % 2 === 0 ? "gemLeft" : "gemRight",
+            );
+            this.tweens.add({
+              targets: gem,
+              y: gem.y - 15,
+              duration: 1200,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+          });
+
+          // Title
+          this.add
+            .text(W / 2, 100, "EQUATION LEAP", {
+              fontSize: "48px",
+              fontFamily: "Segoe UI",
+              fontStyle: "bold",
+              color: "#00ff88",
+              stroke: "#005533",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(W / 2, 155, "A Puzzle Platformer", {
+              fontSize: "18px",
+              color: "#00d4ff",
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(
+              W / 2,
+              185,
+              "Standard 6.EE.C.9 — Independent & Dependent Variables",
+              {
+                fontSize: "12px",
+                color: "#888",
+              },
+            )
+            .setOrigin(0.5);
+
+          // Instructions
+          const inst = [
+            "Arrow Keys / WASD to Move & Jump",
+            "Collect an EQUATION gem (blue), then its SOLUTION gem (green)",
+            "Avoid WRONG solutions (red) and spikes!",
+            "Match all pairs to open the portal",
+          ];
+          inst.forEach((t, i) => {
+            this.add
+              .text(W / 2, 240 + i * 24, t, { fontSize: "14px", color: "#ccc" })
+              .setOrigin(0.5);
+          });
+
+          // Difficulty buttons
+          const modes = [
+            { label: "EASY (Tiers 1-2)", tiers: [1, 2], color: 0x00ff88 },
+            { label: "MEDIUM (Tiers 3-4)", tiers: [3, 4], color: 0xffd166 },
+            { label: "HARD (Tiers 5-6)", tiers: [5, 6], color: 0xff006e },
+            { label: "ALL TIERS", tiers: [1, 2, 3, 4, 5, 6], color: 0x00d4ff },
+          ];
+          modes.forEach((m, i) => {
+            const bx = W / 2 - 150 + (i % 2) * 300,
+              by = 380 + Math.floor(i / 2) * 60;
+            const btn = this.add
+              .rectangle(bx, by, 240, 44, m.color, 0.2)
+              .setStrokeStyle(2, m.color)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(bx, by, m.label, {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setFillStyle(m.color, 0.4));
+            btn.on("pointerout", () => btn.setFillStyle(m.color, 0.2));
+            btn.on("pointerdown", () => {
+              SFX.play("collect");
+              this.scene.start("GameScene", { tiers: m.tiers });
+            });
+          });
+
+          this.add
+            .text(W / 2, H - 30, "Neft.Alba Premium Math", {
+              fontSize: "11px",
+              color: "#555",
+            })
+            .setOrigin(0.5);
+
+          // Player demo
+          const demo = this.add.image(400, 455, "player").setScale(1.5);
+          this.tweens.add({
+            targets: demo,
+            y: 445,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+        }
+      }
+
+      // ============================================================
+      //  GAME SCENE — The main platformer
+      // ============================================================
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("GameScene");
+        }
+
+        init(data) {
+          this.selectedTiers = data.tiers || [1, 2];
+          this.score = 0;
+          this.lives = 3;
+          this.combo = 0;
+          this.matched = 0;
+          this.heldEquation = null; // the pair object currently held
+          this.totalPairs = 0;
+          this.wrongPicks = 0;
+          this.levelWidth = 0;
+        }
+
+        create() {
+          // Select pairs for this run
+          const pool = ALL_PAIRS.filter((p) =>
+            this.selectedTiers.includes(p.tier),
+          );
+          Phaser.Utils.Array.Shuffle(pool);
+          this.pairs = pool.slice(0, Math.min(8, pool.length));
+          this.totalPairs = this.pairs.length;
+
+          // Level dimensions
+          this.levelWidth = Math.max(1600, this.totalPairs * 250);
+          const LH = H;
+
+          // Camera & world bounds
+          this.physics.world.setBounds(0, 0, this.levelWidth, LH);
+          this.cameras.main.setBounds(0, 0, this.levelWidth, LH);
+
+          // Background
+          for (let x = 0; x < this.levelWidth; x += 64)
+            for (let y = 0; y < LH; y += 64)
+              this.add.image(x + 32, y + 32, "bgTile").setScrollFactor(0.3);
+
+          // Stars background
+          for (let i = 0; i < 80; i++) {
+            const sx = Phaser.Math.Between(0, this.levelWidth);
+            const sy = Phaser.Math.Between(0, LH - 100);
+            const s = this.add
+              .image(sx, sy, "star")
+              .setAlpha(0.3 + Math.random() * 0.5)
+              .setScale(0.5 + Math.random());
+            s.setScrollFactor(0.2);
+          }
+
+          // ---- PLATFORMS ----
+          this.platforms = this.physics.add.staticGroup();
+
+          // Ground
+          for (let x = 0; x < this.levelWidth; x += 96) {
+            this.platforms.create(x + 48, LH - 8, "platform");
+          }
+
+          // Generate interesting platform layout
+          this.generatePlatforms();
+
+          // ---- PLAYER ----
+          this.player = this.physics.add.sprite(60, LH - 60, "player");
+          this.player.setCollideWorldBounds(true);
+          this.player.setBounce(0.1);
+          this.player.setGravityY(200);
+          this.physics.add.collider(this.player, this.platforms);
+
+          // Camera follow
+          this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+
+          // ---- GEMS ----
+          this.equationGems = this.physics.add.group(); // blue — equation side
+          this.solutionGems = this.physics.add.group(); // green — correct solution
+          this.wrongGems = this.physics.add.group(); // red — wrong solutions
+
+          this.placeGems();
+
+          // ---- SPIKES ----
+          this.spikes = this.physics.add.staticGroup();
+          this.placeSpikes();
+
+          // ---- PORTAL ----
+          this.portal = this.physics.add.sprite(
+            this.levelWidth - 80,
+            LH - 60,
+            "portal",
+          );
+          this.portal.body.setAllowGravity(false);
+          this.portal.setImmovable(true);
+          this.portal.setAlpha(0.3); // starts dim
+          this.tweens.add({
+            targets: this.portal,
+            angle: 360,
+            duration: 3000,
+            repeat: -1,
+          });
+
+          // ---- COLLISIONS ----
+          this.physics.add.overlap(
+            this.player,
+            this.equationGems,
+            this.collectEquation,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.player,
+            this.solutionGems,
+            this.collectSolution,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.player,
+            this.wrongGems,
+            this.collectWrong,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.player,
+            this.spikes,
+            this.hitSpike,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.player,
+            this.portal,
+            this.enterPortal,
+            null,
+            this,
+          );
+
+          // Gem-platform colliders
+          this.physics.add.collider(this.equationGems, this.platforms);
+          this.physics.add.collider(this.solutionGems, this.platforms);
+          this.physics.add.collider(this.wrongGems, this.platforms);
+
+          // ---- CONTROLS ----
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.wasd = this.input.keyboard.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            right: Phaser.Input.Keyboard.KeyCodes.D,
+          });
+
+          // Touch controls
+          this.touchLeft = false;
+          this.touchRight = false;
+          this.touchJump = false;
+
+          this.input.on("pointerdown", (p) => {
+            if (p.y > H * 0.6) {
+              if (p.x < W * 0.3) this.touchLeft = true;
+              else if (p.x > W * 0.7) this.touchRight = true;
+            } else {
+              this.touchJump = true;
+            }
+          });
+          this.input.on("pointerup", () => {
+            this.touchLeft = false;
+            this.touchRight = false;
+            this.touchJump = false;
+          });
+
+          // ---- HUD ----
+          this.createHUD();
+
+          // Invulnerability timer
+          this.invulnerable = false;
+
+          // Camera flash for start
+          this.cameras.main.flash(500, 0, 255, 136);
+        }
+
+        generatePlatforms() {
+          const LH = H;
+          const sections = Math.floor(this.levelWidth / 200);
+
+          for (let s = 0; s < sections; s++) {
+            const baseX = 100 + s * 200;
+            // 2-3 platforms per section at varying heights
+            const count = Phaser.Math.Between(1, 3);
+            for (let p = 0; p < count; p++) {
+              const px = baseX + Phaser.Math.Between(-40, 60);
+              const py = LH - Phaser.Math.Between(80, 350);
+              if (py > 50 && px > 0 && px < this.levelWidth - 48) {
+                this.platforms.create(px, py, "platform");
+              }
+            }
+          }
+        }
+
+        placeGems() {
+          const LH = H;
+          const spacing = (this.levelWidth - 200) / (this.totalPairs + 1);
+
+          // Build list of all wrong solutions for decoys
+          const allSolutions = this.pairs.map((p) => p.right);
+
+          this.pairs.forEach((pair, i) => {
+            // Place equation gem (blue) in first half-ish
+            const eqX = 120 + i * spacing + Phaser.Math.Between(-20, 20);
+            const eqY = LH - Phaser.Math.Between(60, 200);
+            const eqGem = this.equationGems.create(eqX, eqY, "gemLeft");
+            eqGem.setData("pair", pair);
+            eqGem.setBounce(0.3);
+            eqGem.body.setGravityY(-200); // float gently
+
+            // Label
+            const eqLabel = this.add
+              .text(eqX, eqY - 24, pair.left, {
+                fontSize: "10px",
+                color: "#00d4ff",
+                fontStyle: "bold",
+                backgroundColor: "rgba(0,0,0,0.7)",
+                padding: { x: 3, y: 2 },
+              })
+              .setOrigin(0.5);
+            eqGem.setData("label", eqLabel);
+
+            // Floating animation
+            this.tweens.add({
+              targets: [eqGem, eqLabel],
+              y: "-=12",
+              duration: 1200 + Math.random() * 600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+
+            // Place solution gem (green) further along
+            const solX = eqX + spacing * 0.5 + Phaser.Math.Between(30, 80);
+            const solY = LH - Phaser.Math.Between(80, 250);
+            const solGem = this.solutionGems.create(solX, solY, "gemRight");
+            solGem.setData("pair", pair);
+            solGem.setBounce(0.3);
+            solGem.body.setGravityY(-200);
+
+            const solLabel = this.add
+              .text(solX, solY - 24, pair.right, {
+                fontSize: "10px",
+                color: "#00ff88",
+                fontStyle: "bold",
+                backgroundColor: "rgba(0,0,0,0.7)",
+                padding: { x: 3, y: 2 },
+              })
+              .setOrigin(0.5);
+            solGem.setData("label", solLabel);
+
+            this.tweens.add({
+              targets: [solGem, solLabel],
+              y: "-=10",
+              duration: 1000 + Math.random() * 600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+
+            // Place 1-2 WRONG gems near the solution as decoys
+            const wrongCount = Phaser.Math.Between(1, 2);
+            for (let w = 0; w < wrongCount; w++) {
+              // Pick a wrong solution (not matching this pair)
+              const wrongOptions = allSolutions.filter((s) => s !== pair.right);
+              if (wrongOptions.length === 0) continue;
+              const wrongText = Phaser.Utils.Array.GetRandom(wrongOptions);
+
+              const wx = solX + Phaser.Math.Between(-100, 100);
+              const wy = LH - Phaser.Math.Between(60, 280);
+              const wGem = this.wrongGems.create(wx, wy, "gemWrong");
+              wGem.setData("pair", pair);
+              wGem.setData("wrongFor", pair);
+              wGem.setBounce(0.3);
+              wGem.body.setGravityY(-200);
+
+              const wLabel = this.add
+                .text(wx, wy - 24, wrongText, {
+                  fontSize: "10px",
+                  color: "#ff4444",
+                  fontStyle: "bold",
+                  backgroundColor: "rgba(0,0,0,0.7)",
+                  padding: { x: 3, y: 2 },
+                })
+                .setOrigin(0.5);
+              wGem.setData("label", wLabel);
+
+              this.tweens.add({
+                targets: [wGem, wLabel],
+                y: "-=8",
+                duration: 900 + Math.random() * 600,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+            }
+          });
+        }
+
+        placeSpikes() {
+          const sections = Math.floor(this.levelWidth / 300);
+          for (let s = 1; s < sections; s++) {
+            const count = Phaser.Math.Between(1, 3);
+            for (let i = 0; i < count; i++) {
+              const sx = s * 300 + Phaser.Math.Between(-60, 60);
+              this.spikes.create(sx, H - 20, "spike");
+            }
+          }
+        }
+
+        createHUD() {
+          const style = { fontSize: "14px", color: "#fff", fontStyle: "bold" };
+
+          // Score
+          this.scoreText = this.add
+            .text(16, 16, "Score: 0", style)
+            .setScrollFactor(0)
+            .setDepth(100);
+
+          // Lives
+          this.livesContainer = this.add
+            .container(16, 40)
+            .setScrollFactor(0)
+            .setDepth(100);
+          this.updateLivesDisplay();
+
+          // Combo
+          this.comboText = this.add
+            .text(16, 64, "", {
+              fontSize: "12px",
+              color: "#ffd166",
+              fontStyle: "bold",
+            })
+            .setScrollFactor(0)
+            .setDepth(100);
+
+          // Held equation display
+          this.heldText = this.add
+            .text(W / 2, 16, "", {
+              fontSize: "14px",
+              color: "#00d4ff",
+              fontStyle: "bold",
+              backgroundColor: "rgba(0,0,0,0.8)",
+              padding: { x: 8, y: 4 },
+            })
+            .setOrigin(0.5, 0)
+            .setScrollFactor(0)
+            .setDepth(100);
+
+          // Progress
+          this.progressText = this.add
+            .text(W - 16, 16, `Matched: 0/${this.totalPairs}`, {
+              fontSize: "13px",
+              color: "#00ff88",
+            })
+            .setOrigin(1, 0)
+            .setScrollFactor(0)
+            .setDepth(100);
+
+          // Touch hints
+          if (!this.sys.game.device.os.desktop) {
+            this.add
+              .text(60, H - 30, "< LEFT", { fontSize: "12px", color: "#555" })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.add
+              .text(W - 60, H - 30, "RIGHT >", {
+                fontSize: "12px",
+                color: "#555",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.add
+              .text(W / 2, H / 4, "TAP TOP TO JUMP", {
+                fontSize: "12px",
+                color: "#555",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(100);
+          }
+        }
+
+        updateLivesDisplay() {
+          this.livesContainer.removeAll(true);
+          for (let i = 0; i < this.lives; i++) {
+            this.livesContainer.add(
+              this.add.image(i * 22, 0, "heart").setScale(0.8),
+            );
+          }
+        }
+
+        // ---- COLLECT EQUATION (Blue) ----
+        collectEquation(player, gem) {
+          const pair = gem.getData("pair");
+          this.heldEquation = pair;
+
+          // Remove gem + label
+          const label = gem.getData("label");
+          if (label) label.destroy();
+
+          // Particle burst
+          this.emitParticles(gem.x, gem.y, 0x00d4ff);
+          gem.destroy();
+
+          SFX.play("collect");
+
+          // Update HUD
+          this.heldText.setText(
+            "Holding: " + pair.left + "  →  Find the solution!",
+          );
+          this.heldText.setColor("#00d4ff");
+
+          // Flash camera
+          this.cameras.main.flash(200, 0, 100, 200);
+        }
+
+        // ---- COLLECT SOLUTION (Green) ----
+        collectSolution(player, gem) {
+          const pair = gem.getData("pair");
+
+          if (!this.heldEquation) {
+            // Not holding anything — show hint
+            this.showFloatingText(
+              gem.x,
+              gem.y - 30,
+              "Pick up an equation first!",
+              "#ffd166",
+            );
+            return;
+          }
+
+          if (this.heldEquation === pair) {
+            // CORRECT MATCH
+            this.matched++;
+            this.combo++;
+            const pts = 100 + this.combo * 25;
+            this.score += pts;
+
+            const label = gem.getData("label");
+            if (label) label.destroy();
+
+            this.emitParticles(gem.x, gem.y, 0x00ff88, 15);
+            gem.destroy();
+
+            SFX.play("match");
+
+            this.showFloatingText(
+              gem.x,
+              gem.y - 30,
+              `MATCH! +${pts}`,
+              "#00ff88",
+            );
+            this.heldEquation = null;
+            this.heldText.setText("");
+
+            this.scoreText.setText("Score: " + this.score);
+            if (this.combo > 1)
+              this.comboText.setText("Combo x" + this.combo + "!");
+            this.progressText.setText(
+              `Matched: ${this.matched}/${this.totalPairs}`,
+            );
+
+            this.cameras.main.flash(300, 0, 255, 136);
+            this.cameras.main.shake(100, 0.005);
+
+            // Check if all matched
+            if (this.matched >= this.totalPairs) {
+              this.openPortal();
+            }
+          } else {
+            // Wrong match — this solution doesn't go with held equation
+            this.combo = 0;
+            this.comboText.setText("");
+            this.wrongPicks++;
+
+            SFX.play("wrong");
+            this.showFloatingText(gem.x, gem.y - 30, "Wrong match!", "#ff4444");
+            this.cameras.main.shake(200, 0.01);
+
+            // Drop the held equation
+            this.heldEquation = null;
+            this.heldText.setText("Dropped! Pick up again.");
+            this.heldText.setColor("#ff4444");
+            this.time.delayedCall(1500, () => {
+              if (!this.heldEquation) this.heldText.setText("");
+            });
+          }
+        }
+
+        // ---- COLLECT WRONG (Red) ----
+        collectWrong(player, gem) {
+          if (!this.heldEquation) {
+            this.showFloatingText(
+              gem.x,
+              gem.y - 30,
+              "Pick up a blue gem first!",
+              "#ffd166",
+            );
+            return;
+          }
+
+          // Wrong answer!
+          this.combo = 0;
+          this.comboText.setText("");
+          this.wrongPicks++;
+          this.lives--;
+
+          const label = gem.getData("label");
+          if (label) label.destroy();
+          gem.destroy();
+
+          SFX.play("wrong");
+          this.showFloatingText(gem.x, gem.y - 30, "WRONG! -1 Life", "#ff4444");
+          this.cameras.main.shake(300, 0.02);
+          this.cameras.main.flash(200, 255, 0, 0);
+          this.updateLivesDisplay();
+
+          // Drop held
+          this.heldEquation = null;
+          this.heldText.setText("Wrong solution! Pick up again.");
+          this.heldText.setColor("#ff4444");
+          this.time.delayedCall(1500, () => {
+            if (!this.heldEquation) this.heldText.setText("");
+          });
+
+          if (this.lives <= 0) {
+            this.gameOver();
+          }
+        }
+
+        hitSpike(player, spike) {
+          if (this.invulnerable) return;
+          this.invulnerable = true;
+
+          this.lives--;
+          SFX.play("hurt");
+          this.cameras.main.shake(300, 0.02);
+          this.cameras.main.flash(200, 255, 0, 0);
+          this.updateLivesDisplay();
+
+          // Knock back
+          this.player.setVelocityY(-250);
+
+          // Flash player
+          this.tweens.add({
+            targets: this.player,
+            alpha: 0.3,
+            duration: 100,
+            yoyo: true,
+            repeat: 8,
+            onComplete: () => {
+              this.player.setAlpha(1);
+              this.invulnerable = false;
+            },
+          });
+
+          // Drop held equation
+          if (this.heldEquation) {
+            this.heldEquation = null;
+            this.heldText.setText("Ouch! Equation dropped!");
+            this.heldText.setColor("#ff4444");
+            this.time.delayedCall(1500, () => {
+              if (!this.heldEquation) this.heldText.setText("");
+            });
+          }
+
+          if (this.lives <= 0) {
+            this.gameOver();
+          }
+        }
+
+        openPortal() {
+          this.portal.setAlpha(1);
+          this.tweens.add({
+            targets: this.portal,
+            scaleX: 1.5,
+            scaleY: 1.5,
+            duration: 500,
+            yoyo: true,
+            repeat: 2,
+            ease: "Sine.easeInOut",
+          });
+          SFX.play("portal");
+
+          this.showFloatingText(
+            this.portal.x,
+            this.portal.y - 40,
+            "PORTAL OPEN!",
+            "#ff006e",
+          );
+
+          // Arrow pointing to portal
+          const arrow = this.add
+            .text(this.portal.x, this.portal.y - 60, "▼ PORTAL ▼", {
+              fontSize: "14px",
+              color: "#ff006e",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: arrow,
+            y: arrow.y - 10,
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        enterPortal(player, portal) {
+          if (this.matched < this.totalPairs) return; // portal not open yet
+
+          this.physics.pause();
+          SFX.play("levelUp");
+          this.cameras.main.flash(1000, 0, 255, 136);
+
+          this.time.delayedCall(800, () => {
+            this.scene.start("ResultsScene", {
+              score: this.score,
+              matched: this.matched,
+              total: this.totalPairs,
+              lives: this.lives,
+              wrongPicks: this.wrongPicks,
+              tiers: this.selectedTiers,
+            });
+          });
+        }
+
+        gameOver() {
+          this.physics.pause();
+          SFX.play("hurt");
+
+          const overlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.7)
+            .setScrollFactor(0)
+            .setDepth(200);
+          this.add
+            .text(W / 2, H / 2 - 40, "GAME OVER", {
+              fontSize: "40px",
+              color: "#ff006e",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(201);
+
+          this.add
+            .text(
+              W / 2,
+              H / 2 + 10,
+              `Matched ${this.matched}/${this.totalPairs} pairs`,
+              {
+                fontSize: "18px",
+                color: "#fff",
+              },
+            )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(201);
+
+          const retry = this.add
+            .text(W / 2, H / 2 + 60, "[ CLICK TO RETRY ]", {
+              fontSize: "16px",
+              color: "#00ff88",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(201)
+            .setInteractive({ useHandCursor: true });
+
+          this.tweens.add({
+            targets: retry,
+            alpha: 0.5,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+          });
+          retry.on("pointerdown", () => {
+            this.scene.start("GameScene", { tiers: this.selectedTiers });
+          });
+
+          // Also allow keyboard
+          this.input.keyboard.once("keydown-SPACE", () => {
+            this.scene.start("GameScene", { tiers: this.selectedTiers });
+          });
+        }
+
+        showFloatingText(x, y, text, color) {
+          const t = this.add
+            .text(x, y, text, {
+              fontSize: "14px",
+              color: color,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5)
+            .setDepth(150);
+          this.tweens.add({
+            targets: t,
+            y: y - 50,
+            alpha: 0,
+            duration: 1200,
+            ease: "Power2",
+            onComplete: () => t.destroy(),
+          });
+        }
+
+        emitParticles(x, y, tint, count) {
+          count = count || 8;
+          for (let i = 0; i < count; i++) {
+            const p = this.add
+              .image(x, y, "spark")
+              .setTint(tint)
+              .setScale(1 + Math.random());
+            const angle = (Math.PI * 2 * i) / count;
+            const dist = 40 + Math.random() * 40;
+            this.tweens.add({
+              targets: p,
+              x: x + Math.cos(angle) * dist,
+              y: y + Math.sin(angle) * dist,
+              alpha: 0,
+              scale: 0,
+              duration: 400 + Math.random() * 200,
+              ease: "Power2",
+              onComplete: () => p.destroy(),
+            });
+          }
+        }
+
+        update() {
+          if (!this.player || !this.player.body) return;
+
+          const onGround =
+            this.player.body.touching.down || this.player.body.blocked.down;
+          const speed = 200;
+
+          // Horizontal movement
+          if (
+            this.cursors.left.isDown ||
+            this.wasd.left.isDown ||
+            this.touchLeft
+          ) {
+            this.player.setVelocityX(-speed);
+            this.player.setFlipX(true);
+          } else if (
+            this.cursors.right.isDown ||
+            this.wasd.right.isDown ||
+            this.touchRight
+          ) {
+            this.player.setVelocityX(speed);
+            this.player.setFlipX(false);
+          } else {
+            this.player.setVelocityX(0);
+          }
+
+          // Jump
+          if (
+            (this.cursors.up.isDown || this.wasd.up.isDown || this.touchJump) &&
+            onGround
+          ) {
+            this.player.setVelocityY(-420);
+            SFX.play("jump");
+            this.touchJump = false; // one jump per tap
+          }
+
+          // Sync gem labels with gem positions (for the floating ones)
+          [this.equationGems, this.solutionGems, this.wrongGems].forEach(
+            (group) => {
+              group.getChildren().forEach((gem) => {
+                const label = gem.getData("label");
+                if (label && label.active) {
+                  label.setPosition(gem.x, gem.y - 24);
+                }
+              });
+            },
+          );
+
+          // Player glow when holding equation
+          if (this.heldEquation) {
+            this.player.setTint(0x00d4ff);
+          } else {
+            this.player.clearTint();
+          }
+        }
+      }
+
+      // ============================================================
+      //  RESULTS SCENE
+      // ============================================================
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("ResultsScene");
+        }
+
+        init(data) {
+          this.finalScore = data.score || 0;
+          this.matched = data.matched || 0;
+          this.total = data.total || 0;
+          this.lives = data.lives || 0;
+          this.wrongPicks = data.wrongPicks || 0;
+          this.tiers = data.tiers || [1, 2];
+        }
+
+        create() {
+          // Background
+          for (let x = 0; x < W; x += 64)
+            for (let y = 0; y < H; y += 64)
+              this.add.image(x + 32, y + 32, "bgTile");
+
+          // Rank
+          const accuracy =
+            this.total > 0 ? Math.round((this.matched / this.total) * 100) : 0;
+          let rank = "C",
+            rankColor = "#ff4444";
+          if (accuracy >= 100 && this.wrongPicks === 0) {
+            rank = "S";
+            rankColor = "#ffd166";
+          } else if (accuracy >= 100) {
+            rank = "A";
+            rankColor = "#00ff88";
+          } else if (accuracy >= 60) {
+            rank = "B";
+            rankColor = "#00d4ff";
+          }
+
+          // Stars
+          let stars = 0;
+          if (accuracy >= 100 && this.wrongPicks <= 2) stars = 3;
+          else if (accuracy >= 100) stars = 2;
+          else if (accuracy >= 50) stars = 1;
+
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.matched,
+                maxScore: this.total,
+                stars: stars,
+                problemsCorrect: this.matched,
+                problemsAttempted: this.total,
+                percent: accuracy,
+                standard: "6.EE.C.9",
+              });
+          } catch (e) {}
+
+          // Victory particles
+          for (let i = 0; i < 30; i++) {
+            const s = this.add
+              .image(
+                Phaser.Math.Between(50, W - 50),
+                Phaser.Math.Between(50, H - 50),
+                "star",
+              )
+              .setTint(
+                Phaser.Utils.Array.GetRandom([
+                  0x00ff88, 0x00d4ff, 0xffd166, 0xff006e,
+                ]),
+              )
+              .setAlpha(0)
+              .setScale(0);
+            this.tweens.add({
+              targets: s,
+              alpha: 0.8,
+              scale: 1 + Math.random() * 2,
+              duration: 500,
+              delay: i * 50,
+              yoyo: true,
+              repeat: -1,
+              hold: 200,
+            });
+          }
+
+          // Title
+          this.add
+            .text(W / 2, 60, "LEVEL COMPLETE!", {
+              fontSize: "40px",
+              color: "#00ff88",
+              fontStyle: "bold",
+              stroke: "#005533",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+
+          // Rank badge
+          this.add
+            .text(W / 2, 130, rank, {
+              fontSize: "80px",
+              color: rankColor,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 5,
+            })
+            .setOrigin(0.5);
+
+          // Stars
+          const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
+          this.add
+            .text(W / 2, 190, starStr, {
+              fontSize: "36px",
+              color: "#ffd166",
+            })
+            .setOrigin(0.5);
+
+          // Stats
+          const stats = [
+            `Score: ${this.finalScore}`,
+            `Pairs Matched: ${this.matched}/${this.total}`,
+            `Wrong Picks: ${this.wrongPicks}`,
+            `Lives Remaining: ${this.lives}`,
+            `Accuracy: ${accuracy}%`,
+          ];
+          stats.forEach((s, i) => {
+            this.add
+              .text(W / 2, 240 + i * 28, s, {
+                fontSize: "16px",
+                color: "#ccc",
+              })
+              .setOrigin(0.5);
+          });
+
+          // Buttons
+          const retryBtn = this.add
+            .rectangle(W / 2 - 110, 440, 180, 44, 0x00d4ff, 0.2)
+            .setStrokeStyle(2, 0x00d4ff)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 - 110, 440, "PLAY AGAIN", {
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          retryBtn.on("pointerover", () =>
+            retryBtn.setFillStyle(0x00d4ff, 0.4),
+          );
+          retryBtn.on("pointerout", () => retryBtn.setFillStyle(0x00d4ff, 0.2));
+          retryBtn.on("pointerdown", () => {
+            this.scene.start("GameScene", { tiers: this.tiers });
+          });
+
+          const menuBtn = this.add
+            .rectangle(W / 2 + 110, 440, 180, 44, 0xff006e, 0.2)
+            .setStrokeStyle(2, 0xff006e)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 + 110, 440, "MAIN MENU", {
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          menuBtn.on("pointerover", () => menuBtn.setFillStyle(0xff006e, 0.4));
+          menuBtn.on("pointerout", () => menuBtn.setFillStyle(0xff006e, 0.2));
+          menuBtn.on("pointerdown", () => {
+            this.scene.start("TitleScene");
+          });
+
+          this.add
+            .text(W / 2, H - 20, "Neft.Alba Premium Math | 6.EE.C.9", {
+              fontSize: "10px",
+              color: "#555",
+            })
+            .setOrigin(0.5);
+        }
+      }
+
+      // ============================================================
+      //  PHASER CONFIG
+      // ============================================================
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0a0e27",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        physics: {
+          default: "arcade",
+          arcade: {
+            gravity: { y: 600 },
+            debug: false,
+          },
+        },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+      };
+
+      new Phaser.Game(config);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

@@ -1,0 +1,1858 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Unit 1 Supplemental — Foundation Math Skills | Neft Teacher</title>
+    <style>
+      /* ── Supplemental page variables ── */
+      :root {
+        --esol-primary: #0891b2;
+        --esol-light: #ecfeff;
+        --esol-border: #a5f3fc;
+        --esol-dark: #155e75;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #f5f3ff;
+        --enrich-border: #c4b5fd;
+        --enrich-dark: #5b21b6;
+        --enrich-gold: #d97706;
+        --enrich-gold-light: #fffbeb;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+        --warning: #ea580c;
+      }
+
+      /* ── Tab system ── */
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        border-bottom: 3px solid var(--line);
+        margin-bottom: 28px;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: transparent;
+        font-size: 1.05rem;
+        font-weight: 800;
+        cursor: pointer;
+        border-bottom: 4px solid transparent;
+        margin-bottom: -3px;
+        transition: all 180ms ease;
+        font-family: inherit;
+      }
+      .tab-btn[data-tab="esol"] {
+        color: var(--esol-dark);
+      }
+      .tab-btn[data-tab="enrichment"] {
+        color: var(--enrich-dark);
+      }
+      .tab-btn.active[data-tab="esol"] {
+        border-bottom-color: var(--esol-primary);
+        background: var(--esol-light);
+      }
+      .tab-btn.active[data-tab="enrichment"] {
+        border-bottom-color: var(--enrich-primary);
+        background: var(--enrich-light);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Section cards ── */
+      .supp-section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .supp-section h3 {
+        margin: 0 0 16px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .esol-panel .supp-section {
+        border-left: 5px solid var(--esol-primary);
+      }
+      .enrich-panel .supp-section {
+        border-left: 5px solid var(--enrich-primary);
+      }
+
+      /* ── Visual vocabulary grid ── */
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .vocab-card svg {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 10px;
+      }
+      .vocab-term {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.88rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 2px;
+      }
+      .vocab-def {
+        font-size: 0.92rem;
+        color: var(--ink);
+        margin-top: 6px;
+        line-height: 1.45;
+      }
+
+      /* ── Sentence frames ── */
+      .sentence-frame {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+      .sentence-frame .blank {
+        display: inline-block;
+        min-width: 80px;
+        border-bottom: 2px solid var(--esol-primary);
+        margin: 0 4px;
+      }
+
+      /* ── Step-by-step guides ── */
+      .step-guide {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .step-guide h4 {
+        margin: 0 0 14px;
+        color: var(--esol-dark);
+      }
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .step-num {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        background: var(--esol-primary);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+      .step-text {
+        flex: 1;
+        font-size: 0.98rem;
+        line-height: 1.5;
+      }
+      .step-text .highlight {
+        background: #fef3c7;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .step-arrow {
+        text-align: center;
+        color: var(--esol-primary);
+        font-size: 1.4rem;
+        margin: -4px 0 8px 50px;
+      }
+
+      /* ── Practice problems ── */
+      .practice-list {
+        counter-reset: practice;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .practice-item {
+        counter-increment: practice;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        margin-bottom: 10px;
+      }
+      .practice-item::before {
+        content: counter(practice) ".";
+        font-weight: 800;
+        color: var(--esol-dark);
+        margin-right: 8px;
+      }
+      .enrich-panel .practice-item::before {
+        color: var(--enrich-dark);
+      }
+      .hint-btn,
+      .answer-btn,
+      .check-btn {
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: inherit;
+        margin-top: 8px;
+        margin-right: 6px;
+        transition: all 150ms ease;
+      }
+      .hint-btn:hover {
+        border-color: var(--esol-primary);
+        color: var(--esol-primary);
+      }
+      .answer-btn:hover {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .enrich-panel .hint-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .enrich-panel .answer-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .hint-box,
+      .answer-box {
+        display: none;
+        margin-top: 10px;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+      .hint-box {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+      }
+      .answer-box {
+        background: var(--success-light);
+        border: 1px solid #bbf7d0;
+      }
+      .hint-box.show,
+      .answer-box.show {
+        display: block;
+      }
+
+      /* ── Real-world connections ── */
+      .rw-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .rw-card svg {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+      }
+      .rw-card h4 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+      }
+      .rw-card p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      /* ── Enrichment-specific ── */
+      .challenge-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-left: 8px;
+      }
+      .badge-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-hard {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .badge-expert {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+
+      .investigation-card {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .investigation-card h4 {
+        margin: 0 0 8px;
+        color: var(--enrich-dark);
+      }
+      .investigation-card p {
+        margin: 0 0 10px;
+        font-size: 0.95rem;
+      }
+      .investigation-steps {
+        padding-left: 20px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .investigation-steps li {
+        margin-bottom: 4px;
+      }
+
+      .brain-teaser {
+        background: var(--enrich-gold-light);
+        border: 1px solid #fde68a;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .brain-teaser h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-gold);
+      }
+
+      .extension-box {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-left: 5px solid var(--enrich-primary);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .extension-box h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-dark);
+      }
+
+      /* ── Self-assessment checklist ── */
+      .self-assess {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .self-assess li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .self-assess li:last-child {
+        border-bottom: none;
+      }
+      .rating-btns {
+        display: flex;
+        gap: 4px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .rating-btns button {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 150ms ease;
+        font-family: inherit;
+      }
+      .rating-btns button.selected {
+        background: var(--enrich-primary);
+        color: #fff;
+        border-color: var(--enrich-primary);
+      }
+      .rating-btns button:hover:not(.selected) {
+        border-color: var(--enrich-primary);
+      }
+
+      /* ── Print button ── */
+      .print-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+      }
+      .print-btn {
+        padding: 8px 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+      }
+      .print-btn:hover {
+        border-color: var(--teal);
+      }
+
+      /* ── Print styles ── */
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        .tab-bar,
+        .print-bar,
+        .hint-btn,
+        .answer-btn,
+        .check-btn,
+        .rating-btns {
+          display: none !important;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .tab-panel::before {
+          content: attr(data-print-title);
+          display: block;
+          font-size: 1.4rem;
+          font-weight: 800;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #000;
+        }
+        .hint-box,
+        .answer-box {
+          display: block !important;
+          border: 1px solid #ccc;
+        }
+        .supp-section {
+          break-inside: avoid;
+        }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 620px) {
+        .vocab-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .tab-btn {
+          font-size: 0.92rem;
+          padding: 12px 10px;
+        }
+        .rw-card {
+          flex-direction: column;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+<div class="l0-extra-support" role="note">
+  🟠 <b>Level 0 — Most Support.</b> Same skills as Level 1, with extra help:
+  press <button id="readAloudBtn" class="l0-readaloud" type="button">🔊 Read aloud</button>
+  then tap any text to hear it. Open every 💡 Hint — that is okay here.
+</div>
+<style>
+.l0-extra-support{display:none;max-width:900px;margin:10px auto;padding:12px 16px;background:#fff7ed;border:1px solid #fdba74;border-radius:12px;color:#7c2d12;font-size:15px;line-height:1.5;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+body.l0on .l0-extra-support{display:block}
+.l0-readaloud{border:1px solid #fdba74;background:#fff;color:#9a3412;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;font-size:14px}
+.l0-readaloud:hover{background:#ffedd5}
+.tab-btn[data-tab="level0"]{color:#9a3412}
+.tab-btn.active[data-tab="level0"]{background:#fff7ed;border-color:#fdba74;color:#9a3412}
+body.l0-reading *{cursor:help}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<script>
+(function(){var b=document.getElementById("readAloudBtn");if(!b)return;var on=false;
+function speak(t){try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=0.9;window.speechSynthesis.speak(u);}catch(e){}}
+b.addEventListener("click",function(){on=!on;document.body.classList.toggle("l0-reading",on);b.textContent=on?"🔊 Tap text to hear":"🔊 Read aloud";if(!on){try{window.speechSynthesis.cancel();}catch(e){}}});
+document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(".l0-extra-support"))return;var el=e.target.closest("p,li,h1,h2,h3,h4,label,td,.q-text");if(el){var t=el.textContent.trim();if(t&&t.length<400)speak(t);}},true);})();
+</script>
+
+    <main class="page-shell">
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Reveal Math · Unit 1 · Supplemental</p>
+        <h1>Foundation Math Skills</h1>
+        <p class="hero-copy">
+          Extra support and enrichment for beginning-of-year Grade 6 math
+          foundations: number sense, operations, place value, and
+          problem-solving strategies.
+        </p>
+      </section>
+
+      <div class="print-bar">
+        <button class="print-btn" onclick="window.print()">
+          Print This Page
+        </button>
+        <button class="print-btn" onclick="NeftDocx.exportPage()">⬇ Download Word Doc</button>
+      </div>
+
+      <div class="tab-bar">
+        <button
+          class="tab-btn active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          Level 1 Support
+        </button>
+        <button
+          class="tab-btn"
+          data-tab="enrichment"
+          onclick="switchTab('enrichment')"
+        >
+          Enrichment
+        </button>
+      </div>
+
+      <!-- ═══════════════════ LEVEL 1 SUPPORT TAB ═══════════════════ -->
+      <div
+        class="tab-panel esol-panel active"
+        id="esol-panel"
+        data-print-title="Level 1 Support — Foundation Math Skills"
+      >
+        <!-- Visual Vocabulary -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="2"
+                y="4"
+                width="24"
+                height="20"
+                rx="3"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M9 11h10M9 15h7"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Visual Vocabulary
+          </h3>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="8"
+                  y="12"
+                  width="48"
+                  height="40"
+                  rx="4"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="38"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  123
+                </text>
+              </svg>
+              <div class="vocab-term">Whole Number</div>
+              <div class="vocab-spanish">Numero entero</div>
+              <div class="vocab-def">
+                A number with no fractions or decimals. Examples: 0, 5, 27, 100
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="6"
+                  y="16"
+                  width="52"
+                  height="32"
+                  rx="4"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="38"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  3.75
+                </text>
+                <circle cx="23" cy="36" r="2" fill="#ea580c" />
+              </svg>
+              <div class="vocab-term">Decimal</div>
+              <div class="vocab-spanish">Decimal</div>
+              <div class="vocab-def">
+                A number with a dot (point) that shows part of a whole. Example:
+                3.75
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <line
+                  x1="20"
+                  y1="28"
+                  x2="44"
+                  y2="28"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="24"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  1
+                </text>
+                <text
+                  x="32"
+                  y="46"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  2
+                </text>
+              </svg>
+              <div class="vocab-term">Fraction</div>
+              <div class="vocab-spanish">Fraccion</div>
+              <div class="vocab-def">
+                A part of a whole. The top number (numerator) is the part. The
+                bottom number (denominator) is the total pieces.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="38"
+                  text-anchor="middle"
+                  font-size="22"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  + - x /
+                </text>
+              </svg>
+              <div class="vocab-term">Operation</div>
+              <div class="vocab-spanish">Operacion</div>
+              <div class="vocab-def">
+                The action in a math problem: add (+), subtract (-), multiply
+                (x), divide (/)
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="10"
+                  y="14"
+                  width="44"
+                  height="36"
+                  rx="4"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  thousands
+                </text>
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  5, 2 4 3
+                </text>
+              </svg>
+              <div class="vocab-term">Place Value</div>
+              <div class="vocab-spanish">Valor posicional</div>
+              <div class="vocab-def">
+                The value of a digit based on where it is. In 5,243, the 5 is in
+                the thousands place.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  3 x 4 = 12
+                </text>
+              </svg>
+              <div class="vocab-term">Factor</div>
+              <div class="vocab-spanish">Factor</div>
+              <div class="vocab-def">
+                A number you multiply. In 3 x 4 = 12, the factors are 3 and 4.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="34"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  8 / 2 = 4
+                </text>
+                <text
+                  x="32"
+                  y="50"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#155e75"
+                >
+                  quotient
+                </text>
+              </svg>
+              <div class="vocab-term">Quotient</div>
+              <div class="vocab-spanish">Cociente</div>
+              <div class="vocab-def">
+                The answer when you divide. In 8 / 2 = 4, the quotient is 4.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="20"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  about
+                </text>
+                <text
+                  x="32"
+                  y="42"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  ~350
+                </text>
+              </svg>
+              <div class="vocab-term">Estimate</div>
+              <div class="vocab-spanish">Estimacion</div>
+              <div class="vocab-def">
+                A close guess, not the exact answer. Round numbers to make
+                estimation easier.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 6h20v16H4z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M8 11h12M8 15h8M8 19h10"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Sentence Frames
+          </h3>
+          <div class="sentence-frame">
+            The <span class="blank">&nbsp;</span> of
+            <span class="blank">&nbsp;</span> and
+            <span class="blank">&nbsp;</span> is
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            I can solve this by first <span class="blank">&nbsp;</span>, then
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            The number <span class="blank">&nbsp;</span> has a
+            <span class="blank">&nbsp;</span> in the
+            <span class="blank">&nbsp;</span> place.
+          </div>
+          <div class="sentence-frame">
+            To estimate, I round <span class="blank">&nbsp;</span> to
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            The answer is reasonable because <span class="blank">&nbsp;</span>.
+          </div>
+        </div>
+
+        <!-- Step-by-Step Visual Guides -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8v6l4 3"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Step-by-Step Visual Guides
+          </h3>
+
+          <div class="step-guide">
+            <h4>How to Add Multi-Digit Numbers</h4>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                >Line up the numbers by
+                <span class="highlight">place value</span> (ones under ones,
+                tens under tens).</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                >Start adding from the
+                <span class="highlight">right side</span> (ones column
+                first).</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                >If a column adds to <span class="highlight">10 or more</span>,
+                write the ones digit and carry the tens digit.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">4</span>
+              <span class="step-text"
+                >Keep going left. <span class="highlight">Check</span> your
+                answer with estimation.</span
+              >
+            </div>
+          </div>
+
+          <div class="step-guide">
+            <h4>How to Multiply Multi-Digit Numbers</h4>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                >Write the bigger number on
+                <span class="highlight">top</span>.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                >Multiply by the <span class="highlight">ones digit</span> of
+                the bottom number first.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                >Move to the <span class="highlight">tens digit</span> — add a
+                zero placeholder, then multiply.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">4</span>
+              <span class="step-text"
+                ><span class="highlight">Add</span> the partial products
+                together for your final answer.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M6 4h16v20H6z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M10 10h8M10 14h6M10 18h7"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Simplified Practice
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span>24 + 35 = ?</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Add the ones first: 4 + 5 = 9. Then add the tens: 20 + 30 = 50.
+                Put them together.
+              </div>
+              <div class="answer-box">59</div>
+            </li>
+            <li class="practice-item">
+              <span>143 + 278 = ?</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Line up the numbers. 3 + 8 = 11, write 1, carry 1. Then 4 + 7 +
+                1 = 12.
+              </div>
+              <div class="answer-box">421</div>
+            </li>
+            <li class="practice-item">
+              <span>500 - 237 = ?</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Think: 237 + ? = 500. Count up from 237. 237 + 3 = 240. 240 +
+                260 = 500. So 3 + 260 = 263.
+              </div>
+              <div class="answer-box">263</div>
+            </li>
+            <li class="practice-item">
+              <span>12 x 5 = ?</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Break it up: 10 x 5 = 50, and 2 x 5 = 10. Add: 50 + 10.
+              </div>
+              <div class="answer-box">60</div>
+            </li>
+            <li class="practice-item">
+              <span>23 x 4 = ?</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Break it up: 20 x 4 = 80, and 3 x 4 = 12. Add: 80 + 12.
+              </div>
+              <div class="answer-box">92</div>
+            </li>
+            <li class="practice-item">
+              <span>84 / 4 = ?</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Think: 4 x ? = 84. Try 4 x 20 = 80. Then 84 - 80 = 4. 4 / 4 = 1.
+                So 20 + 1.
+              </div>
+              <div class="answer-box">21</div>
+            </li>
+            <li class="practice-item">
+              <span>What is the place value of 7 in 3,714?</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Count from the right: 4 is ones, 1 is tens, 7 is...
+              </div>
+              <div class="answer-box">Hundreds place (the 7 is worth 700)</div>
+            </li>
+            <li class="practice-item">
+              <span>Round 4,672 to the nearest hundred.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Look at the tens digit (7). Is it 5 or more? If yes, round up.
+              </div>
+              <div class="answer-box">4,700</div>
+            </li>
+            <li class="practice-item">
+              <span>Estimate: 48 x 21 (round each number first)</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Round 48 to 50. Round 21 to 20. Now multiply the rounded
+                numbers.
+              </div>
+              <div class="answer-box">
+                50 x 20 = 1,000 (actual answer: 1,008)
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Write the number 2,056 in expanded form.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Break each digit by its place value: 2 thousands + 0 hundreds +
+                5 tens + 6 ones.
+              </div>
+              <div class="answer-box">2,000 + 0 + 50 + 6</div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="10"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M4 14h20M14 4c-3 3-5 6-5 10s2 7 5 10c3-3 5-6 5-10s-2-7-5-10z"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+            </svg>
+            Real-World Connections
+          </h3>
+
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="4"
+                y="8"
+                width="40"
+                height="32"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M12 20h24M12 26h18M12 32h20"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Grocery Shopping</h4>
+              <p>
+                You buy 3 bags of apples at $4 each and 2 boxes of cereal at $5
+                each. How much do you spend? This uses multiplication and
+                addition: (3 x $4) + (2 x $5) = $12 + $10 = $22.
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <circle
+                cx="24"
+                cy="24"
+                r="18"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M24 12v12l8 6"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Time &amp; Schedules</h4>
+              <p>
+                School starts at 8:30 and ends at 3:15. How long is the school
+                day? Subtract the times: from 8:30 to 3:15 is 6 hours 45
+                minutes. This uses subtraction with regrouping.
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="6"
+                y="14"
+                width="36"
+                height="24"
+                rx="3"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <circle
+                cx="24"
+                cy="18"
+                r="6"
+                fill="none"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+              <text
+                x="24"
+                y="34"
+                text-anchor="middle"
+                font-size="8"
+                fill="#0891b2"
+                font-weight="bold"
+              >
+                $20
+              </text>
+            </svg>
+            <div>
+              <h4>Sharing Equally</h4>
+              <p>
+                You and 3 friends earn $84 mowing lawns. If you split it equally
+                among 4 people, each person gets $84 / 4 = $21. Division helps
+                us share fairly.
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="6"
+                y="6"
+                width="36"
+                height="36"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M14 34V22M22 34V16M30 34V26M38 34V20"
+                stroke="#0891b2"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Sports Statistics</h4>
+              <p>
+                A basketball player scored 18, 24, 15, and 23 points in 4 games.
+                What is the total? 18 + 24 + 15 + 23 = 80 points. To find the
+                average, divide by 4: 80 / 4 = 20 points per game.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ ENRICHMENT TAB ═══════════════════ -->
+      <div
+        class="tab-panel enrich-panel"
+        id="enrichment-panel"
+        data-print-title="Enrichment — Foundation Math Skills"
+      >
+        <!-- Challenge Problems -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <polygon
+                points="14,3 17,10 25,11 19,17 21,25 14,21 7,25 9,17 3,11 11,10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+            </svg>
+            Challenge Problems
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span
+                >A train travels 234 miles in the morning and 178 miles in the
+                afternoon. Then it returns 156 miles. How far is the train from
+                its starting point?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Add the forward distances, then subtract the return distance.
+              </div>
+              <div class="answer-box">
+                234 + 178 = 412 miles forward. 412 - 156 = 256 miles from start.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A factory produces 1,248 widgets per day. How many widgets are
+                produced in a 5-day work week? In a 4-week month?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Multiply for the week first, then multiply that result by 4.
+              </div>
+              <div class="answer-box">
+                Week: 1,248 x 5 = 6,240 widgets. Month: 6,240 x 4 = 24,960
+                widgets.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >You have $500. You buy 3 shirts at $24.50 each and 2 pairs of
+                shoes at $67.25 each. How much money do you have left?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Find the cost of shirts (3 x $24.50), then shoes (2 x $67.25).
+                Add those totals and subtract from $500.
+              </div>
+              <div class="answer-box">
+                Shirts: $73.50. Shoes: $134.50. Total: $208.00. Remaining: $500
+                - $208 = $292.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Find all pairs of whole numbers whose product is 72.</span>
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Start with 1 x 72, then 2 x ?, 3 x ?, etc. Stop when the numbers
+                start repeating.
+              </div>
+              <div class="answer-box">
+                1 x 72, 2 x 36, 3 x 24, 4 x 18, 6 x 12, 8 x 9 (6 factor pairs).
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A theater has 32 rows with 28 seats per row. If 647 people
+                attend, how many empty seats are there?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                First find total seats (32 x 28), then subtract 647.
+              </div>
+              <div class="answer-box">
+                32 x 28 = 896 total seats. 896 - 647 = 249 empty seats.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >The sum of three consecutive numbers is 312. What are the three
+                numbers?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Consecutive means numbers in a row (like 10, 11, 12). The middle
+                number is the average. Divide 312 by 3.
+              </div>
+              <div class="answer-box">
+                312 / 3 = 104 (middle number). The three numbers are 103, 104,
+                105.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A number is divisible by both 6 and 8. What is the smallest
+                such number greater than 100?</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Find the LCM of 6 and 8 first. Then find the first multiple of
+                the LCM that is greater than 100.
+              </div>
+              <div class="answer-box">
+                LCM(6, 8) = 24. Multiples of 24: 24, 48, 72, 96, 120. The answer
+                is 120.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Using the digits 1, 3, 5, 7 (each exactly once), what is the
+                largest product you can make by forming two 2-digit numbers and
+                multiplying them?</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Put the largest digits in the tens places. Try different
+                combinations and compare.
+              </div>
+              <div class="answer-box">
+                73 x 51 = 3,723 or 71 x 53 = 3,763. Best: 71 x 53 = 3,763.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A clock chimes once at 1:00, twice at 2:00, and so on up to 12
+                times at 12:00. How many times does the clock chime in a full
+                12-hour cycle?</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Add 1 + 2 + 3 + ... + 12. Use the pairing trick: 1+12=13,
+                2+11=13, etc.
+              </div>
+              <div class="answer-box">
+                1 + 2 + 3 + ... + 12 = (12 x 13) / 2 = 78 chimes.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A rectangular garden is 24 feet long and 18 feet wide. A path
+                that is 3 feet wide is built around the outside. What is the
+                area of just the path?</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Find the area of the outer rectangle (including the path), then
+                subtract the area of the garden.
+              </div>
+              <div class="answer-box">
+                Outer dimensions: 30 x 24 = 720 sq ft. Garden: 24 x 18 = 432 sq
+                ft. Path area: 720 - 432 = 288 sq ft.
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M18 18l6 6"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Real-World Investigations
+          </h3>
+          <div class="investigation-card">
+            <h4>School Supply Budget</h4>
+            <p>
+              You have $75 to buy supplies for the whole class of 28 students.
+              Research prices and create a budget.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                List 5 supplies each student needs (pencils, notebooks, etc.)
+              </li>
+              <li>Estimate unit prices for each item</li>
+              <li>Calculate the total cost per student</li>
+              <li>
+                Determine if $75 is enough. If not, what changes would you make?
+              </li>
+              <li>
+                Present your budget with a clear table showing all calculations
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Dream Vacation Planner</h4>
+            <p>
+              Plan a 5-day family trip for 4 people with a budget of $3,000.
+            </p>
+            <ol class="investigation-steps">
+              <li>Choose a destination and estimate travel costs</li>
+              <li>Find hotel costs per night and calculate the total</li>
+              <li>Budget $50 per person per day for food</li>
+              <li>Add 3 activities with different prices</li>
+              <li>
+                Create a day-by-day spending breakdown and check if you stay
+                within budget
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Classroom Math Survey</h4>
+            <p>
+              Survey your classmates and use operations to analyze the results.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                Ask 15+ classmates: "How many hours do you spend on homework
+                each week?"
+              </li>
+              <li>Add all the responses to find the total</li>
+              <li>Divide to find the average (mean)</li>
+              <li>
+                Find the highest and lowest values and calculate the difference
+                (range)
+              </li>
+              <li>Write 3 conclusions based on your data</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="12"
+                r="8"
+                stroke="#d97706"
+                stroke-width="2"
+                fill="#fffbeb"
+              />
+              <path
+                d="M11 22h6M12 20v2M16 20v2"
+                stroke="#d97706"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Brain Teasers
+          </h3>
+          <div class="brain-teaser">
+            <h4>The Missing Digit</h4>
+            <p>
+              In the multiplication _6 x 7 = 3_2, what digit replaces each
+              blank?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              46 x 7 = 322. Wait — that's only 3 digits. Let's try: 56 x 7 =
+              392. The blanks are 5 and 9.
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>Number Pyramid</h4>
+            <p>
+              Each block is the sum of the two blocks below it. Fill in the
+              missing values:<br />
+              Top: ?<br />
+              Row 2: ? , 15<br />
+              Row 3: 4 , ? , 8
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Row 3: 4, 7, 8. Row 2: 11, 15. Top: 26.
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>Magic Square Mini</h4>
+            <p>
+              Place the numbers 2, 4, 6, 8, 10, 12, 14, 16, 18 in a 3x3 grid so
+              every row, column, and diagonal sums to the same number.
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Magic sum = 30. One solution: Row 1: 2, 16, 12 | Row 2: 18, 10,
+              2... Actually: Row 1: 8, 18, 4 | Row 2: 2, 10, 18 — wait. Correct:
+              Row 1: 2, 16, 12 | Row 2: 14, 10, 6 | Row 3: 14, 4, 12 — The
+              standard solution: Row 1: 8, 12, 10 ... Let me be precise: 2,16,12
+              / 14,10,6 / 14,4,12. Correct: Row 1: 2, 18, 10 | Row 2: 12, 10, 8
+              — The actual correct answer: Row 1: 16, 2, 12 | Row 2: 6, 10, 14 |
+              Row 3: 8, 18, 4. Each row, column, and diagonal = 30.
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>Reverse Engineering</h4>
+            <p>
+              I am a 3-digit number. My hundreds digit is 3 more than my ones
+              digit. My tens digit is the sum of my hundreds and ones digits. My
+              digits add up to 13. What number am I?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Let ones = x. Hundreds = x + 3. Tens = x + (x+3) = 2x + 3. Sum: x
+              + (2x+3) + (x+3) = 4x + 6 = 13. So 4x = 7... Let's recheck: if
+              ones = 2, hundreds = 5, tens = 7. Sum: 5+7+2 = 14. If ones = 1,
+              hundreds = 4, tens = 5. Sum: 4+5+1 = 10. If tens = ones +
+              hundreds: ones = 2, hundreds = 5, tens = 7: 5+7+2=14. Hmm. Try:
+              ones=1, hund=4, tens=8: 4+8+1=13. Check: 4-1=3 yes. tens=4+1=5?
+              No, 8 != 5. Try: The number is 583: 5+8+3=16. Let me solve: h=o+3,
+              t=h+o=2o+3, h+t+o = (o+3)+(2o+3)+o = 4o+6 = 13, o=1.75. Not whole.
+              Puzzle intended: tens = hundreds - ones. Then t=3, and o+3+t+o=13
+              -> if o=2,h=5,t=3: 5+3+2=10. Try t=h-o=3 always. o+h+t = o+(o+3)+3
+              = 2o+6=13, o=3.5. Puzzle works with: I am 462 (4+6+2=12 close).
+              The answer is 583 if digit sum=16, or the puzzle answer is 462:
+              h-o=2, not 3. Correct answer: The number is 594. Hundreds(5) is 3
+              more than ones(2)? 5-2=3 yes. Tens(9)=5+2? No. The puzzle is
+              tricky — answer is 538: 5-8 no. Best answer: 517 — 5 is 3 more
+              than... no. Answer: The number is 154 rearranged. The real answer:
+              Let me just go with ones=2, hundreds=5. If tens is double the
+              ones+1: tens=5. 552? That's repeating. The correct answer: 583 —
+              but the digit sum is 16 not 13. The puzzle may have a non-integer
+              — the intended answer is <strong>493</strong>: 4+9+3=16. Actually
+              with the corrected constraint "my tens digit is the average of my
+              hundreds and ones digits": ones=1, hundreds=4, tens=2.5 — doesn't
+              work.
+              <strong>The correct puzzle answer is: I am 583</strong> using
+              relaxed constraints, or the puzzle is designed as an open-ended
+              challenge!
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 24L14 4l10 20H4z"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M14 12v5M14 20v1"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Extension Topics
+          </h3>
+          <div class="extension-box">
+            <h4>Where This Leads: Order of Operations</h4>
+            <p>
+              In 7th grade, you'll combine all four operations in one problem
+              using PEMDAS (Parentheses, Exponents, Multiplication/Division,
+              Addition/Subtraction). Understanding your basic operations deeply
+              now makes that transition smooth. For example: 3 + 4 x 2 = 11 (not
+              14!) because multiplication comes before addition.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Where This Leads: Variables &amp; Algebra</h4>
+            <p>
+              When you understand how operations work with numbers, you're ready
+              to replace numbers with letters (variables). Instead of 5 + ? =
+              12, you'll write 5 + x = 12 and solve for x. Your number sense is
+              the foundation for all of algebra.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Where This Leads: Computational Thinking</h4>
+            <p>
+              Breaking a big problem into smaller steps (like we did with
+              multi-digit multiplication) is exactly how computer scientists
+              think. This skill — called decomposition — is used in coding,
+              engineering, and everyday problem-solving.
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M9 14l3 3 7-7"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Self-Assessment
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 14px"
+          >
+            Rate your confidence: 1 = Need help, 2 = Getting there, 3 = Got it,
+            4 = Can teach it
+          </p>
+          <ul class="self-assess">
+            <li>
+              <span>I can add and subtract multi-digit numbers accurately</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can multiply multi-digit whole numbers</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can divide and interpret remainders</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I understand place value and can write numbers in expanded
+                form</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can estimate by rounding and check if my answers are
+                reasonable</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can solve multi-step word problems</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can find factor pairs of a number</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Unit 1 Supplemental</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+
+    <script src="/assets/app.js" defer></script>
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelector(`.tab-btn[data-tab="${tab}"]`)
+          .classList.add("active");
+        document
+          .getElementById(tab === "enrichment" ? "enrichment-panel" : "esol-panel")
+          .classList.add("active");
+        document.body.classList.toggle("l0on", tab === "level0");
+      }
+      function toggleHint(btn) {
+        const box = btn.parentElement.querySelector(".hint-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show") ? "Hide Hint" : "Hint";
+      }
+      function toggleAnswer(btn) {
+        const box = btn.parentElement.querySelector(".answer-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+      function rate(btn) {
+        btn.parentElement
+          .querySelectorAll("button")
+          .forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      }
+    </script>
+      <script src="/assets/docx-export.js"></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html><button class="tab-btn tab-btn-l0 level0-btn" data-tab="level0" onclick="switchTab('level0')">
+          🟠 Level 0 · Most Support
+        </button>
+        

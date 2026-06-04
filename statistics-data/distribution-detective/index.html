@@ -1,0 +1,1527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Distribution Detective | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Explore center vs. spread, describe distribution shape, and compute Mean Absolute Deviation (MAD) on interactive dot plots. Auto-graded Grade 6 statistics activity (6.SP.A.2, 6.SP.A.3, 6.SP.B.5c)."
+    />
+    <style>
+      /* ===== Inlined Neft Teacher design tokens (offline-capable) ===== */
+      :root {
+        --navy: #12355b;
+        --navy-light: #18466f;
+        --teal: #1fa6a2;
+        --teal-dark: #15807d;
+        --teal-light: #dff2ee;
+        --amber: #f2c15b;
+        --amber-light: #fef7e0;
+        --cream: #f7f4ec;
+        --coral: #d9795d;
+        --coral-light: #fce6de;
+        --purple: #7c5cbf;
+        --purple-light: #ece4fa;
+
+        --bg: #f6f7f2;
+        --card: #ffffff;
+        --ink: #21313f;
+        --muted: #5f6f80;
+        --line: #d7e2ed;
+        --success: #0f7c4a;
+        --success-bg: #e6f7ef;
+        --error: #b64e2f;
+        --error-bg: #fef0ec;
+        --hint: #875f00;
+        --hint-bg: #fef7e0;
+
+        --radius-sm: 8px;
+        --radius-md: 14px;
+        --radius-lg: 22px;
+
+        --sp-1: 4px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 20px;
+        --sp-6: 24px;
+        --sp-7: 32px;
+        --sp-8: 40px;
+
+        --font-display:
+          "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: Calibri, "Segoe UI", system-ui, sans-serif;
+        --shadow: 0 18px 45px rgba(23, 32, 42, 0.12);
+        --max-width: 1120px;
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        min-height: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        background:
+          linear-gradient(
+            135deg,
+            rgba(31, 166, 162, 0.12),
+            rgba(242, 193, 91, 0.09) 45%,
+            rgba(217, 121, 93, 0.06)
+          ),
+          var(--bg);
+        color: var(--ink);
+        font-family: var(--font-body);
+        line-height: 1.5;
+      }
+      a {
+        color: var(--teal-dark);
+      }
+
+      .page-shell {
+        width: min(100% - 32px, var(--max-width));
+        margin: 0 auto;
+        padding: 28px 0 28px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-6);
+      }
+
+      .breadcrumb {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .breadcrumb a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span.sep {
+        color: var(--line);
+        margin: 0 4px;
+      }
+
+      .hero {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--teal);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow);
+        padding: clamp(22px, 4vw, 40px);
+        display: grid;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+      .eyebrow {
+        margin: 0;
+        color: var(--teal-dark);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-family: var(--font-display);
+      }
+      .hero h1 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.9rem, 5vw, 3.1rem);
+        line-height: 1.04;
+        color: var(--navy);
+      }
+      .hero-copy {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.15rem);
+      }
+      .magnifier {
+        position: absolute;
+        right: -12px;
+        top: -16px;
+        font-size: 7rem;
+        opacity: 0.08;
+        transform: rotate(-12deg);
+        pointer-events: none;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: var(--sp-6);
+        align-items: start;
+      }
+      @media (max-width: 980px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        box-shadow: 0 10px 28px rgba(23, 32, 42, 0.07);
+        padding: var(--sp-6);
+      }
+      .card-title {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--navy);
+        margin: 0 0 var(--sp-3);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+      }
+
+      /* Scenario chips */
+      .scenario-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-4);
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--cream);
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 7px 13px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        font-family: var(--font-display);
+        transition: all 0.15s;
+      }
+      .chip:hover {
+        border-color: var(--teal);
+      }
+      .chip.active {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal-dark);
+      }
+
+      .scenario-desc {
+        background: var(--teal-light);
+        border-left: 4px solid var(--teal);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-3) var(--sp-4);
+        font-size: 0.92rem;
+        color: var(--navy);
+        margin-bottom: var(--sp-4);
+      }
+      .scenario-desc .es {
+        display: block;
+        color: var(--teal-dark);
+        font-style: italic;
+        margin-top: 4px;
+        font-size: 0.85rem;
+      }
+
+      /* Stats banner */
+      .stats-banner {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-4);
+      }
+      .stat-badge {
+        background: var(--cream);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-2);
+        text-align: center;
+      }
+      .stat-badge.hl {
+        background: var(--amber-light);
+        border-color: var(--amber);
+      }
+      .stat-val {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--navy);
+        line-height: 1.1;
+        font-family: var(--font-display);
+      }
+      .stat-lbl {
+        font-size: 0.66rem;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-top: 2px;
+      }
+
+      /* Chart */
+      .chart-wrap {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-3);
+        margin-bottom: var(--sp-3);
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02);
+      }
+      .chart-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        touch-action: manipulation;
+      }
+      .column-hit {
+        cursor: pointer;
+      }
+      .column-hit:hover .col-bg {
+        fill: rgba(31, 166, 162, 0.06);
+      }
+      .dot {
+        fill: var(--teal);
+        stroke: var(--navy);
+        stroke-width: 1.4px;
+        cursor: pointer;
+        transition: transform 0.12s ease-out;
+        transform-origin: center;
+        transform-box: fill-box;
+      }
+      .dot:hover {
+        fill: var(--coral);
+        transform: scale(1.12);
+      }
+      .dot.enter {
+        animation: pop 0.22s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.1);
+        }
+        70% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-4);
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px var(--sp-4);
+        border-radius: var(--radius-sm);
+        font-weight: 800;
+        font-size: 0.86rem;
+        cursor: pointer;
+        border: none;
+        font-family: var(--font-display);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s;
+      }
+      .btn-primary {
+        background: var(--teal);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--teal-dark);
+      }
+      .btn-secondary {
+        background: var(--surface-soft, #eef4f3);
+        border: 1px solid var(--line);
+        color: var(--navy);
+      }
+      .btn-secondary:hover {
+        background: var(--line);
+      }
+      .btn-accent {
+        background: var(--coral);
+        color: #fff;
+      }
+      .btn-accent:hover {
+        background: #c25f44;
+      }
+
+      .toggle-row {
+        display: flex;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+        margin-bottom: var(--sp-3);
+      }
+      .toggle-btn {
+        background: none;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: var(--muted);
+        cursor: pointer;
+        font-family: var(--font-display);
+      }
+      .toggle-btn.on {
+        background: var(--purple);
+        color: #fff;
+        border-color: var(--purple);
+      }
+
+      /* MAD breakdown */
+      .mad-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        margin-top: var(--sp-2);
+      }
+      .mad-table th,
+      .mad-table td {
+        border: 1px solid var(--line);
+        padding: 4px 6px;
+        text-align: center;
+      }
+      .mad-table th {
+        background: var(--cream);
+        font-family: var(--font-display);
+        color: var(--navy);
+      }
+      .mad-table .muted-cell {
+        color: var(--muted);
+      }
+      details.mad-help {
+        margin-top: var(--sp-3);
+      }
+      details.mad-help summary {
+        cursor: pointer;
+        font-weight: 800;
+        color: var(--teal-dark);
+        font-family: var(--font-display);
+      }
+
+      /* Detective questions */
+      .q-item {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-4);
+        margin-bottom: var(--sp-3);
+        background: #fff;
+        transition: all 0.2s;
+      }
+      .q-item.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .q-item.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .q-prompt {
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: var(--sp-2);
+        font-size: 0.95rem;
+      }
+      .q-prompt .es {
+        display: block;
+        color: var(--muted);
+        font-style: italic;
+        font-weight: 600;
+        font-size: 0.82rem;
+        margin-top: 3px;
+      }
+      .q-options {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .opt-btn {
+        text-align: left;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--cream);
+        cursor: pointer;
+        font-size: 0.88rem;
+        font-family: var(--font-body);
+        color: var(--ink);
+        transition: all 0.12s;
+      }
+      .opt-btn:hover {
+        border-color: var(--teal);
+      }
+      .opt-btn.chosen-correct {
+        background: var(--success);
+        color: #fff;
+        border-color: var(--success);
+        font-weight: 800;
+      }
+      .opt-btn.chosen-wrong {
+        background: var(--error);
+        color: #fff;
+        border-color: var(--error);
+      }
+      .opt-btn.reveal-correct {
+        border-color: var(--success);
+        box-shadow: inset 0 0 0 2px var(--success);
+      }
+      .opt-btn:disabled {
+        cursor: default;
+      }
+
+      .num-row {
+        display: flex;
+        gap: var(--sp-2);
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .num-row input {
+        width: 90px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        font-size: 0.95rem;
+        font-family: var(--font-display);
+        font-weight: 700;
+      }
+      .feedback {
+        margin-top: var(--sp-2);
+        font-size: 0.85rem;
+        font-weight: 700;
+        min-height: 1.1em;
+      }
+      .feedback.ok {
+        color: var(--success);
+      }
+      .feedback.no {
+        color: var(--error);
+      }
+      .hint-box {
+        margin-top: var(--sp-2);
+        padding: 8px 12px;
+        background: var(--hint-bg);
+        border-left: 3px solid var(--amber);
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        color: var(--hint);
+        display: none;
+      }
+      .hint-box.show {
+        display: block;
+      }
+
+      .level-pill {
+        display: inline-block;
+        font-size: 0.66rem;
+        font-weight: 900;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-left: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        vertical-align: middle;
+      }
+      .level-1 {
+        background: var(--teal-light);
+        color: var(--teal-dark);
+      }
+      .level-2 {
+        background: var(--purple-light);
+        color: var(--purple);
+      }
+
+      /* Progress / score */
+      .score-bar {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        background: var(--navy);
+        color: #fff;
+        border-radius: var(--radius-md);
+        padding: var(--sp-3) var(--sp-5);
+        font-family: var(--font-display);
+        font-weight: 800;
+      }
+      .score-bar .track {
+        flex: 1;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .score-bar .fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--amber));
+        transition: width 0.4s ease;
+      }
+
+      .site-footer {
+        margin-top: var(--sp-4);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--line);
+        padding-top: var(--sp-4);
+      }
+      .site-footer a {
+        color: var(--teal-dark);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--navy);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 999;
+        transform: translateY(110px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      /* Print */
+      .print-head {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        .page-shell {
+          width: 100% !important;
+          padding: 0 !important;
+        }
+        .magnifier,
+        .controls,
+        .toggle-row,
+        .chip,
+        .btn,
+        .toast,
+        .scenario-row,
+        .opt-btn:disabled {
+        }
+        .controls,
+        .toggle-row,
+        .toast,
+        .btn {
+          display: none !important;
+        }
+        .main-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .card {
+          box-shadow: none !important;
+          border: 1px solid #000 !important;
+          page-break-inside: avoid;
+        }
+        .print-head {
+          display: block !important;
+          border-bottom: 3px double #000;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+        }
+        .hero {
+          box-shadow: none !important;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Neft Hub</a><span class="sep">/</span>
+        <a href="/math/">Grade 6 Math</a><span class="sep">/</span>
+        <a href="/statistics-data/">Statistics &amp; Data</a
+        ><span class="sep">/</span>
+        <span>Distribution Detective</span>
+      </nav>
+
+      <div class="print-head">
+        <h1
+          style="font-family: Outfit, sans-serif; margin: 0; font-size: 1.7rem"
+        >
+          DISTRIBUTION DETECTIVE — Case File
+        </h1>
+        <p style="margin: 4px 0 0; color: #444">
+          6.SP.A.2 · 6.SP.A.3 · 6.SP.B.5c — Center, Spread, Shape &amp; MAD
+        </p>
+        <div
+          style="display: flex; gap: 40px; margin-top: 10px; font-weight: bold"
+        >
+          <div>DETECTIVE: ______________________</div>
+          <div>DATE: ______________</div>
+        </div>
+      </div>
+
+      <header class="hero">
+        <span class="magnifier" aria-hidden="true">🔎</span>
+        <span class="eyebrow">📊 Statistics &amp; Data · Unit 8</span>
+        <h1>Distribution Detective</h1>
+        <p class="hero-copy">
+          Every data set tells a story. Build a dot plot, then investigate its
+          <strong>center</strong>, its <strong>spread</strong>, and its
+          <strong>shape</strong> — and crack the
+          <strong>Mean Absolute Deviation (MAD)</strong> case. Click a column to
+          add a dot; click a dot to remove it. Solve all the cases to earn your
+          Detective badge!
+        </p>
+      </header>
+
+      <div class="score-bar" role="status" aria-live="polite">
+        <span
+          >🏅 Cases solved: <span id="solved-count">0</span> /
+          <span id="total-count">0</span></span
+        >
+        <div class="track"><div class="fill" id="score-fill"></div></div>
+      </div>
+
+      <main class="main-grid">
+        <!-- LEFT: workspace -->
+        <section class="card" aria-label="Data workspace">
+          <h2 class="card-title">🗂️ The Data Lab</h2>
+
+          <div class="scenario-row" id="scenario-row"></div>
+          <div class="scenario-desc" id="scenario-desc"></div>
+
+          <div class="stats-banner">
+            <div class="stat-badge">
+              <div class="stat-val" id="s-count">0</div>
+              <div class="stat-lbl">Count (n)</div>
+            </div>
+            <div class="stat-badge hl">
+              <div class="stat-val" id="s-mean">–</div>
+              <div class="stat-lbl">Mean</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="s-median">–</div>
+              <div class="stat-lbl">Median</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="s-range">–</div>
+              <div class="stat-lbl">Range</div>
+            </div>
+            <div class="stat-badge hl">
+              <div class="stat-val" id="s-mad">–</div>
+              <div class="stat-lbl">MAD</div>
+            </div>
+          </div>
+
+          <div class="toggle-row" role="group" aria-label="Chart overlays">
+            <button
+              class="toggle-btn"
+              id="t-mean"
+              onclick="toggleOverlay('mean')"
+            >
+              📍 Show Mean
+            </button>
+            <button
+              class="toggle-btn"
+              id="t-median"
+              onclick="toggleOverlay('median')"
+            >
+              📌 Show Median
+            </button>
+            <button
+              class="toggle-btn"
+              id="t-dev"
+              onclick="toggleOverlay('dev')"
+            >
+              ↔️ Show Distances from Mean
+            </button>
+          </div>
+
+          <div class="chart-wrap">
+            <svg
+              id="dot-svg"
+              class="chart-svg"
+              viewBox="0 0 760 300"
+              preserveAspectRatio="xMidYMid meet"
+              role="img"
+              aria-label="Interactive dot plot. Click a column to add a dot, click a dot to remove it."
+            ></svg>
+          </div>
+
+          <div class="controls">
+            <button class="btn btn-secondary" onclick="clearData()">
+              🗑️ Clear
+            </button>
+            <button class="btn btn-primary" onclick="loadPreset('symmetric')">
+              Symmetric Sample
+            </button>
+            <button class="btn btn-primary" onclick="loadPreset('skewRight')">
+              Skewed-Right Sample
+            </button>
+            <button class="btn btn-primary" onclick="loadPreset('cluster')">
+              Tight Cluster
+            </button>
+            <button class="btn btn-accent" onclick="window.print()">
+              🖨️ Print Case File
+            </button>
+          </div>
+
+          <details class="mad-help">
+            <summary>
+              🧮 How is MAD calculated?
+              <span class="level-pill level-1">Level 1 support</span>
+            </summary>
+            <p style="font-size: 0.85rem; color: var(--muted); margin: 8px 0">
+              <strong>MAD = Mean Absolute Deviation.</strong> It measures the
+              <em>typical distance</em> each data point sits from the mean.
+              Steps: (1) find the mean, (2) find each point's distance from the
+              mean (always positive — that's the "absolute" part), (3) average
+              those distances.
+              <span style="display: block; font-style: italic; margin-top: 4px"
+                >ES: La DAM es la distancia típica de cada dato a la media
+                (promedio de las distancias).</span
+              >
+            </p>
+            <div id="mad-breakdown"></div>
+          </details>
+        </section>
+
+        <!-- RIGHT: detective cases -->
+        <aside class="card" aria-label="Detective cases">
+          <h2 class="card-title">🕵️ Detective Cases</h2>
+          <p
+            style="
+              font-size: 0.86rem;
+              color: var(--muted);
+              margin: 0 0 var(--sp-4);
+            "
+          >
+            Read the live data, then answer. Cases update with your data set. No
+            peeking — reason it out!
+          </p>
+          <div id="cases"></div>
+        </aside>
+      </main>
+
+      <footer class="site-footer">
+        <div>Neft Teacher · Grade 6 Mathematics</div>
+        <div>
+          Standards: CCSS 6.SP.A.2 · 6.SP.A.3 · 6.SP.B.5c ·
+          <a href="/statistics-data/">Back to Statistics Hub</a>
+        </div>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast">
+      <span style="font-size: 1.4rem" id="toast-emoji">🎉</span>
+      <div>
+        <div style="font-weight: 800" id="toast-title">Case Solved!</div>
+        <div style="font-size: 0.78rem; opacity: 0.9" id="toast-desc"></div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* ===== Audio ===== */
+      const Synth = {
+        ctx: null,
+        init() {
+          if (!this.ctx) {
+            const C = window.AudioContext || window.webkitAudioContext;
+            if (C) this.ctx = new C();
+          }
+        },
+        play(kind) {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === "suspended") this.ctx.resume();
+          const t = this.ctx.currentTime;
+          const presets = {
+            click: { f: [320, 140], d: 0.07, v: 0.04 },
+            correct: { f: [523.25, 783.99], d: 0.2, v: 0.07 },
+            wrong: { f: [220, 160], d: 0.18, v: 0.06 },
+            win: { f: [440, 554.37, 659.25, 880], d: 0.45, v: 0.09 },
+          };
+          const c = presets[kind] || presets.click;
+          const osc = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(c.f[0], t);
+          if (c.f.length === 2) {
+            osc.frequency.exponentialRampToValueAtTime(c.f[1], t + c.d);
+          } else {
+            const step = c.d / c.f.length;
+            c.f.forEach((freq, i) =>
+              osc.frequency.setValueAtTime(freq, t + i * step),
+            );
+          }
+          g.gain.setValueAtTime(0.001, t);
+          g.gain.linearRampToValueAtTime(c.v, t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, t + c.d);
+          osc.connect(g).connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + c.d + 0.01);
+        },
+      };
+
+      /* ===== State ===== */
+      const MAXVAL = 12; // x-axis 0..12
+      const MAXPERCOL = 8;
+      let data = []; // array of integers
+      const overlays = { mean: false, median: false, dev: false };
+      const solved = {}; // caseId -> true
+      const PRESETS = {
+        symmetric: [4, 5, 5, 6, 6, 6, 7, 7, 8],
+        skewRight: [2, 2, 3, 3, 3, 4, 5, 7, 9, 11],
+        cluster: [5, 6, 6, 6, 6, 7, 7, 7, 8],
+      };
+
+      const dotSvg = document.getElementById("dot-svg");
+
+      /* ===== Scenarios (theme context) ===== */
+      const SCENARIOS = [
+        {
+          id: "goals",
+          emoji: "⚽",
+          en: "Goals scored by the team in each of its games this season.",
+          es: "Goles que anotó el equipo en cada partido de la temporada.",
+          unit: "goals",
+        },
+        {
+          id: "books",
+          emoji: "📚",
+          en: "Books each student read over summer break.",
+          es: "Libros que cada estudiante leyó durante el verano.",
+          unit: "books",
+        },
+        {
+          id: "temp",
+          emoji: "🌡️",
+          en: "High temperature (°C above 0) recorded each day this week.",
+          es: "Temperatura máxima (°C) registrada cada día de esta semana.",
+          unit: "°C",
+        },
+        {
+          id: "steps",
+          emoji: "👟",
+          en: "Free throws made by each player in practice.",
+          es: "Tiros libres encestados por cada jugador en la práctica.",
+          unit: "shots",
+        },
+      ];
+      let scenario = SCENARIOS[0];
+
+      /* ===== Statistics ===== */
+      function stats(arr) {
+        if (arr.length === 0)
+          return {
+            n: 0,
+            mean: null,
+            median: null,
+            range: null,
+            mad: null,
+            min: null,
+            max: null,
+          };
+        const sorted = [...arr].sort((a, b) => a - b);
+        const n = sorted.length;
+        const sum = sorted.reduce((s, v) => s + v, 0);
+        const mean = sum / n;
+        const mid = Math.floor(n / 2);
+        const median =
+          n % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        const min = sorted[0],
+          max = sorted[n - 1];
+        const range = max - min;
+        const mad = sorted.reduce((s, v) => s + Math.abs(v - mean), 0) / n;
+        return { n, mean, median, range, mad, min, max };
+      }
+      const r1 = (x) => Math.round(x * 10) / 10; // 1 decimal
+      const r2 = (x) => Math.round(x * 100) / 100; // 2 decimals
+
+      /* ===== Render dot plot ===== */
+      function xPos(v) {
+        return 55 + (v / MAXVAL) * 660;
+      } // 0..12 -> 55..715
+
+      function renderPlot(animateVal) {
+        const st = stats(data);
+        let svg = "";
+
+        // gridlines + clickable columns
+        for (let i = 0; i <= MAXVAL; i++) {
+          const x = xPos(i);
+          svg += `<line x1="${x}" y1="20" x2="${x}" y2="240" stroke="#eef3f8" stroke-dasharray="3,3"/>`;
+          svg += `<g class="column-hit" tabindex="0" role="button" aria-label="Add a data point with value ${i}"
+              onclick="addVal(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addVal(${i});}">
+              <rect class="col-bg" x="${x - 26}" y="20" width="52" height="220" fill="transparent"/></g>`;
+        }
+        // axis
+        svg += `<line x1="45" y1="240" x2="725" y2="240" stroke="var(--navy)" stroke-width="3" stroke-linecap="round"/>`;
+        for (let i = 0; i <= MAXVAL; i++) {
+          const x = xPos(i);
+          svg += `<line x1="${x}" y1="240" x2="${x}" y2="246" stroke="var(--navy)" stroke-width="2"/>`;
+          svg += `<text x="${x}" y="263" font-family="Outfit,sans-serif" font-size="13" font-weight="800" text-anchor="middle" fill="var(--navy)">${i}</text>`;
+        }
+        svg += `<text x="385" y="288" font-family="Outfit,sans-serif" font-size="13" font-weight="800" text-anchor="middle" fill="var(--muted)">${scenario.emoji} ${escapeXml(capUnit(scenario.unit))}</text>`;
+
+        // dots
+        const counts = Array(MAXVAL + 1).fill(0);
+        data.forEach((v) => {
+          if (v >= 0 && v <= MAXVAL) counts[v]++;
+        });
+        const R = 12,
+          GAP = 26;
+        for (let c = 0; c <= MAXVAL; c++) {
+          const x = xPos(c);
+          for (let row = 0; row < counts[c]; row++) {
+            const y = 240 - row * GAP - R - 4;
+            const isNew = animateVal === c && row === counts[c] - 1;
+            svg += `<circle class="dot${isNew ? " enter" : ""}" cx="${x}" cy="${y}" r="${R}"
+               onclick="event.stopPropagation(); removeVal(${c})"
+               tabindex="0" role="button" aria-label="Remove a dot at value ${c}"
+               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();removeVal(${c});}"></circle>`;
+          }
+        }
+
+        // overlays
+        if (st.n > 0) {
+          if (overlays.dev) {
+            data.forEach((v) => {
+              const x1 = xPos(v),
+                x2 = xPos(st.mean);
+              if (Math.abs(v - st.mean) > 0.001) {
+                svg += `<line x1="${x1}" y1="226" x2="${x2}" y2="226" stroke="var(--coral)" stroke-width="2" opacity="0.55"/>`;
+              }
+            });
+          }
+          if (overlays.mean) {
+            const x = xPos(st.mean);
+            svg += `<line x1="${x}" y1="18" x2="${x}" y2="240" stroke="var(--amber)" stroke-width="3" stroke-dasharray="6,4"/>`;
+            svg += `<rect x="${x - 30}" y="2" width="60" height="16" rx="4" fill="var(--amber)"/>`;
+            svg += `<text x="${x}" y="14" font-family="Outfit,sans-serif" font-size="11" font-weight="900" text-anchor="middle" fill="#5b4400">mean ${r1(st.mean)}</text>`;
+          }
+          if (overlays.median) {
+            const x = xPos(st.median);
+            svg += `<line x1="${x}" y1="18" x2="${x}" y2="240" stroke="var(--purple)" stroke-width="3" stroke-dasharray="2,4"/>`;
+            svg += `<rect x="${x - 32}" y="2" width="64" height="16" rx="4" fill="var(--purple)"/>`;
+            svg += `<text x="${x}" y="14" font-family="Outfit,sans-serif" font-size="11" font-weight="900" text-anchor="middle" fill="#fff">med ${r1(st.median)}</text>`;
+          }
+        } else {
+          svg += `<text x="385" y="130" font-family="Outfit,sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="var(--muted)">Click a column to add data points ▾</text>`;
+        }
+
+        dotSvg.innerHTML = svg;
+      }
+
+      function capUnit(u) {
+        return u.charAt(0).toUpperCase() + u.slice(1);
+      }
+      function escapeXml(s) {
+        return String(s).replace(
+          /[<>&]/g,
+          (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c],
+        );
+      }
+
+      /* ===== Stats panel + MAD breakdown ===== */
+      function refreshStatsPanel() {
+        const st = stats(data);
+        document.getElementById("s-count").textContent = st.n;
+        document.getElementById("s-mean").textContent = st.n
+          ? r1(st.mean)
+          : "–";
+        document.getElementById("s-median").textContent = st.n
+          ? r1(st.median)
+          : "–";
+        document.getElementById("s-range").textContent = st.n ? st.range : "–";
+        document.getElementById("s-mad").textContent = st.n ? r2(st.mad) : "–";
+
+        // MAD breakdown table (only if details may be open / always build)
+        const box = document.getElementById("mad-breakdown");
+        if (st.n === 0) {
+          box.innerHTML = `<p style="color:var(--muted);font-size:0.82rem;">Add data points to see the MAD worked out.</p>`;
+          return;
+        }
+        const sorted = [...data].sort((a, b) => a - b);
+        let rows = sorted
+          .map((v) => {
+            const dev = Math.abs(v - st.mean);
+            return `<tr><td>${v}</td><td class="muted-cell">${r1(st.mean)}</td><td>|${v} − ${r1(st.mean)}| = <strong>${r2(dev)}</strong></td></tr>`;
+          })
+          .join("");
+        const totalDev = sorted.reduce((s, v) => s + Math.abs(v - st.mean), 0);
+        box.innerHTML = `
+    <table class="mad-table">
+      <thead><tr><th>Value</th><th>Mean</th><th>Absolute distance</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p style="font-size:0.82rem;color:var(--navy);margin:8px 0 0;">
+      Sum of distances = <strong>${r2(totalDev)}</strong> ÷ n (<strong>${st.n}</strong>) =
+      MAD = <strong>${r2(st.mad)}</strong>
+    </p>`;
+      }
+
+      /* ===== Detective cases (auto-graded, data-driven) ===== */
+      /*
+   Each case is regenerated against the *current* data so answers are never
+   hard-coded text the student can memorise. Multiple-choice options are
+   plausible distractors derived from the data.
+*/
+      const CASES = [
+        {
+          id: "center",
+          level: 1,
+          title: "Case 1 — Find the Center",
+          en: "Which value best describes the CENTER of this data set (a typical value)?",
+          es: "¿Qué valor describe mejor el CENTRO de estos datos (un valor típico)?",
+          type: "mc",
+          build(st) {
+            const mean = r1(st.mean);
+            const opts = uniqueNums([mean, r1(st.median), st.min, st.max]);
+            return {
+              options: opts.map((v) => ({ label: `${v}` })),
+              // center: accept mean OR median (both are measures of center)
+              accept: (o) =>
+                Math.abs(Number(o) - st.mean) < 0.05 ||
+                Math.abs(Number(o) - st.median) < 0.05,
+            };
+          },
+          hint: "The mean (balance point) and the median (middle value) are both measures of center. The min and max are NOT.",
+        },
+        {
+          id: "shape",
+          level: 1,
+          title: "Case 2 — Describe the Shape",
+          en: "What is the overall SHAPE of this distribution?",
+          es: "¿Cuál es la FORMA general de esta distribución?",
+          type: "mcShape",
+          hint: "Compare mean and median. Mean ≈ median → roughly symmetric. Mean noticeably greater than median → skewed right. Mean noticeably less → skewed left.",
+        },
+        {
+          id: "spread",
+          level: 1,
+          title: "Case 3 — Measure the Spread",
+          en: "Two stat values measure SPREAD (how far data is from the center). Pick the one that gives the FULL width from lowest to highest.",
+          es: "Elige la medida de DISPERSIÓN que da el ancho total, del valor más bajo al más alto.",
+          type: "mc",
+          build(st) {
+            const range = st.range;
+            const opts = uniqueNums([
+              range,
+              st.median,
+              r1(st.mean),
+              r2(st.mad),
+            ]);
+            return {
+              options: opts.map((v) => ({ label: `${v}` })),
+              accept: (o) => Math.abs(Number(o) - st.range) < 0.05,
+            };
+          },
+          hint: "Range = maximum − minimum. It is the full width of the data. The mean and median are centers, not spread.",
+        },
+        {
+          id: "mad",
+          level: 1,
+          title: "Case 4 — Crack the MAD",
+          en: "Compute the Mean Absolute Deviation (MAD) of the current data. Round to 2 decimals.",
+          es: "Calcula la Desviación Absoluta Media (DAM) de los datos. Redondea a 2 decimales.",
+          type: "num",
+          accept: (input, st) => Math.abs(Number(input) - st.mad) < 0.05,
+          hint: "MAD steps: 1) mean, 2) each |value − mean|, 3) average those distances. Open the MAD helper under the plot if you get stuck.",
+        },
+        {
+          id: "interpret",
+          level: 2,
+          title: "Case 5 — Detective's Reasoning",
+          en: "A SMALL MAD compared to a LARGE MAD tells you the data is...",
+          es: "Una DAM PEQUEÑA (frente a una grande) indica que los datos están...",
+          type: "mcStatic",
+          options: [
+            {
+              label:
+                "...clustered tightly near the mean (consistent / low variability).",
+              correct: true,
+            },
+            {
+              label: "...spread far from the mean (high variability).",
+              correct: false,
+            },
+            { label: "...always perfectly symmetric.", correct: false },
+          ],
+          hint: "MAD is the typical distance from the mean. Small distance = points hug the mean = low variability.",
+        },
+      ];
+
+      function uniqueNums(arr) {
+        const seen = new Set();
+        const out = [];
+        arr.forEach((v) => {
+          const k = String(v);
+          if (!seen.has(k)) {
+            seen.add(k);
+            out.push(v);
+          }
+        });
+        // shuffle deterministically-ish
+        for (let i = out.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [out[i], out[j]] = [out[j], out[i]];
+        }
+        return out;
+      }
+
+      function shapeAnswer(st) {
+        // returns 'symmetric' | 'right' | 'left'
+        if (st.n === 0) return null;
+        const diff = st.mean - st.median;
+        if (Math.abs(diff) <= 0.4) return "symmetric";
+        return diff > 0 ? "right" : "left";
+      }
+
+      function buildCases() {
+        const st = stats(data);
+        const host = document.getElementById("cases");
+        if (st.n < 3) {
+          host.innerHTML = `<div class="q-item"><div class="q-prompt">🔒 Add at least 3 data points to open the cases.<span class="es">Agrega al menos 3 datos para abrir los casos.</span></div></div>`;
+          document.getElementById("total-count").textContent = "0";
+          updateScore();
+          return;
+        }
+        let html = "";
+        CASES.forEach((c) => {
+          const lvl =
+            c.level === 2
+              ? `<span class="level-pill level-2">Level 2</span>`
+              : `<span class="level-pill level-1">Level 1</span>`;
+          html += `<div class="q-item" id="case-${c.id}">
+      <div class="q-prompt">${c.title} ${lvl}<br>${c.en}<span class="es">${c.es}</span></div>`;
+
+          if (c.type === "num") {
+            html += `<div class="num-row">
+        <input type="number" step="0.01" id="in-${c.id}" placeholder="MAD = ?" aria-label="Your MAD answer">
+        <button class="btn btn-primary" onclick="checkNum('${c.id}')">Check</button>
+        <button class="btn btn-secondary" onclick="toggleHint('${c.id}')">💡 Hint</button>
+      </div>`;
+          } else if (c.type === "mcShape") {
+            const opts = [
+              { key: "symmetric", label: "Roughly symmetric (mean ≈ median)" },
+              {
+                key: "right",
+                label: "Skewed right (tail toward high values; mean > median)",
+              },
+              {
+                key: "left",
+                label: "Skewed left (tail toward low values; mean < median)",
+              },
+            ];
+            html +=
+              `<div class="q-options">` +
+              opts
+                .map(
+                  (o) =>
+                    `<button class="opt-btn" data-key="${o.key}" onclick="checkShape('${c.id}','${o.key}',this)">${o.label}</button>`,
+                )
+                .join("") +
+              `</div><button class="btn btn-secondary" style="margin-top:8px" onclick="toggleHint('${c.id}')">💡 Hint</button>`;
+          } else if (c.type === "mcStatic") {
+            html +=
+              `<div class="q-options">` +
+              c.options
+                .map(
+                  (o, i) =>
+                    `<button class="opt-btn" data-i="${i}" onclick="checkStatic('${c.id}',${i},${o.correct},this)">${o.label}</button>`,
+                )
+                .join("") +
+              `</div><button class="btn btn-secondary" style="margin-top:8px" onclick="toggleHint('${c.id}')">💡 Hint</button>`;
+          } else {
+            // mc (numeric distractors)
+            const built = c.build(st);
+            caseRuntime[c.id] = built;
+            html +=
+              `<div class="q-options">` +
+              built.options
+                .map(
+                  (o) =>
+                    `<button class="opt-btn" data-val="${o.label}" onclick="checkMc('${c.id}','${o.label}',this)">${o.label}</button>`,
+                )
+                .join("") +
+              `</div><button class="btn btn-secondary" style="margin-top:8px" onclick="toggleHint('${c.id}')">💡 Hint</button>`;
+          }
+
+          html += `<div class="feedback" id="fb-${c.id}"></div>
+             <div class="hint-box" id="hint-${c.id}">💡 ${c.hint}</div>
+           </div>`;
+        });
+        host.innerHTML = html;
+        document.getElementById("total-count").textContent = CASES.length;
+        // restore solved styling
+        CASES.forEach((c) => {
+          if (solved[c.id]) markSolvedUI(c.id);
+        });
+        updateScore();
+      }
+      const caseRuntime = {};
+
+      function findCase(id) {
+        return CASES.find((c) => c.id === id);
+      }
+
+      function markSolvedUI(id) {
+        const item = document.getElementById("case-" + id);
+        if (item) item.classList.add("correct");
+        const fb = document.getElementById("fb-" + id);
+        if (fb) {
+          fb.className = "feedback ok";
+          fb.textContent = "✓ Case closed!";
+        }
+      }
+
+      function award(id) {
+        if (!solved[id]) {
+          solved[id] = true;
+          Synth.play("correct");
+          const c = findCase(id);
+          toast("🎉", "Case Solved!", c.title);
+          checkAllSolved();
+        }
+        updateScore();
+      }
+
+      function checkAllSolved() {
+        const all = CASES.every((c) => solved[c.id]);
+        if (all) {
+          Synth.play("win");
+          toast(
+            "🏅",
+            "Detective Badge Earned!",
+            "You solved every case. Try a new sample to test your skills again.",
+          );
+        }
+      }
+
+      function checkNum(id) {
+        const c = findCase(id);
+        const st = stats(data);
+        const val = document.getElementById("in-" + id).value;
+        const item = document.getElementById("case-" + id);
+        const fb = document.getElementById("fb-" + id);
+        if (val === "" || isNaN(Number(val))) {
+          fb.className = "feedback no";
+          fb.textContent = "Enter a number first.";
+          return;
+        }
+        if (c.accept(val, st)) {
+          item.classList.remove("wrong");
+          item.classList.add("correct");
+          fb.className = "feedback ok";
+          fb.textContent = "✓ Exactly — MAD cracked!";
+          award(id);
+        } else {
+          item.classList.add("wrong");
+          fb.className = "feedback no";
+          fb.textContent =
+            "Not quite — recheck your distances and re-average. (Hint available.)";
+          Synth.play("wrong");
+        }
+      }
+
+      function checkMc(id, val, btn) {
+        const rt = caseRuntime[id];
+        const st = stats(data);
+        const item = document.getElementById("case-" + id);
+        const fb = document.getElementById("fb-" + id);
+        const ok = rt.accept(val, st);
+        if (ok) {
+          disableOpts(item, btn, true);
+          item.classList.remove("wrong");
+          item.classList.add("correct");
+          fb.className = "feedback ok";
+          fb.textContent = "✓ Correct!";
+          award(id);
+        } else {
+          btn.classList.add("chosen-wrong");
+          item.classList.add("wrong");
+          fb.className = "feedback no";
+          fb.textContent = "✗ Try again — re-read what the case is asking.";
+          Synth.play("wrong");
+        }
+      }
+
+      function checkShape(id, key, btn) {
+        const st = stats(data);
+        const ans = shapeAnswer(st);
+        const item = document.getElementById("case-" + id);
+        const fb = document.getElementById("fb-" + id);
+        if (key === ans) {
+          disableOpts(item, btn, true);
+          item.classList.remove("wrong");
+          item.classList.add("correct");
+          fb.className = "feedback ok";
+          fb.textContent = `✓ Right — mean ${r1(st.mean)} vs median ${r1(st.median)} confirms it.`;
+          award(id);
+        } else {
+          btn.classList.add("chosen-wrong");
+          item.classList.add("wrong");
+          fb.className = "feedback no";
+          fb.textContent =
+            "✗ Compare the mean and median again, then look at where the tail points.";
+          Synth.play("wrong");
+        }
+      }
+
+      function checkStatic(id, i, correct, btn) {
+        const item = document.getElementById("case-" + id);
+        const fb = document.getElementById("fb-" + id);
+        if (correct) {
+          disableOpts(item, btn, true);
+          item.classList.remove("wrong");
+          item.classList.add("correct");
+          fb.className = "feedback ok";
+          fb.textContent = "✓ Spot on, detective.";
+          award(id);
+        } else {
+          btn.classList.add("chosen-wrong");
+          item.classList.add("wrong");
+          fb.className = "feedback no";
+          fb.textContent =
+            "✗ Not that one — think about what 'distance from the mean' means.";
+          Synth.play("wrong");
+        }
+      }
+
+      function disableOpts(item, chosen, correct) {
+        item.querySelectorAll(".opt-btn").forEach((b) => (b.disabled = true));
+        if (correct) chosen.classList.add("chosen-correct");
+      }
+
+      function toggleHint(id) {
+        document.getElementById("hint-" + id).classList.toggle("show");
+        Synth.play("click");
+      }
+
+      function updateScore() {
+        const total = CASES.length;
+        const count = CASES.filter((c) => solved[c.id]).length;
+        document.getElementById("solved-count").textContent = count;
+        document.getElementById("score-fill").style.width =
+          (count / total) * 100 + "%";
+      }
+
+      /* ===== Data mutation ===== */
+      function addVal(v) {
+        const c = data.filter((x) => x === v).length;
+        if (c >= MAXPERCOL) return;
+        data.push(v);
+        Synth.play("click");
+        refreshAll(v);
+      }
+      function removeVal(v) {
+        const idx = data.lastIndexOf(v);
+        if (idx > -1) data.splice(idx, 1);
+        Synth.play("click");
+        refreshAll();
+      }
+      function clearData() {
+        data = [];
+        Synth.play("click");
+        // clearing data should not wipe earned badges, but cases lock under 3 pts
+        refreshAll();
+      }
+      function loadPreset(name) {
+        data = [...PRESETS[name]];
+        Synth.play("click");
+        refreshAll();
+      }
+
+      /* When data changes, previously "solved" numeric/shape cases may no longer
+   match the NEW data, so we reset solved flags that depend on live values.
+   Static-reasoning case (interpret) stays solved. */
+      function refreshAll(animateVal) {
+        ["center", "shape", "spread", "mad"].forEach((id) => {
+          delete solved[id];
+        });
+        renderPlot(animateVal);
+        refreshStatsPanel();
+        buildCases();
+      }
+
+      /* ===== Overlays ===== */
+      function toggleOverlay(key) {
+        overlays[key] = !overlays[key];
+        document
+          .getElementById("t-" + key)
+          .classList.toggle("on", overlays[key]);
+        Synth.play("click");
+        renderPlot();
+      }
+
+      /* ===== Scenario chips ===== */
+      function buildScenarioChips() {
+        const row = document.getElementById("scenario-row");
+        row.innerHTML = SCENARIOS.map(
+          (s) =>
+            `<button class="chip${s.id === scenario.id ? " active" : ""}" onclick="setScenario('${s.id}')">${s.emoji} ${capUnit(s.unit)}</button>`,
+        ).join("");
+        updateScenarioDesc();
+      }
+      function setScenario(id) {
+        scenario = SCENARIOS.find((s) => s.id === id) || SCENARIOS[0];
+        Synth.play("click");
+        buildScenarioChips();
+        renderPlot();
+      }
+      function updateScenarioDesc() {
+        document.getElementById("scenario-desc").innerHTML =
+          `<strong>${scenario.emoji} Investigation:</strong> ${scenario.en}<span class="es">ES: ${scenario.es}</span>`;
+      }
+
+      /* ===== Toast ===== */
+      let toastTimer = null;
+      function toast(emoji, title, desc) {
+        document.getElementById("toast-emoji").textContent = emoji;
+        document.getElementById("toast-title").textContent = title;
+        document.getElementById("toast-desc").textContent = desc || "";
+        const el = document.getElementById("toast");
+        el.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+      }
+
+      /* ===== Init ===== */
+      window.addEventListener("DOMContentLoaded", () => {
+        buildScenarioChips();
+        loadPreset("symmetric");
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

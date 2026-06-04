@@ -1,0 +1,1550 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.NS.C.6 · Unit 8" data-standard="6.NS.C.6" data-unit="8" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 17: Rational Numbers (6.NS.C.6) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #0f766e;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --soft-red: #fef2f1;
+      }
+      .mission-hero {
+        background: linear-gradient(
+          135deg,
+          #1a2f4a 0%,
+          #1a4a6e 60%,
+          #0f766e 100%
+        );
+        color: #fff;
+        border-radius: var(--radius);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 32px;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin: 0 0 8px;
+        line-height: 1.1;
+      }
+      .hero-eyebrow {
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7dd3c0;
+        margin-bottom: 4px;
+      }
+      .hero-standard {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        margin-top: 8px;
+      }
+      .hero-scenario {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        opacity: 0.92;
+        margin-top: 12px;
+      }
+      .hero-svg {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+      }
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-bar a {
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .nav-bar a:hover {
+        background: var(--soft-teal);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 3vw, 28px);
+      }
+      .card h2 {
+        color: var(--navy);
+        margin-top: 0;
+        font-size: 1.4rem;
+      }
+      .card h3 {
+        color: var(--teal);
+        margin-top: 18px;
+        font-size: 1.1rem;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: start;
+      }
+      .problem-box {
+        background: var(--soft-blue);
+        border-left: 5px solid var(--navy);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 1.08rem;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .language-box {
+        background: #f0faf8;
+        border: 2px solid #a7d8d0;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-top: 16px;
+      }
+      .language-box h3 {
+        margin-top: 0;
+        color: var(--teal);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .vocab-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .sentence-frames {
+        background: var(--soft-gold);
+        padding: 14px;
+        border-radius: 6px;
+        margin-top: 10px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+        font-style: italic;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .rep-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: #fafcff;
+      }
+      .rep-card h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid #b9ddd8;
+      }
+      .role-facilitator {
+        background: #eef6ff;
+      }
+      .role-model {
+        background: #ecf8f6;
+      }
+      .role-checker {
+        background: #fff6df;
+      }
+      .role-reporter {
+        background: #fef2f1;
+      }
+      .role strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .role .role-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .timer-section {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .timer-display {
+        font-size: 3rem;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold);
+      }
+      .timer-label {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .timer-btn {
+        min-height: 40px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .timer-btn.start {
+        background: var(--green);
+        color: #fff;
+      }
+      .timer-btn.pause {
+        background: var(--gold);
+        color: #fff;
+      }
+      .timer-btn.reset {
+        background: var(--surface);
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+      }
+      .phase-header:hover {
+        background: #f8fafb;
+      }
+      .phase-time {
+        background: var(--soft-blue);
+        color: var(--navy);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .phase-name {
+        font-weight: 800;
+        flex: 1;
+      }
+      .phase-body {
+        padding: 0 14px 14px;
+        display: none;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-card.open .phase-arrow {
+        transform: rotate(90deg);
+      }
+      .phase-arrow {
+        transition: transform 0.2s;
+      }
+      .checkpoint {
+        background: var(--soft-green);
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.92rem;
+      }
+      .challenge-box {
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .rubric-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 2px solid #bed4ea;
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        font-size: 1.1rem;
+      }
+      .visual-model {
+        text-align: center;
+        margin: 16px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      @media print {
+        .nav-bar,
+        .timer-section,
+        .timer-controls,
+        .timer-btn,
+        .no-print {
+          display: none !important;
+        }
+        .card,
+        .mission-hero {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .mission-hero {
+          background: #23395d !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero {
+          grid-template-columns: 1fr;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          max-width: 280px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="nav-bar" aria-label="Mission navigation">
+        <a href="/math-lab-missions/">Back to All Missions</a>
+        <div>
+          <a href="/math-lab-missions/mission-16/">Prev Mission</a>
+          <a href="/math-lab-missions/mission-18/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <div class="hero-eyebrow">Mission 17 &middot; Unit 7</div>
+          <h1 id="hero-title">Rational Numbers</h1>
+          <span class="hero-standard">6.NS.C.6 &middot; Unit 8</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Place rational numbers on a number line and interpret their order.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="hero-scenario">
+            A marine biologist is studying ocean creatures at different depths.
+            A dolphin swims at <strong>-3.5 meters</strong> (below sea level). A
+            sea turtle dives to <strong>-12&frac34; meters</strong>. A flying
+            fish jumps to <strong>+2.25 meters</strong> (above sea level). Your
+            team must place these animals on a
+            <strong>vertical number line</strong>, compare their positions,
+            order them from deepest to highest, and find the
+            <strong>distance</strong> between the dolphin and the sea turtle.
+          </p>
+        </div>
+        <svg
+          class="hero-svg"
+          viewBox="0 0 360 440"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Vertical ocean depth diagram with three sea creatures at different levels"
+        >
+          <!-- Ocean background gradient -->
+          <defs>
+            <linearGradient id="ocean" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#87CEEB" />
+              <stop offset="30%" stop-color="#4a90d9" />
+              <stop offset="70%" stop-color="#1a5276" />
+              <stop offset="100%" stop-color="#0c2d48" />
+            </linearGradient>
+          </defs>
+          <rect
+            x="0"
+            y="0"
+            width="360"
+            height="440"
+            rx="12"
+            fill="url(#ocean)"
+          />
+          <!-- Sky area -->
+          <rect
+            x="0"
+            y="0"
+            width="360"
+            height="120"
+            fill="#87CEEB"
+            opacity="0.5"
+          />
+          <!-- Sea level line -->
+          <line
+            x1="0"
+            y1="160"
+            x2="360"
+            y2="160"
+            stroke="#fff"
+            stroke-width="3"
+            stroke-dasharray="8,4"
+          />
+          <text
+            x="340"
+            y="155"
+            text-anchor="end"
+            font-size="13"
+            font-weight="800"
+            fill="#fff"
+          >
+            SEA LEVEL (0)
+          </text>
+          <!-- Vertical number line -->
+          <line
+            x1="60"
+            y1="60"
+            x2="60"
+            y2="420"
+            stroke="#fff"
+            stroke-width="2"
+            opacity="0.6"
+          />
+          <!-- Tick marks -->
+          <line
+            x1="50"
+            y1="80"
+            x2="70"
+            y2="80"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="84" text-anchor="end" font-size="11" fill="#fff">
+            +4
+          </text>
+          <line
+            x1="50"
+            y1="120"
+            x2="70"
+            y2="120"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="124" text-anchor="end" font-size="11" fill="#fff">
+            +2
+          </text>
+          <line
+            x1="50"
+            y1="160"
+            x2="70"
+            y2="160"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text
+            x="40"
+            y="164"
+            text-anchor="end"
+            font-size="12"
+            font-weight="700"
+            fill="#fff"
+          >
+            0
+          </text>
+          <line
+            x1="50"
+            y1="200"
+            x2="70"
+            y2="200"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="204" text-anchor="end" font-size="11" fill="#fff">
+            -2
+          </text>
+          <line
+            x1="50"
+            y1="230"
+            x2="70"
+            y2="230"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="234" text-anchor="end" font-size="11" fill="#fff">
+            -3.5
+          </text>
+          <line
+            x1="50"
+            y1="280"
+            x2="70"
+            y2="280"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="284" text-anchor="end" font-size="11" fill="#fff">
+            -6
+          </text>
+          <line
+            x1="50"
+            y1="320"
+            x2="70"
+            y2="320"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="324" text-anchor="end" font-size="11" fill="#fff">
+            -8
+          </text>
+          <line
+            x1="50"
+            y1="360"
+            x2="70"
+            y2="360"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="364" text-anchor="end" font-size="11" fill="#fff">
+            -10
+          </text>
+          <line
+            x1="50"
+            y1="400"
+            x2="70"
+            y2="400"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
+          <text x="40" y="404" text-anchor="end" font-size="11" fill="#fff">
+            -12.75
+          </text>
+          <!-- Flying fish at +2.25 -->
+          <circle cx="160" cy="118" r="20" fill="#ffd700" opacity="0.3" />
+          <text x="160" y="108" text-anchor="middle" font-size="26">
+            &#128031;
+          </text>
+          <text x="230" y="123" font-size="12" font-weight="700" fill="#ffd700">
+            Flying Fish: +2.25 m
+          </text>
+          <!-- Dolphin at -3.5 -->
+          <circle cx="200" cy="230" r="22" fill="#4fc3f7" opacity="0.3" />
+          <text x="200" y="220" text-anchor="middle" font-size="28">
+            &#128044;
+          </text>
+          <text x="260" y="235" font-size="12" font-weight="700" fill="#4fc3f7">
+            Dolphin: -3.5 m
+          </text>
+          <!-- Sea turtle at -12.75 -->
+          <circle cx="170" cy="398" r="22" fill="#66bb6a" opacity="0.3" />
+          <text x="170" y="388" text-anchor="middle" font-size="26">
+            &#128034;
+          </text>
+          <text x="240" y="403" font-size="12" font-weight="700" fill="#66bb6a">
+            Turtle: -12.75 m
+          </text>
+          <!-- Distance bracket -->
+          <line
+            x1="80"
+            y1="230"
+            x2="80"
+            y2="400"
+            stroke="#ffd700"
+            stroke-width="2"
+            stroke-dasharray="4,3"
+          />
+          <text
+            x="95"
+            y="318"
+            font-size="11"
+            font-weight="700"
+            fill="#ffd700"
+            transform="rotate(-90, 95, 318)"
+          >
+            Distance: 9.25 m
+          </text>
+        </svg>
+      </section>
+
+      <!-- INVESTIGATION -->
+      <section class="card" aria-labelledby="investigation-title">
+        <h2 id="investigation-title">The Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> Three ocean animals are at these
+          positions relative to sea level: flying fish at
+          <strong>+2.25 m</strong>, dolphin at <strong>-3.5 m</strong>, sea
+          turtle at <strong>-12&frac34; m</strong> (which is -12.75 m). Place
+          all three on a vertical number line. Order them from deepest to
+          highest. Then calculate the distance between the dolphin and the sea
+          turtle. Finally: which animal is closest to sea level?
+        </div>
+
+        <h3>Visual Model: Vertical Number Line</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 580 300"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Vertical number line showing positions of three sea creatures and the distance calculation"
+            style="max-width: 580px"
+          >
+            <text
+              x="290"
+              y="22"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Ordering and Distance on a Vertical Number Line
+            </text>
+            <!-- Number line -->
+            <line
+              x1="120"
+              y1="45"
+              x2="120"
+              y2="280"
+              stroke="#23395d"
+              stroke-width="3"
+            />
+            <!-- Arrow top -->
+            <polygon points="120,40 115,50 125,50" fill="#23395d" />
+            <!-- Arrow bottom -->
+            <polygon points="120,285 115,275 125,275" fill="#23395d" />
+            <!-- Ticks and labels -->
+            <line
+              x1="110"
+              y1="55"
+              x2="130"
+              y2="55"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="100"
+              y="59"
+              text-anchor="end"
+              font-size="12"
+              fill="#23395d"
+            >
+              +4
+            </text>
+            <line
+              x1="110"
+              y1="80"
+              x2="130"
+              y2="80"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="100"
+              y="84"
+              text-anchor="end"
+              font-size="12"
+              fill="#23395d"
+            >
+              +2.25
+            </text>
+            <!-- Flying fish -->
+            <circle cx="120" cy="80" r="7" fill="#ffd700" />
+            <text
+              x="140"
+              y="84"
+              font-size="12"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Flying Fish (+2.25)
+            </text>
+            <!-- Sea level -->
+            <line
+              x1="80"
+              y1="105"
+              x2="160"
+              y2="105"
+              stroke="#0f766e"
+              stroke-width="2"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="100"
+              y="99"
+              text-anchor="end"
+              font-size="12"
+              font-weight="800"
+              fill="#0f766e"
+            >
+              0
+            </text>
+            <text x="170" y="109" font-size="11" fill="#0f766e">Sea Level</text>
+            <!-- Dolphin at -3.5 -->
+            <line
+              x1="110"
+              y1="145"
+              x2="130"
+              y2="145"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="100"
+              y="149"
+              text-anchor="end"
+              font-size="12"
+              fill="#23395d"
+            >
+              -3.5
+            </text>
+            <circle cx="120" cy="145" r="7" fill="#4a90d9" />
+            <text
+              x="140"
+              y="149"
+              font-size="12"
+              font-weight="700"
+              fill="#4a90d9"
+            >
+              Dolphin (-3.5)
+            </text>
+            <!-- Turtle at -12.75 -->
+            <line
+              x1="110"
+              y1="250"
+              x2="130"
+              y2="250"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="100"
+              y="254"
+              text-anchor="end"
+              font-size="12"
+              fill="#23395d"
+            >
+              -12.75
+            </text>
+            <circle cx="120" cy="250" r="7" fill="#2f7d32" />
+            <text
+              x="140"
+              y="254"
+              font-size="12"
+              font-weight="700"
+              fill="#2f7d32"
+            >
+              Turtle (-12.75)
+            </text>
+            <!-- Distance bracket -->
+            <line
+              x1="95"
+              y1="145"
+              x2="95"
+              y2="250"
+              stroke="#b42318"
+              stroke-width="2"
+            />
+            <line
+              x1="90"
+              y1="145"
+              x2="100"
+              y2="145"
+              stroke="#b42318"
+              stroke-width="2"
+            />
+            <line
+              x1="90"
+              y1="250"
+              x2="100"
+              y2="250"
+              stroke="#b42318"
+              stroke-width="2"
+            />
+            <text
+              x="80"
+              y="200"
+              text-anchor="end"
+              font-size="12"
+              font-weight="700"
+              fill="#b42318"
+              transform="rotate(-90, 80, 200)"
+            >
+              9.25 m
+            </text>
+            <!-- Calculation box -->
+            <rect
+              x="320"
+              y="50"
+              width="240"
+              height="110"
+              rx="8"
+              fill="#edf5ff"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="340"
+              y="72"
+              font-size="13"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Order (deepest to highest):
+            </text>
+            <text x="340" y="92" font-size="12" fill="#333">
+              1. Turtle: -12.75 m (deepest)
+            </text>
+            <text x="340" y="110" font-size="12" fill="#333">
+              2. Dolphin: -3.5 m
+            </text>
+            <text x="340" y="128" font-size="12" fill="#333">
+              3. Flying Fish: +2.25 m (highest)
+            </text>
+            <text
+              x="340"
+              y="150"
+              font-size="11"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              Closest to sea level: Flying Fish
+            </text>
+            <!-- Distance calculation -->
+            <rect
+              x="320"
+              y="175"
+              width="240"
+              height="90"
+              rx="8"
+              fill="#fef2f1"
+              stroke="#b42318"
+              stroke-width="1.5"
+            />
+            <text
+              x="340"
+              y="197"
+              font-size="13"
+              font-weight="700"
+              fill="#b42318"
+            >
+              Distance Calculation:
+            </text>
+            <text x="340" y="217" font-size="12" fill="#333">
+              |-3.5 - (-12.75)|
+            </text>
+            <text x="340" y="235" font-size="12" fill="#333">
+              = |-3.5 + 12.75|
+            </text>
+            <text
+              x="340"
+              y="253"
+              font-size="13"
+              font-weight="800"
+              fill="#b42318"
+            >
+              = |9.25| = 9.25 meters
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Convert to the same form.</strong> Write -12&frac34; as a
+            decimal: -12.75. Now all three positions are decimals.
+            <em>Guiding question: How do you convert &frac34; to a decimal?</em>
+          </li>
+          <li>
+            <strong>Draw the vertical number line.</strong> Mark sea level as 0.
+            Place positive numbers above and negative below. Plot all three
+            creatures.
+            <em
+              >Guiding question: Why does -12.75 go farther below 0 than
+              -3.5?</em
+            >
+          </li>
+          <li>
+            <strong>Compare positions.</strong> Which is deepest? Which is
+            highest? Use &lt; and &gt; to compare each pair.
+            <em
+              >Guiding question: Is -12.75 greater or less than -3.5? How do you
+              know?</em
+            >
+          </li>
+          <li>
+            <strong>Order from least to greatest.</strong> -12.75 &lt; -3.5 &lt;
+            +2.25. Write this ordering.
+            <em
+              >Guiding question: On a vertical number line, does "less than"
+              mean higher or lower?</em
+            >
+          </li>
+          <li>
+            <strong>Find the distance.</strong> Distance between dolphin and
+            turtle: |-3.5 - (-12.75)| = |-3.5 + 12.75| = |9.25| = 9.25 m.
+            <em
+              >Guiding question: Why do we use absolute value for distance?</em
+            >
+          </li>
+          <li>
+            <strong>Identify closest to sea level.</strong> Compare |+2.25| =
+            2.25, |-3.5| = 3.5, |-12.75| = 12.75. Flying fish is closest (2.25 m
+            from 0).
+            <em
+              >Guiding question: What does absolute value tell us about
+              position?</em
+            >
+          </li>
+        </ol>
+
+        <div class="language-box">
+          <h3>Language Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-item">
+              <strong>Rational number</strong><br />
+              Any number that can be written as a fraction: integers, decimals,
+              fractions.
+            </div>
+            <div class="vocab-item">
+              <strong>Negative number</strong><br />
+              A number less than zero. Written with a minus sign: -3.5.
+            </div>
+            <div class="vocab-item">
+              <strong>Positive number</strong><br />
+              A number greater than zero: +2.25 or just 2.25.
+            </div>
+            <div class="vocab-item">
+              <strong>Absolute value</strong><br />
+              The distance from zero. Always positive. |-5| = 5.
+            </div>
+            <div class="vocab-item">
+              <strong>Opposite</strong><br />
+              Same distance from zero, other side. The opposite of -3 is +3.
+            </div>
+            <div class="vocab-item">
+              <strong>Sea level</strong><br />
+              The surface of the ocean. We call this zero (0 meters).
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <strong>Sentence Frames:</strong>
+            <p>
+              "_____ is deeper than _____ because it is farther below sea
+              level."
+            </p>
+            <p>
+              "The absolute value of _____ is _____, which means it is _____
+              meters from sea level."
+            </p>
+            <p>
+              "I know -12.75 &lt; -3.5 because on the number line, -12.75 is
+              _____."
+            </p>
+          </div>
+        </div>
+
+        <h3>Multiple Representations</h3>
+        <div class="representations">
+          <div class="rep-card">
+            <h4>Approach 1: Vertical Number Line</h4>
+            <p>
+              Draw a vertical line with 0 in the middle. Plot each value. The
+              lowest point is the least value. Read the order by going up the
+              line.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 2: Absolute Value Comparison</h4>
+            <p>
+              Find each distance from zero:<br />|+2.25| = 2.25<br />|-3.5| =
+              3.5<br />|-12.75| = 12.75<br />The smallest absolute value is
+              closest to sea level.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 3: Real-World Reasoning</h4>
+            <p>
+              Think of an elevator: floor -12 is much lower than floor -3. A
+              positive floor is above ground. You would ride the elevator 9.25
+              floors from -3.5 to -12.75.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM ROLES -->
+      <section class="card" aria-labelledby="roles-title">
+        <h2 id="roles-title">Team Roles</h2>
+        <div class="role-grid">
+          <div class="role role-facilitator">
+            <span class="role-icon" aria-hidden="true">&#128218;</span>
+            <strong>Facilitator</strong>
+            Read the ocean scenario. Make sure everyone converts -12&frac34; to
+            -12.75. Guide the team through each comparison.
+          </div>
+          <div class="role role-model">
+            <span class="role-icon" aria-hidden="true">&#9999;&#65039;</span>
+            <strong>Model Builder</strong>
+            Draw the vertical number line with sea level at 0. Plot and label
+            all three creatures at the correct positions with accurate spacing.
+          </div>
+          <div class="role role-checker">
+            <span class="role-icon" aria-hidden="true">&#128270;</span>
+            <strong>Precision Checker</strong>
+            Verify each comparison (&lt; and &gt;). Check the distance
+            calculation step by step. Confirm absolute values are correct.
+          </div>
+          <div class="role role-reporter">
+            <span class="role-icon" aria-hidden="true">&#128221;</span>
+            <strong>Reporter</strong>
+            Prepare the defense: state the order, the distance, and which animal
+            is closest to sea level. Use complete sentences with math evidence.
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMER & PHASES -->
+      <div class="two-col">
+        <section class="card" aria-labelledby="phases-title">
+          <h2 id="phases-title">Timed Lab Phases</h2>
+
+          <div class="timer-section no-print">
+            <div class="timer-label" id="activePhaseLabel">Launch Phase</div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">
+              03:00
+            </div>
+            <div class="timer-controls">
+              <button class="timer-btn start" id="startTimer">Start</button>
+              <button class="timer-btn pause" id="pauseTimer">Pause</button>
+              <button class="timer-btn reset" id="resetTimer">Reset</button>
+            </div>
+          </div>
+
+          <div class="phase-cards" id="phaseList">
+            <article class="phase-card open" data-minutes="3">
+              <button class="phase-header" aria-expanded="true">
+                <span class="phase-time">3 min</span>
+                <span class="phase-name">Launch</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Read the marine biologist scenario. Assign roles. Convert
+                  -12&frac34; to a decimal.
+                </p>
+                <ul>
+                  <li>What does "below sea level" mean in numbers?</li>
+                  <li>What does a positive number mean here?</li>
+                  <li>What is &frac34; as a decimal?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Everyone knows the three values and what
+                  positive/negative means in this context.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="6">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">6 min</span>
+                <span class="phase-name">Build</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Draw the vertical number line. Place all three animals. Write
+                  comparison statements.
+                </p>
+                <ul>
+                  <li>Where is 0 (sea level) on your number line?</li>
+                  <li>Is -12.75 above or below -3.5?</li>
+                  <li>Write: -12.75 ___ -3.5 (fill in &lt; or &gt;).</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Number line drawn with all 3 creatures plotted.
+                  Comparison statements written.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="5">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">5 min</span>
+                <span class="phase-name">Solve</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Order from least to greatest. Calculate the distance between
+                  dolphin and turtle. Find which animal is closest to sea level.
+                </p>
+                <ul>
+                  <li>What is |-3.5 - (-12.75)|?</li>
+                  <li>Which absolute value is smallest?</li>
+                  <li>Write the complete ordering with &lt; signs.</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Ordering complete. Distance calculated. Closest
+                  animal identified.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="4">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">4 min</span>
+                <span class="phase-name">Defend</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Reporter prepares the defense using the number line as visual
+                  evidence.
+                </p>
+                <ul>
+                  <li>
+                    "The order from deepest to highest is _____ because _____."
+                  </li>
+                  <li>"The distance is _____ meters because _____."</li>
+                  <li>
+                    "The _____ is closest to sea level because its absolute
+                    value is _____."
+                  </li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Defense uses the number line, comparisons, and
+                  absolute value calculations.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div>
+          <section class="card" aria-labelledby="challenge-title">
+            <h2 id="challenge-title">Challenge Extensions</h2>
+            <div class="challenge-box">
+              <strong>Extension Problem:</strong> A submarine is at -85.5
+              meters. It rises 30.25 meters, then dives 15.75 meters. What is
+              its final position? Plot the starting point, each move, and the
+              final position on a number line.
+            </div>
+            <h3>What If?</h3>
+            <ul>
+              <li>
+                What if the dolphin dives 8 more meters? What is its new
+                position? Is it deeper than the turtle?
+              </li>
+              <li>
+                A whale is exactly halfway between the dolphin and the turtle.
+                What depth is the whale at?
+              </li>
+              <li>
+                What temperature is the opposite of -3.5 degrees? Plot both on a
+                horizontal number line.
+              </li>
+            </ul>
+            <h3>Real-Life Connections</h3>
+            <p>
+              Negative numbers appear in temperatures below zero, bank account
+              overdrafts, elevations below sea level (Death Valley is -86 m),
+              and golf scores under par.
+            </p>
+          </section>
+
+          <section class="card" aria-labelledby="defense-title">
+            <h2 id="defense-title">Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                Order the three animals from deepest to highest. Explain how you
+                know.
+              </li>
+              <li>
+                What is the distance between the dolphin and the sea turtle?
+                Show your work.
+              </li>
+              <li>
+                Which animal is closest to sea level? How does absolute value
+                help you answer?
+              </li>
+              <li>
+                Is -3.5 greater or less than -12.75? Explain using the number
+                line.
+              </li>
+            </ol>
+            <strong>Sentence Starters:</strong>
+            <ul>
+              <li>
+                "The deepest animal is _____ at _____ meters because _____."
+              </li>
+              <li>
+                "I found the distance by calculating |_____ - (_____)| = _____."
+              </li>
+              <li>
+                "Absolute value tells us _____, which is useful because _____."
+              </li>
+            </ul>
+            <h3>Rubric</h3>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th>Criteria</th>
+                  <th>Excellent (4)</th>
+                  <th>Proficient (3)</th>
+                  <th>Developing (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Number line</td>
+                  <td>Accurate vertical line with all 3 plotted and labeled</td>
+                  <td>All 3 plotted with minor spacing issues</td>
+                  <td>Some creatures plotted</td>
+                </tr>
+                <tr>
+                  <td>Ordering</td>
+                  <td>Correct order with comparison symbols and explanation</td>
+                  <td>Correct order stated</td>
+                  <td>Partial ordering</td>
+                </tr>
+                <tr>
+                  <td>Distance</td>
+                  <td>Correct calculation with absolute value shown</td>
+                  <td>Correct answer</td>
+                  <td>Attempted</td>
+                </tr>
+                <tr>
+                  <td>Absolute value</td>
+                  <td>Used to compare distances from zero with explanation</td>
+                  <td>Absolute values calculated</td>
+                  <td>Concept mentioned</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </div>
+
+      <!-- EXIT PRODUCT -->
+      <section class="card" aria-labelledby="exit-title">
+        <h2 id="exit-title">Exit Product</h2>
+        <div class="exit-box">
+          <strong>Your team submits:</strong> An Ocean Depth Report with:
+          <ul>
+            <li>
+              A vertical number line with all three creatures plotted accurately
+            </li>
+            <li>
+              Ordering from least to greatest with &lt; symbols: -12.75 &lt;
+              -3.5 &lt; +2.25
+            </li>
+            <li>
+              Comparison statements for each pair (e.g., "-3.5 &gt; -12.75
+              because...")
+            </li>
+            <li>
+              Distance calculation using absolute value: |-3.5 - (-12.75)| =
+              9.25 m
+            </li>
+            <li>
+              Identification of which creature is closest to sea level with
+              justification
+            </li>
+          </ul>
+        </div>
+        <h3>Self-Assessment Checklist</h3>
+        <ul class="checklist">
+          <li>I can convert a fraction to a decimal (-12&frac34; = -12.75).</li>
+          <li>
+            I placed negative numbers correctly on a vertical number line.
+          </li>
+          <li>I used &lt; and &gt; to compare negative numbers correctly.</li>
+          <li>
+            I used absolute value to find the distance between two numbers.
+          </li>
+          <li>
+            I understand that a bigger negative number is farther from zero, not
+            "more."
+          </li>
+          <li>
+            I can explain what negative and positive mean in a real situation.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var currentPhase = 0,
+          remaining = phases[0].minutes * 60,
+          interval = null;
+        var display = document.getElementById("timerDisplay"),
+          label = document.getElementById("activePhaseLabel");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function upd() {
+          display.textContent = fmt(remaining);
+          label.textContent = phases[currentPhase].name + " Phase";
+        }
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (interval) return;
+            interval = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              upd();
+              if (remaining === 0) {
+                clearInterval(interval);
+                interval = null;
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+          });
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[currentPhase].minutes * 60;
+            upd();
+          });
+        document
+          .getElementById("phaseList")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            var card = h.parentElement,
+              all = document.querySelectorAll(".phase-card"),
+              idx = Array.prototype.indexOf.call(all, card);
+            all.forEach(function (c, i) {
+              c.classList.toggle("open", i === idx);
+              c.querySelector(".phase-header").setAttribute(
+                "aria-expanded",
+                i === idx ? "true" : "false",
+              );
+            });
+            currentPhase = idx;
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[idx].minutes * 60;
+            upd();
+          });
+        upd();
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

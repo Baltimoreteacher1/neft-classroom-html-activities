@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>10B Surface Area &amp; Nets Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>10B | Surface Area &amp; Nets Study Guide</h1>
+        <div class="guide-meta">
+          Unit 5: Area &amp; Volume &bull; Lesson 5.6 &bull; Standard: 6.G.4
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Surface Area</strong> &mdash; the total area of ALL the
+          outside faces of a 3D shape.
+          <span class="spanish">(&aacute;rea de superficie)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Net</strong> &mdash; a flat pattern that can be folded to make
+          a 3D shape. It shows every face.
+          <span class="spanish">(desarrollo / red)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Face</strong> &mdash; a flat surface of a 3D shape.
+          <span class="spanish">(cara)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Edge</strong> &mdash; the line segment where two faces meet.
+          <span class="spanish">(arista)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Vertex</strong> &mdash; a corner point where edges meet
+          (plural: vertices).
+          <span class="spanish">(v&eacute;rtice)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Visual &mdash; Net of a Rectangular Prism</h2>
+        <div class="example-box">
+          <p>
+            A rectangular prism has <strong>6 faces</strong> that come in
+            <strong>3 pairs</strong>:
+          </p>
+          <pre style="font-size: 0.95rem; line-height: 1.4; margin-top: 0.5rem">
+         +------+
+         | TOP  |
+         | l&times;w  |
+  +------+------+------+------+
+  | LEFT | FRONT| RIGHT| BACK |
+  | w&times;h  | l&times;h  | w&times;h  | l&times;h  |
+  +------+------+------+------+
+         |BOTTOM|
+         | l&times;w  |
+         +------+
+
+  3 pairs of identical faces:
+    2 faces of l &times; w  (top &amp; bottom)
+    2 faces of l &times; h  (front &amp; back)
+    2 faces of w &times; h  (left &amp; right)</pre
+          >
+        </div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step: Finding Surface Area</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <strong>Identify all faces</strong> of the 3D shape. A rectangular
+            prism has 6 faces.
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <strong>Find the area of each face</strong> (length &times; width
+            for each rectangle).
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <strong>Add all the areas together.</strong>
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Example:</strong> l = 5, w = 3, h = 2<br />
+          Top &amp; Bottom: 2 &times; (5 &times; 3) = 2 &times; 15 = 30<br />
+          Front &amp; Back: 2 &times; (5 &times; 2) = 2 &times; 10 = 20<br />
+          Left &amp; Right: 2 &times; (3 &times; 2) = 2 &times; 6 = 12<br />
+          SA = 30 + 20 + 12 = <strong>62 square units</strong>
+        </div>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Formula Box</h2>
+        <div class="formula-highlight">SA = 2lw + 2lh + 2wh</div>
+        <p
+          style="
+            text-align: center;
+            margin-top: 0.5rem;
+            color: var(--guide-muted);
+          "
+        >
+          l = length, w = width, h = height
+        </p>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong
+              >Don't forget &mdash; a rectangular prism has 6 faces, not
+              4!</strong
+            >
+            There are 3 PAIRS of matching faces.
+          </li>
+          <li>
+            <strong>Surface area is in SQUARE units</strong> (cm&sup2;,
+            in&sup2;), NOT cubic units. Volume is cubic; surface area is square.
+          </li>
+          <li>
+            <strong>A net shows all faces flat.</strong> When you fold it up, it
+            makes the 3D shape. Use the net to make sure you count every face.
+          </li>
+          <li>
+            <strong>A cube has 6 identical square faces.</strong> SA of a cube =
+            6s&sup2;.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> Find the surface area: l = 4 cm, w = 3 cm, h = 2
+            cm.<br />SA = 2(4&times;3) + 2(4&times;2) + 2(3&times;2) = ?
+          </p>
+          <input type="text" id="q1" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q1', '52', 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> A cube has sides of 5 in. What is the surface
+            area? (SA = 6 &times; s&sup2;)
+          </p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q2', '150', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> How many faces does a rectangular prism have?
+          </p>
+          <input type="text" id="q3" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q3', '6', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> Find the surface area: l = 10 m, w = 4 m, h = 3
+            m.
+          </p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q4', '164', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

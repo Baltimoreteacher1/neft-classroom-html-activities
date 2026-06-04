@@ -1,0 +1,1342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coordinate Polygon Architect | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Plot polygon vertices on a coordinate grid, draw the polygon, and find side lengths, perimeter, and area using coordinates — including across all four quadrants with absolute value. Auto-graded Grade 6 geometry activity (6.G.A.3)."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --navy-light: #18466f;
+        --teal: #1fa6a2;
+        --teal-dark: #15807d;
+        --teal-light: #dff2ee;
+        --amber: #f2c15b;
+        --amber-light: #fef7e0;
+        --cream: #f7f4ec;
+        --coral: #d9795d;
+        --coral-light: #fce6de;
+        --purple: #7c5cbf;
+        --purple-light: #ece4fa;
+
+        --bg: #f6f7f2;
+        --card: #ffffff;
+        --ink: #21313f;
+        --muted: #5f6f80;
+        --line: #d7e2ed;
+        --success: #0f7c4a;
+        --success-bg: #e6f7ef;
+        --error: #b64e2f;
+        --error-bg: #fef0ec;
+        --hint: #875f00;
+        --hint-bg: #fef7e0;
+
+        --radius-sm: 8px;
+        --radius-md: 14px;
+        --radius-lg: 22px;
+        --sp-1: 4px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 20px;
+        --sp-6: 24px;
+        --sp-7: 32px;
+        --sp-8: 40px;
+        --font-display:
+          "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: Calibri, "Segoe UI", system-ui, sans-serif;
+        --shadow: 0 18px 45px rgba(23, 32, 42, 0.12);
+        --max-width: 1120px;
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        min-height: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        background:
+          linear-gradient(
+            135deg,
+            rgba(124, 92, 191, 0.12),
+            rgba(31, 166, 162, 0.09) 45%,
+            rgba(242, 193, 91, 0.06)
+          ),
+          var(--bg);
+        color: var(--ink);
+        font-family: var(--font-body);
+        line-height: 1.5;
+      }
+      a {
+        color: var(--teal-dark);
+      }
+
+      .page-shell {
+        width: min(100% - 32px, var(--max-width));
+        margin: 0 auto;
+        padding: 28px 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-6);
+      }
+      .breadcrumb {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .breadcrumb a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span.sep {
+        color: var(--line);
+        margin: 0 4px;
+      }
+
+      .hero {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--purple);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow);
+        padding: clamp(22px, 4vw, 40px);
+        display: grid;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+      .eyebrow {
+        margin: 0;
+        color: var(--purple);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-family: var(--font-display);
+      }
+      .hero h1 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.9rem, 5vw, 3.1rem);
+        line-height: 1.04;
+        color: var(--navy);
+      }
+      .hero-copy {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.15rem);
+      }
+      .hero-ico {
+        position: absolute;
+        right: -8px;
+        top: -14px;
+        font-size: 6.5rem;
+        opacity: 0.08;
+        transform: rotate(-10deg);
+        pointer-events: none;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: var(--sp-6);
+        align-items: start;
+      }
+      @media (max-width: 980px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        box-shadow: 0 10px 28px rgba(23, 32, 42, 0.07);
+        padding: var(--sp-6);
+      }
+      .card-title {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--navy);
+        margin: 0 0 var(--sp-3);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+      }
+
+      /* Mission picker */
+      .mission-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-4);
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--cream);
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 7px 13px;
+        font-weight: 800;
+        font-size: 0.84rem;
+        cursor: pointer;
+        font-family: var(--font-display);
+        transition: all 0.15s;
+      }
+      .chip:hover {
+        border-color: var(--purple);
+      }
+      .chip.active {
+        background: var(--purple);
+        color: #fff;
+        border-color: var(--purple);
+      }
+      .chip .lvl {
+        font-size: 0.62rem;
+        opacity: 0.85;
+        display: block;
+      }
+
+      .brief {
+        background: var(--purple-light);
+        border-left: 4px solid var(--purple);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-3) var(--sp-4);
+        font-size: 0.92rem;
+        color: var(--navy);
+        margin-bottom: var(--sp-4);
+      }
+      .brief .es {
+        display: block;
+        color: var(--purple);
+        font-style: italic;
+        margin-top: 4px;
+        font-size: 0.84rem;
+      }
+      .brief .coords {
+        font-family: "Outfit", monospace;
+        font-weight: 800;
+        color: var(--navy);
+      }
+
+      /* Grid svg */
+      .grid-wrap {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-2);
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02);
+      }
+      #grid-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        touch-action: manipulation;
+        cursor: crosshair;
+      }
+      .vertex {
+        fill: var(--coral);
+        stroke: var(--navy);
+        stroke-width: 2;
+        transition: transform 0.12s;
+        transform-origin: center;
+        transform-box: fill-box;
+      }
+      .vertex:hover {
+        transform: scale(1.18);
+      }
+      .vertex.enter {
+        animation: pop 0.22s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.1);
+        }
+        70% {
+          transform: scale(1.25);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .target-ghost {
+        fill: none;
+        stroke: var(--teal);
+        stroke-width: 2;
+        stroke-dasharray: 5, 4;
+        opacity: 0.55;
+      }
+      .target-dot {
+        fill: var(--teal);
+        opacity: 0.45;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin: var(--sp-4) 0 var(--sp-3);
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px var(--sp-4);
+        border-radius: var(--radius-sm);
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border: none;
+        font-family: var(--font-display);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s;
+      }
+      .btn-primary {
+        background: var(--teal);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--teal-dark);
+      }
+      .btn-purple {
+        background: var(--purple);
+        color: #fff;
+      }
+      .btn-purple:hover {
+        background: #6a4caf;
+      }
+      .btn-secondary {
+        background: #eef4f3;
+        border: 1px solid var(--line);
+        color: var(--navy);
+      }
+      .btn-secondary:hover {
+        background: var(--line);
+      }
+      .btn-accent {
+        background: var(--coral);
+        color: #fff;
+      }
+      .btn-accent:hover {
+        background: #c25f44;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      .vlist {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-2);
+      }
+      .vtag {
+        background: var(--coral-light);
+        border: 1px solid var(--coral);
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-family: "Outfit", monospace;
+        font-weight: 800;
+        font-size: 0.82rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .vtag button {
+        border: none;
+        background: none;
+        color: var(--coral);
+        cursor: pointer;
+        font-weight: 900;
+        font-size: 0.95rem;
+        line-height: 1;
+      }
+
+      .status-line {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-bottom: var(--sp-2);
+      }
+
+      /* Measure section */
+      .measure-grid {
+        display: grid;
+        gap: var(--sp-3);
+      }
+      .measure-item {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-3) var(--sp-4);
+        background: #fff;
+        transition: all 0.2s;
+      }
+      .measure-item.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .measure-item.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .measure-label {
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 0.92rem;
+        margin-bottom: 6px;
+      }
+      .measure-label .es {
+        display: block;
+        color: var(--muted);
+        font-style: italic;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+      .num-row {
+        display: flex;
+        gap: var(--sp-2);
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .num-row input {
+        width: 88px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        font-size: 0.95rem;
+        font-family: var(--font-display);
+        font-weight: 700;
+      }
+      .unit-tag {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .feedback {
+        margin-top: 6px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        min-height: 1.05em;
+      }
+      .feedback.ok {
+        color: var(--success);
+      }
+      .feedback.no {
+        color: var(--error);
+      }
+      .hint-box {
+        margin-top: 6px;
+        padding: 8px 12px;
+        background: var(--hint-bg);
+        border-left: 3px solid var(--amber);
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        color: var(--hint);
+        display: none;
+      }
+      .hint-box.show {
+        display: block;
+      }
+
+      .level-pill {
+        display: inline-block;
+        font-size: 0.64rem;
+        font-weight: 900;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-left: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        vertical-align: middle;
+      }
+      .level-1 {
+        background: var(--teal-light);
+        color: var(--teal-dark);
+      }
+      .level-2 {
+        background: var(--purple-light);
+        color: var(--purple);
+      }
+
+      .score-bar {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        background: var(--navy);
+        color: #fff;
+        border-radius: var(--radius-md);
+        padding: var(--sp-3) var(--sp-5);
+        font-family: var(--font-display);
+        font-weight: 800;
+      }
+      .score-bar .track {
+        flex: 1;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .score-bar .fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--purple), var(--teal));
+        transition: width 0.4s ease;
+      }
+
+      details.help {
+        margin-top: var(--sp-3);
+      }
+      details.help summary {
+        cursor: pointer;
+        font-weight: 800;
+        color: var(--teal-dark);
+        font-family: var(--font-display);
+      }
+      details.help p {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .site-footer {
+        margin-top: var(--sp-4);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--line);
+        padding-top: var(--sp-4);
+      }
+      .site-footer a {
+        color: var(--teal-dark);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--navy);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 999;
+        transform: translateY(110px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .print-head {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        .page-shell {
+          width: 100% !important;
+          padding: 0 !important;
+        }
+        .controls,
+        .toast,
+        .btn,
+        .mission-row {
+          display: none !important;
+        }
+        .main-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .card {
+          box-shadow: none !important;
+          border: 1px solid #000 !important;
+          page-break-inside: avoid;
+        }
+        .hero {
+          box-shadow: none !important;
+        }
+        .print-head {
+          display: block !important;
+          border-bottom: 3px double #000;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Neft Hub</a><span class="sep">/</span>
+        <a href="/math/">Grade 6 Math</a><span class="sep">/</span>
+        <a href="/geometry-prep/">Geometry</a><span class="sep">/</span>
+        <span>Coordinate Polygon Architect</span>
+      </nav>
+
+      <div class="print-head">
+        <h1
+          style="font-family: Outfit, sans-serif; margin: 0; font-size: 1.7rem"
+        >
+          COORDINATE POLYGON ARCHITECT — Blueprint
+        </h1>
+        <p style="margin: 4px 0 0; color: #444">
+          6.G.A.3 — Polygons in the coordinate plane: side lengths, perimeter
+          &amp; area
+        </p>
+        <div
+          style="display: flex; gap: 40px; margin-top: 10px; font-weight: bold"
+        >
+          <div>ARCHITECT: ______________________</div>
+          <div>DATE: ______________</div>
+        </div>
+      </div>
+
+      <header class="hero">
+        <span class="hero-ico" aria-hidden="true">📐</span>
+        <span class="eyebrow">📐 Geometry · Coordinate Plane</span>
+        <h1>Coordinate Polygon Architect</h1>
+        <p class="hero-copy">
+          You're the architect! Read each blueprint,
+          <strong>plot the vertices</strong> on the coordinate grid, draw the
+          polygon, then compute its <strong>side lengths</strong>,
+          <strong>perimeter</strong>, and <strong>area</strong> straight from
+          the coordinates — even across all four quadrants using
+          <strong>absolute value</strong>. Tap the grid to drop a vertex; tap a
+          vertex to remove it.
+        </p>
+      </header>
+
+      <div class="score-bar" role="status" aria-live="polite">
+        <span
+          >🏗️ Blueprints approved: <span id="solved-count">0</span> /
+          <span id="total-count">0</span></span
+        >
+        <div class="track"><div class="fill" id="score-fill"></div></div>
+      </div>
+
+      <main class="main-grid">
+        <!-- LEFT: grid -->
+        <section class="card" aria-label="Coordinate grid workspace">
+          <h2 class="card-title">🗺️ Build Site</h2>
+
+          <div class="mission-row" id="mission-row"></div>
+          <div class="brief" id="brief"></div>
+
+          <div class="grid-wrap">
+            <svg
+              id="grid-svg"
+              viewBox="0 0 520 520"
+              preserveAspectRatio="xMidYMid meet"
+              role="img"
+              aria-label="Coordinate grid from negative 10 to 10. Click a lattice point to plot a vertex."
+            ></svg>
+          </div>
+
+          <div class="status-line" id="status-line">
+            Plot the vertices listed in the blueprint.
+          </div>
+          <div class="vlist" id="vlist"></div>
+
+          <div class="controls">
+            <button class="btn btn-secondary" onclick="clearVertices()">
+              🗑️ Clear Plot
+            </button>
+            <button
+              class="btn btn-purple"
+              id="ghost-btn"
+              onclick="toggleGhost()"
+            >
+              👻 Show Target Outline
+            </button>
+            <button
+              class="btn btn-primary"
+              id="check-shape-btn"
+              onclick="checkShape()"
+            >
+              ✅ Check My Polygon
+            </button>
+            <button class="btn btn-accent" onclick="window.print()">
+              🖨️ Print Blueprint
+            </button>
+          </div>
+          <div class="feedback" id="shape-fb"></div>
+
+          <details class="help">
+            <summary>
+              📏 How do I find side length, perimeter &amp; area from
+              coordinates?
+              <span class="level-pill level-1">Level 1 support</span>
+            </summary>
+            <p>
+              <strong>Horizontal side</strong> (same y): length = |x₂ − x₁|.<br />
+              <strong>Vertical side</strong> (same x): length = |y₂ − y₁|.<br />
+              Use absolute value so the length is always positive — even when
+              points are in different quadrants. Example: from (−3, 2) to (4, 2)
+              the length is |4 − (−3)| = |7| = 7 units.<br />
+              <strong>Perimeter</strong> = add all the side lengths.<br />
+              <strong>Area of a rectangle</strong> = length × width.<br />
+              <span style="display: block; font-style: italic; margin-top: 4px"
+                >ES: Lado horizontal = |x₂ − x₁|; lado vertical = |y₂ − y₁|. El
+                valor absoluto mantiene la longitud positiva.</span
+              >
+            </p>
+          </details>
+        </section>
+
+        <!-- RIGHT: measurements -->
+        <aside class="card" aria-label="Measurements">
+          <h2 class="card-title">📊 Measurements</h2>
+          <p
+            style="
+              font-size: 0.86rem;
+              color: var(--muted);
+              margin: 0 0 var(--sp-4);
+            "
+          >
+            Once your polygon matches the blueprint, compute these from the
+            coordinates. All answers auto-check.
+          </p>
+          <div class="measure-grid" id="measure-grid"></div>
+        </aside>
+      </main>
+
+      <footer class="site-footer">
+        <div>Neft Teacher · Grade 6 Mathematics</div>
+        <div>
+          Standard: CCSS 6.G.A.3 ·
+          <a href="/geometry-prep/">Back to Geometry Hub</a>
+        </div>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast">
+      <span style="font-size: 1.4rem" id="toast-emoji">🎉</span>
+      <div>
+        <div style="font-weight: 800" id="toast-title">Approved!</div>
+        <div style="font-size: 0.78rem; opacity: 0.9" id="toast-desc"></div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* ===== Audio ===== */
+      const Synth = {
+        ctx: null,
+        init() {
+          if (!this.ctx) {
+            const C = window.AudioContext || window.webkitAudioContext;
+            if (C) this.ctx = new C();
+          }
+        },
+        play(kind) {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === "suspended") this.ctx.resume();
+          const t = this.ctx.currentTime;
+          const P = {
+            click: { f: [330, 150], d: 0.07, v: 0.04 },
+            correct: { f: [523.25, 783.99], d: 0.2, v: 0.07 },
+            wrong: { f: [220, 160], d: 0.18, v: 0.06 },
+            win: { f: [440, 554.37, 659.25, 880], d: 0.45, v: 0.09 },
+          };
+          const c = P[kind] || P.click;
+          const osc = this.ctx.createOscillator(),
+            g = this.ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(c.f[0], t);
+          if (c.f.length === 2) {
+            osc.frequency.exponentialRampToValueAtTime(c.f[1], t + c.d);
+          } else {
+            const s = c.d / c.f.length;
+            c.f.forEach((f, i) => osc.frequency.setValueAtTime(f, t + i * s));
+          }
+          g.gain.setValueAtTime(0.001, t);
+          g.gain.linearRampToValueAtTime(c.v, t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, t + c.d);
+          osc.connect(g).connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + c.d + 0.01);
+        },
+      };
+
+      /* ===== Grid geometry =====
+   Logical coords: x,y in [-10, 10]. SVG 520x520, padding 30 -> 460 plotting area.
+   Step = 460 / 20 = 23 px per unit. Origin at (30 + 10*23, 30 + 10*23) = (260, 260). */
+      const GMIN = -10,
+        GMAX = 10,
+        PAD = 30,
+        SPAN = 460,
+        STEP = SPAN / (GMAX - GMIN); // 23
+      function sx(x) {
+        return PAD + (x - GMIN) * STEP;
+      }
+      function sy(y) {
+        return PAD + (GMAX - y) * STEP;
+      } // invert y
+      function invX(px) {
+        return Math.round((px - PAD) / STEP + GMIN);
+      }
+      function invY(px) {
+        return Math.round(GMAX - (px - PAD) / STEP);
+      }
+
+      const gridSvg = document.getElementById("grid-svg");
+
+      /* ===== Missions (blueprints) =====
+   Each polygon's vertices are axis-aligned so side lengths are |Δx| or |Δy|.
+   order: vertices in drawing order. */
+      const MISSIONS = [
+        {
+          id: "m1",
+          level: 1,
+          name: "Garden Plot",
+          emoji: "🌻",
+          en: "A square flower bed. Plot the 4 corners and find its measurements.",
+          es: "Un cantero cuadrado. Marca las 4 esquinas y halla sus medidas.",
+          verts: [
+            [2, 2],
+            [7, 2],
+            [7, 7],
+            [2, 7],
+          ],
+          measures: [
+            {
+              id: "side",
+              label: "Length of one side",
+              es: "Longitud de un lado",
+              unit: "units",
+              value: 5,
+              hint: "Pick two corners that share a y-value (or x-value). |7 − 2| = 5.",
+            },
+            {
+              id: "perim",
+              label: "Perimeter",
+              es: "Perímetro",
+              unit: "units",
+              value: 20,
+              hint: "A square has 4 equal sides: 5 + 5 + 5 + 5, or 4 × 5.",
+            },
+            {
+              id: "area",
+              label: "Area",
+              es: "Área",
+              unit: "square units",
+              value: 25,
+              hint: "Area of a square = side × side = 5 × 5.",
+            },
+          ],
+        },
+        {
+          id: "m2",
+          level: 1,
+          name: "Soccer Field",
+          emoji: "⚽",
+          en: "A rectangular mini-field. Plot the 4 corners, then measure.",
+          es: "Una mini-cancha rectangular. Marca las 4 esquinas y mide.",
+          verts: [
+            [-6, -3],
+            [4, -3],
+            [4, 3],
+            [-6, 3],
+          ],
+          measures: [
+            {
+              id: "len",
+              label: "Length (the longer horizontal side)",
+              es: "Largo (lado horizontal)",
+              unit: "units",
+              value: 10,
+              hint: "Horizontal side crosses from x = −6 to x = 4. |4 − (−6)| = |10| = 10.",
+            },
+            {
+              id: "wid",
+              label: "Width (the vertical side)",
+              es: "Ancho (lado vertical)",
+              unit: "units",
+              value: 6,
+              hint: "Vertical side from y = −3 to y = 3. |3 − (−3)| = |6| = 6.",
+            },
+            {
+              id: "perim",
+              label: "Perimeter",
+              es: "Perímetro",
+              unit: "units",
+              value: 32,
+              hint: "Two lengths + two widths: 10 + 10 + 6 + 6.",
+            },
+            {
+              id: "area",
+              label: "Area",
+              es: "Área",
+              unit: "square units",
+              value: 60,
+              hint: "Rectangle area = length × width = 10 × 6.",
+            },
+          ],
+        },
+        {
+          id: "m3",
+          level: 2,
+          name: "Four-Quadrant Banner",
+          emoji: "🚩",
+          en: "A rectangle spanning all four quadrants. Use absolute value carefully!",
+          es: "Un rectángulo en los cuatro cuadrantes. ¡Usa el valor absoluto con cuidado!",
+          verts: [
+            [-8, 5],
+            [6, 5],
+            [6, -4],
+            [-8, -4],
+          ],
+          measures: [
+            {
+              id: "len",
+              label: "Horizontal side length",
+              es: "Longitud del lado horizontal",
+              unit: "units",
+              value: 14,
+              hint: "From x = −8 to x = 6 across the y-axis: |6 − (−8)| = |14| = 14.",
+            },
+            {
+              id: "wid",
+              label: "Vertical side length",
+              es: "Longitud del lado vertical",
+              unit: "units",
+              value: 9,
+              hint: "From y = 5 to y = −4 across the x-axis: |5 − (−4)| = |9| = 9.",
+            },
+            {
+              id: "perim",
+              label: "Perimeter",
+              es: "Perímetro",
+              unit: "units",
+              value: 46,
+              hint: "2 × 14 + 2 × 9 = 28 + 18.",
+            },
+            {
+              id: "area",
+              label: "Area",
+              es: "Área",
+              unit: "square units",
+              value: 126,
+              hint: "14 × 9. Multiply the two side lengths.",
+            },
+          ],
+        },
+        {
+          id: "m4",
+          level: 2,
+          name: "L-Shaped Park",
+          emoji: "🌳",
+          en: "A composite L-shaped park (6 vertices). Find its perimeter and area by decomposing it.",
+          es: "Un parque en forma de L (6 vértices). Halla el perímetro y el área descomponiéndolo.",
+          verts: [
+            [-4, -2],
+            [4, -2],
+            [4, 2],
+            [0, 2],
+            [0, 6],
+            [-4, 6],
+          ],
+          measures: [
+            {
+              id: "perim",
+              label: "Perimeter (add all 6 sides)",
+              es: "Perímetro (suma los 6 lados)",
+              unit: "units",
+              value: 32,
+              hint: "Sides in order: 8, 4, 4, 4, 4, 8. Add them: 8+4+4+4+4+8 = 32.",
+            },
+            {
+              id: "area",
+              label: "Total area (split into two rectangles)",
+              es: "Área total (divide en dos rectángulos)",
+              unit: "square units",
+              value: 48,
+              hint: "Split into two non-overlapping rectangles. Bottom rectangle: width 8 (x from −4 to 4) × height 4 (y from −2 to 2) = 32. Top-left rectangle: width 4 (x from −4 to 0) × height 4 (y from 2 to 6) = 16. Total = 32 + 16 = 48.",
+            },
+          ],
+        },
+      ];
+
+      let mission = MISSIONS[0];
+      let plotted = []; // [[x,y], ...] in plot order
+      let showGhost = false;
+      const solvedMeasures = {}; // missionId -> Set of measure ids
+      const shapeApproved = {}; // missionId -> bool
+
+      MISSIONS.forEach((m) => (solvedMeasures[m.id] = new Set()));
+
+      /* ===== Render grid ===== */
+      function renderGrid(animatePt) {
+        let s = "";
+        // minor grid lines
+        for (let i = GMIN; i <= GMAX; i++) {
+          const X = sx(i),
+            Y = sy(i);
+          const major = i === 0;
+          s += `<line x1="${X}" y1="${PAD}" x2="${X}" y2="${PAD + SPAN}" stroke="${major ? "#9fb4c9" : "#eef3f8"}" stroke-width="${major ? 2 : 1}"/>`;
+          s += `<line x1="${PAD}" y1="${Y}" x2="${PAD + SPAN}" y2="${Y}" stroke="${major ? "#9fb4c9" : "#eef3f8"}" stroke-width="${major ? 2 : 1}"/>`;
+        }
+        // axis arrows + labels (every 2)
+        for (let i = GMIN; i <= GMAX; i += 2) {
+          if (i === 0) continue;
+          const X = sx(i),
+            Y = sy(i);
+          s += `<text x="${X}" y="${sy(0) + 13}" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle" fill="var(--muted)">${i}</text>`;
+          s += `<text x="${sx(0) - 7}" y="${Y + 3}" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="end" fill="var(--muted)">${i}</text>`;
+        }
+        s += `<text x="${sx(0) - 7}" y="${sy(0) + 13}" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="end" fill="var(--muted)">0</text>`;
+        s += `<text x="${PAD + SPAN + 6}" y="${sy(0) + 3}" font-family="Outfit,sans-serif" font-size="11" font-weight="900" fill="var(--navy)">x</text>`;
+        s += `<text x="${sx(0) - 3}" y="${PAD - 8}" font-family="Outfit,sans-serif" font-size="11" font-weight="900" fill="var(--navy)">y</text>`;
+
+        // clickable lattice hit-area (transparent rect capturing clicks)
+        s += `<rect x="${PAD}" y="${PAD}" width="${SPAN}" height="${SPAN}" fill="transparent" id="hit-area"/>`;
+
+        // ghost target outline
+        if (showGhost) {
+          const pts = mission.verts
+            .map((v) => `${sx(v[0])},${sy(v[1])}`)
+            .join(" ");
+          s += `<polygon class="target-ghost" points="${pts}"/>`;
+          mission.verts.forEach((v) => {
+            s += `<circle class="target-dot" cx="${sx(v[0])}" cy="${sy(v[1])}" r="4"/>`;
+          });
+        }
+
+        // current polygon (filled translucent) if 3+ points
+        if (plotted.length >= 2) {
+          const pts = plotted.map((v) => `${sx(v[0])},${sy(v[1])}`).join(" ");
+          if (plotted.length >= 3) {
+            s += `<polygon points="${pts}" fill="rgba(124,92,191,0.12)" stroke="var(--purple)" stroke-width="2.5" stroke-linejoin="round"/>`;
+          } else {
+            s += `<polyline points="${pts}" fill="none" stroke="var(--purple)" stroke-width="2.5"/>`;
+          }
+          // side length labels at midpoints (axis-aligned only)
+          for (let i = 0; i < plotted.length && plotted.length >= 3; i++) {
+            const a = plotted[i],
+              b = plotted[(i + 1) % plotted.length];
+            const mx = (sx(a[0]) + sx(b[0])) / 2,
+              my = (sy(a[1]) + sy(b[1])) / 2;
+            let len = null;
+            if (a[1] === b[1]) len = Math.abs(b[0] - a[0]);
+            else if (a[0] === b[0]) len = Math.abs(b[1] - a[1]);
+            if (len !== null) {
+              s += `<rect x="${mx - 11}" y="${my - 9}" width="22" height="15" rx="3" fill="#fff" stroke="var(--purple)" stroke-width="1" opacity="0.92"/>`;
+              s += `<text x="${mx}" y="${my + 2}" font-family="Outfit,sans-serif" font-size="10" font-weight="900" text-anchor="middle" fill="var(--purple)">${len}</text>`;
+            }
+          }
+        }
+
+        // vertices
+        plotted.forEach((v, i) => {
+          const isNew =
+            animatePt &&
+            animatePt[0] === v[0] &&
+            animatePt[1] === v[1] &&
+            i === plotted.length - 1;
+          s += `<circle class="vertex${isNew ? " enter" : ""}" cx="${sx(v[0])}" cy="${sy(v[1])}" r="7"
+            onclick="event.stopPropagation(); removeVertex(${i})"
+            tabindex="0" role="button" aria-label="Vertex at ${v[0]}, ${v[1]}. Activate to remove."
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();removeVertex(${i});}"></circle>`;
+          s += `<text x="${sx(v[0]) + 10}" y="${sy(v[1]) - 8}" font-family="Outfit,monospace" font-size="10" font-weight="800" fill="var(--navy)">(${v[0]}, ${v[1]})</text>`;
+        });
+
+        gridSvg.innerHTML = s;
+        // attach click handler to hit area
+        document
+          .getElementById("hit-area")
+          .addEventListener("click", onGridClick);
+      }
+
+      function onGridClick(evt) {
+        const pt = svgPoint(evt);
+        const gx = invX(pt.x),
+          gy = invY(pt.y);
+        if (gx < GMIN || gx > GMAX || gy < GMIN || gy > GMAX) return;
+        // prevent exact duplicate
+        if (plotted.some((v) => v[0] === gx && v[1] === gy)) return;
+        if (plotted.length >= 8) {
+          flashStatus("Maximum 8 vertices. Remove one first.");
+          return;
+        }
+        plotted.push([gx, gy]);
+        Synth.play("click");
+        renderGrid([gx, gy]);
+        updateVList();
+      }
+
+      function svgPoint(evt) {
+        const rect = gridSvg.getBoundingClientRect();
+        const vbW = 520,
+          vbH = 520;
+        const x = ((evt.clientX - rect.left) / rect.width) * vbW;
+        const y = ((evt.clientY - rect.top) / rect.height) * vbH;
+        return { x, y };
+      }
+
+      function removeVertex(i) {
+        plotted.splice(i, 1);
+        Synth.play("click");
+        renderGrid();
+        updateVList();
+      }
+      function clearVertices() {
+        plotted = [];
+        Synth.play("click");
+        renderGrid();
+        updateVList();
+        document.getElementById("shape-fb").textContent = "";
+      }
+      function toggleGhost() {
+        showGhost = !showGhost;
+        document
+          .getElementById("ghost-btn")
+          .classList.toggle("btn-secondary", showGhost);
+        Synth.play("click");
+        renderGrid();
+      }
+
+      function updateVList() {
+        const host = document.getElementById("vlist");
+        host.innerHTML = plotted
+          .map(
+            (v, i) =>
+              `<span class="vtag">(${v[0]}, ${v[1]}) <button onclick="removeVertex(${i})" aria-label="Remove vertex">×</button></span>`,
+          )
+          .join("");
+        document.getElementById("status-line").textContent =
+          `${plotted.length} of ${mission.verts.length} vertices plotted.`;
+      }
+
+      let statusTimer = null;
+      function flashStatus(msg) {
+        const el = document.getElementById("status-line");
+        const prev = `${plotted.length} of ${mission.verts.length} vertices plotted.`;
+        el.textContent = msg;
+        clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => {
+          el.textContent = prev;
+        }, 2200);
+      }
+
+      /* ===== Check polygon matches blueprint (as a set of vertices) ===== */
+      function checkShape() {
+        const fb = document.getElementById("shape-fb");
+        const target = mission.verts;
+        if (plotted.length !== target.length) {
+          fb.className = "feedback no";
+          fb.textContent = `✗ The blueprint needs exactly ${target.length} vertices — you have ${plotted.length}.`;
+          Synth.play("wrong");
+          return;
+        }
+        // compare as sets (order-independent), since the shape is what matters
+        const key = (a) =>
+          a
+            .map((v) => v.join(","))
+            .sort()
+            .join("|");
+        if (key(plotted) === key(target)) {
+          fb.className = "feedback ok";
+          fb.textContent =
+            "✓ Polygon matches the blueprint! Now take your measurements →";
+          if (!shapeApproved[mission.id]) {
+            shapeApproved[mission.id] = true;
+            Synth.play("correct");
+            toast(
+              "📐",
+              "Polygon Approved!",
+              "Coordinates verified. Measure away, architect.",
+            );
+          }
+          unlockMeasures();
+        } else {
+          fb.className = "feedback no";
+          fb.textContent =
+            "✗ Right number of points, wrong locations. Compare with the target outline (👻) and re-plot.";
+          Synth.play("wrong");
+        }
+      }
+
+      /* ===== Measurements panel ===== */
+      function buildMeasures() {
+        const host = document.getElementById("measure-grid");
+        const approved = shapeApproved[mission.id];
+        host.innerHTML = mission.measures
+          .map((m) => {
+            const done = solvedMeasures[mission.id].has(m.id);
+            return `<div class="measure-item${done ? " correct" : ""}" id="meas-${m.id}">
+      <div class="measure-label">${m.label}<span class="es">${m.es}</span></div>
+      <div class="num-row">
+        <input type="number" step="0.5" id="in-${m.id}" ${approved ? "" : "disabled"} placeholder="?" aria-label="${m.label}">
+        <span class="unit-tag">${m.unit}</span>
+        <button class="btn btn-primary" ${approved ? "" : "disabled"} onclick="checkMeasure('${m.id}')">Check</button>
+        <button class="btn btn-secondary" onclick="toggleHint('${m.id}')">💡</button>
+      </div>
+      <div class="feedback" id="fb-${m.id}">${done ? "✓ Correct!" : ""}</div>
+      <div class="hint-box" id="hint-${m.id}">💡 ${m.hint}</div>
+    </div>`;
+          })
+          .join("");
+        if (!approved) {
+          host.insertAdjacentHTML(
+            "afterbegin",
+            `<div class="status-line" style="color:var(--purple);font-weight:700;">🔒 Plot the polygon and press “Check My Polygon” to unlock the measurements.</div>`,
+          );
+        }
+      }
+      function unlockMeasures() {
+        buildMeasures();
+      }
+
+      function checkMeasure(id) {
+        const m = mission.measures.find((x) => x.id === id);
+        const input = document.getElementById("in-" + id).value;
+        const item = document.getElementById("meas-" + id);
+        const fb = document.getElementById("fb-" + id);
+        if (input === "" || isNaN(Number(input))) {
+          fb.className = "feedback no";
+          fb.textContent = "Enter a number first.";
+          return;
+        }
+        if (Math.abs(Number(input) - m.value) < 0.001) {
+          item.classList.remove("wrong");
+          item.classList.add("correct");
+          fb.className = "feedback ok";
+          fb.textContent = "✓ Correct!";
+          if (!solvedMeasures[mission.id].has(id)) {
+            solvedMeasures[mission.id].add(id);
+            Synth.play("correct");
+            checkMissionComplete();
+          }
+          updateScore();
+        } else {
+          item.classList.add("wrong");
+          fb.className = "feedback no";
+          fb.textContent =
+            "✗ Recheck using absolute value of the coordinate differences.";
+          Synth.play("wrong");
+        }
+      }
+
+      function checkMissionComplete() {
+        const m = mission;
+        if (solvedMeasures[m.id].size === m.measures.length) {
+          Synth.play("win");
+          toast(
+            "🏆",
+            `${m.name} Complete!`,
+            "All measurements approved. Pick another blueprint!",
+          );
+        }
+      }
+
+      function toggleHint(id) {
+        document.getElementById("hint-" + id).classList.toggle("show");
+        Synth.play("click");
+      }
+
+      /* ===== Score across all missions ===== */
+      function totalMeasures() {
+        return MISSIONS.reduce((s, m) => s + m.measures.length, 0);
+      }
+      function solvedTotal() {
+        return MISSIONS.reduce((s, m) => s + solvedMeasures[m.id].size, 0);
+      }
+      function updateScore() {
+        const total = totalMeasures(),
+          done = solvedTotal();
+        document.getElementById("solved-count").textContent = done;
+        document.getElementById("total-count").textContent = total;
+        document.getElementById("score-fill").style.width =
+          (done / total) * 100 + "%";
+      }
+
+      /* ===== Mission picker ===== */
+      function buildMissionChips() {
+        document.getElementById("mission-row").innerHTML = MISSIONS.map(
+          (m) =>
+            `<button class="chip${m.id === mission.id ? " active" : ""}" onclick="setMission('${m.id}')">
+       ${m.emoji} ${m.name}<span class="lvl">${m.level === 2 ? "Level 2 · enrichment" : "Level 1 · support"}</span>
+     </button>`,
+        ).join("");
+      }
+      function setMission(id) {
+        mission = MISSIONS.find((m) => m.id === id) || MISSIONS[0];
+        plotted = [];
+        showGhost = false;
+        document.getElementById("ghost-btn").classList.remove("btn-secondary");
+        document.getElementById("shape-fb").textContent = "";
+        Synth.play("click");
+        buildMissionChips();
+        updateBrief();
+        renderGrid();
+        updateVList();
+        buildMeasures();
+      }
+      function updateBrief() {
+        const coords = mission.verts
+          .map((v) => `(${v[0]}, ${v[1]})`)
+          .join("  ");
+        document.getElementById("brief").innerHTML =
+          `<strong>${mission.emoji} ${mission.name}:</strong> ${mission.en}<br>
+     <span class="coords">Vertices: ${coords}</span>
+     <span class="es">ES: ${mission.es}</span>`;
+      }
+
+      /* ===== Toast ===== */
+      let toastTimer = null;
+      function toast(emoji, title, desc) {
+        document.getElementById("toast-emoji").textContent = emoji;
+        document.getElementById("toast-title").textContent = title;
+        document.getElementById("toast-desc").textContent = desc || "";
+        const el = document.getElementById("toast");
+        el.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+      }
+
+      /* ===== Init ===== */
+      window.addEventListener("DOMContentLoaded", () => {
+        buildMissionChips();
+        updateBrief();
+        renderGrid();
+        updateVList();
+        buildMeasures();
+        updateScore();
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,6 +1,6 @@
 # ESOL, Reading, Writing, and Math
 
-`neft-classroom-html-activities` is a plain static HTML collection for Mr. Neft's ESOL, reading, writing, and math classroom activities. It is designed for Cloudflare Pages and does not use Vite, React, npm, or any build system.
+`neft-classroom-html-activities` is a mostly static HTML collection for Mr. Neft's ESOL, reading, writing, and math classroom activities. It is designed for Cloudflare Pages. Most activities are standalone HTML folders, and the Reveal Math lesson launchers are built with Vite so Cloudflare can publish the complete `dist/` output.
 
 Folder structure:
 
@@ -49,6 +49,20 @@ Folder structure:
   mcap-review/
     index.html
     ...activity-folders/
+  math/
+    index.html
+    unit-1/
+      index.html
+      projects/
+        index.html        (unit projects hub)
+        version-a/index.html  (Design & Build culminating project)
+        version-b/index.html  (Real-World Investigation culminating project)
+    ...unit-folders/
+  lessons/
+    1-1/
+      index.html
+      config.json
+    ...lesson-folders/
 ```
 
 ## How This Repo Works
@@ -73,12 +87,44 @@ Organized unit and subject folders:
 - `ratios-proportions/`
 - `esol-reading-writing/`
 - `mcap-review/`
+- `math/`
+- `lessons/`
 
 Shared files:
 
 - `assets/shared.css` provides the classroom design system.
 - `assets/app.js` provides small shared behavior, currently the footer year.
 - `source-repos.md` maps source repository names to their organized target folders.
+
+## Culminating Projects
+
+Each Grade 6 math unit (`math/unit-1` through `math/unit-10`) includes a
+`projects/` folder with two creative, interactive end-of-unit projects:
+
+- **Version A — Design & Build:** an open-ended maker challenge.
+- **Version B — Real-World Investigation:** a data-and-decision challenge.
+
+Both versions assess the same unit standards through different contexts, so
+they double as choice-board options, differentiated assignments, or A/B class
+sets. Each project is a self-contained HTML page with live calculators,
+scaffolded hints, a progress bar, a written deliverable, a student checklist, a
+3-point rubric, and a print button. Projects are linked from each unit's
+`index.html` and from the math hub at `math/index.html`.
+
+## Math Remediation: Bridge to Grade 6
+
+`math/remediation/` is a Grades 7–8 remediation track that rebuilds the
+foundational skills students need to be ready for Grade 6 math. It has a top
+hub plus five units (`unit-r1` through `unit-r5`), each with its own hub and
+five interactive lessons:
+
+- R1 Whole Numbers & Operations, R2 Fraction Foundations, R3 Decimals & Money,
+  R4 Factors/Multiples/Patterns, R5 Pre-Algebra & Geometry Readiness.
+
+Every lesson is a self-contained interactive HTML page following the same path —
+**Learn It → Try It → Practice → Exit Ticket** — with self-checking items,
+instant feedback, hints, a progress bar, a "Why this matters for Grade 6"
+standard callout, and a print button. Linked from the math hub and sitemap.
 
 ## Adding A New Activity
 
@@ -90,16 +136,36 @@ Shared files:
 
 Every activity can have its own `index.html` inside its folder. Cloudflare Pages will serve that folder at a clean URL that follows the folder path.
 
+## Local Development
+
+Install dependencies once:
+
+```sh
+npm install
+```
+
+Build the Cloudflare Pages output:
+
+```sh
+npm run build
+```
+
+Preview the built site locally:
+
+```sh
+npm run preview
+```
+
 ## Cloudflare Pages Setup
 
 Use these settings:
 
-- Framework preset: `None`
-- Build command: leave blank or use `exit 0`
-- Build output directory: `/`
+- Framework preset: `Vite`
+- Build command: `npm run build`
+- Build output directory: `dist`
 - Root directory: leave blank unless deploying a subfolder
 - Production branch: `main`
 
 ## Static Site Notes
 
-This repository is intentionally lightweight. It should work by opening the HTML files directly or by serving the repository as a static site. Keep activities classroom-safe, student-friendly, and Cloudflare Pages-compatible.
+This repository is intentionally lightweight. Standalone activity folders should stay classroom-safe, student-friendly, and Cloudflare Pages-compatible. For deployed changes, use the Vite build so generated lesson pages and copied static folders are published together.

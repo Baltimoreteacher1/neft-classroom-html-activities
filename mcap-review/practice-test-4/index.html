@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Interactive, auto-graded Maryland MCAP Grade 6 math practice test 4 from Neft Teacher. 40 questions with instant scoring, domain breakdown, and explanations." />
+    <title>MCAP Practice Test 4 &middot; Grade 6 Math &middot; Neft Teacher</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --primary: #0d9488;
+        --primary-light: #14b8a6;
+        --primary-dark: #0f766e;
+        --bg: #fffbeb;
+        --text: #1e293b;
+        --card: #ffffff;
+        --correct: #16a34a;
+        --incorrect: #dc2626;
+        --border: #e2e8f0;
+        --muted: #64748b;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container { max-width: 760px; margin: 0 auto; padding: 20px; }
+      .breadcrumb { font-size: 0.85rem; color: var(--muted); margin-bottom: 14px; }
+      .breadcrumb a { color: var(--primary-dark); text-decoration: none; }
+      .breadcrumb a:hover { text-decoration: underline; }
+      .breadcrumb span { margin: 0 6px; }
+      .mcap-note {
+        display: inline-block; text-align: center; font-size: 0.78rem; font-weight: 700;
+        letter-spacing: 0.04em; color: var(--primary-dark); background: #f0fdfa;
+        border: 1px solid #99f6e4; border-radius: 20px; padding: 5px 14px; margin-bottom: 14px;
+      }
+      h1 { color: var(--primary-dark); font-size: 1.9rem; text-align: center; margin-bottom: 4px; }
+      .subtitle { text-align: center; color: var(--muted); font-size: 0.95rem; margin-bottom: 18px; }
+      .intro-card, .question-card, .summary-card {
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+      }
+      .intro-card p { margin-bottom: 8px; font-size: 0.95rem; }
+      .intro-card ul { margin: 8px 0 8px 22px; font-size: 0.9rem; color: var(--muted); }
+      .progress-bar { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; margin-bottom: 6px; }
+      .progress-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s; }
+      .progress-text { text-align: center; font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; }
+      .q-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+      .q-number {
+        flex-shrink: 0; background: var(--primary); color: #fff; min-width: 30px; height: 30px;
+        border-radius: 50%; text-align: center; line-height: 30px; font-size: 0.85rem; font-weight: 700; padding: 0 4px;
+      }
+      .q-domain {
+        margin-left: auto; flex-shrink: 0; font-size: 0.72rem; font-weight: 700; color: var(--primary-dark);
+        background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 2px 9px;
+      }
+      .q-text { font-weight: 600; font-size: 1.02rem; }
+      .q-note { font-size: 0.85rem; color: var(--muted); font-style: italic; margin: 6px 0 4px; }
+      .options { list-style: none; margin-top: 10px; }
+      .option {
+        display: block; border: 2px solid var(--border); border-radius: 10px; padding: 11px 14px;
+        margin-bottom: 9px; cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 0.95rem;
+      }
+      .option:hover { border-color: var(--primary-light); }
+      .option input { margin-right: 10px; accent-color: var(--primary); }
+      .option.sel { border-color: var(--primary); background: #f0fdfa; }
+      .option.correct { border-color: var(--correct); background: #f0fdf4; }
+      .option.incorrect { border-color: var(--incorrect); background: #fef2f2; }
+      .fr-input {
+        width: 100%; max-width: 280px; padding: 10px 12px; border: 2px solid var(--border);
+        border-radius: 10px; font-size: 1rem; margin-top: 8px;
+      }
+      .fr-input:focus { outline: none; border-color: var(--primary); }
+      .hint-toggle {
+        background: none; border: none; color: var(--primary-dark); font-size: 0.85rem; font-weight: 600;
+        cursor: pointer; padding: 4px 0; margin-top: 6px; text-decoration: underline;
+      }
+      .hint-box {
+        background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px;
+        padding: 8px 12px; margin-top: 8px; font-size: 0.88rem;
+      }
+      .explain-box {
+        border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 0.9rem;
+        background: #f8fafc; border: 1px solid var(--border);
+      }
+      .explain-box .verdict { font-weight: 700; margin-bottom: 4px; }
+      .verdict.right { color: var(--correct); }
+      .verdict.wrong { color: var(--incorrect); }
+      .answered-correct { border-color: var(--correct); }
+      .answered-incorrect { border-color: var(--incorrect); }
+      .btn {
+        display: inline-block; border: none; border-radius: 10px; padding: 12px 28px;
+        font-size: 1rem; font-weight: 600; cursor: pointer; margin: 6px;
+      }
+      .btn-primary { background: var(--primary); color: #fff; }
+      .btn-primary:hover { background: var(--primary-dark); }
+      .btn-reset { background: #64748b; color: #fff; }
+      .btn-reset:hover { background: #475569; }
+      .btn-row { text-align: center; margin: 22px 0; }
+      .summary-card { text-align: center; }
+      .score-big { font-size: 3rem; font-weight: 800; color: var(--primary-dark); }
+      .score-pct { font-size: 1.1rem; color: var(--muted); margin-bottom: 14px; }
+      .domain-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.92rem; }
+      .domain-table th, .domain-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+      .domain-table th { color: var(--primary-dark); }
+      .domain-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .dbar { background: #e2e8f0; border-radius: 10px; height: 9px; overflow: hidden; margin-top: 4px; }
+      .dbar > div { background: var(--primary); height: 100%; }
+      .footer {
+        text-align: center; padding: 20px; color: #94a3b8; font-size: 0.8rem; margin-top: 10px;
+      }
+      .stretch-note {
+        font-size: 0.85rem; color: var(--muted); background: #f0fdfa; border: 1px dashed #99f6e4;
+        border-radius: 8px; padding: 8px 12px; margin-top: 10px;
+      }
+      .hidden { display: none !important; }
+      .focus-target:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+      @media (max-width: 600px) {
+        .container { padding: 12px; }
+        h1 { font-size: 1.45rem; }
+        .intro-card, .question-card, .summary-card { padding: 15px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { transition-duration: 0.001ms !important; }
+      }
+      @media print {
+        body { background: #fff; }
+        .no-print { display: none !important; }
+        .question-card, .intro-card, .summary-card { box-shadow: none; page-break-inside: avoid; }
+        .hint-box, .explain-box { display: block !important; }
+        .option { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="container">
+      <nav class="breadcrumb no-print" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/mcap-review/">MCAP &amp; General Review</a><span>/</span>Practice Test 4
+      </nav>
+      <div style="text-align: center">
+        <span class="mcap-note">Maryland MCAP &middot; Grade 6 &middot; Full-length</span>
+      </div>
+      <h1>Practice Test 4</h1>
+      <p class="subtitle">Grade 6 Mathematics &bull; 40 questions &bull; Calculator not permitted</p>
+
+      <div class="intro-card no-print">
+        <p><strong>How this works:</strong> Answer all 40 questions, then press <em>Submit &amp; Grade</em>. You'll get your score, a domain breakdown, and a worked explanation for every question.</p>
+        <ul>
+          <li>Your answers save automatically on this device. Use <em>Reset</em> to start fresh.</li>
+          <li>Need a nudge? Each question has an optional <strong>Level 1 hint</strong>. Explanations stay hidden until you submit &mdash; no peeking!</li>
+          <li>Domains are tagged (6.RP, 6.NS, 6.EE, 6.G, 6.SP) so you can see your strengths.</li>
+        </ul>
+      </div>
+
+      <div class="progress-bar no-print" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="40">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text no-print" id="progressText">0 of 40 answered</p>
+
+      <form id="quizForm" onsubmit="return false;"></form>
+
+      <div class="btn-row no-print">
+        <button type="button" class="btn btn-primary focus-target" id="submitBtn" onclick="gradeTest()">Submit &amp; Grade</button>
+        <button type="button" class="btn btn-reset focus-target" onclick="resetTest()">Reset</button>
+      </div>
+
+      <div id="summary" class="summary-card hidden" tabindex="-1"></div>
+
+      <div class="btn-row no-print" id="postRow" style="display:none">
+        <button type="button" class="btn btn-reset focus-target" onclick="resetTest()">Reset &amp; Try Again</button>
+        <button type="button" class="btn btn-primary focus-target" onclick="window.print()">Print</button>
+        <a class="btn btn-reset focus-target" href="/mcap-review/">Back to MCAP Review</a>
+      </div>
+
+      <div class="footer">
+        Neft Teacher &bull; Maryland MCAP &middot; Grade 6 Mathematics &bull; Practice Test 4 &bull;
+        <a href="/mcap-review/" style="color:#0f766e">All MCAP practice</a>
+        &bull; &copy; <span id="yr"></span>
+      </div>
+    </div>
+
+    <script>
+      const TEST_NUM = 4;
+      const STORAGE_KEY = "mcapPracticeTest_4_v1";
+      const DOMAIN_NAMES = {"6.RP": "Ratios & Proportional Relationships", "6.NS": "The Number System", "6.EE": "Expressions & Equations", "6.G": "Geometry", "6.SP": "Statistics & Probability"};
+      const QUESTIONS = [{"id": 1, "domain": "6.NS", "type": "mc", "text": "What is the value of |−9|?", "explain": "Absolute value is distance from zero, always nonnegative: |−9| = 9.", "hint": "Absolute value gives the distance from 0, which is never negative.", "options": ["−9", "9", "−1/9", "1/9"], "answer": 1}, {"id": 2, "domain": "6.SP", "type": "mc", "text": "A box has 4 red, 6 yellow, and 5 blue cards. If one card is drawn, what is the probability it is yellow?", "explain": "Total = 15; yellow = 6, so P(yellow) = 6/15 = 2/5.", "hint": "Probability = yellow cards ÷ total cards.", "options": ["2/5", "1/3", "1/2", "3/5"], "answer": 0}, {"id": 3, "domain": "6.RP", "type": "mc", "text": "Popcorn prices: Small 8 oz $4.00, Medium 12 oz $5.40, Large 16 oz $6.40. Which size gives the most popcorn per dollar?", "explain": "Small 8/4 = 2.0; Medium 12/5.4 ≈ 2.22; Large 16/6.4 = 2.5 oz/$. Large is best.", "hint": "Divide ounces by price for each size and compare.", "options": ["Small (2.0 oz/$)", "Medium (2.2 oz/$)", "Large (2.5 oz/$)", "All equal value"], "answer": 2}, {"id": 4, "domain": "6.RP", "type": "mc", "text": "A school had 450 students last year and 540 this year. What is the percent increase?", "explain": "Increase = 90; 90/450 = 0.20 = 20%.", "hint": "Percent increase = (increase ÷ original) × 100.", "options": ["15%", "18%", "20%", "25%"], "answer": 2}, {"id": 5, "domain": "6.NS", "type": "mc", "text": "A coach has 60 water bottles and 84 towels and wants identical kits with none left over. What is the greatest number of kits she can make?", "explain": "GCF of 60 and 84 is 12, so she can make 12 identical kits.", "hint": "Find the greatest common factor of 60 and 84.", "options": ["6 kits", "8 kits", "12 kits", "15 kits"], "answer": 2}, {"id": 6, "domain": "6.G", "type": "mc", "text": "An angle measures 76°. A ray bisects it (cuts it in half). What is the measure of each smaller angle?", "explain": "Bisect means divide in half: 76 ÷ 2 = 38°.", "hint": "Bisecting an angle splits it into two equal parts.", "options": ["34°", "36°", "38°", "40°"], "answer": 2}, {"id": 7, "domain": "6.NS", "type": "mc", "text": "A baker uses 3/4 cup of sugar per batch, divides by 2/3, then multiplies that amount by 5/6. How much sugar is needed?", "explain": "3/4 ÷ 2/3 = 3/4 × 3/2 = 9/8; 9/8 × 5/6 = 45/48 = 15/16 cup.", "hint": "Dividing by a fraction means multiplying by its reciprocal. Do one step at a time.", "options": ["15/16 cup", "5/8 cup", "15/32 cup", "5/16 cup"], "answer": 0}, {"id": 8, "domain": "6.G", "type": "fr", "text": "A triangle has vertices A(2,3), B(6,3), and C(4,7). What is the area of the triangle?", "explain": "Base AB = |6−2| = 4; height from C = |7−3| = 4; area = 1/2 × 4 × 4 = 8 square units.", "hint": "Use AB as the base, then find the straight-up distance from C to that line.", "answer": "8", "accept": ["8", "8 square units", "8 units"]}, {"id": 9, "domain": "6.G", "type": "mc", "text": "A rectangular prism is 8 cm long, 5 cm wide, and 3 cm high. What is its volume?", "explain": "Volume = 8 × 5 × 3 = 120 cubic cm.", "hint": "Volume = length × width × height.", "options": ["90 cubic cm", "100 cubic cm", "110 cubic cm", "120 cubic cm"], "answer": 3}, {"id": 10, "domain": "6.SP", "type": "mc", "text": "Books read by five students: Alex 6, Blake 9, Casey 4, Dana 7, Emma 7. How many books did all five read in total?", "explain": "6 + 9 + 4 + 7 + 7 = 33 books.", "hint": "Add the number of books each student read.", "options": ["30 books", "33 books", "36 books", "39 books"], "answer": 1}, {"id": 11, "domain": "6.EE", "type": "mc", "text": "The expression 6x − 3(2x + 4) is equivalent to which of the following?", "explain": "6x − 3(2x + 4) = 6x − 6x − 12 = −12.", "hint": "Distribute the −3, then combine like terms.", "options": ["−12", "0", "−12x", "12x − 12"], "answer": 0}, {"id": 12, "domain": "6.SP", "type": "mc", "text": "Books sold over four months: Jan 200, Feb 180, Mar 220, Apr 250. What is the average number of books sold per month?", "explain": "Sum = 850; 850 ÷ 4 = 212.5 books.", "hint": "Add the four months and divide by 4.", "options": ["200 books", "212.5 books", "215 books", "220 books"], "answer": 1}, {"id": 13, "domain": "6.SP", "type": "mc", "text": "Monthly rainfall (inches): Jan 3.2, Feb 2.8, Mar 4.5, Apr 3.6, May 2.9, Jun 3.0. What is the mean monthly rainfall?", "explain": "Sum = 20.0; 20.0 ÷ 6 ≈ 3.33 → 3.3 inches.", "hint": "Add all six values and divide by 6.", "options": ["3.0 inches", "3.2 inches", "3.3 inches", "3.5 inches"], "answer": 2}, {"id": 14, "domain": "6.NS", "type": "mc", "text": "A recipe needs 2/3 cup of flour per batch. For 4 1/2 batches, how many cups of flour are needed?", "explain": "4 1/2 = 9/2; 2/3 × 9/2 = 18/6 = 3 cups.", "hint": "Multiply the flour per batch by the number of batches (as an improper fraction).", "options": ["2 1/2 cups", "3 cups", "3 1/2 cups", "4 cups"], "answer": 1}, {"id": 15, "domain": "6.G", "type": "mc", "text": "A garden is 18 ft long and 12 ft wide. If the width is increased by 25%, what is the new area?", "explain": "New width = 12 × 1.25 = 15 ft; new area = 18 × 15 = 270 square feet.", "hint": "Increase the width by 25% first, then multiply by the length.", "options": ["240 square feet", "252 square feet", "270 square feet", "288 square feet"], "answer": 2}, {"id": 16, "domain": "6.NS", "type": "mc", "text": "Points P(1,2), Q(4,5), R(6,1), S(7,4) are on a plane. Which point is located at (6, 1)?", "explain": "R is at (6, 1).", "hint": "Look for the point with x = 6 and y = 1.", "options": ["Point P", "Point Q", "Point R", "Point S"], "answer": 2}, {"id": 17, "domain": "6.RP", "type": "mc", "text": "A bike shop offers 15% off all bikes. If a bike originally costs $240, what is the sale price?", "explain": "Discount = 240 × 0.15 = $36; sale price = 240 − 36 = $204.", "hint": "Find the discount, then subtract it from $240.", "options": ["$200", "$204", "$210", "$216"], "answer": 1}, {"id": 18, "domain": "6.RP", "type": "fr", "text": "A machine produces 450 widgets in 6 hours. At this rate, how many widgets will it produce in 10 hours?", "explain": "Rate = 450/6 = 75 widgets per hour; 75 × 10 = 750 widgets.", "hint": "Find the widgets per hour, then multiply by 10.", "answer": "750", "accept": ["750", "750 widgets"]}, {"id": 19, "domain": "6.EE", "type": "mc", "text": "Which inequality represents all values of x greater than −3 but less than or equal to 5?", "explain": "Greater than −3 (not included) and ≤ 5 (included): −3 < x ≤ 5.", "hint": "'Greater than' is strict (<); 'less than or equal to' includes the endpoint (≤).", "options": ["−3 < x < 5", "−3 < x ≤ 5", "−3 ≤ x < 5", "−3 ≤ x ≤ 5"], "answer": 1}, {"id": 20, "domain": "6.G", "type": "mc", "text": "A cube has an edge length of 5 cm. What is its surface area?", "explain": "Surface area = 6 × 5² = 6 × 25 = 150 cm².", "hint": "A cube has 6 equal square faces; each face is side².", "options": ["125 cm²", "150 cm²", "175 cm²", "200 cm²"], "answer": 1}, {"id": 21, "domain": "6.RP", "type": "mc", "text": "A pool holds 12,000 gallons and drains at 150 gallons per hour. How long will it take to drain completely?", "explain": "12,000 ÷ 150 = 80 hours.", "hint": "Time = total amount ÷ rate.", "options": ["60 hours", "70 hours", "80 hours", "90 hours"], "answer": 2}, {"id": 22, "domain": "6.SP", "type": "mc", "text": "Sports played: Basketball 12, Soccer 18, Tennis 6, Volleyball 9. Which sport represents the mode of the data?", "explain": "Soccer has the greatest count (18), so it is the mode.", "hint": "The mode is the category with the highest frequency.", "options": ["Basketball", "Soccer", "Tennis", "Volleyball"], "answer": 1}, {"id": 23, "domain": "6.G", "type": "mc", "text": "A T-shaped figure: top rectangle 24 in by 6 in, vertical rectangle 8 in by 18 in, with an 8 by 6 overlap counted twice. What is the total area?", "explain": "Top 24×6 = 144; stem 8×18 = 144; overlap 8×6 = 48; total = 144 + 144 − 48 = 240 in².", "hint": "Add both rectangles, then subtract the overlapping region once.", "options": ["144 square inches", "168 square inches", "240 square inches", "288 square inches"], "answer": 2}, {"id": 24, "domain": "6.EE", "type": "mc", "text": "If n = 7, what is the value of 4n − 9 + 2n?", "explain": "Combine: 6n − 9; substitute n = 7: 6(7) − 9 = 42 − 9 = 33.", "hint": "Combine like terms first (4n + 2n), then substitute 7.", "options": ["33", "35", "37", "39"], "answer": 0}, {"id": 25, "domain": "6.NS", "type": "mc", "text": "Jordan runs 3/8 of a mile Monday and 5/12 of a mile Tuesday. How many total miles did Jordan run?", "explain": "LCD of 8 and 12 is 24: 3/8 = 9/24, 5/12 = 10/24; sum = 19/24 mile.", "hint": "Use a common denominator of 24 before adding.", "options": ["8/20 mile", "19/24 mile", "7/10 mile", "1 mile"], "answer": 1}, {"id": 26, "domain": "6.G", "type": "mc", "text": "A honeycomb has 7 regular hexagons, each with area 65 cm². What is the total area of all 7 hexagons?", "explain": "7 × 65 = 455 cm².", "hint": "Multiply the area of one hexagon by 7.", "options": ["385 square centimeters", "420 square centimeters", "455 square centimeters", "490 square centimeters"], "answer": 2}, {"id": 27, "domain": "6.EE", "type": "fr", "text": "A number is divided by 8, then 12 is added. If the final answer is 20, what was the original number?", "explain": "x/8 + 12 = 20 → x/8 = 8 → x = 64.", "hint": "Work backward: undo the +12 first, then undo the ÷8.", "answer": "64", "accept": ["64"]}, {"id": 28, "domain": "6.SP", "type": "mc", "text": "Distances on 1 gallon: Car A 28.5, Car B 32.0, Car C 30.5, Car D 29.0, Car E 31.5 miles. What is the median distance?", "explain": "In order: 28.5, 29.0, 30.5, 31.5, 32.0; middle value = 30.5 miles.", "hint": "Put the five distances in order and pick the middle one.", "options": ["29.0 miles", "30.0 miles", "30.5 miles", "31.0 miles"], "answer": 2}, {"id": 29, "domain": "6.EE", "type": "mc", "text": "If x = 4 and y = 2, what is the value of x² + 3y² − 4xy?", "explain": "16 + 3(4) − 4(4)(2) = 16 + 12 − 32 = −4.", "hint": "Compute each term carefully, then combine.", "options": ["−10", "−6", "−4", "0"], "answer": 2}, {"id": 30, "domain": "6.G", "type": "mc", "text": "A pinwheel is made of 4 identical right triangles, each with legs 9 cm and 12 cm. What is the total area of the pinwheel?", "explain": "One triangle = 1/2 × 9 × 12 = 54 cm²; 4 × 54 = 216 cm².", "hint": "Find one triangle's area, then multiply by 4.", "options": ["108 square centimeters", "162 square centimeters", "216 square centimeters", "432 square centimeters"], "answer": 2}, {"id": 31, "domain": "6.SP", "type": "mc", "text": "A double bar graph shows January sales: Store A 120 books, Store B 100 books. How many more books did Store A sell than Store B?", "explain": "120 − 100 = 20 more books.", "hint": "Subtract Store B's January value from Store A's.", "options": ["15 books", "20 books", "25 books", "30 books"], "answer": 1}, {"id": 32, "domain": "6.EE", "type": "mc", "text": "A group must weigh at least 180 pounds. Three friends weigh 150 pounds together. What is the minimum weight x a fourth friend must have?", "explain": "150 + x ≥ 180 → x ≥ 30.", "hint": "Set up '150 plus the fourth weight is at least 180' and solve.", "options": ["x ≥ 25", "x ≥ 30", "x ≥ 35", "x ≥ 40"], "answer": 1}, {"id": 33, "domain": "6.NS", "type": "mc", "text": "A painter uses 3 1/2 gallons to cover a whole wall. To paint only 3/5 of the wall, how many gallons are needed?", "explain": "3 1/2 = 7/2; 7/2 × 3/5 = 21/10 = 2 1/10 gallons.", "hint": "Multiply the full-wall amount by 3/5.", "options": ["2 1/10 gallons", "2 3/10 gallons", "2 1/5 gallons", "2 2/5 gallons"], "answer": 0}, {"id": 34, "domain": "6.G", "type": "mc", "text": "Triangle XYZ has vertices X(2,1), Y(7,1), Z(2,5). What is the area of triangle XYZ?", "explain": "Base XY = |7−2| = 5; height XZ = |5−1| = 4; area = 1/2 × 5 × 4 = 10 square units.", "hint": "Use the horizontal side as base and the vertical side as height.", "options": ["8 square units", "9 square units", "10 square units", "12.5 square units"], "answer": 2}, {"id": 35, "domain": "6.RP", "type": "mc", "text": "A model race car is built to a scale of 1:32. If the model is 6 inches long, what is the actual car's length in feet?", "explain": "Actual = 32 × 6 = 192 inches; 192 ÷ 12 = 16 feet.", "hint": "Multiply by 32 for inches, then convert inches to feet (÷12).", "options": ["12 feet", "14 feet", "15 feet", "16 feet"], "answer": 3}, {"id": 36, "domain": "6.RP", "type": "mc", "text": "On a 40-question test, Emma answered 30 correctly. What percentage did she get wrong?", "explain": "Missed = 40 − 30 = 10; 10/40 = 1/4 = 25%.", "hint": "Find how many she missed, then write that as a percent of 40.", "options": ["20%", "25%", "30%", "35%"], "answer": 1}, {"id": 37, "domain": "6.G", "type": "mc", "text": "A U-shaped metal piece: outer rectangle 20 m by 14 m with an inner cut-out of 14 m by 8 m. What is the area of the U-shaped piece?", "explain": "Outer 20×14 = 280; cut-out 14×8 = 112; area = 280 − 112 = 168 m².", "hint": "Subtract the cut-out area from the full outer rectangle.", "options": ["112 square meters", "126 square meters", "168 square meters", "280 square meters"], "answer": 2}, {"id": 38, "domain": "6.SP", "type": "mc", "text": "Points scored in six games: 78, 85, 72, 90, 81, 84. What is the median number of points?", "explain": "In order: 72, 78, 81, 84, 85, 90; median = (81 + 84)/2 = 82.5.", "hint": "Order the values and average the two middle ones.", "options": ["81 points", "82.5 points", "83 points", "84 points"], "answer": 1}, {"id": 39, "domain": "6.RP", "type": "mc", "text": "A store sold 240 items on Monday, which was 60% of the items sold on Sunday. How many items were sold on Sunday?", "explain": "0.60x = 240 → x = 240 ÷ 0.60 = 400 items.", "hint": "240 is 60% of Sunday's total. Divide by 0.60 to find the whole.", "options": ["360 items", "380 items", "400 items", "420 items"], "answer": 2}, {"id": 40, "domain": "6.G", "type": "mc", "text": "A net shows a box 6 in long, 4 in wide, 3 in tall. What is the total surface area of the box?", "explain": "2(6×4) + 2(6×3) + 2(4×3) = 48 + 36 + 24 = 108 in².", "hint": "Add the areas of all 6 faces (three pairs of matching faces).", "options": ["72 square inches", "96 square inches", "108 square inches", "120 square inches"], "answer": 2}];
+      let graded = false;
+
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+      function buildQuiz() {
+        const form = document.getElementById("quizForm");
+        form.innerHTML = "";
+        QUESTIONS.forEach(function (q) {
+          const card = document.createElement("div");
+          card.className = "question-card";
+          card.id = "qcard-" + q.id;
+
+          let h = '<div class="q-head">';
+          h += '<span class="q-number">' + q.id + '</span>';
+          h += '<span class="q-text">' + esc(q.text) + '</span>';
+          h += '<span class="q-domain" title="' + esc(DOMAIN_NAMES[q.domain]) + '">' + q.domain + '</span>';
+          h += '</div>';
+          if (q.note) h += '<p class="q-note">' + esc(q.note) + '</p>';
+
+          if (q.type === "mc") {
+            h += '<ul class="options">';
+            q.options.forEach(function (opt, i) {
+              const oid = "q" + q.id + "_o" + i;
+              h += '<li><label class="option" for="' + oid + '">';
+              h += '<input type="radio" name="q' + q.id + '" id="' + oid + '" value="' + i + '" onchange="onAnswer(' + q.id + ')"> ';
+              h += esc(opt) + '</label></li>';
+            });
+            h += '</ul>';
+          } else {
+            h += '<input type="text" class="fr-input" name="q' + q.id + '" id="q' + q.id + '_fr" ';
+            h += 'placeholder="Type your answer" autocomplete="off" oninput="onAnswer(' + q.id + ')" aria-label="Answer for question ' + q.id + '">';
+          }
+
+          if (q.hint) {
+            h += '<button type="button" class="hint-toggle no-print" onclick="toggleHint(' + q.id + ')" id="hintbtn-' + q.id + '">Show Level 1 hint</button>';
+            h += '<div class="hint-box hidden" id="hint-' + q.id + '"><strong>Level 1:</strong> ' + esc(q.hint) + '</div>';
+          }
+          if (q.stretch) {
+            h += '<div class="stretch-note"><strong>Level 2 stretch:</strong> ' + esc(q.stretch) + '</div>';
+          }
+          h += '<div class="explain-box hidden" id="explain-' + q.id + '"></div>';
+          card.innerHTML = h;
+          form.appendChild(card);
+        });
+      }
+
+      function toggleHint(id) {
+        const box = document.getElementById("hint-" + id);
+        const btn = document.getElementById("hintbtn-" + id);
+        const hidden = box.classList.toggle("hidden");
+        btn.textContent = hidden ? "Show Level 1 hint" : "Hide Level 1 hint";
+      }
+
+      function getResponse(q) {
+        if (q.type === "mc") {
+          const sel = document.querySelector('input[name="q' + q.id + '"]:checked');
+          return sel ? parseInt(sel.value, 10) : null;
+        } else {
+          const el = document.getElementById("q" + q.id + "_fr");
+          return el && el.value.trim() !== "" ? el.value.trim() : null;
+        }
+      }
+
+      function onAnswer(id) {
+        if (id) {
+          const q = QUESTIONS.find(function(x){return x.id===id;});
+          if (q && q.type === "mc") {
+            const labels = document.querySelectorAll('#qcard-' + id + ' .option');
+            labels.forEach(function(l){ l.classList.remove("sel"); });
+            const sel = document.querySelector('input[name="q' + id + '"]:checked');
+            if (sel) sel.closest(".option").classList.add("sel");
+          }
+        }
+        saveProgress();
+        updateProgress();
+      }
+
+      function updateProgress() {
+        let answered = 0;
+        QUESTIONS.forEach(function (q) { if (getResponse(q) !== null) answered++; });
+        document.getElementById("progressFill").style.width = (answered / QUESTIONS.length * 100) + "%";
+        document.getElementById("progressText").textContent = answered + " of " + QUESTIONS.length + " answered";
+      }
+
+      function saveProgress() {
+        const data = {};
+        QUESTIONS.forEach(function (q) {
+          const r = getResponse(q);
+          if (r !== null) data[q.id] = r;
+        });
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+      }
+
+      function loadProgress() {
+        let data;
+        try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) { data = {}; }
+        QUESTIONS.forEach(function (q) {
+          if (!(q.id in data)) return;
+          if (q.type === "mc") {
+            const inp = document.querySelector('input[name="q' + q.id + '"][value="' + data[q.id] + '"]');
+            if (inp) { inp.checked = true; inp.closest(".option").classList.add("sel"); }
+          } else {
+            const el = document.getElementById("q" + q.id + "_fr");
+            if (el) el.value = data[q.id];
+          }
+        });
+      }
+
+      function normalizeFR(s) {
+        return String(s).toLowerCase().replace(/\s+/g, " ").replace(/[$,°]/g, "")
+          .replace(/\s*\/\s*/g, "/").trim();
+      }
+
+      function checkFR(q, resp) {
+        const given = normalizeFR(resp);
+        const list = (q.accept || [String(q.answer)]);
+        for (let i = 0; i < list.length; i++) {
+          if (normalizeFR(list[i]) === given) return true;
+        }
+        return false;
+      }
+
+      function gradeTest() {
+        graded = true;
+        let correct = 0;
+        const byDomain = {};
+        Object.keys(DOMAIN_NAMES).forEach(function (d) { byDomain[d] = { c: 0, t: 0 }; });
+
+        QUESTIONS.forEach(function (q) {
+          const card = document.getElementById("qcard-" + q.id);
+          const resp = getResponse(q);
+          let isCorrect = false;
+          byDomain[q.domain].t++;
+
+          if (q.type === "mc") {
+            const labels = card.querySelectorAll(".option");
+            labels.forEach(function (l, i) {
+              l.classList.remove("sel");
+              if (i === q.answer) l.classList.add("correct");
+              if (resp !== null && i === resp && resp !== q.answer) l.classList.add("incorrect");
+              l.querySelector("input").disabled = true;
+            });
+            isCorrect = resp !== null && resp === q.answer;
+          } else {
+            const el = document.getElementById("q" + q.id + "_fr");
+            isCorrect = resp !== null && checkFR(q, resp);
+            if (el) el.disabled = true;
+          }
+
+          if (isCorrect) { correct++; byDomain[q.domain].c++; }
+          card.classList.add(isCorrect ? "answered-correct" : "answered-incorrect");
+
+          const ex = document.getElementById("explain-" + q.id);
+          let verdict;
+          if (resp === null) verdict = '<span class="verdict wrong">Not answered</span>';
+          else if (isCorrect) verdict = '<span class="verdict right">Correct</span>';
+          else verdict = '<span class="verdict wrong">Incorrect</span>';
+          let ans = q.type === "mc" ? esc(q.options[q.answer]) : esc(String(q.answer));
+          ex.innerHTML = '<div class="verdict-line">' + verdict + '</div>' +
+            '<div><strong>Answer:</strong> ' + ans + '</div>' +
+            '<div>' + esc(q.explain) + '</div>';
+          ex.classList.remove("hidden");
+        });
+
+        showSummary(correct, byDomain);
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("submitBtn").style.opacity = 0.5;
+        document.getElementById("postRow").style.display = "block";
+        const sum = document.getElementById("summary");
+        sum.scrollIntoView({ behavior: "smooth", block: "start" });
+        sum.focus();
+      }
+
+      function showSummary(correct, byDomain) {
+        const total = QUESTIONS.length;
+        const pct = Math.round((correct / total) * 100);
+        let msg;
+        if (pct >= 90) msg = "Outstanding work!";
+        else if (pct >= 75) msg = "Great job &mdash; you're MCAP-ready!";
+        else if (pct >= 60) msg = "Solid effort. Review the misses below.";
+        else msg = "Keep practicing &mdash; the explanations will help.";
+
+        let h = '<div class="score-big">' + correct + " / " + total + "</div>";
+        h += '<div class="score-pct">' + pct + "% &bull; " + msg + "</div>";
+        h += '<table class="domain-table"><thead><tr><th>Domain</th><th class="num">Score</th></tr></thead><tbody>';
+        Object.keys(DOMAIN_NAMES).forEach(function (d) {
+          const b = byDomain[d];
+          if (b.t === 0) return;
+          const dp = Math.round((b.c / b.t) * 100);
+          h += '<tr><td>' + d + " &middot; " + esc(DOMAIN_NAMES[d]) +
+            '<div class="dbar"><div style="width:' + dp + '%"></div></div></td>' +
+            '<td class="num">' + b.c + "/" + b.t + " (" + dp + "%)</td></tr>";
+        });
+        h += "</tbody></table>";
+        h += '<p style="margin-top:14px;font-size:0.88rem;color:var(--muted)">Scroll up to see the correct answer and a worked explanation under every question.</p>';
+        const sum = document.getElementById("summary");
+        sum.innerHTML = h;
+        sum.classList.remove("hidden");
+      }
+
+      function resetTest() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        graded = false;
+        buildQuiz();
+        document.getElementById("summary").classList.add("hidden");
+        document.getElementById("postRow").style.display = "none";
+        const sb = document.getElementById("submitBtn");
+        sb.disabled = false; sb.style.opacity = 1;
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      buildQuiz();
+      loadProgress();
+      updateProgress();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

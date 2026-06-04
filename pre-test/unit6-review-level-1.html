@@ -1,0 +1,1279 @@
+<!doctype html>
+<html lang="en" data-nt-level="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎵 Unit 6 Review: Expressions — Level 1 (Support)</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #dbeafe;
+        --bg: #f0f9ff;
+        --card: #ffffff;
+        --text: #1e293b;
+        --muted: #6b7280;
+        --line: #d1d5db;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --amber: #f59e0b;
+        --amber-bg: #fef3c7;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+      }
+      input,
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .screen {
+        display: none;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 24px 16px 80px;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      .login-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 40px 32px;
+        text-align: center;
+        margin-top: 40px;
+      }
+      .login-card h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+      .login-card .subtitle {
+        color: var(--muted);
+        margin-bottom: 28px;
+        font-size: 15px;
+      }
+      .login-card .emoji-hero {
+        font-size: 56px;
+        margin-bottom: 16px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border 0.2s;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+      .btn-outline:hover {
+        background: var(--primary-light);
+      }
+      .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+
+      .progress-bar {
+        background: #e5e7eb;
+        border-radius: 99px;
+        height: 10px;
+        margin: 16px 0 8px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .progress-text {
+        font-size: 13px;
+        color: var(--muted);
+        text-align: right;
+      }
+
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-desc {
+        background: var(--primary-light);
+        padding: 12px 20px;
+        font-size: 14px;
+        color: var(--text);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .q-card {
+        background: var(--card);
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .q-card:first-of-type {
+        border-radius: var(--radius);
+      }
+      .q-body {
+        padding: 20px;
+      }
+      .q-number {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+
+      .mc-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .mc-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 15px;
+      }
+      .mc-option:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+      .mc-option.selected {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+      .mc-option.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .mc-option.incorrect {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .mc-option.show-correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .mc-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        transition: all 0.2s;
+      }
+      .mc-option.selected .mc-dot {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+      .mc-option.correct .mc-dot {
+        border-color: var(--success);
+        background: var(--success);
+        color: #fff;
+      }
+      .mc-option.incorrect .mc-dot {
+        border-color: var(--error);
+        background: var(--error);
+        color: #fff;
+      }
+
+      .fill-input {
+        width: 160px;
+        padding: 8px 12px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        transition: border 0.2s;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .fill-input.incorrect {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .fill-unit {
+        font-size: 14px;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .feedback.incorrect {
+        display: block;
+        background: var(--error-bg);
+        color: var(--error);
+      }
+
+      .q-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      .results-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px;
+        margin-bottom: 20px;
+      }
+      .results-card h2 {
+        font-size: 22px;
+        margin-bottom: 16px;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 36px;
+        font-weight: 800;
+        color: #fff;
+      }
+      .score-circle span {
+        font-size: 14px;
+        font-weight: 400;
+      }
+      .score-high {
+        background: var(--success);
+      }
+      .score-mid {
+        background: var(--amber);
+      }
+      .score-low {
+        background: var(--error);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .section-score:last-child {
+        border-bottom: none;
+      }
+      .section-name {
+        font-weight: 600;
+      }
+      .section-result {
+        font-weight: 700;
+      }
+      .tip-box {
+        background: var(--amber-bg);
+        border-left: 4px solid var(--amber);
+        padding: 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 16px;
+      }
+      .tip-box h3 {
+        font-size: 15px;
+        margin-bottom: 6px;
+        color: #92400e;
+      }
+      .tip-box ul {
+        margin-left: 20px;
+        font-size: 14px;
+        color: #78350f;
+      }
+      .tip-box li {
+        margin-bottom: 4px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 24px 16px;
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 40px;
+      }
+
+      @media print {
+        .screen {
+          display: block !important;
+          padding: 12px;
+        }
+        .btn,
+        .q-nav {
+          display: none !important;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- LOGIN -->
+    <div id="loginScreen" class="screen active">
+      <div class="login-card">
+        <div class="emoji-hero">🎵</div>
+        <h1>Unit 6 Review: Expressions</h1>
+        <p class="subtitle">
+          6.EE.1-4 — Exponents, Algebraic Expressions, Properties &amp;
+          Equivalent Expressions
+        </p>
+        <p class="subtitle" style="margin-bottom: 24px">
+          20 Problems &bull; 4 Sections &bull; Immediate Feedback
+        </p>
+        <div class="form-group">
+          <label for="studentName">Your Name</label>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="First and Last Name"
+            autocomplete="name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="studentPeriod">Class Period</label>
+          <select id="studentPeriod">
+            <option value="">Select Period</option>
+            <option>Period 1</option>
+            <option>Period 2</option>
+            <option>Period 3</option>
+            <option>Period 4</option>
+            <option>Period 5</option>
+            <option>Period 6</option>
+            <option>Period 7</option>
+          </select>
+        </div>
+        <button
+          class="btn btn-primary"
+          style="width: 100%; margin-top: 8px"
+          onclick="startReview()"
+          id="startBtn"
+          disabled
+        >
+          Start Review
+        </button>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quizScreen" class="screen">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        "
+      >
+        <h2 id="sectionTitle" style="font-size: 18px"></h2>
+        <span id="qCount" style="font-size: 14px; color: var(--muted)"></span>
+      </div>
+      <div style="margin-bottom: 8px">
+        <span
+          style="
+            display: inline-block;
+            background: #e6f5ee;
+            color: #2d8a6e;
+            border: 1px solid #2d8a6e;
+            border-radius: 99px;
+            padding: 3px 12px;
+            font-size: 12px;
+            font-weight: 700;
+          "
+          >Level 1 · Support</span
+        >
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text" id="progressText"></p>
+      <div id="questionArea"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsScreen" class="screen">
+      <div class="results-card" style="text-align: center">
+        <div class="emoji-hero" style="font-size: 48px; margin-bottom: 8px">
+          🎵
+        </div>
+        <h2>Unit 6 Review Complete!</h2>
+        <p
+          id="resultsName"
+          style="color: var(--muted); margin-bottom: 16px"
+        ></p>
+        <div id="scoreCircle" class="score-circle"></div>
+      </div>
+      <div class="results-card">
+        <h2>Section Scores</h2>
+        <div id="sectionScores"></div>
+      </div>
+      <div class="results-card">
+        <h2>Study Tips</h2>
+        <div id="studyTips"></div>
+      </div>
+      <div class="results-card" style="text-align: center">
+        <h2 style="margin-bottom: 12px">Review Your Answers</h2>
+        <button class="btn btn-outline" onclick="showReviewAll()">
+          View All Questions &amp; Answers
+        </button>
+      </div>
+      <div id="reviewAllArea" style="display: none"></div>
+      <div
+        style="
+          text-align: center;
+          margin-top: 20px;
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          flex-wrap: wrap;
+        "
+      >
+        <button class="btn btn-primary" onclick="exportResults()">
+          Export Results
+        </button>
+        <button class="btn btn-primary" onclick="downloadResultsCSV()">
+          Download Results (CSV for teacher)
+        </button>
+        <button class="btn btn-outline" onclick="retakeReview()">
+          Retake Review
+        </button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      Neft Teacher &mdash; Grade 6 Unit 6 Expressions Review
+    </footer>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      const STORAGE_KEY = "unit6Review_v1_L1";
+
+      const sections = [
+        {
+          name: "Vocabulary",
+          icon: "📖",
+          desc: "Match expression terms to their definitions. Choose the best answer.",
+          questions: [
+            {
+              type: "mc",
+              prompt: "An <strong>exponent</strong> tells you:",
+              choices: [
+                "What number to add repeatedly",
+                "How many times to use the base as a factor",
+                "The value of the variable",
+                "Which operation to perform first",
+              ],
+              answer: 1,
+              explain:
+                "An exponent tells how many times to multiply the base by itself. For example, 3⁴ means 3 × 3 × 3 × 3.",
+            },
+            {
+              type: "mc",
+              prompt: "A <strong>variable</strong> is:",
+              choices: [
+                "A number that never changes",
+                "A letter or symbol that represents an unknown number",
+                "The answer to an equation",
+                "A mathematical operation",
+              ],
+              answer: 1,
+              explain:
+                "A variable is a letter (like x, y, or n) used to represent a number that can change or is unknown.",
+            },
+            {
+              type: "mc",
+              prompt: "A <strong>coefficient</strong> is:",
+              choices: [
+                "A variable that stands alone",
+                "A number added to a variable",
+                "The numerical factor multiplied by the variable in a term",
+                "The exponent in an expression",
+              ],
+              answer: 2,
+              explain:
+                "A coefficient is the number multiplied by the variable. In the term 7x, the coefficient is 7.",
+            },
+            {
+              type: "mc",
+              prompt: "The <strong>distributive property</strong> states that:",
+              choices: [
+                "a + b = b + a",
+                "a(b + c) = ab + ac",
+                "(a + b) + c = a + (b + c)",
+                "a × 1 = a",
+              ],
+              answer: 1,
+              explain:
+                "The distributive property lets you multiply a number by each term inside parentheses: a(b + c) = ab + ac.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "<strong>Equivalent expressions</strong> are expressions that:",
+              choices: [
+                "Use the same variables",
+                "Have the same number of terms",
+                "Have the same value for every value of the variable",
+                "Are written in the same form",
+              ],
+              answer: 2,
+              explain:
+                "Equivalent expressions always produce the same result no matter what value is substituted for the variable.",
+            },
+          ],
+        },
+        {
+          name: "Quick Check",
+          icon: "⚡",
+          desc: "Evaluate and simplify. Pick the correct answer for each problem.",
+          questions: [
+            {
+              type: "mc",
+              prompt: "What is the value of 2⁵?",
+              choices: ["10", "25", "32", "64"],
+              answer: 2,
+              explain: "2⁵ = 2 × 2 × 2 × 2 × 2 = 32.",
+            },
+            {
+              type: "mc",
+              prompt: "Evaluate 3x + 7 when x = 4.",
+              choices: ["19", "15", "21", "34"],
+              answer: 0,
+              explain: "3(4) + 7 = 12 + 7 = 19.",
+            },
+            {
+              type: "mc",
+              prompt: "Which expression is equivalent to 6(x + 3)?",
+              choices: ["6x + 3", "6x + 18", "x + 18", "6x + 9"],
+              answer: 1,
+              explain:
+                "Using the distributive property: 6(x + 3) = 6 · x + 6 · 3 = 6x + 18.",
+            },
+            {
+              type: "mc",
+              prompt: "Simplify: 4y + 9 + 2y + 1",
+              choices: ["6y + 10", "4y + 12", "6y + 9", "16y"],
+              answer: 0,
+              explain: "Combine like terms: (4y + 2y) + (9 + 1) = 6y + 10.",
+            },
+            {
+              type: "mc",
+              prompt: "What is the value of 10³?",
+              choices: ["30", "100", "1,000", "10,000"],
+              answer: 2,
+              explain: "10³ = 10 × 10 × 10 = 1,000.",
+            },
+          ],
+        },
+        {
+          name: "Practice",
+          icon: "✏️",
+          desc: "Calculate and simplify. Type your answer (number or simplified expression).",
+          questions: [
+            {
+              type: "fill",
+              prompt: "Evaluate: 4² + 3²",
+              answer: "25",
+              unit: "",
+              explain: "4² + 3² = 16 + 9 = 25.",
+            },
+            {
+              type: "fill",
+              prompt: "Evaluate 5n − 2 when n = 6.",
+              answer: "28",
+              unit: "",
+              explain: "5(6) − 2 = 30 − 2 = 28.",
+            },
+            {
+              type: "fill",
+              prompt: "Evaluate 2(x + 8) when x = 3.",
+              answer: "22",
+              unit: "",
+              explain: "2(3 + 8) = 2(11) = 22.",
+            },
+            {
+              type: "fill",
+              prompt: "What is the value of 6¹?",
+              answer: "6",
+              unit: "",
+              explain:
+                "Any number raised to the first power equals itself: 6¹ = 6.",
+            },
+            {
+              type: "fill",
+              prompt: "Evaluate: (2 + 3)² − 4",
+              answer: "21",
+              unit: "",
+              explain: "(2 + 3)² − 4 = 5² − 4 = 25 − 4 = 21.",
+            },
+          ],
+        },
+        {
+          name: "Challenge",
+          icon: "🏆",
+          desc: "Solve word problems involving expressions. Read carefully and choose the best answer.",
+          questions: [
+            {
+              type: "mc",
+              prompt:
+                "Maria earns $8 per hour. She also gets a $15 bonus each week. Which expression represents her total earnings for <em>h</em> hours in one week?",
+              choices: ["8 + 15h", "8h + 15", "15h + 8h", "23h"],
+              answer: 1,
+              explain:
+                "She earns $8 for each hour (8h) plus a flat $15 bonus, so the expression is 8h + 15.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A square garden has a side length of <em>s</em> feet. Which expression represents the area of the garden?",
+              choices: ["4s", "2s", "s²", "s + s"],
+              answer: 2,
+              explain: "Area of a square = side × side = s × s = s².",
+            },
+            {
+              type: "mc",
+              prompt:
+                "Jake bought 3 notebooks and 2 pens. Each notebook costs <em>n</em> dollars and each pen costs $2. He paid with a $20 bill. Which expression shows his change?",
+              choices: ["20 − 3n − 4", "20 − 3n + 4", "20 − n − 2", "20 − 5n"],
+              answer: 0,
+              explain:
+                "Total cost = 3n + 2(2) = 3n + 4. Change = 20 − (3n + 4) = 20 − 3n − 4.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A recipe is tripled. The original recipe uses (2c + 5) cups of ingredients, where <em>c</em> is cups of flour. How many total cups are needed for the tripled recipe?",
+              choices: ["2c + 15", "6c + 5", "6c + 15", "5c + 15"],
+              answer: 2,
+              explain:
+                "Triple the expression: 3(2c + 5) = 6c + 15 (using the distributive property).",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A storage cube has edges of length 4 ft. The volume of a cube is s³, where <em>s</em> is the edge length. What is the volume?",
+              choices: ["12 ft³", "16 ft³", "48 ft³", "64 ft³"],
+              answer: 3,
+              explain: "Volume = s³ = 4³ = 4 × 4 × 4 = 64 ft³.",
+            },
+          ],
+        },
+      ];
+
+      // STATE
+      let student = { name: "", period: "" };
+      let currentSection = 0;
+      let currentQ = 0;
+      let globalQ = 0;
+      let answers = [];
+      let locked = [];
+      let attempts = []; // Level 1: count of wrong attempts per global question
+      let lastResults = null;
+
+      // LOGIN
+      const nameInput = document.getElementById("studentName");
+      const periodInput = document.getElementById("studentPeriod");
+      const startBtn = document.getElementById("startBtn");
+
+      function checkLogin() {
+        startBtn.disabled = !(nameInput.value.trim() && periodInput.value);
+      }
+      nameInput.addEventListener("input", checkLogin);
+      periodInput.addEventListener("change", checkLogin);
+
+      function startReview() {
+        student.name = nameInput.value.trim();
+        student.period = periodInput.value;
+        currentSection = 0;
+        currentQ = 0;
+        globalQ = 0;
+        answers = [];
+        locked = [];
+        attempts = [];
+        for (let s of sections)
+          for (let q of s.questions) {
+            locked.push(false);
+            attempts.push(0);
+          }
+        showScreen("quizScreen");
+        renderQuestion();
+      }
+
+      // NAVIGATION
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function getGlobalIndex(sec, qi) {
+        let idx = 0;
+        for (let i = 0; i < sec; i++) idx += sections[i].questions.length;
+        return idx + qi;
+      }
+
+      function totalQuestions() {
+        return sections.reduce((s, sec) => s + sec.questions.length, 0);
+      }
+
+      // RENDER
+      function renderQuestion() {
+        const sec = sections[currentSection];
+        const q = sec.questions[currentQ];
+        const gi = getGlobalIndex(currentSection, currentQ);
+        globalQ = gi;
+
+        document.getElementById("sectionTitle").textContent =
+          sec.icon + " " + sec.name;
+        document.getElementById("qCount").textContent =
+          `Question ${gi + 1} of ${totalQuestions()}`;
+        const pct = (gi / totalQuestions()) * 100;
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressText").textContent =
+          `${gi} of ${totalQuestions()} completed`;
+
+        const area = document.getElementById("questionArea");
+        let html = "";
+
+        if (currentQ === 0) {
+          html += `<div class="section-header">${sec.icon} Section ${currentSection + 1}: ${sec.name}</div>`;
+          html += `<div class="section-desc">${sec.desc}</div>`;
+        }
+
+        html += `<div class="q-card" ${currentQ > 0 ? 'style="border-radius:var(--radius)"' : ""}>`;
+        html += `<div class="q-body">`;
+        html += `<div class="q-number">Question ${gi + 1}</div>`;
+        html += `<div class="q-prompt">${q.prompt}</div>`;
+
+        if (q.type === "mc") {
+          html += `<div class="mc-options" id="mcOptions">`;
+          q.choices.forEach((c, i) => {
+            html += `<div class="mc-option" data-idx="${i}" onclick="selectMC(${i})">`;
+            html += `<div class="mc-dot"></div><span>${c}</span></div>`;
+          });
+          html += `</div>`;
+        } else if (q.type === "fill") {
+          html += `<div style="margin-top:8px"><input type="text" class="fill-input" id="fillInput" placeholder="?" autocomplete="off">`;
+          html += `<span class="fill-unit">${q.unit || ""}</span></div>`;
+        }
+
+        html += `<div class="feedback" id="feedback"></div>`;
+        html += `<div class="q-nav">`;
+        if (gi > 0)
+          html += `<button class="btn btn-outline btn-sm" onclick="prevQuestion()">Back</button>`;
+        else html += `<span></span>`;
+        html += `<button class="btn btn-primary btn-sm" id="checkBtn" onclick="checkAnswer()" disabled>Check Answer</button>`;
+        html += `</div></div></div>`;
+
+        area.innerHTML = html;
+
+        const prev = answers.find(
+          (a) => a.section === currentSection && a.qIndex === currentQ,
+        );
+        if (prev) restoreAnswered(prev);
+        else if (q.type === "fill") {
+          document
+            .getElementById("fillInput")
+            .addEventListener("input", function () {
+              document.getElementById("checkBtn").disabled = !this.value.trim();
+            });
+          document
+            .getElementById("fillInput")
+            .addEventListener("keydown", function (e) {
+              if (e.key === "Enter" && this.value.trim()) checkAnswer();
+            });
+        }
+      }
+
+      function selectMC(idx) {
+        const gi = getGlobalIndex(currentSection, currentQ);
+        if (locked[gi]) return;
+        document
+          .querySelectorAll(".mc-option")
+          .forEach((o) => o.classList.remove("selected"));
+        document
+          .querySelector(`.mc-option[data-idx="${idx}"]`)
+          .classList.add("selected");
+        document.getElementById("checkBtn").disabled = false;
+      }
+
+      // CHECK ANSWER (Level 1 — Support: one retry on a wrong answer)
+      function checkAnswer() {
+        const gi = getGlobalIndex(currentSection, currentQ);
+        if (locked[gi]) {
+          nextQuestion();
+          return;
+        }
+
+        const sec = sections[currentSection];
+        const q = sec.questions[currentQ];
+        let correct = false,
+          userAnswer = "";
+
+        // Evaluate the current answer without revealing yet.
+        let selIdx = -1;
+        if (q.type === "mc") {
+          const sel = document.querySelector(".mc-option.selected");
+          if (!sel) return;
+          selIdx = parseInt(sel.dataset.idx);
+          userAnswer = q.choices[selIdx];
+          correct = selIdx === q.answer;
+        } else if (q.type === "fill") {
+          const input = document.getElementById("fillInput");
+          userAnswer = input.value.trim();
+          if (!userAnswer) return;
+          correct = userAnswer === q.answer;
+        }
+
+        // LEVEL 1: first wrong attempt -> one retry, do not lock or reveal.
+        if (!correct && attempts[gi] === 0) {
+          attempts[gi] = 1;
+          const fb = document.getElementById("feedback");
+          fb.className = "feedback incorrect";
+          fb.textContent = "Not quite — try again";
+          if (q.type === "mc") {
+            // Clear selection and re-enable options.
+            document.querySelectorAll(".mc-option").forEach((o) => {
+              o.classList.remove("selected");
+              o.style.pointerEvents = "";
+            });
+            document.getElementById("checkBtn").disabled = true;
+          } else if (q.type === "fill") {
+            const input = document.getElementById("fillInput");
+            input.disabled = false;
+            input.classList.remove("incorrect");
+            input.focus();
+            input.select();
+          }
+          return;
+        }
+
+        // Correct, or second wrong attempt -> lock and reveal.
+        if (q.type === "mc") {
+          document.querySelectorAll(".mc-option").forEach((o) => {
+            const oi = parseInt(o.dataset.idx);
+            if (oi === q.answer) o.classList.add("correct");
+            else if (oi === selIdx && !correct) o.classList.add("incorrect");
+            o.style.pointerEvents = "none";
+          });
+        } else if (q.type === "fill") {
+          const input = document.getElementById("fillInput");
+          input.classList.add(correct ? "correct" : "incorrect");
+          input.disabled = true;
+          if (!correct) {
+            const corrSpan = document.createElement("span");
+            corrSpan.style.cssText =
+              "margin-left:12px;color:var(--success);font-weight:600";
+            corrSpan.textContent =
+              "Correct answer: " + q.answer + (q.unit ? " " + q.unit : "");
+            input.parentNode.appendChild(corrSpan);
+          }
+        }
+
+        const fb = document.getElementById("feedback");
+        fb.className = "feedback " + (correct ? "correct" : "incorrect");
+        fb.innerHTML = (correct ? "✓ Correct! " : "✗ Incorrect. ") + q.explain;
+
+        locked[gi] = true;
+        answers = answers.filter(
+          (a) => !(a.section === currentSection && a.qIndex === currentQ),
+        );
+        answers.push({
+          section: currentSection,
+          qIndex: currentQ,
+          correct,
+          userAnswer,
+        });
+
+        const btn = document.getElementById("checkBtn");
+        btn.textContent = gi < totalQuestions() - 1 ? "Next →" : "See Results";
+        btn.disabled = false;
+        btn.onclick = gi < totalQuestions() - 1 ? nextQuestion : showResults;
+      }
+
+      function restoreAnswered(prev) {
+        const q = sections[prev.section].questions[prev.qIndex];
+        const gi = getGlobalIndex(prev.section, prev.qIndex);
+
+        if (q.type === "mc") {
+          const choiceIdx = q.choices.indexOf(prev.userAnswer);
+          document.querySelectorAll(".mc-option").forEach((o) => {
+            const oi = parseInt(o.dataset.idx);
+            if (oi === q.answer) o.classList.add("correct");
+            if (oi === choiceIdx && !prev.correct) o.classList.add("incorrect");
+            if (oi === choiceIdx) o.classList.add("selected");
+            o.style.pointerEvents = "none";
+          });
+        } else if (q.type === "fill") {
+          const input = document.getElementById("fillInput");
+          input.value = prev.userAnswer;
+          input.classList.add(prev.correct ? "correct" : "incorrect");
+          input.disabled = true;
+          if (!prev.correct) {
+            const corrSpan = document.createElement("span");
+            corrSpan.style.cssText =
+              "margin-left:12px;color:var(--success);font-weight:600";
+            corrSpan.textContent =
+              "Correct answer: " + q.answer + (q.unit ? " " + q.unit : "");
+            input.parentNode.appendChild(corrSpan);
+          }
+        }
+
+        const fb = document.getElementById("feedback");
+        fb.className = "feedback " + (prev.correct ? "correct" : "incorrect");
+        fb.innerHTML =
+          (prev.correct ? "✓ Correct! " : "✗ Incorrect. ") + q.explain;
+
+        const btn = document.getElementById("checkBtn");
+        btn.textContent = gi < totalQuestions() - 1 ? "Next →" : "See Results";
+        btn.disabled = false;
+        btn.onclick = gi < totalQuestions() - 1 ? nextQuestion : showResults;
+      }
+
+      // NAV
+      function nextQuestion() {
+        currentQ++;
+        if (currentQ >= sections[currentSection].questions.length) {
+          currentSection++;
+          currentQ = 0;
+        }
+        if (currentSection >= sections.length) {
+          showResults();
+          return;
+        }
+        renderQuestion();
+      }
+
+      function prevQuestion() {
+        currentQ--;
+        if (currentQ < 0) {
+          currentSection--;
+          if (currentSection < 0) {
+            currentSection = 0;
+            currentQ = 0;
+            return;
+          }
+          currentQ = sections[currentSection].questions.length - 1;
+        }
+        renderQuestion();
+      }
+
+      // RESULTS
+      function showResults() {
+        showScreen("resultsScreen");
+        const total = totalQuestions();
+        const correctCount = answers.filter((a) => a.correct).length;
+        const pct = Math.round((correctCount / total) * 100);
+
+        document.getElementById("resultsName").textContent =
+          student.name + " — " + student.period;
+        const circle = document.getElementById("scoreCircle");
+        circle.className =
+          "score-circle " +
+          (pct >= 80 ? "score-high" : pct >= 60 ? "score-mid" : "score-low");
+        circle.innerHTML = `${pct}%<span>${correctCount} / ${total}</span>`;
+
+        let scoresHTML = "";
+        const sectionResults = [];
+        sections.forEach((sec, si) => {
+          const secAnswers = answers.filter((a) => a.section === si);
+          const secCorrect = secAnswers.filter((a) => a.correct).length;
+          const secTotal = sec.questions.length;
+          const secPct = Math.round((secCorrect / secTotal) * 100);
+          sectionResults.push({
+            name: sec.name,
+            correct: secCorrect,
+            total: secTotal,
+            pct: secPct,
+          });
+          const color =
+            secPct >= 80
+              ? "var(--success)"
+              : secPct >= 60
+                ? "var(--amber)"
+                : "var(--error)";
+          scoresHTML += `<div class="section-score"><span class="section-name">${sec.icon} ${sec.name}</span><span class="section-result" style="color:${color}">${secCorrect}/${secTotal} (${secPct}%)</span></div>`;
+        });
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+
+        let tips = "";
+        if (sectionResults[0].pct < 80) {
+          tips += `<div class="tip-box"><h3>📖 Vocabulary</h3><ul>
+      <li>Review: exponent, base, variable, coefficient, constant, term.</li>
+      <li>Know the distributive property: a(b + c) = ab + ac.</li>
+      <li>Understand what makes two expressions equivalent.</li></ul></div>`;
+        }
+        if (sectionResults[1].pct < 80) {
+          tips += `<div class="tip-box"><h3>⚡ Evaluating &amp; Simplifying</h3><ul>
+      <li>To evaluate: substitute the value, then follow order of operations (PEMDAS).</li>
+      <li>Exponents: multiply the base by itself (e.g., 2⁵ = 2×2×2×2×2).</li>
+      <li>Combine like terms: group terms with the same variable.</li>
+      <li>Apply the distributive property to remove parentheses.</li></ul></div>`;
+        }
+        if (sectionResults[2].pct < 80) {
+          tips += `<div class="tip-box"><h3>✏️ Computation Practice</h3><ul>
+      <li>Write out each substitution step before simplifying.</li>
+      <li>Remember: parentheses first, then exponents, then multiply/divide, then add/subtract.</li>
+      <li>Double-check: any number to the 1st power equals itself (n¹ = n).</li></ul></div>`;
+        }
+        if (sectionResults[3].pct < 80) {
+          tips += `<div class="tip-box"><h3>🏆 Word Problems</h3><ul>
+      <li>Identify the variable — what quantity is changing or unknown?</li>
+      <li>Translate words to math: "per" means multiply, "total" means add.</li>
+      <li>Use the distributive property when a group is repeated.</li>
+      <li>Check your expression by plugging in a simple number.</li></ul></div>`;
+        }
+        if (!tips) {
+          tips = `<div class="tip-box" style="border-left-color:var(--success);background:var(--success-bg)"><h3 style="color:var(--success)">Great job!</h3><ul style="color:var(--text)"><li>You scored 80% or above in all sections.</li><li>Keep practicing with order of operations and the distributive property!</li></ul></div>`;
+        }
+        document.getElementById("studyTips").innerHTML = tips;
+        lastResults = {
+          sections: sectionResults.map((s) => ({
+            name: s.name,
+            correct: s.correct,
+            total: s.total,
+          })),
+          correct: correctCount,
+          total: total,
+        };
+        saveResults();
+      }
+
+      // CSV EXPORT (teacher-importable, via shared NTResults module)
+      function downloadResultsCSV() {
+        if (!lastResults || typeof NTResults === "undefined") return;
+        NTResults.finish({
+          student: student.name,
+          assessment: "Unit 6 Review",
+          standard: "6.EE",
+          level: "1",
+          class: student.period,
+          sections: lastResults.sections,
+          correct: lastResults.correct,
+          total: lastResults.total,
+        });
+      }
+
+      // REVIEW ALL
+      function showReviewAll() {
+        const area = document.getElementById("reviewAllArea");
+        if (area.style.display === "block") {
+          area.style.display = "none";
+          return;
+        }
+        let html = "";
+        let gi = 0;
+        sections.forEach((sec, si) => {
+          html += `<div class="results-card"><h2>${sec.icon} ${sec.name}</h2>`;
+          sec.questions.forEach((q, qi) => {
+            gi++;
+            const ans = answers.find(
+              (a) => a.section === si && a.qIndex === qi,
+            );
+            const icon = ans && ans.correct ? "✓" : "✗";
+            const color =
+              ans && ans.correct ? "var(--success)" : "var(--error)";
+            html += `<div style="padding:12px 0;border-bottom:1px solid var(--line)">`;
+            html += `<div style="font-weight:700;color:${color};margin-bottom:4px">${icon} Q${gi}: ${q.prompt}</div>`;
+            if (q.type === "mc") {
+              html += `<div style="font-size:14px;color:var(--muted)">Your answer: ${ans ? ans.userAnswer : "—"}</div>`;
+              html += `<div style="font-size:14px;color:var(--success)">Correct: ${q.choices[q.answer]}</div>`;
+            } else {
+              html += `<div style="font-size:14px;color:var(--muted)">Your answer: ${ans ? ans.userAnswer : "—"} ${q.unit || ""}</div>`;
+              html += `<div style="font-size:14px;color:var(--success)">Correct: ${q.answer} ${q.unit || ""}</div>`;
+            }
+            html += `<div style="font-size:13px;margin-top:4px;color:var(--text)">${q.explain}</div></div>`;
+          });
+          html += `</div>`;
+        });
+        area.innerHTML = html;
+        area.style.display = "block";
+      }
+
+      // EXPORT
+      function exportResults() {
+        const total = totalQuestions();
+        const correctCount = answers.filter((a) => a.correct).length;
+        const pct = Math.round((correctCount / total) * 100);
+        let text = `Unit 6 Review: Expressions — Results\n`;
+        text += `Student: ${student.name}\nPeriod: ${student.period}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${correctCount}/${total} (${pct}%)\n\n`;
+
+        sections.forEach((sec, si) => {
+          const secAns = answers.filter((a) => a.section === si);
+          const secCorr = secAns.filter((a) => a.correct).length;
+          text += `--- ${sec.name}: ${secCorr}/${sec.questions.length} ---\n`;
+          sec.questions.forEach((q, qi) => {
+            const ans = secAns.find((a) => a.qIndex === qi);
+            const mark = ans && ans.correct ? "✓" : "✗";
+            const stripHTML = q.prompt.replace(/<[^>]*>/g, "");
+            text += `${mark} Q${getGlobalIndex(si, qi) + 1}: ${stripHTML}\n`;
+            if (q.type === "mc") {
+              text += `   Your answer: ${ans ? ans.userAnswer : "—"}\n`;
+              text += `   Correct: ${q.choices[q.answer]}\n`;
+            } else {
+              text += `   Your answer: ${ans ? ans.userAnswer : "—"} ${q.unit || ""}\n`;
+              text += `   Correct: ${q.answer} ${q.unit || ""}\n`;
+            }
+          });
+          text += `\n`;
+        });
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit6-Review-${student.name.replace(/\s+/g, "-")}.txt`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      // STORAGE
+      function saveResults() {
+        const data = {
+          student,
+          answers,
+          timestamp: new Date().toISOString(),
+          score: answers.filter((a) => a.correct).length,
+          total: totalQuestions(),
+        };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+
+      function retakeReview() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        showScreen("loginScreen");
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

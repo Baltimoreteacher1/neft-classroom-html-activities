@@ -1,0 +1,1500 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Equivalent Expressions Forge: An interactive Neft Teacher activity for Grade 6 (6.EE.A.4) where students identify and generate equivalent expressions using the distributive property and combining like terms, with an algebra-tile area model."
+    />
+    <title>Equivalent Expressions Forge | Neft Teacher</title>
+    <style>
+      :root {
+        --bg: #0d1326;
+        --panel: #161e3a;
+        --panel2: #1f294a;
+        --ink: #eef2ff;
+        --muted: #9fb0d6;
+        --gold: #ffcf5c;
+        --orange: #ff8a3d;
+        --ember: #ff5a4d;
+        --green: #3fd17a;
+        --red: #ff5d6c;
+        --blue: #5cc6ff;
+        --line: #2b375f;
+        --tileX: #5cc6ff;
+        --tile1: #ffcf5c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Arial,
+          sans-serif;
+        background: radial-gradient(
+          1200px 600px at 50% -10%,
+          #20305e 0%,
+          var(--bg) 60%
+        );
+        color: var(--ink);
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+      a {
+        color: var(--blue);
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      /* Top bar */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+      }
+      .brand .logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+        background: linear-gradient(135deg, var(--orange), var(--ember));
+        box-shadow: 0 6px 18px rgba(255, 90, 77, 0.4);
+      }
+      .backlink {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .backlink:hover {
+        background: var(--panel2);
+        color: var(--ink);
+      }
+      header.hero {
+        background: linear-gradient(135deg, var(--panel), var(--panel2));
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px 22px;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      header.hero::after {
+        content: "🔥";
+        position: absolute;
+        right: 14px;
+        top: 6px;
+        font-size: 84px;
+        opacity: 0.1;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 1.7rem;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .std {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(92, 198, 255, 0.15);
+        border: 1px solid var(--blue);
+        color: var(--blue);
+        font-size: 0.78rem;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      /* Controls */
+      .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 14px 0;
+      }
+      .seg {
+        display: inline-flex;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px;
+        gap: 4px;
+      }
+      .seg button {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 8px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .seg button.active {
+        background: linear-gradient(135deg, var(--orange), var(--ember));
+        color: #fff;
+      }
+      .seg button:hover:not(.active) {
+        color: var(--ink);
+      }
+      .lang-toggle {
+        margin-left: auto;
+      }
+      .scorebar {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px 16px;
+        margin-bottom: 14px;
+      }
+      .pill {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .pill b {
+        color: var(--gold);
+        font-size: 1.05rem;
+      }
+      .streak {
+        color: var(--orange);
+      }
+      /* Card */
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .prompt {
+        font-size: 1.05rem;
+        margin: 0 0 6px;
+      }
+      .prompt-es {
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin: 0 0 14px;
+        font-style: italic;
+      }
+      .target-expr {
+        display: inline-block;
+        font-family: "Cambria Math", "Times New Roman", Georgia, serif;
+        font-size: 1.9rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        background: #0a1124;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 22px;
+        margin: 6px 0 4px;
+      }
+      /* Tile model */
+      .model-wrap {
+        background: #0a1124;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 14px 0;
+        text-align: center;
+      }
+      .model-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .legend {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        display: inline-block;
+      }
+      /* Choices (identify mode) */
+      .choices {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .choice {
+        background: var(--panel2);
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        cursor: pointer;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        text-align: center;
+        transition: 0.15s;
+        user-select: none;
+      }
+      .choice:hover {
+        border-color: var(--blue);
+        transform: translateY(-2px);
+      }
+      .choice.selected {
+        border-color: var(--gold);
+        background: #26305a;
+      }
+      .choice.correct {
+        border-color: var(--green);
+        background: rgba(63, 209, 122, 0.18);
+        animation: pop 0.4s;
+      }
+      .choice.wrong {
+        border-color: var(--red);
+        background: rgba(255, 93, 108, 0.16);
+        animation: shake 0.4s;
+      }
+      .choice.disabled {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.9);
+        }
+        50% {
+          transform: scale(1.06);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-7px);
+        }
+        75% {
+          transform: translateX(7px);
+        }
+      }
+      /* Generate mode inputs */
+      .gen-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 14px 0;
+      }
+      .gen-row input {
+        width: 62px;
+        font-size: 1.4rem;
+        text-align: center;
+        font-family: inherit;
+        font-weight: 700;
+        background: #0a1124;
+        color: var(--ink);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 4px;
+      }
+      .gen-row input:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      .gen-row input.ok {
+        border-color: var(--green);
+      }
+      .gen-row input.no {
+        border-color: var(--red);
+      }
+      .hint-build {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      /* Buttons */
+      .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--orange), var(--ember));
+        color: #fff;
+        box-shadow: 0 6px 16px rgba(255, 90, 77, 0.35);
+      }
+      .btn-primary:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        color: var(--ink);
+        background: var(--panel2);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        align-items: center;
+      }
+      /* Feedback */
+      .feedback {
+        margin-top: 14px;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 0.95rem;
+        display: none;
+        border: 1px solid var(--line);
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.35s;
+      }
+      .feedback.good {
+        background: rgba(63, 209, 122, 0.12);
+        border-color: var(--green);
+      }
+      .feedback.bad {
+        background: rgba(255, 93, 108, 0.1);
+        border-color: var(--red);
+      }
+      .feedback h4 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+      }
+      .feedback .es {
+        color: var(--muted);
+        font-style: italic;
+        font-size: 0.88rem;
+        margin-top: 6px;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      /* Hint panel */
+      details.hint {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 14px;
+        margin-top: 12px;
+      }
+      details.hint summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--gold);
+        font-size: 0.9rem;
+      }
+      details.hint .body {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .lvl {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-right: 6px;
+      }
+      .lvl1 {
+        background: rgba(92, 198, 255, 0.18);
+        color: var(--blue);
+        border: 1px solid var(--blue);
+      }
+      .lvl2 {
+        background: rgba(255, 207, 92, 0.18);
+        color: var(--gold);
+        border: 1px solid var(--gold);
+      }
+      /* Win banner */
+      .win {
+        display: none;
+        text-align: center;
+        padding: 26px;
+        background: linear-gradient(135deg, #23315f, #2c1a3f);
+        border: 1px solid var(--gold);
+        border-radius: 18px;
+        margin-bottom: 16px;
+      }
+      .win.show {
+        display: block;
+        animation: fade 0.4s;
+      }
+      .win h2 {
+        margin: 0 0 6px;
+        font-size: 1.6rem;
+        color: var(--gold);
+      }
+      footer {
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-align: center;
+        border-top: 1px solid var(--line);
+        margin-top: 24px;
+        padding: 18px 0 8px;
+      }
+      footer .mk {
+        color: var(--orange);
+        font-weight: 700;
+      }
+      .spark {
+        position: fixed;
+        pointer-events: none;
+        font-size: 1.4rem;
+        z-index: 50;
+        animation: rise 1s ease-out forwards;
+      }
+      @keyframes rise {
+        0% {
+          opacity: 1;
+          transform: translateY(0) scale(0.6);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-90px) scale(1.3);
+        }
+      }
+      @media (max-width: 560px) {
+        h1 {
+          font-size: 1.35rem;
+        }
+        .target-expr {
+          font-size: 1.5rem;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+          color: #000;
+        }
+        .topbar,
+        .controls,
+        .actions,
+        .lang-toggle,
+        .backlink,
+        .btn,
+        details.hint {
+          display: none !important;
+        }
+        .card,
+        header.hero,
+        .scorebar {
+          border-color: #999;
+        }
+        .feedback {
+          display: block !important;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand"><span class="logo">⚒️</span> Neft Teacher</div>
+        <a class="backlink" href="../../index.html">&larr; Back to Hub</a>
+      </div>
+
+      <header class="hero">
+        <h1>Equivalent Expressions Forge</h1>
+        <p class="sub">
+          Heat up the forge and hammer expressions into equivalent shapes
+          &mdash; using the distributive property and combining like terms.
+        </p>
+        <p class="sub" id="subEs" style="font-style: italic">
+          Calienta la forja y transforma expresiones en formas equivalentes
+          &mdash; usando la propiedad distributiva y combinando t&eacute;rminos
+          semejantes.
+        </p>
+        <span class="std"
+          >Standard 6.EE.A.4 &middot; Equivalent Expressions</span
+        >
+      </header>
+
+      <div class="controls">
+        <div class="seg" role="tablist" aria-label="Activity mode">
+          <button id="mIdentify" class="active" onclick="setMode('identify')">
+            Identify
+          </button>
+          <button id="mGenerate" onclick="setMode('generate')">Generate</button>
+        </div>
+        <div class="seg lang-toggle" role="group" aria-label="Language">
+          <button id="langEN" class="active" onclick="setLang('en')">EN</button>
+          <button id="langES" onclick="setLang('es')">ES</button>
+        </div>
+      </div>
+
+      <div class="scorebar">
+        <span class="pill" id="lblQ">Round <b id="qNum">1</b> / <b>8</b></span>
+        <span class="pill" id="lblScore">Forged: <b id="score">0</b></span>
+        <span class="pill streak" id="lblStreak"
+          >🔥 Streak: <b id="streak" class="streak">0</b></span
+        >
+      </div>
+
+      <div class="win" id="winBanner">
+        <h2 id="winTitle">🏆 Master Blacksmith!</h2>
+        <p id="winMsg">You forged every expression. Outstanding work!</p>
+        <button class="btn btn-primary" onclick="restart()" id="winBtn">
+          Forge Again
+        </button>
+      </div>
+
+      <div class="card" id="gameCard">
+        <p class="prompt" id="prompt">
+          Which expression is equivalent to the one below?
+        </p>
+        <p class="prompt-es" id="promptEs">
+          ¿Cuál expresión es equivalente a la de abajo?
+        </p>
+        <div style="text-align: center">
+          <span class="target-expr" id="targetExpr">3(x + 4)</span>
+        </div>
+
+        <div class="model-wrap" id="modelWrap">
+          <svg
+            id="tileSvg"
+            viewBox="0 0 480 180"
+            role="img"
+            aria-label="Algebra tile area model"
+          ></svg>
+          <div class="legend">
+            <span
+              ><i class="swatch" style="background: var(--tileX)"></i>
+              <span id="legX">x-tile (length x)</span></span
+            >
+            <span
+              ><i class="swatch" style="background: var(--tile1)"></i>
+              <span id="leg1">unit tile (1)</span></span
+            >
+          </div>
+        </div>
+
+        <!-- IDENTIFY MODE -->
+        <div id="identifyArea">
+          <div class="choices" id="choices"></div>
+        </div>
+
+        <!-- GENERATE MODE -->
+        <div id="generateArea" style="display: none">
+          <p class="hint-build" id="genInstr">
+            Fill the boxes so your expanded expression is equivalent (use the
+            distributive property):
+          </p>
+          <div class="gen-row" id="genRow"></div>
+        </div>
+
+        <div class="feedback" id="feedback" role="status" aria-live="polite">
+          <h4 id="fbTitle"></h4>
+          <div id="fbBody"></div>
+          <div class="es" id="fbEs"></div>
+        </div>
+
+        <details class="hint" id="hintBox">
+          <summary id="hintSummary">💡 Need a hint?</summary>
+          <div class="body">
+            <p>
+              <span class="lvl lvl1">Level 1 · Support</span>
+              <span id="hint1"></span>
+            </p>
+            <p>
+              <span class="lvl lvl2">Level 2 · Challenge</span>
+              <span id="hint2"></span>
+            </p>
+          </div>
+        </details>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="checkBtn" onclick="checkAnswer()">
+            Check &amp; Forge
+          </button>
+          <button
+            class="btn btn-ghost"
+            id="nextBtn"
+            onclick="nextRound()"
+            disabled
+          >
+            Next &rarr;
+          </button>
+          <button class="btn btn-ghost" onclick="restart()" id="resetBtn">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <footer>
+        <div>
+          Forged for Grade 6 mathematicians &middot;
+          <span class="mk">Neft Teacher</span> &middot; Standard 6.EE.A.4
+        </div>
+        <div style="margin-top: 4px">
+          Equivalent expressions name the same value for <em>every</em> value of
+          the variable.
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      "use strict";
+      /* ============ Equivalent Expressions Forge — 6.EE.A.4 ============ */
+
+      var TOTAL = 8;
+      var lang = "en";
+      var mode = "identify";
+      var qNum = 0; // 0-indexed current question within active deck
+      var score = 0;
+      var streak = 0;
+      var answered = false;
+      var current = null; // current problem object
+
+      /* ---- Problem banks ----
+   Each identify problem: a (coefficient), b (constant), so target = a(x + b)
+   Correct equivalent = ax + ab. Distractors are common misconceptions. */
+      function buildIdentifyBank() {
+        // randomized small whole numbers, kept Grade-6 friendly
+        var bank = [];
+        var combos = [
+          [3, 4],
+          [2, 5],
+          [4, 2],
+          [5, 3],
+          [2, 7],
+          [6, 2],
+          [3, 6],
+          [4, 5],
+          [2, 9],
+          [5, 2],
+        ];
+        shuffle(combos);
+        for (var i = 0; i < combos.length; i++) {
+          var a = combos[i][0],
+            b = combos[i][1];
+          var correct = fmtLinear(a, a * b); // ax + ab
+          var distract = [
+            fmtLinear(a, b), // forgot to multiply constant: ax + b
+            fmtLinear(a * b, a), // multiplied wrong / swapped
+            fmtLinear(a + b, a * b), // added instead of distributing coeff
+          ];
+          bank.push({
+            type: "distribute",
+            a: a,
+            b: b,
+            target: a + "(x + " + b + ")",
+            correct: correct,
+            options: distract,
+          });
+        }
+        return bank;
+      }
+
+      /* combining-like-terms identify problems mixed in */
+      function buildCombineBank() {
+        var bank = [];
+        var combos = [
+          [2, 3, 4],
+          [5, 1, 2],
+          [3, 4, 1],
+          [4, 2, 3],
+          [6, 1, 5],
+          [2, 6, 2],
+        ]; // (cx + d) + (ex + f)
+        shuffle(combos);
+        for (var i = 0; i < combos.length; i++) {
+          var c = combos[i][0],
+            d = combos[i][1],
+            e = combos[i][2];
+          var f = i % 2 === 0 ? d + 1 : d;
+          var sumCoef = c + e,
+            sumConst = d + f;
+          var correct = fmtLinear(sumCoef, sumConst);
+          // candidate misconception distractors; filter any that collide with the correct answer
+          var pool = [
+            fmtLinear(sumCoef, d * f), // multiplied the constants
+            fmtLinear(c * e, sumConst), // multiplied the coefficients
+            fmtLinear(sumCoef - 1, sumConst), // off-by-one on coefficient
+            fmtLinear(sumCoef, sumConst + 1), // off-by-one on constant
+            fmtLinear(sumCoef + 1, sumConst), // counted an extra x
+          ];
+          var distract = [];
+          for (var p = 0; p < pool.length && distract.length < 3; p++) {
+            if (pool[p] !== correct && distract.indexOf(pool[p]) < 0)
+              distract.push(pool[p]);
+          }
+          bank.push({
+            type: "combine",
+            c: c,
+            d: d,
+            e: e,
+            f: f,
+            target: c + "x + " + d + " + " + e + "x + " + f,
+            correct: correct,
+            options: distract,
+          });
+        }
+        return bank;
+      }
+
+      var identifyDeck = [];
+      function freshIdentifyDeck() {
+        var dist = buildIdentifyBank();
+        var comb = buildCombineBank();
+        // interleave: mostly distributive (the A.4 core) with combine practice
+        var deck = dist.slice(0, 5).concat(comb.slice(0, 3));
+        shuffle(deck);
+        identifyDeck = deck.slice(0, TOTAL);
+      }
+
+      /* generate deck: target a(x+b); student types coefficient & constant of expanded form */
+      var generateDeck = [];
+      function freshGenerateDeck() {
+        var combos = [
+          [2, 3],
+          [3, 5],
+          [4, 4],
+          [5, 2],
+          [2, 8],
+          [6, 3],
+          [3, 7],
+          [4, 6],
+          [7, 2],
+          [2, 4],
+        ];
+        shuffle(combos);
+        var deck = [];
+        for (var i = 0; i < TOTAL; i++) {
+          var a = combos[i][0],
+            b = combos[i][1];
+          deck.push({
+            a: a,
+            b: b,
+            target: a + "(x + " + b + ")",
+            ans: [a, a * b],
+          });
+        }
+        generateDeck = deck;
+      }
+
+      /* ---- formatting helpers ---- */
+      function fmtLinear(coef, cons) {
+        var s = coef + "x";
+        if (cons > 0) s += " + " + cons;
+        else if (cons < 0) s += " − " + Math.abs(cons);
+        return s;
+      }
+      function shuffle(arr) {
+        for (var i = arr.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = arr[i];
+          arr[i] = arr[j];
+          arr[j] = t;
+        }
+        return arr;
+      }
+
+      /* ---- SVG area model: draws a(x+b) as 'a' rows of (one x-tile + b unit tiles) ---- */
+      function drawModel(p) {
+        var svg = document.getElementById("tileSvg");
+        if (!p || (p.type && p.type === "combine")) {
+          // combine model: two strips stacked
+          drawCombineModel(svg, p);
+          return;
+        }
+        var a = p.a,
+          b = p.b;
+        var pad = 14,
+          xw = 70,
+          uw = 24,
+          gap = 6,
+          rowH = 34,
+          rgap = 10;
+        var rowW = xw + gap + b * (uw + gap);
+        var W = rowW + pad * 2;
+        var H = a * (rowH + rgap) - rgap + pad * 2 + 18;
+        svg.setAttribute("viewBox", "0 0 " + Math.max(W, 300) + " " + H);
+        var s = "";
+        // bracket label on left
+        for (var r = 0; r < a; r++) {
+          var y = pad + r * (rowH + rgap);
+          var x = pad;
+          // x-tile
+          s +=
+            '<rect x="' +
+            x +
+            '" y="' +
+            y +
+            '" width="' +
+            xw +
+            '" height="' +
+            rowH +
+            '" rx="5" fill="#1d3a5c" stroke="#5cc6ff" stroke-width="2"/>';
+          s +=
+            '<text x="' +
+            (x + xw / 2) +
+            '" y="' +
+            (y + rowH / 2 + 5) +
+            '" fill="#bfe4ff" font-size="16" font-weight="700" text-anchor="middle">x</text>';
+          x += xw + gap;
+          for (var u = 0; u < b; u++) {
+            s +=
+              '<rect x="' +
+              x +
+              '" y="' +
+              y +
+              '" width="' +
+              uw +
+              '" height="' +
+              rowH +
+              '" rx="4" fill="#4a3a12" stroke="#ffcf5c" stroke-width="2"/>';
+            s +=
+              '<text x="' +
+              (x + uw / 2) +
+              '" y="' +
+              (y + rowH / 2 + 5) +
+              '" fill="#ffe6a3" font-size="13" font-weight="700" text-anchor="middle">1</text>';
+            x += uw + gap;
+          }
+        }
+        // 'a' rows brace
+        s +=
+          '<text x="' +
+          Math.max(W, 300) / 2 +
+          '" y="' +
+          (H - 6) +
+          '" fill="#9fb0d6" font-size="13" text-anchor="middle">' +
+          (lang === "es"
+            ? a + " grupos de (x + " + b + ")"
+            : a + " groups of (x + " + b + ")") +
+          "</text>";
+        svg.innerHTML = s;
+      }
+      function drawCombineModel(svg, p) {
+        var c = p.c,
+          d = p.d,
+          e = p.e,
+          f = p.f;
+        var pad = 14,
+          xw = 46,
+          uw = 20,
+          gap = 5,
+          rowH = 32,
+          rgap = 14;
+        var w1 = c * (xw + gap) + d * (uw + gap),
+          w2 = e * (xw + gap) + f * (uw + gap);
+        var W = Math.max(w1, w2) + pad * 2;
+        var H = 2 * rowH + rgap + pad * 2 + 18;
+        svg.setAttribute("viewBox", "0 0 " + Math.max(W, 300) + " " + H);
+        var s = "";
+        function strip(yc, coef, cons) {
+          var x = pad;
+          for (var i = 0; i < coef; i++) {
+            s +=
+              '<rect x="' +
+              x +
+              '" y="' +
+              yc +
+              '" width="' +
+              xw +
+              '" height="' +
+              rowH +
+              '" rx="5" fill="#1d3a5c" stroke="#5cc6ff" stroke-width="2"/>';
+            s +=
+              '<text x="' +
+              (x + xw / 2) +
+              '" y="' +
+              (yc + rowH / 2 + 5) +
+              '" fill="#bfe4ff" font-size="14" font-weight="700" text-anchor="middle">x</text>';
+            x += xw + gap;
+          }
+          for (var u = 0; u < cons; u++) {
+            s +=
+              '<rect x="' +
+              x +
+              '" y="' +
+              yc +
+              '" width="' +
+              uw +
+              '" height="' +
+              rowH +
+              '" rx="4" fill="#4a3a12" stroke="#ffcf5c" stroke-width="2"/>';
+            s +=
+              '<text x="' +
+              (x + uw / 2) +
+              '" y="' +
+              (yc + rowH / 2 + 5) +
+              '" fill="#ffe6a3" font-size="12" font-weight="700" text-anchor="middle">1</text>';
+            x += uw + gap;
+          }
+        }
+        strip(pad, c, d);
+        strip(pad + rowH + rgap, e, f);
+        s +=
+          '<text x="' +
+          Math.max(W, 300) / 2 +
+          '" y="' +
+          (H - 6) +
+          '" fill="#9fb0d6" font-size="12" text-anchor="middle">' +
+          (lang === "es"
+            ? "Junta los x con los x y las unidades con las unidades"
+            : "Combine x-tiles with x-tiles, units with units") +
+          "</text>";
+        svg.innerHTML = s;
+      }
+
+      /* ---- render a round ---- */
+      function render() {
+        answered = false;
+        document.getElementById("feedback").className = "feedback";
+        document.getElementById("nextBtn").disabled = true;
+        document.getElementById("checkBtn").disabled = false;
+        document.getElementById("hintBox").open = false;
+        var deck = mode === "identify" ? identifyDeck : generateDeck;
+        current = deck[qNum];
+        document.getElementById("qNum").textContent = qNum + 1;
+        document.getElementById("targetExpr").textContent = current.target;
+
+        if (mode === "identify") {
+          document.getElementById("identifyArea").style.display = "";
+          document.getElementById("generateArea").style.display = "none";
+          drawModel(current);
+          // build options
+          var opts = current.options.concat([current.correct]);
+          opts = dedupe(opts);
+          // ensure correct is present
+          if (opts.indexOf(current.correct) < 0) opts.push(current.correct);
+          shuffle(opts);
+          var html = "";
+          for (var i = 0; i < opts.length; i++) {
+            html +=
+              '<div class="choice" data-v="' +
+              opts[i].replace(/"/g, "") +
+              '" onclick="selectChoice(this)">' +
+              opts[i] +
+              "</div>";
+          }
+          document.getElementById("choices").innerHTML = html;
+          setHints();
+        } else {
+          document.getElementById("identifyArea").style.display = "none";
+          document.getElementById("generateArea").style.display = "";
+          drawModel(current);
+          document.getElementById("genRow").innerHTML =
+            '<input id="genCoef" inputmode="numeric" aria-label="coefficient of x"> x &nbsp;+&nbsp; ' +
+            '<input id="genConst" inputmode="numeric" aria-label="constant term">';
+          setHints();
+        }
+        applyLang();
+      }
+      function dedupe(a) {
+        var seen = {},
+          out = [];
+        for (var i = 0; i < a.length; i++) {
+          if (!seen[a[i]]) {
+            seen[a[i]] = 1;
+            out.push(a[i]);
+          }
+        }
+        return out;
+      }
+
+      var selected = null;
+      function selectChoice(el) {
+        if (answered) return;
+        var all = document.querySelectorAll(".choice");
+        for (var i = 0; i < all.length; i++)
+          all[i].classList.remove("selected");
+        el.classList.add("selected");
+        selected = el;
+      }
+
+      /* ---- hints (Level 1 / Level 2) ---- */
+      function setHints() {
+        var h1 = "",
+          h2 = "";
+        if (mode === "identify" && current.type === "distribute") {
+          h1 =
+            lang === "es"
+              ? "La propiedad distributiva: multiplica el número de afuera por <b>cada</b> término de adentro. " +
+                current.a +
+                " × x y " +
+                current.a +
+                " × " +
+                current.b +
+                "."
+              : "Distributive property: multiply the outside number by <b>each</b> term inside. " +
+                current.a +
+                " × x and " +
+                current.a +
+                " × " +
+                current.b +
+                ".";
+          h2 =
+            lang === "es"
+              ? "Comprueba sustituyendo x = 2 en ambas expresiones: deben dar el mismo valor."
+              : "Verify by substituting x = 2 into both expressions — they must give the same value.";
+        } else if (mode === "identify") {
+          h1 =
+            lang === "es"
+              ? "Junta los términos semejantes: suma los coeficientes de x, y suma las constantes por separado."
+              : "Combine like terms: add the x-coefficients together, and add the constants separately.";
+          h2 =
+            lang === "es"
+              ? "No multipliques términos semejantes — solo se suman cuando se combinan."
+              : "Do not multiply like terms — they only add when combining.";
+        } else {
+          h1 =
+            lang === "es"
+              ? "Multiplica " +
+                current.a +
+                " por x (primer cuadro) y " +
+                current.a +
+                " por " +
+                current.b +
+                " (segundo cuadro)."
+              : "Multiply " +
+                current.a +
+                " by x (first box) and " +
+                current.a +
+                " by " +
+                current.b +
+                " (second box).";
+          h2 =
+            lang === "es"
+              ? "El coeficiente queda igual al número de afuera; la constante es el producto."
+              : "The coefficient equals the outside number; the constant is the product.";
+        }
+        document.getElementById("hint1").innerHTML = h1;
+        document.getElementById("hint2").innerHTML = h2;
+      }
+
+      /* ---- checking ---- */
+      function checkAnswer() {
+        if (answered) return;
+        if (mode === "identify") checkIdentify();
+        else checkGenerate();
+      }
+
+      function checkIdentify() {
+        if (!selected) {
+          flashHint();
+          return;
+        }
+        answered = true;
+        var all = document.querySelectorAll(".choice");
+        for (var i = 0; i < all.length; i++) all[i].classList.add("disabled");
+        var chosen = selected.textContent.trim();
+        var correctText = current.correct;
+        var isRight = chosen === correctText;
+        // mark
+        for (var j = 0; j < all.length; j++) {
+          if (all[j].textContent.trim() === correctText) {
+            if (isRight) all[j].classList.add("correct");
+          }
+        }
+        if (isRight) {
+          selected.classList.add("correct");
+          onCorrect();
+        } else {
+          selected.classList.add("wrong");
+          // reveal correct only AFTER the wrong attempt
+          for (var k = 0; k < all.length; k++) {
+            if (all[k].textContent.trim() === correctText)
+              all[k].classList.add("correct");
+          }
+          onWrong();
+        }
+        finishRound();
+      }
+
+      function checkGenerate() {
+        var ci = document.getElementById("genCoef"),
+          co = document.getElementById("genConst");
+        var cv = parseInt(ci.value, 10),
+          kv = parseInt(co.value, 10);
+        if (isNaN(cv) || isNaN(kv)) {
+          flashHint();
+          return;
+        }
+        answered = true;
+        var okC = cv === current.ans[0],
+          okK = kv === current.ans[1];
+        ci.className = okC ? "ok" : "no";
+        co.className = okK ? "ok" : "no";
+        ci.disabled = true;
+        co.disabled = true;
+        if (okC && okK) {
+          onCorrect();
+        } else {
+          onWrong();
+        }
+        finishRound();
+      }
+
+      function onCorrect() {
+        score++;
+        streak++;
+        document.getElementById("score").textContent = score;
+        document.getElementById("streak").textContent = streak;
+        var fb = document.getElementById("feedback");
+        fb.className = "feedback good show";
+        document.getElementById("fbTitle").textContent =
+          streak >= 3
+            ? "🔥 " +
+              (lang === "es" ? "¡En racha! " : "On fire! ") +
+              streak +
+              "x"
+            : "✅ " + (lang === "es" ? "¡Forjado!" : "Forged!");
+        document.getElementById("fbBody").innerHTML = explainCorrect("en");
+        document.getElementById("fbEs").innerHTML =
+          lang === "es" ? "" : explainCorrect("es");
+        sparks();
+      }
+      function onWrong() {
+        streak = 0;
+        document.getElementById("streak").textContent = 0;
+        var fb = document.getElementById("feedback");
+        fb.className = "feedback bad show";
+        document.getElementById("fbTitle").textContent =
+          "❌ " +
+          (lang === "es"
+            ? "Casi — revisa la forja"
+            : "Not yet — check the forge");
+        document.getElementById("fbBody").innerHTML = explainCorrect("en");
+        document.getElementById("fbEs").innerHTML =
+          lang === "es" ? "" : explainCorrect("es");
+      }
+
+      function explainCorrect(L) {
+        var es = L === "es";
+        if (mode === "identify" && current.type === "distribute") {
+          return (
+            (es ? "La respuesta correcta es " : "The correct answer is ") +
+            "<b>" +
+            current.correct +
+            "</b>. " +
+            (es
+              ? current.a +
+                " × x = " +
+                current.a +
+                "x, y " +
+                current.a +
+                " × " +
+                current.b +
+                " = " +
+                current.a * current.b +
+                "."
+              : current.a +
+                " × x = " +
+                current.a +
+                "x, and " +
+                current.a +
+                " × " +
+                current.b +
+                " = " +
+                current.a * current.b +
+                ".")
+          );
+        } else if (mode === "identify") {
+          var sc = current.c + current.e,
+            sk = current.d + current.f;
+          return (
+            (es ? "La respuesta correcta es " : "The correct answer is ") +
+            "<b>" +
+            current.correct +
+            "</b>. " +
+            (es
+              ? "Suma los x: " +
+                current.c +
+                "x + " +
+                current.e +
+                "x = " +
+                sc +
+                "x. Suma las unidades: " +
+                current.d +
+                " + " +
+                current.f +
+                " = " +
+                sk +
+                "."
+              : "Add the x-tiles: " +
+                current.c +
+                "x + " +
+                current.e +
+                "x = " +
+                sc +
+                "x. Add the units: " +
+                current.d +
+                " + " +
+                current.f +
+                " = " +
+                sk +
+                ".")
+          );
+        } else {
+          return (
+            (es ? "La forma expandida es " : "The expanded form is ") +
+            "<b>" +
+            fmtLinear(current.ans[0], current.ans[1]) +
+            "</b>. " +
+            (es
+              ? "Coeficiente = " +
+                current.a +
+                ", constante = " +
+                current.a +
+                "×" +
+                current.b +
+                " = " +
+                current.ans[1] +
+                "."
+              : "Coefficient = " +
+                current.a +
+                ", constant = " +
+                current.a +
+                "×" +
+                current.b +
+                " = " +
+                current.ans[1] +
+                ".")
+          );
+        }
+      }
+
+      function finishRound() {
+        document.getElementById("checkBtn").disabled = true;
+        document.getElementById("nextBtn").disabled = false;
+      }
+
+      function nextRound() {
+        if (qNum + 1 >= TOTAL) {
+          showWin();
+          return;
+        }
+        qNum++;
+        render();
+        document.getElementById("feedback").className = "feedback";
+      }
+
+      function showWin() {
+        var pct = Math.round((score / TOTAL) * 100);
+        document.getElementById("winBanner").classList.add("show");
+        document.getElementById("gameCard").style.display = "none";
+        var title, msg;
+        if (pct === 100) {
+          title =
+            "🏆 " +
+            (lang === "es" ? "¡Maestro Herrero!" : "Master Blacksmith!");
+        } else if (pct >= 70) {
+          title = "⭐ " + (lang === "es" ? "¡Gran Herrero!" : "Skilled Smith!");
+        } else {
+          title =
+            "⚒️ " + (lang === "es" ? "¡Sigue practicando!" : "Keep Hammering!");
+        }
+        msg =
+          lang === "es"
+            ? "Forjaste " + score + " de " + TOTAL + " (" + pct + "%)."
+            : "You forged " + score + " of " + TOTAL + " (" + pct + "%).";
+        document.getElementById("winTitle").textContent = title;
+        document.getElementById("winMsg").textContent = msg;
+        document.getElementById("winBtn").textContent =
+          lang === "es" ? "Forjar de nuevo" : "Forge Again";
+      }
+
+      function restart() {
+        score = 0;
+        streak = 0;
+        qNum = 0;
+        answered = false;
+        selected = null;
+        document.getElementById("score").textContent = 0;
+        document.getElementById("streak").textContent = 0;
+        document.getElementById("winBanner").classList.remove("show");
+        document.getElementById("gameCard").style.display = "";
+        if (mode === "identify") freshIdentifyDeck();
+        else freshGenerateDeck();
+        render();
+      }
+
+      function setMode(m) {
+        if (mode === m) return;
+        mode = m;
+        document
+          .getElementById("mIdentify")
+          .classList.toggle("active", m === "identify");
+        document
+          .getElementById("mGenerate")
+          .classList.toggle("active", m === "generate");
+        document.getElementById("prompt").textContent =
+          m === "identify"
+            ? "Which expression is equivalent to the one below?"
+            : "Build the equivalent expanded expression:";
+        document.getElementById("promptEs").textContent =
+          m === "identify"
+            ? "¿Cuál expresión es equivalente a la de abajo?"
+            : "Construye la expresión equivalente expandida:";
+        restart();
+      }
+
+      /* ---- language ---- */
+      function setLang(L) {
+        lang = L;
+        document
+          .getElementById("langEN")
+          .classList.toggle("active", L === "en");
+        document
+          .getElementById("langES")
+          .classList.toggle("active", L === "es");
+        applyLang();
+      }
+      function applyLang() {
+        var es = lang === "es";
+        document.getElementById("promptEs").style.display = es
+          ? "block"
+          : "block";
+        // show/hide spanish subtitle line emphasis (keep both visible — bilingual)
+        document.getElementById("lblQ").firstChild.textContent = es
+          ? "Ronda "
+          : "Round ";
+        document.getElementById("checkBtn").innerHTML = es
+          ? "Comprobar y forjar"
+          : "Check &amp; Forge";
+        document.getElementById("nextBtn").innerHTML = es
+          ? "Siguiente &rarr;"
+          : "Next &rarr;";
+        document.getElementById("resetBtn").textContent = es
+          ? "Reiniciar"
+          : "Reset";
+        document.getElementById("hintSummary").textContent = es
+          ? "💡 ¿Necesitas una pista?"
+          : "💡 Need a hint?";
+        document.getElementById("legX").textContent = es
+          ? "pieza-x (largo x)"
+          : "x-tile (length x)";
+        document.getElementById("leg1").textContent = es
+          ? "pieza unidad (1)"
+          : "unit tile (1)";
+        document.getElementById("lblScore").firstChild.textContent = es
+          ? "Forjadas: "
+          : "Forged: ";
+        document.getElementById("genInstr").textContent = es
+          ? "Llena los cuadros para que tu expresión expandida sea equivalente (usa la propiedad distributiva):"
+          : "Fill the boxes so your expanded expression is equivalent (use the distributive property):";
+        if (current) setHints();
+        // redraw model labels in chosen language
+        if (current) drawModel(current);
+      }
+
+      /* ---- effects ---- */
+      function sparks() {
+        var emo = ["✨", "🔥", "⭐", "💥"];
+        for (var i = 0; i < 7; i++) {
+          (function (i) {
+            var el = document.createElement("div");
+            el.className = "spark";
+            el.textContent = emo[Math.floor(Math.random() * emo.length)];
+            el.style.left = 40 + Math.random() * 40 + "%";
+            el.style.top = 35 + Math.random() * 20 + "%";
+            el.style.animationDelay = i * 0.05 + "s";
+            document.body.appendChild(el);
+            setTimeout(function () {
+              el.remove();
+            }, 1100);
+          })(i);
+        }
+      }
+      function flashHint() {
+        var hb = document.getElementById("hintBox");
+        hb.open = true;
+        hb.animate
+          ? hb.animate(
+              [
+                { outline: "2px solid var(--gold)" },
+                { outline: "2px solid transparent" },
+              ],
+              { duration: 600 },
+            )
+          : 0;
+      }
+
+      /* ---- boot ---- */
+      freshIdentifyDeck();
+      freshGenerateDeck();
+      render();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

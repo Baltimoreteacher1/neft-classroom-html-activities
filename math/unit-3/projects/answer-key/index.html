@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 3 Projects — Teacher Answer Key | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Teacher answer key for Unit 3 culminating projects (Version A: Smoothie Bar Designer and Version B: Sports Stats Scout). Worked solutions using default values."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Answer-Key specific styles ── */
+      .ak-hero {
+        background: linear-gradient(
+          135deg,
+          #0f2b3c 0%,
+          #7c2d8a 60%,
+          #d4952a 100%
+        );
+        color: #fff;
+        padding: 36px 24px 30px;
+        text-align: center;
+      }
+      .ak-hero h1 {
+        margin: 8px 0 6px;
+        font-size: clamp(24px, 4vw, 36px);
+        letter-spacing: -0.02em;
+      }
+      .ak-hero p {
+        max-width: 600px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+      }
+      .ak-tags {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .ak-tag {
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .ak-tag.gold {
+        background: #d4952a;
+        border-color: #d4952a;
+        color: #2a1c00;
+      }
+
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .ak-print-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #0f2b3c;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 22px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        margin: 22px 0 10px;
+        font-family: inherit;
+      }
+      .ak-print-btn:hover {
+        filter: brightness(1.1);
+      }
+
+      /* version divider */
+      .version-banner {
+        background: linear-gradient(90deg, #7c2d8a, #d4952a);
+        color: #fff;
+        border-radius: 14px;
+        padding: 14px 20px;
+        margin: 30px 0 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .version-banner.blue {
+        background: linear-gradient(90deg, #0f2b3c, #1a6fb5);
+      }
+      .version-banner .vb-icon {
+        font-size: 30px;
+        line-height: 1;
+        flex: 0 0 auto;
+      }
+      .version-banner h2 {
+        margin: 0;
+        font-size: 22px;
+      }
+      .version-banner p {
+        margin: 2px 0 0;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      /* phase answer blocks */
+      .ak-phase {
+        background: #fff;
+        border: 1px solid #e2e7ec;
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin: 16px 0;
+        box-shadow: 0 3px 14px rgba(15, 43, 60, 0.08);
+      }
+      .ak-phase-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .ak-phase-num {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #1a6fb5;
+        color: #fff;
+        font-weight: 800;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ak-phase-num.purple {
+        background: #7c2d8a;
+      }
+      .ak-phase-num.teal {
+        background: #0e8a7d;
+      }
+      .ak-phase-num.gold {
+        background: #d4952a;
+        color: #2a1c00;
+      }
+      .ak-phase-num.coral {
+        background: #c45a3c;
+      }
+      .ak-phase-num.green {
+        background: #2d874b;
+      }
+      .ak-phase-num.navy {
+        background: #0f2b3c;
+      }
+
+      .ak-phase h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #1a2633;
+      }
+      .ak-phase .skill-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #5e6e7e;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .ak-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      @media (max-width: 580px) {
+        .ak-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .ak-input-block {
+        background: #f7f9fb;
+        border: 1px solid #e2e7ec;
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .ak-input-block .label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #5e6e7e;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+      }
+      .ak-input-block .val {
+        font-size: 17px;
+        font-weight: 800;
+        color: #1a2633;
+      }
+
+      .ak-answer {
+        background: #e4f5f3;
+        border: 1px solid #bfe6e0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-answer .big {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0e8a7d;
+        margin-bottom: 6px;
+      }
+      .ak-answer .steps {
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.7;
+      }
+
+      .ak-qc {
+        background: #fdf3e0;
+        border: 1px solid #f5d78a;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-qc .qc-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #7c5a00;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-qc .qc-q {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1a2633;
+        margin: 4px 0;
+      }
+      .ak-qc .qc-a {
+        font-size: 22px;
+        font-weight: 800;
+        color: #d4952a;
+      }
+      .ak-qc .qc-work {
+        font-size: 14px;
+        color: #5e6e7e;
+        margin-top: 4px;
+      }
+
+      .ak-sample {
+        background: #e6f4eb;
+        border: 1px solid #a6d9b7;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-sample .s-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #185c2e;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-sample p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.65;
+        font-style: italic;
+      }
+
+      .ak-rubric {
+        background: #eeecfd;
+        border: 1px solid #c5bff7;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-rubric .r-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #2d1a8a;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-rubric p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.65;
+      }
+
+      .ratio-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .ratio-tbl th,
+      .ratio-tbl td {
+        border: 1px solid #e2e7ec;
+        padding: 8px 12px;
+        text-align: center;
+      }
+      .ratio-tbl th {
+        background: #7c2d8a;
+        color: #fff;
+        font-size: 12px;
+      }
+      .ratio-tbl td:first-child {
+        font-weight: 700;
+        background: #fdf3e0;
+      }
+
+      .stats-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .stats-tbl th,
+      .stats-tbl td {
+        border: 1px solid #e2e7ec;
+        padding: 8px 12px;
+        text-align: center;
+      }
+      .stats-tbl th {
+        background: #0f2b3c;
+        color: #fff;
+        font-size: 12px;
+      }
+      .stats-tbl td:first-child {
+        font-weight: 700;
+        background: #e8f2fc;
+        text-align: left;
+      }
+
+      .section-divider {
+        border: none;
+        border-top: 2px dashed #e2e7ec;
+        margin: 32px 0;
+      }
+
+      /* Print styles */
+      @media print {
+        .ak-print-btn {
+          display: none !important;
+        }
+        .ak-hero {
+          background: #0f2b3c !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .ak-phase,
+        .version-banner {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+        .version-banner {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .ak-answer,
+        .ak-qc,
+        .ak-sample,
+        .ak-rubric,
+        .ak-input-block {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body>
+    <header class="ak-hero">
+      <div style="font-size: 44px; line-height: 1">📋</div>
+      <h1>Unit 3 Projects — Teacher Answer Key</h1>
+      <p>
+        Worked solutions using the default input values for both project
+        versions. For teachers only.
+      </p>
+      <div class="ak-tags">
+        <span class="ak-tag gold">Unit 3 · Ratios &amp; Rates</span>
+        <span class="ak-tag">6.RP.1</span>
+        <span class="ak-tag">6.RP.2</span>
+        <span class="ak-tag">6.RP.3</span>
+        <span class="ak-tag">Teacher Use Only</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="note-panel" style="margin: 20px 0">
+        <p>
+          <strong
+            >For teachers — worked solutions using the default values.</strong
+          >
+          Students who change inputs get different but similarly-structured
+          answers. Each phase shows: default inputs used, step-by-step
+          arithmetic, the correct final answer, and the exact quick-check
+          answer. Sample expert responses and rubric guidance are included for
+          scoring.
+        </p>
+      </div>
+
+      <button class="ak-print-btn" onclick="window.print()">
+        🖨️ Print answer key
+      </button>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- VERSION A: Smoothie Bar Designer                    -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="version-banner">
+        <div class="vb-icon">🥤</div>
+        <div>
+          <h2>Version A — Smoothie Bar Designer</h2>
+          <p>
+            Context: Opening a school smoothie bar using ratios, equivalent
+            ratios, unit rates, and better-buy comparisons.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num purple">1</div>
+          <div>
+            <div class="skill-label">
+              Writing &amp; Simplifying Ratios · 6.RP.1
+            </div>
+            <h3>Write Your Smoothie Recipe Ratio</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Cups of fruit (default)</div>
+            <div class="val">6</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Cups of yogurt (default)</div>
+            <div class="val">4</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">3:2</div>
+          <div class="steps">
+            <strong>Three forms of the ratio:</strong><br />
+            &bull; Colon form: <strong>6:4</strong><br />
+            &bull; Word form: <strong>6 to 4</strong><br />
+            &bull; Fraction form: <strong>6/4</strong><br /><br />
+            <strong>Simplification:</strong> GCF(6, 4) = 2. Divide both: 6 ÷ 2 =
+            3, 4 ÷ 2 = 2.<br />
+            Simplified ratio = <strong>3:2</strong>. For every
+            <strong>3 cups of fruit</strong> use
+            <strong>2 cups of yogurt</strong>.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">
+            Sample Expert Response (deliverable starter)
+          </div>
+          <p>
+            "My smoothie recipe uses 6 cups of fruit to 4 cups of yogurt. I can
+            write this ratio as 6:4, 6 to 4, or 6/4. Since GCF(6, 4) = 2, the
+            simplified ratio is 3:2, meaning for every 3 cups of fruit I need
+            exactly 2 cups of yogurt to keep the same taste."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">
+            Sample 4/3/2 Rubric Guidance — Writing &amp; Simplifying Ratios
+          </div>
+          <p>
+            <strong>4 (Expert):</strong> Writes all three forms correctly (6:4,
+            6 to 4, 6/4), identifies GCF = 2, shows the division step (6÷2,
+            4÷2), states the simplified ratio 3:2, and explains what it means in
+            context ("for every 3 cups of fruit…").<br />
+            <strong>3 (Proficient):</strong> All three forms correct and
+            simplified ratio 3:2 stated; GCF work may be implicit.<br />
+            <strong>2 (Developing):</strong> Ratio written but one form is
+            missing, or simplification skipped/incorrect.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">2</div>
+          <div>
+            <div class="skill-label">
+              Equivalent Ratios &amp; Ratio Tables · 6.RP.3
+            </div>
+            <h3>Scale Up Your Recipe</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Base cups of fruit (1×)</div>
+            <div class="val">6</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Base cups of yogurt (1×)</div>
+            <div class="val">4</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">3 Equivalent Ratios</div>
+          <div class="steps">
+            Multiply both parts of the base ratio (6:4) by the batch multiplier:
+          </div>
+          <table class="ratio-tbl" style="margin-top: 10px">
+            <tr>
+              <th>Batch Size</th>
+              <th>Fruit (cups)</th>
+              <th>Yogurt (cups)</th>
+              <th>Ratio</th>
+            </tr>
+            <tr>
+              <td>1× batch</td>
+              <td>6</td>
+              <td>4</td>
+              <td>6:4 → 3:2</td>
+            </tr>
+            <tr>
+              <td>2× batch</td>
+              <td>12</td>
+              <td>8</td>
+              <td>12:8 → 3:2</td>
+            </tr>
+            <tr>
+              <td>3× batch</td>
+              <td>18</td>
+              <td>12</td>
+              <td>18:12 → 3:2</td>
+            </tr>
+          </table>
+          <div class="steps" style="margin-top: 8px">
+            All three rows are <strong>equivalent ratios</strong> because each
+            simplifies to 3:2. The recipe taste is identical at every scale.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>
+            "To serve more smoothie customers I scaled my base recipe (6 cups
+            fruit, 4 cups yogurt). A double batch uses 12 cups of fruit and 8
+            cups of yogurt, and a triple batch uses 18 cups and 12 cups. All
+            three ratios simplify to 3:2, confirming the taste stays the same no
+            matter how many I make."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">
+            Sample 4/3/2 Rubric Guidance — Equivalent Ratios / Ratio Table
+          </div>
+          <p>
+            <strong>4 (Expert):</strong> All three rows correct (6:4, 12:8,
+            18:12); explains why each ratio is equivalent (same GCF
+            simplification, or "multiplied both parts by the same factor");
+            connects back to the recipe context.<br />
+            <strong>3 (Proficient):</strong> All table rows numerically
+            correct.<br />
+            <strong>2 (Developing):</strong> One or two rows correct; pattern
+            not explained.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3</div>
+          <div>
+            <div class="skill-label">
+              Unit Rate &amp; Better Buy · 6.RP.2 · 6.RP.3
+            </div>
+            <h3>Price Your Smoothies Fairly</h3>
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 0 0 10px">Part A — Unit Rate</p>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Total cost for batch</div>
+            <div class="val">$9.00</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Smoothies per batch</div>
+            <div class="val">3</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">$3.00 per smoothie</div>
+          <div class="steps">
+            Unit rate = Total cost ÷ Number of smoothies<br />
+            $9.00 ÷ 3 = <strong>$3.00 per smoothie</strong><br />
+            Set the selling price above $3.00 to make a profit.
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 16px 0 10px">Part B — Better Buy</p>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Pack A price</div>
+            <div class="val">$4.50</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Pack A cups</div>
+            <div class="val">3</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Pack B price</div>
+            <div class="val">$7.20</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Pack B cups</div>
+            <div class="val">6</div>
+          </div>
+        </div>
+
+        <div class="ak-answer" style="margin-top: 10px">
+          <div class="big">Pack B is the better buy</div>
+          <div class="steps">
+            Pack A: $4.50 ÷ 3 cups = <strong>$1.50 per cup</strong><br />
+            Pack B: $7.20 ÷ 6 cups = <strong>$1.20 per cup</strong><br />
+            Pack B saves <strong>$0.30 per cup</strong>. Even though Pack B
+            costs more upfront, its unit price is lower.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>
+            "Each smoothie costs $3.00 to make ($9.00 ÷ 3), so I must sell each
+            for more than $3.00 to profit. For yogurt, Pack B ($7.20 for 6 cups
+            = $1.20/cup) beats Pack A ($4.50 for 3 cups = $1.50/cup) by $0.30
+            per cup, so I will order Pack B even though it costs more in total."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">
+            Sample 4/3/2 Rubric Guidance — Unit Rate &amp; Better Buy
+          </div>
+          <p>
+            <strong>4 (Expert):</strong> Unit rate $3.00/smoothie correct with
+            division shown; both unit prices computed ($1.50, $1.20), Pack B
+            identified as better buy with a contextual explanation ("saves
+            $0.30/cup").<br />
+            <strong>3 (Proficient):</strong> Unit rate correct; better buy
+            correctly identified.<br />
+            <strong>2 (Developing):</strong> Unit rate attempted; better buy
+            missing or incorrect (e.g., chose Pack A because the total price is
+            lower).
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num coral">4</div>
+          <div>
+            <div class="skill-label">
+              Ratio Reasoning &amp; Quick Check · 6.RP.1 · 6.RP.3
+            </div>
+            <h3>Menu Board Decision &amp; Quick Check</h3>
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Quick Check — Simplify the ratio 12:18</div>
+          <div class="qc-q">What is the simplified form of 12:18?</div>
+          <div class="qc-a">2:3</div>
+          <div class="qc-work">
+            GCF(12, 18) = 6. Divide both: 12 ÷ 6 = 2, 18 ÷ 6 = 3. Simplified
+            ratio = <strong>2:3</strong>. The JS accepts exactly "2:3".
+          </div>
+        </div>
+
+        <div class="ak-sample" style="margin-top: 12px">
+          <div class="s-label">
+            Sample Expert Response — Menu Board Reflection (Full Deliverable)
+          </div>
+          <p>
+            "My smoothie recipe uses a ratio of 6 cups of fruit to 4 cups of
+            yogurt, which simplifies to 3:2. To serve more customers I can scale
+            up to 12 cups of fruit and 8 cups of yogurt for a double batch,
+            keeping the same 3:2 ratio. Each smoothie costs $3.00 to make (unit
+            rate: $9.00 ÷ 3), so I priced my smoothies at $4.50 to earn a $1.50
+            profit each. I chose Pack B yogurt because it costs $1.20 per cup
+            vs. Pack A's $1.50 per cup — saving $0.30 per cup. My featured menu
+            ratio is 3:2 fruit to yogurt because the extra fruit creates a
+            sweeter, fruitier taste that customers enjoy."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">
+            Sample 4/3/2 Rubric Guidance — Communication
+          </div>
+          <p>
+            <strong>4 (Expert):</strong> Reflection explicitly cites all four
+            numeric results (ratio in three forms, scaled table values, unit
+            rate, both better-buy unit prices) and gives a clear, reasoned
+            choice for the menu board ratio.<br />
+            <strong>3 (Proficient):</strong> Uses most numbers and gives a clear
+            decision.<br />
+            <strong>2 (Developing):</strong> Vague or missing key numbers (e.g.,
+            only mentions the ratio without citing the unit rate or better buy).
+          </p>
+        </div>
+      </div>
+
+      <!-- Part 2 — Peer (Version A) -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">2P</div>
+          <div>
+            <div class="skill-label">
+              Part 2 · Peer — Compare with equivalent ratios · 6.RP.3
+            </div>
+            <h3>Interview &amp; Compare Recipes</h3>
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">My recipe (from Part 1)</div>
+            <div class="val">6 : 4</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Partner recipe (example)</div>
+            <div class="val">5 : 5</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Common base (cups of yogurt)</div>
+            <div class="val">12</div>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">
+            At 12 cups yogurt: Me = 18 cups fruit · Partner = 12 cups fruit
+          </div>
+          <div class="steps">
+            Scale each recipe to the same cups of yogurt (12) using equivalent
+            ratios:<br />
+            Me: 6:4 → ×3 → <strong>18:12</strong> (18 cups fruit per 12
+            yogurt)<br />
+            Partner: 5:5 → ×2.4 → <strong>12:12</strong> (12 cups fruit per 12
+            yogurt)<br />
+            My smoothie is fruitier at the same amount of yogurt (18 &gt;
+            12).<br />
+            <em
+              >Note: the page computes fruit-at-base as (fruit ÷ yogurt) × base,
+              so any partner numbers work.</em
+            >
+          </div>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">Rubric Guidance — Comparison (Peer)</div>
+          <p>
+            <strong>4:</strong> Scales both recipes to the common base with
+            correct equivalent-ratio reasoning and states who is fruitier and
+            why. <strong>3:</strong> Both scaled correctly.
+            <strong>2:</strong> One scaled correctly.
+          </p>
+        </div>
+      </div>
+
+      <!-- Part 3 — World (Version A) -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3W</div>
+          <div>
+            <div class="skill-label">
+              Part 3 · World — Unit price vs the world · 6.RP.2–3
+            </div>
+            <h3>How Does Your Price Compare?</h3>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">World per-cup averages (built-in store sample)</div>
+          <div class="steps">
+            Means across all 8 stores (including the airport "bad buy"
+            outlier):<br />
+            Strawberry: <strong>$1.96/cup</strong> &nbsp;|&nbsp; Yogurt:
+            <strong>$1.34/cup</strong> &nbsp;|&nbsp; Banana:
+            <strong>$0.55/cup</strong><br /><br />
+            Means with the outlier removed (the 7 normal stores):<br />
+            Strawberry: <strong>$1.59/cup</strong> &nbsp;|&nbsp; Yogurt:
+            <strong>$1.08/cup</strong> &nbsp;|&nbsp; Banana:
+            <strong>$0.40/cup</strong><br /><br />
+            A student's better-buy price of $1.20/cup (yogurt) is below the
+            $1.34 average — a good deal.
+          </div>
+        </div>
+        <div class="ak-qc">
+          <div class="qc-label">What-If Lab — expected behavior</div>
+          <div class="qc-q">
+            Add one more cup at a high price (e.g., $5.00) to the yogurt sample.
+          </div>
+          <div class="qc-work">
+            Before mean ≈ $1.34; after adding $5.00 the mean rises to about
+            $1.75. One high value pulls the average up — that is the outlier
+            idea.
+          </div>
+        </div>
+        <div class="ak-sample">
+          <div class="s-label">
+            Sample Level 2 Response — Rate-as-data (preview of statistics)
+          </div>
+          <p>
+            "The yogurt prices have a mean of $1.34 per cup. The airport kiosk
+            at $3.20 per cup is an outlier — it is much higher than every other
+            store. Without it, the mean drops to $1.08, which shows one outlier
+            can pull the average up and make prices look worse than they really
+            are."
+          </p>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">
+            Rubric Guidance — Level 2 (rate-as-data) &amp; Careful Thinking
+          </div>
+          <p>
+            <strong>4:</strong> Computes the mean correctly, identifies the
+            outlier (airport kiosk), and explains how the outlier pulls the mean
+            up; careful-thinking note gives a real reason prices differ
+            (shipping, season, store size). <strong>3:</strong> Mean and outlier
+            correct. <strong>2:</strong> Mean attempted or outlier named without
+            explanation.
+          </p>
+        </div>
+      </div>
+
+      <hr class="section-divider" />
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- VERSION B: Sports Stats Scout                       -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="version-banner blue">
+        <div class="vb-icon">🏆</div>
+        <div>
+          <h2>Version B — Sports Stats Scout</h2>
+          <p>
+            Context: Junior sports analyst computing unit rates, equivalent
+            ratios, and season projections for two players.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num" style="background: #1a6fb5">1</div>
+          <div>
+            <div class="skill-label">Unit Rate · 6.RP.2</div>
+            <h3>Compute Each Player's Rate</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Player A name (default)</div>
+            <div class="val">Jordan</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Player B name (default)</div>
+            <div class="val">Riley</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Jordan total points</div>
+            <div class="val">84</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Jordan games played</div>
+            <div class="val">12</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Riley total points</div>
+            <div class="val">70</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Riley games played</div>
+            <div class="val">10</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">Jordan: 7.00 ppg &nbsp;|&nbsp; Riley: 7.00 ppg</div>
+          <div class="steps">
+            Jordan: 84 pts ÷ 12 games = <strong>7.00 points per game</strong
+            ><br />
+            Riley: 70 pts ÷ 10 games = <strong>7.00 points per game</strong
+            ><br />
+            Both players are <strong>tied</strong> at 7.00 points per game with
+            the default values.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>
+            "Jordan scored 84 points in 12 games, giving a unit rate of 7.00
+            points per game (84 ÷ 12). Riley scored 70 points in 10 games, also
+            7.00 ppg (70 ÷ 10). On a per-game basis the two players are
+            perfectly tied, so I need additional data — like the
+            equivalent-ratio comparison and season projection — to make a
+            recommendation."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Unit Rate</div>
+          <p>
+            <strong>4 (Expert):</strong> Both unit rates correct (7.00 ppg
+            each); division work shown for both; interpretation stated ("they
+            are tied — this means..."); notes the tie creates a need for further
+            analysis.<br />
+            <strong>3 (Proficient):</strong> Both unit rates numerically
+            correct.<br />
+            <strong>2 (Developing):</strong> One rate correct or division set up
+            incorrectly (e.g., games ÷ points instead of points ÷ games).
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">2</div>
+          <div>
+            <div class="skill-label">Equivalent Ratios · 6.RP.1 · 6.RP.3</div>
+            <h3>Compare Players Using Equivalent Ratios</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Jordan pts</div>
+            <div class="val">84</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Jordan games</div>
+            <div class="val">12</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Riley pts</div>
+            <div class="val">70</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Riley games</div>
+            <div class="val">10</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Scale to (common games)</div>
+            <div class="val">60</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">
+            In 60 games: Jordan = 420 pts &nbsp;|&nbsp; Riley = 420 pts
+          </div>
+          <div class="steps">
+            <strong>Jordan scaled:</strong> Factor = 60 ÷ 12 = 5. &nbsp; 84 × 5
+            = <strong>420 pts</strong><br />
+            Equivalent ratio: 84:12 = 420:60 &nbsp;(multiply both parts by 5)<br /><br />
+            <strong>Riley scaled:</strong> Factor = 60 ÷ 10 = 6. &nbsp; 70 × 6 =
+            <strong>420 pts</strong><br />
+            Equivalent ratio: 70:10 = 420:60 &nbsp;(multiply both parts by 6)<br /><br />
+            Both would score the same — it is a tie at 420 pts in 60 games.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>
+            "To compare Jordan and Riley on equal footing, I scaled both to 60
+            games. Jordan's ratio 84:12 becomes 420:60 (multiply by 5), and
+            Riley's ratio 70:10 becomes 420:60 (multiply by 6). Since 420 = 420,
+            both players would score identically over 60 games, confirming the
+            tie we saw in the unit-rate analysis."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">
+            Sample 4/3/2 Rubric Guidance — Equivalent Ratios
+          </div>
+          <p>
+            <strong>4 (Expert):</strong> Scaling factors shown (×5, ×6), both
+            products correct (420, 420), explains why these are equivalent
+            ratios ("I multiplied both parts by the same number, so the ratio
+            stays the same"), and ties the result back to the comparison.<br />
+            <strong>3 (Proficient):</strong> Both players scaled correctly to 60
+            games (420 pts each).<br />
+            <strong>2 (Developing):</strong> One scaling correct; factor
+            computed wrong for the other (e.g., added instead of multiplied).
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3</div>
+          <div>
+            <div class="skill-label">Ratio Table · 6.RP.3</div>
+            <h3>Project Stats Over a Full Season</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Jordan rate (ppg)</div>
+            <div class="val">7</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Riley rate (ppg)</div>
+            <div class="val">7</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">
+            30-game projection: Jordan = 210 pts &nbsp;|&nbsp; Riley = 210 pts
+          </div>
+          <div class="steps">Each row = unit rate × number of games:</div>
+          <table class="stats-tbl" style="margin-top: 10px">
+            <tr>
+              <th>Games Played</th>
+              <th>Jordan (projected pts)</th>
+              <th>Riley (projected pts)</th>
+              <th>Calculation</th>
+            </tr>
+            <tr>
+              <td>10 games</td>
+              <td>70.0 pts</td>
+              <td>70.0 pts</td>
+              <td>7 × 10 = 70</td>
+            </tr>
+            <tr>
+              <td>20 games</td>
+              <td>140.0 pts</td>
+              <td>140.0 pts</td>
+              <td>7 × 20 = 140</td>
+            </tr>
+            <tr>
+              <td>30 games</td>
+              <td>210.0 pts</td>
+              <td>210.0 pts</td>
+              <td>7 × 30 = 210</td>
+            </tr>
+          </table>
+          <div class="steps" style="margin-top: 8px">
+            Both players project to the same season total — a perfect tie. All
+            rows are equivalent ratios (rate stays constant at 7 ppg).
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>
+            "Using each player's unit rate of 7 points per game, my ratio table
+            projects: at 10 games both have 70 points, at 20 games both have 140
+            points, and at 30 games (full season) both project to 210 points.
+            Every row is an equivalent ratio of 7:1, meaning the per-game rate
+            never changes."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">
+            Sample 4/3/2 Rubric Guidance — Ratio Table / Projection
+          </div>
+          <p>
+            <strong>4 (Expert):</strong> All six table cells correct (70, 140,
+            210 for each player); explains the pattern ("multiply unit rate by
+            games played"); connects the tie in projections to the
+            recommendation section.<br />
+            <strong>3 (Proficient):</strong> All six cells numerically
+            correct.<br />
+            <strong>2 (Developing):</strong> Two or more cells correct; pattern
+            partially shown.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num coral">4</div>
+          <div>
+            <div class="skill-label">
+              Rate Reasoning &amp; Quick Check · 6.RP.2
+            </div>
+            <h3>Draft Decision &amp; Quick Check</h3>
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">
+            Quick Check — Unit Rate: 20 points in 5 games
+          </div>
+          <div class="qc-q">What is the unit rate (points per game)?</div>
+          <div class="qc-a">4 points per game</div>
+          <div class="qc-work">
+            20 points ÷ 5 games = <strong>4 points per game</strong>. The JS
+            accepts exactly the number 4.
+          </div>
+        </div>
+
+        <div class="ak-sample" style="margin-top: 12px">
+          <div class="s-label">
+            Sample Expert Response — Scouting Report (Full Deliverable)
+          </div>
+          <p>
+            "Coach, I analyzed the stats for Jordan and Riley. Jordan's unit
+            rate is 7.00 points per game (84 ÷ 12) and Riley's is also 7.00
+            points per game (70 ÷ 10). When I scaled both to 60 games using
+            equivalent ratios, both players had 420 projected points — a tie. By
+            the end of the 30-game season, both project to 210 points. Because
+            the math shows no statistical difference, I recommend starting
+            Jordan based on consistency: Jordan reached 7.00 ppg over 12 games
+            (a larger sample) compared to Riley's 10 games, making Jordan's rate
+            more reliable."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">
+            Sample 4/3/2 Rubric Guidance — Communication
+          </div>
+          <p>
+            <strong>4 (Expert):</strong> Scouting report cites all three math
+            tools (unit rate numbers, equivalent-ratio scaling with factors,
+            season projection totals); recommendation is clearly stated with a
+            data-backed justification (even when the data shows a tie, the
+            student reasons through sample size or another factor).<br />
+            <strong>3 (Proficient):</strong> Report gives a clear recommendation
+            with most numbers present.<br />
+            <strong>2 (Developing):</strong> Vague or missing key data points
+            (e.g., no mention of the equivalent-ratio comparison).
+          </p>
+        </div>
+      </div>
+
+      <!-- Part 2 — Peer (Version B) -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">2P</div>
+          <div>
+            <div class="skill-label">
+              Part 2 · Peer — Compare with equivalent ratios · 6.RP.3
+            </div>
+            <h3>Interview &amp; Compare Athletes</h3>
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">My athlete (from Part 1)</div>
+            <div class="val">84 : 12</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Partner athlete (example)</div>
+            <div class="val">70 : 10</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Common base (games)</div>
+            <div class="val">60</div>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">In 60 games: Me = 420 pts · Partner = 420 pts</div>
+          <div class="steps">
+            Scale each athlete to 60 games using equivalent ratios:<br />
+            Me: 84:12 → factor 60÷12 = 5 → <strong>420:60</strong> (420 pts)<br />
+            Partner: 70:10 → factor 60÷10 = 6 → <strong>420:60</strong> (420
+            pts)<br />
+            With these example numbers it is a tie — both project to 420 points
+            in 60 games.<br />
+            <em
+              >Note: the page computes points-at-base as (points ÷ games) ×
+              base, so any partner numbers work.</em
+            >
+          </div>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">Rubric Guidance — Comparison (Peer)</div>
+          <p>
+            <strong>4:</strong> Scales both athletes to the common base with
+            correct equivalent-ratio reasoning and states who scores more and
+            why. <strong>3:</strong> Both scaled correctly.
+            <strong>2:</strong> One scaled correctly.
+          </p>
+        </div>
+      </div>
+
+      <!-- Part 3 — World (Version B) -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3W</div>
+          <div>
+            <div class="skill-label">
+              Part 3 · World — Unit rate vs the world · 6.RP.2–3
+            </div>
+            <h3>How Does Your Player Compare?</h3>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">
+            World points-per-game average (built-in player sample)
+          </div>
+          <div class="steps">
+            Mean across all 8 players (including the "phenom" outlier at 22.0
+            ppg):
+            <strong>9.09 ppg</strong>.<br />
+            Mean with the outlier removed (the 7 normal players):
+            <strong>7.24 ppg</strong>.<br /><br />
+            An athlete at 7.00 ppg is just below the 7.24 typical average —
+            solidly average for youth play.
+          </div>
+        </div>
+        <div class="ak-qc">
+          <div class="qc-label">What-If Lab — expected behavior</div>
+          <div class="qc-q">
+            Add a hot-streak game with extra points (e.g., 30) to an
+            84-pts-in-12-games athlete.
+          </div>
+          <div class="qc-work">
+            Before: 84 ÷ 12 = 7.00 ppg. After: (84 + 30) ÷ (12 + 1) = 114 ÷ 13 ≈
+            8.77 ppg. One big game pulls the average rate up.
+          </div>
+        </div>
+        <div class="ak-sample">
+          <div class="s-label">
+            Sample Level 2 Response — Rate-as-data (preview of statistics)
+          </div>
+          <p>
+            "The player rates have a mean of about 9.1 points per game. The
+            'phenom' at 22.0 ppg is an outlier — far above everyone else.
+            Without it the mean drops to about 7.2 ppg, which shows one outlier
+            can pull the average up and make the typical player look stronger
+            than they are."
+          </p>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">
+            Rubric Guidance — Level 2 (rate-as-data) &amp; Careful Thinking
+          </div>
+          <p>
+            <strong>4:</strong> Computes the mean correctly, identifies the
+            outlier (phenom), and explains how it pulls the mean up;
+            careful-thinking note gives a real reason rates differ (league
+            level, minutes, position, sport). <strong>3:</strong> Mean and
+            outlier correct. <strong>2:</strong> Mean attempted or outlier named
+            without explanation.
+          </p>
+        </div>
+      </div>
+
+      <footer class="site-footer" style="margin-top: 40px">
+        <span>Neft Teacher · Unit 3 Projects · Teacher Answer Key</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </div>
+
+    <script src="/assets/app.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

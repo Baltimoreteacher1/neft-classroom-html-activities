@@ -107,6 +107,7 @@
     populateStreams();
     bindEvents();
     renderAll();
+    initCurriculumHub();
     registerServiceWorker();
   }
 
@@ -272,6 +273,9 @@
       <div class="launch-actions"><a href="${escapeAttr(link.url)}">Open</a><button type="button" data-link-delete="${link.id}">Delete</button></div>
       <small>${escapeHtml(link.url)}</small>
     </article>`).join('') || '<p>No links match the current search.</p>';
+    if (typeof renderPlaylistOptions === 'function') {
+      renderPlaylistOptions();
+    }
   }
 
   function filteredTasks() {
@@ -510,9 +514,552 @@
     toast.timer = setTimeout(() => els.toast.classList.remove('visible'), 2600);
   }
 
+  // ── Curriculum Hub Upgrade Functions ──
+  function initCurriculumHub() {
+    var uploader = document.getElementById('rosterFileUploader');
+    if (uploader) {
+      uploader.addEventListener('change', handleRosterUpload);
+    }
+    
+    if (localStorage.getItem('neftos.roster.v1')) {
+      try {
+        var cachedRoster = JSON.parse(localStorage.getItem('neftos.roster.v1'));
+        if (Array.isArray(cachedRoster)) {
+          displayRosterSummary(cachedRoster);
+          renderDiagnosticsMatrix(cachedRoster);
+        }
+      } catch(e) {}
+    }
+    
+    renderPlaylistOptions();
+    switchGeneratorTab('lesson');
+    renderWeeklyCalendar();
+  }
+
+  window.switchGeneratorTab = function(tabName) {
+    var tabs = ['lesson', 'worksheet', 'playlist'];
+    tabs.forEach(function(t) {
+      var content = document.getElementById('tabContent' + capitalize(t));
+      var btn = document.getElementById('tabBtn' + capitalize(t));
+      if (content) {
+        content.style.display = (t === tabName) ? 'block' : 'none';
+      }
+      if (btn) {
+        if (t === tabName) {
+          btn.className = 'primary-action small';
+          btn.style.boxShadow = 'none';
+        } else {
+          btn.className = 'secondary-action small';
+        }
+      }
+    });
+  };
+
+  window.loadSampleRoster = function() {
+    var sample = [
+      { name: "Sofia R.", wida: "Level 1: Entering", struggling: "MGSE6.NS.4, MGSE6.NS.2" },
+      { name: "Mateo L.", wida: "Level 2: Emerging", struggling: "MGSE6.NS.4, MGSE6.EE.1" },
+      { name: "An C.", wida: "Level 1: Entering", struggling: "MGSE6.NS.4, MGSE6.EE.2" },
+      { name: "Yusuf M.", wida: "Level 3: Developing", struggling: "MGSE6.NS.4, MGSE6.NS.3" },
+      { name: "Li Wei T.", wida: "Level 2: Emerging", struggling: "MGSE6.NS.4, MGSE6.NS.1" }
+    ];
+    localStorage.setItem('neftos.roster.v1', JSON.stringify(sample));
+    displayRosterSummary(sample);
+    toast("Loaded sample student roster!");
+  };
+
+  function handleRosterUpload(event) {
+    var file = event.target.files?.[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+      var text = reader.result;
+      var parsedRoster = [];
+      
+      try {
+        var data = JSON.parse(text);
+        if (Array.isArray(data)) {
+          parsedRoster = data;
+        } else if (data && Array.isArray(data.students)) {
+          parsedRoster = data.students;
+        } else if (data && typeof data === 'object') {
+          for (var key in data) {
+            if (Array.isArray(data[key])) {
+              parsedRoster = data[key];
+              break;
+            }
+          }
+        }
+      } catch(e) {
+        parsedRoster = parseCsvRoster(text);
+      }
+      
+      if (parsedRoster.length > 0) {
+        parsedRoster = parsedRoster.map(function(s) {
+          return {
+            name: s.name || s.student || s.Student || s.Name || "Unknown Student",
+            wida: s.wida || s.level || s.Wida || s.Level || s.WIDALevel || "Level 3: Developing",
+            struggling: s.struggling || s.standards || s.standard || s.Struggling || ""
+          };
+        });
+        localStorage.setItem('neftos.roster.v1', JSON.stringify(parsedRoster));
+        displayRosterSummary(parsedRoster);
+        toast("Successfully imported " + parsedRoster.length + " students from roster!");
+      } else {
+        toast("Could not parse student roster. Ensure it is a valid CSV or JSON file.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function parseCsvRoster(text) {
+    var lines = text.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+    if (lines.length < 2) return [];
+    
+    var headers = lines[0].split(',').map(function(h){return h.replace(/^["']|["']$/g, '').trim();});
+    
+    var nameIdx = headers.findIndex(function(h){return /name|student/i.test(h);});
+    var widaIdx = headers.findIndex(function(h){return /wida|level|elp/i.test(h);});
+    var standardIdx = headers.findIndex(function(h){return /standard|struggling|topic/i.test(h);});
+    
+    if (nameIdx === -1) nameIdx = 0;
+    if (widaIdx === -1) widaIdx = 1 < headers.length ? 1 : 0;
+    if (standardIdx === -1) standardIdx = 2 < headers.length ? 2 : 0;
+    
+    var roster = [];
+    for (var i = 1; i < lines.length; i++) {
+      var row = splitCsvLine(lines[i]);
+      if (row.length === 0) continue;
+      roster.push({
+        name: row[nameIdx] || "Student " + i,
+        wida: row[widaIdx] || "Level 2: Emerging",
+        struggling: row[standardIdx] || ""
+      });
+    }
+    return roster;
+  }
+
+  function splitCsvLine(line) {
+    var result = [];
+    var cell = "";
+    var inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+      } else if (ch === ',' && !inQuotes) {
+        result.push(cell.trim().replace(/^["']|["']$/g, ''));
+        cell = "";
+      } else {
+        cell += ch;
+      }
+    }
+    result.push(cell.trim().replace(/^["']|["']$/g, ''));
+    return result;
+  }
+
+  function displayRosterSummary(roster) {
+    var summaryPanel = document.getElementById('rosterSummaryPanel');
+    if (!summaryPanel) return;
+    
+    summaryPanel.style.display = 'grid';
+    document.getElementById('rosterTotalCount').textContent = roster.length + " students";
+    
+    var riskList = roster.filter(function(s) {
+      return /level\s*[1-2]/i.test(s.wida) || /entering|emerging/i.test(s.wida);
+    });
+    document.getElementById('rosterRiskCount').textContent = riskList.length + " targeted";
+    
+    var standardsMap = {};
+    roster.forEach(function(s) {
+      if (s.struggling) {
+        var stds = s.struggling.split(/,|;/).map(function(x){return x.trim();}).filter(Boolean);
+        stds.forEach(function(std) {
+          standardsMap[std] = (standardsMap[std] || 0) + 1;
+        });
+      }
+    });
+    var uniqueStandards = Object.keys(standardsMap);
+    document.getElementById('rosterStandardCount').textContent = uniqueStandards.length + " unique";
+    
+    renderDiagnosticsMatrix(roster);
+  }
+
+  window.generateLessonPrompt = function() {
+    var standard = document.getElementById('lpStandard').value.trim() || 'MGSE6.NS.4';
+    var topic = document.getElementById('lpTopic').value.trim() || 'Greatest Common Factor (GCF) visual models';
+    
+    var roster = [];
+    if (localStorage.getItem('neftos.roster.v1')) {
+      try { roster = JSON.parse(localStorage.getItem('neftos.roster.v1')); } catch(e) {}
+    }
+    
+    var targetStudents = [];
+    roster.forEach(function(s) {
+      var isTarget = /level\s*[1-2]/i.test(s.wida) || /entering|emerging/i.test(s.wida);
+      var strugglesWithStandard = s.struggling && s.struggling.toLowerCase().indexOf(standard.toLowerCase()) !== -1;
+      if (isTarget || strugglesWithStandard) {
+        targetStudents.push(s.name);
+      }
+    });
+    
+    var smallGroupSection = "";
+    if (targetStudents.length > 0) {
+      smallGroupSection = "Target Small Group Students for Scaffolded Support:\n" +
+        targetStudents.map(function(name) { return "- " + name + " (Level 1-2 Support)"; }).join("\n") + "\n\n" +
+        "WIDA Scaffold Level Directives:\n" +
+        "- Use explicit vocabulary cards with visual pillars for terms like 'factor', 'greatest', and 'common'.\n" +
+        "- Integrate interactive visual GCF Venn diagrams to show overlapping common factors.\n" +
+        "- Implement bilingual sentence starters (e.g., 'Therefore, the GCF of [A] and [B] is...') to build academic oral practice.";
+    } else {
+      smallGroupSection = "Target Small Group Students:\n" +
+        "- Fallback Group: All entering and emerging bilingual learners.\n\n" +
+        "WIDA Scaffold Level Directives:\n" +
+        "- Use explicit vocabulary columns, simple math models, and sequence transition starters.";
+    }
+    
+    var prompt = "Act as an expert ESOL Curriculum Planner & Mathematics Creative Developer.\n" +
+      "Create an enterprise-grade WIDA ACCESS scaffolded lesson plan for standard " + standard + ".\n\n" +
+      "Lesson Topic: " + topic + "\n\n" +
+      smallGroupSection + "\n\n" +
+      "Required Lesson Deliverables:\n" +
+      "1. Standards Mapping & 'I Can' Objectives: Write a student-friendly objective in Sora/Outfit style.\n" +
+      "2. Vocabulary Word Wall: Define required target words and provide Spanish/Arabic/Vietnamese multilingual column translations.\n" +
+      "3. Classroom Sequence: Detailed outline of 'Notice and Wonder' Do-Now, direct instruction using visual SVG models, small-group practice worksheets, and independent reflection.\n" +
+      "4. Exit Assessment Ticket: Design a clean exit ticket aligned to the objective to check student understanding.\n\n" +
+      "Execute this plan with zero placeholders, complete and publication-ready, matching the EduWonderLab QA Harness standards.";
+      
+    document.getElementById('lpOutputPrompt').value = prompt;
+    toast("Lesson plan prompt compiled!");
+  };
+
+  window.copyLessonPrompt = function() {
+    var txt = document.getElementById('lpOutputPrompt').value;
+    if (!txt) return toast("Compile a prompt first.");
+    copyText(txt);
+  };
+
+  window.generateDoNowWorksheet = function() {
+    var a = parseInt(document.getElementById('wsNumA').value) || 12;
+    var b = parseInt(document.getElementById('wsNumB').value) || 18;
+    
+    document.getElementById('wsValA').textContent = a;
+    document.getElementById('wsValB').textContent = b;
+    document.getElementById('wsValA_row').textContent = a;
+    document.getElementById('wsValB_row').textContent = b;
+    
+    var factorsA = calculateFactors(a);
+    var factorsB = calculateFactors(b);
+    
+    document.getElementById('wsFactorsA').textContent = factorsA.join(', ');
+    document.getElementById('wsFactorsB').textContent = factorsB.join(', ');
+    
+    var common = factorsA.filter(function(x) { return factorsB.indexOf(x) !== -1; });
+    var gcf = common[common.length - 1];
+    
+    document.getElementById('wsGcfResult').textContent = gcf;
+    
+    var uniqueA = factorsA.filter(function(x) { return common.indexOf(x) === -1; });
+    var uniqueB = factorsB.filter(function(x) { return common.indexOf(x) === -1; });
+    
+    var svgContainer = document.getElementById('svgVennContainer');
+    if (svgContainer) {
+      svgContainer.innerHTML = drawGCFVennSVG(a, b, uniqueA, uniqueB, common, gcf);
+    }
+    
+    document.getElementById('worksheetDisplayArea').style.display = 'block';
+    toast("Print-ready Do-Now worksheet & GCF Venn diagram generated!");
+  };
+
+  function calculateFactors(num) {
+    var factors = [];
+    for (var i = 1; i <= num; i++) {
+      if (num % i === 0) factors.push(i);
+    }
+    return factors;
+  }
+
+  function drawGCFVennSVG(numA, numB, uniqueA, uniqueB, common, gcf) {
+    var width = 450;
+    var height = 250;
+    
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '" style="background:white; border: 1px solid var(--neft-line); border-radius: 8px;">' +
+      '<!-- Background Rect -->' +
+      '<rect width="' + width + '" height="' + height + '" fill="#ffffff" />' +
+      
+      '<!-- Left Circle (Value A) -->' +
+      '<circle cx="175" cy="120" r="85" fill="rgba(15, 118, 110, 0.12)" stroke="#0f766e" stroke-width="2.5" />' +
+      
+      '<!-- Right Circle (Value B) -->' +
+      '<circle cx="275" cy="120" r="85" fill="rgba(183, 121, 31, 0.12)" stroke="#b7791f" stroke-width="2.5" />' +
+      
+      '<!-- Circle Labels -->' +
+      '<text x="135" y="30" font-family="\'Sora\', \'Segoe UI\', sans-serif" font-size="11" font-weight="800" fill="#0f766e" text-anchor="middle">Factors of ' + numA + '</text>' +
+      '<text x="315" y="30" font-family="\'Sora\', \'Segoe UI\', sans-serif" font-size="11" font-weight="800" fill="#b7791f" text-anchor="middle">Factors of ' + numB + '</text>';
+      
+    uniqueA.forEach(function(f, idx) {
+      var x = 125 + (idx % 2 === 0 ? -12 : 12);
+      var y = 80 + idx * 24;
+      if (y > 180) y = 140;
+      svg += '<text x="' + x + '" y="' + y + '" font-family="\'Sora\', \'Segoe UI\', sans-serif" font-size="13" font-weight="bold" fill="#0f766e" text-anchor="middle">' + f + '</text>';
+    });
+    
+    uniqueB.forEach(function(f, idx) {
+      var x = 325 + (idx % 2 === 0 ? -12 : 12);
+      var y = 80 + idx * 24;
+      if (y > 180) y = 140;
+      svg += '<text x="' + x + '" y="' + y + '" font-family="\'Sora\', \'Segoe UI\', sans-serif" font-size="13" font-weight="bold" fill="#b7791f" text-anchor="middle">' + f + '</text>';
+    });
+    
+    common.forEach(function(f, idx) {
+      var x = 225;
+      var y = 75 + idx * 26;
+      if (y > 175) y = 165;
+      var isGcf = (f === gcf);
+      var fill = isGcf ? '#c2410c' : '#1e293b';
+      var weight = isGcf ? '900' : 'bold';
+      var size = isGcf ? '15' : '12';
+      svg += '<text x="' + x + '" y="' + y + '" font-family="\'Sora\', \'Segoe UI\', sans-serif" font-size="' + size + '" font-weight="' + weight + '" fill="' + fill + '" text-anchor="middle">' + f + (isGcf ? ' (GCF)' : '') + '</text>';
+    });
+    
+    svg += '<!-- Callout Banner -->' +
+      '<rect x="145" y="200" width="160" height="30" rx="15" fill="#fef3c7" stroke="#c2410c" stroke-width="1" />' +
+      '<text x="225" y="219" font-family="\'Sora\', \'Segoe UI\', sans-serif" font-size="11" font-weight="800" fill="#c2410c" text-anchor="middle">🎯 Greatest Common GCF = ' + gcf + '</text>';
+      
+    svg += '</svg>';
+    return svg;
+  }
+
+  window.renderPlaylistOptions = function() {
+    var wrap = document.getElementById('playlistSelectionWrap');
+    if (!wrap) return;
+    
+    wrap.innerHTML = state.links.map(function(link) {
+      return '<label style="display: flex; align-items: center; gap: 8px; font-weight: normal; text-transform: none; font-size: 0.9rem; color: var(--neft-navy); cursor: pointer; margin: 0;">' +
+        '<input type="checkbox" class="playlist-link-checkbox" data-label="' + escapeAttr(link.label) + '" data-url="' + escapeAttr(link.url) + '" style="width: auto; margin: 0;" />' +
+        '<span><strong>' + escapeHtml(link.label) + '</strong> (' + escapeHtml(link.url) + ')</span>' +
+        '</label>';
+    }).join('') || '<p style="margin:0; font-size:0.86rem; color:var(--neft-muted);">No classroom fast links available. Add links in the Launchpad first!</p>';
+  };
+
+  window.compileClassroomPlaylist = function() {
+    var checkboxes = document.querySelectorAll('.playlist-link-checkbox');
+    var selected = [];
+    checkboxes.forEach(function(cb) {
+      if (cb.checked) {
+        selected.push({
+          label: cb.dataset.label,
+          url: cb.dataset.url
+        });
+      }
+    });
+    
+    if (selected.length === 0) {
+      return toast("Select at least one classroom activity checkbox first.");
+    }
+    
+    var md = "# 📋 Classroom URL Playlist Sequence\n" +
+      "Sequence prepared on: " + new Date().toLocaleDateString() + "\n\n" +
+      "Please execute the following learning activities in order:\n\n";
+      
+    selected.forEach(function(item, idx) {
+      md += (idx + 1) + ". 🌟 **Step " + (idx + 1) + ": " + item.label + "**\n" +
+        "   - URL Route: [" + item.url + "](" + item.url + ")\n" +
+        "   - Objective: Complete WIDA simulated practice standards on this workstation route.\n\n";
+    });
+    
+    md += "Prepared by NeftOS Curriculum Playlist System.\n";
+    document.getElementById('playlistOutputMarkdown').value = md;
+    toast("Playlist sequence compiled!");
+  };
+
+  window.copyPlaylistMarkdown = function() {
+    var txt = document.getElementById('playlistOutputMarkdown').value;
+    if (!txt) return toast("Compile a playlist first.");
+    copyText(txt);
+  };
+
   function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js').catch(() => {});
     }
   }
+
+  function renderWeeklyCalendar() {
+    const wrap = document.getElementById('weeklyCalendarWrap');
+    if (!wrap) return;
+
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    let cached = {};
+    try {
+      cached = JSON.parse(localStorage.getItem('neftos.planner.v1')) || {};
+    } catch(e) {}
+
+    wrap.innerHTML = days.map(day => {
+      const dayKey = day.toLowerCase();
+      const std = cached[dayKey + '_std'] || '';
+      const obj = cached[dayKey + '_obj'] || '';
+      const play = cached[dayKey + '_play'] || '';
+
+      return `
+        <div style="background: white; border: 1px solid var(--neft-line); padding: 12px; border-radius: 12px; display: grid; gap: 8px;">
+          <span style="font-weight: 800; font-size: 0.85rem; color: var(--neft-teal-dark); border-bottom: 1px solid var(--neft-line); padding-bottom: 4px; display: block;">📅 ${day}</span>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Standard
+              <input type="text" class="planner-input" data-day="${dayKey}" data-field="std" value="${escapeHtml(std)}" placeholder="MGSE6.NS.4" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
+            </label>
+            <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Objective
+              <input type="text" class="planner-input" data-day="${dayKey}" data-field="obj" value="${escapeHtml(obj)}" placeholder="Find GCF of whole numbers" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
+            </label>
+          </div>
+          <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Playlist / Sequence
+            <input type="text" class="planner-input" data-day="${dayKey}" data-field="play" value="${escapeHtml(play)}" placeholder="Do-Now Worksheet -> Playlist Sequence" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
+          </label>
+        </div>
+      `;
+    }).join('');
+
+    wrap.querySelectorAll('.planner-input').forEach(input => {
+      input.addEventListener('input', () => {
+        const day = input.dataset.day;
+        const field = input.dataset.field;
+        let data = {};
+        try {
+          data = JSON.parse(localStorage.getItem('neftos.planner.v1')) || {};
+        } catch(e) {}
+        data[day + '_' + field] = input.value;
+        localStorage.setItem('neftos.planner.v1', JSON.stringify(data));
+      });
+    });
+  }
+
+  function renderDiagnosticsMatrix(roster) {
+    const body = document.getElementById('diagnosticsMatrixBody');
+    if (!body) return;
+
+    if (!roster || roster.length === 0) {
+      body.innerHTML = `
+        <tr>
+          <td colspan="5" style="padding: 12px; text-align: center; color: var(--neft-muted);">No student data connector active. Click "Load Sample" or import a file above to view diagnostics.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    body.innerHTML = roster.map(student => {
+      const isHighRiskWida = /level\s*[1-2]/i.test(student.wida) || /entering|emerging/i.test(student.wida);
+      const strugglesFactoring = student.struggling && student.struggling.includes('NS.4');
+      const strugglesDecimals = student.struggling && student.struggling.includes('NS.3');
+      
+      let tag = '<span class="tag" style="background:#e0f2fe; color:#0369a1; font-weight:800; padding:2px 6px; border-radius:6px; font-size:0.72rem;">DEVELOPING</span>';
+      if (isHighRiskWida) {
+        tag = '<span class="tag" style="background:#fef2f2; color:#b91c1c; font-weight:800; padding:2px 6px; border-radius:6px; font-size:0.72rem;">HIGH ESOL RISK</span>';
+      } else if (strugglesFactoring || strugglesDecimals) {
+        tag = '<span class="tag" style="background:#fef3c7; color:#b45309; font-weight:800; padding:2px 6px; border-radius:6px; font-size:0.72rem;">STANDARDS AT RISK</span>';
+      }
+
+      return `
+        <tr style="border-bottom: 1px solid var(--neft-line); transition: background 0.15s ease;" onmouseover="this.style.background='var(--neft-sage)'" onmouseout="this.style.background='none'">
+          <td style="padding: 10px; font-weight: bold; color: var(--neft-navy);">${escapeHtml(student.name)}</td>
+          <td style="padding: 10px;">${escapeHtml(student.wida)}</td>
+          <td style="padding: 10px; color: ${strugglesFactoring ? 'var(--neft-coral)' : '#16a34a'}; font-weight: bold;">
+            ${strugglesFactoring ? '⚠️ Struggling' : '✓ Proficient'}
+          </td>
+          <td style="padding: 10px; color: ${strugglesDecimals ? 'var(--neft-coral)' : '#16a34a'}; font-weight: bold;">
+             ${strugglesDecimals ? '⚠️ Struggling' : '✓ Proficient'}
+          </td>
+          <td style="padding: 10px;">${tag}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.auditAppsScript = function() {
+    const code = document.getElementById('appsScriptInput').value;
+    const feedback = document.getElementById('appsScriptFeedback');
+    if (!code.trim()) {
+      feedback.style.display = 'block';
+      feedback.style.background = '#fef2f2';
+      feedback.style.borderColor = '#fca5a5';
+      feedback.style.color = '#991b1b';
+      feedback.innerHTML = '<strong>Error:</strong> Please paste some Google Apps Script code to audit.';
+      return;
+    }
+
+    const stack = [];
+    const matching = { '}': '{', ']': '[', ')': '(' };
+    let lines = code.split('\n');
+    let braceError = null;
+    
+    for (let lNum = 0; lNum < lines.length; lNum++) {
+      let line = lines[lNum];
+      for (let charIdx = 0; charIdx < line.length; charIdx++) {
+        let char = line[charIdx];
+        if (char === '{' || char === '[' || char === '(') {
+          stack.push({ char, line: lNum + 1, col: charIdx + 1 });
+        } else if (char === '}' || char === ']' || char === ')') {
+          if (stack.length === 0) {
+            braceError = `Unexpected closed bracket '${char}' at line ${lNum + 1}, column ${charIdx + 1}.`;
+            break;
+          }
+          let top = stack.pop();
+          if (top.char !== matching[char]) {
+            braceError = `Mismatch: opened '${top.char}' at line ${top.line} but closed with '${char}' at line ${lNum + 1}, column ${charIdx + 1}.`;
+            break;
+          }
+        }
+      }
+      if (braceError) break;
+    }
+
+    if (!braceError && stack.length > 0) {
+      let top = stack.pop();
+      braceError = `Unclosed bracket '${top.char}' opened at line ${top.line}, column ${top.col}.`;
+    }
+
+    let hazards = [];
+    let batchCheck = true;
+    
+    let hasLoop = /for\s*\(|while\s*\(|\.forEach\s*\(/.test(code);
+    let hasSingleCell = /\.getValue\(|\.setValue\(|\.setComment\(|\.setFont\(/.test(code);
+    if (hasLoop && hasSingleCell) {
+      hazards.push("⚠️ <strong>Runtime Hazard:</strong> Single-cell write/read (.getValue/.setValue) inside a loop. Please batch your data using <code>getValues()</code> and <code>setValues()</code> to avoid massive script slowing or timeouts.");
+      batchCheck = false;
+    }
+
+    let hasConfig = /CONFIG\s*=/.test(code);
+    let hasValidateConfig = /validateConfig\s*\(/.test(code);
+    let hasSelfTest = /selfTest\s*\(/.test(code);
+
+    let suggestions = [];
+    if (!hasConfig) suggestions.push("Consider defining a centralized <code>CONFIG</code> block for your properties.");
+    if (!hasValidateConfig) suggestions.push("Add a <code>validateConfig()</code> routine to verify parameters at startup.");
+    if (!hasSelfTest) suggestions.push("Implement a <code>selfTest()</code> function to verify spreadsheet or doc schema stability.");
+
+    let passed = !braceError && batchCheck;
+    feedback.style.display = 'block';
+    
+    if (passed) {
+      feedback.style.background = '#f0fdf4';
+      feedback.style.borderColor = '#86efac';
+      feedback.style.color = '#166534';
+      let html = `<strong>🟢 Preflight Audit: PASS</strong><br>Brace balancing looks complete! Structure is clean.`;
+      if (suggestions.length > 0) {
+        html += `<br><br><strong>Architecture Recommendations:</strong><ul>` + suggestions.map(s => `<li>${s}</li>`).join('') + `</ul>`;
+      }
+      feedback.innerHTML = html;
+    } else {
+      feedback.style.background = '#fef2f2';
+      feedback.style.borderColor = '#fca5a5';
+      feedback.style.color = '#991b1b';
+      let html = `<strong>🔴 Preflight Audit: FAIL</strong><br>`;
+      if (braceError) {
+        html += `<strong>Syntax / Bracket Mismatch:</strong><br>${braceError}<br><br>`;
+      }
+      if (hazards.length > 0) {
+        html += `<strong>Critical Hazards Identified:</strong><br>` + hazards.map(h => `<p style="margin:4px 0;">${h}</p>`).join('') + `<br>`;
+      }
+      feedback.innerHTML = html;
+    }
+  };
 })();

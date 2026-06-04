@@ -1,0 +1,1966 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.EE.C.9 · Unit 10" data-standard="6.EE.C.9" data-unit="10" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 22: Dependent Variables (6.EE.C.9) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #115e59;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #eef7ee;
+        --line: #d9e1e8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg);
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .mission-nav a:hover {
+        text-decoration: underline;
+      }
+      .mission-hero {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 28px;
+        align-items: center;
+        padding: clamp(28px, 5vw, 48px);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--navy);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 12px;
+        color: var(--navy);
+      }
+      .mission-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .standard-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-teal);
+        color: var(--teal-dark);
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-left: 6px;
+      }
+      .hero-scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-svg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+        border-bottom: 2px solid var(--soft-blue);
+        padding-bottom: 8px;
+      }
+      .panel h3 {
+        color: var(--teal-dark);
+        font-size: 1.12rem;
+        margin-top: 18px;
+        margin-bottom: 8px;
+      }
+      .problem-box {
+        padding: 18px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 1.05rem;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        display: block;
+        margin-top: 4px;
+      }
+      .language-box {
+        padding: 18px;
+        background: #f0faf9;
+        border: 2px dashed #8bbab3;
+        border-radius: 8px;
+        margin: 18px 0;
+      }
+      .language-box h3 {
+        color: var(--teal-dark);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .vocab-item .def {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .sentence-frames {
+        padding: 12px 16px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .sentence-frames p {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role-card {
+        padding: 14px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+        border-radius: 8px;
+      }
+      .role-card strong {
+        display: block;
+        color: #115e60;
+        margin-bottom: 4px;
+      }
+      .role-card .task {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .timer-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        min-height: 42px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn:focus-visible {
+        outline: 3px solid rgba(32, 122, 122, 0.35);
+        outline-offset: 2px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .phase-header {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 4px 14px 14px;
+        color: var(--muted);
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .challenge-box {
+        padding: 16px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        padding: 12px 16px;
+        background: var(--soft-blue);
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .sentence-starter {
+        display: block;
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+      .exit-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "☐";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .svg-container {
+        display: flex;
+        justify-content: center;
+        margin: 18px 0;
+      }
+      .svg-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .rep-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .rep-tab {
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .rep-tab.active {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .rep-content {
+        display: none;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .rep-content.active {
+        display: block;
+      }
+      .print-only {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-bar,
+        .timer-buttons,
+        .btn,
+        .rep-tabs {
+          display: none !important;
+        }
+        .panel,
+        .mission-hero {
+          box-shadow: none;
+          border-color: #999;
+          break-inside: avoid;
+        }
+        .phase-body,
+        .rep-content {
+          display: block !important;
+        }
+        .print-only {
+          display: block;
+        }
+        .content-grid {
+          display: block;
+        }
+        .content-grid > * {
+          margin-bottom: 18px;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero,
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          order: -1;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-21/">&#8592; Mission 21</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-23/">Mission 23 &#8594;</a>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <span class="mission-badge">Mission 22</span>
+          <span
+            class="mission-badge"
+            style="background: var(--soft-teal); color: var(--teal-dark)"
+            >Unit 9</span
+          >
+          <span class="standard-tag">6.EE.C.9</span>
+          <h1 id="hero-title">Dependent Variables</h1>
+          <span class="mlm-standard">6.EE.C.9 &middot; Unit 10</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Use variables to represent two quantities that change together.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="hero-scenario">
+            The school store sells custom spirit bracelets for
+            <strong>$3 each</strong>. There is also a
+            <strong>$5 setup fee</strong> for each order. The student council
+            needs to figure out the total cost for any number of bracelets so
+            they can plan the budget for spirit week. Your team must identify
+            the independent and dependent variables, write an equation, and
+            predict costs for different order sizes: 10, 25, 50, and 100
+            bracelets.
+          </p>
+        </div>
+        <div class="hero-svg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 380 420"
+            width="380"
+            height="420"
+            aria-label="Diagram showing independent variable (bracelets ordered) flowing into a rule box and producing the dependent variable (total cost)"
+          >
+            <rect width="380" height="420" rx="12" fill="#edf5ff" />
+            <!-- Title -->
+            <text
+              x="190"
+              y="30"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Input → Rule → Output
+            </text>
+
+            <!-- Input box -->
+            <rect
+              x="30"
+              y="60"
+              width="130"
+              height="80"
+              rx="10"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="2.5"
+            />
+            <text
+              x="95"
+              y="88"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#115e59"
+            >
+              INDEPENDENT
+            </text>
+            <text
+              x="95"
+              y="106"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              Number of
+            </text>
+            <text
+              x="95"
+              y="120"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              bracelets (b)
+            </text>
+
+            <!-- Arrow 1 -->
+            <polygon points="170,100 190,90 190,110" fill="#207a7a" />
+
+            <!-- Rule box -->
+            <rect
+              x="195"
+              y="70"
+              width="100"
+              height="60"
+              rx="8"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="2.5"
+            />
+            <text
+              x="245"
+              y="96"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="900"
+              fill="#b7791f"
+            >
+              c = 3b + 5
+            </text>
+            <text
+              x="245"
+              y="114"
+              text-anchor="middle"
+              font-size="10"
+              fill="#5b6573"
+            >
+              Rule / Equation
+            </text>
+
+            <!-- Arrow 2 -->
+            <polygon points="305,100 325,90 325,110" fill="#b7791f" />
+
+            <!-- Output box -->
+            <rect
+              x="330"
+              y="60"
+              width="40"
+              height="80"
+              rx="8"
+              fill="none"
+              stroke="none"
+            />
+            <rect x="228" y="60" width="1" height="1" fill="none" />
+
+            <!-- Dependent box placed to right -->
+            <rect
+              x="230"
+              y="160"
+              width="130"
+              height="80"
+              rx="10"
+              fill="#edf5ff"
+              stroke="#23395d"
+              stroke-width="2.5"
+            />
+            <text
+              x="295"
+              y="188"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              DEPENDENT
+            </text>
+            <text
+              x="295"
+              y="206"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              Total cost in
+            </text>
+            <text
+              x="295"
+              y="220"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              dollars (c)
+            </text>
+
+            <!-- Arrow from rule to dependent -->
+            <line
+              x1="245"
+              y1="130"
+              x2="275"
+              y2="155"
+              stroke="#23395d"
+              stroke-width="2"
+              marker-end="url(#arrowN)"
+            />
+            <defs>
+              <marker
+                id="arrowN"
+                markerWidth="8"
+                markerHeight="6"
+                refX="8"
+                refY="3"
+                orient="auto"
+              >
+                <polygon points="0,0 8,3 0,6" fill="#23395d" />
+              </marker>
+            </defs>
+
+            <!-- Table visualization -->
+            <rect
+              x="30"
+              y="270"
+              width="320"
+              height="130"
+              rx="8"
+              fill="#fff"
+              stroke="#d9e1e8"
+              stroke-width="1.5"
+            />
+            <text
+              x="190"
+              y="260"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Prediction Table
+            </text>
+            <!-- Header -->
+            <rect
+              x="30"
+              y="270"
+              width="320"
+              height="28"
+              rx="8"
+              fill="#ecf8f6"
+            />
+            <text
+              x="110"
+              y="289"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#115e59"
+            >
+              Bracelets (b)
+            </text>
+            <text
+              x="270"
+              y="289"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Total Cost (c = 3b + 5)
+            </text>
+            <line
+              x1="190"
+              y1="272"
+              x2="190"
+              y2="398"
+              stroke="#d9e1e8"
+              stroke-width="1"
+            />
+            <!-- Rows -->
+            <g font-size="12" fill="#263242">
+              <text x="110" y="316" text-anchor="middle">10</text>
+              <text x="270" y="316" text-anchor="middle">3(10) + 5 = $35</text>
+              <line x1="32" y1="324" x2="348" y2="324" stroke="#eee" />
+              <text x="110" y="342" text-anchor="middle">25</text>
+              <text x="270" y="342" text-anchor="middle">3(25) + 5 = $80</text>
+              <line x1="32" y1="350" x2="348" y2="350" stroke="#eee" />
+              <text x="110" y="368" text-anchor="middle">50</text>
+              <text x="270" y="368" text-anchor="middle">3(50) + 5 = $155</text>
+              <line x1="32" y1="376" x2="348" y2="376" stroke="#eee" />
+              <text x="110" y="394" text-anchor="middle">100</text>
+              <text x="270" y="394" text-anchor="middle">
+                3(100) + 5 = $305
+              </text>
+            </g>
+
+            <!-- Bracelet icons -->
+            <g transform="translate(30,160)">
+              <ellipse
+                cx="40"
+                cy="30"
+                rx="28"
+                ry="18"
+                fill="none"
+                stroke="#207a7a"
+                stroke-width="3"
+              />
+              <ellipse
+                cx="80"
+                cy="30"
+                rx="28"
+                ry="18"
+                fill="none"
+                stroke="#b7791f"
+                stroke-width="3"
+              />
+              <ellipse
+                cx="120"
+                cy="30"
+                rx="28"
+                ry="18"
+                fill="none"
+                stroke="#23395d"
+                stroke-width="3"
+              />
+              <text
+                x="80"
+                y="65"
+                text-anchor="middle"
+                font-size="10"
+                fill="#5b6573"
+              >
+                Spirit Bracelets
+              </text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <!-- LEFT -->
+        <div>
+          <section class="panel">
+            <h2>The Problem</h2>
+            <div class="problem-box">
+              <strong
+                >How much will it cost to order bracelets for spirit
+                week?</strong
+              >
+              The school store charges $3 per bracelet plus a $5 setup fee per
+              order. The student council has a budget of $200. Your team needs
+              to: (1) identify which variable is independent and which is
+              dependent, (2) write an equation, (3) predict costs for 10, 25,
+              50, and 100 bracelets, and (4) find the maximum number of
+              bracelets they can afford.
+            </div>
+
+            <h3>Visual Model: Input-Output Machine</h3>
+            <div class="svg-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 500 220"
+                width="500"
+                height="220"
+                aria-label="Input-output machine diagram showing bracelets going in and cost coming out"
+              >
+                <rect width="500" height="220" rx="8" fill="#f8fffd" />
+                <!-- Machine -->
+                <rect
+                  x="160"
+                  y="40"
+                  width="180"
+                  height="120"
+                  rx="12"
+                  fill="#fff6df"
+                  stroke="#b7791f"
+                  stroke-width="2.5"
+                />
+                <text
+                  x="250"
+                  y="75"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="900"
+                  fill="#b7791f"
+                >
+                  RULE MACHINE
+                </text>
+                <text
+                  x="250"
+                  y="100"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  c = 3b + 5
+                </text>
+                <text
+                  x="250"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#5b6573"
+                >
+                  Multiply by 3, then add 5
+                </text>
+                <text
+                  x="250"
+                  y="145"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  (cost per bracelet) + (setup fee)
+                </text>
+                <!-- Input arrow -->
+                <rect
+                  x="20"
+                  y="75"
+                  width="120"
+                  height="50"
+                  rx="8"
+                  fill="#ecf8f6"
+                  stroke="#207a7a"
+                  stroke-width="2"
+                />
+                <text
+                  x="80"
+                  y="98"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#115e59"
+                >
+                  INPUT: b
+                </text>
+                <text
+                  x="80"
+                  y="113"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  # of bracelets
+                </text>
+                <line
+                  x1="140"
+                  y1="100"
+                  x2="155"
+                  y2="100"
+                  stroke="#207a7a"
+                  stroke-width="2.5"
+                  marker-end="url(#arr1)"
+                />
+                <!-- Output arrow -->
+                <rect
+                  x="360"
+                  y="75"
+                  width="120"
+                  height="50"
+                  rx="8"
+                  fill="#edf5ff"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="420"
+                  y="98"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  OUTPUT: c
+                </text>
+                <text
+                  x="420"
+                  y="113"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  Total cost ($)
+                </text>
+                <line
+                  x1="340"
+                  y1="100"
+                  x2="355"
+                  y2="100"
+                  stroke="#23395d"
+                  stroke-width="2.5"
+                  marker-end="url(#arr2)"
+                />
+                <defs>
+                  <marker
+                    id="arr1"
+                    markerWidth="8"
+                    markerHeight="6"
+                    refX="8"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <polygon points="0,0 8,3 0,6" fill="#207a7a" />
+                  </marker>
+                  <marker
+                    id="arr2"
+                    markerWidth="8"
+                    markerHeight="6"
+                    refX="8"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <polygon points="0,0 8,3 0,6" fill="#23395d" />
+                  </marker>
+                </defs>
+                <!-- Examples below -->
+                <g font-size="11" fill="#263242">
+                  <text x="80" y="185" text-anchor="middle" font-weight="700">
+                    b = 10
+                  </text>
+                  <text x="250" y="185" text-anchor="middle">3(10) + 5</text>
+                  <text x="420" y="185" text-anchor="middle" font-weight="700">
+                    c = $35
+                  </text>
+                  <text x="80" y="205" text-anchor="middle" font-weight="700">
+                    b = 25
+                  </text>
+                  <text x="250" y="205" text-anchor="middle">3(25) + 5</text>
+                  <text x="420" y="205" text-anchor="middle" font-weight="700">
+                    c = $80
+                  </text>
+                </g>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Name the variables.</strong> What two quantities change
+                in this problem? The number of bracelets and the total cost.
+                Which one do YOU choose? Which one DEPENDS on your choice?
+                <span class="guiding-q"
+                  >Why is the number of bracelets the independent
+                  variable?</span
+                >
+              </li>
+              <li>
+                <strong>Write the equation.</strong> If each bracelet costs $3
+                and there is a $5 fee, then: Total cost = 3 times (number of
+                bracelets) + 5, or c = 3b + 5.
+                <span class="guiding-q"
+                  >What does the 3 represent? What does the 5 represent?</span
+                >
+              </li>
+              <li>
+                <strong>Build a table.</strong> Use b = 10, 25, 50, and 100.
+                Substitute each value into c = 3b + 5 and calculate.
+                <span class="guiding-q"
+                  >As b gets bigger, what happens to c? Does it increase by the
+                  same amount each time?</span
+                >
+              </li>
+              <li>
+                <strong>Find the budget limit.</strong> The council has $200.
+                Solve: 200 = 3b + 5. What is the maximum number of bracelets?
+                <span class="guiding-q"
+                  >If the answer is not a whole number, should you round up or
+                  down? Why?</span
+                >
+              </li>
+              <li>
+                <strong>Interpret your results.</strong> Explain what each part
+                of the equation means in the real-world context. Why does the
+                cost start at $5 even with zero bracelets?
+                <span class="guiding-q"
+                  >What would the equation look like if there were no setup
+                  fee?</span
+                >
+              </li>
+            </ol>
+
+            <!-- Language -->
+            <div class="language-box">
+              <h3>Language Support: Key Vocabulary</h3>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Independent Variable</strong>
+                  <div class="def">
+                    The variable you choose or control. It goes on the x-axis.
+                    Here: number of bracelets (b).
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Dependent Variable</strong>
+                  <div class="def">
+                    The variable that changes because of your choice. It goes on
+                    the y-axis. Here: total cost (c).
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Equation</strong>
+                  <div class="def">
+                    A math sentence with an equal sign that shows how two things
+                    are related. Example: c = 3b + 5.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Substitute</strong>
+                  <div class="def">
+                    Replace a variable with a number. Example: if b = 10, then c
+                    = 3(10) + 5 = 35.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Rate</strong>
+                  <div class="def">
+                    How much one quantity changes for each unit of another.
+                    Here: $3 per bracelet.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Initial Value</strong>
+                  <div class="def">
+                    The starting amount before any change happens. Here: $5
+                    setup fee.
+                  </div>
+                </div>
+              </div>
+              <div class="sentence-frames">
+                <strong>Sentence Frames:</strong>
+                <p>
+                  "The independent variable is ___ because it is the value we
+                  ___."
+                </p>
+                <p>
+                  "The dependent variable is ___ because it changes when ___
+                  changes."
+                </p>
+                <p>"When b = ___, the total cost c = 3(___) + 5 = ___."</p>
+              </div>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="rep-tabs" role="tablist">
+              <button
+                class="rep-tab active"
+                role="tab"
+                data-target="rep1"
+                aria-selected="true"
+              >
+                Table
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep2"
+                aria-selected="false"
+              >
+                Graph
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep3"
+                aria-selected="false"
+              >
+                Words
+              </button>
+            </div>
+            <div class="rep-content active" id="rep1">
+              <table
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 0.95rem;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--soft-blue)">
+                    <th
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      Bracelets (b)
+                    </th>
+                    <th
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      Calculation
+                    </th>
+                    <th
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      Total Cost (c)
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      0
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3(0) + 5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      $5
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      10
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3(10) + 5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      $35
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      25
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3(25) + 5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      $80
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      50
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3(50) + 5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      $155
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      65
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3(65) + 5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      $200
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      100
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3(100) + 5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      $305
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="rep-content" id="rep2">
+              <div class="svg-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 400 280"
+                  width="400"
+                  height="280"
+                >
+                  <rect width="400" height="280" rx="6" fill="#fff" />
+                  <!-- Axes -->
+                  <line
+                    x1="60"
+                    y1="240"
+                    x2="380"
+                    y2="240"
+                    stroke="#23395d"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="60"
+                    y1="240"
+                    x2="60"
+                    y2="20"
+                    stroke="#23395d"
+                    stroke-width="2"
+                  />
+                  <text
+                    x="220"
+                    y="272"
+                    text-anchor="middle"
+                    font-size="12"
+                    font-weight="700"
+                    fill="#23395d"
+                  >
+                    Bracelets (b)
+                  </text>
+                  <text
+                    x="18"
+                    y="130"
+                    text-anchor="middle"
+                    font-size="12"
+                    font-weight="700"
+                    fill="#23395d"
+                    transform="rotate(-90,18,130)"
+                  >
+                    Cost ($)
+                  </text>
+                  <!-- Grid and labels -->
+                  <g font-size="10" fill="#5b6573">
+                    <text x="55" y="244" text-anchor="end">$0</text>
+                    <text x="55" y="200" text-anchor="end">$50</text>
+                    <line
+                      x1="58"
+                      y1="196"
+                      x2="380"
+                      y2="196"
+                      stroke="#eee"
+                      stroke-width="1"
+                    />
+                    <text x="55" y="156" text-anchor="end">$100</text>
+                    <line
+                      x1="58"
+                      y1="152"
+                      x2="380"
+                      y2="152"
+                      stroke="#eee"
+                      stroke-width="1"
+                    />
+                    <text x="55" y="112" text-anchor="end">$150</text>
+                    <line
+                      x1="58"
+                      y1="108"
+                      x2="380"
+                      y2="108"
+                      stroke="#eee"
+                      stroke-width="1"
+                    />
+                    <text x="55" y="68" text-anchor="end">$200</text>
+                    <line
+                      x1="58"
+                      y1="64"
+                      x2="380"
+                      y2="64"
+                      stroke="#eee"
+                      stroke-width="1"
+                    />
+                    <text x="55" y="28" text-anchor="end">$300</text>
+                    <text x="60" y="256">0</text>
+                    <text x="124" y="256">10</text>
+                    <text x="220" y="256">25</text>
+                    <text x="348" y="256">50</text>
+                  </g>
+                  <!-- Line -->
+                  <line
+                    x1="60"
+                    y1="236"
+                    x2="380"
+                    y2="104"
+                    stroke="#207a7a"
+                    stroke-width="3"
+                  />
+                  <!-- Points -->
+                  <circle cx="60" cy="236" r="5" fill="#207a7a" />
+                  <circle cx="124" cy="210" r="5" fill="#207a7a" />
+                  <circle cx="220" cy="168" r="5" fill="#207a7a" />
+                  <circle cx="348" cy="104" r="5" fill="#207a7a" />
+                  <!-- Labels -->
+                  <text
+                    x="130"
+                    y="204"
+                    font-size="9"
+                    fill="#207a7a"
+                    font-weight="700"
+                  >
+                    (10, $35)
+                  </text>
+                  <text
+                    x="226"
+                    y="162"
+                    font-size="9"
+                    fill="#207a7a"
+                    font-weight="700"
+                  >
+                    (25, $80)
+                  </text>
+                  <text
+                    x="300"
+                    y="98"
+                    font-size="9"
+                    fill="#207a7a"
+                    font-weight="700"
+                  >
+                    (50, $155)
+                  </text>
+                  <!-- Budget line -->
+                  <line
+                    x1="58"
+                    y1="64"
+                    x2="380"
+                    y2="64"
+                    stroke="#b42318"
+                    stroke-width="1.5"
+                    stroke-dasharray="6,4"
+                  />
+                  <text
+                    x="382"
+                    y="60"
+                    font-size="9"
+                    fill="#b42318"
+                    font-weight="700"
+                  >
+                    Budget: $200
+                  </text>
+                </svg>
+              </div>
+              <p>
+                Notice the line is straight because the cost increases at a
+                constant rate ($3 per bracelet). The line crosses the y-axis at
+                $5 (the setup fee).
+              </p>
+            </div>
+            <div class="rep-content" id="rep3">
+              <p>
+                <strong>In words:</strong> "The total cost depends on the number
+                of bracelets ordered. For every additional bracelet, the cost
+                goes up by $3. Even before buying any bracelets, there is a $5
+                setup fee. So if the student council orders 65 bracelets, they
+                will spend exactly $200, which is their entire budget."
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT -->
+        <div>
+          <section class="panel">
+            <h2>Team Roles</h2>
+            <div class="role-grid">
+              <div class="role-card">
+                <strong>Facilitator</strong>
+                <div class="task">
+                  Read the scenario aloud. Guide the team to first name the
+                  variables before jumping to calculations. Keep the timer
+                  visible.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Model Builder</strong>
+                <div class="task">
+                  Draw the input-output machine and the coordinate graph. Plot
+                  the points from the table on graph paper.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Precision Checker</strong>
+                <div class="task">
+                  Verify each substitution: does 3(25)+5 really equal 80? Check
+                  that the budget equation is solved correctly. Confirm labels
+                  on axes.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Reporter</strong>
+                <div class="task">
+                  Write the final recommendation: "The council can order at most
+                  ___ bracelets because ___." Prepare to explain what
+                  independent and dependent mean.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Timed Lab Phases</h2>
+            <div class="timer-bar">
+              <div>
+                <strong id="activePhaseLabel">Ready</strong>
+                <div style="font-size: 0.9rem; color: var(--muted)">
+                  Click a phase, then press Start.
+                </div>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">
+                03:00
+              </div>
+            </div>
+            <div class="timer-buttons">
+              <button class="btn btn-primary" id="startTimer">Start</button>
+              <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+              <button class="btn btn-secondary" id="resetTimer">Reset</button>
+            </div>
+            <div style="margin-top: 14px">
+              <article class="phase-card open">
+                <button class="phase-header" data-phase="0" data-minutes="3">
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>
+                      Read the scenario. Underline the two quantities that
+                      change.
+                    </li>
+                    <li>Assign roles.</li>
+                    <li>
+                      Discuss: Which variable do you control? Which one depends?
+                    </li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can you name the independent
+                      and dependent variable?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="1" data-minutes="6">
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Write the equation c = 3b + 5.</li>
+                    <li>Build the table with b = 0, 10, 25, 50, 100.</li>
+                    <li>Model Builder: draw the coordinate graph.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does your table have at least
+                      5 rows? Does the graph show a straight line?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="2" data-minutes="5">
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Solve 200 = 3b + 5 to find the maximum bracelets.</li>
+                    <li>
+                      Explain what happens if the order is 66 bracelets instead
+                      of 65.
+                    </li>
+                    <li>Write your budget recommendation.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does your answer make sense
+                      in context? (You cannot order partial bracelets.)
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="3" data-minutes="4">
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>
+                      Reporter: practice explaining independent vs. dependent.
+                    </li>
+                    <li>Team: quiz each other on the defense questions.</li>
+                    <li>
+                      Make sure you can explain what the 3 and the 5 represent.
+                    </li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can everyone point to the
+                      graph and explain the budget line?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Challenge</h2>
+            <div class="challenge-box">
+              <strong>Extension:</strong> A second vendor charges $2.50 per
+              bracelet but has a $20 setup fee. Write the equation for Vendor B.
+              For what number of bracelets does Vendor B become cheaper than
+              Vendor A?
+            </div>
+            <div class="whatif">
+              <strong>What If...?</strong>
+              <ul>
+                <li>
+                  What if the setup fee were $0? How would the equation and
+                  graph change?
+                </li>
+                <li>
+                  What if the price per bracelet doubled to $6? How would the
+                  graph look different?
+                </li>
+              </ul>
+            </div>
+            <p>
+              <strong>Real-Life Connection:</strong> Ride-share apps use the
+              same idea: a base fare (initial value) plus a rate per mile. The
+              total fare depends on the distance. Identifying which variable
+              depends on which helps you compare services and make smart
+              choices.
+            </p>
+          </section>
+
+          <section class="panel">
+            <h2>Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                Which is the independent variable and which is dependent? How do
+                you know?
+                <span class="sentence-starter"
+                  >"The independent variable is ___ because we choose it. The
+                  dependent variable is ___ because it changes based on
+                  ___."</span
+                >
+              </li>
+              <li>
+                What does the 3 mean in c = 3b + 5? What does the 5 mean?
+                <span class="sentence-starter"
+                  >"The 3 represents ___ and the 5 represents ___."</span
+                >
+              </li>
+              <li>
+                How did you find the maximum number of bracelets for the $200
+                budget?
+                <span class="sentence-starter"
+                  >"We solved the equation 200 = 3b + 5 by first ___ and then
+                  ___."</span
+                >
+              </li>
+              <li>
+                How does the graph show the relationship between bracelets and
+                cost?
+                <span class="sentence-starter"
+                  >"The graph shows a straight line that starts at ___ and goes
+                  up by ___ for each bracelet."</span
+                >
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 12px;
+                padding: 12px;
+                background: var(--soft-green);
+                border-radius: 6px;
+              "
+            >
+              <strong>Rubric Quick-Check:</strong>
+              <ul style="margin: 6px 0 0; padding-left: 18px">
+                <li>
+                  Variables correctly identified as independent and dependent
+                </li>
+                <li>Equation c = 3b + 5 written and used</li>
+                <li>Table with at least 4 input-output pairs</li>
+                <li>Graph with labeled axes and plotted points</li>
+                <li>Budget question solved and explained</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Exit Product</h2>
+            <div class="exit-box">
+              <strong>Submit a one-page Lab Report that includes:</strong>
+              <ul class="checklist">
+                <li>
+                  Variables identified and labeled (independent: b, dependent:
+                  c)
+                </li>
+                <li>Equation: c = 3b + 5</li>
+                <li>Completed table with at least 5 rows</li>
+                <li>Coordinate graph with labeled axes and budget line</li>
+                <li>Written answer: maximum bracelets within $200 budget</li>
+              </ul>
+            </div>
+            <div style="margin-top: 12px">
+              <strong>Self-Assessment:</strong>
+              <ul class="checklist">
+                <li>
+                  I can identify independent and dependent variables in a real
+                  situation
+                </li>
+                <li>
+                  I can write an equation that shows how the variables are
+                  related
+                </li>
+                <li>I can use a table and graph to show the relationship</li>
+                <li>I can solve the equation to answer a budget question</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="print-only">
+        <h2>Work Space</h2>
+        <p><strong>Variables:</strong></p>
+        <br /><br />
+        <p><strong>Table and Graph:</strong></p>
+        <br /><br />
+        <p><strong>Solution and Defense:</strong></p>
+        <br /><br />
+      </section>
+
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-21/">&#8592; Mission 21</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-23/">Mission 23 &#8594;</a>
+      </nav>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        document.querySelectorAll(".rep-tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            document.querySelectorAll(".rep-tab").forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            document.querySelectorAll(".rep-content").forEach(function (c) {
+              c.classList.remove("active");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            var target = document.getElementById(tab.dataset.target);
+            if (target) target.classList.add("active");
+          });
+        });
+
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0,
+          remainingSeconds = phases[0].minutes * 60,
+          timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay"),
+          activePhaseLabel = document.getElementById("activePhaseLabel");
+
+        function formatTime(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+
+        document.querySelectorAll(".phase-header").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.phase);
+            activePhaseIndex = idx;
+            remainingSeconds = parseInt(btn.dataset.minutes) * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent = phases[idx].title + " phase";
+            document.querySelectorAll(".phase-card").forEach(function (c, i) {
+              if (i === idx) c.classList.add("open");
+              else c.classList.remove("open");
+            });
+            stopTimer();
+          });
+        });
+
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stopTimer();
+            remainingSeconds = phases[activePhaseIndex].minutes * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent =
+              phases[activePhaseIndex].title + " phase";
+          });
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

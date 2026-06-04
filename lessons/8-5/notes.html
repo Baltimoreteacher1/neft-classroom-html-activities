@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Display Data: Box Plots — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Display Data: Box Plots · Standard 6.SP.4";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+}
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="8-5-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/8-5-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/8-5-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 8 · Standard 6.SP.4</p>
+    <h1>Display Data: Box Plots </h1>
+    <p class="meta">Lesson 8-5</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  
+  <section class="section vocab">
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/box-plot.svg" alt="Illustration of Box Plot: A graph that shows how data is spread using five key numbers." onerror="this.style.display='none'" />
+    <p class="vocab-caption">A box from Q1 to Q3 with a line at the median, and whiskers from min to max</p>
+  </div>
+  <h3 class="vocab-term">Box Plot</h3>
+  <p class="vocab-def">A graph that shows how data is spread using five key numbers.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/median.svg" alt="Illustration of Median: The middle number that splits the data in half." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</p>
+  </div>
+  <h3 class="vocab-term">Median</h3>
+  <p class="vocab-def">The middle number that splits the data in half.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/quartile.svg" alt="Illustration of Quartile: Numbers that split the data into four equal parts." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</p>
+  </div>
+  <h3 class="vocab-term">Quartile</h3>
+  <p class="vocab-def">Numbers that split the data into four equal parts.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/interquartile-range.svg" alt="Illustration of Interquartile Range: The spread of the middle half of the data (Q3 − Q1)." onerror="this.style.display='none'" />
+    <p class="vocab-caption">If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</p>
+  </div>
+  <h3 class="vocab-term">Interquartile Range</h3>
+  <p class="vocab-def">The spread of the middle half of the data (Q3 − Q1).</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <p class="vocab-caption">A box plot where the median is centered in the box shows symmetric distribution</p>
+  </div>
+  <h3 class="vocab-term">Data distribution</h3>
+  <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Small IQR = low variability in the middle 50%. Large IQR = high variability</p>
+  </div>
+  <h3 class="vocab-term">Variability</h3>
+  <p class="vocab-def">How spread out the numbers are.</p>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can make and read a box plot to summarize a data set.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">The basketball league wants to compare scoring across teams.</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can make and read a box plot to summarize a data set.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Box Plot</span><span class="notes-word-chip">Median</span><span class="notes-word-chip">Quartile</span><span class="notes-word-chip">Interquartile Range</span><span class="notes-word-chip">Data distribution</span><span class="notes-word-chip">Variability</span></div>
+    </div></div>
+  <div class="think-block">
+    <h3>🤔 Think About It</h3>
+    <ul class="prompt-list"><li>What are the lowest and highest scores?</li><li>What score is in the middle of the data?</li><li>Are the scores bunched together or spread out?</li></ul>
+  </div>
+  <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p>
+      <ol class="try-choices" type="A"><li>13</li><li>25</li><li>10</li><li>20</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> IQR = Q3 − Q1 = 28 − 15 = 13.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 13</p>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> On a box plot, what does the line inside the box represent?</p>
+      <ol class="try-choices" type="A"><li>The median</li><li>The mean</li><li>The mode</li><li>The range</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What percentage of data falls between Q1 and Q3 on a box plot?</p>
+      <ol class="try-choices" type="A"><li>50%</li><li>25%</li><li>75%</li><li>100%</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+  </div>
+</section>
+  <section class="section turn-and-talk">
+  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
+  <div class="tt-card">
+  <span class="tt-phase">Launch</span>
+  <p class="tt-question">The Wildcats' scores are 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. To build a box plot you need a five-number summary. What five numbers will you need?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A box plot is built from the minimum, Q1, median, Q3, and maximum.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;box plot&quot; or &quot;median&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">A box plot needs the ___, Q1, median, Q3, and ___.</span><span class="twr-es">Un diagrama de caja necesita el ___, Q1, mediana, Q3 y el ___.</span></p><p class="twr-frame"><span class="twr-en">The median of these scores is ___.</span><span class="twr-es">La mediana de estos puntajes es ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">box plot</span><span class="tt-word">median</span><span class="tt-word">quartile</span><span class="tt-word">interquartile range</span><span class="tt-word">minimum</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Justify: explain how to find Q1 and Q3 for this data set and what they represent.</p>
+    <ul class="tt-extend-stems"><li>Q1 is the median of the ___ half, which is ___.</li><li>Q3 is the median of the ___ half, which is ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Explore</span>
+  <p class="tt-question">As you draw the box from Q1 to Q3, what does the length of the box tell you about the players' scores?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> The box spans the middle 50% of the data; its length is the interquartile range.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;box plot&quot; or &quot;median&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The box covers the middle ___ of the scores.</span><span class="twr-es">La caja cubre el ___ medio de los puntajes.</span></p><p class="twr-frame"><span class="twr-en">A longer box means the middle scores are ___.</span><span class="twr-es">Una caja más larga significa que los puntajes del medio están ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">box plot</span><span class="tt-word">median</span><span class="tt-word">quartile</span><span class="tt-word">interquartile range</span><span class="tt-word">spread</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer explains the box covers the middle 50% (Q1 to Q3), its length is the IQR, and a longer box means greater spread.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Compare: how would the box plot change if the highest score were 50 instead of 28? Which part changes, the box or the whisker?</p>
+    <ul class="tt-extend-stems"><li>The ___ would change because ___.</li><li>The box would stay about the same since ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Connect</span>
+  <p class="tt-question">Team A: Min=40, Q1=52, Med=60, Q3=68, Max=75. Team B: Min=35, Q1=55, Med=61, Q3=65, Max=80. A fan says Team B is better because they scored 80 once. Which team scores high more consistently?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A single high value matters less than the median and the spread of the middle 50%.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;box plot&quot; or &quot;median&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">Team ___ scores high more consistently because their ___ is higher.</span><span class="twr-es">El Equipo ___ anota alto más consistentemente porque su ___ es mayor.</span></p><p class="twr-frame"><span class="twr-en">The 80-point game is just the ___, not the typical score.</span><span class="twr-es">El juego de 80 puntos es solo el ___, no el puntaje típico.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">box plot</span><span class="tt-word">median</span><span class="tt-word">quartile</span><span class="tt-word">interquartile range</span><span class="tt-word">maximum</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compare medians and Q1/Q3 (Team B has a higher Q1 and median) and explain the single max of 80 doesn't make a team consistently better.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Critique: the fan focuses only on the maximum. What two box-plot features give a fairer comparison? Defend your choice.</p>
+    <ul class="tt-extend-stems"><li>A fairer comparison looks at the ___ and the ___.</li><li>The maximum alone is misleading because ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Reflect</span>
+  <p class="tt-question">A box plot has Q1 = 20 and Q3 = 36. What is the IQR, and what does it represent?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> The IQR is Q3 minus Q1 and measures the spread of the middle 50% of the data.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;interquartile range&quot; or &quot;quartile&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The IQR is ___ because Q3 minus Q1 equals ___.</span><span class="twr-es">El RIC es ___ porque Q3 menos Q1 es ___.</span></p><p class="twr-frame"><span class="twr-en">It represents the spread of the middle ___ of the data.</span><span class="twr-es">Representa la dispersión del ___ medio de los datos.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">interquartile range</span><span class="tt-word">quartile</span><span class="tt-word">median</span><span class="tt-word">box plot</span><span class="tt-word">spread</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute IQR = 36 - 20 = 16 and explain it is the range of the middle 50% of the data.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Generalize: why is the IQR a more reliable measure of spread than the full range for a box plot with an extreme value?</p>
+    <ul class="tt-extend-stems"><li>The IQR is more reliable because it ignores ___.</li><li>The full range can be misleading when ___.</li></ul>
+  </div>
+</div>
+</section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: display your collected data with box plots and other graphs.</p>
+      <div class="project-links">
+        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📦</span>
+        <h3 class="project-title">Box Plot Builder</h3>
+      </div>
+      <p class="project-desc">Construct box plots from data and read the five-number summary (6.SP.4).</p>
+      <div class="project-links">
+        <a href="/statistics-data/box-plot-builder/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🕵️</span>
+        <h3 class="project-title">Box Plot Detective</h3>
+      </div>
+      <p class="project-desc">Interpret box plots to compare and analyze data sets.</p>
+      <div class="project-links">
+        <a href="/statistics-data/box-plot-detective/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain my box plot using the words box plot, median, quartile, and interquartile range.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Box Plot is a graph that shows how data is spread using five key numbers.<span class="twr-es">Diagrama de caja es una gráfica que muestra cómo se reparten los datos con cinco números clave.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about box plot. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre diagrama de caja. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Box Plot matters in math<span class="twr-es">Diagrama de caja importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Box Plot matters in math because ___.</span><span class="twr-es">Diagrama de caja importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Box Plot matters in math, but ___.</span><span class="twr-es">Diagrama de caja importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Box Plot matters in math, so ___.</span><span class="twr-es">Diagrama de caja importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about box plot.<span class="twr-es">Di un hecho verdadero sobre box plot.</span></p>
+        <p class="twr-frame"><span class="twr-en">Box plot ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about box plot.<span class="twr-es">Haz una pregunta sobre box plot.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about box plot.<span class="twr-es">Muestra entusiasmo sobre box plot.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with box plot.<span class="twr-es">Dile a un compañero qué hacer con box plot.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">A box plot needs the ___, Q1, median, Q3, and ___.</span><span class="twr-es">Un diagrama de caja necesita el ___, Q1, mediana, Q3 y el ___.</span></p><p class="twr-frame"><span class="twr-en">The median of these scores is ___.</span><span class="twr-es">La mediana de estos puntajes es ___.</span></p><p class="twr-frame"><span class="twr-en">The box covers the middle ___ of the scores.</span><span class="twr-es">La caja cubre el ___ medio de los puntajes.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. What does the box (between Q1 and Q3) of a box plot represent?</p>
+  <ol class="try-choices" type="A"><li>The middle 50% of the data</li><li>All of the data</li><li>The mean</li><li>Only the largest values</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A data set has minimum 5 and maximum 45. What is the range?</p>
+  <ol class="try-choices" type="A"><li>40</li><li>50</li><li>25</li><li>9</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">Two basketball teams played 9 games each. Team A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Team B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Find the five-number summary and IQR for each team. Which team is more consistent? Which has a wider spread in the middle 50%?</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Team A: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team B: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team ___ is more consistent because its IQR is ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">A box plot has Q1 = 20 and Q3 = 36. What is the IQR and what does it represent?</p>
+  <ol class="try-choices" type="A"><li>IQR = 16; it is the spread of the middle 50% of the data</li><li>IQR = 56; it is the total of Q1 and Q3</li><li>IQR = 28; it is the median between Q1 and Q3</li><li>IQR = 36; it is the value of Q3</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key &amp; Teacher Guide</h2>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. The median <span class="ak-why">— The line inside the box of a box plot always represents the median.</span></li><li><strong>You Try (notes):</strong> A. 50% <span class="ak-why">— The box in a box plot contains the middle 50% of the data (from Q1 to Q3).</span></li><li><strong>Try It 1:</strong> A. The middle 50% of the data <span class="ak-why">— The box spans Q1 to Q3, holding the middle half of the data.</span></li><li><strong>Try It 2:</strong> A. 40 <span class="ak-why">— Range = maximum − minimum = 45 − 5 = 40.</span></li><li><strong>Exit Ticket:</strong> A. IQR = 16; it is the spread of the middle 50% of the data <span class="ak-why">— IQR = Q3 − Q1 = 36 − 20 = 16. The IQR tells you the range of the middle 50% of the data.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Box Plot is a graph that shows how data is spread using five key numbers.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-5 · Standard 6.SP.4</footer>
+</main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

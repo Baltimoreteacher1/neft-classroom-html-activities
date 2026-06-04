@@ -1,37 +1,2196 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Homework classroom activity.">
-  <title>Homework</title>
-  <link rel="stylesheet" href="/assets/shared.css">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="MCAP Homework Practice Studio | Grade 6 Math Review. Explore interactive domain review modules, timed practice self-checks, and adaptive Maryland state prep."
+    />
+    <title>MCAP Homework Practice Studio</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&family=Lexend:wght@400;700;800&family=Atkinson+Hyperlegible+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Shared Design System -->
+    <link rel="stylesheet" href="/assets/shared.css" />
+
+    <style>
+      :root {
+        /* Design Tokens */
+        --navy: #0f172a;
+        --navy-light: #1e293b;
+        --teal: #0d9488;
+        --teal-light: #f0fdfa;
+        --teal-pale: #ccfbf1;
+        --gold: #d97706;
+        --gold-pale: #fef3c7;
+        --terracotta: #ea580c;
+        --terra-pale: #ffedd5;
+        --sage: #16a34a;
+        --sage-pale: #dcfce7;
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #cbd5e1;
+
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --radius-sm: 8px;
+        --shadow-premium: 0 15px 35px rgba(15, 23, 42, 0.08);
+        --transition-smooth: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: var(--bg);
+        color: var(--ink);
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Outfit", sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0;
+      }
+
+      /* Compact Hero Section */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          var(--navy) 0%,
+          var(--navy-light) 100%
+        );
+        color: white;
+        border-top: 6px solid var(--teal);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1.4fr 0.8fr;
+        gap: 24px;
+        align-items: center;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-premium);
+      }
+
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        color: white;
+        line-height: 1.1;
+      }
+
+      .hero p.tagline {
+        color: #94a3b8;
+        font-size: 1.1rem;
+        margin: 12px 0 20px;
+        max-width: 650px;
+      }
+
+      .hero-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .hero-pill {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #e2e8f0;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      .timing-card {
+        background: rgba(255, 255, 255, 0.96);
+        color: var(--ink);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      }
+
+      .timing-card h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+      }
+
+      .timing-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .timing-list li {
+        display: flex;
+        gap: 8px;
+        font-size: 0.9rem;
+        align-items: flex-start;
+      }
+
+      .timing-list li::before {
+        content: "•";
+        color: var(--teal);
+        font-weight: 800;
+        font-size: 1.2rem;
+        line-height: 1;
+      }
+
+      /* Sticky Navigation Tabs */
+      nav.tab-nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(246, 247, 242, 0.95);
+        backdrop-filter: blur(12px);
+        border-bottom: 2px solid var(--line);
+        padding: 10px 0;
+        margin: 20px 0;
+      }
+
+      .tab-container {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .tab-container::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-btn {
+        background: white;
+        border: 1px solid var(--line);
+        padding: 10px 18px;
+        border-radius: var(--radius-md);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--muted);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab-btn:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+        transform: translateY(-1px);
+      }
+
+      .tab-btn.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+      }
+
+      /* Floating language overlays */
+      .lang-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999;
+        display: flex;
+        gap: 8px;
+      }
+
+      .float-btn {
+        background: var(--gold);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(217, 119, 6, 0.3);
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .float-btn:hover {
+        transform: translateY(-2px) scale(1.03);
+      }
+
+      /* Spanish helper */
+      .es-text {
+        display: none;
+        font-style: italic;
+        color: var(--teal);
+        font-size: 0.88em;
+        margin-top: 4px;
+        border-left: 3px solid var(--teal);
+        padding-left: 8px;
+      }
+
+      body.show-spanish .es-text {
+        display: block;
+      }
+
+      /* Sections Structure */
+      section.tab-panel {
+        display: none;
+        animation: panelFade 0.3s ease-out;
+      }
+
+      section.tab-panel.active {
+        display: block;
+      }
+
+      @keyframes panelFade {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      @media (max-width: 900px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Glassmorphism Premium Cards */
+      .card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 24px;
+        box-shadow: var(--shadow-premium);
+        transition: var(--transition-smooth);
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      .card h2 {
+        color: var(--navy);
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+      }
+
+      .card h3 {
+        color: var(--navy);
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card p {
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 0.95rem;
+        margin: 0 0 16px;
+      }
+
+      /* Real-Time Calculators */
+      .calc-board {
+        background: var(--teal-light);
+        border: 1px solid rgba(13, 148, 136, 0.25);
+        border-radius: var(--radius-md);
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .calc-title {
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        color: var(--teal);
+        border-bottom: 1.5px solid rgba(13, 148, 136, 0.2);
+        padding-bottom: 6px;
+      }
+
+      .calc-grid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .calc-row {
+        background: white;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px dashed var(--line);
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-family: "Atkinson Hyperlegible Mono", monospace;
+        font-weight: 500;
+      }
+
+      .calc-row b {
+        color: var(--navy);
+      }
+
+      .calc-total {
+        font-size: 1.45rem;
+        font-family: "Lexend", sans-serif;
+        font-weight: 800;
+        color: var(--teal);
+        text-align: center;
+        background: white;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        border: 2px solid var(--teal);
+      }
+
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .vocab-card {
+        background: #f8fafc;
+        border: 2px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        text-align: center;
+        transition: var(--transition-smooth);
+      }
+
+      .vocab-card:hover {
+        border-color: var(--teal);
+        background: white;
+        transform: translateY(-3px);
+      }
+
+      .vocab-icon {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .vocab-card b {
+        display: block;
+        font-family: "Outfit", sans-serif;
+        font-size: 1.15rem;
+        color: var(--teal);
+        margin-bottom: 6px;
+      }
+
+      .vocab-card p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .btn {
+        background: var(--navy);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: var(--radius-sm);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn:hover {
+        background: var(--navy-light);
+        transform: translateY(-1px);
+      }
+
+      .btn-teal {
+        background: var(--teal);
+      }
+
+      .btn-teal:hover {
+        background: var(--teal-dark);
+      }
+
+      .input-wrapper {
+        position: relative;
+        margin-top: 10px;
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        border: 2px solid var(--line);
+        font-family: "Atkinson Hyperlegible Mono", monospace;
+        font-size: 1.05rem;
+        font-weight: 700;
+        background: white;
+        color: var(--ink);
+        transition: var(--transition-smooth);
+        outline: none;
+      }
+
+      .input-field:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 4px var(--teal-light);
+      }
+
+      .feedback-box {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        font-size: 0.9rem;
+        font-weight: 700;
+        display: none;
+        line-height: 1.5;
+      }
+
+      .feedback-box.correct {
+        background: var(--sage-pale);
+        color: var(--sage);
+        border: 1px solid rgba(21, 128, 61, 0.25);
+        display: block;
+      }
+
+      .feedback-box.wrong {
+        background: var(--terra-pale);
+        color: var(--terracotta);
+        border: 1px solid rgba(194, 65, 12, 0.25);
+        display: block;
+      }
+
+      /* Graded Practice Test Styles */
+      .test-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .test-progress {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-premium);
+      }
+
+      .progress-track {
+        flex: 1;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        margin: 0 16px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--teal), var(--sage));
+        width: 0%;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .progress-label {
+        font-weight: 800;
+        font-family: "Lexend", sans-serif;
+        color: var(--navy);
+      }
+
+      .test-card {
+        background: white;
+        border-left: 6px solid var(--teal);
+        border-radius: var(--radius-md);
+        padding: 24px;
+        box-shadow: var(--shadow-premium);
+        transition: var(--transition-smooth);
+      }
+
+      .test-card.correct-card {
+        border-left-color: var(--sage);
+      }
+
+      .test-card.wrong-card {
+        border-left-color: var(--terracotta);
+      }
+
+      .q-header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .q-badge {
+        background: var(--navy);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-family: "Atkinson Hyperlegible Mono", monospace;
+      }
+
+      .q-title {
+        font-family: "Lexend", sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      .q-text {
+        font-size: 1rem;
+        color: var(--ink);
+        line-height: 1.55;
+        margin-bottom: 16px;
+      }
+
+      .q-options {
+        display: grid;
+        gap: 10px;
+      }
+
+      .q-option {
+        background: #f8fafc;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .q-option:hover {
+        border-color: var(--teal);
+        background: var(--teal-light);
+      }
+
+      .q-option.correct {
+        border-color: var(--sage) !important;
+        background: var(--sage-pale) !important;
+        color: var(--sage) !important;
+      }
+
+      .q-option.incorrect {
+        border-color: var(--terracotta) !important;
+        background: var(--terra-pale) !important;
+        color: var(--terracotta) !important;
+      }
+
+      /* Completion scorecard */
+      .score-card {
+        display: none;
+        background: linear-gradient(
+          135deg,
+          var(--teal-pale) 0%,
+          var(--gold-pale) 100%
+        );
+        border: 2px solid var(--teal);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        text-align: center;
+        box-shadow: var(--shadow-premium);
+        animation: scalePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes scalePop {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .score-big {
+        font-family: "Lexend", sans-serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--teal-dark);
+        margin: 10px 0;
+      }
+
+      .explain-list {
+        display: grid;
+        gap: 12px;
+        text-align: left;
+        margin: 20px 0;
+      }
+
+      .explain-item {
+        background: white;
+        border: 1.5px dashed var(--line);
+        border-radius: var(--radius-md);
+        padding: 16px;
+      }
+
+      .explain-item b {
+        color: var(--navy);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      /* Confetti Box */
+      .confetti-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10000;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        opacity: 0;
+        animation: fall 2s ease-out forwards;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translate3d(0, 0, 0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translate3d(var(--dx), var(--dy), 0) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* Print optimizations */
+      @media print {
+        header.hero,
+        nav.tab-nav,
+        .timing-card,
+        .lang-widget,
+        input[type="range"],
+        select {
+          display: none !important;
+        }
+        body {
+          background: white;
+        }
+        section.tab-panel {
+          display: block !important;
+          opacity: 1 !important;
+          transform: none !important;
+          page-break-after: always;
+        }
+        .card,
+        .test-card,
+        .canvas-panel {
+          box-shadow: none !important;
+          border: 1px solid #777 !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
-<body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/mcap-review/">MCAP and General Review</a><span>/</span><span>Homework</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Homework</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <body>
+    <div class="page-shell">
+      <!-- Breadcrumb Navigation -->
+      <nav
+        class="breadcrumb"
+        aria-label="Breadcrumb"
+        style="margin-bottom: 20px"
+      >
+        <a href="/">Home</a><span>/</span>
+        <a href="/mcap-review/">MCAP and General Review</a><span>/</span>
+        <span>Homework Practice</span>
+      </nav>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Homework</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/mcap-review/homework/</span></p>
+      <!-- Premium Compact Hero -->
+      <header class="hero compact-hero">
+        <div>
+          <p class="eyebrow" style="color: #f43f5e">
+            Interactive MCAP Prep Mission
+          </p>
+          <h1>MCAP Homework Practice Studio</h1>
+          <p class="tagline">
+            Power up your homework checks! Review prime operations, algebraic
+            equations, ratios, and area on coordinate planes with live
+            validators.
+          </p>
+          <div class="hero-pills" aria-label="Objectives covered">
+            <span class="hero-pill">Equation Solvers</span>
+            <span class="hero-pill">Decimals & Fractions</span>
+            <span class="hero-pill">Ratio Scales</span>
+            <span class="hero-pill">State Prep</span>
+          </div>
+          <p style="margin-top: 16px">
+            <a
+              href="/mcap-review/packets/"
+              style="
+                display: inline-block;
+                padding: 11px 18px;
+                background: #fff;
+                color: #0f172a;
+                border-radius: 10px;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 0.95rem;
+              "
+              >📘 Download printable homework &amp; review packets (Word +
+              online) →</a
+            >
+          </p>
+        </div>
+        <aside class="timing-card">
+          <h3>Prep Roadmap</h3>
+          <ul class="timing-list">
+            <li>
+              <strong>Domain Solvers:</strong> Input decimal operations and
+              solve multi-step algebraic formulas.
+            </li>
+            <li>
+              <strong>Ratio Scales:</strong> Input base ratios to compute scaled
+              values.
+            </li>
+            <li>
+              <strong>Graded MCAP Test:</strong> Cumulative 4-question
+              self-grading review sheet.
+            </li>
+          </ul>
+        </aside>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="tab-nav">
+        <div class="tab-container">
+          <button
+            class="tab-btn active"
+            onclick="switchTab('notes')"
+            id="btn-notes"
+          >
+            📚 Study Roadmap
+          </button>
+          <button class="tab-btn" onclick="switchTab('calc')" id="btn-calc">
+            📐 Domain Solvers
+          </button>
+          <button class="tab-btn" onclick="switchTab('ratios')" id="btn-ratios">
+            ⚖️ Ratio Scales
+          </button>
+          <button class="tab-btn" onclick="switchTab('test')" id="btn-test">
+            🏆 Graded Homework Sheet
+          </button>
+        </div>
+      </nav>
+
+      <!-- TAB 1: Study Roadmap -->
+      <section id="notes" class="tab-panel active">
+        <div class="card" style="margin-bottom: 20px">
+          <h2>Maryland MCAP Exam Roadmap</h2>
+          <p>
+            The state assessment measures your understanding of expressions,
+            rational numbers, ratios, and spatial area. Review these core
+            formulas and glossary snapshot terms before starting your review
+            sheets.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>📈 Operations & Decimals</h3>
+            <p>
+              Divide fractions by multiplying by the reciprocal
+              (Keep-Change-Flip). For decimals, align decimal places when adding
+              or subtracting, and count spaces when multiplying.
+            </p>
+            <div class="es-text">
+              Keeps-Change-Flip: Para dividir fracciones, multiplica por la
+              recíproca.
+            </div>
+            <div class="formula-box">a/b ÷ c/d = a/b × d/c</div>
+          </div>
+
+          <div class="card">
+            <h3>⚖️ Equations & Variables</h3>
+            <p>
+              Perform inverse operations on both sides to isolate the variable.
+              Whatever operation you apply to one side, you must apply to the
+              other to keep it balanced.
+            </p>
+            <div class="es-text">
+              Operaciones Inversas: Despeja la variable aplicando la operación
+              opuesta en ambos lados.
+            </div>
+            <div class="formula-box">ax + b = c → ax = c - b</div>
+          </div>
+
+          <div class="card">
+            <h3>📊 Ratio & Coordinate Area</h3>
+            <p>
+              Determine coordinate distances by subtracting coordinates with
+              matching axes, and build ratio tables to scale units evenly.
+            </p>
+            <div class="es-text">
+              Escalar Razones: Multiplica o divide los términos por el mismo
+              número para mantener proporciones.
+            </div>
+            <div class="formula-box">A : B = (A × k) : (B × k)</div>
+          </div>
+        </div>
+
+        <div class="vocab-grid">
+          <div class="vocab-card">
+            <span class="vocab-icon">🔄</span>
+            <b>Reciprocal</b>
+            <div class="es-text">Recíproca: La fracción invertida.</div>
+            <p>
+              The multiplicative inverse of a fraction (e.g. reciprocal of 2/3
+              is 3/2).
+            </p>
+          </div>
+          <div class="vocab-card">
+            <span class="vocab-icon">⚖️</span>
+            <b>Inverse Operation</b>
+            <div class="es-text">
+              Operación Inversa: La operación que deshace a otra.
+            </div>
+            <p>
+              Operations that undo each other (such as addition and subtraction,
+              or multiplication and division).
+            </p>
+          </div>
+          <div class="vocab-card">
+            <span class="vocab-icon">🗺️</span>
+            <b>Coordinate Plane</b>
+            <div class="es-text">
+              Plano Cartesiano: Sistema de cuadrículas con ejes X e Y.
+            </div>
+            <p>
+              A 2D grid plane formed by horizontal X-axis and vertical Y-axis
+              intersecting at origin (0,0).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Domain Solvers -->
+      <section id="calc" class="tab-panel">
+        <div class="grid-2">
+          <!-- Solver 1: Decimal operations -->
+          <div class="card">
+            <h3>🔢 Decimal operation checker</h3>
+            <p>
+              Input two decimal values, choose an operator (+, -, ×, ÷), and
+              solve. Verify your computed answer live with Mr. Neft's database.
+            </p>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 80px 1fr;
+                gap: 10px;
+                margin-bottom: 12px;
+              "
+            >
+              <div>
+                <label for="decVal1">Value 1:</label>
+                <input
+                  type="number"
+                  id="decVal1"
+                  class="input-field"
+                  step="0.01"
+                  value="12.5"
+                />
+              </div>
+              <div>
+                <label for="decOp">Op:</label>
+                <select
+                  id="decOp"
+                  class="input-field"
+                  style="padding: 12px 8px"
+                  onchange="updateDecSolver()"
+                >
+                  <option value="+">+</option>
+                  <option value="-">-</option>
+                  <option value="*">×</option>
+                  <option value="/">÷</option>
+                </select>
+              </div>
+              <div>
+                <label for="decVal2">Value 2:</label>
+                <input
+                  type="number"
+                  id="decVal2"
+                  class="input-field"
+                  step="0.01"
+                  value="4.2"
+                />
+              </div>
+            </div>
+
+            <div class="input-wrapper">
+              <label for="decUserAns">Your Calculated Answer:</label>
+              <input
+                type="number"
+                id="decUserAns"
+                class="input-field"
+                step="0.001"
+                placeholder="Enter answer..."
+              />
+            </div>
+            <div style="margin-top: 12px">
+              <button class="btn btn-teal" onclick="checkDecimalSolver()">
+                Verify Operation
+              </button>
+            </div>
+            <div id="decFeedback" class="feedback-box"></div>
+          </div>
+
+          <!-- Solver 2: Equation Solver -->
+          <div class="card">
+            <h3>⚖️ Two-Step Equation balances</h3>
+            <p>
+              Input a two-step algebraic equation of the format
+              <b>ax + b = c</b> (using numbers of your choice), then solve for
+              <b>x</b>. Check your isolate balances live!
+            </p>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 12px;
+              "
+            >
+              <div>
+                <label for="eqA">Value a:</label>
+                <input type="number" id="eqA" class="input-field" value="3" />
+              </div>
+              <div>
+                <label for="eqB">Value b (+):</label>
+                <input type="number" id="eqB" class="input-field" value="5" />
+              </div>
+              <div>
+                <label for="eqC">Value c (=):</label>
+                <input type="number" id="eqC" class="input-field" value="26" />
+              </div>
+            </div>
+
+            <div class="input-wrapper">
+              <label for="eqUserAns">Your Calculated x:</label>
+              <input
+                type="number"
+                id="eqUserAns"
+                class="input-field"
+                placeholder="Enter x value..."
+              />
+            </div>
+            <div style="margin-top: 12px">
+              <button class="btn btn-teal" onclick="checkEquationSolver()">
+                Verify Equation
+              </button>
+            </div>
+            <div id="eqFeedback" class="feedback-box"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Ratio Scales -->
+      <section id="ratios" class="tab-panel">
+        <div class="sim-workspace">
+          <div class="canvas-panel">
+            <h3>Ratio Table Scaler</h3>
+            <p>
+              Input a base ratio (A : B), adjust the scale multiplier slider,
+              and watch the ratio table and equivalent visualization scale live!
+            </p>
+
+            <div
+              class="calc-board"
+              style="
+                background: var(--gold-pale);
+                border-color: rgba(217, 119, 6, 0.25);
+              "
+            >
+              <div class="calc-title" style="color: var(--gold)">
+                Visual Ratio Representation (A : B)
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  min-height: 160px;
+                "
+              >
+                <svg
+                  id="ratio-visual"
+                  width="300"
+                  height="120"
+                  viewBox="0 0 300 120"
+                ></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-panel">
+            <div class="card">
+              <h3>Scale Parameters</h3>
+
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 12px;
+                  margin-bottom: 16px;
+                "
+              >
+                <div class="slider-group">
+                  <label for="ratioAInput">Base Term A:</label>
+                  <input
+                    type="number"
+                    id="ratioAInput"
+                    class="input-field"
+                    value="3"
+                    oninput="updateRatioLab()"
+                  />
+                </div>
+                <div class="slider-group">
+                  <label for="ratioBInput">Base Term B:</label>
+                  <input
+                    type="number"
+                    id="ratioBInput"
+                    class="input-field"
+                    value="2"
+                    oninput="updateRatioLab()"
+                  />
+                </div>
+              </div>
+
+              <div class="slider-group">
+                <label for="scaleSlider"
+                  >Scale Multiplier (k): <span id="scaleVal">2x</span></label
+                >
+                <input
+                  type="range"
+                  id="scaleSlider"
+                  min="1"
+                  max="10"
+                  value="2"
+                  oninput="updateRatioLab()"
+                />
+              </div>
+            </div>
+
+            <div class="calc-board">
+              <div class="calc-title">Calculated Equivalent Ratio</div>
+              <div class="calc-grid">
+                <div class="calc-row">
+                  <span>Base Ratio:</span><span id="ratioBaseVal">3 : 2</span>
+                </div>
+                <div class="calc-row">
+                  <span>Scale Multiplier:</span
+                  ><span id="ratioScaleVal">k = 2</span>
+                </div>
+              </div>
+              <div class="calc-total" id="ratioResultVal">
+                Equivalent Ratio = 6 : 4
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: Graded Homework Practice Test -->
+      <section id="test" class="tab-panel">
+        <div
+          class="test-panel-layout"
+          style="
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            align-items: start;
+          "
+        >
+          <!-- Sidebar domain selector -->
+          <div
+            class="glass-panel"
+            style="
+              padding: 15px;
+              border-radius: 16px;
+              background: rgba(255, 255, 255, 0.85);
+              border: 1px solid var(--neft-line);
+              box-shadow: 0 8px 32px rgba(23, 32, 42, 0.06);
+            "
+          >
+            <h3
+              style="
+                margin-top: 0;
+                margin-bottom: 10px;
+                color: var(--navy);
+                font-size: 1.1rem;
+                font-family: &quot;Lexend&quot;, sans-serif;
+              "
+            >
+              📝 Homework Domains
+            </h3>
+            <p
+              style="
+                font-size: 0.82rem;
+                color: var(--navy);
+                opacity: 0.8;
+                margin-bottom: 12px;
+                font-weight: normal;
+                text-transform: none;
+                letter-spacing: 0;
+              "
+            >
+              Choose standards to dynamically generate a targeted 4-question
+              homework sheet.
+            </p>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 15px;
+              "
+              id="domainFilterGroup"
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  font-size: 0.88rem;
+                  font-weight: normal;
+                  text-transform: none;
+                  margin: 0;
+                  cursor: pointer;
+                  color: var(--navy);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="domNS"
+                  checked
+                  style="width: auto; margin: 0"
+                />
+                🔢 Number System (NS)
+              </label>
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  font-size: 0.88rem;
+                  font-weight: normal;
+                  text-transform: none;
+                  margin: 0;
+                  cursor: pointer;
+                  color: var(--navy);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="domRP"
+                  checked
+                  style="width: auto; margin: 0"
+                />
+                📊 Ratios &amp; Rates (RP)
+              </label>
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  font-size: 0.88rem;
+                  font-weight: normal;
+                  text-transform: none;
+                  margin: 0;
+                  cursor: pointer;
+                  color: var(--navy);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="domEE"
+                  checked
+                  style="width: auto; margin: 0"
+                />
+                🔣 Expressions &amp; Eqs (EE)
+              </label>
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  font-size: 0.88rem;
+                  font-weight: normal;
+                  text-transform: none;
+                  margin: 0;
+                  cursor: pointer;
+                  color: var(--navy);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="domG"
+                  checked
+                  style="width: auto; margin: 0"
+                />
+                📐 Geometry &amp; Area (G)
+              </label>
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  font-size: 0.88rem;
+                  font-weight: normal;
+                  text-transform: none;
+                  margin: 0;
+                  cursor: pointer;
+                  color: var(--navy);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="domSP"
+                  checked
+                  style="width: auto; margin: 0"
+                />
+                📈 Statistics (SP)
+              </label>
+            </div>
+            <button
+              type="button"
+              class="btn btn-teal"
+              onclick="generateCustomHomework()"
+              style="
+                width: 100%;
+                border-radius: 12px;
+                padding: 10px;
+                font-weight: 800;
+                font-size: 0.88rem;
+              "
+            >
+              ⚡ Generate Homework
+            </button>
+          </div>
+
+          <!-- Content Area -->
+          <div
+            class="test-panel"
+            style="
+              margin: 0;
+              padding: 0;
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+              gap: 15px;
+            "
+          >
+            <!-- Graded Progress header -->
+            <div class="test-progress" style="margin-bottom: 5px">
+              <div class="progress-label" id="progressStatus">
+                GRADE: -- / 100
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar" id="progressBar"></div>
+              </div>
+              <div class="progress-label" id="progressCount">
+                0 / 4 Answered
+              </div>
+            </div>
+
+            <!-- Dynamic Questions Wrapper -->
+            <div
+              id="dynamicQuestionsWrap"
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+              "
+            >
+              <!-- Dynamically populated test cards -->
+            </div>
+
+            <!-- Completion card scorecard -->
+            <div class="score-card" id="finalScoreCard" style="display: none">
+              <h2>🏆 Graded Homework Complete!</h2>
+              <p class="eyebrow" style="color: var(--gold)">
+                MCAP Review Certified Master
+              </p>
+              <div class="score-big" id="finalGrade">100%</div>
+              <p id="scoreSummary">
+                Outstanding! You have solved all state standard equations,
+                decimals, ratios, and area homework problems correctly.
+              </p>
+
+              <div class="explain-list" id="feedbackExplains"></div>
+
+              <div
+                style="
+                  margin-top: 20px;
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 10px;
+                  justify-content: center;
+                "
+              >
+                <button class="btn btn-teal" onclick="window.print()">
+                  Print Homework Scorecard
+                </button>
+                <button
+                  class="btn"
+                  style="
+                    background: #2b579a;
+                    color: white;
+                    border-color: #2b579a;
+                  "
+                  onclick="downloadCleanDocx()"
+                >
+                  Download clean DOCX
+                </button>
+                <button class="btn btn-navy" onclick="resetHomeworkTest()">
+                  Retry Practice
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sticky Floating Lang Toggle & Reset -->
+      <div class="lang-widget no-print">
+        <button class="float-btn" onclick="toggleLanguage()" id="langToggle">
+          Spanish Help
+        </button>
+        <button
+          class="float-btn"
+          style="background: var(--navy)"
+          onclick="resetAllData()"
+        >
+          Reset Studio
+        </button>
       </div>
-    </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/mcap-review/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+      <footer class="site-footer">
+        <span>Mr. Neft's classroom activities</span>
+        <span
+          >&copy; <span id="currentYear"></span> Classroom-ready static
+          HTML</span
+        >
+      </footer>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+
+    <!-- Confetti box -->
+    <div class="confetti-container" id="confettiBox"></div>
+
+    <script>
+            // 1. CONFIGURATION
+            const CONFIG = {
+              theme: 'navy-teal',
+              defaultVal1: 12.5,
+              defaultVal2: 4.2,
+              defaultA: 3,
+              defaultB: 5,
+              defaultC: 26,
+              debug: true
+            };
+
+            // 2. CONFIG VALIDATION
+            function validateConfig() {
+              console.log("=== Validating MCAP Homework Config ===");
+              if (typeof CONFIG !== 'object' || CONFIG === null) {
+                console.error("Config validation failed: CONFIG object is missing or null.");
+                return false;
+              }
+              const required = ['theme', 'defaultVal1', 'defaultVal2', 'defaultA', 'defaultB', 'defaultC'];
+              for (const key of required) {
+                if (!(key in CONFIG)) {
+                  console.error(`Config validation failed: missing key '${key}'`);
+                  return false;
+                }
+              }
+              console.log("MCAP Homework Config: VALID");
+              return true;
+            }
+
+            // 3. DIAGNOSTICS SELF-TEST
+            function selfTest() {
+              console.log("=== Running MCAP Homework Diagnostics ===");
+              try {
+                const checkIds = ['decVal1', 'decVal2', 'eqA', 'eqB', 'eqC', 'ratioAInput', 'ratioBInput', 'scaleSlider'];
+                checkIds.forEach(id => {
+                  if (!document.getElementById(id)) {
+                    throw new Error(`Self-Test Failed: DOM node #${id} missing.`);
+                  }
+                });
+                console.log("MCAP Homework Self-Test: 100% PASS");
+                return true;
+              } catch (e) {
+                console.error("MCAP Homework Self-Test Error: ", e.message);
+                return false;
+              }
+            }
+
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Graded Practice State
+            let homeworkAnswers = {1: null, 2: null, 3: null, 4: null};
+            let studentSelectedOption = {1: null, 2: null, 3: null, 4: null};
+            let activeQuestions = [];
+
+            const QUESTION_DATABASE = {
+              ns: [
+                {
+                  title: "Fractions Division (6.NS.A.1)",
+                  text: "A container holds <b>4 &frac12; cups</b> of sugar. If each cake recipe requires <b>&frac34; cup</b> of sugar, how many complete recipes can be baked?",
+                  options: ["A) 4 recipes", "B) 6 recipes", "C) 5 recipes", "D) 8 recipes"],
+                  correctIndex: 1,
+                  explain: "Division: 4 &frac12; &divide; &frac34; = 9/2 &times; 4/3 = 36/6 = 6 recipes.",
+                  model: "text"
+                },
+                {
+                  title: "Decimal Division (6.NS.B.3)",
+                  text: "Evaluate the quotient: <b>14.25 &divide; 1.5</b>",
+                  options: ["A) 8.5", "B) 9.5", "C) 10.5", "D) 11.25"],
+                  correctIndex: 1,
+                  explain: "Perform decimal division: 14.25 &divide; 1.5 = 9.5.",
+                  model: "text"
+                }
+              ],
+              rp: [
+                {
+                  title: "Equivalent Ratios (6.RP.A.3)",
+                  text: "A recipe table scales flour to water at a constant ratio of <b>3 : 5</b>. If the baker scales up and uses <b>25 cups of water</b>, how many cups of flour are required?",
+                  options: ["A) 15 cups", "B) 12 cups", "C) 20 cups", "D) 10 cups"],
+                  correctIndex: 0,
+                  explain: "Equivalent scaling: flour ratio 3 : 5. Water is 25 (multiplied by 5). So flour = 3 &times; 5 = 15 cups.",
+                  model: "ratio-tape"
+                },
+                {
+                  title: "Unit Rate Application (6.RP.A.2)",
+                  text: "A car travels <b>240 miles</b> in <b>4 hours</b>. At this constant speed, how far will the car travel in <b>7 hours</b>?",
+                  options: ["A) 400 miles", "B) 420 miles", "C) 380 miles", "D) 450 miles"],
+                  correctIndex: 1,
+                  explain: "Find the unit rate: 240 miles &divide; 4 hours = 60 miles per hour. For 7 hours: 60 &times; 7 = 420 miles.",
+                  model: "text"
+                }
+              ],
+              ee: [
+                {
+                  title: "Solving Equations (6.EE.B.7)",
+                  text: "Solve for x in the following algebraic equation: <b>3x - 5 = 16</b>",
+                  options: ["A) x = 5", "B) x = 6", "C) x = 7", "D) x = 9"],
+                  correctIndex: 2,
+                  explain: "Isolate x: 3x - 5 = 16 &rarr; 3x = 21 &rarr; x = 7.",
+                  model: "text"
+                },
+                {
+                  title: "Independent & Dependent Variables (6.EE.C.9)",
+                  text: "A rental company charges a flat fee of <b>$20 plus $5 per hour</b> (h) for bike rentals. Which equation represents the total cost (C)?",
+                  options: ["A) C = 20h + 5", "B) C = 5h + 20", "C) C = 25h", "D) C = 20 - 5h"],
+                  correctIndex: 1,
+                  explain: "The flat fee is $20 (constant), and the hourly fee is $5 (multiplied by h). So total cost is C = 5h + 20.",
+                  model: "text"
+                }
+              ],
+              g: [
+                {
+                  title: "Triangle Coordinate Area (6.G.A.1)",
+                  text: "A triangular sail plotted on a grid has a bottom baseline length of <b>18 units</b> and a perpendicular height of <b>8 units</b>. What is its area?",
+                  options: ["A) 144 sq units", "B) 72 sq units", "C) 36 sq units", "D) 90 sq units"],
+                  correctIndex: 1,
+                  explain: "Area = &frac12; &times; base &times; height = &frac12; &times; 18 &times; 8 = 72 square units.",
+                  model: "text"
+                },
+                {
+                  title: "Polygons on Coordinate Grid (6.G.A.3)",
+                  text: "A rectangular sandbox has vertices at coordinates <b>(2, 2)</b>, <b>(8, 2)</b>, <b>(8, 6)</b>, and <b>(2, 6)</b>. What is the area of the sandbox?",
+                  options: ["A) 24 sq units", "B) 18 sq units", "C) 20 sq units", "D) 12 sq units"],
+                  correctIndex: 0,
+                  explain: "Length = 8 - 2 = 6 units. Width = 6 - 2 = 4 units. Area = length &times; width = 6 &times; 4 = 24 square units.",
+                  model: "coordinate-grid"
+                }
+              ],
+              sp: [
+                {
+                  title: "Mean, Median, and Mode (6.SP.B.5c)",
+                  text: "A student scored <b>85, 90, 85, 70, and 95</b> on five quizzes. What is the **median** score?",
+                  options: ["A) 85", "B) 90", "C) 80", "D) 88"],
+                  correctIndex: 0,
+                  explain: "Order the scores: 70, 85, 85, 90, 95. The middle value is 85.",
+                  model: "text"
+                },
+                {
+                  title: "Statistical Data Display (6.SP.B.4)",
+                  text: "A statistical data set has values: <b>2, 3, 5, 8, 12</b>. What is the range of this data set?",
+                  options: ["A) 8", "B) 9", "C) 10", "D) 7"],
+                  correctIndex: 2,
+                  explain: "Range = Maximum - Minimum = 12 - 2 = 10.",
+                  model: "text"
+                }
+              ]
+            };
+
+            // 3. TAB NAVIGATION
+            function switchTab(tabId) {
+              document.querySelectorAll('section.tab-panel').forEach(section => {
+                section.classList.remove('active');
+              });
+              document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+              });
+
+              document.getElementById(tabId).classList.add('active');
+              document.getElementById('btn-' + tabId).classList.add('active');
+
+              if (tabId === 'ratios') {
+                updateRatioLab();
+              }
+            }
+
+            // 4. LANGUAGE HELP TOGGLE
+            function toggleLanguage() {
+              document.body.classList.toggle('show-spanish');
+              const active = document.body.classList.contains('show-spanish');
+              document.getElementById('langToggle').textContent = active ? 'EN English Help' : 'Spanish Help';
+              showToast(active ? "Spanish terms overlay active!" : "English terms active.");
+            }
+
+            function showToast(msg) {
+              let toast = document.createElement('div');
+              toast.style.position = 'fixed';
+              toast.style.bottom = '80px';
+              toast.style.left = '50%';
+              toast.style.transform = 'translateX(-50%)';
+              toast.style.background = 'var(--navy)';
+              toast.style.color = 'white';
+              toast.style.padding = '8px 20px';
+              toast.style.borderRadius = '999px';
+              toast.style.fontWeight = '800';
+              toast.style.fontSize = '0.85rem';
+              toast.style.zIndex = '9999';
+              toast.textContent = msg;
+              document.body.appendChild(toast);
+              setTimeout(() => toast.remove(), 2000);
+            }
+
+            // 5. DECIMAL SOLVER ENGINE
+            function updateDecSolver() {
+              document.getElementById('decFeedback').style.display = 'none';
+            }
+
+            function checkDecimalSolver() {
+              const v1 = parseFloat(document.getElementById('decVal1').value);
+              const v2 = parseFloat(document.getElementById('decVal2').value);
+              const op = document.getElementById('decOp').value;
+              const user = parseFloat(document.getElementById('decUserAns').value);
+              const fb = document.getElementById('decFeedback');
+
+              if (isNaN(v1) || isNaN(v2) || isNaN(user)) {
+                fb.textContent = "Please fill in all decimal value inputs.";
+                fb.className = "feedback-box wrong";
+                return;
+              }
+
+              let correct = 0;
+              if (op === '+') correct = v1 + v2;
+              else if (op === '-') correct = v1 - v2;
+              else if (op === '*') correct = v1 * v2;
+              else if (op === '/') correct = v1 / v2;
+
+              correct = parseFloat(correct.toFixed(3));
+
+              if (Math.abs(user - correct) < 0.01) {
+                fb.textContent = `Correct! ${v1} ${op} ${v2} = ${correct}. Great decimal alignment!`;
+                fb.className = "feedback-box correct";
+                triggerConfetti(30);
+              } else {
+                fb.textContent = `Keep practicing! Mr. Neft calculated: ${correct}. Re-check your carrying or borrow operations.`;
+                fb.className = "feedback-box wrong";
+              }
+            }
+
+            // 6. EQUATION SOLVER ENGINE
+            function checkEquationSolver() {
+              const a = parseFloat(document.getElementById('eqA').value);
+              const b = parseFloat(document.getElementById('eqB').value);
+              const c = parseFloat(document.getElementById('eqC').value);
+              const user = parseFloat(document.getElementById('eqUserAns').value);
+              const fb = document.getElementById('eqFeedback');
+
+              if (isNaN(a) || isNaN(b) || isNaN(c) || isNaN(user)) {
+                fb.textContent = "Please fill in all algebraic values.";
+                fb.className = "feedback-box wrong";
+                return;
+              }
+
+              // Formula: ax + b = c -> ax = c - b -> x = (c - b) / a
+              const step1 = c - b;
+              const correct = parseFloat((step1 / a).toFixed(2));
+
+              if (Math.abs(user - correct) < 0.01) {
+                fb.innerHTML = `<b>Correct!</b> Solving equations step-by-step:
+                  <br>• Step 1 (Subtract constant b): <b>${a}x = ${c} - ${b} → ${a}x = ${step1}</b>.
+                  <br>• Step 2 (Divide coefficient a): <b>x = ${step1} ÷ ${a} → x = ${correct}</b>.`;
+                fb.className = "feedback-box correct";
+                triggerConfetti(30);
+              } else {
+                fb.textContent = `Keep practicing! Subtract b (${b}) from c (${c}) to get ${step1}. Then divide by coefficient a (${a}) to isolate x.`;
+                fb.className = "feedback-box wrong";
+              }
+            }
+
+            // 7. RATIO SCALES ENGINE
+            function updateRatioLab() {
+              const a = parseInt(document.getElementById('ratioAInput').value);
+              const b = parseInt(document.getElementById('ratioBInput').value);
+              const k = parseInt(document.getElementById('scaleSlider').value);
+
+              if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0) return;
+
+              document.getElementById('scaleVal').textContent = k + "x";
+              document.getElementById('ratioBaseVal').textContent = `${a} : ${b}`;
+              document.getElementById('ratioScaleVal').textContent = `k = ${k}`;
+
+              const scaledA = a * k;
+              const scaledB = b * k;
+              document.getElementById('ratioResultVal').textContent = `Equivalent Ratio = ${scaledA} : ${scaledB}`;
+
+              drawRatioVisual(a, b, k);
+            }
+
+            function drawRatioVisual(a, b, k) {
+              const svg = document.getElementById('ratio-visual');
+              svg.innerHTML = '';
+
+              const maxTotal = (a + b) * k;
+              // Limit visual rendering if counts exceed screen spaces
+              const size = maxTotal > 15 ? 12 : 20;
+              const gap = 6;
+
+              // Render sets A (Teal circles) and B (Gold circles)
+              let cx = 10;
+              let cy = 35;
+
+              // Set A circles
+              for (let i = 0; i < a * k; i++) {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", cx);
+                circle.setAttribute("cy", cy);
+                circle.setAttribute("r", size / 2);
+                circle.setAttribute("fill", "var(--teal)");
+                circle.setAttribute("stroke", "var(--teal-dark)");
+                circle.setAttribute("stroke-width", "1");
+                svg.appendChild(circle);
+
+                cx += size + gap;
+                if (cx > 280) { cx = 10; cy += size + gap; }
+              }
+
+              // Add gap separator if space permits
+              cx += 10;
+
+              // Set B circles
+              for (let j = 0; j < b * k; j++) {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", cx);
+                circle.setAttribute("cy", cy);
+                circle.setAttribute("r", size / 2);
+                circle.setAttribute("fill", "var(--gold)");
+                circle.setAttribute("stroke", "#5d3f0f");
+                circle.setAttribute("stroke-width", "1");
+                svg.appendChild(circle);
+
+                cx += size + gap;
+                if (cx > 280) { cx = 10; cy += size + gap; }
+              }
+            }
+
+            // 8. GRADED HOMEWORK SHEET PRACTICE TEST
+            function drawRatioTapeSVG(a, b) {
+              const blockW = 40;
+              const blockH = 25;
+              const startX = 60;
+              const width = 320;
+              const height = 100;
+
+              let svg = `<svg width="${width}" height="${height}" style="background:white; border: 1px solid var(--neft-line); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" viewBox="0 0 ${width} ${height}">`;
+              svg += `<text x="10" y="32" font-family="'Lexend', sans-serif" font-size="11" font-weight="bold" fill="var(--navy)">Flour</text>`;
+              for (let i = 0; i < a; i++) {
+                const x = startX + i * blockW;
+                svg += `<rect x="${x}" y="15" width="${blockW}" height="${blockH}" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" rx="3" ry="3"/>`;
+                svg += `<text x="${x + blockW/2}" y="32" font-family="'Lexend', sans-serif" font-size="10" font-weight="bold" fill="#0369a1" text-anchor="middle">5</text>`;
+              }
+              svg += `<text x="${startX + a * blockW + 8}" y="32" font-family="'Lexend', sans-serif" font-size="11" font-weight="bold" fill="#0369a1">? (15)</text>`;
+
+              svg += `<text x="10" y="72" font-family="'Lexend', sans-serif" font-size="11" font-weight="bold" fill="var(--navy)">Water</text>`;
+              for (let j = 0; j < b; j++) {
+                const x = startX + j * blockW;
+                svg += `<rect x="${x}" y="55" width="${blockW}" height="${blockH}" fill="#fef3c7" stroke="#d97706" stroke-width="1.5" rx="3" ry="3"/>`;
+                svg += `<text x="${x + blockW/2}" y="72" font-family="'Lexend', sans-serif" font-size="10" font-weight="bold" fill="#b45309" text-anchor="middle">5</text>`;
+              }
+              svg += `<text x="${startX + b * blockW + 8}" y="72" font-family="'Lexend', sans-serif" font-size="11" font-weight="bold" fill="#b45309">25</text>`;
+              svg += `</svg>`;
+              return svg;
+            }
+
+            function drawCoordinateGridSVG() {
+              const width = 240;
+              const height = 240;
+              const margin = 25;
+              const size = 190;
+
+              let svg = `<svg width="${width}" height="${height}" style="background:white; border: 1px solid var(--neft-line); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" viewBox="0 0 ${width} ${height}">`;
+              for (let i = 0; i <= 10; i++) {
+                const sx = margin + i * 19;
+                const sy = margin + i * 19;
+                svg += `<line x1="${sx}" y1="${margin}" x2="${sx}" y2="${margin + size}" stroke="#e2e8f0" stroke-width="1"/>`;
+                svg += `<line x1="${margin}" y1="${sy}" x2="${margin + size}" y2="${sy}" stroke="#e2e8f0" stroke-width="1"/>`;
+              }
+
+              const axisY = margin + 10 * 19;
+              const axisX = margin;
+              svg += `<line x1="${axisX}" y1="${axisY}" x2="${margin + size}" y2="${axisY}" stroke="#1e293b" stroke-width="2"/>`;
+              svg += `<line x1="${axisX}" y1="${margin}" x2="${axisX}" y2="${axisY}" stroke="#1e293b" stroke-width="2"/>`;
+
+              for (let i = 0; i <= 10; i += 2) {
+                const sx = margin + i * 19;
+                const sy = margin + (10 - i) * 19;
+                svg += `<line x1="${sx}" y1="${axisY}" x2="${sx}" y2="${axisY + 4}" stroke="#1e293b" stroke-width="1.5"/>`;
+                svg += `<text x="${sx}" y="${axisY + 16}" font-family="'Lexend', sans-serif" font-size="9" text-anchor="middle" fill="#475569">${i}</text>`;
+                if (i > 0) {
+                  svg += `<line x1="${axisX - 4}" y1="${sy}" x2="${axisX}" y2="${sy}" stroke="#1e293b" stroke-width="1.5"/>`;
+                  svg += `<text x="${axisX - 8}" y="${sy + 3}" font-family="'Lexend', sans-serif" font-size="9" text-anchor="end" fill="#475569">${i}</text>`;
+                }
+              }
+
+              const rx = margin + 2 * 19;
+              const ry = margin + (10 - 6) * 19;
+              const rw = (8 - 2) * 19;
+              const rh = (6 - 2) * 19;
+
+              svg += `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="rgba(13, 148, 136, 0.25)" stroke="#0d9488" stroke-width="2" stroke-dasharray="3,3"/>`;
+
+              const vertices = [{x:2, y:2}, {x:8, y:2}, {x:8, y:6}, {x:2, y:6}];
+              vertices.forEach(v => {
+                const vx = margin + v.x * 19;
+                const vy = margin + (10 - v.y) * 19;
+                svg += `<circle cx="${vx}" cy="${vy}" r="4" fill="#0f172a" stroke="white" stroke-width="1"/>`;
+
+                let dy = -8;
+                let dx = 0;
+                if (v.y === 2) dy = 14;
+                if (v.x === 8) dx = 4;
+                if (v.x === 2) dx = -4;
+
+                svg += `<text x="${vx + dx}" y="${vy + dy}" font-family="'Lexend', sans-serif" font-size="8" font-weight="bold" fill="#0f172a" text-anchor="middle">(${v.x},${v.y})</text>`;
+              });
+
+              svg += `</svg>`;
+              return svg;
+            }
+
+            function generateCustomHomework() {
+              const domains = [];
+              if (document.getElementById('domNS').checked) domains.push('ns');
+              if (document.getElementById('domRP').checked) domains.push('rp');
+              if (document.getElementById('domEE').checked) domains.push('ee');
+              if (document.getElementById('domG').checked) domains.push('g');
+              if (document.getElementById('domSP').checked) domains.push('sp');
+
+              let pool = [];
+              domains.forEach(d => {
+                if (QUESTION_DATABASE[d]) {
+                  pool = pool.concat(QUESTION_DATABASE[d]);
+                }
+              });
+
+              if (pool.length < 4) {
+                pool = [];
+                Object.keys(QUESTION_DATABASE).forEach(d => {
+                  pool = pool.concat(QUESTION_DATABASE[d]);
+                });
+              }
+
+              const shuffled = pool.sort(() => 0.5 - Math.random());
+              activeQuestions = shuffled.slice(0, 4);
+
+              homeworkAnswers = {1: null, 2: null, 3: null, 4: null};
+              studentSelectedOption = {1: null, 2: null, 3: null, 4: null};
+
+              document.getElementById('finalScoreCard').style.display = 'none';
+              document.getElementById('progressBar').style.width = "0%";
+              document.getElementById('progressCount').textContent = "0 / 4 Answered";
+              document.getElementById('progressStatus').textContent = "GRADE: -- / 100";
+
+              const wrap = document.getElementById('dynamicQuestionsWrap');
+              wrap.innerHTML = '';
+
+              activeQuestions.forEach((q, idx) => {
+                const qNum = idx + 1;
+
+                let modelHtml = '';
+                if (q.model === 'ratio-tape') {
+                  modelHtml = `<div style="display:flex; justify-content:center; margin:10px 0;">${drawRatioTapeSVG(3, 5)}</div>`;
+                } else if (q.model === 'coordinate-grid') {
+                  modelHtml = `<div style="display:flex; justify-content:center; margin:10px 0;">${drawCoordinateGridSVG()}</div>`;
+                }
+
+                let optionsHtml = '';
+                q.options.forEach((opt, optIdx) => {
+                  optionsHtml += `
+                    <button class="q-option" onclick="selectOption(${idx}, ${optIdx})">${opt}</button>
+                  `;
+                });
+
+                wrap.innerHTML += `
+                  <div class="test-card" id="q${qNum}-card">
+                    <div class="q-header">
+                      <span class="q-badge" style="background:var(--navy); color:white; padding:4px 8px; border-radius:8px; font-weight:800; font-size:0.75rem;">${q.title}</span>
+                      <span class="q-points" style="font-size:0.8rem; color:var(--muted); font-weight:bold;">25 pts</span>
+                    </div>
+                    <p class="q-text" style="font-size:0.95rem; margin-top:10px; margin-bottom:10px;">${q.text}</p>
+                    ${modelHtml}
+                    <div class="q-options" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                      ${optionsHtml}
+                    </div>
+                  </div>
+                `;
+              });
+
+              showToast("Generated targeted MCAP Homework!");
+            }
+
+            function selectOption(qIdx, optIdx) {
+              const qNum = qIdx + 1;
+              const question = activeQuestions[qIdx];
+              const isCorrect = (optIdx === question.correctIndex);
+
+              homeworkAnswers[qNum] = isCorrect;
+              studentSelectedOption[qNum] = question.options[optIdx];
+
+              const card = document.getElementById(`q${qNum}-card`);
+              const options = card.querySelectorAll('.q-option');
+
+              options.forEach(opt => opt.className = 'q-option');
+              options[optIdx].className = isCorrect ? 'q-option correct' : 'q-option incorrect';
+
+              if (isCorrect) {
+                card.className = "test-card correct-card";
+                showToast("Well done!");
+              } else {
+                card.className = "test-card wrong-card";
+                options[question.correctIndex].classList.add('correct');
+              }
+
+              updateHomeworkProgress();
+            }
+
+            function updateHomeworkProgress() {
+              let answered = 0;
+              let correctCount = 0;
+
+              for (let q in homeworkAnswers) {
+                if (homeworkAnswers[q] !== null) {
+                  answered++;
+                  if (homeworkAnswers[q] === true) {
+                    correctCount++;
+                  }
+                }
+              }
+
+              const pct = (answered / 4) * 100;
+              document.getElementById('progressBar').style.width = pct + "%";
+              document.getElementById('progressCount').textContent = `${answered} / 4 Answered`;
+
+              if (answered === 4) {
+                const finalScore = (correctCount / 4) * 100;
+                document.getElementById('progressStatus').textContent = `GRADE: ${finalScore}%`;
+
+                const explains = document.getElementById('feedbackExplains');
+                explains.innerHTML = '';
+
+                for (let i = 0; i < 4; i++) {
+                  const qNum = i + 1;
+                  const question = activeQuestions[i];
+                  const isCorrect = homeworkAnswers[qNum];
+                  explains.innerHTML += `
+                    <div class="explain-item" style="border-left: 3px solid ${isCorrect ? 'var(--teal)' : 'var(--gold)'}; padding-left: 10px; margin-bottom: 12px;">
+                      <b>Question ${qNum}: ${question.title} (${isCorrect ? '✓ CORRECT' : '✗ WRONG'})</b>
+                      <p style="margin:2px 0 0; font-size:0.88rem; color:var(--muted);">${question.explain}</p>
+                    </div>
+                  `;
+                }
+
+                document.getElementById('finalGrade').textContent = `${finalScore}%`;
+                document.getElementById('finalScoreCard').style.display = 'block';
+
+                try { window.EduPulse && EduPulse.record({ activityTitle: document.title, score: correctCount, maxScore: 4, percent: finalScore, problemsCorrect: correctCount, problemsAttempted: 4 }); } catch(e) {}
+
+                if (finalScore === 100) {
+                  triggerConfetti(65);
+                  showToast("🎖️ Perfect score achieved!");
+                } else {
+                  showToast("Practice complete. Study the solutions below!");
+                }
+              }
+            }
+
+            function resetHomeworkTest() {
+              homeworkAnswers = {1: null, 2: null, 3: null, 4: null};
+              studentSelectedOption = {1: null, 2: null, 3: null, 4: null};
+              document.querySelectorAll('.test-card').forEach(card => {
+                card.className = 'test-card';
+                card.querySelectorAll('.q-option').forEach(opt => opt.className = 'q-option');
+              });
+              document.getElementById('finalScoreCard').style.display = 'none';
+              document.getElementById('progressBar').style.width = "0%";
+              document.getElementById('progressCount').textContent = "0 / 4 Answered";
+              document.getElementById('progressStatus').textContent = "GRADE: -- / 100";
+              showToast("Graded test entries reset.");
+              generateCustomHomework();
+            }
+
+            function downloadCleanDocx() {
+              let answered = 0;
+              let correctCount = 0;
+              for (let q in homeworkAnswers) {
+                if (homeworkAnswers[q] !== null) {
+                  answered++;
+                  if (homeworkAnswers[q] === true) correctCount++;
+                }
+              }
+
+              const finalScore = answered > 0 ? Math.round((correctCount / 4) * 100) : 0;
+
+              let docHtml = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                  <meta charset="utf-8">
+                  <title>MCAP Homework Practice Submission</title>
+                  <style>
+                    body { font-family: 'Calibri', 'Arial', sans-serif; line-height: 1.5; color: #333333; margin: 1in; }
+                    h1 { color: #0d9488; font-size: 20pt; border-bottom: 2px solid #0d9488; padding-bottom: 6px; font-family: 'Georgia', serif; }
+                    h2 { color: #1e293b; font-size: 14pt; margin-top: 18pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; }
+                    .metadata { font-size: 11pt; margin-bottom: 20pt; background-color: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; }
+                    .score-banner { font-size: 14pt; font-weight: bold; color: #16a34a; margin-bottom: 15pt; }
+                    .q-box { border: 1px solid #cbd5e1; padding: 12px; margin-bottom: 15px; background-color: #ffffff; }
+                    .q-text { font-weight: bold; font-size: 11pt; color: #0f172a; }
+                    .choices { margin-left: 15px; margin-top: 5px; font-size: 11pt; }
+                    .choice-item { margin-bottom: 2px; }
+                    .selected-choice { font-weight: bold; color: #0d9488; }
+                    .incorrect-choice { font-weight: bold; color: #ef4444; }
+                    .explain-box { margin-top: 8px; font-style: italic; color: #475569; font-size: 10pt; background-color: #f1f5f9; padding: 8px; border-left: 3px solid #0d9488; }
+                    .correct-badge { color: #16a34a; font-weight: bold; }
+                    .incorrect-badge { color: #ef4444; font-weight: bold; }
+                    .footer { text-align: center; font-size: 9pt; color: #64748b; margin-top: 30pt; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+
+      @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+      </style>
+                </head>
+                <body>
+                  <h1>MCAP Homework Practice Report</h1>
+                  <div class="metadata">
+                    <p><strong>Student Name:</strong> ___________________________</p>
+                    <p><strong>Date of Submission:</strong> \${new Date().toLocaleDateString()}</p>
+                    <p><strong>Subject:</strong> Grade 6 Mathematics MCAP Review</p>
+                    <p><strong>Progress:</strong> \${answered} / 4 Questions Solved</p>
+                    <p class="score-banner"><strong>Performance Grade:</strong> \${finalScore}%</p>
+                  </div>
+              `;
+
+              for (let i = 0; i < 4; i++) {
+                const qNum = i + 1;
+                const q = activeQuestions[i];
+                if (!q) continue;
+
+                const isCorrect = homeworkAnswers[qNum];
+                const selected = studentSelectedOption[qNum];
+
+                docHtml += `
+                  <div class="q-box">
+                    <p class="q-text">Question \${qNum}: \${q.title}<br>\${q.text}</p>
+                    <div class="choices">
+                `;
+
+                q.options.forEach((opt, optIdx) => {
+                  const isSelected = selected === opt;
+                  const isCorrectOption = optIdx === q.correctIndex;
+
+                  let classStr = "choice-item";
+                  let prefix = "   ";
+                  if (isSelected) {
+                    if (isCorrect) {
+                      classStr += " selected-choice";
+                      prefix = "&#10003; [STUDENT CHOICE] ";
+                    } else {
+                      classStr += " incorrect-choice";
+                      prefix = "&#10007; [STUDENT CHOICE] ";
+                    }
+                  } else if (isCorrectOption && selected !== null) {
+                    classStr += " selected-choice";
+                    prefix = "&#9733; [CORRECT CHOICE] ";
+                  }
+
+                  docHtml += `<div class="\${classStr}">\${prefix}\${opt}</div>`;
+                });
+
+                docHtml += `
+                    </div>
+                    <p style="margin-top: 10px;"><strong>Status:</strong> \${selected === null ? '<span style="color:#eab308; font-weight:bold;">UNANSWERED</span>' : (isCorrect ? '<span class="correct-badge">CORRECT</span>' : '<span class="incorrect-badge">INCORRECT</span>')}</p>
+                    <div class="explain-box">
+                      <strong>Step-by-Step Mathematical Solution:</strong><br>
+                      \${q.explain}
+                    </div>
+                  </div>
+                `;
+              }
+
+              docHtml += `
+                  <div class="footer">
+                    <p>Generated by Mr. Neft's MCAP Homework Practice Studio - Classroom-ready static HTML activities</p>
+                  </div>
+                  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
+                </html>
+              `;
+
+              const blob = new Blob(['\\ufeff' + docHtml], {
+                type: 'application/msword'
+              });
+
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = \`MCAP_Homework_Submission_\${new Date().toISOString().slice(0,10)}.doc\`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              showToast("Clean Word Document generated successfully!");
+            }
+
+            // 9. confetti
+            function triggerConfetti(count) {
+              const box = document.getElementById('confettiBox');
+              box.innerHTML = '';
+              const colors = ['#0d9488', '#ea580c', '#d97706', '#16a34a', '#3b82f6'];
+
+              for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.floor(Math.random() * 8) + 6;
+                const left = Math.floor(Math.random() * 100);
+                const top = Math.floor(Math.random() * 20) + 40;
+
+                const dx = (Math.random() - 0.5) * 400 + "px";
+                const dy = (Math.random() * 300) + 150 + "px";
+
+                p.style.background = color;
+                p.style.width = size + "px";
+                p.style.height = size + "px";
+                p.style.left = left + "%";
+                p.style.top = top + "%";
+                p.style.setProperty('--dx', dx);
+                p.style.setProperty('--dy', dy);
+
+                box.appendChild(p);
+              }
+            }
+
+            // 10. reset all
+            function resetAllData() {
+              document.getElementById('decVal1').value = CONFIG.defaultVal1;
+              document.getElementById('decVal2').value = CONFIG.defaultVal2;
+              document.getElementById('decOp').value = '+';
+              document.getElementById('decUserAns').value = '';
+              document.getElementById('decFeedback').style.display = 'none';
+
+              document.getElementById('eqA').value = CONFIG.defaultA;
+              document.getElementById('eqB').value = CONFIG.defaultB;
+              document.getElementById('eqC').value = CONFIG.defaultC;
+              document.getElementById('eqUserAns').value = '';
+              document.getElementById('eqFeedback').style.display = 'none';
+
+              document.getElementById('ratioAInput').value = 3;
+              document.getElementById('ratioBInput').value = 2;
+              document.getElementById('scaleSlider').value = 2;
+
+              document.body.classList.remove('show-spanish');
+              document.getElementById('langToggle').textContent = 'Spanish Help';
+
+              updateRatioLab();
+              resetHomeworkTest();
+              showToast("All review dashboards and workspaces reset!");
+            }
+
+            // Init
+            if (validateConfig() && selfTest()) {
+              updateRatioLab();
+              generateCustomHomework();
+            }
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+  </body>
 </html>

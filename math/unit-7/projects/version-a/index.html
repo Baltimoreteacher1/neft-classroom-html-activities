@@ -1,0 +1,2196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Theme Park Map Designer — Unit 7 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 7 Integers &amp; Coordinate Plane culminating project. Map YOUR real places on the coordinate plane, compare with a partner, then explore real-world maps — plotting, quadrants, reflections, and distance with absolute value."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --purple: #6d3fc0;
+        --purple-light: #f0eaff;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .phero {
+        background: linear-gradient(
+          135deg,
+          #1a1060 0%,
+          #6d3fc0 55%,
+          #c45a3c 100%
+        );
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
+      }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .intro-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--purple);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .intro-card .scenario {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      .phase {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .phase-num {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--purple);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--purple);
+        background: var(--purple-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background: var(--purple-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .task strong {
+        color: var(--purple);
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--purple);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .grid4 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 10px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+        .grid4 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .btn {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.alt2 {
+        background: var(--gold);
+        color: #2a1c00;
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--purple);
+        border: 2px solid var(--line);
+      }
+
+      .readout {
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--purple-light);
+        border: 1px solid #c9b6f0;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--purple);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--purple);
+        font-size: 14px;
+      }
+      .hintbox p {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
+
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
+
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--purple), var(--coral));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
+      /* SVG grid */
+      .grid-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 18px 0 0;
+      }
+      .grid-wrap svg text {
+        font-family: var(--font);
+      }
+
+      @media print {
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
+    <header class="phero">
+      <div class="deco">🎢</div>
+      <h1>Theme Park Map Designer</h1>
+      <p>
+        Map <strong>your own</strong> world on the coordinate plane. Plot the
+        real places you care about, compare your map with a partner, then
+        explore real city maps and coaster heights. Plot, reflect, and measure
+        distance with integers.
+      </p>
+      <div class="tags">
+        <span class="tag gold">Unit 7 · Integers &amp; Coordinate Plane</span>
+        <span class="tag">6.NS.6</span>
+        <span class="tag">6.NS.8</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u7ProjectA')">💾 Save</button>
+        <button
+          onclick="PK.load('u7ProjectA', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🗺️ Your Mission</h2>
+        <p class="scenario">
+          Build a coordinate-plane map in three steps.
+          <strong>Part 1 (Self):</strong> place the real places
+          <em>you</em> care about on the grid, enter their integer coordinates,
+          identify quadrants, reflect a place, and measure a distance.
+          <strong>Part 2 (Peer):</strong> a partner maps their places, then
+          auto-compare. <strong>Part 3 (World):</strong> compare your map to
+          real cities and coaster heights, run the What-If Lab, and finish your
+          blueprint.
+        </p>
+      </div>
+
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true">
+              <line
+                x1="29"
+                y1="4"
+                x2="29"
+                y2="54"
+                stroke="#6d3fc0"
+                stroke-width="2"
+              />
+              <line
+                x1="4"
+                y1="29"
+                x2="54"
+                y2="29"
+                stroke="#6d3fc0"
+                stroke-width="2"
+              />
+              <text
+                x="42"
+                y="18"
+                font-size="11"
+                fill="#6d3fc0"
+                font-weight="800"
+              >
+                I
+              </text>
+              <text
+                x="12"
+                y="18"
+                font-size="11"
+                fill="#6d3fc0"
+                font-weight="800"
+              >
+                II
+              </text>
+              <text
+                x="11"
+                y="48"
+                font-size="11"
+                fill="#6d3fc0"
+                font-weight="800"
+              >
+                III
+              </text>
+              <text
+                x="41"
+                y="48"
+                font-size="11"
+                fill="#6d3fc0"
+                font-weight="800"
+              >
+                IV
+              </text>
+            </svg>
+            <b>Quadrant</b>
+            <p>
+              One of the four regions the x- and y-axes split the plane into.
+              Signs: I (+,+), II (−,+), III (−,−), IV (+,−).
+            </p>
+            <p class="pk-es">
+              Cuadrante: una de las cuatro regiones del plano. Signos: I (+,+),
+              II (−,+), III (−,−), IV (+,−).
+            </p>
+          </div>
+          <div class="pk-term">
+            <svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true">
+              <line
+                x1="4"
+                y1="29"
+                x2="54"
+                y2="29"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <circle cx="20" cy="16" r="4" fill="#0e8a7d" />
+              <circle cx="20" cy="42" r="4" fill="#c45a3c" />
+              <line
+                x1="20"
+                y1="16"
+                x2="20"
+                y2="42"
+                stroke="#c45a3c"
+                stroke-width="1.5"
+                stroke-dasharray="3 2"
+              />
+            </svg>
+            <b>Reflection</b>
+            <p>
+              A flip over an axis like a mirror. Over the x-axis: (x, y) → (x,
+              −y). Over the y-axis: (x, y) → (−x, y).
+            </p>
+            <p class="pk-es">
+              Reflexión: un giro de espejo sobre un eje. Sobre el eje x: (x, y)
+              → (x, −y).
+            </p>
+          </div>
+          <div class="pk-term">
+            <svg width="64" height="44" viewBox="0 0 64 44" aria-hidden="true">
+              <line
+                x1="4"
+                y1="24"
+                x2="60"
+                y2="24"
+                stroke="#1a2633"
+                stroke-width="2"
+              />
+              <line
+                x1="32"
+                y1="18"
+                x2="32"
+                y2="30"
+                stroke="#1a2633"
+                stroke-width="2"
+              />
+              <text x="29" y="40" font-size="9" fill="#5e6e7e">0</text>
+              <circle cx="14" cy="24" r="3.5" fill="#d4952a" />
+              <text x="6" y="14" font-size="9" fill="#d4952a">|−3|=3</text>
+            </svg>
+            <b>Absolute Value</b>
+            <p>
+              |n| is the distance from 0 on a number line — never negative. |−3|
+              = 3 and |3| = 3.
+            </p>
+            <p class="pk-es">
+              Valor absoluto: |n| es la distancia desde 0 — nunca es negativo.
+              |−3| = 3.
+            </p>
+          </div>
+          <div class="pk-term">
+            <svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true">
+              <line
+                x1="29"
+                y1="4"
+                x2="29"
+                y2="54"
+                stroke="#1a2633"
+                stroke-width="1.5"
+              />
+              <line
+                x1="4"
+                y1="29"
+                x2="54"
+                y2="29"
+                stroke="#1a2633"
+                stroke-width="1.5"
+              />
+              <circle cx="42" cy="14" r="4" fill="#6d3fc0" />
+              <text x="14" y="50" font-size="8.5" fill="#6d3fc0">(x, y)</text>
+            </svg>
+            <b>Coordinate / Integer</b>
+            <p>
+              An ordered pair (x, y): x is left/right, y is up/down. Integers
+              are whole numbers including negatives: …−2, −1, 0, 1, 2…
+            </p>
+            <p class="pk-es">
+              Par ordenado (x, y); enteros incluyen negativos: …−2, −1, 0, 1, 2…
+            </p>
+          </div>
+          <div class="pk-term">
+            <svg width="64" height="44" viewBox="0 0 64 44" aria-hidden="true">
+              <line
+                x1="4"
+                y1="22"
+                x2="60"
+                y2="22"
+                stroke="#1a6fb5"
+                stroke-width="2"
+              />
+              <line
+                x1="32"
+                y1="14"
+                x2="32"
+                y2="30"
+                stroke="#1a6fb5"
+                stroke-width="3"
+              />
+              <text x="22" y="40" font-size="8.5" fill="#1a6fb5">
+                sea level = 0
+              </text>
+            </svg>
+            <b>Sea Level = 0 (reference)</b>
+            <p>
+              Zero is the reference point. Above zero is positive, below zero is
+              negative. Like the origin on the plane.
+            </p>
+            <p class="pk-es">
+              El nivel del mar = 0 es el punto de referencia: arriba es
+              positivo, abajo es negativo.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>Distance, shared x:</b> |y₂ − y₁| (vertical line)</p>
+            <p><b>Distance, shared y:</b> |x₂ − x₁| (horizontal line)</p>
+            <p><b>Reflect over x-axis:</b> (x, y) → (x, −y)</p>
+            <p><b>Reflect over y-axis:</b> (x, y) → (−x, y)</p>
+            <p><b>Absolute value:</b> |n| = distance from 0</p>
+            <p>
+              <b>Quadrant signs:</b> I (+,+) · II (−,+) · III (−,−) · IV (+,−)
+            </p>
+            <p class="pk-lvl2">
+              <b>Diagonal (Level 2 preview):</b> right triangle legs |Δx| and
+              |Δy|; diagonal² = |Δx|² + |Δy|² (Pythagoras)
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "My ___ is at (___, ___) in Quadrant ___ because x is ___ and y is
+              ___."
+            </p>
+            <p>
+              "Reflecting (___, ___) over the ___-axis gives (___, ___) because
+              ___ changes sign."
+            </p>
+            <p>
+              "The distance from ___ to ___ is ___ units because they share ___
+              and |___ − ___| = ___."
+            </p>
+            <p class="pk-es">
+              "Mi ___ está en (___, ___) en el Cuadrante ___ porque x es ___ y y
+              es ___."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <span class="arc-banner">Part 1 · Self — map YOUR world</span>
+            <div class="skill">
+              Plot · Quadrants · Reflect · Distance · 6.NS.6 · 6.NS.8
+            </div>
+            <h2>Map the Places You Care About</h2>
+          </div>
+        </div>
+        <p>
+          Pick a spot to be your <strong>origin (0, 0)</strong> — maybe your
+          home. Then place real places around it with integer coordinates:
+          blocks east are +x, west are −x, north are +y, south are −y. Not sure?
+          Click <em>Use example numbers</em>.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <div class="task">
+          <strong>Rules:</strong> Use integers between −10 and 10. Try to place
+          at least one place with a negative x and one with a negative y.
+          <span class="pk-lvl1">Level 1: you only need to plot 2 places.</span>
+          <span class="pk-lvl2"
+            >Level 2: plot all 3 and try a diagonal-distance stretch
+            below.</span
+          >
+        </div>
+
+        <div style="margin-top: 14px">
+          <label class="fld" for="p1name">Place 1 name (e.g., Home)</label>
+          <input
+            type="text"
+            id="p1name"
+            data-save
+            placeholder="example: Home"
+            oninput="plotPlaces()"
+          />
+          <div class="grid4" style="margin-top: 8px">
+            <div>
+              <label class="fld" for="a1x">x</label
+              ><input
+                type="number"
+                id="a1x"
+                data-save
+                min="-10"
+                max="10"
+                placeholder="example: 0"
+                oninput="plotPlaces()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="a1y">y</label
+              ><input
+                type="number"
+                id="a1y"
+                data-save
+                min="-10"
+                max="10"
+                placeholder="example: 0"
+                oninput="plotPlaces()"
+              />
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 10px">
+          <label class="fld" for="p2name">Place 2 name (e.g., School)</label>
+          <input
+            type="text"
+            id="p2name"
+            data-save
+            placeholder="example: School"
+            oninput="plotPlaces()"
+          />
+          <div class="grid4" style="margin-top: 8px">
+            <div>
+              <label class="fld" for="a2x">x</label
+              ><input
+                type="number"
+                id="a2x"
+                data-save
+                min="-10"
+                max="10"
+                placeholder="example: 5"
+                oninput="plotPlaces()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="a2y">y</label
+              ><input
+                type="number"
+                id="a2y"
+                data-save
+                min="-10"
+                max="10"
+                placeholder="example: -3"
+                oninput="plotPlaces()"
+              />
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 10px">
+          <label class="fld" for="p3name"
+            >Place 3 name (e.g., Friend's house / Park)</label
+          >
+          <input
+            type="text"
+            id="p3name"
+            data-save
+            placeholder="example: Park"
+            oninput="plotPlaces()"
+          />
+          <div class="grid4" style="margin-top: 8px">
+            <div>
+              <label class="fld" for="a3x">x</label
+              ><input
+                type="number"
+                id="a3x"
+                data-save
+                min="-10"
+                max="10"
+                placeholder="example: -7"
+                oninput="plotPlaces()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="a3y">y</label
+              ><input
+                type="number"
+                id="a3y"
+                data-save
+                min="-10"
+                max="10"
+                placeholder="example: 4"
+                oninput="plotPlaces()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <button class="btn" type="button" onclick="plotPlaces()">
+          Plot &amp; Identify Quadrants
+        </button>
+        <div class="readout" id="plot-out"></div>
+        <div class="grid-wrap">
+          <svg
+            id="park-svg"
+            width="300"
+            height="300"
+            viewBox="-150 -150 300 300"
+            style="
+              background: #fff;
+              border-radius: 12px;
+              border: 1px solid var(--line);
+            "
+          ></svg>
+        </div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Quadrant I: (+, +). Quadrant II: (−, +). Quadrant III: (−, −).
+            Quadrant IV: (+, −). Points on the axes are not in any quadrant.
+          </p>
+        </details>
+
+        <!-- 1b Reflection -->
+        <h3 style="margin-top: 24px">
+          🪞 Mirror one of your places (reflection)
+        </h3>
+        <p style="color: var(--muted); font-size: 14px">
+          Reflect a place across an axis to plan a "mirrored" section of your
+          map.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="rx">Original x</label
+            ><input
+              type="number"
+              id="rx"
+              data-save
+              min="-10"
+              max="10"
+              placeholder="example: 3"
+              oninput="calcReflection()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="ry">Original y</label
+            ><input
+              type="number"
+              id="ry"
+              data-save
+              min="-10"
+              max="10"
+              placeholder="example: 4"
+              oninput="calcReflection()"
+            />
+          </div>
+        </div>
+        <label class="fld" for="raxis">Reflect across which axis?</label>
+        <select id="raxis" data-save onchange="calcReflection()">
+          <option value="x">x-axis (horizontal line)</option>
+          <option value="y">y-axis (vertical line)</option>
+          <option value="both">Both axes</option>
+        </select>
+        <button class="btn alt" type="button" onclick="calcReflection()">
+          Reflect the point
+        </button>
+        <div class="readout" id="reflect-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Across the <strong>x-axis</strong>: keep x, negate y → (3, 4) → (3,
+            −4). Across the <strong>y-axis</strong>: negate x, keep y → (3, 4) →
+            (−3, 4). Both: negate both → (−3, −4).
+          </p>
+        </details>
+
+        <!-- 1c Distance -->
+        <h3 style="margin-top: 24px">
+          📏 Measure a walking distance (absolute value)
+        </h3>
+        <p style="color: var(--muted); font-size: 14px">
+          If two places share an x or a y, the distance is the absolute
+          difference of the other coordinate.
+        </p>
+        <div class="task">
+          <strong>Tip:</strong> make both points share the same x
+          <em>or</em> the same y (not both). The calculator tells you if they do
+          not.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="d1x">Point A — x</label
+            ><input
+              type="number"
+              id="d1x"
+              data-save
+              min="-10"
+              max="10"
+              placeholder="example: 2"
+              oninput="calcDistance()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="d1y">Point A — y</label
+            ><input
+              type="number"
+              id="d1y"
+              data-save
+              min="-10"
+              max="10"
+              placeholder="example: 3"
+              oninput="calcDistance()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="d2x">Point B — x</label
+            ><input
+              type="number"
+              id="d2x"
+              data-save
+              min="-10"
+              max="10"
+              placeholder="example: 2"
+              oninput="calcDistance()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="d2y">Point B — y</label
+            ><input
+              type="number"
+              id="d2y"
+              data-save
+              min="-10"
+              max="10"
+              placeholder="example: -5"
+              oninput="calcDistance()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcDistance()">
+          Calculate walking distance
+        </button>
+        <div class="readout" id="dist-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Absolute value = distance, never negative. |3 − (−5)| = |8| = 8. So
+            (2, 3) and (2, −5) are 8 units apart because they share x = 2.
+          </p>
+        </details>
+
+        <div class="pk-lvl2" style="margin-top: 18px">
+          <div class="task">
+            <strong
+              >Level 2 stretch — Diagonal distance (right-triangle
+              preview):</strong
+            >
+            Pick two of your places that do <em>not</em> share a coordinate. The
+            legs of the right triangle are |Δx| and |Δy|. Use the grid to count
+            them, then estimate the diagonal with Pythagoras.
+          </div>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="diagDx">Horizontal leg |Δx|</label
+              ><input
+                type="number"
+                id="diagDx"
+                data-save
+                min="0"
+                placeholder="example: 3"
+                oninput="calcDiag()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="diagDy">Vertical leg |Δy|</label
+              ><input
+                type="number"
+                id="diagDy"
+                data-save
+                min="0"
+                placeholder="example: 4"
+                oninput="calcDiag()"
+              />
+            </div>
+          </div>
+          <button class="btn alt2" type="button" onclick="calcDiag()">
+            Estimate diagonal
+          </button>
+          <div class="readout" id="diag-out"></div>
+        </div>
+
+        <!-- 1d Quick check -->
+        <div class="task" style="margin-top: 18px">
+          <strong>Quick check:</strong> What is the distance between (2, 3) and
+          (2, 9)?
+        </div>
+        <label class="fld" for="check-dist">Your answer (in units)</label>
+        <input
+          type="number"
+          id="check-dist"
+          data-save
+          placeholder="Type a number"
+        />
+        <button class="btn alt" type="button" onclick="checkDist()">
+          Check answer
+        </button>
+        <div class="feedback" id="check-distFb"></div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 worked step: both points share x = 2, so distance = |9 − 3| =
+          |6| = 6.
+        </p>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div>
+            <span class="arc-banner">Part 2 · Peer — compare maps</span>
+            <div class="skill">Compare &amp; reason · 6.NS.6 · 6.NS.8</div>
+            <h2>Compare Your Map to a Partner's</h2>
+          </div>
+        </div>
+        <p>
+          Ask a partner to plot <strong>their</strong> places. Type their
+          numbers in to auto-compare.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>
+            "Which quadrant is your favorite place in? What are its
+            coordinates?"
+          </p>
+          <p>
+            "If your two places share a row or column, how far apart are they?"
+          </p>
+          <p>"How many quadrants does your map reach into?"</p>
+          <p class="pk-es">
+            "¿En qué cuadrante está tu lugar favorito? ¿Cuáles son sus
+            coordenadas?"
+          </p>
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-quad"
+              >Partner: how many quadrants does their map reach? (1–4)</label
+            >
+            <input
+              type="number"
+              id="p-quad"
+              data-save
+              min="0"
+              max="4"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-distx"
+              >Partner Place A x (a place that shares a row/col with
+              another)</label
+            >
+            <input
+              type="number"
+              id="p-distx"
+              data-save
+              min="-10"
+              max="10"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-disty">Partner Place A y</label>
+            <input
+              type="number"
+              id="p-disty"
+              data-save
+              min="-10"
+              max="10"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-dist2x">Partner Place B x</label>
+            <input
+              type="number"
+              id="p-dist2x"
+              data-save
+              min="-10"
+              max="10"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-dist2y">Partner Place B y</label>
+            <input
+              type="number"
+              id="p-dist2y"
+              data-save
+              min="-10"
+              max="10"
+              oninput="comparePeer()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare our maps
+        </button>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <div class="pk-callout pk-no-print" style="margin-top: 14px">
+          <h3>Compare Sentence Frames</h3>
+          <p>
+            "My map reaches ___ quadrants and my partner's reaches ___, so ___
+            spans more of the plane."
+          </p>
+          <p>
+            "My walking distance is ___ units and my partner's is ___ units; the
+            difference is ___."
+          </p>
+          <p class="pk-es">
+            "Mi mapa alcanza ___ cuadrantes y el de mi compañero ___, así que
+            ___."
+          </p>
+        </div>
+        <label class="fld" for="peerReflect"
+          >Whose map covers more of the plane, and how do you know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My map reaches ___ quadrants while my partner's reaches ___, so ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner"
+              >Part 3 · World — real maps &amp; coasters</span
+            >
+            <div class="skill">Compare to real data · 6.NS.6 · 6.NS.8</div>
+            <h2>How Does Your Map Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are real-ish landmark coordinates on a city grid (origin = city
+          center) and famous roller-coaster drop heights. Pick a category and
+          see where your number lands.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="dist">
+                Landmark distance from center (units)
+              </option>
+              <option value="drop">
+                Coaster drop height (m, signed: drop = −)
+              </option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="1"
+              oninput="worldGo()"
+              placeholder="type your value"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: a walking distance from Part 1 is a great value to type here.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3 id="worldTitle">World Sample 🌍</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <thead>
+                  <tr id="worldHead"></tr>
+                </thead>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+            <p class="pk-lvl1" style="font-size: 13px; color: var(--muted)">
+              Level 1: stick with one category (landmark distance) to keep it
+              simple.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Move an attraction by ±n units along a shared row, or add a deeper
+            coaster drop, and watch the distance / minimum / average change.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="whatIfVal"
+                >New value to add to the sample</label
+              >
+              <input
+                type="number"
+                id="whatIfVal"
+                step="1"
+                placeholder="example: 12"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter a value to test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is your number bigger or smaller than the world sample average? Why
+          might that be?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My number is ___ the sample average because ___."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 question: A coaster drops from +52 m to −13 m below the
+            loading dock (0). How tall is the total drop? Show your thinking
+            with absolute value.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="|52| + |−13| = ___ because ___"
+          ></textarea>
+        </div>
+        <label class="fld" for="careful"
+          >Careful thinking: why can two maps look very different but both be
+          "correct"?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="Two maps can differ because ___ (origin choice, scale, real places)."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Pitch Your Park Blueprint</h2>
+          </div>
+        </div>
+        <p>
+          Write a short blueprint summary (3–5 sentences) using your real
+          coordinates and numbers from above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="My map's origin is ___. My ___ is at (__, __) in Quadrant __, and my ___ is at (__, __) in Quadrant __. I reflected (__, __) across the __-axis to get (__, __). The walking distance from (__, __) to (__, __) is __ units because they share the same __ and |__ − __| = __."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Blueprint Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I plotted my real
+            places and identified each quadrant.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I reflected a point
+            across an axis and explained what changed.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I calculated a walking
+            distance using absolute value.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I compared my map with
+            a partner's.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I compared a number to
+            the world sample.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> My blueprint summary
+            uses my real coordinates and numbers.
+          </li>
+        </ul>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.downloadText('park-blueprint.txt', 'reportBox')"
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your blueprint summary.
+        </div>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--navy)">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Plotting &amp; Quadrants</td>
+            <td>
+              All points correctly placed and quadrant identified with sign
+              reasoning shown
+            </td>
+            <td>All quadrants correctly identified</td>
+            <td>One or two quadrants correct; some sign errors</td>
+          </tr>
+          <tr>
+            <td>Reflections</td>
+            <td>
+              Correct new coordinates with clear explanation of which value
+              changed and why
+            </td>
+            <td>Correct new coordinates</td>
+            <td>One coordinate correct or partial reasoning</td>
+          </tr>
+          <tr>
+            <td>Distance</td>
+            <td>
+              Correct distance with absolute-value work; explains the shared
+              coordinate
+            </td>
+            <td>Correct distance calculated</td>
+            <td>Attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Compares maps and world data with clear reasoning</td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>
+              Blueprint clearly justifies every coordinate and number used
+            </td>
+            <td>Blueprint uses most coordinates</td>
+            <td>Blueprint unclear or missing values</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">
+        Neft Teacher · Unit 7 Culminating Project · Version A ·
+        <span id="yr"></span>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
+
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      // running state used by report + peer + world
+      const proj = { quadCount: null, dist: null, reflected: null, places: [] };
+
+      function quadrantName(x, y) {
+        if (x === 0 || y === 0) return "on an axis (not in any quadrant)";
+        if (x > 0 && y > 0) return "Quadrant I (+, +)";
+        if (x < 0 && y > 0) return "Quadrant II (−, +)";
+        if (x < 0 && y < 0) return "Quadrant III (−, −)";
+        return "Quadrant IV (+, −)";
+      }
+      function quadrantId(x, y) {
+        if (x === 0 || y === 0) return 0;
+        if (x > 0 && y > 0) return 1;
+        if (x < 0 && y > 0) return 2;
+        if (x < 0 && y < 0) return 3;
+        return 4;
+      }
+
+      function drawGrid(extra) {
+        const svg = $("park-svg");
+        const scale = 13;
+        let s = "";
+        for (let i = -10; i <= 10; i++) {
+          const pos = i * scale;
+          const opacity = i === 0 ? "0.8" : "0.18";
+          const sw = i === 0 ? "2" : "1";
+          s +=
+            '<line x1="' +
+            pos +
+            '" y1="-130" x2="' +
+            pos +
+            '" y2="130" stroke="#1a2633" stroke-width="' +
+            sw +
+            '" opacity="' +
+            opacity +
+            '"/>';
+          s +=
+            '<line x1="-130" y1="' +
+            pos +
+            '" x2="130" y2="' +
+            pos +
+            '" stroke="#1a2633" stroke-width="' +
+            sw +
+            '" opacity="' +
+            opacity +
+            '"/>';
+        }
+        s +=
+          '<text x="135" y="5" font-size="12" font-weight="800" fill="#1a2633">x</text>';
+        s +=
+          '<text x="3" y="-135" font-size="12" font-weight="800" fill="#1a2633">y</text>';
+        for (let i = -10; i <= 10; i += 2) {
+          if (i !== 0) {
+            s +=
+              '<text x="' +
+              (i * scale - 3) +
+              '" y="14" font-size="9" fill="#5e6e7e" text-anchor="middle">' +
+              i +
+              "</text>";
+            s +=
+              '<text x="-14" y="' +
+              (-i * scale + 4) +
+              '" font-size="9" fill="#5e6e7e" text-anchor="middle">' +
+              i +
+              "</text>";
+          }
+        }
+        s += '<text x="-8" y="14" font-size="9" fill="#5e6e7e">0</text>';
+        s += extra || "";
+        svg.innerHTML = s;
+      }
+
+      function readPlaces() {
+        const raw = [
+          {
+            name: $("p1name").value || "Place 1",
+            x: num("a1x"),
+            y: num("a1y"),
+            c: "#6d3fc0",
+            icon: "🏠",
+          },
+          {
+            name: $("p2name").value || "Place 2",
+            x: num("a2x"),
+            y: num("a2y"),
+            c: "#0e8a7d",
+            icon: "🏫",
+          },
+          {
+            name: $("p3name").value || "Place 3",
+            x: num("a3x"),
+            y: num("a3y"),
+            c: "#c45a3c",
+            icon: "📍",
+          },
+        ];
+        return raw.filter((p) => !isNaN(p.x) && !isNaN(p.y));
+      }
+
+      function plotPlaces() {
+        const pts = readPlaces();
+        const scale = 13;
+        if (!pts.length) {
+          proj.quadCount = null;
+          proj.places = [];
+          drawGrid(
+            '<circle cx="0" cy="0" r="5" fill="#d4952a"/><text x="8" y="-8" font-size="10" fill="#d4952a" font-weight="700">origin</text>',
+          );
+          $("plot-out").classList.remove("show");
+          return;
+        }
+        let html = "";
+        const quads = new Set();
+        let extra =
+          '<circle cx="0" cy="0" r="5" fill="#d4952a"/><text x="8" y="-8" font-size="10" fill="#d4952a" font-weight="700">origin</text>';
+        pts.forEach((p) => {
+          const q = quadrantId(p.x, p.y);
+          if (q) quads.add(q);
+          html +=
+            "<div style='margin:6px 0;'>" +
+            p.icon +
+            " <strong>" +
+            p.name +
+            "</strong> at (" +
+            p.x +
+            ", " +
+            p.y +
+            ") — <strong>" +
+            quadrantName(p.x, p.y) +
+            "</strong></div>";
+          const cx = p.x * scale,
+            cy = -p.y * scale;
+          extra +=
+            '<circle cx="' +
+            cx +
+            '" cy="' +
+            cy +
+            '" r="7" fill="' +
+            p.c +
+            '"/>';
+          extra +=
+            '<text x="' +
+            (cx + 10) +
+            '" y="' +
+            (cy - 8) +
+            '" font-size="11" fill="' +
+            p.c +
+            '" font-weight="800">(' +
+            p.x +
+            "," +
+            p.y +
+            ")</text>";
+        });
+        drawGrid(extra);
+        proj.quadCount = quads.size;
+        proj.places = pts;
+        html +=
+          '<div style="margin-top:8px;color:var(--green);font-weight:700;">✅ Plotted! Your map reaches ' +
+          quads.size +
+          " quadrant" +
+          (quads.size === 1 ? "" : "s") +
+          ".</div>";
+        show("plot-out", html);
+        comparePeer();
+      }
+
+      function calcReflection() {
+        const x = num("rx"),
+          y = num("ry"),
+          axis = $("raxis").value;
+        if (isNaN(x) || isNaN(y)) {
+          $("reflect-out").classList.remove("show");
+          proj.reflected = null;
+          return;
+        }
+        let nx, ny, explanation;
+        if (axis === "x") {
+          nx = x;
+          ny = -y;
+          explanation =
+            "Reflecting across the <strong>x-axis</strong> keeps x the same and negates y: (x, y) → (x, −y).";
+        } else if (axis === "y") {
+          nx = -x;
+          ny = y;
+          explanation =
+            "Reflecting across the <strong>y-axis</strong> negates x and keeps y: (x, y) → (−x, y).";
+        } else {
+          nx = -x;
+          ny = -y;
+          explanation =
+            "Reflecting across <strong>both axes</strong> negates both — the same as a 180° turn about the origin.";
+        }
+        proj.reflected = { from: [x, y], to: [nx, ny], axis: axis };
+        show(
+          "reflect-out",
+          '<div class="big">(' +
+            nx +
+            ", " +
+            ny +
+            ")</div>" +
+            "<strong>Original:</strong> (" +
+            x +
+            ", " +
+            y +
+            ") → <strong>Reflected:</strong> (" +
+            nx +
+            ", " +
+            ny +
+            ")<br><br>" +
+            explanation,
+        );
+      }
+
+      function calcDistance() {
+        const x1 = num("d1x"),
+          y1 = num("d1y"),
+          x2 = num("d2x"),
+          y2 = num("d2y");
+        if ([x1, y1, x2, y2].some(isNaN)) {
+          $("dist-out").classList.remove("show");
+          proj.dist = null;
+          return;
+        }
+        if (x1 === x2 && y1 === y2) {
+          show(
+            "dist-out",
+            "⚠️ Those are the same point — distance = 0. Enter two different points.",
+          );
+          proj.dist = null;
+          return;
+        }
+        if (x1 !== x2 && y1 !== y2) {
+          show(
+            "dist-out",
+            "⚠️ These points do <strong>not</strong> share an x or y coordinate (" +
+              x1 +
+              " ≠ " +
+              x2 +
+              " and " +
+              y1 +
+              " ≠ " +
+              y2 +
+              "). Adjust one so they share a value. (Diagonal distance is the Level 2 stretch below.)",
+          );
+          proj.dist = null;
+          return;
+        }
+        let dist, sharedLabel, diffLabel, formula;
+        if (x1 === x2) {
+          dist = Math.abs(y2 - y1);
+          sharedLabel = "x = " + x1;
+          diffLabel = "y-values";
+          formula =
+            "|" + y2 + " − (" + y1 + ")| = |" + (y2 - y1) + "| = " + dist;
+        } else {
+          dist = Math.abs(x2 - x1);
+          sharedLabel = "y = " + y1;
+          diffLabel = "x-values";
+          formula =
+            "|" + x2 + " − (" + x1 + ")| = |" + (x2 - x1) + "| = " + dist;
+        }
+        proj.dist = dist;
+        show(
+          "dist-out",
+          '<div class="big">' +
+            dist +
+            " units</div>" +
+            "A(" +
+            x1 +
+            ", " +
+            y1 +
+            ") and B(" +
+            x2 +
+            ", " +
+            y2 +
+            ") share <strong>" +
+            sharedLabel +
+            "</strong>, " +
+            "so the distance is the absolute difference of their <strong>" +
+            diffLabel +
+            "</strong>.<br>Distance = " +
+            formula +
+            ".",
+        );
+        comparePeer();
+      }
+
+      function calcDiag() {
+        const dx = Math.abs(num("diagDx")),
+          dy = Math.abs(num("diagDy"));
+        if (isNaN(dx) || isNaN(dy)) {
+          $("diag-out").classList.remove("show");
+          return;
+        }
+        const diag = Math.sqrt(dx * dx + dy * dy);
+        show(
+          "diag-out",
+          '<div class="big">≈ ' +
+            diag.toFixed(2) +
+            " units</div>" +
+            "The two legs are |Δx| = " +
+            dx +
+            " and |Δy| = " +
+            dy +
+            ". By the Pythagorean Theorem (a Grade 8 preview): " +
+            "diagonal² = " +
+            dx +
+            "² + " +
+            dy +
+            "² = " +
+            dx * dx +
+            " + " +
+            dy * dy +
+            " = " +
+            (dx * dx + dy * dy) +
+            ", so the diagonal = √" +
+            (dx * dx + dy * dy) +
+            " ≈ <strong>" +
+            diag.toFixed(2) +
+            "</strong>.",
+        );
+      }
+
+      function checkDist() {
+        const ok = PK.checkWork("check-dist", 6, 0);
+        updateProgress();
+        return ok;
+      }
+
+      /* ---- Part 2: peer compare (uses kit) ---- */
+      function comparePeer() {
+        const rows = [];
+        // quadrant span
+        const pq = num("p-quad");
+        if (proj.quadCount != null && !isNaN(pq))
+          rows.push({
+            label: "Quadrants reached",
+            me: proj.quadCount,
+            partner: pq,
+          });
+        // partner distance (if their two points share a row/col)
+        const px1 = num("p-distx"),
+          py1 = num("p-disty"),
+          px2 = num("p-dist2x"),
+          py2 = num("p-dist2y");
+        let pDist = null;
+        if (![px1, py1, px2, py2].some(isNaN)) {
+          if (px1 === px2 && py1 !== py2) pDist = Math.abs(py2 - py1);
+          else if (py1 === py2 && px1 !== px2) pDist = Math.abs(px2 - px1);
+        }
+        if (proj.dist != null && pDist != null)
+          rows.push({
+            label: "Walking distance (units)",
+            me: proj.dist,
+            partner: pDist,
+          });
+        if (!rows.length) {
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish Part 1 and enter your partner\'s numbers to compare.</p>';
+          return;
+        }
+        PK.peerCompare("peerBox", rows);
+        updateProgress();
+      }
+
+      /* ---- Part 3: world dataset + meter ---- */
+      // Landmark grid coords (origin = city center) → distance from center used as the metric.
+      // Real coaster drop heights (signed: a drop below the dock = negative).
+      const worldData = {
+        dist: {
+          title: "City Landmark Grid 🗺️ (origin = center)",
+          head: ["Landmark", "(x, y)", "Dist. from center"],
+          // distance from center = |x| + |y| (taxicab) for a 6th-grade friendly metric on shared rows/cols
+          rows: [
+            ["Statue of Liberty, NYC", [-3, -4], 7],
+            ["Eiffel Tower, Paris", [-2, 3], 5],
+            ["Sydney Opera House", [5, -2], 7],
+            ["Tokyo Tower", [4, 4], 8],
+            ["Christ the Redeemer, Rio", [-6, -5], 11],
+            ["Big Ben, London", [1, 2], 3],
+          ],
+          sample: function () {
+            return this.rows.map((r) => r[2]);
+          },
+        },
+        drop: {
+          title: "Famous Coaster Drops 🎢 (drop = negative)",
+          head: ["Coaster", "Park", "Drop (m)"],
+          rows: [
+            ["Kingda Ka", "NJ, USA", -127],
+            ["Top Thrill 2", "OH, USA", -128],
+            ["Fury 325", "NC, USA", -98],
+            ["Steel Dragon 2000", "Japan", -94],
+            ["Leviathan", "Canada", -93],
+            ["Goliath", "CA, USA", -78],
+          ],
+          sample: function () {
+            return this.rows.map((r) => r[2]);
+          },
+        },
+      };
+
+      function renderWorld() {
+        const cat = $("worldCat").value;
+        const d = worldData[cat];
+        $("worldTitle").textContent = d.title;
+        $("worldHead").innerHTML = d.head
+          .map((h) => "<th>" + h + "</th>")
+          .join("");
+        $("worldRows").innerHTML = d.rows
+          .map((r) => {
+            if (cat === "dist")
+              return (
+                "<tr><td>" +
+                r[0] +
+                "</td><td>(" +
+                r[1][0] +
+                ", " +
+                r[1][1] +
+                ")</td><td>" +
+                r[2] +
+                "</td></tr>"
+              );
+            return (
+              "<tr><td>" +
+              r[0] +
+              "</td><td>" +
+              r[1] +
+              "</td><td>" +
+              r[2] +
+              "</td></tr>"
+            );
+          })
+          .join("");
+      }
+      function worldSample() {
+        return worldData[$("worldCat").value].sample();
+      }
+      function worldGo() {
+        renderWorld();
+        const my = num("myWorld");
+        const cat = $("worldCat").value;
+        const labels =
+          cat === "drop"
+            ? { mean: "Avg drop", me: "Me" }
+            : { mean: "Avg dist", me: "Me" };
+        PK.worldMeter("worldMeter", worldSample(), my, labels);
+        updateProgress();
+      }
+      function runWhatIf() {
+        const v = parseFloat($("whatIfVal").value);
+        const sample = worldSample();
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
+          return;
+        }
+        const beforeMin = Math.min.apply(null, sample);
+        const afterArr = sample.concat([v]);
+        const afterMin = Math.min.apply(null, afterArr);
+        PK.whatIf(
+          "whatIfBox",
+          { average: PK.mean(sample).toFixed(2), min: beforeMin },
+          { average: PK.mean(afterArr).toFixed(2), min: afterMin },
+          "Adding a value of " + v + " to the sample:",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          p1name: "Home",
+          a1x: 0,
+          a1y: 0,
+          p2name: "School",
+          a2x: 5,
+          a2y: -3,
+          p3name: "Park",
+          a3x: -7,
+          a3y: 4,
+          rx: 3,
+          ry: 4,
+          raxis: "x",
+          d1x: 2,
+          d1y: 3,
+          d2x: 2,
+          d2y: -5,
+          diagDx: 3,
+          diagDy: 4,
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      function recalcAll() {
+        plotPlaces();
+        calcReflection();
+        calcDistance();
+        calcDiag();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const v = (id) => $(id).value || "(blank)";
+        return (
+          "THEME PARK MAP DESIGNER — MY BLUEPRINT\n" +
+          "======================================\n\n" +
+          "PART 1: MY MAP (SELF)\n" +
+          "Origin (0,0): " +
+          v("p1name") +
+          "\n" +
+          proj.places
+            .map(
+              (p) =>
+                "  " +
+                p.name +
+                " at (" +
+                p.x +
+                ", " +
+                p.y +
+                ") — " +
+                quadrantName(p.x, p.y),
+            )
+            .join("\n") +
+          "\n" +
+          "Quadrants reached: " +
+          (proj.quadCount == null ? "(not finished)" : proj.quadCount) +
+          "\n" +
+          "Reflection: " +
+          (proj.reflected
+            ? "(" +
+              proj.reflected.from.join(", ") +
+              ") over " +
+              proj.reflected.axis +
+              "-axis → (" +
+              proj.reflected.to.join(", ") +
+              ")"
+            : "(not finished)") +
+          "\n" +
+          "Walking distance: " +
+          (proj.dist == null ? "(not finished)" : proj.dist + " units") +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "Partner quadrants: " +
+          ($("p-quad").value || "-") +
+          "\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "My value vs world: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n" +
+          "Careful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "BLUEPRINT PITCH:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["quadrants_reached", proj.quadCount],
+          ["walking_distance", proj.dist],
+          [
+            "reflection",
+            proj.reflected
+              ? "(" +
+                proj.reflected.from.join(" ") +
+                ") " +
+                proj.reflected.axis +
+                " -> (" +
+                proj.reflected.to.join(" ") +
+                ")"
+              : "",
+          ],
+          ["partner", $("partnerName").value],
+          ["partner_quadrants", $("p-quad").value],
+        ];
+        proj.places.forEach((p, i) =>
+          rows.push([
+            "place_" + (i + 1),
+            p.name + " (" + p.x + "," + p.y + ")",
+          ]),
+        );
+        PK.downloadCsv("park-blueprint-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // up to 4
+        const distOk = $("check-distFb").querySelector(".pk-ok") ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const peer = $("p-quad").value || $("p-distx").value ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + distOk + checks + peer + wrld + pitch; // up to 4+1+6+1+1+1 = 14
+        const pct = Math.min(100, Math.round((total / 14) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills two friendly places if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          const empty = !$("a1x").value && !$("a2x").value;
+          if (empty) {
+            $("p1name").value = "Home";
+            $("a1x").value = 0;
+            $("a1y").value = 0;
+            $("p2name").value = "School";
+            $("a2x").value = 4;
+            $("a2y").value = 0;
+            plotPlaces();
+          }
+        }
+      };
+
+      /* ---- init (runs after deferred kit script is ready) ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        drawGrid(
+          '<circle cx="0" cy="0" r="5" fill="#d4952a"/><text x="8" y="-8" font-size="10" fill="#d4952a" font-weight="700">origin</text>',
+        );
+        renderWorld();
+        PK.initLevel({ storageKey: "u7ProjectA", default: "level-1" });
+        PK.load("u7ProjectA", { after: recalcAll });
+        updateProgress();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

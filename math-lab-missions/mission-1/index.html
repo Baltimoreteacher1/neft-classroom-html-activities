@@ -1,0 +1,1851 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.NS.B.4 · Unit 1" data-standard="6.NS.B.4" data-unit="1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 1: Factors and Multiples (6.NS.B.4) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --soft-red: #fef2f2;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 340px;
+        height: auto;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+
+      .language-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .language-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn-ghost {
+        background: var(--soft-teal);
+        border-color: #a7d8d0;
+        color: var(--teal-dark);
+      }
+
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .vocab-grid {
+          grid-template-columns: 1fr;
+        }
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a class="disabled" aria-disabled="true">Previous Mission</a>
+          <a href="../mission-2/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 1 &middot; Unit 1</p>
+          <h1 id="mission-title">Factors and Multiples</h1>
+          <span class="standards">6.NS.B.4 &middot; Unit 1</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Find the greatest common factor and use the distributive property.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="scenario">
+            The school kitchen needs to pack
+            <strong>120 granola bars</strong> and
+            <strong>84 juice boxes</strong> into identical snack bags for Field
+            Day. Every bag must have the same number of granola bars and the
+            same number of juice boxes, with nothing left over. Your team must
+            figure out every possible bag size, recommend the best option, and
+            prove it works using factors, the GCF, and the distributive
+            property.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 340 400"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Snack bags with granola bars and juice boxes arranged in equal groups"
+          >
+            <!-- Background -->
+            <rect width="340" height="400" rx="16" fill="#edf5ff" />
+            <!-- Table surface -->
+            <rect
+              x="20"
+              y="280"
+              width="300"
+              height="100"
+              rx="8"
+              fill="#d4a76a"
+              opacity="0.3"
+            />
+            <rect x="20" y="280" width="300" height="8" rx="4" fill="#c49a5e" />
+            <!-- Bag 1 -->
+            <rect
+              x="30"
+              y="160"
+              width="80"
+              height="120"
+              rx="10"
+              fill="#fff"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <path
+              d="M40 160 Q70 140 100 160"
+              fill="none"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="70"
+              y="152"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#23395d"
+            >
+              BAG 1
+            </text>
+            <!-- Granola bars in bag 1 -->
+            <rect x="40" y="175" width="24" height="10" rx="3" fill="#b7791f" />
+            <rect x="40" y="190" width="24" height="10" rx="3" fill="#b7791f" />
+            <rect x="40" y="205" width="24" height="10" rx="3" fill="#b7791f" />
+            <rect x="40" y="220" width="24" height="10" rx="3" fill="#b7791f" />
+            <rect x="40" y="235" width="24" height="10" rx="3" fill="#b7791f" />
+            <rect x="40" y="250" width="24" height="10" rx="3" fill="#b7791f" />
+            <!-- Juice boxes in bag 1 -->
+            <rect x="72" y="178" width="18" height="24" rx="3" fill="#207a7a" />
+            <rect x="72" y="210" width="18" height="24" rx="3" fill="#207a7a" />
+            <rect x="72" y="242" width="18" height="24" rx="3" fill="#207a7a" />
+            <rect x="72" y="174" width="18" height="6" rx="2" fill="#135f60" />
+            <rect x="72" y="206" width="18" height="6" rx="2" fill="#135f60" />
+            <rect x="72" y="238" width="18" height="6" rx="2" fill="#135f60" />
+            <!-- Bag 2 -->
+            <rect
+              x="130"
+              y="160"
+              width="80"
+              height="120"
+              rx="10"
+              fill="#fff"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <path
+              d="M140 160 Q170 140 200 160"
+              fill="none"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="170"
+              y="152"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#23395d"
+            >
+              BAG 2
+            </text>
+            <rect
+              x="140"
+              y="175"
+              width="24"
+              height="10"
+              rx="3"
+              fill="#b7791f"
+            />
+            <rect
+              x="140"
+              y="190"
+              width="24"
+              height="10"
+              rx="3"
+              fill="#b7791f"
+            />
+            <rect
+              x="140"
+              y="205"
+              width="24"
+              height="10"
+              rx="3"
+              fill="#b7791f"
+            />
+            <rect
+              x="140"
+              y="220"
+              width="24"
+              height="10"
+              rx="3"
+              fill="#b7791f"
+            />
+            <rect
+              x="140"
+              y="235"
+              width="24"
+              height="10"
+              rx="3"
+              fill="#b7791f"
+            />
+            <rect
+              x="140"
+              y="250"
+              width="24"
+              height="10"
+              rx="3"
+              fill="#b7791f"
+            />
+            <rect
+              x="172"
+              y="178"
+              width="18"
+              height="24"
+              rx="3"
+              fill="#207a7a"
+            />
+            <rect
+              x="172"
+              y="210"
+              width="18"
+              height="24"
+              rx="3"
+              fill="#207a7a"
+            />
+            <rect
+              x="172"
+              y="242"
+              width="18"
+              height="24"
+              rx="3"
+              fill="#207a7a"
+            />
+            <rect x="172" y="174" width="18" height="6" rx="2" fill="#135f60" />
+            <rect x="172" y="206" width="18" height="6" rx="2" fill="#135f60" />
+            <rect x="172" y="238" width="18" height="6" rx="2" fill="#135f60" />
+            <!-- Bag 3 (partial, showing pattern continues) -->
+            <rect
+              x="230"
+              y="160"
+              width="80"
+              height="120"
+              rx="10"
+              fill="#fff"
+              stroke="#23395d"
+              stroke-width="2"
+              stroke-dasharray="6,4"
+            />
+            <text
+              x="270"
+              y="225"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              ...
+            </text>
+            <!-- Labels -->
+            <text
+              x="170"
+              y="35"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Field Day Snack Packing
+            </text>
+            <text
+              x="170"
+              y="58"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              120 granola bars + 84 juice boxes
+            </text>
+            <!-- Arrow with GCF label -->
+            <rect
+              x="100"
+              y="70"
+              width="140"
+              height="36"
+              rx="18"
+              fill="#207a7a"
+            />
+            <text
+              x="170"
+              y="93"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              GCF = ? bags
+            </text>
+            <!-- Decorative math symbols -->
+            <text x="30" y="110" font-size="22" fill="#b7791f" opacity="0.5">
+              x
+            </text>
+            <text x="290" y="130" font-size="22" fill="#207a7a" opacity="0.5">
+              =
+            </text>
+            <text x="60" y="130" font-size="18" fill="#23395d" opacity="0.4">
+              120
+            </text>
+            <text x="250" y="110" font-size="18" fill="#23395d" opacity="0.4">
+              84
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the snack-packing problem aloud, makes sure everyone
+                  lists factors before the team picks a bag size, and watches
+                  the timer.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Draws factor rainbows or T-charts for 120 and 84, circles
+                  common factors, and writes the distributive property
+                  equation.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Verifies that each factor pair multiplies correctly, checks
+                  that items divide evenly into bags, and confirms no
+                  leftovers.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: states the recommended bag size, shows
+                  the GCF evidence, and explains one mistake the team
+                  caught.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>
+                The school kitchen has <strong>120 granola bars</strong> and
+                <strong>84 juice boxes</strong>. They need to make identical
+                snack bags for Field Day. Each bag must have the same number of
+                granola bars and the same number of juice boxes. No items can be
+                left over.
+              </p>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>
+                  Find all possible bag sizes (how many bags can you make?).
+                </li>
+                <li>
+                  For each bag size, tell how many granola bars and juice boxes
+                  go in each bag.
+                </li>
+                <li>Recommend the best bag size and explain why.</li>
+                <li>
+                  Use the distributive property to verify: GCF x (items per bag)
+                  = total items.
+                </li>
+              </ol>
+            </div>
+
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 560 260"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Factor T-charts for 120 and 84 showing common factors highlighted"
+              >
+                <!-- 120 T-chart -->
+                <rect
+                  x="10"
+                  y="10"
+                  width="240"
+                  height="240"
+                  rx="8"
+                  fill="#fff"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="130"
+                  y="38"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  Factors of 120
+                </text>
+                <line
+                  x1="130"
+                  y1="48"
+                  x2="130"
+                  y2="240"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <line
+                  x1="20"
+                  y1="48"
+                  x2="240"
+                  y2="48"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <!-- Factor pairs -->
+                <text
+                  x="70"
+                  y="70"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  1
+                </text>
+                <text
+                  x="190"
+                  y="70"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  120
+                </text>
+                <text
+                  x="70"
+                  y="92"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  2
+                </text>
+                <text
+                  x="190"
+                  y="92"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  60
+                </text>
+                <text
+                  x="70"
+                  y="114"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  3
+                </text>
+                <text
+                  x="190"
+                  y="114"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  40
+                </text>
+                <text
+                  x="70"
+                  y="136"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  4
+                </text>
+                <text
+                  x="190"
+                  y="136"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  30
+                </text>
+                <text
+                  x="70"
+                  y="158"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  5
+                </text>
+                <text
+                  x="190"
+                  y="158"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  24
+                </text>
+                <text
+                  x="70"
+                  y="180"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  6
+                </text>
+                <text
+                  x="190"
+                  y="180"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  20
+                </text>
+                <text
+                  x="70"
+                  y="202"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  8
+                </text>
+                <text
+                  x="190"
+                  y="202"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  15
+                </text>
+                <text
+                  x="70"
+                  y="224"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  10
+                </text>
+                <text
+                  x="190"
+                  y="224"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  12
+                </text>
+                <!-- 84 T-chart -->
+                <rect
+                  x="310"
+                  y="10"
+                  width="240"
+                  height="240"
+                  rx="8"
+                  fill="#fff"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="430"
+                  y="38"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  Factors of 84
+                </text>
+                <line
+                  x1="430"
+                  y1="48"
+                  x2="430"
+                  y2="240"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <line
+                  x1="320"
+                  y1="48"
+                  x2="540"
+                  y2="48"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <text
+                  x="370"
+                  y="70"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  1
+                </text>
+                <text
+                  x="490"
+                  y="70"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  84
+                </text>
+                <text
+                  x="370"
+                  y="92"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  2
+                </text>
+                <text
+                  x="490"
+                  y="92"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  42
+                </text>
+                <text
+                  x="370"
+                  y="114"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  3
+                </text>
+                <text
+                  x="490"
+                  y="114"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  28
+                </text>
+                <text
+                  x="370"
+                  y="136"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  4
+                </text>
+                <text
+                  x="490"
+                  y="136"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  21
+                </text>
+                <text
+                  x="370"
+                  y="158"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  6
+                </text>
+                <text
+                  x="490"
+                  y="158"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  14
+                </text>
+                <text
+                  x="370"
+                  y="180"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                >
+                  7
+                </text>
+                <text
+                  x="490"
+                  y="180"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  12
+                </text>
+                <!-- Common factors highlight -->
+                <rect
+                  x="120"
+                  y="245"
+                  width="320"
+                  height="8"
+                  rx="4"
+                  fill="#207a7a"
+                  opacity="0.3"
+                />
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>List all factor pairs of 120</strong>
+                Start with 1 x 120. Check 2, 3, 4, and keep going until the
+                factors repeat. Use a T-chart to organize your pairs.
+                <p class="guiding-q">
+                  How do you know when you have found all the factor pairs?
+                </p>
+              </li>
+              <li>
+                <strong>List all factor pairs of 84</strong>
+                Do the same for 84. Start with 1 x 84 and check every number up
+                to the square root.
+                <p class="guiding-q">
+                  Which small numbers do NOT divide evenly into 84? How can you
+                  tell quickly?
+                </p>
+              </li>
+              <li>
+                <strong>Circle the common factors</strong>
+                Compare both lists. Mark every number that appears as a factor
+                of BOTH 120 and 84. These are the possible bag sizes.
+                <p class="guiding-q">
+                  How many common factors did you find? Which one is the
+                  greatest?
+                </p>
+              </li>
+              <li>
+                <strong>Find the GCF and calculate items per bag</strong>
+                The Greatest Common Factor tells you the most bags you can make.
+                Divide: 120 / GCF = granola bars per bag. 84 / GCF = juice boxes
+                per bag.
+                <p class="guiding-q">
+                  Does your answer make sense? Are both quotients whole numbers?
+                </p>
+              </li>
+              <li>
+                <strong>Write the distributive property equation</strong>
+                Show that GCF x (granola bars per bag + juice boxes per bag) =
+                total items. For example: 12 x (10 + 7) = 12 x 10 + 12 x 7 = 120
+                + 84 = 204.
+                <p class="guiding-q">
+                  Why does the distributive property help prove your answer is
+                  correct?
+                </p>
+              </li>
+              <li>
+                <strong>Choose the best bag size and defend it</strong>
+                Think about what is practical. Too few bags means too many items
+                per bag (heavy!). Too many bags means only 1 item each. What is
+                the best balance?
+                <p class="guiding-q">
+                  If a parent says "That bag is too heavy for a 6th grader," how
+                  would you change your recommendation?
+                </p>
+              </li>
+            </ol>
+
+            <!-- Language SUPPORT -->
+            <div class="language-box">
+              <h3>Language Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Factor:</strong> A number that divides evenly into
+                  another (no remainder)
+                </div>
+                <div class="vocab-item">
+                  <strong>Multiple:</strong> The result when you multiply a
+                  number by a whole number
+                </div>
+                <div class="vocab-item">
+                  <strong>GCF:</strong> Greatest Common Factor - the biggest
+                  number that divides into two or more numbers
+                </div>
+                <div class="vocab-item">
+                  <strong>Distributive Property:</strong> a x (b + c) = a x b +
+                  a x c
+                </div>
+                <div class="vocab-item">
+                  <strong>Factor pair:</strong> Two numbers that multiply to
+                  give a product
+                </div>
+                <div class="vocab-item">
+                  <strong>Divide evenly:</strong> No remainder (leftover) when
+                  you divide
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "___ is a factor of ___ because ___ divides into ___ with no
+                  remainder."
+                </li>
+                <li>"The common factors of ___ and ___ are ___."</li>
+                <li>
+                  "The GCF is ___ because it is the largest factor they share."
+                </li>
+                <li>
+                  "Using the distributive property: ___ x (___ + ___) = ___."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>T-Chart</h4>
+                <p>
+                  List factor pairs in two columns. Circle shared factors in
+                  both charts.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Factor Rainbow</h4>
+                <p>
+                  Write factors in order. Draw arcs connecting pairs that
+                  multiply to the number.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Equation</h4>
+                <p>
+                  GCF x (items per bag) = total. Use distributive property to
+                  verify.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <!-- TIMED PHASES -->
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Launch phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  03:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="3"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">3 min</span>
+                  <span class="phase-title">Launch</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the Field Day snack problem aloud. Assign roles. Each
+                    person underlines the key numbers (120 and 84) and the
+                    question (how many bags?).
+                  </p>
+                  <p class="guiding-q">
+                    What does "identical bags" mean? What does "no leftovers"
+                    tell us mathematically?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: every team member can say what the problem
+                    is asking.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span>
+                  <span class="phase-title">Build</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Model Builder creates T-charts for both 120 and 84. The
+                    whole team helps find factor pairs. Circle common factors on
+                    both charts.
+                  </p>
+                  <p class="guiding-q">
+                    How can you check if a number is a factor without a
+                    calculator? (Think about divisibility rules.)
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: you have complete factor lists for both
+                    numbers and common factors circled.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span>
+                  <span class="phase-title">Solve</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Identify the GCF. Calculate items per bag: 120 / GCF and 84
+                    / GCF. Write the distributive property equation. Precision
+                    Checker verifies all division and multiplication.
+                  </p>
+                  <p class="guiding-q">
+                    If your division does not come out even, what does that tell
+                    you about your GCF?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: you have a verified GCF, items-per-bag
+                    counts, and a distributive property equation.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span>
+                  <span class="phase-title">Defend</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares the presentation. State the GCF, show the
+                    T-charts, read the distributive property equation, and
+                    explain why the recommended bag size is the best practical
+                    choice.
+                  </p>
+                  <p class="guiding-q">
+                    What is one mistake your team made, and how did you fix it?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: Reporter can explain the full solution in
+                    under 60 seconds.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                The kitchen just found <strong>60 extra water bottles</strong>.
+                Now they need bags with granola bars, juice boxes, AND water
+                bottles -- all equal, no leftovers. Find the new GCF of 120, 84,
+                and 60. How does adding a third item change the number of
+                possible bag sizes?
+              </p>
+            </div>
+
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                the kitchen had 126 juice boxes instead of 84? Would the GCF
+                change?
+              </li>
+              <li>
+                you could have up to 5 items left over? How would that change
+                your answer?
+              </li>
+              <li>
+                a teacher said "I need at least 15 bags"? Which common factors
+                work now?
+              </li>
+            </ul>
+
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Factories use GCF thinking every day. When a company packages
+              different products in combo packs, they find common factors to
+              avoid waste. Event planners do the same when setting up equal
+              tables.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>What is the GCF of 120 and 84, and how did you find it?</li>
+              <li>
+                How many granola bars and juice boxes go in each bag? Show your
+                division.
+              </li>
+              <li>Write and explain your distributive property equation.</li>
+              <li>
+                Why is the GCF the BEST bag size, not just any common factor?
+              </li>
+              <li>How did your team check that there are zero leftovers?</li>
+            </ol>
+
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>
+                "Our team found that the GCF of 120 and 84 is ___ because..."
+              </li>
+              <li>
+                "Each bag will have ___ granola bars and ___ juice boxes."
+              </li>
+              <li>
+                "We verified using the distributive property: ___ x (___ + ___)
+                = ___."
+              </li>
+              <li>"We recommend ___ bags because..."</li>
+            </ul>
+
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Clear Claim</strong>
+                State the GCF and bag count
+              </div>
+              <div class="rubric-item">
+                <strong>Math Evidence</strong>
+                Show T-charts, division, and distributive property
+              </div>
+              <div class="rubric-item">
+                <strong>Reasonableness</strong>
+                Explain why the answer makes real-world sense
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>T-charts for 120 and 84 with all factor pairs</li>
+                <li>Common factors circled and GCF identified</li>
+                <li>Division showing items per bag (120/GCF and 84/GCF)</li>
+                <li>Distributive property equation written out</li>
+                <li>One-sentence recommendation for the best bag size</li>
+                <li>
+                  Three-sentence defense: claim, evidence, reasonableness check
+                </li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <!-- PRINT WORKSPACE -->
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Factors of 120:</strong></p>
+        <br /><br />
+        <p><strong>Factors of 84:</strong></p>
+        <br /><br />
+        <p><strong>Common Factors:</strong></p>
+        <br />
+        <p><strong>GCF:</strong></p>
+        <br />
+        <p><strong>Distributive Property Equation:</strong></p>
+        <br />
+        <p><strong>Recommendation and Defense:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0;
+        var remainingSeconds = phases[0].minutes * 60;
+        var timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay");
+        var activePhaseLabel = document.getElementById("activePhaseLabel");
+        var phaseList = document.getElementById("phaseList");
+
+        function formatTime(s) {
+          var m = Math.floor(s / 60);
+          var r = s % 60;
+          return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+        }
+
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+
+        function selectPhase(index) {
+          stopTimer();
+          activePhaseIndex = index;
+          remainingSeconds = phases[index].minutes * 60;
+          activePhaseLabel.textContent = phases[index].title + " phase";
+          timerDisplay.textContent = formatTime(remainingSeconds);
+          var articles = phaseList.querySelectorAll(".phase");
+          articles.forEach(function (a, i) {
+            a.classList.toggle("is-open", i === index);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              i === index ? "true" : "false",
+            );
+          });
+        }
+
+        phaseList.addEventListener("click", function (e) {
+          var toggle = e.target.closest(".phase-toggle");
+          if (toggle) selectPhase(Number(toggle.dataset.phase));
+        });
+
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent =
+                  phases[activePhaseIndex].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            selectPhase(activePhaseIndex);
+          });
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

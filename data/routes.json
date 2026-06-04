@@ -1,31 +1,38 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Neft Hub Route Registry",
-  "updated": "2026-05-25",
+  "updated": "2026-06-02",
   "rules": {
     "canonicalRoot": "/",
     "productionBranch": "main",
     "cloudflareBuildOutput": "/",
-    "privacyNote": "Use neutral public route names for personal practice pages. Avoid child-identifying or private family details in public paths."
+    "privacyNote": "Avoid child-identifying or private family details in public paths and in the public homepage nav. Routes marked \"visibility\":\"private\" must NOT be linked from the public student hub (index.html); they stay reachable by direct URL only. Fields: audience = student|teacher|family|admin, visibility = public|teacher|private."
   },
   "routes": [
     {
       "id": "neft-hub",
       "title": "Neft Hub",
       "path": "/",
-      "family": ["professional", "personal", "reading"],
+      "family": [
+        "professional",
+        "reading"
+      ],
       "group": "core",
       "kicker": "Home",
-      "description": "Single front door for professional teacher work, personal practice, reading resources, and recurring workflows.",
+      "audience": "student",
+      "visibility": "public",
+      "description": "Single front door for classroom math, reading, language practice, and teacher workflows.",
       "cta": "Open Neft Hub",
       "featured": true,
-      "search": "home hub neft professional personal reading"
+      "search": "home hub neft professional reading"
     },
     {
       "id": "professional-hub",
       "title": "Professional Hub",
       "path": "/teacher-tools/",
-      "family": ["professional"],
+      "family": [
+        "professional"
+      ],
       "group": "core",
       "kicker": "Professional",
       "description": "Teacher-facing dashboard for planning, data, classroom workflow, instruction, and deployment tools.",
@@ -37,9 +44,14 @@
       "id": "neftos-command-center",
       "title": "NeftOS Command Center",
       "path": "/teacher-tools/neftos-command-center/",
-      "family": ["professional", "personal"],
+      "family": [
+        "professional",
+        "personal"
+      ],
       "group": "core",
       "kicker": "Command",
+      "audience": "admin",
+      "visibility": "private",
       "description": "Local-first command center for daily priorities, reusable prompts, QA checks, and project planning.",
       "cta": "Open command center",
       "featured": true,
@@ -49,7 +61,9 @@
       "id": "forecast-engine",
       "title": "Neft Learning Forecast Engine",
       "path": "/teacher-tools/forecast-engine/",
-      "family": ["professional"],
+      "family": [
+        "professional"
+      ],
       "group": "data",
       "kicker": "Evidence",
       "description": "Evidence review, readiness forecasting, small groups, and intervention planning.",
@@ -61,7 +75,9 @@
       "id": "data-studio",
       "title": "Data Studio",
       "path": "/statistics-data/data-studio/",
-      "family": ["professional"],
+      "family": [
+        "professional"
+      ],
       "group": "data",
       "kicker": "Data",
       "description": "Charts, grouping, summaries, predictions, and plain-language classroom data analysis.",
@@ -70,10 +86,26 @@
       "search": "data studio charts dashboard statistics grouping analysis"
     },
     {
+      "id": "lesson-plan-generator",
+      "title": "Neft Teacher Lesson Plan Generator",
+      "path": "/teacher-tools/lesson-plan-generator/",
+      "family": [
+        "professional"
+      ],
+      "group": "planning",
+      "kicker": "Planning",
+      "description": "Turn lesson inputs, standards, and supports into a polished, printable 10-section flagship lesson plan.",
+      "cta": "Build a lesson plan",
+      "featured": true,
+      "search": "lesson plan generator planning standards objective supports differentiation printable"
+    },
+    {
       "id": "math-section",
       "title": "Math Section",
       "path": "/math/",
-      "family": ["professional"],
+      "family": [
+        "professional"
+      ],
       "group": "curriculum",
       "kicker": "Math",
       "description": "Grade 6 math units, resources, and classroom activities.",
@@ -83,21 +115,42 @@
     },
     {
       "id": "esol-section",
-      "title": "ESOL Section",
+      "title": "Reading & Language",
       "path": "/esol/",
-      "family": ["professional"],
+      "family": [
+        "professional"
+      ],
       "group": "curriculum",
-      "kicker": "ESOL",
+      "kicker": "Reading & Language",
       "description": "Language supports, newcomer access, reading, writing, and scaffolded activities.",
-      "cta": "Browse ESOL",
+      "cta": "Browse Reading & Language",
       "featured": true,
       "search": "esol language supports newcomer reading writing vocabulary"
+    },
+    {
+      "id": "refugee-guided-review",
+      "title": "Refugee Guided Review",
+      "path": "/refugee/",
+      "family": [
+        "personal",
+        "reading",
+        "professional"
+      ],
+      "group": "reading",
+      "kicker": "Reading",
+      "description": "Visual page-section review for Refugee pages 1-252 with characters, events, themes, quote-finder clues, and oral review supports.",
+      "cta": "Open Refugee review",
+      "featured": true,
+      "search": "refugee guided review pages 1 252 josef isabel mahmoud reading noam"
     },
     {
       "id": "blood-on-the-river",
       "title": "Blood on the River",
       "path": "/blood-on-the-river/",
-      "family": ["professional", "reading"],
+      "family": [
+        "professional",
+        "reading"
+      ],
       "group": "reading",
       "kicker": "Reading",
       "description": "Complete chapter-by-chapter interactive reading collection with vocabulary, scenes, quote explanations, and checks.",
@@ -109,9 +162,13 @@
       "id": "hebrew-reading-practice",
       "title": "Hebrew Reading Practice",
       "path": "/practice/hebrew-reading/",
-      "family": ["personal"],
+      "family": [
+        "personal"
+      ],
       "group": "personal",
       "kicker": "Personal",
+      "audience": "family",
+      "visibility": "private",
       "description": "Short routines, review links, confidence checks, and practice focus areas.",
       "cta": "Open practice page",
       "featured": true,
@@ -120,10 +177,14 @@
     {
       "id": "hebrew-review",
       "title": "Hebrew Review",
-      "path": "/hebrew",
-      "family": ["personal"],
+      "path": "/esol-reading-writing/noamhebrewreview/",
+      "family": [
+        "personal"
+      ],
       "group": "personal",
       "kicker": "Review",
+      "audience": "family",
+      "visibility": "private",
       "description": "Existing review page for vocabulary, decoding, and word reading practice.",
       "cta": "Open Hebrew review",
       "featured": false,
@@ -133,7 +194,10 @@
       "id": "blood-on-the-river-chapter-1",
       "title": "Blood on the River · Chapter 1",
       "path": "/blood-on-the-river/chapter-1/",
-      "family": ["personal", "reading"],
+      "family": [
+        "personal",
+        "reading"
+      ],
       "group": "reading",
       "kicker": "Chapter 1",
       "description": "Chapter-based reading support with vocabulary, passage scenes, quote popups, and student checks.",
@@ -148,27 +212,298 @@
       "title": "Blood on the River Chapters",
       "basePath": "/blood-on-the-river/chapter-",
       "chapterCount": 27,
-      "family": ["reading", "professional", "personal"]
+      "family": [
+        "reading",
+        "professional",
+        "personal"
+      ]
     }
   ],
   "redirects": [
-    { "source": "/hub", "destination": "/", "status": 301 },
-    { "source": "/neft-hub", "destination": "/", "status": 301 },
-    { "source": "/home", "destination": "/", "status": 301 },
-    { "source": "/start", "destination": "/", "status": 301 },
-    { "source": "/tools", "destination": "/teacher-tools/", "status": 301 },
-    { "source": "/professional", "destination": "/teacher-tools/", "status": 301 },
-    { "source": "/professional-hub", "destination": "/teacher-tools/", "status": 301 },
-    { "source": "/neftos", "destination": "/teacher-tools/neftos-command-center/", "status": 301 },
-    { "source": "/command-center", "destination": "/teacher-tools/neftos-command-center/", "status": 301 },
-    { "source": "/forecast", "destination": "/teacher-tools/forecast-engine/", "status": 301 },
-    { "source": "/forecast-engine", "destination": "/teacher-tools/forecast-engine/", "status": 301 },
-    { "source": "/data-studio", "destination": "/statistics-data/data-studio/", "status": 301 },
-    { "source": "/blood", "destination": "/blood-on-the-river/", "status": 301 },
-    { "source": "/hebrew-practice", "destination": "/practice/hebrew-reading/", "status": 301 },
-    { "source": "/personal-practice", "destination": "/practice/hebrew-reading/", "status": 301 },
-    { "source": "/hebrew", "destination": "/esol-reading-writing/noamhebrewreview/", "status": 301 },
-    { "source": "/math-6", "destination": "/math/", "status": 301 },
-    { "source": "/esol-supports", "destination": "/esol/", "status": 301 }
+    {
+      "source": "/me",
+      "destination": "/personal/",
+      "status": 301
+    },
+    {
+      "source": "/hub",
+      "destination": "/",
+      "status": 301
+    },
+    {
+      "source": "/neft-hub",
+      "destination": "/",
+      "status": 301
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "status": 301
+    },
+    {
+      "source": "/start",
+      "destination": "/",
+      "status": 301
+    },
+    {
+      "source": "/tools",
+      "destination": "/teacher-tools/",
+      "status": 301
+    },
+    {
+      "source": "/professional",
+      "destination": "/teacher-tools/",
+      "status": 301
+    },
+    {
+      "source": "/professional-hub",
+      "destination": "/teacher-tools/",
+      "status": 301
+    },
+    {
+      "source": "/neftos",
+      "destination": "/teacher-tools/neftos-command-center/",
+      "status": 301
+    },
+    {
+      "source": "/command-center",
+      "destination": "/teacher-tools/neftos-command-center/",
+      "status": 301
+    },
+    {
+      "source": "/forecast",
+      "destination": "/teacher-tools/forecast-engine/",
+      "status": 301
+    },
+    {
+      "source": "/forecast-engine",
+      "destination": "/teacher-tools/forecast-engine/",
+      "status": 301
+    },
+    {
+      "source": "/data-studio",
+      "destination": "/statistics-data/data-studio/",
+      "status": 301
+    },
+    {
+      "source": "/lesson-plan",
+      "destination": "/teacher-tools/lesson-plan-generator/",
+      "status": 301
+    },
+    {
+      "source": "/lesson-plan-generator",
+      "destination": "/teacher-tools/lesson-plan-generator/",
+      "status": 301
+    },
+    {
+      "source": "/refugee-review",
+      "destination": "/refugee/",
+      "status": 301
+    },
+    {
+      "source": "/refugee-book",
+      "destination": "/refugee/",
+      "status": 301
+    },
+    {
+      "source": "/refugee-pages",
+      "destination": "/refugee/",
+      "status": 301
+    },
+    {
+      "source": "/blood",
+      "destination": "/blood-on-the-river/",
+      "status": 301
+    },
+    {
+      "source": "/math-6",
+      "destination": "/math/",
+      "status": 301
+    },
+    {
+      "source": "/esol-supports",
+      "destination": "/esol/",
+      "status": 301
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/assets/favicon.svg",
+      "status": 301
+    },
+    {
+      "source": "/noam-school",
+      "destination": "/noam-school-v10/",
+      "status": 301
+    },
+    {
+      "source": "/noam-school/",
+      "destination": "/noam-school-v10/",
+      "status": 301
+    },
+    {
+      "source": "/games",
+      "destination": "/directory/",
+      "status": 301
+    },
+    {
+      "source": "/games/",
+      "destination": "/directory/",
+      "status": 301
+    },
+    {
+      "source": "/practice",
+      "destination": "/directory/",
+      "status": 301
+    },
+    {
+      "source": "/practice/",
+      "destination": "/directory/",
+      "status": 301
+    },
+    {
+      "source": "/tools/",
+      "destination": "/directory/",
+      "status": 301
+    },
+    {
+      "source": "/activities",
+      "destination": "/directory/",
+      "status": 301
+    },
+    {
+      "source": "/activities/",
+      "destination": "/directory/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/stats-of-my-life",
+      "destination": "/statistics-data/statistics-of-my-life/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/stats-of-my-life/",
+      "destination": "/statistics-data/statistics-of-my-life/",
+      "status": 301
+    },
+    {
+      "source": "/expressions-equations/ind-dep-varaibles",
+      "destination": "/expressions-equations/ind-dep-variables/",
+      "status": 301
+    },
+    {
+      "source": "/expressions-equations/ind-dep-varaibles/",
+      "destination": "/expressions-equations/ind-dep-variables/",
+      "status": 301
+    },
+    {
+      "source": "/number-system/6-ns-b-4review1",
+      "destination": "/number-system/6-ns-b-4review/",
+      "status": 301
+    },
+    {
+      "source": "/number-system/6-ns-b-4review1/",
+      "destination": "/number-system/6-ns-b-4review/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/gemini-data-quest",
+      "destination": "/statistics-data/mean-median-mode-game/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/gemini-data-quest/",
+      "destination": "/statistics-data/mean-median-mode-game/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/5-5gemini",
+      "destination": "/unit-5/volume-scaffold-module/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/5-5gemini/",
+      "destination": "/unit-5/volume-scaffold-module/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/unit5worldarchitectureprojet",
+      "destination": "/unit-5/world-architect-project/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/unit5worldarchitectureprojet/",
+      "destination": "/unit-5/world-architect-project/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/5-3rvtrapezoid",
+      "destination": "/unit-5/trapezoid-area-studio-rv/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/5-3rvtrapezoid/",
+      "destination": "/unit-5/trapezoid-area-studio-rv/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/5-3envtrapezoidactivity",
+      "destination": "/unit-5/trapezoid-area-studio-env/",
+      "status": 301
+    },
+    {
+      "source": "/unit-5/5-3envtrapezoidactivity/",
+      "destination": "/unit-5/trapezoid-area-studio-env/",
+      "status": 301
+    },
+    {
+      "source": "/expressions-equations/6eec9aftertest2",
+      "destination": "/expressions-equations/proportional-relationships-mission/",
+      "status": 301
+    },
+    {
+      "source": "/expressions-equations/6eec9aftertest2/",
+      "destination": "/expressions-equations/proportional-relationships-mission/",
+      "status": 301
+    },
+    {
+      "source": "/expressions-equations/6eec9testproject",
+      "destination": "/expressions-equations/proportional-relationships-gallery/",
+      "status": 301
+    },
+    {
+      "source": "/expressions-equations/6eec9testproject/",
+      "destination": "/expressions-equations/proportional-relationships-gallery/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/meanmedianmodeintrohtml",
+      "destination": "/statistics-data/mean-median-mode-intro/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/meanmedianmodeintrohtml/",
+      "destination": "/statistics-data/mean-median-mode-intro/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/2-2histogramgraphicnovel",
+      "destination": "/statistics-data/histogram-graphic-novel/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/2-2histogramgraphicnovel/",
+      "destination": "/statistics-data/histogram-graphic-novel/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/histogramhero",
+      "destination": "/statistics-data/histogram-hero/",
+      "status": 301
+    },
+    {
+      "source": "/statistics-data/histogramhero/",
+      "destination": "/statistics-data/histogram-hero/",
+      "status": 301
+    }
   ]
 }

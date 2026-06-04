@@ -1,0 +1,1843 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lesson 7-3: Understand Absolute Value of Rational Numbers</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .header h1 {
+        font-size: clamp(22px, 4vw, 30px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .header p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0;
+        max-width: 600px;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      /* Level Toggle */
+      .level-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--card);
+        color: var(--navy);
+        box-shadow: 0 1px 4px rgba(15, 43, 60, 0.12);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--navy);
+      }
+      .level-desc {
+        font-size: 13px;
+        color: var(--faint);
+        margin-left: auto;
+      }
+      .progress-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .progress-track {
+        height: 4px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--teal), var(--blue));
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+
+      /* Main Content */
+      .main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 20px 24px 80px;
+      }
+
+      /* Section Headers */
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 32px 0 16px;
+      }
+      .section-header:first-child {
+        margin-top: 8px;
+      }
+      .section-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .section-icon.warmup {
+        background: var(--gold);
+      }
+      .section-icon.practice {
+        background: var(--blue);
+      }
+      .section-icon.challenge {
+        background: var(--coral);
+      }
+      .section-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0;
+      }
+      .section-header .count {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+
+      /* Question Card */
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: border-color 0.2s;
+      }
+      .q-card.correct {
+        border-color: var(--green);
+      }
+      .q-card.incorrect {
+        border-color: var(--coral);
+      }
+      .q-card.correct .q-status {
+        display: flex;
+      }
+      .q-card.incorrect .q-status-wrong {
+        display: flex;
+      }
+      .q-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.45;
+      }
+      .q-prompt .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+      }
+
+      /* Scaffold (Level 1 only) */
+      .scaffold {
+        background: var(--teal-light);
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #1a5c54;
+        line-height: 1.45;
+        display: none;
+      }
+      .scaffold strong {
+        color: var(--teal);
+      }
+      .scaffold .vocab {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 700;
+        margin: 2px;
+      }
+      body.level-1 .scaffold {
+        display: block;
+      }
+
+      /* Multiple Choice */
+      .mc-options {
+        display: grid;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .mc-btn:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn .letter {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: var(--line);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mc-btn:hover .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn.selected .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .mc-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Fill-in */
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fill-input {
+        width: 100px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .fill-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.12);
+      }
+      .fill-input.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .fill-input.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .fill-text {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      /* True/False & Yes/No */
+      .tf-options {
+        display: flex;
+        gap: 8px;
+      }
+      .tf-btn {
+        flex: 1;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .tf-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .tf-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .tf-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .tf-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+      .tf-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Check Button */
+      .check-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .check-btn:hover {
+        background: #155fa0;
+        transform: translateY(-1px);
+      }
+      .check-btn:active {
+        transform: scale(0.98);
+      }
+      .check-btn:disabled {
+        background: var(--line);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+      }
+
+      /* Feedback */
+      .q-status,
+      .q-status-wrong {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .q-status {
+        background: var(--green-light);
+        color: #1a5c36;
+        border: 1px solid rgba(45, 135, 75, 0.15);
+      }
+      .q-status-wrong {
+        background: var(--coral-light);
+        color: #8a3322;
+        border: 1px solid rgba(196, 90, 60, 0.15);
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* Explain (Level 2 only) */
+      .explain-section {
+        display: none;
+        margin-top: 12px;
+      }
+      body.level-2 .explain-section {
+        display: block;
+      }
+      .explain-prompt {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .explain-input {
+        width: 100%;
+        min-height: 60px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.4;
+      }
+      .explain-input:focus {
+        border-color: var(--blue);
+      }
+
+      /* Sentence frame (Level 1) */
+      .sentence-frame {
+        display: none;
+      }
+      body.level-1 .sentence-frame {
+        display: block;
+      }
+      .sentence-frame p {
+        font-size: 13px;
+        color: var(--teal);
+        font-weight: 600;
+        margin: 6px 0 0;
+        font-style: italic;
+      }
+
+      /* Drag & Drop */
+      .drag-zone {
+        min-height: 52px;
+        border: 2px dashed var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        transition: border-color 0.15s;
+        background: var(--bg);
+      }
+      .drag-zone.over {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .drag-zone.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        border-style: solid;
+      }
+      .drag-zone.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        border-style: solid;
+      }
+      .drag-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: grab;
+        user-select: none;
+        transition: all 0.15s;
+        color: var(--ink);
+      }
+      .drag-item:active {
+        cursor: grabbing;
+        opacity: 0.7;
+      }
+      .drag-item.placed {
+        background: var(--blue-light);
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .drag-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .drop-grid {
+        display: grid;
+        gap: 10px;
+      }
+      .drop-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+      .drop-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      /* Number Line */
+      .number-line-wrap {
+        margin: 14px 0;
+        padding: 10px 0;
+      }
+      .number-line-svg {
+        width: 100%;
+        height: 60px;
+      }
+
+      /* Score Footer */
+      .score-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        padding: 10px 24px;
+      }
+      .score-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .score-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-text span {
+        color: var(--teal);
+      }
+      .reset-btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .reset-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .header {
+          padding: 20px 16px 16px;
+        }
+        .level-bar {
+          padding: 12px 16px;
+        }
+        .main {
+          padding: 16px 16px 80px;
+        }
+        .q-card {
+          padding: 16px;
+        }
+        .drop-row {
+          grid-template-columns: 1fr;
+        }
+        .level-desc {
+          display: none;
+        }
+      }
+
+      /* Print */
+      @media print {
+        .score-bar,
+        .level-bar,
+        .progress-bar {
+          display: none;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="level-1">
+<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+<style>
+#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
+#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
+.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
+@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
+.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
+.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
+.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
+.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
+.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
+.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
+.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
+.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
+.vso-dot.active{background:#6366F1;transform:scale(1.25)}
+.vso-dot.seen{background:#A5B4FC}
+
+      /* ===== Level 0 (most-supported tier) ===== */
+      .level0-support { display:none; }
+      body.level-0 .level0-support {
+        display:block; max-width:860px; margin:14px auto 0; padding:14px 16px;
+        background:#fff7ed; border:1px solid #fdba74; border-radius:12px;
+        font-size:14px; color:#7c2d12; line-height:1.5;
+      }
+      body.level-0 .level0-support h3 { margin:0 0 8px; font-size:15px; color:#9a3412; }
+      body.level-0 .level0-support ul { margin:6px 0 0; padding-left:20px; }
+      body.level-0 .level0-support .l0-frames { margin-top:8px; font-style:italic; }
+      .read-aloud-btn {
+        border:1px solid #fdba74; background:#fff; color:#9a3412; border-radius:8px;
+        padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; margin-left:8px;
+      }
+      .read-aloud-btn:hover { background:#ffedd5; }
+      body:not(.level-0) .read-aloud-btn { display:none; }
+      body.level-0 [class*="hint"] { display:block !important; }
+      body.level-0.reading p, body.level-0.reading li, body.level-0.reading label { cursor:help; }
+
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<div id="vocabSlideshowOverlay">
+<div class="vso-card">
+  <div class="vso-progress" id="vsoProgress">Word 1 of 3</div>
+  <div class="vso-svg-wrap" id="vsoSvg"></div>
+  <div class="vso-word" id="vsoWord"></div>
+  <div class="vso-def" id="vsoDef"></div>
+  <div class="vso-nav">
+    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
+    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
+    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
+  </div>
+  <div class="vso-dots" id="vsoDots"></div>
+</div>
+</div>
+<script>
+(function(){
+const VSO_ITEMS=[
+  {word: 'Absolute Value', def: 'The distance a number is from zero. Always zero or positive.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="180" x2="270" y2="180" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="180" r="6" fill="#059669"/>   <text x="150" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="80" cy="180" r="10" fill="#DC2626"/>   <text x="80" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-5</text>   <path d="M80,165 L150,165" stroke="#6366F1" stroke-width="4"/>   <text x="115" y="155" text-anchor="middle" font-size="18" font-weight="800" fill="#6366F1" font-family="sans-serif">5 units</text>   <text x="150" y="90" text-anchor="middle" font-size="36" font-weight="900" fill="#6366F1" font-family="sans-serif">|-5| = 5</text> </svg>'},
+  {word: 'Integer', def: 'A whole number: positive, negative, or zero.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrNL)"/>   <defs><marker id="arrNL" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <circle cx="150" cy="150" r="8" fill="#059669"/>   <text x="150" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="150" r="8" fill="#DC2626"/>   <text x="90" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-2</text>   <circle cx="60" cy="150" r="8" fill="#DC2626"/>   <text x="60" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="150" r="8" fill="#3B82F6"/>   <text x="210" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">2</text>   <circle cx="240" cy="150" r="8" fill="#3B82F6"/>   <text x="240" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">3</text>   <text x="150" y="100" text-anchor="middle" font-size="22" font-weight="800" fill="#1E293B" font-family="sans-serif">...-3, -2, -1, 0, 1, 2, 3...</text> </svg>'},
+  {word: 'Number Line', def: 'A line with numbers placed at equal distances.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="20" y1="150" x2="280" y2="150" stroke="#1E293B" stroke-width="4" marker-end="url(#arrNL2)"/>   <defs><marker id="arrNL2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <line x1="50" y1="140" x2="50" y2="160" stroke="#1E293B" stroke-width="2"/><text x="50" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">0</text>   <line x1="100" y1="140" x2="100" y2="160" stroke="#1E293B" stroke-width="2"/><text x="100" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">1</text>   <line x1="150" y1="140" x2="150" y2="160" stroke="#1E293B" stroke-width="2"/><text x="150" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">2</text>   <line x1="200" y1="140" x2="200" y2="160" stroke="#1E293B" stroke-width="2"/><text x="200" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">3</text>   <line x1="250" y1="140" x2="250" y2="160" stroke="#1E293B" stroke-width="2"/><text x="250" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">4</text>   <circle cx="150" cy="150" r="10" fill="#DC2626"/> </svg>'}
+];
+let vsoIdx=0,vsoSeen=new Set();
+function vsoRender(){
+  const it=VSO_ITEMS[vsoIdx];
+  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
+  document.getElementById('vsoWord').textContent=it.word;
+  document.getElementById('vsoDef').textContent=it.def;
+  document.getElementById('vsoSvg').innerHTML=it.svg;
+  vsoSeen.add(vsoIdx);
+  document.getElementById('vsoPrev').disabled=vsoIdx===0;
+  const isLast=vsoIdx===VSO_ITEMS.length-1;
+  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
+  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
+  const dots=document.getElementById('vsoDots');
+  dots.innerHTML='';
+  VSO_ITEMS.forEach(function(_,i){
+    const d=document.createElement('span');
+    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
+    d.onclick=function(){vsoIdx=i;vsoRender();};
+    dots.appendChild(d);
+  });
+}
+window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
+window.vsoClose=function(){
+  const el=document.getElementById('vocabSlideshowOverlay');
+  el.classList.add('vso-hidden');
+  setTimeout(function(){el.remove();},600);
+};
+vsoRender();
+})();
+</script>
+<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+
+
+    <header class="header">
+      <div class="header-inner">
+        <h1>Understand Absolute Value of Rational Numbers</h1>
+        <p>
+          Interpret absolute value as distance from zero on a number line and
+          distinguish comparisons of absolute value from statements about order.
+        </p>
+        <span class="standard-badge"
+          >6.NS.C.7 &middot; Absolute Value &amp; Rational Numbers</span
+        >
+      </div>
+    </header>
+
+    <div class="level-bar">
+      <span class="level-label">Level</span>
+      <div class="level-toggle">
+        <button class="level-btn" data-level="0">Level 0</button>
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+        <button id="readAloudBtn" class="read-aloud-btn" type="button">🔊 Read aloud</button>
+      </div>
+      <span class="level-desc" id="levelDesc"
+        >Guided practice with vocabulary support</span
+      >
+    </div>
+
+    
+      <div class="level0-support" role="note" aria-label="Level 0 extra support">
+        <h3>🟠 Level 0 — Extra Support</h3>
+        <ul>
+          <li><strong>Watch first:</strong> the worked example and hints are already shown for you.</li>
+          <li><strong>One at a time:</strong> answer one question, check it, then go on.</li>
+          <li><strong>Read aloud:</strong> press 🔊 Read aloud, then click any sentence to hear it.</li>
+        </ul>
+        <div class="l0-frames"><strong>Sentence starters:</strong> “First, I…” · “The answer is… because…” · “I know this because…”</div>
+      </div>
+
+    <div class="progress-bar">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- WARM-UP -->
+      <div class="section-header">
+        <div class="section-icon warmup">W</div>
+        <h2>Warm-Up</h2>
+        <span class="count">2 questions</span>
+      </div>
+
+      <!-- W1: MC -->
+      <article class="q-card" data-q="w1">
+        <div class="q-num">Warm-Up 1</div>
+        <div class="q-prompt">
+          What is the <strong>absolute value</strong> of &minus;6? <br /><strong
+            class="math"
+            >|&minus;6| = ?</strong
+          >
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong>
+          <span class="vocab">Absolute value</span> is the
+          <span class="vocab">distance from zero</span> on a number line.
+          Distance is always positive or zero. The symbols
+          <span class="vocab">| |</span> mean absolute value.
+          <div class="number-line-wrap">
+            <svg
+              class="number-line-svg"
+              viewBox="0 0 500 60"
+              aria-label="Number line showing -6 is 6 units from 0"
+            >
+              <line
+                x1="30"
+                y1="30"
+                x2="470"
+                y2="30"
+                stroke="#0f2b3c"
+                stroke-width="2"
+              />
+              <line
+                x1="250"
+                y1="20"
+                x2="250"
+                y2="40"
+                stroke="#0f2b3c"
+                stroke-width="2"
+              />
+              <text
+                x="250"
+                y="55"
+                text-anchor="middle"
+                font-size="13"
+                fill="#0f2b3c"
+                font-weight="700"
+              >
+                0
+              </text>
+              <line
+                x1="90"
+                y1="20"
+                x2="90"
+                y2="40"
+                stroke="#c45a3c"
+                stroke-width="2"
+              />
+              <text
+                x="90"
+                y="55"
+                text-anchor="middle"
+                font-size="13"
+                fill="#c45a3c"
+                font-weight="700"
+              >
+                &minus;6
+              </text>
+              <line
+                x1="90"
+                y1="18"
+                x2="250"
+                y2="18"
+                stroke="#0e8a7d"
+                stroke-width="2"
+                stroke-dasharray="4,3"
+              />
+              <text
+                x="170"
+                y="13"
+                text-anchor="middle"
+                font-size="11"
+                fill="#0e8a7d"
+                font-weight="700"
+              >
+                6 units
+              </text>
+            </svg>
+          </div>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>&minus;6</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>6</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>0</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>1/6</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! |&minus;6| = 6. The number &minus;6 is 6 units from zero
+            on the number line.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Not quite. Absolute value means distance from zero. &minus;6 is 6
+            units from zero, so |&minus;6| = <strong>6</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- W2: T/F -->
+      <article class="q-card" data-q="w2">
+        <div class="q-num">Warm-Up 2</div>
+        <div class="q-prompt">
+          True or false:
+          <strong>Absolute value is always positive or zero.</strong>
+        </div>
+        <div class="scaffold">
+          <strong>Think about it:</strong>
+          <span class="vocab">Distance</span> can never be negative. Since
+          absolute value measures distance from zero, can it ever be a negative
+          number?
+        </div>
+        <div class="tf-options">
+          <button class="tf-btn" data-val="true">True</button>
+          <button class="tf-btn" data-val="false">False</button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Absolute value is distance from zero, and distance is
+            never negative. It is always zero or positive.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Actually, this is <strong>true</strong>. Since absolute value
+            measures distance from zero, it can never be negative.</span
+          >
+        </div>
+      </article>
+
+      <!-- PRACTICE -->
+      <div class="section-header">
+        <div class="section-icon practice">P</div>
+        <h2>Practice</h2>
+        <span class="count">5 questions</span>
+      </div>
+
+      <!-- P1: Fill-in -->
+      <article class="q-card" data-q="p1">
+        <div class="q-num">Practice 1</div>
+        <div class="q-prompt">Find the absolute value of each number.</div>
+        <div class="scaffold">
+          <strong>Remember:</strong>
+          <span class="vocab">Absolute value</span> = distance from zero. Remove
+          any negative sign. If the number is already positive or zero, it stays
+          the same.
+          <div class="number-line-wrap">
+            <svg
+              class="number-line-svg"
+              viewBox="0 0 500 60"
+              aria-label="Number line from -5 to 5"
+            >
+              <line
+                x1="30"
+                y1="30"
+                x2="470"
+                y2="30"
+                stroke="#0f2b3c"
+                stroke-width="2"
+              />
+              <line
+                x1="250"
+                y1="20"
+                x2="250"
+                y2="40"
+                stroke="#0f2b3c"
+                stroke-width="2"
+              />
+              <text
+                x="250"
+                y="55"
+                text-anchor="middle"
+                font-size="13"
+                fill="#0f2b3c"
+                font-weight="700"
+              >
+                0
+              </text>
+              <line
+                x1="162"
+                y1="22"
+                x2="162"
+                y2="38"
+                stroke="#5e6e7e"
+                stroke-width="1.5"
+              />
+              <text
+                x="162"
+                y="55"
+                text-anchor="middle"
+                font-size="11"
+                fill="#5e6e7e"
+              >
+                &minus;3.5
+              </text>
+              <line
+                x1="410"
+                y1="22"
+                x2="410"
+                y2="38"
+                stroke="#5e6e7e"
+                stroke-width="1.5"
+              />
+              <text
+                x="410"
+                y="55"
+                text-anchor="middle"
+                font-size="11"
+                fill="#5e6e7e"
+              >
+                7
+              </text>
+            </svg>
+          </div>
+        </div>
+        <div style="display: grid; gap: 14px">
+          <div class="fill-row">
+            <span class="fill-text"><strong>a.</strong> |&minus;3.5| =</span>
+            <input
+              class="fill-input"
+              data-answer="3.5"
+              placeholder="?"
+              aria-label="absolute value of negative 3.5"
+            />
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"><strong>b.</strong> |7| =</span>
+            <input
+              class="fill-input"
+              data-answer="7"
+              placeholder="?"
+              aria-label="absolute value of 7"
+            />
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"><strong>c.</strong> |0| =</span>
+            <input
+              class="fill-input"
+              data-answer="0"
+              placeholder="?"
+              aria-label="absolute value of 0"
+            />
+          </div>
+        </div>
+        <button class="check-btn" id="p1-check">Check All</button>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "|___| = ___ because ___ is ___ units from zero on
+            the number line."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! |&minus;3.5| = 3.5, |7| = 7, and |0| = 0. Each answer
+            is the distance from zero.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some answers need another look. Remember: absolute value is always
+            the distance from zero (drop the negative sign). |&minus;3.5| = 3.5,
+            |7| = 7, |0| = 0.</span
+          >
+        </div>
+      </article>
+
+      <!-- P2: MC -->
+      <article class="q-card" data-q="p2">
+        <div class="q-num">Practice 2</div>
+        <div class="q-prompt">
+          Which number has the <strong>greater absolute value</strong>: &minus;8
+          or 5?
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Find the absolute value of each number
+          first.<br />
+          |&minus;8| = ? and |5| = ?<br />
+          Then compare: which distance from zero is larger?
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span
+            ><span>5, because positive numbers are always greater</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span
+            ><span>&minus;8, because |&minus;8| = 8 and 8 &gt; 5</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>They are equal</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>5, because 5 &gt; &minus;8</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="I compared the absolute values by..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "|&minus;8| = ___ and |5| = ___. Since ___ &gt; ___,
+            &minus;8 has the greater absolute value."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! |&minus;8| = 8 and |5| = 5. Since 8 &gt; 5, &minus;8 has
+            the greater absolute value even though &minus;8 is less than 5 on
+            the number line.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Find each absolute value: |&minus;8| = 8 and |5| = 5. Since 8 &gt;
+            5, the answer is <strong>B</strong>. Remember: absolute value is
+            about distance from zero, not which number is greater.</span
+          >
+        </div>
+      </article>
+
+      <!-- P3: Drag-and-Drop — Sort by absolute value least to greatest -->
+      <article class="q-card" data-q="p3">
+        <div class="q-num">Practice 3</div>
+        <div class="q-prompt">
+          Drag the expressions into order from <strong>least</strong> to
+          <strong>greatest</strong> absolute value.
+        </div>
+        <div class="scaffold">
+          <strong>Steps:</strong> First, find the absolute value of each
+          expression. Then arrange from smallest to largest.<br />
+          <span class="vocab">|0|</span> = 0,
+          <span class="vocab">|&minus;1|</span> = 1,
+          <span class="vocab">|2|</span> = 2,
+          <span class="vocab">|&minus;3|</span> = 3,
+          <span class="vocab">|4|</span> = 4,
+          <span class="vocab">|&minus;5.5|</span> = 5.5
+        </div>
+        <div class="drag-bank" id="p3-bank">
+          <div class="drag-item" draggable="true" data-id="d1" data-order="2">
+            |2|
+          </div>
+          <div class="drag-item" draggable="true" data-id="d2" data-order="3">
+            |&minus;3|
+          </div>
+          <div class="drag-item" draggable="true" data-id="d3" data-order="0">
+            |0|
+          </div>
+          <div class="drag-item" draggable="true" data-id="d4" data-order="5.5">
+            |&minus;5.5|
+          </div>
+          <div class="drag-item" draggable="true" data-id="d5" data-order="4">
+            |4|
+          </div>
+          <div class="drag-item" draggable="true" data-id="d6" data-order="1">
+            |&minus;1|
+          </div>
+        </div>
+        <div class="drop-grid">
+          <div class="drop-row" style="grid-template-columns: auto 1fr">
+            <div class="drop-label">Least &rarr; Greatest</div>
+            <div class="drag-zone" id="p3-order"></div>
+          </div>
+        </div>
+        <button class="check-btn" id="p3-check">Check</button>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "I know |0| is the smallest because 0 is the closest
+            to zero. |&minus;5.5| is the largest because 5.5 is the farthest
+            from zero."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! The order is: |0| = 0, |&minus;1| = 1, |2| = 2,
+            |&minus;3| = 3, |4| = 4, |&minus;5.5| = 5.5.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Not quite. Find each absolute value first, then sort: 0, 1, 2, 3,
+            4, 5.5. The correct order is |0|, |&minus;1|, |2|, |&minus;3|, |4|,
+            |&minus;5.5|.</span
+          >
+        </div>
+      </article>
+
+      <!-- P4: T/F -->
+      <article class="q-card" data-q="p4">
+        <div class="q-num">Practice 4</div>
+        <div class="q-prompt">
+          True or false:
+          <strong>"|&minus;4| &gt; |3| means &minus;4 &gt; 3."</strong>
+        </div>
+        <div class="scaffold">
+          <strong>Be careful!</strong> Comparing
+          <span class="vocab">absolute values</span> is NOT the same as
+          comparing the numbers themselves.<br />
+          |&minus;4| = 4 and |3| = 3, so 4 &gt; 3 is true.<br />
+          But is &minus;4 &gt; 3? Where is &minus;4 on the number line compared
+          to 3?
+        </div>
+        <div class="tf-options">
+          <button class="tf-btn" data-val="true">True</button>
+          <button class="tf-btn" data-val="false">False</button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="This statement is false/true because..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "|&minus;4| = ___ and |3| = ___, so |&minus;4| &gt;
+            |3| is ___. But &minus;4 &gt; 3 is ___ because &minus;4 is to the
+            ___ of 3 on the number line."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! |&minus;4| &gt; |3| is true (4 &gt; 3), but &minus;4 is
+            NOT greater than 3. Comparing absolute values is different from
+            comparing the numbers.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >This is <strong>false</strong>. While |&minus;4| &gt; |3| (because
+            4 &gt; 3), that does not mean &minus;4 &gt; 3. In fact, &minus;4
+            &lt; 3. Absolute value comparison does not equal number
+            comparison.</span
+          >
+        </div>
+      </article>
+
+      <!-- P5: MC — Real-world -->
+      <article class="q-card" data-q="p5">
+        <div class="q-num">Practice 5</div>
+        <div class="q-prompt">
+          A submarine is at <strong>&minus;200 feet</strong> (below sea level).
+          A bird is at <strong>150 feet</strong> (above sea level). Which is
+          <strong>farther from sea level</strong>?
+        </div>
+        <div class="scaffold">
+          <strong>Sea level = 0.</strong> Use absolute value to find each
+          distance from sea level:<br />
+          Submarine: |&minus;200| = ?<br />
+          Bird: |150| = ?<br />
+          Which distance is greater?
+          <div class="number-line-wrap">
+            <svg
+              class="number-line-svg"
+              viewBox="0 0 500 60"
+              aria-label="Vertical number line showing -200 and 150 relative to sea level 0"
+            >
+              <line
+                x1="30"
+                y1="30"
+                x2="470"
+                y2="30"
+                stroke="#0f2b3c"
+                stroke-width="2"
+              />
+              <line
+                x1="250"
+                y1="20"
+                x2="250"
+                y2="40"
+                stroke="#0f2b3c"
+                stroke-width="2"
+              />
+              <text
+                x="250"
+                y="55"
+                text-anchor="middle"
+                font-size="12"
+                fill="#0f2b3c"
+                font-weight="700"
+              >
+                0 (sea level)
+              </text>
+              <line
+                x1="80"
+                y1="22"
+                x2="80"
+                y2="38"
+                stroke="#c45a3c"
+                stroke-width="2"
+              />
+              <text
+                x="80"
+                y="55"
+                text-anchor="middle"
+                font-size="11"
+                fill="#c45a3c"
+                font-weight="700"
+              >
+                &minus;200
+              </text>
+              <line
+                x1="390"
+                y1="22"
+                x2="390"
+                y2="38"
+                stroke="#1a6fb5"
+                stroke-width="2"
+              />
+              <text
+                x="390"
+                y="55"
+                text-anchor="middle"
+                font-size="11"
+                fill="#1a6fb5"
+                font-weight="700"
+              >
+                150
+              </text>
+            </svg>
+          </div>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span
+            ><span>The bird, because 150 is a positive number</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span
+            ><span>The submarine, because |&minus;200| = 200 &gt; 150</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span
+            ><span>They are the same distance from sea level</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span
+            ><span>The bird, because it is above sea level</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain using absolute value:</div>
+          <textarea
+            class="explain-input"
+            placeholder="The submarine is farther because..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The submarine is at ___ ft, so its distance from
+            sea level is |___| = ___ ft. The bird is at ___ ft, so its distance
+            is |___| = ___ ft. Since ___ &gt; ___, the ___ is farther from sea
+            level."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! |&minus;200| = 200 and |150| = 150. Since 200 &gt; 150,
+            the submarine is farther from sea level even though its elevation is
+            a negative number.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Use absolute value to find distance from sea level: |&minus;200| =
+            200 and |150| = 150. Since 200 &gt; 150, the
+            <strong>submarine</strong> is farther. The answer is
+            <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- CHALLENGE -->
+      <div class="section-header">
+        <div class="section-icon challenge">&#9733;</div>
+        <h2>Challenge</h2>
+        <span class="count">1 question</span>
+      </div>
+
+      <article class="q-card" data-q="c1">
+        <div class="q-num">Challenge</div>
+        <div class="q-prompt">
+          Two hikers are exploring a canyon. Hiker A is at
+          <strong>&minus;350 feet</strong> (below sea level). Hiker B is at
+          <strong>275 feet</strong> (above sea level). Compare their distances
+          from sea level using absolute value. Who is farther from sea level,
+          and by how much? Explain your reasoning.
+        </div>
+        <div class="scaffold">
+          <strong>Plan your response:</strong><br />
+          1. Find each hiker's distance from sea level using
+          <span class="vocab">absolute value</span>.<br />
+          2. Compare the distances.<br />
+          3. Find the difference: subtract the smaller from the larger.<br />
+          <span class="vocab">|&minus;350|</span> = ? and
+          <span class="vocab">|275|</span> = ?
+        </div>
+        <div style="display: grid; gap: 10px">
+          <div>
+            <div class="explain-prompt">Your response:</div>
+            <textarea
+              class="explain-input"
+              style="min-height: 100px"
+              placeholder="Hiker A is at -350 ft, so the absolute value is... Hiker B is at 275 ft, so..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "Hiker A is at ___ ft, so their distance from sea
+            level is |___| = ___ ft. Hiker B is at ___ ft, so their distance is
+            |___| = ___ ft. Hiker ___ is farther from sea level by ___ &minus;
+            ___ = ___ ft because ___."
+          </p>
+        </div>
+      </article>
+    </main>
+
+    <footer class="score-bar">
+      <div class="score-inner">
+        <span class="score-text"
+          ><span id="scoreCount">0</span> of
+          <span id="scoreTotal">8</span> correct</span
+        >
+        <button class="reset-btn" id="resetBtn">Start Over</button>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const ANSWERS = {
+          w1: "b",
+          w2: "true",
+          p2: "b",
+          p4: "false",
+          p5: "b",
+        };
+
+        let score = 0;
+        let total = 0;
+        const totalQ = 8;
+
+        // Level toggle
+        const levelBtns = document.querySelectorAll(".level-btn");
+        const levelDesc = document.getElementById("levelDesc");
+        const descs = {
+          0: "Step-by-step support with read-aloud and worked examples",
+          1: "Guided practice with vocabulary support",
+          2: "Grade-level practice with explanations",
+        };
+        levelBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            levelBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.body.className = (btn.dataset.level === "0") ? "level-0 level-1" : "level-" + btn.dataset.level;
+            levelDesc.textContent = descs[btn.dataset.level];
+          });
+        });
+
+        function updateProgress() {
+          const pct = Math.round((total / totalQ) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("scoreCount").textContent = score;
+        }
+
+        // MC questions
+        document.querySelectorAll(".mc-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".mc-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".mc-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => {
+              b.classList.add("locked");
+              if (b.dataset.val === ANSWERS[qId]) b.classList.add("is-correct");
+            });
+            if (!correct) selected.classList.add("is-wrong");
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // TF questions
+        document.querySelectorAll(".tf-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".tf-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".tf-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => b.classList.add("locked"));
+            if (correct) {
+              selected.classList.add("is-correct");
+              score++;
+              card.classList.add("correct");
+            } else {
+              selected.classList.add("is-wrong");
+              btns.forEach((b) => {
+                if (b.dataset.val === ANSWERS[qId])
+                  b.classList.add("is-correct");
+              });
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // Drag and Drop (P3) — ordering
+        const bank = document.getElementById("p3-bank");
+        const orderZone = document.getElementById("p3-order");
+        let draggedItem = null;
+
+        if (bank) {
+          function initDragItem(item) {
+            item.addEventListener("dragstart", (e) => {
+              draggedItem = item;
+              e.dataTransfer.effectAllowed = "move";
+              setTimeout(() => (item.style.opacity = ".4"), 0);
+            });
+            item.addEventListener("dragend", () => {
+              item.style.opacity = "1";
+              draggedItem = null;
+            });
+            item.addEventListener(
+              "touchstart",
+              () => {
+                draggedItem = item;
+              },
+              { passive: true },
+            );
+          }
+
+          bank.querySelectorAll(".drag-item").forEach(initDragItem);
+
+          // Allow drops on order zone
+          orderZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            orderZone.classList.add("over");
+          });
+          orderZone.addEventListener("dragleave", () =>
+            orderZone.classList.remove("over"),
+          );
+          orderZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            orderZone.classList.remove("over");
+            if (draggedItem) {
+              orderZone.appendChild(draggedItem);
+              draggedItem.classList.add("placed");
+            }
+          });
+
+          // Click to remove from zone back to bank
+          orderZone.addEventListener("click", (e) => {
+            const item = e.target.closest(".drag-item");
+            if (item) {
+              bank.appendChild(item);
+              item.classList.remove("placed");
+            }
+          });
+
+          // Click-to-place fallback: click in bank appends to order zone
+          bank.addEventListener("click", (e) => {
+            const item = e.target.closest(".drag-item");
+            if (!item) return;
+            orderZone.appendChild(item);
+            item.classList.add("placed");
+          });
+
+          document
+            .getElementById("p3-check")
+            .addEventListener("click", function () {
+              total++;
+              const items = orderZone.querySelectorAll(".drag-item");
+              const correctOrder = [0, 1, 2, 3, 4, 5.5];
+              let allCorrect = items.length === 6;
+              if (allCorrect) {
+                items.forEach((item, i) => {
+                  if (parseFloat(item.dataset.order) !== correctOrder[i]) {
+                    allCorrect = false;
+                  }
+                });
+              }
+              const card = this.closest(".q-card");
+              if (allCorrect) {
+                score++;
+                card.classList.add("correct");
+                orderZone.classList.add("is-correct");
+              } else {
+                card.classList.add("incorrect");
+                orderZone.classList.add("is-wrong");
+              }
+              this.disabled = true;
+              // Lock dragging
+              orderZone.querySelectorAll(".drag-item").forEach((item) => {
+                item.setAttribute("draggable", "false");
+                item.style.cursor = "default";
+              });
+              bank.querySelectorAll(".drag-item").forEach((item) => {
+                item.setAttribute("draggable", "false");
+                item.style.cursor = "default";
+              });
+              updateProgress();
+            });
+        }
+
+        // Fill-in (P1)
+        const p1Check = document.getElementById("p1-check");
+        if (p1Check) {
+          p1Check.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const inputs = card.querySelectorAll(".fill-input");
+            let allCorrect = true;
+            inputs.forEach((inp) => {
+              const val = inp.value.trim();
+              const ans = inp.dataset.answer;
+              if (val === ans) {
+                inp.classList.add("is-correct");
+              } else {
+                inp.classList.add("is-wrong");
+                allCorrect = false;
+              }
+              inp.readOnly = true;
+            });
+            total++;
+            if (allCorrect) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+
+        // Reset
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          score = 0;
+          total = 0;
+          document.querySelectorAll(".q-card").forEach((card) => {
+            card.classList.remove("correct", "incorrect");
+          });
+          document.querySelectorAll(".mc-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".tf-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".fill-input").forEach((inp) => {
+            inp.classList.remove("is-correct", "is-wrong");
+            inp.value = "";
+            inp.readOnly = false;
+          });
+          document.querySelectorAll(".drag-item").forEach((item) => {
+            item.classList.remove("placed");
+            item.setAttribute("draggable", "true");
+            item.style.cursor = "grab";
+            if (bank) bank.appendChild(item);
+          });
+          document.querySelectorAll(".drag-zone").forEach((z) => {
+            z.classList.remove("is-correct", "is-wrong");
+          });
+          document
+            .querySelectorAll(".check-btn")
+            .forEach((b) => (b.disabled = false));
+          document
+            .querySelectorAll(".explain-input")
+            .forEach((t) => (t.value = ""));
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        updateProgress();
+      })();
+    
+        // ===== Level 0 read-aloud (click any text to hear it) =====
+        (function(){
+          var raBtn = document.getElementById("readAloudBtn");
+          if(!raBtn) return;
+          var on = false;
+          function speak(t){ try{ window.speechSynthesis.cancel();
+            var u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.speak(u);}catch(e){} }
+          raBtn.addEventListener("click", function(){
+            on=!on; document.body.classList.toggle("reading", on);
+            raBtn.textContent = on ? "🔊 Tap text to hear" : "🔊 Read aloud";
+            if(!on){ try{window.speechSynthesis.cancel();}catch(e){} }
+          });
+          document.addEventListener("click", function(e){
+            if(!on || !document.body.classList.contains("level-0")) return;
+            if(e.target.closest(".level-bar")) return;
+            var el = e.target.closest("p,li,h1,h2,h3,label,.question,.prompt,.q-text,.scaffold,.sentence-frame");
+            if(el && el.textContent.trim()){ speak(el.textContent.trim()); }
+          }, true);
+        })();
+
+      </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

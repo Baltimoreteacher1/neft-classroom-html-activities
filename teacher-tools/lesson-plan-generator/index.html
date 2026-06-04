@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neft Teacher Lesson Plan Generator</title>
+    <meta
+      name="description"
+      content="Local-first teacher tool: turn typed notes, slides, PDFs, or docs into a polished, printable, source-faithful lesson plan."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="badge info"
+            >Local-first · no upload · works offline</span
+          >
+          <h1>Neft Teacher Lesson Plan Generator</h1>
+          <p>
+            Give it your source — typed notes, slides, a PDF, or a doc — and get
+            a complete, teach-tomorrow lesson plan built from that source.
+          </p>
+        </div>
+        <button class="btn ghost" id="themeBtn" type="button">Theme</button>
+      </header>
+
+      <main class="main">
+        <!-- ============ INPUT ============ -->
+        <section class="card" id="inputCard">
+          <h2 class="card-title">1 · Give the generator your source</h2>
+          <p class="muted">
+            The lesson plan is built <strong>only</strong> from what you provide
+            — your notes, slides, PDF, or doc are the source of truth. Nothing
+            is invented; only genuinely missing required details are marked
+            <span class="inferred-chip">[INFERRED — VERIFY]</span>.
+          </p>
+
+          <div class="input-grid">
+            <label class="field big">
+              <span class="field-label">Type or paste your lesson notes</span>
+              <textarea
+                id="sourceText"
+                rows="12"
+                placeholder="Paste slide text, a linked-activity description, or write your lesson notes here. Helpful things to include when you have them:&#10;&#10;Title: Area of Composite Polygons&#10;Grade/Course: Grade 6 Mathematics&#10;Date: &#10;Standard: 6.G.A.1 — find area by composing / decomposing&#10;Objective: Students will find the area of composite polygons by decomposing into rectangles and triangles.&#10;Vocabulary: composite figure, decompose, area&#10;Do Now: number talk splitting an L-shape&#10;Mini-lesson: model decomposing an L-shape; think-aloud on choosing cuts&#10;Guided: partners solve 2 shapes on grid paper&#10;Independent: practice set problems 1-6; challenge for early finishers&#10;Exit ticket: one composite shape, explain the cut"
+              ></textarea>
+              <span class="helper small"
+                >Plain text is fine — the more real detail you give, the more
+                complete the plan.</span
+              >
+            </label>
+
+            <div class="or-divider" aria-hidden="true"><span>or</span></div>
+
+            <div class="upload-col">
+              <span class="field-label">Upload a file</span>
+              <button class="btn upload primary" id="uploadBtn" type="button">
+                <span class="up-emoji">📎</span> Upload slides / file
+              </button>
+              <div
+                class="dropzone"
+                id="dropzone"
+                tabindex="0"
+                role="button"
+                aria-label="Upload a .pptx, .pdf, .docx, or .txt file"
+              >
+                <div class="dz-icon">⬆</div>
+                <p class="muted small">…or drag &amp; drop here</p>
+                <p class="muted small">.pptx · .pdf · .docx · .txt</p>
+              </div>
+              <input
+                type="file"
+                id="fileInput"
+                accept=".pptx,.pdf,.docx,.txt"
+                hidden
+              />
+              <p class="file-status small" id="fileStatus"></p>
+              <p class="muted small">
+                Files are read inside your browser. Nothing is sent anywhere.
+              </p>
+            </div>
+          </div>
+
+          <div class="generate-row">
+            <button class="btn primary big" id="generateBtn" type="button">
+              ✦ Generate Lesson Plan
+            </button>
+            <button class="btn ghost" id="sampleBtn" type="button">
+              Load example
+            </button>
+            <button class="btn ghost" id="clearBtn" type="button">Clear</button>
+          </div>
+        </section>
+
+        <!-- ============ PIPELINE STATUS ============ -->
+        <section class="card status-card" id="statusCard" hidden>
+          <h2 class="card-title">2 · Pipeline</h2>
+          <ol class="pipeline" id="pipeline">
+            <li data-stage="preflight"><span class="pip"></span>Preflight</li>
+            <li data-stage="extract">
+              <span class="pip"></span>Source extract
+            </li>
+            <li data-stage="map"><span class="pip"></span>Content map</li>
+            <li data-stage="build">
+              <span class="pip"></span>Lesson plan build
+            </li>
+            <li data-stage="qa"><span class="pip"></span>QA harness</li>
+            <li data-stage="repair"><span class="pip"></span>Repair</li>
+            <li data-stage="finalqa"><span class="pip"></span>Final QA</li>
+          </ol>
+          <div id="qaPanel" class="qa-panel"></div>
+        </section>
+
+        <!-- ============ OUTPUT ============ -->
+        <section class="card" id="outputCard" hidden>
+          <div class="output-head">
+            <h2 class="card-title">3 · Lesson plan</h2>
+            <div class="output-actions">
+              <button class="btn" id="printBtn" type="button">
+                Print / PDF
+              </button>
+              <button class="btn" id="downloadDocBtn" type="button">
+                Download Word (.doc)
+              </button>
+              <button class="btn ghost" id="downloadMdBtn" type="button">
+                Download .md
+              </button>
+            </div>
+          </div>
+          <div id="lessonOutput" class="lesson-output"></div>
+        </section>
+      </main>
+
+      <footer class="foot">
+        Neft Teacher · Local-first lesson plan generator · Source-faithful
+        pipeline with QA harness
+      </footer>
+    </div>
+
+    <!-- Self-hosted libraries (no CDN at runtime). -->
+    <script src="./vendor/jszip.min.js" defer></script>
+    <script src="./app.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>

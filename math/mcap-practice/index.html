@@ -1,0 +1,1786 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grade 6 MCAP Practice Test</title>
+    <meta
+      name="description"
+      content="Self-grading Grade 6 MCAP-style math practice test covering 6.NS, 6.RP, 6.EE, 6.G, and 6.SP standards."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+      }
+      .wrap {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      /* ── HEADER ── */
+      .phero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 36px 24px 30px;
+        text-align: center;
+      }
+      .phero h1 {
+        font-size: clamp(24px, 5vw, 38px);
+        margin: 0 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        margin: 0 auto;
+        max-width: 580px;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+      }
+      .tags {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      /* ── BREADCRUMB ── */
+      .breadcrumb {
+        font-size: 13px;
+        padding: 14px 0 0;
+        color: var(--muted);
+      }
+      .breadcrumb a {
+        color: var(--blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* ── SCREENS ── */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* ── START SCREEN ── */
+      .start-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 32px 28px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .start-card h2 {
+        margin: 0 0 16px;
+        font-size: 22px;
+        color: var(--navy);
+      }
+      .overview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin: 20px 0;
+      }
+      @media (max-width: 540px) {
+        .overview-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .ov-item {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .ov-item strong {
+        display: block;
+        font-size: 15px;
+        color: var(--navy);
+      }
+      .ov-item span {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .rules {
+        background: var(--gold-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 18px 0;
+        font-size: 14px;
+      }
+      .rules ul {
+        margin: 6px 0 0 0;
+        padding-left: 20px;
+      }
+      .rules li {
+        margin: 5px 0;
+      }
+
+      /* ── TEST SCREEN ── */
+      .progress-bar-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg);
+        padding: 10px 0 8px;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .progress-track {
+        height: 10px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        transition: width 0.4s;
+      }
+
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px 26px;
+        margin: 20px 0;
+        box-shadow: var(--shadow);
+      }
+      .q-meta {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      .q-num {
+        background: var(--blue);
+        color: #fff;
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 16px;
+        flex: 0 0 auto;
+      }
+      .q-standard {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: var(--line);
+        border-radius: 50px;
+        padding: 3px 10px;
+      }
+      .q-type {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--blue);
+        background: var(--blue-light);
+        border-radius: 50px;
+        padding: 3px 10px;
+      }
+      .q-stem {
+        font-size: 16px;
+        margin: 0 0 16px;
+      }
+      .q-stem strong {
+        color: var(--navy);
+      }
+
+      /* Multiple choice */
+      .mc-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .mc-list li {
+        margin: 8px 0;
+      }
+      .mc-list label {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        cursor: pointer;
+        background: #f7f9fb;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-size: 15px;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .mc-list label:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-list input[type="radio"] {
+        margin-top: 3px;
+        flex: 0 0 auto;
+        accent-color: var(--blue);
+      }
+      .mc-list input[type="checkbox"] {
+        margin-top: 3px;
+        flex: 0 0 auto;
+        accent-color: var(--blue);
+      }
+
+      /* Numeric input */
+      .num-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 6px 0;
+        flex-wrap: wrap;
+      }
+      .num-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      input[type="number"],
+      input[type="text"],
+      select {
+        padding: 10px 12px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+        transition: border-color 0.15s;
+      }
+      input[type="number"]:focus,
+      input[type="text"]:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      input[type="number"] {
+        width: 120px;
+      }
+      select {
+        min-width: 160px;
+      }
+
+      /* Two-part */
+      .twopart-part {
+        background: #f7f9fb;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 14px 0;
+      }
+      .twopart-part h4 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--navy);
+      }
+
+      /* Matching */
+      .match-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0;
+      }
+      .match-table th,
+      .match-table td {
+        border: 1px solid var(--line);
+        padding: 10px 13px;
+        text-align: left;
+        vertical-align: middle;
+      }
+      .match-table th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .match-table tr:nth-child(even) td {
+        background: #f7f9fb;
+      }
+
+      /* Check button */
+      .btn-check {
+        background: var(--teal);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 22px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+        transition: filter 0.15s;
+      }
+      .btn-check:hover {
+        filter: brightness(1.08);
+      }
+      .btn-check:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      .inline-fb {
+        display: none;
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .inline-fb.show {
+        display: block;
+      }
+      .inline-fb.ok {
+        background: var(--green-light);
+        color: var(--green);
+        border: 1px solid #b7dfc5;
+      }
+      .inline-fb.no {
+        background: var(--coral-light);
+        color: var(--coral);
+        border: 1px solid #f0c4b8;
+      }
+
+      /* Nav buttons */
+      .q-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 8px 0 24px;
+        gap: 10px;
+      }
+      .btn-nav {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: filter 0.15s;
+      }
+      .btn-nav:hover {
+        filter: brightness(1.08);
+      }
+      .btn-nav:disabled {
+        background: var(--line);
+        color: var(--muted);
+        cursor: not-allowed;
+      }
+      .btn-nav:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .btn-nav.submit {
+        background: var(--green);
+      }
+      .q-counter {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      /* Submit row */
+      .submit-row {
+        text-align: center;
+        margin: 26px 0;
+      }
+
+      /* ── SCORE REPORT ── */
+      .score-hero {
+        text-align: center;
+        background: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        padding: 32px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .score-big {
+        font-size: 64px;
+        font-weight: 900;
+        color: var(--navy);
+        line-height: 1;
+      }
+      .score-pct {
+        font-size: 22px;
+        color: var(--muted);
+        font-weight: 700;
+        margin: 4px 0;
+      }
+      .score-msg {
+        font-size: 16px;
+        color: var(--ink);
+        margin: 10px 0 0;
+      }
+      .score-msg.great {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .score-msg.good {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .score-msg.keep {
+        color: var(--gold);
+        font-weight: 700;
+      }
+
+      .breakdown {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 18px 0;
+        box-shadow: var(--shadow);
+      }
+      .breakdown h3 {
+        margin: 0 0 14px;
+        font-size: 18px;
+      }
+      .strand-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 10px 0;
+        flex-wrap: wrap;
+      }
+      .strand-name {
+        font-weight: 700;
+        width: 40px;
+        font-size: 14px;
+        color: var(--navy);
+      }
+      .strand-track {
+        flex: 1;
+        min-width: 120px;
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .strand-fill {
+        height: 100%;
+        border-radius: 50px;
+        background: var(--teal);
+        transition: width 0.5s;
+      }
+      .strand-fill.full {
+        background: var(--green);
+      }
+      .strand-fill.half {
+        background: var(--gold);
+      }
+      .strand-fill.low {
+        background: var(--coral);
+      }
+      .strand-score {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .review-toggle {
+        background: none;
+        border: 2px solid var(--blue);
+        color: var(--blue);
+        border-radius: 10px;
+        padding: 9px 18px;
+        font-weight: 800;
+        font-size: 14px;
+        cursor: pointer;
+        font-family: inherit;
+        margin: 6px 0;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .review-toggle:hover {
+        background: var(--blue);
+        color: #fff;
+      }
+      .review-toggle:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      .review-list {
+        display: none;
+        margin-top: 16px;
+      }
+      .review-list.open {
+        display: block;
+      }
+
+      .rev-item {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 12px 0;
+      }
+      .rev-item .rev-head {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .rev-item .rev-num {
+        font-weight: 900;
+        font-size: 15px;
+        color: var(--navy);
+      }
+      .rev-item .rev-std {
+        font-size: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        padding: 2px 9px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .rev-item .rev-icon {
+        font-size: 18px;
+      }
+      .rev-item .rev-q {
+        font-size: 14px;
+        color: var(--ink);
+        margin: 0 0 8px;
+      }
+      .rev-chosen {
+        background: var(--coral-light);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+        margin: 4px 0;
+      }
+      .rev-correct {
+        background: var(--green-light);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+        margin: 4px 0;
+        font-weight: 700;
+      }
+      .rev-explanation {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 8px;
+        font-style: italic;
+      }
+
+      .report-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 26px 0;
+      }
+      .btn-main {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: 800;
+        font-size: 16px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: filter 0.15s;
+      }
+      .btn-main:hover {
+        filter: brightness(1.08);
+      }
+      .btn-main:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .btn-main.alt {
+        background: var(--teal);
+      }
+
+      /* ── GENERAL UTILS ── */
+      .btn-primary {
+        display: inline-block;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 30px;
+        font-weight: 800;
+        font-size: 17px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 18px;
+        transition: filter 0.15s;
+      }
+      .btn-primary:hover {
+        filter: brightness(1.08);
+      }
+      .btn-primary:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 500px) {
+        .q-card {
+          padding: 18px 16px;
+        }
+        .match-table th,
+        .match-table td {
+          padding: 8px 9px;
+          font-size: 13px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="phero">
+      <h1>Grade 6 MCAP Practice Test</h1>
+      <p>
+        Technology-enhanced items — multiple choice, multi-select, numeric
+        entry, two-part, and matching
+      </p>
+      <div class="tags">
+        <span class="tag">6.NS</span>
+        <span class="tag">6.RP</span>
+        <span class="tag">6.EE</span>
+        <span class="tag">6.G</span>
+        <span class="tag">6.SP</span>
+        <span class="tag">Self-Grading</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <!-- ══════════════════════════════════════════════════
+       SCREEN A — START
+  ══════════════════════════════════════════════════ -->
+      <div id="screen-start" class="screen active">
+        <div class="start-card">
+          <h2>About This Practice Test</h2>
+          <p>
+            This test uses the same item types as the Maryland Comprehensive
+            Assessment Program (MCAP) for Grade 6 math. Questions are randomly
+            ordered each time you start.
+          </p>
+
+          <div class="overview-grid">
+            <div class="ov-item">
+              <strong>14 Questions</strong>
+              <span>Randomly shuffled each attempt</span>
+            </div>
+            <div class="ov-item">
+              <strong>5 Standards Domains</strong>
+              <span>NS · RP · EE · G · SP</span>
+            </div>
+            <div class="ov-item">
+              <strong>5 Item Types</strong>
+              <span
+                >Multiple choice, multi-select, numeric entry, two-part,
+                matching</span
+              >
+            </div>
+            <div class="ov-item">
+              <strong>Instant Score Report</strong>
+              <span>Per-standard breakdown + review</span>
+            </div>
+          </div>
+
+          <div class="rules">
+            <strong>Test Guidelines</strong>
+            <ul>
+              <li>Read each question carefully before answering.</li>
+              <li>
+                For <strong>multi-select</strong> items: choose ALL correct
+                answers — partial credit is not awarded.
+              </li>
+              <li>
+                For <strong>numeric entry</strong>: enter your answer as a
+                decimal or whole number.
+              </li>
+              <li>
+                You may navigate back to change answers before submitting.
+              </li>
+              <li>
+                Hit <strong>Submit Test</strong> on the last question to see
+                your score report.
+              </li>
+            </ul>
+          </div>
+
+          <button class="btn-primary" id="btn-begin" onclick="beginTest()">
+            Begin Test
+          </button>
+        </div>
+      </div>
+      <!-- /screen-start -->
+
+      <!-- ══════════════════════════════════════════════════
+       SCREEN B — TEST
+  ══════════════════════════════════════════════════ -->
+      <div id="screen-test" class="screen">
+        <div class="progress-bar-wrap" aria-live="polite">
+          <div class="progress-label">
+            Question <span id="prog-current">1</span> of
+            <span id="prog-total">14</span>
+          </div>
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <div class="progress-fill" id="prog-fill"></div>
+          </div>
+        </div>
+
+        <div id="question-area"></div>
+
+        <div class="q-nav">
+          <button class="btn-nav" id="btn-back" onclick="goBack()" disabled>
+            &#8592; Back
+          </button>
+          <span class="q-counter" id="q-counter">1 / 14</span>
+          <button class="btn-nav" id="btn-next" onclick="goNext()">
+            Next &#8594;
+          </button>
+        </div>
+      </div>
+      <!-- /screen-test -->
+
+      <!-- ══════════════════════════════════════════════════
+       SCREEN C — SCORE REPORT
+  ══════════════════════════════════════════════════ -->
+      <div id="screen-report" class="screen">
+        <div class="score-hero" id="score-hero">
+          <div class="score-big" id="score-fraction">—</div>
+          <div class="score-pct" id="score-pct">—</div>
+          <div class="score-msg" id="score-msg"></div>
+        </div>
+
+        <div class="breakdown" id="strand-breakdown">
+          <h3>Per-Standard Breakdown</h3>
+          <div id="strand-rows"></div>
+        </div>
+
+        <div class="breakdown">
+          <h3>Review Your Answers</h3>
+          <button
+            class="review-toggle"
+            id="btn-review"
+            onclick="toggleReview()"
+            aria-expanded="false"
+          >
+            Show All Questions &amp; Answers
+          </button>
+          <div class="review-list" id="review-list"></div>
+        </div>
+
+        <div class="report-btns">
+          <button class="btn-main alt" onclick="retakeTest()">
+            Retake This Test
+          </button>
+          <button class="btn-main" onclick="newTest()">
+            New Practice Test
+          </button>
+        </div>
+      </div>
+      <!-- /screen-report -->
+
+      <footer class="footer">
+        Neft Teacher &middot; MCAP Practice &middot; Grade 6 Math
+      </footer>
+    </div>
+    <!-- /wrap -->
+
+    <script>
+      /* ================================================================
+   QUESTION BANK
+   Each item: { id, standard, strand, type, stem, ... }
+   Types: 'mc' | 'multiselect' | 'numeric' | 'twopart' | 'matching'
+================================================================ */
+
+      /* ---- helpers ---- */
+      function rnd(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+      }
+      function pick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      /* ---- question generator ---- */
+      function buildBank() {
+        const bank = [];
+
+        /* ── 1  6.RP.1  Multiple Choice ── */
+        (function () {
+          const p = rnd(3, 7),
+            t = rnd(8, 15) + rnd(1, 5);
+          bank.push({
+            id: "rp1",
+            standard: "6.RP.1",
+            strand: "RP",
+            type: "mc",
+            stem: `A recipe uses <strong>${p} cups</strong> of flour and <strong>${t} cups</strong> of flour total (flour + other ingredients). Which statement correctly describes a ratio in this situation?`,
+            choices: [
+              `The ratio of flour to total cups is ${p} to ${t}.`,
+              `The ratio of flour to total cups is ${t} to ${p}.`,
+              `The ratio of other ingredients to flour is ${p} to ${t - p}.`,
+              `Ratios can only compare equal quantities, so no ratio exists here.`,
+            ],
+            correct: 0,
+            explanation: `A part-to-whole ratio compares one quantity to the total. Flour : total = ${p} : ${t}.`,
+          });
+        })();
+
+        /* ── 2  6.RP.3a  Multiple Choice — equivalent ratios ── */
+        (function () {
+          let a = rnd(2, 5),
+            b = rnd(3, 6);
+          while (a === b) b = rnd(3, 6); // avoid a:b reducing to 1:1
+          const k = rnd(2, 5);
+          bank.push({
+            id: "rp3a",
+            standard: "6.RP.3a",
+            strand: "RP",
+            type: "mc",
+            stem: `Which ratio is equivalent to <strong>${a} : ${b}</strong>?`,
+            choices: [
+              `${a * k} : ${b * k}`,
+              `${a + k} : ${b + k}`,
+              `${a * k} : ${b * k + 1}`,
+              `${a * k + 1} : ${b * k}`,
+            ],
+            correct: 0,
+            explanation: `Multiply both terms by the same factor: ${a}×${k} = ${a * k} and ${b}×${k} = ${b * k}, so ${a * k} : ${b * k} is equivalent to ${a} : ${b}.`,
+          });
+        })();
+
+        /* ── 3  6.RP.3c  Numeric Entry — unit rate ── */
+        (function () {
+          const miles = pick([120, 150, 180, 240, 270, 300, 360]);
+          const hours = pick([3, 4, 5, 6]);
+          const rate = miles / hours;
+          bank.push({
+            id: "rp3c",
+            standard: "6.RP.3c",
+            strand: "RP",
+            type: "numeric",
+            stem: `A car travels <strong>${miles} miles</strong> in <strong>${hours} hours</strong> at a constant speed. What is the unit rate in miles per hour?`,
+            unit: "miles per hour",
+            answer: rate,
+            tolerance: 0.01,
+            explanation: `Unit rate = ${miles} ÷ ${hours} = ${rate} miles per hour.`,
+          });
+        })();
+
+        /* ── 4  6.NS.1  Multi-select — dividing fractions ── */
+        bank.push({
+          id: "ns1",
+          standard: "6.NS.1",
+          strand: "NS",
+          type: "multiselect",
+          stem: `Which expressions are equal to <strong>2 ÷ (1/3)</strong>? Select ALL that apply.`,
+          choices: [`2 × 3`, `2 × (1/3)`, `6`, `2/3`, `3 × 2`],
+          correct: [0, 2, 4],
+          explanation: `Dividing by a fraction means multiplying by its reciprocal: 2 ÷ (1/3) = 2 × 3 = 6. Both "2 × 3" and "3 × 2" equal 6 (commutative property), and 6 itself is correct.`,
+        });
+
+        /* ── 5  6.NS.3  Numeric Entry — decimal operations ── */
+        (function () {
+          const a = (rnd(10, 49) / 10).toFixed(1) * 1;
+          const b = (rnd(5, 29) / 10).toFixed(1) * 1;
+          const ans = Math.round(a * b * 100) / 100;
+          bank.push({
+            id: "ns3",
+            standard: "6.NS.3",
+            strand: "NS",
+            type: "numeric",
+            stem: `What is the value of <strong>${a.toFixed(1)} × ${b.toFixed(1)}</strong>?`,
+            unit: "",
+            answer: ans,
+            tolerance: 0.01,
+            explanation: `${a.toFixed(1)} × ${b.toFixed(1)} = ${ans}`,
+          });
+        })();
+
+        /* ── 6  6.NS.4  Multiple Choice — GCF ── */
+        (function () {
+          const factors = [
+            [12, 18, 6],
+            [15, 25, 5],
+            [24, 36, 12],
+            [20, 30, 10],
+            [16, 24, 8],
+          ];
+          const [a, b, g] = pick(factors);
+          bank.push({
+            id: "ns4",
+            standard: "6.NS.4",
+            strand: "NS",
+            type: "mc",
+            stem: `What is the Greatest Common Factor (GCF) of <strong>${a}</strong> and <strong>${b}</strong>?`,
+            choices: [
+              `${g}`,
+              `${g * 2}`,
+              `${Math.floor(g / 2) || 1}`,
+              `${a * b}`,
+            ],
+            correct: 0,
+            explanation: `The GCF of ${a} and ${b} is ${g}. It is the largest number that divides both evenly.`,
+          });
+        })();
+
+        /* ── 7  6.EE.1  Two-Part — exponents ── */
+        (function () {
+          const base = rnd(2, 5),
+            exp = rnd(2, 4);
+          const val = Math.pow(base, exp);
+          const wrongVals = [base * exp, base + exp, val + 1, val - 1].filter(
+            (x) => x !== val && x > 0,
+          );
+          bank.push({
+            id: "ee1",
+            standard: "6.EE.1",
+            strand: "EE",
+            type: "twopart",
+            stem: `Consider the expression <strong>${base}<sup>${exp}</sup></strong>.`,
+            partA: {
+              label: "Part A",
+              question: `Which statement describes what ${base}<sup>${exp}</sup> means?`,
+              choices: [
+                `${base} multiplied by itself ${exp} time${exp > 1 ? "s" : ""}`,
+                `${base} multiplied by ${exp}`,
+                `${base} added to itself ${exp} time${exp > 1 ? "s" : ""}`,
+                `${exp} multiplied by itself ${base} times`,
+              ],
+              correct: 0,
+              explanation: `An exponent tells how many times the base is used as a factor. ${base}<sup>${exp}</sup> means ${Array(exp).fill(base).join(" × ")}.`,
+            },
+            partB: {
+              label: "Part B",
+              question: `What is the value of ${base}<sup>${exp}</sup>?`,
+              type: "numeric",
+              answer: val,
+              tolerance: 0,
+              unit: "",
+              explanation: `${Array(exp).fill(base).join(" × ")} = ${val}`,
+            },
+          });
+        })();
+
+        /* ── 8  6.EE.2  Multiple Choice — evaluate expression ── */
+        (function () {
+          const a = rnd(2, 5),
+            b = rnd(1, 4),
+            c = rnd(1, 6),
+            x = rnd(2, 5);
+          const val = a * x + b;
+          bank.push({
+            id: "ee2",
+            standard: "6.EE.2",
+            strand: "EE",
+            type: "mc",
+            stem: `Evaluate <strong>${a}x + ${b}</strong> when x = <strong>${x}</strong>.`,
+            choices: [`${val}`, `${a + b}`, `${a * x}`, `${(a + b) * x}`],
+            correct: 0,
+            explanation: `Substitute x = ${x}: ${a}(${x}) + ${b} = ${a * x} + ${b} = ${val}.`,
+          });
+        })();
+
+        /* ── 9  6.EE.3  Matching / Dropdown — equivalent expressions ── */
+        bank.push({
+          id: "ee3",
+          standard: "6.EE.3",
+          strand: "EE",
+          type: "matching",
+          stem: `Match each expression on the left to its equivalent simplified form on the right. Use each answer once.`,
+          pairs: [
+            { left: "3x + 5x", right: "8x", key: "A" },
+            { left: "4(2 + y)", right: "8 + 4y", key: "B" },
+            { left: "2a + 3b + a", right: "3a + 3b", key: "C" },
+            { left: "6 · x · x", right: "6x²", key: "D" },
+          ],
+          options: ["8x", "8 + 4y", "3a + 3b", "6x²"],
+          explanation: `Combine like terms and apply the distributive property: 3x+5x=8x; 4(2+y)=8+4y; 2a+a+3b=3a+3b; 6·x·x=6x².`,
+        });
+
+        /* ── 10  6.EE.4  Multi-select — identify equivalent expressions ── */
+        bank.push({
+          id: "ee4",
+          standard: "6.EE.4",
+          strand: "EE",
+          type: "multiselect",
+          stem: `Which expressions are equivalent to <strong>12n + 8</strong>? Select ALL that apply.`,
+          choices: [
+            `4(3n + 2)`,
+            `2(6n + 4)`,
+            `12n + 8`,
+            `8 + 12n`,
+            `2(5n + 4)`,
+          ],
+          correct: [0, 1, 2, 3],
+          explanation: `4(3n+2)=12n+8 ✓; 2(6n+4)=12n+8 ✓; 12n+8 itself ✓; 8+12n=12n+8 (commutative) ✓; 2(5n+4)=10n+8 ✗.`,
+        });
+
+        /* ── 11  6.EE.7  Numeric Entry — solve one-step equation ── */
+        (function () {
+          const sol = rnd(4, 15);
+          const c = rnd(2, 6);
+          const b = sol + c;
+          bank.push({
+            id: "ee7",
+            standard: "6.EE.7",
+            strand: "EE",
+            type: "numeric",
+            stem: `Solve for x: <strong>x + ${c} = ${b}</strong>`,
+            unit: "",
+            answer: sol,
+            tolerance: 0,
+            explanation: `Subtract ${c} from both sides: x = ${b} − ${c} = ${sol}.`,
+          });
+        })();
+
+        /* ── 12  6.G.1  Multiple Choice — area of triangle ── */
+        (function () {
+          const b = rnd(6, 14),
+            h = rnd(5, 12);
+          const area = (b * h) / 2;
+          bank.push({
+            id: "g1",
+            standard: "6.G.1",
+            strand: "G",
+            type: "mc",
+            stem: `A triangle has a base of <strong>${b} cm</strong> and a height of <strong>${h} cm</strong>. What is the area of the triangle?`,
+            choices: [
+              `${area} cm²`,
+              `${b * h} cm²`,
+              `${b + h} cm²`,
+              `${2 * (b + h)} cm²`,
+            ],
+            correct: 0,
+            explanation: `Area of a triangle = ½ × base × height = ½ × ${b} × ${h} = ${area} cm².`,
+          });
+        })();
+
+        /* ── 13  6.G.2  Numeric Entry — volume of rectangular prism ── */
+        (function () {
+          const l = rnd(3, 9),
+            w = rnd(2, 7),
+            h = rnd(2, 6);
+          const vol = l * w * h;
+          bank.push({
+            id: "g2",
+            standard: "6.G.2",
+            strand: "G",
+            type: "numeric",
+            stem: `A rectangular prism has a length of <strong>${l} ft</strong>, a width of <strong>${w} ft</strong>, and a height of <strong>${h} ft</strong>. What is the volume of the prism in cubic feet?`,
+            unit: "ft³",
+            answer: vol,
+            tolerance: 0,
+            explanation: `Volume = length × width × height = ${l} × ${w} × ${h} = ${vol} ft³.`,
+          });
+        })();
+
+        /* ── 14  6.SP.1  Multi-select — statistical questions ── */
+        bank.push({
+          id: "sp1",
+          standard: "6.SP.1",
+          strand: "SP",
+          type: "multiselect",
+          stem: `Which of the following are <strong>statistical questions</strong>? Select ALL that apply.`,
+          choices: [
+            `How many students are in Mr. Lopez's class today?`,
+            `How many hours per night do sixth graders typically sleep?`,
+            `What is 7 × 8?`,
+            `What are the typical high temperatures in Baltimore during July?`,
+            `How tall is the Eiffel Tower?`,
+          ],
+          correct: [1, 3],
+          explanation: `A statistical question anticipates variability in answers. "How many hours do sixth graders sleep?" and "Typical temperatures in July?" vary across people/days — statistical. The others have one fixed answer.`,
+        });
+
+        /* ── 15  6.SP.4  Multiple Choice — median ── */
+        (function () {
+          const raw = [
+            rnd(60, 75),
+            rnd(70, 80),
+            rnd(75, 85),
+            rnd(80, 90),
+            rnd(85, 95),
+            rnd(88, 99),
+            rnd(90, 100),
+          ];
+          const sorted = [...raw].sort((a, b) => a - b);
+          const med = sorted[3]; // index 3 of 7 items = median
+          bank.push({
+            id: "sp4",
+            standard: "6.SP.4",
+            strand: "SP",
+            type: "mc",
+            stem: `Seven students scored the following on a quiz: <strong>${sorted.join(", ")}</strong>. What is the median score?`,
+            choices: [
+              `${med}`,
+              `${sorted[0]}`,
+              `${sorted[6]}`,
+              `${Math.round(sorted.reduce((a, c) => a + c, 0) / sorted.length)}`,
+            ],
+            correct: 0,
+            explanation: `With 7 values in order, the median is the 4th value: ${med}.`,
+          });
+        })();
+
+        return bank;
+      }
+
+      /* ================================================================
+   SHUFFLE
+================================================================ */
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      /* ================================================================
+   STATE
+================================================================ */
+      let questions = [];
+      let current = 0;
+      let answers = {}; // { qId: answer }
+      let graded = {}; // { qId: { correct: bool, score: 0|0.5|1 } }
+
+      /* ================================================================
+   SCREENS
+================================================================ */
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function beginTest() {
+        questions = shuffle(buildBank());
+        current = 0;
+        answers = {};
+        graded = {};
+        updateProgress();
+        renderQuestion();
+        showScreen("screen-test");
+      }
+
+      function retakeTest() {
+        current = 0;
+        answers = {};
+        graded = {};
+        updateProgress();
+        renderQuestion();
+        showScreen("screen-test");
+      }
+
+      function newTest() {
+        beginTest();
+      }
+
+      /* ================================================================
+   PROGRESS BAR
+================================================================ */
+      function updateProgress() {
+        const answered = Object.keys(answers).length;
+        const pct = Math.round((answered / questions.length) * 100);
+        const fill = document.getElementById("prog-fill");
+        if (fill) {
+          fill.style.width = pct + "%";
+          fill.parentElement.setAttribute("aria-valuenow", pct);
+        }
+        const pc = document.getElementById("prog-current");
+        const pt = document.getElementById("prog-total");
+        const qc = document.getElementById("q-counter");
+        if (pc) pc.textContent = current + 1;
+        if (pt) pt.textContent = questions.length;
+        if (qc) qc.textContent = current + 1 + " / " + questions.length;
+      }
+
+      /* ================================================================
+   NAVIGATION
+================================================================ */
+      function goNext() {
+        saveCurrentAnswer();
+        if (current < questions.length - 1) {
+          current++;
+          updateProgress();
+          renderQuestion();
+        }
+      }
+
+      function goBack() {
+        saveCurrentAnswer();
+        if (current > 0) {
+          current--;
+          updateProgress();
+          renderQuestion();
+        }
+      }
+
+      function saveCurrentAnswer() {
+        const q = questions[current];
+        if (!q) return;
+        if (q.type === "mc") {
+          const sel = document.querySelector(
+            `input[name="mc_${q.id}"]:checked`,
+          );
+          if (sel) answers[q.id] = parseInt(sel.value, 10);
+        } else if (q.type === "multiselect") {
+          const boxes = document.querySelectorAll(
+            `input[name="ms_${q.id}"]:checked`,
+          );
+          if (boxes.length)
+            answers[q.id] = Array.from(boxes)
+              .map((b) => parseInt(b.value, 10))
+              .sort((a, b) => a - b);
+        } else if (q.type === "numeric") {
+          const inp = document.getElementById(`num_${q.id}`);
+          if (inp && inp.value !== "") answers[q.id] = parseFloat(inp.value);
+        } else if (q.type === "twopart") {
+          const selA = document.querySelector(
+            `input[name="tpA_${q.id}"]:checked`,
+          );
+          const inpB = document.getElementById(`tpB_${q.id}`);
+          answers[q.id] = {
+            partA: selA ? parseInt(selA.value, 10) : null,
+            partB: inpB && inpB.value !== "" ? parseFloat(inpB.value) : null,
+          };
+        } else if (q.type === "matching") {
+          const sels = q.pairs.map((_, i) => {
+            const s = document.getElementById(`match_${q.id}_${i}`);
+            return s ? s.value : "";
+          });
+          answers[q.id] = sels;
+        }
+      }
+
+      /* ================================================================
+   RENDER QUESTION
+================================================================ */
+      function renderQuestion() {
+        const q = questions[current];
+        const area = document.getElementById("question-area");
+        area.innerHTML = buildQHTML(q);
+
+        // Restore saved answers
+        restoreAnswer(q);
+
+        // Back/Next buttons
+        const btnBack = document.getElementById("btn-back");
+        const btnNext = document.getElementById("btn-next");
+        btnBack.disabled = current === 0;
+
+        if (current === questions.length - 1) {
+          btnNext.textContent = "Submit Test ✓";
+          btnNext.classList.add("submit");
+          btnNext.onclick = submitTest;
+        } else {
+          btnNext.textContent = "Next →";
+          btnNext.classList.remove("submit");
+          btnNext.onclick = goNext;
+        }
+        updateProgress();
+      }
+
+      function buildQHTML(q) {
+        let html = `<div class="q-card">
+    <div class="q-meta">
+      <div class="q-num">${current + 1}</div>
+      <span class="q-standard">${q.standard}</span>
+      <span class="q-type">${typeLabel(q.type)}</span>
+    </div>`;
+
+        if (q.type !== "twopart") {
+          html += `<p class="q-stem">${q.stem}</p>`;
+        } else {
+          html += `<p class="q-stem">${q.stem}</p>`;
+        }
+
+        if (q.type === "mc") {
+          html += buildMC(q);
+        } else if (q.type === "multiselect") {
+          html += `<p style="font-size:13px;color:var(--muted);margin:0 0 10px;">Select ALL that apply.</p>`;
+          html += buildMultiselect(q);
+        } else if (q.type === "numeric") {
+          html += buildNumeric(q);
+        } else if (q.type === "twopart") {
+          html += buildTwoPart(q);
+        } else if (q.type === "matching") {
+          html += buildMatching(q);
+        }
+
+        html += `</div>`;
+        return html;
+      }
+
+      function typeLabel(t) {
+        return (
+          {
+            mc: "Multiple Choice",
+            multiselect: "Multi-Select",
+            numeric: "Numeric Entry",
+            twopart: "Two-Part Item",
+            matching: "Matching",
+          }[t] || t
+        );
+      }
+
+      function buildMC(q) {
+        return `<ul class="mc-list" role="radiogroup" aria-label="Answer choices">${q.choices
+          .map(
+            (c, i) => `<li>
+      <label>
+        <input type="radio" name="mc_${q.id}" value="${i}" aria-label="Choice ${String.fromCharCode(65 + i)}: ${c}">
+        <span><strong>${String.fromCharCode(65 + i)}.</strong> ${c}</span>
+      </label>
+    </li>`,
+          )
+          .join("")}</ul>`;
+      }
+
+      function buildMultiselect(q) {
+        return `<ul class="mc-list">${q.choices
+          .map(
+            (c, i) => `<li>
+      <label>
+        <input type="checkbox" name="ms_${q.id}" value="${i}" aria-label="Choice ${String.fromCharCode(65 + i)}: ${c}">
+        <span><strong>${String.fromCharCode(65 + i)}.</strong> ${c}</span>
+      </label>
+    </li>`,
+          )
+          .join("")}</ul>`;
+      }
+
+      function buildNumeric(q) {
+        return `<div class="num-wrap">
+    <input type="number" id="num_${q.id}" step="any" placeholder="Enter answer"
+      aria-label="Numeric answer" style="width:160px;">
+    ${q.unit ? `<span class="num-label">${q.unit}</span>` : ""}
+  </div>`;
+      }
+
+      function buildTwoPart(q) {
+        return `
+    <div class="twopart-part">
+      <h4>Part A</h4>
+      <p style="font-size:15px;margin:0 0 12px;">${q.partA.question}</p>
+      <ul class="mc-list" role="radiogroup">${q.partA.choices
+        .map(
+          (c, i) => `<li>
+          <label>
+            <input type="radio" name="tpA_${q.id}" value="${i}">
+            <span><strong>${String.fromCharCode(65 + i)}.</strong> ${c}</span>
+          </label>
+        </li>`,
+        )
+        .join("")}</ul>
+    </div>
+    <div class="twopart-part">
+      <h4>Part B</h4>
+      <p style="font-size:15px;margin:0 0 12px;">${q.partB.question}</p>
+      <div class="num-wrap">
+        <input type="number" id="tpB_${q.id}" step="any" placeholder="Enter answer" style="width:160px;">
+        ${q.partB.unit ? `<span class="num-label">${q.partB.unit}</span>` : ""}
+      </div>
+    </div>`;
+      }
+
+      function buildMatching(q) {
+        const opts = q.options;
+        return `<table class="match-table" role="table">
+    <thead><tr>
+      <th scope="col">Expression</th>
+      <th scope="col">Equivalent Form</th>
+    </tr></thead>
+    <tbody>${q.pairs
+      .map(
+        (p, i) => `
+      <tr>
+        <td>${p.left}</td>
+        <td>
+          <select id="match_${q.id}_${i}" aria-label="Match for ${p.left}">
+            <option value="">— select —</option>
+            ${opts.map((o) => `<option value="${o}">${o}</option>`).join("")}
+          </select>
+        </td>
+      </tr>`,
+      )
+      .join("")}
+    </tbody>
+  </table>`;
+      }
+
+      /* ================================================================
+   RESTORE SAVED ANSWER
+================================================================ */
+      function restoreAnswer(q) {
+        const saved = answers[q.id];
+        if (saved === undefined) return;
+
+        if (q.type === "mc") {
+          const radio = document.querySelector(
+            `input[name="mc_${q.id}"][value="${saved}"]`,
+          );
+          if (radio) radio.checked = true;
+        } else if (q.type === "multiselect") {
+          (saved || []).forEach((v) => {
+            const cb = document.querySelector(
+              `input[name="ms_${q.id}"][value="${v}"]`,
+            );
+            if (cb) cb.checked = true;
+          });
+        } else if (q.type === "numeric") {
+          const inp = document.getElementById(`num_${q.id}`);
+          if (inp && saved !== undefined) inp.value = saved;
+        } else if (q.type === "twopart") {
+          if (saved.partA !== null) {
+            const r = document.querySelector(
+              `input[name="tpA_${q.id}"][value="${saved.partA}"]`,
+            );
+            if (r) r.checked = true;
+          }
+          const inpB = document.getElementById(`tpB_${q.id}`);
+          if (inpB && saved.partB !== null) inpB.value = saved.partB;
+        } else if (q.type === "matching") {
+          (saved || []).forEach((v, i) => {
+            const s = document.getElementById(`match_${q.id}_${i}`);
+            if (s) s.value = v;
+          });
+        }
+      }
+
+      /* ================================================================
+   GRADING
+================================================================ */
+      function gradeAll() {
+        graded = {};
+        questions.forEach((q) => {
+          const ans = answers[q.id];
+          let result = { correct: false, partial: false, score: 0 };
+
+          if (q.type === "mc") {
+            result.correct = ans === q.correct;
+            result.score = result.correct ? 1 : 0;
+          } else if (q.type === "multiselect") {
+            if (Array.isArray(ans)) {
+              const sorted = [...ans].sort((a, b) => a - b);
+              const target = [...q.correct].sort((a, b) => a - b);
+              result.correct =
+                JSON.stringify(sorted) === JSON.stringify(target);
+              result.score = result.correct ? 1 : 0;
+            }
+          } else if (q.type === "numeric") {
+            if (ans !== undefined && ans !== null) {
+              result.correct = Math.abs(ans - q.answer) <= q.tolerance;
+              result.score = result.correct ? 1 : 0;
+            }
+          } else if (q.type === "twopart") {
+            let scoreA = 0,
+              scoreB = 0;
+            if (ans) {
+              scoreA = ans.partA === q.partA.correct ? 1 : 0;
+              if (ans.partB !== null && ans.partB !== undefined) {
+                scoreB =
+                  Math.abs(ans.partB - q.partB.answer) <= q.partB.tolerance
+                    ? 1
+                    : 0;
+              }
+            }
+            result.score = (scoreA + scoreB) / 2;
+            result.correct = scoreA === 1 && scoreB === 1;
+          } else if (q.type === "matching") {
+            if (Array.isArray(ans)) {
+              const allRight = q.pairs.every((p, i) => ans[i] === p.right);
+              result.correct = allRight;
+              const numRight = q.pairs.filter(
+                (p, i) => ans[i] === p.right,
+              ).length;
+              result.score = allRight ? 1 : 0; // exact-match for full credit
+            }
+          }
+
+          graded[q.id] = result;
+        });
+      }
+
+      /* ================================================================
+   SUBMIT
+================================================================ */
+      function submitTest() {
+        saveCurrentAnswer();
+        gradeAll();
+        buildReport();
+        showScreen("screen-report");
+      }
+
+      /* ================================================================
+   SCORE REPORT
+================================================================ */
+      function buildReport() {
+        // Total score
+        let totalScore = 0;
+        questions.forEach((q) => {
+          totalScore += graded[q.id] ? graded[q.id].score : 0;
+        });
+        const maxScore = questions.length;
+        const pct = Math.round((totalScore / maxScore) * 100);
+
+        document.getElementById("score-fraction").textContent =
+          totalScore.toFixed(1).replace(".0", "") + " / " + maxScore;
+        document.getElementById("score-pct").textContent = pct + "%";
+
+        const msg = document.getElementById("score-msg");
+        if (pct >= 90) {
+          msg.textContent =
+            "Outstanding work! You have mastered these Grade 6 standards.";
+          msg.className = "score-msg great";
+        } else if (pct >= 75) {
+          msg.textContent =
+            "Good job! A little more practice on the missed items and you are ready.";
+          msg.className = "score-msg good";
+        } else if (pct >= 55) {
+          msg.textContent =
+            "Keep going — review the standards below and try again!";
+          msg.className = "score-msg keep";
+        } else {
+          msg.textContent =
+            "Keep practicing — every attempt builds your skills!";
+          msg.className = "score-msg keep";
+        }
+
+        // Strand breakdown
+        const strands = { NS: [], RP: [], EE: [], G: [], SP: [] };
+        questions.forEach((q) => {
+          if (strands[q.strand]) strands[q.strand].push(q);
+        });
+
+        let rowsHTML = "";
+        Object.entries(strands).forEach(([strand, qs]) => {
+          if (!qs.length) return;
+          const earned = qs.reduce(
+            (s, q) => s + (graded[q.id] ? graded[q.id].score : 0),
+            0,
+          );
+          const total = qs.length;
+          const ratio = earned / total;
+          const fillClass = ratio >= 1 ? "full" : ratio >= 0.5 ? "half" : "low";
+          rowsHTML += `<div class="strand-row">
+      <span class="strand-name">${strand}</span>
+      <div class="strand-track">
+        <div class="strand-fill ${fillClass}" style="width:${Math.round(ratio * 100)}%"></div>
+      </div>
+      <span class="strand-score">${earned % 1 === 0 ? earned : earned.toFixed(1)} / ${total}</span>
+    </div>`;
+        });
+        document.getElementById("strand-rows").innerHTML = rowsHTML;
+
+        // Review list
+        buildReview();
+
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: totalScore,
+              maxScore: maxScore,
+              problemsCorrect: totalScore,
+              problemsAttempted: maxScore,
+            });
+        } catch (e) {}
+      }
+
+      function buildReview() {
+        let html = "";
+        questions.forEach((q, idx) => {
+          const g = graded[q.id] || { score: 0, correct: false };
+          const icon = g.score >= 1 ? "✅" : g.score > 0 ? "🔶" : "❌";
+          let chosen = "";
+          let correct = "";
+          const ans = answers[q.id];
+
+          if (q.type === "mc") {
+            chosen =
+              ans !== undefined
+                ? `Your answer: ${String.fromCharCode(65 + ans)}. ${q.choices[ans]}`
+                : "Not answered";
+            correct = `Correct answer: ${String.fromCharCode(65 + q.correct)}. ${q.choices[q.correct]}`;
+          } else if (q.type === "multiselect") {
+            const selected = Array.isArray(ans)
+              ? ans
+                  .map((i) => `${String.fromCharCode(65 + i)}. ${q.choices[i]}`)
+                  .join("; ")
+              : "Not answered";
+            const corrList = q.correct
+              .map((i) => `${String.fromCharCode(65 + i)}. ${q.choices[i]}`)
+              .join("; ");
+            chosen = `Your selections: ${selected}`;
+            correct = `Correct selections: ${corrList}`;
+          } else if (q.type === "numeric") {
+            chosen = ans !== undefined ? `Your answer: ${ans}` : "Not answered";
+            correct = `Correct answer: ${q.answer}`;
+          } else if (q.type === "twopart") {
+            const a = ans || { partA: null, partB: null };
+            const pa =
+              a.partA !== null
+                ? `A: ${String.fromCharCode(65 + a.partA)}. ${q.partA.choices[a.partA]}`
+                : "Part A: Not answered";
+            const pb =
+              a.partB !== null ? `B: ${a.partB}` : "Part B: Not answered";
+            chosen = `Your answers — ${pa} | ${pb}`;
+            correct = `Correct — A: ${String.fromCharCode(65 + q.partA.correct)}. ${q.partA.choices[q.partA.correct]} | B: ${q.partB.answer}`;
+          } else if (q.type === "matching") {
+            const rows = q.pairs
+              .map((p, i) => {
+                const given = ans && ans[i] ? ans[i] : "—";
+                return `"${p.left}" → ${given}`;
+              })
+              .join("; ");
+            const corr = q.pairs
+              .map((p) => `"${p.left}" → ${p.right}`)
+              .join("; ");
+            chosen = `Your matches: ${rows}`;
+            correct = `Correct matches: ${corr}`;
+          }
+
+          const stemPlain = q.stem
+            .replace(/<[^>]+>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+          html += `<div class="rev-item">
+      <div class="rev-head">
+        <span class="rev-num">Q${idx + 1}</span>
+        <span class="rev-std">${q.standard}</span>
+        <span class="rev-icon">${icon}</span>
+      </div>
+      <p class="rev-q">${stemPlain}</p>
+      <div class="rev-chosen">${escHtml(chosen)}</div>
+      <div class="rev-correct">${escHtml(correct)}</div>
+      <p class="rev-explanation">${q.explanation || (q.type === "twopart" ? q.partA.explanation + " " + q.partB.explanation : "")}</p>
+    </div>`;
+        });
+        document.getElementById("review-list").innerHTML = html;
+      }
+
+      function escHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function toggleReview() {
+        const list = document.getElementById("review-list");
+        const btn = document.getElementById("btn-review");
+        const open = list.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open);
+        btn.textContent = open
+          ? "Hide Questions & Answers"
+          : "Show All Questions & Answers";
+      }
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>2C Fraction Word Problems Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input,
+      .practice-problem textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus,
+      .practice-problem textarea:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      .fraction {
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        margin: 0 0.15rem;
+      }
+      .fraction .num {
+        display: block;
+        border-bottom: 2px solid var(--guide-ink);
+        padding: 0 4px 2px;
+      }
+      .fraction .den {
+        display: block;
+        padding: 2px 4px 0;
+      }
+      .keyword-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0.75rem 0;
+      }
+      .keyword-table th,
+      .keyword-table td {
+        padding: 0.6rem 0.75rem;
+        text-align: left;
+        border: 1px solid #cbd5e1;
+      }
+      .keyword-table th {
+        background: var(--guide-primary);
+        color: #fff;
+      }
+      .keyword-table tr:nth-child(even) {
+        background: #f8fafc;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>📝 2C | Fraction Word Problems Study Guide</h1>
+        <div class="guide-meta">
+          Unit 2: Fractions &amp; Decimals &bull; Lessons 2.5&ndash;2.7 &bull;
+          Standard: 6.NS.1
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>📘 Key Vocabulary &mdash; Key Words That Tell You the Operation</h2>
+        <div class="vocab-term">
+          <strong>"of"</strong> &mdash; means <strong>multiply</strong>.
+          Example: "1/2 <em>of</em> 24" means 1/2 &times; 24.
+          <span class="spanish">("de" = multiplicar)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>"per" / "each"</strong> &mdash; means <strong>divide</strong>.
+          Example: "split equally <em>per</em> person" means divide.
+          <span class="spanish">("por" / "cada" = dividir)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>"total" / "altogether" / "in all"</strong> &mdash; means
+          <strong>add</strong>. Example: "how many <em>in all</em>?" means add.
+          <span class="spanish">("total" / "en total" = sumar)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>"how much more" / "how much less" / "left over"</strong>
+          &mdash; means <strong>subtract</strong>. Example: "how much
+          <em>more</em> does she need?" means subtract.
+          <span class="spanish"
+            >("cu&aacute;nto m&aacute;s" / "cu&aacute;nto queda" = restar)</span
+          >
+        </div>
+        <div class="vocab-term">
+          <strong>"equally" / "shared" / "split"</strong> &mdash; means
+          <strong>divide</strong>.
+          <span class="spanish">("igualmente" / "compartir" / "dividir")</span>
+        </div>
+      </div>
+
+      <!-- VISUAL: KEY WORDS TABLE -->
+      <div class="guide-section">
+        <h2>🗝️ Visual Reference &mdash; Key Words to Operations</h2>
+        <table class="keyword-table">
+          <tr>
+            <th>Key Word(s)</th>
+            <th>Operation</th>
+            <th>Example</th>
+          </tr>
+          <tr>
+            <td><strong>of</strong></td>
+            <td>Multiply (&times;)</td>
+            <td>"3/4 <em>of</em> 20 cups" &rarr; 3/4 &times; 20</td>
+          </tr>
+          <tr>
+            <td><strong>per, each, equally, split, shared</strong></td>
+            <td>Divide (&divide;)</td>
+            <td>"12 cookies split among 1/3 bags" &rarr; 12 &divide; 1/3</td>
+          </tr>
+          <tr>
+            <td><strong>total, altogether, in all, combined</strong></td>
+            <td>Add (+)</td>
+            <td>
+              "ate 1/4 and 2/4, how much <em>total</em>?" &rarr; 1/4 + 2/4
+            </td>
+          </tr>
+          <tr>
+            <td><strong>how much more, left, remaining, difference</strong></td>
+            <td>Subtract (&minus;)</td>
+            <td>
+              "had 3/4, used 1/2, how much <em>left</em>?" &rarr; 3/4 &minus;
+              1/2
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>🔢 Step-by-Step &mdash; Solving Fraction Word Problems</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> <strong>Read</strong> the problem
+            carefully. Underline the numbers and circle the key words.
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <strong>Identify the operation</strong> using the key words table
+            above.
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <strong>Set up the equation</strong> with the fractions and
+            operation.
+          </li>
+          <li>
+            <span class="step-num">4</span> <strong>Solve</strong> using the
+            correct method (common denominator for +/&minus;, straight across
+            for &times;, KCF for &divide;).
+          </li>
+          <li>
+            <span class="step-num">5</span> <strong>Check:</strong> Does your
+            answer make sense? Is it reasonable?
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Example:</strong> Maria has 3/4 of a pizza. She eats 1/3
+          <em>of</em> it. How much pizza did she eat?<br /><br />
+          Key word: <strong>"of"</strong> &rarr; multiply<br />
+          Equation: 1/3 &times; 3/4 = 3/12 = <strong>1/4</strong><br />
+          Maria ate 1/4 of the whole pizza. &checkmark; That makes sense because
+          she ate part of a part.
+        </div>
+      </div>
+
+      <!-- TIP -->
+      <div class="guide-section tip-section">
+        <h2>💡 Language Tip &mdash; Reading Word Problems</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>Read the problem 3 times:</strong> 1st for the story, 2nd
+            for the numbers, 3rd for the question.
+          </li>
+          <li>
+            <strong>Draw a picture</strong> if it helps you see the problem.
+          </li>
+          <li>
+            <strong>Rewrite the problem</strong> in your own words using simpler
+            English.
+          </li>
+          <li>
+            <strong>Look for the question mark (?)</strong> &mdash; that tells
+            you what to solve for.
+          </li>
+        </ul>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>⚠️ Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>"Of" ALWAYS means multiply with fractions.</strong> This is
+            the most important key word to remember!
+          </li>
+          <li>
+            <strong
+              >Don't confuse "how many groups" (divide) with "how much total"
+              (multiply).</strong
+            >
+            Read carefully!
+          </li>
+          <li>
+            <strong>Check if your answer is reasonable.</strong> If you multiply
+            a fraction by a fraction, the answer should be SMALLER than both
+            numbers.
+          </li>
+          <li>
+            <strong>Units matter:</strong> Make sure your answer has the right
+            label (cups, miles, pounds, etc.).
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>✏️ Practice Problems</h2>
+        <p style="margin-bottom: 0.75rem; color: var(--guide-muted)">
+          Write fractions as a/b. Write mixed numbers as: whole a/b (example: 1
+          1/2). Include only the number, not the unit.
+        </p>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> A recipe calls for 3/4 cup of sugar. You want to
+            make 1/2 <em>of</em> the recipe. How many cups of sugar do you need?
+          </p>
+          <p style="color: var(--guide-muted); font-size: 0.9rem">
+            Hint: "of" means multiply. Find 1/2 &times; 3/4.
+          </p>
+          <input type="text" id="q1" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkFraction('q1', 3, 8, 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> You have 6 pounds of trail mix. Each bag holds
+            2/3 of a pound. How many bags can you fill?
+          </p>
+          <p style="color: var(--guide-muted); font-size: 0.9rem">
+            Hint: "each bag holds" means divide. Find 6 &divide; 2/3.
+          </p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q2', '9', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> Sam ran 2/5 of a mile on Monday and 1/3 of a
+            mile on Tuesday. How far did he run <em>in all</em>?
+          </p>
+          <p style="color: var(--guide-muted); font-size: 0.9rem">
+            Hint: "in all" means add. Find 2/5 + 1/3.
+          </p>
+          <input type="text" id="q3" placeholder="Type your answer..." />
+          <button
+            class="check-btn"
+            onclick="checkFraction('q3', 11, 15, 'fb3')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> A board is 5/6 of a meter long. You cut off 1/4
+            of a meter. How much board is <em>left</em>?
+          </p>
+          <p style="color: var(--guide-muted); font-size: 0.9rem">
+            Hint: "left" means subtract. Find 5/6 &minus; 1/4.
+          </p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkFraction('q4', 7, 12, 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "✓ Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent =
+            "Not quite. Try again! Re-read the problem and look for key words.";
+        }
+      }
+      function checkFraction(inputId, correctNum, correctDen, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, " ");
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+          return;
+        }
+        var mixedMatch = val.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+        if (mixedMatch) {
+          var whole = parseInt(mixedMatch[1]);
+          var n = parseInt(mixedMatch[2]);
+          var d = parseInt(mixedMatch[3]);
+          var totalNum = whole * d + n;
+          if (totalNum * correctDen === correctNum * d) {
+            feedback.className = "feedback correct";
+            feedback.textContent = "✓ Correct! Great work!";
+            return;
+          }
+        }
+        var parts = val.replace(/\s/g, "").split("/");
+        if (parts.length === 2) {
+          var n2 = parseInt(parts[0]),
+            d2 = parseInt(parts[1]);
+          if (
+            !isNaN(n2) &&
+            !isNaN(d2) &&
+            d2 !== 0 &&
+            n2 * correctDen === correctNum * d2
+          ) {
+            feedback.className = "feedback correct";
+            feedback.textContent = "✓ Correct! Great work!";
+            return;
+          }
+        }
+        if (
+          !isNaN(parseFloat(val)) &&
+          Math.abs(parseFloat(val) - correctNum / correctDen) < 0.001
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "✓ Correct! Great work!";
+          return;
+        }
+        feedback.className = "feedback incorrect";
+        feedback.textContent =
+          "Not quite. Re-read the problem, find the key word, and try again!";
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

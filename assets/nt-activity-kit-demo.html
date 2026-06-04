@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neft Teacher — Activity Kit Demo</title>
+    <!-- 1) include the kit -->
+    <link rel="stylesheet" href="nt-activity-kit.css" />
+    <style>
+      body {
+        font-family: system-ui, Arial, sans-serif;
+        max-width: 760px;
+        margin: 24px auto;
+        padding: 0 16px;
+        color: #16243a;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .q {
+        margin: 14px 0;
+      }
+      .q label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .q input {
+        font: inherit;
+        padding: 7px 9px;
+        border: 1px solid #d8e0ec;
+        border-radius: 7px;
+        width: 220px;
+      }
+      #check {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 8px;
+        padding: 9px 16px;
+        border: 0;
+        border-radius: 8px;
+        background: #1f9d55;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Unit 8 · Statistics — Quick Check (3 questions)</h1>
+    <p>Enter your name above, answer the questions, then grade and export.</p>
+
+    <!-- 2) NTKit mounts its identity bar + Save buttons + results panel here -->
+    <div id="ntkit"></div>
+
+    <form id="activity">
+      <div class="q">
+        <label for="a1">1. What is the mean of 4, 8, 6?</label>
+        <input type="text" id="a1" autocomplete="off" />
+      </div>
+      <div class="q">
+        <label for="a2">2. What is the median of 3, 9, 5, 1, 7?</label>
+        <input type="text" id="a2" autocomplete="off" />
+      </div>
+      <div class="q">
+        <label for="a3">3. What is the range of 2, 10, 5?</label>
+        <input type="text" id="a3" autocomplete="off" />
+      </div>
+      <button type="button" id="check">Grade my answers</button>
+    </form>
+
+    <!-- 3) include the kit script -->
+    <script src="nt-activity-kit.js"></script>
+    <script>
+      // 4) mount + grade
+      NTKit.mount("#ntkit");
+
+      document.getElementById("check").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "unit-8-stats",
+          activityTitle: "Unit 8 · Statistics — Quick Check",
+          standard: "6.SP.B.5",
+          items: [
+            {
+              prompt: "Mean of 4, 8, 6",
+              studentAnswer: document.getElementById("a1").value,
+              correctAnswer: "6",
+              points: 1,
+              skill: "Mean",
+            },
+            {
+              prompt: "Median of 3, 9, 5, 1, 7",
+              studentAnswer: document.getElementById("a2").value,
+              correctAnswer: "5",
+              points: 1,
+              skill: "Median",
+            },
+            {
+              prompt: "Range of 2, 10, 5",
+              studentAnswer: document.getElementById("a3").value,
+              correctAnswer: "8",
+              points: 1,
+              skill: "Range",
+            },
+          ],
+        });
+      });
+    </script>
+  </body>
+</html>

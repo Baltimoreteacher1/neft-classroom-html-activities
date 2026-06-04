@@ -1,0 +1,2063 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Variable Voyage — Unit 9 Review Game</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --navy-deep: #060e18;
+        --navy-mid: #0b1a2a;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --teal-glow: #14d4c2;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --gold-glow: #ffd666;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #e2eaf2;
+        --muted: #8a97a5;
+        --faint: #5e6e7e;
+        --line: rgba(255, 255, 255, 0.1);
+        --bg: #060e18;
+        --card: rgba(15, 43, 60, 0.85);
+        --card-border: rgba(14, 138, 125, 0.25);
+        --radius: 14px;
+        --shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* ── Starfield ── */
+      .starfield {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .star {
+        position: absolute;
+        border-radius: 50%;
+        background: #fff;
+        animation: twinkle var(--dur) ease-in-out infinite alternate;
+      }
+      @keyframes twinkle {
+        0% {
+          opacity: 0.15;
+          transform: scale(0.8);
+        }
+        100% {
+          opacity: var(--max-o, 1);
+          transform: scale(1.2);
+        }
+      }
+
+      /* ── Screens ── */
+      .screen {
+        display: none;
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── Title Screen ── */
+      #titleScreen {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 24px;
+        gap: 20px;
+      }
+      .title-rocket {
+        width: 80px;
+        height: 120px;
+        position: relative;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-15px);
+        }
+      }
+      .rocket-body {
+        position: absolute;
+        left: 20px;
+        top: 0;
+        width: 40px;
+        height: 80px;
+        background: linear-gradient(135deg, #e8eef4, #c0cdd8);
+        border-radius: 20px 20px 8px 8px;
+        box-shadow: inset -5px 0 10px rgba(0, 0, 0, 0.15);
+      }
+      .rocket-nose {
+        position: absolute;
+        left: 20px;
+        top: -20px;
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-bottom: 30px solid var(--coral);
+      }
+      .rocket-window {
+        position: absolute;
+        left: 30px;
+        top: 22px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 35% 35%,
+          var(--teal-glow),
+          var(--teal)
+        );
+        box-shadow: 0 0 10px var(--teal-glow);
+      }
+      .rocket-fin-l,
+      .rocket-fin-r {
+        position: absolute;
+        top: 55px;
+        width: 0;
+        height: 0;
+        border-bottom: 30px solid var(--gold);
+      }
+      .rocket-fin-l {
+        left: 5px;
+        border-left: 15px solid transparent;
+        border-right: 0 solid transparent;
+      }
+      .rocket-fin-r {
+        right: 5px;
+        border-right: 15px solid transparent;
+        border-left: 0 solid transparent;
+      }
+      .rocket-flame {
+        position: absolute;
+        left: 25px;
+        top: 78px;
+        width: 30px;
+        height: 40px;
+        background: linear-gradient(
+          to bottom,
+          var(--gold-glow),
+          var(--coral),
+          transparent
+        );
+        border-radius: 0 0 50% 50%;
+        animation: flicker 0.15s ease-in-out infinite alternate;
+        filter: blur(2px);
+      }
+      @keyframes flicker {
+        0% {
+          height: 36px;
+          opacity: 0.9;
+        }
+        100% {
+          height: 44px;
+          opacity: 1;
+        }
+      }
+      .game-title {
+        font-size: clamp(28px, 6vw, 48px);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        margin: 0;
+        background: linear-gradient(135deg, var(--teal-glow), var(--gold-glow));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .game-subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin: 0;
+        max-width: 400px;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 4px;
+        background: rgba(14, 138, 125, 0.15);
+        border: 1px solid rgba(14, 138, 125, 0.3);
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: var(--teal-glow);
+      }
+
+      /* Level Toggle */
+      .level-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 8px;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--teal);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(14, 212, 194, 0.3);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--ink);
+      }
+
+      .start-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 40px;
+        font-size: 18px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 0 20px rgba(14, 138, 125, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px rgba(14, 138, 125, 0.5);
+      }
+
+      /* ── Game Screen ── */
+      #gameScreen {
+        padding: 0;
+      }
+
+      /* HUD */
+      .hud {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(6, 14, 24, 0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+        padding: 10px 20px;
+      }
+      .hud-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .fuel-cells {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .fuel-cell {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--teal-glow), var(--teal));
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        transition: all 0.4s;
+        box-shadow: 0 0 8px rgba(14, 212, 194, 0.4);
+      }
+      .fuel-cell.empty {
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: none;
+        color: var(--faint);
+      }
+      .fuel-cell.lost {
+        animation: fuelLost 0.5s ease-out;
+      }
+      @keyframes fuelLost {
+        0% {
+          transform: scale(1.3);
+          background: var(--coral);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .hud-score {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--gold-glow);
+      }
+      .hud-timer {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .hud-timer.warning {
+        color: var(--coral);
+        animation: pulse 0.5s infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.5;
+        }
+      }
+      .hud-planet-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--teal-glow);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      /* Space Map */
+      .space-map {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 20px 0;
+      }
+      .map-track {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        padding: 0 10px;
+      }
+      .map-track::before {
+        content: "";
+        position: absolute;
+        left: 30px;
+        right: 30px;
+        top: 50%;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 2px;
+      }
+      .map-node {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 800;
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        background: var(--navy-mid);
+        color: var(--faint);
+        position: relative;
+        z-index: 1;
+        transition: all 0.4s;
+      }
+      .map-node.active {
+        border-color: var(--teal-glow);
+        color: var(--teal-glow);
+        box-shadow: 0 0 16px rgba(14, 212, 194, 0.4);
+        animation: nodePulse 2s ease-in-out infinite;
+      }
+      @keyframes nodePulse {
+        0%,
+        100% {
+          box-shadow: 0 0 12px rgba(14, 212, 194, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 24px rgba(14, 212, 194, 0.6);
+        }
+      }
+      .map-node.complete {
+        border-color: var(--green);
+        color: var(--green);
+        background: rgba(45, 135, 75, 0.15);
+      }
+      .map-node.failed {
+        border-color: var(--coral);
+        color: var(--coral);
+        background: rgba(196, 90, 60, 0.15);
+      }
+      .map-label {
+        position: absolute;
+        top: 48px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--faint);
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* Planet content area */
+      .planet-area {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 20px 100px;
+      }
+
+      /* Travel animation */
+      .travel-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: var(--bg);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+      }
+      .travel-overlay.active {
+        display: flex;
+      }
+      .travel-text {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--teal-glow);
+        animation: travelPulse 1s ease-in-out infinite;
+      }
+      @keyframes travelPulse {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      .travel-rocket {
+        width: 60px;
+        height: 90px;
+        position: relative;
+        animation: rocketFly 1.5s ease-in-out;
+      }
+      @keyframes rocketFly {
+        0% {
+          transform: translateY(100px) scale(0.6);
+          opacity: 0;
+        }
+        50% {
+          transform: translateY(-20px) scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Planet Header */
+      .planet-header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .planet-orb {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 12px;
+        display: grid;
+        place-items: center;
+        font-size: 28px;
+      }
+      .planet-orb.p1 {
+        background: radial-gradient(circle at 35% 35%, #6ee7d8, var(--teal));
+        box-shadow: 0 0 30px rgba(14, 212, 194, 0.4);
+      }
+      .planet-orb.p2 {
+        background: radial-gradient(circle at 35% 35%, #a78bfa, #6d28d9);
+        box-shadow: 0 0 30px rgba(109, 40, 217, 0.4);
+      }
+      .planet-orb.p3 {
+        background: radial-gradient(circle at 35% 35%, #60a5fa, var(--blue));
+        box-shadow: 0 0 30px rgba(26, 111, 181, 0.4);
+      }
+      .planet-orb.p4 {
+        background: radial-gradient(
+          circle at 35% 35%,
+          var(--gold-glow),
+          var(--gold)
+        );
+        box-shadow: 0 0 30px rgba(212, 149, 42, 0.4);
+      }
+      .planet-orb.p5 {
+        background: radial-gradient(circle at 35% 35%, #fb7185, var(--coral));
+        box-shadow: 0 0 30px rgba(196, 90, 60, 0.4);
+      }
+      .planet-name {
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0 0 4px;
+      }
+      .planet-desc {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* Question cards (game version) */
+      .g-card {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: border-color 0.3s;
+      }
+      .g-card.correct {
+        border-color: var(--green);
+      }
+      .g-card.incorrect {
+        border-color: var(--coral);
+      }
+      .g-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--teal-glow);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .g-prompt {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.45;
+      }
+      .g-prompt strong {
+        color: var(--gold-glow);
+      }
+      .g-prompt .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+      }
+
+      /* Hint (Level 1 only) */
+      .hint-btn {
+        border: 1px solid rgba(14, 138, 125, 0.3);
+        background: rgba(14, 138, 125, 0.1);
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--teal-glow);
+        cursor: pointer;
+        margin-bottom: 12px;
+        transition: all 0.2s;
+        display: none;
+      }
+      body.level-1 .hint-btn {
+        display: inline-block;
+      }
+      body.level-0 .hint-btn {
+        display: inline-block;
+        animation: l0pulse 1.6s ease-in-out infinite;
+      }
+      .level0-tag {
+        display: none;
+        margin-left: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #9a3412;
+        background: #fff7ed;
+        border: 1px solid #fdba74;
+        border-radius: 6px;
+        padding: 3px 8px;
+      }
+      body.level-0 .level0-tag {
+        display: inline-block;
+      }
+      @keyframes l0pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 rgba(253, 186, 116, 0);
+        }
+        50% {
+          box-shadow: 0 0 10px rgba(253, 186, 116, 0.7);
+        }
+      }
+      .hint-btn:hover {
+        background: rgba(14, 138, 125, 0.2);
+      }
+      .hint-box {
+        display: none;
+        background: rgba(14, 138, 125, 0.1);
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: var(--teal-glow);
+        line-height: 1.45;
+      }
+      .hint-box.shown {
+        display: block;
+      }
+      .hint-box .vocab {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(14, 138, 125, 0.25);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 700;
+        margin: 2px;
+      }
+
+      /* MC Options (space theme) */
+      .mc-options {
+        display: grid;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .mc-btn:hover {
+        border-color: var(--teal);
+        background: rgba(14, 138, 125, 0.1);
+      }
+      .mc-btn .letter {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mc-btn:hover .letter {
+        background: var(--teal);
+        color: #fff;
+      }
+      .mc-btn.selected {
+        border-color: var(--teal);
+        background: rgba(14, 138, 125, 0.15);
+      }
+      .mc-btn.selected .letter {
+        background: var(--teal);
+        color: #fff;
+      }
+      .mc-btn.is-correct {
+        border-color: var(--green);
+        background: rgba(45, 135, 75, 0.15);
+      }
+      .mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: rgba(196, 90, 60, 0.15);
+      }
+      .mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .mc-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Fill input */
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fill-input {
+        width: 120px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .fill-input:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgba(14, 212, 194, 0.15);
+      }
+      .fill-input.is-correct {
+        border-color: var(--green);
+        background: rgba(45, 135, 75, 0.12);
+      }
+      .fill-input.is-wrong {
+        border-color: var(--coral);
+        background: rgba(196, 90, 60, 0.12);
+      }
+      .fill-text {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      /* Check button */
+      .check-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .check-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 12px rgba(14, 138, 125, 0.3);
+      }
+      .check-btn:active {
+        transform: scale(0.98);
+      }
+      .check-btn:disabled {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Feedback */
+      .g-status,
+      .g-status-wrong {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .g-status {
+        background: rgba(45, 135, 75, 0.15);
+        color: #6ee7b7;
+        border: 1px solid rgba(45, 135, 75, 0.25);
+      }
+      .g-status-wrong {
+        background: rgba(196, 90, 60, 0.15);
+        color: #fca5a5;
+        border: 1px solid rgba(196, 90, 60, 0.25);
+      }
+      .g-card.correct .g-status {
+        display: flex;
+      }
+      .g-card.incorrect .g-status-wrong {
+        display: flex;
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* Planet action */
+      .planet-action {
+        text-align: center;
+        margin-top: 24px;
+      }
+      .next-planet-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 32px;
+        font-size: 16px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 0 16px rgba(14, 138, 125, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: none;
+      }
+      .next-planet-btn.visible {
+        display: inline-block;
+      }
+      .next-planet-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 24px rgba(14, 138, 125, 0.5);
+      }
+
+      /* SVG Graph styles */
+      .graph-wrap {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 14px;
+        overflow-x: auto;
+      }
+      .graph-wrap svg {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+      .graph-wrap svg text {
+        font-family: var(--font);
+      }
+
+      /* Table */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 14px;
+        font-size: 15px;
+      }
+      .data-table th {
+        background: rgba(14, 138, 125, 0.15);
+        color: var(--teal-glow);
+        padding: 10px 14px;
+        text-align: center;
+        font-weight: 700;
+        border: 1px solid var(--line);
+      }
+      .data-table td {
+        padding: 10px 14px;
+        text-align: center;
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+      .data-table tr:nth-child(even) td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* ── Game Over / Victory ── */
+      #endScreen {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 24px;
+        gap: 16px;
+      }
+      .end-title {
+        font-size: clamp(26px, 5vw, 42px);
+        font-weight: 900;
+        margin: 0;
+      }
+      .end-title.victory {
+        background: linear-gradient(135deg, var(--gold-glow), var(--teal-glow));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .end-title.defeat {
+        color: var(--coral);
+      }
+      .end-subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin: 0;
+      }
+      .end-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        max-width: 400px;
+        width: 100%;
+        margin-top: 8px;
+      }
+      .end-stat {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 16px 12px;
+      }
+      .end-stat-val {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--teal-glow);
+      }
+      .end-stat-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-top: 4px;
+      }
+      .star-display {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin: 8px 0;
+      }
+      .star-icon {
+        font-size: 32px;
+        color: rgba(255, 255, 255, 0.12);
+        transition: all 0.3s;
+      }
+      .star-icon.earned {
+        color: var(--gold-glow);
+        text-shadow: 0 0 12px rgba(255, 214, 102, 0.5);
+      }
+      .play-again-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 14px 36px;
+        font-size: 16px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        box-shadow: 0 0 16px rgba(14, 138, 125, 0.3);
+      }
+      .play-again-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Victory confetti */
+      .confetti-piece {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        z-index: 100;
+        pointer-events: none;
+        animation: confettiFall var(--fall-dur, 3s) linear forwards;
+      }
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-20px) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        .hud {
+          padding: 8px 12px;
+        }
+        .hud-inner {
+          gap: 8px;
+        }
+        .planet-area {
+          padding: 16px 12px 100px;
+        }
+        .g-card {
+          padding: 16px;
+        }
+        .end-stats {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        }
+        .map-node {
+          width: 36px;
+          height: 36px;
+          font-size: 13px;
+        }
+        .map-label {
+          font-size: 8px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="level-1">
+    <!-- Starfield background -->
+    <div class="starfield" id="starfield"></div>
+
+    <!-- ═══════════ TITLE SCREEN ═══════════ -->
+    <div class="screen active" id="titleScreen">
+      <div class="title-rocket">
+        <div class="rocket-nose"></div>
+        <div class="rocket-body"></div>
+        <div class="rocket-window"></div>
+        <div class="rocket-fin-l"></div>
+        <div class="rocket-fin-r"></div>
+        <div class="rocket-flame"></div>
+      </div>
+      <h1 class="game-title">Variable Voyage</h1>
+      <p class="game-subtitle">
+        Navigate the galaxy by solving two-variable relationship problems. Power
+        your spaceship to each planet!
+      </p>
+      <span class="standard-badge">6.EE.C.9 &middot; Unit 9 Review Game</span>
+      <div class="level-bar">
+        <span class="level-label">Difficulty</span>
+        <div class="level-toggle">
+          <button class="level-btn" data-level="0">Level 0 (Guided)</button>
+          <button class="level-btn active" data-level="1">
+            Level 1 (Hints)
+          </button>
+          <button class="level-btn" data-level="2">Level 2 (No Hints)</button>
+        </div>
+        <span class="level0-tag">🟠 Guided: hints stay on</span>
+      </div>
+      <button class="start-btn" id="startBtn">Launch Mission</button>
+    </div>
+
+    <!-- ═══════════ GAME SCREEN ═══════════ -->
+    <div class="screen" id="gameScreen">
+      <div class="hud">
+        <div class="hud-inner">
+          <div class="fuel-cells" id="fuelCells">
+            <span
+              style="
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--muted);
+                margin-right: 4px;
+              "
+              >FUEL</span
+            >
+            <div class="fuel-cell" data-idx="0">&#9650;</div>
+            <div class="fuel-cell" data-idx="1">&#9650;</div>
+            <div class="fuel-cell" data-idx="2">&#9650;</div>
+          </div>
+          <span class="hud-planet-label" id="hudPlanet">Planet 1</span>
+          <span class="hud-timer" id="hudTimer">60s</span>
+          <span class="hud-score" id="hudScore">&#9733; 0 pts</span>
+        </div>
+      </div>
+
+      <div class="space-map">
+        <div class="map-track">
+          <div class="map-node active" data-planet="0" id="mapNode0">
+            1<span class="map-label">Variable<br />Station</span>
+          </div>
+          <div class="map-node" data-planet="1" id="mapNode1">
+            2<span class="map-label">Table<br />Nebula</span>
+          </div>
+          <div class="map-node" data-planet="2" id="mapNode2">
+            3<span class="map-label">Graph<br />Galaxy</span>
+          </div>
+          <div class="map-node" data-planet="3" id="mapNode3">
+            4<span class="map-label">Equation<br />Orbit</span>
+          </div>
+          <div class="map-node" data-planet="4" id="mapNode4">
+            &#9733;<span class="map-label">Mission<br />Control</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="planet-area" id="planetArea">
+        <!-- Dynamically filled -->
+      </div>
+    </div>
+
+    <!-- ═══════════ TRAVEL OVERLAY ═══════════ -->
+    <div class="travel-overlay" id="travelOverlay">
+      <div class="travel-rocket">
+        <div
+          class="rocket-nose"
+          style="
+            left: 10px;
+            top: -15px;
+            border-left-width: 15px;
+            border-right-width: 15px;
+            border-bottom-width: 22px;
+          "
+        ></div>
+        <div
+          class="rocket-body"
+          style="left: 10px; top: 0; width: 30px; height: 60px"
+        ></div>
+        <div
+          class="rocket-window"
+          style="left: 17px; top: 16px; width: 16px; height: 16px"
+        ></div>
+        <div
+          class="rocket-flame"
+          style="left: 13px; top: 58px; width: 24px; height: 32px"
+        ></div>
+      </div>
+      <div class="travel-text" id="travelText">Traveling to next planet...</div>
+    </div>
+
+    <!-- ═══════════ END SCREEN ═══════════ -->
+    <div class="screen" id="endScreen">
+      <h1 class="end-title" id="endTitle"></h1>
+      <p class="end-subtitle" id="endSubtitle"></p>
+      <div class="star-display" id="starDisplay"></div>
+      <div class="end-stats" id="endStats"></div>
+      <button class="play-again-btn" id="playAgainBtn">Play Again</button>
+    </div>
+
+    <script>
+      (function () {
+        /* ═══════════ GAME DATA ═══════════ */
+        const PLANETS = [
+          {
+            name: "Variable Station",
+            desc: "Identify independent and dependent variables",
+            orbClass: "p1",
+            time: 60,
+            questions: [
+              {
+                num: "Mission 1-1",
+                prompt:
+                  "A store sells lemonade. The more cups sold, the more money earned.<br><br>Which is the <strong>independent variable</strong> and which is the <strong>dependent variable</strong>?",
+                hint: "<strong>Vocabulary:</strong> The <span class='vocab'>independent variable</span> is the one you control or that changes on its own. The <span class='vocab'>dependent variable</span> depends on it (changes because of it).",
+                type: "mc",
+                options: [
+                  {
+                    letter: "A",
+                    text: "Independent: money earned; Dependent: cups sold",
+                    val: "a",
+                  },
+                  {
+                    letter: "B",
+                    text: "Independent: cups sold; Dependent: money earned",
+                    val: "b",
+                  },
+                  {
+                    letter: "C",
+                    text: "Both are independent variables",
+                    val: "c",
+                  },
+                  {
+                    letter: "D",
+                    text: "Both are dependent variables",
+                    val: "d",
+                  },
+                ],
+                answer: "b",
+                correct:
+                  "Correct! The number of cups sold is what changes first (independent). The money earned depends on how many cups are sold (dependent).",
+                wrong:
+                  "Not quite. Think: which changes first? You decide how many cups to sell (independent), and the money earned depends on that (dependent). The answer is <strong>B</strong>.",
+              },
+              {
+                num: "Mission 1-2",
+                prompt:
+                  "Marcus tracks how many hours he studies and his test score.<br><br>Which variable is <strong>dependent</strong>?",
+                hint: '<strong>Strategy:</strong> Ask yourself: "Which one changes BECAUSE of the other?" The test score changes because of how many hours he studies.',
+                type: "mc",
+                options: [
+                  { letter: "A", text: "Hours studied", val: "a" },
+                  { letter: "B", text: "Test score", val: "b" },
+                  {
+                    letter: "C",
+                    text: "Neither — they are unrelated",
+                    val: "c",
+                  },
+                  { letter: "D", text: "Both are dependent", val: "d" },
+                ],
+                answer: "b",
+                correct:
+                  "Yes! The test score depends on hours studied. Test score is the dependent variable.",
+                wrong:
+                  "The test score changes based on hours studied, so the test score is <strong>dependent</strong>. The answer is <strong>B</strong>.",
+              },
+            ],
+          },
+          {
+            name: "Table Nebula",
+            desc: "Read tables, find patterns, predict values",
+            orbClass: "p2",
+            time: 60,
+            questions: [
+              {
+                num: "Mission 2-1",
+                prompt:
+                  "A bakery charges $3 per cookie.<br><br><table class='data-table'><tr><th>Cookies (x)</th><th>Cost (y)</th></tr><tr><td>1</td><td>$3</td></tr><tr><td>2</td><td>$6</td></tr><tr><td>3</td><td>$9</td></tr><tr><td>5</td><td>?</td></tr></table>What is the cost when <strong>x = 5</strong>?",
+                hint: "<strong>Pattern:</strong> Look at how the cost changes. Each cookie adds $3. So for 5 cookies: 5 &times; $3 = ?",
+                type: "mc",
+                options: [
+                  { letter: "A", text: "$12", val: "a" },
+                  { letter: "B", text: "$15", val: "b" },
+                  { letter: "C", text: "$18", val: "c" },
+                  { letter: "D", text: "$8", val: "d" },
+                ],
+                answer: "b",
+                correct:
+                  "Correct! The pattern is y = 3x. When x = 5: y = 3 &times; 5 = $15.",
+                wrong:
+                  "The pattern is y = 3x (cost = $3 per cookie). For 5 cookies: 3 &times; 5 = $15. The answer is <strong>B</strong>.",
+              },
+              {
+                num: "Mission 2-2",
+                prompt:
+                  "A plant grows 2 inches every week.<br><br><table class='data-table'><tr><th>Weeks (x)</th><th>Height in inches (y)</th></tr><tr><td>0</td><td>4</td></tr><tr><td>1</td><td>6</td></tr><tr><td>2</td><td>8</td></tr><tr><td>3</td><td>10</td></tr></table>What will the height be at <strong>week 5</strong>?",
+                hint: "<strong>Strategy:</strong> The plant starts at 4 inches and grows 2 inches each week. Pattern: y = 2x + 4. Plug in x = 5.",
+                type: "mc",
+                options: [
+                  { letter: "A", text: "12 inches", val: "a" },
+                  { letter: "B", text: "10 inches", val: "b" },
+                  { letter: "C", text: "14 inches", val: "c" },
+                  { letter: "D", text: "16 inches", val: "d" },
+                ],
+                answer: "c",
+                correct:
+                  "Correct! The rule is y = 2x + 4. When x = 5: y = 2(5) + 4 = 14 inches.",
+                wrong:
+                  "The plant starts at 4 and grows 2 per week: y = 2x + 4. At week 5: 2(5) + 4 = 14. The answer is <strong>C</strong>.",
+              },
+            ],
+          },
+          {
+            name: "Graph Galaxy",
+            desc: "Interpret graphs and match to descriptions",
+            orbClass: "p3",
+            time: 60,
+            questions: [
+              {
+                num: "Mission 3-1",
+                prompt:
+                  "<div class='graph-wrap'><svg viewBox='0 0 320 220' xmlns='http://www.w3.org/2000/svg'><rect x='50' y='10' width='260' height='180' fill='rgba(255,255,255,0.03)' stroke='rgba(255,255,255,0.1)' rx='4'/><line x1='50' y1='190' x2='310' y2='190' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><line x1='50' y1='190' x2='50' y2='10' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><text x='180' y='215' fill='#8a97a5' font-size='12' text-anchor='middle'>Time (hours)</text><text x='15' y='105' fill='#8a97a5' font-size='12' text-anchor='middle' transform='rotate(-90,15,105)'>Distance (miles)</text><line x1='50' y1='190' x2='115' y2='150' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><line x1='115' y1='150' x2='180' y2='110' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><line x1='180' y1='110' x2='245' y2='70' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><line x1='245' y1='70' x2='310' y2='30' stroke='#14d4c2' stroke-width='3' stroke-linecap='round'/><circle cx='50' cy='190' r='5' fill='#14d4c2'/><circle cx='115' cy='150' r='5' fill='#14d4c2'/><circle cx='180' cy='110' r='5' fill='#14d4c2'/><circle cx='245' cy='70' r='5' fill='#14d4c2'/><circle cx='310' cy='30' r='5' fill='#14d4c2'/><text x='50' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>0</text><text x='115' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>1</text><text x='180' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>2</text><text x='245' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>3</text><text x='310' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>4</text><text x='44' y='193' fill='#8a97a5' font-size='11' text-anchor='end'>0</text><text x='44' y='153' fill='#8a97a5' font-size='11' text-anchor='end'>20</text><text x='44' y='113' fill='#8a97a5' font-size='11' text-anchor='end'>40</text><text x='44' y='73' fill='#8a97a5' font-size='11' text-anchor='end'>60</text><text x='44' y='33' fill='#8a97a5' font-size='11' text-anchor='end'>80</text></svg></div>Based on this graph, which description best matches the relationship?",
+                hint: "<strong>Reading graphs:</strong> Look at the pattern of the points. As time increases, distance increases. Find the rate: from 0 to 1 hour, distance goes from 0 to 20 miles. That's 20 miles per hour.",
+                type: "mc",
+                options: [
+                  {
+                    letter: "A",
+                    text: "A car travels 20 miles every hour",
+                    val: "a",
+                  },
+                  {
+                    letter: "B",
+                    text: "A car travels 40 miles every hour",
+                    val: "b",
+                  },
+                  { letter: "C", text: "A car slows down over time", val: "c" },
+                  {
+                    letter: "D",
+                    text: "Distance stays the same each hour",
+                    val: "d",
+                  },
+                ],
+                answer: "a",
+                correct:
+                  "Correct! The graph shows a steady increase of 20 miles per hour. The line goes up at a constant rate.",
+                wrong:
+                  "Look at the points: (0,0), (1,20), (2,40), (3,60), (4,80). Each hour adds 20 miles. The answer is <strong>A</strong>.",
+              },
+              {
+                num: "Mission 3-2",
+                prompt:
+                  "<div class='graph-wrap'><svg viewBox='0 0 320 220' xmlns='http://www.w3.org/2000/svg'><rect x='50' y='10' width='260' height='180' fill='rgba(255,255,255,0.03)' stroke='rgba(255,255,255,0.1)' rx='4'/><line x1='50' y1='190' x2='310' y2='190' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><line x1='50' y1='190' x2='50' y2='10' stroke='rgba(255,255,255,0.3)' stroke-width='1'/><text x='180' y='215' fill='#8a97a5' font-size='12' text-anchor='middle'>Tickets (x)</text><text x='15' y='105' fill='#8a97a5' font-size='12' text-anchor='middle' transform='rotate(-90,15,105)'>Total Cost ($)</text><circle cx='50' cy='170' r='5' fill='#ffd666'/><circle cx='115' cy='138' r='5' fill='#ffd666'/><circle cx='180' cy='106' r='5' fill='#ffd666'/><circle cx='245' cy='74' r='5' fill='#ffd666'/><circle cx='310' cy='42' r='5' fill='#ffd666'/><line x1='50' y1='170' x2='115' y2='138' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><line x1='115' y1='138' x2='180' y2='106' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><line x1='180' y1='106' x2='245' y2='74' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><line x1='245' y1='74' x2='310' y2='42' stroke='#ffd666' stroke-width='3' stroke-linecap='round'/><text x='50' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>0</text><text x='115' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>1</text><text x='180' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>2</text><text x='245' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>3</text><text x='310' y='205' fill='#8a97a5' font-size='11' text-anchor='middle'>4</text><text x='44' y='193' fill='#8a97a5' font-size='11' text-anchor='end'>0</text><text x='44' y='173' fill='#8a97a5' font-size='11' text-anchor='end'>5</text><text x='44' y='141' fill='#8a97a5' font-size='11' text-anchor='end'>13</text><text x='44' y='109' fill='#8a97a5' font-size='11' text-anchor='end'>21</text><text x='44' y='77' fill='#8a97a5' font-size='11' text-anchor='end'>29</text><text x='44' y='45' fill='#8a97a5' font-size='11' text-anchor='end'>37</text></svg></div>The graph shows the cost of carnival tickets. There is a $5 entry fee plus $8 per ticket. How much do <strong>6 tickets</strong> cost in total?",
+                hint: "<strong>Strategy:</strong> The rule is: Total Cost = $5 + $8 &times; (number of tickets). Plug in 6 for the number of tickets.",
+                type: "mc",
+                options: [
+                  { letter: "A", text: "$48", val: "a" },
+                  { letter: "B", text: "$53", val: "b" },
+                  { letter: "C", text: "$40", val: "c" },
+                  { letter: "D", text: "$56", val: "d" },
+                ],
+                answer: "b",
+                correct: "Correct! Total = $5 + $8 &times; 6 = $5 + $48 = $53.",
+                wrong:
+                  "The pattern is y = 5 + 8x. For 6 tickets: 5 + 8(6) = 5 + 48 = $53. The answer is <strong>B</strong>.",
+              },
+            ],
+          },
+          {
+            name: "Equation Orbit",
+            desc: "Write equations from tables and descriptions",
+            orbClass: "p4",
+            time: 60,
+            questions: [
+              {
+                num: "Mission 4-1",
+                prompt:
+                  "A gym charges $10 per month for a membership.<br><br><table class='data-table'><tr><th>Months (x)</th><th>Total Cost (y)</th></tr><tr><td>1</td><td>$10</td></tr><tr><td>2</td><td>$20</td></tr><tr><td>3</td><td>$30</td></tr><tr><td>4</td><td>$40</td></tr></table>Which equation represents this relationship?",
+                hint: "<strong>Tip:</strong> Look at how x and y relate. When x = 1, y = 10. When x = 2, y = 20. What do you multiply x by each time to get y?",
+                type: "mc",
+                options: [
+                  { letter: "A", text: "y = x + 10", val: "a" },
+                  { letter: "B", text: "y = 10x", val: "b" },
+                  { letter: "C", text: "y = x &times; x", val: "c" },
+                  { letter: "D", text: "y = 10 + x", val: "d" },
+                ],
+                answer: "b",
+                correct:
+                  "Correct! Each month costs $10, so the total is y = 10x. Multiply the number of months by 10.",
+                wrong:
+                  "Each month adds $10. The rule: y = 10 &times; x, or y = 10x. The answer is <strong>B</strong>.",
+              },
+              {
+                num: "Mission 4-2",
+                prompt:
+                  "A taxi charges a $4 flat fee plus $2 per mile.<br><br>Write the equation for the total cost <strong>y</strong> in terms of miles <strong>x</strong>.",
+                hint: "<strong>Pattern:</strong> Start with the flat fee ($4) and add $2 for each mile. The equation has two parts: a starting number + a rate times x.",
+                type: "fill",
+                fillParts: [
+                  {
+                    before: "y = ",
+                    inputWidth: "60px",
+                    answer: "2",
+                    after: "x + ",
+                    id: "f41",
+                  },
+                  {
+                    before: "",
+                    inputWidth: "60px",
+                    answer: "4",
+                    after: "",
+                    id: "f42",
+                  },
+                ],
+                correct:
+                  "Correct! y = 2x + 4. The taxi charges $2 per mile (2x) plus a $4 flat fee.",
+                wrong:
+                  "The flat fee is $4 and the rate is $2/mile. So y = 2x + 4. Fill in 2 for the rate and 4 for the flat fee.",
+              },
+            ],
+          },
+          {
+            name: "Mission Control",
+            desc: "Final multi-step real-world challenge",
+            orbClass: "p5",
+            time: 90,
+            questions: [
+              {
+                num: "Final Mission",
+                prompt:
+                  "A water park charges a $6 entrance fee plus $4 per ride.<br><br><table class='data-table'><tr><th>Rides (x)</th><th>Total Cost (y)</th></tr><tr><td>0</td><td>$6</td></tr><tr><td>1</td><td>$10</td></tr><tr><td>2</td><td>$14</td></tr><tr><td>3</td><td>$18</td></tr></table><strong>Part A:</strong> What is the equation for this relationship?",
+                hint: "<strong>Strategy:</strong> Find the starting value (when x = 0, y = 6) and the rate of change ($4 per ride). Put them together: y = (rate)x + (start).",
+                type: "mc",
+                options: [
+                  { letter: "A", text: "y = 6x + 4", val: "a" },
+                  { letter: "B", text: "y = 4x + 6", val: "b" },
+                  { letter: "C", text: "y = 10x", val: "c" },
+                  { letter: "D", text: "y = 4x", val: "d" },
+                ],
+                answer: "b",
+                correct:
+                  "Part A correct! y = 4x + 6. The entrance fee is $6 (starting value) and each ride costs $4 (rate).",
+                wrong:
+                  "When x = 0, y = 6 (that's the entrance fee). Each ride adds $4. So y = 4x + 6. The answer is <strong>B</strong>.",
+              },
+              {
+                num: "Final Mission (continued)",
+                prompt:
+                  "<strong>Part B:</strong> Using the equation y = 4x + 6, how much would <strong>7 rides</strong> cost?<br><br><strong>Part C:</strong> Sara has $30. How many rides can she go on?",
+                hint: "<strong>Part B:</strong> Plug in x = 7 into y = 4x + 6.<br><strong>Part C:</strong> Set y = 30 and solve: 30 = 4x + 6. Subtract 6 from both sides, then divide by 4.",
+                type: "twofill",
+                fills: [
+                  {
+                    label: "Part B: Cost for 7 rides = $",
+                    answer: "34",
+                    id: "fb1",
+                  },
+                  {
+                    label: "Part C: Number of rides Sara can take =",
+                    answer: "6",
+                    id: "fb2",
+                  },
+                ],
+                correct:
+                  "Mission Complete! Part B: y = 4(7) + 6 = 28 + 6 = $34. Part C: 30 = 4x + 6, so 24 = 4x, x = 6 rides.",
+                wrong:
+                  "Part B: y = 4(7) + 6 = 28 + 6 = <strong>$34</strong>. Part C: 30 = 4x + 6 &rarr; 24 = 4x &rarr; x = <strong>6 rides</strong>.",
+              },
+            ],
+          },
+        ];
+
+        /* ═══════════ STATE ═══════════ */
+        let fuel = 3;
+        let score = 0;
+        let currentPlanet = 0;
+        let currentQuestion = 0;
+        let planetTimer = null;
+        let timeLeft = 0;
+        let planetStartTime = 0;
+        let totalBonusStars = 0;
+        let planetPerfect = true;
+        let questionsAnswered = 0;
+        let totalCorrect = 0;
+        let gameOver = false;
+
+        /* ═══════════ INIT ═══════════ */
+        function initStarfield() {
+          const sf = document.getElementById("starfield");
+          sf.innerHTML = "";
+          const count = Math.min(
+            120,
+            Math.floor((window.innerWidth * window.innerHeight) / 5000),
+          );
+          for (let i = 0; i < count; i++) {
+            const s = document.createElement("div");
+            s.className = "star";
+            const size = Math.random() * 3 + 1;
+            s.style.width = size + "px";
+            s.style.height = size + "px";
+            s.style.left = Math.random() * 100 + "%";
+            s.style.top = Math.random() * 100 + "%";
+            s.style.setProperty("--dur", Math.random() * 3 + 1 + "s");
+            s.style.setProperty(
+              "--max-o",
+              (Math.random() * 0.6 + 0.4).toFixed(2),
+            );
+            s.style.animationDelay = Math.random() * 3 + "s";
+            sf.appendChild(s);
+          }
+        }
+        initStarfield();
+
+        /* ═══════════ LEVEL TOGGLE ═══════════ */
+        document.querySelectorAll(".level-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll(".level-btn").forEach(function (b) {
+              b.classList.remove("active");
+            });
+            btn.classList.add("active");
+            document.body.className =
+              btn.dataset.level === "0"
+                ? "level-0 level-1"
+                : "level-" + btn.dataset.level;
+          });
+        });
+
+        /* ═══════════ SCREENS ═══════════ */
+        function showScreen(id) {
+          document.querySelectorAll(".screen").forEach(function (s) {
+            s.classList.remove("active");
+          });
+          document.getElementById(id).classList.add("active");
+        }
+
+        document
+          .getElementById("startBtn")
+          .addEventListener("click", function () {
+            fuel = 3;
+            score = 0;
+            currentPlanet = 0;
+            currentQuestion = 0;
+            totalBonusStars = 0;
+            questionsAnswered = 0;
+            totalCorrect = 0;
+            gameOver = false;
+            updateFuelDisplay();
+            updateScoreDisplay();
+            resetMapNodes();
+            showScreen("gameScreen");
+            loadPlanet(0);
+          });
+
+        document
+          .getElementById("playAgainBtn")
+          .addEventListener("click", function () {
+            showScreen("titleScreen");
+          });
+
+        /* ═══════════ HUD ═══════════ */
+        function updateFuelDisplay() {
+          var cells = document.querySelectorAll("#fuelCells .fuel-cell");
+          cells.forEach(function (c, i) {
+            if (i < fuel) {
+              c.classList.remove("empty");
+            } else {
+              c.classList.add("empty");
+            }
+          });
+        }
+
+        function loseFuel() {
+          fuel--;
+          var cells = document.querySelectorAll("#fuelCells .fuel-cell");
+          if (cells[fuel]) {
+            cells[fuel].classList.add("lost");
+            setTimeout(function () {
+              cells[fuel].classList.remove("lost");
+            }, 500);
+          }
+          updateFuelDisplay();
+          if (fuel <= 0) {
+            gameOver = true;
+            clearInterval(planetTimer);
+            setTimeout(function () {
+              showEndScreen(false);
+            }, 800);
+          }
+        }
+
+        function updateScoreDisplay() {
+          document.getElementById("hudScore").innerHTML =
+            "&#9733; " + score + " pts";
+        }
+
+        /* ═══════════ TIMER ═══════════ */
+        function startTimer(seconds) {
+          timeLeft = seconds;
+          planetStartTime = seconds;
+          updateTimerDisplay();
+          clearInterval(planetTimer);
+          planetTimer = setInterval(function () {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+              clearInterval(planetTimer);
+              timeExpired();
+            }
+          }, 1000);
+        }
+
+        function updateTimerDisplay() {
+          var el = document.getElementById("hudTimer");
+          el.textContent = timeLeft + "s";
+          if (timeLeft <= 10) {
+            el.classList.add("warning");
+          } else {
+            el.classList.remove("warning");
+          }
+        }
+
+        function timeExpired() {
+          // Lock all unanswered questions on current planet
+          var cards = document.querySelectorAll(
+            "#planetArea .g-card:not(.correct):not(.incorrect)",
+          );
+          cards.forEach(function (card) {
+            card.classList.add("incorrect");
+            card.querySelectorAll(".mc-btn").forEach(function (b) {
+              b.classList.add("locked");
+            });
+            card.querySelectorAll(".fill-input").forEach(function (i) {
+              i.readOnly = true;
+            });
+            card.querySelectorAll(".check-btn").forEach(function (b) {
+              b.disabled = true;
+            });
+            questionsAnswered++;
+            loseFuel();
+            planetPerfect = false;
+            if (gameOver) return;
+          });
+          if (!gameOver) {
+            showNextButton();
+          }
+        }
+
+        /* ═══════════ MAP ═══════════ */
+        function resetMapNodes() {
+          for (var i = 0; i < 5; i++) {
+            var node = document.getElementById("mapNode" + i);
+            node.classList.remove("active", "complete", "failed");
+            if (i === 0) node.classList.add("active");
+          }
+        }
+
+        function updateMapNode(idx, status) {
+          var node = document.getElementById("mapNode" + idx);
+          node.classList.remove("active");
+          node.classList.add(status);
+        }
+
+        /* ═══════════ LOAD PLANET ═══════════ */
+        function loadPlanet(idx) {
+          currentPlanet = idx;
+          currentQuestion = 0;
+          planetPerfect = true;
+          var planet = PLANETS[idx];
+
+          // Update HUD
+          document.getElementById("hudPlanet").textContent = planet.name;
+
+          // Update map
+          for (var i = 0; i < 5; i++) {
+            var node = document.getElementById("mapNode" + i);
+            if (i === idx) {
+              node.classList.add("active");
+            } else if (i > idx) {
+              node.classList.remove("active");
+            }
+          }
+
+          // Build planet HTML
+          var html = '<div class="planet-header">';
+          html += '<div class="planet-orb ' + planet.orbClass + '"></div>';
+          html += '<h2 class="planet-name">' + planet.name + "</h2>";
+          html += '<p class="planet-desc">' + planet.desc + "</p>";
+          html += "</div>";
+
+          planet.questions.forEach(function (q, qi) {
+            html += buildQuestionHTML(q, qi, idx);
+          });
+
+          html +=
+            '<div class="planet-action"><button class="next-planet-btn" id="nextPlanetBtn">';
+          if (idx < 4) {
+            html += "Travel to Next Planet &#9654;";
+          } else {
+            html += "Complete Mission &#9654;";
+          }
+          html += "</button></div>";
+
+          document.getElementById("planetArea").innerHTML = html;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          // Wire events
+          wireQuestionEvents(idx);
+
+          // Start timer
+          startTimer(planet.time);
+        }
+
+        /* ═══════════ BUILD QUESTION HTML ═══════════ */
+        function buildQuestionHTML(q, qi, pi) {
+          var id = "q-" + pi + "-" + qi;
+          var html = '<article class="g-card" data-qid="' + id + '">';
+          html += '<div class="g-num">' + q.num + "</div>";
+          html += '<div class="g-prompt">' + q.prompt + "</div>";
+
+          // Hint button
+          html +=
+            '<button class="hint-btn" data-target="hint-' +
+            id +
+            '">&#128161; Mission Briefing</button>';
+          html +=
+            '<div class="hint-box" id="hint-' + id + '">' + q.hint + "</div>";
+
+          if (q.type === "mc") {
+            html += '<div class="mc-options" data-qid="' + id + '">';
+            q.options.forEach(function (opt) {
+              html += '<button class="mc-btn" data-val="' + opt.val + '">';
+              html += '<span class="letter">' + opt.letter + "</span>";
+              html += "<span>" + opt.text + "</span>";
+              html += "</button>";
+            });
+            html += "</div>";
+            html +=
+              '<button class="check-btn" data-qid="' +
+              id +
+              '" disabled>Check Answer</button>';
+          } else if (q.type === "fill") {
+            html += '<div class="fill-row">';
+            q.fillParts.forEach(function (fp) {
+              html += '<span class="fill-text">' + fp.before + "</span>";
+              html +=
+                '<input class="fill-input" data-answer="' +
+                fp.answer +
+                '" id="' +
+                fp.id +
+                '" style="width:' +
+                fp.inputWidth +
+                '" placeholder="?" aria-label="fill in">';
+              html += '<span class="fill-text">' + fp.after + "</span>";
+            });
+            html += "</div>";
+            html +=
+              '<button class="check-btn" data-qid="' +
+              id +
+              '">Check Answer</button>';
+          } else if (q.type === "twofill") {
+            q.fills.forEach(function (f) {
+              html += '<div class="fill-row" style="margin-bottom:10px">';
+              html += '<span class="fill-text">' + f.label + "</span>";
+              html +=
+                '<input class="fill-input" data-answer="' +
+                f.answer +
+                '" id="' +
+                f.id +
+                '" style="width:80px" placeholder="?" aria-label="fill in">';
+              html += "</div>";
+            });
+            html +=
+              '<button class="check-btn" data-qid="' +
+              id +
+              '">Check Answer</button>';
+          }
+
+          html +=
+            '<div class="g-status"><span class="fb-icon">&#10003;</span><span>' +
+            q.correct +
+            "</span></div>";
+          html +=
+            '<div class="g-status-wrong"><span class="fb-icon">&#10007;</span><span>' +
+            q.wrong +
+            "</span></div>";
+          html += "</article>";
+          return html;
+        }
+
+        /* ═══════════ WIRE EVENTS ═══════════ */
+        function wireQuestionEvents(planetIdx) {
+          var planet = PLANETS[planetIdx];
+
+          // Hint buttons
+          document
+            .querySelectorAll("#planetArea .hint-btn")
+            .forEach(function (btn) {
+              btn.addEventListener("click", function () {
+                var target = document.getElementById(btn.dataset.target);
+                target.classList.toggle("shown");
+                btn.textContent = target.classList.contains("shown")
+                  ? "Hide Briefing"
+                  : "💡 Mission Briefing";
+              });
+            });
+
+          // MC selections
+          document
+            .querySelectorAll("#planetArea .mc-options")
+            .forEach(function (group) {
+              var qid = group.dataset.qid;
+              var checkBtn = document.querySelector(
+                '.check-btn[data-qid="' + qid + '"]',
+              );
+              var btns = group.querySelectorAll(".mc-btn");
+
+              btns.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                  if (btn.classList.contains("locked")) return;
+                  btns.forEach(function (b) {
+                    b.classList.remove("selected");
+                  });
+                  btn.classList.add("selected");
+                  if (checkBtn) checkBtn.disabled = false;
+                });
+              });
+            });
+
+          // Check buttons
+          document
+            .querySelectorAll("#planetArea .check-btn")
+            .forEach(function (checkBtn) {
+              checkBtn.addEventListener("click", function () {
+                if (checkBtn.disabled) return;
+                var qid = checkBtn.dataset.qid;
+                var card = document.querySelector(
+                  '.g-card[data-qid="' + qid + '"]',
+                );
+                if (
+                  card.classList.contains("correct") ||
+                  card.classList.contains("incorrect")
+                )
+                  return;
+
+                // Parse planet/question index from qid
+                var parts = qid.split("-");
+                var pi = parseInt(parts[1]);
+                var qi = parseInt(parts[2]);
+                var qData = PLANETS[pi].questions[qi];
+
+                var isCorrect = false;
+
+                if (qData.type === "mc") {
+                  var selected = card.querySelector(".mc-btn.selected");
+                  if (!selected) return;
+                  isCorrect = selected.dataset.val === qData.answer;
+                  var allBtns = card.querySelectorAll(".mc-btn");
+                  allBtns.forEach(function (b) {
+                    b.classList.add("locked");
+                    if (b.dataset.val === qData.answer)
+                      b.classList.add("is-correct");
+                  });
+                  if (!isCorrect) selected.classList.add("is-wrong");
+                } else if (qData.type === "fill") {
+                  var inputs = card.querySelectorAll(".fill-input");
+                  isCorrect = true;
+                  inputs.forEach(function (inp) {
+                    var val = inp.value.trim();
+                    if (val === inp.dataset.answer) {
+                      inp.classList.add("is-correct");
+                    } else {
+                      inp.classList.add("is-wrong");
+                      isCorrect = false;
+                    }
+                    inp.readOnly = true;
+                  });
+                } else if (qData.type === "twofill") {
+                  var inputs = card.querySelectorAll(".fill-input");
+                  isCorrect = true;
+                  inputs.forEach(function (inp) {
+                    var val = inp.value.trim();
+                    if (val === inp.dataset.answer) {
+                      inp.classList.add("is-correct");
+                    } else {
+                      inp.classList.add("is-wrong");
+                      isCorrect = false;
+                    }
+                    inp.readOnly = true;
+                  });
+                }
+
+                questionsAnswered++;
+                checkBtn.disabled = true;
+
+                if (isCorrect) {
+                  card.classList.add("correct");
+                  totalCorrect++;
+                  // Base points
+                  var pts = 100;
+                  // Time bonus
+                  var bonus = Math.floor(timeLeft * 2);
+                  pts += bonus;
+                  score += pts;
+                } else {
+                  card.classList.add("incorrect");
+                  planetPerfect = false;
+                  loseFuel();
+                  if (gameOver) return;
+                }
+
+                updateScoreDisplay();
+                checkPlanetComplete(planetIdx);
+              });
+            });
+
+          // Next planet button
+          var nextBtn = document.getElementById("nextPlanetBtn");
+          if (nextBtn) {
+            nextBtn.addEventListener("click", function () {
+              clearInterval(planetTimer);
+
+              // Planet completion bonus
+              if (planetPerfect) {
+                score += 200;
+                totalBonusStars++;
+                updateScoreDisplay();
+              }
+
+              var status = planetPerfect ? "complete" : "failed";
+              updateMapNode(currentPlanet, status);
+
+              if (currentPlanet < 4) {
+                // Travel animation
+                var overlay = document.getElementById("travelOverlay");
+                document.getElementById("travelText").textContent =
+                  "Traveling to " + PLANETS[currentPlanet + 1].name + "...";
+                overlay.classList.add("active");
+                setTimeout(function () {
+                  overlay.classList.remove("active");
+                  loadPlanet(currentPlanet + 1);
+                }, 1500);
+              } else {
+                // Game complete
+                updateMapNode(currentPlanet, status);
+                showEndScreen(true);
+              }
+            });
+          }
+        }
+
+        function checkPlanetComplete(planetIdx) {
+          var planet = PLANETS[planetIdx];
+          var cards = document.querySelectorAll("#planetArea .g-card");
+          var allDone = true;
+          cards.forEach(function (c) {
+            if (
+              !c.classList.contains("correct") &&
+              !c.classList.contains("incorrect")
+            ) {
+              allDone = false;
+            }
+          });
+          if (allDone) {
+            clearInterval(planetTimer);
+            showNextButton();
+          }
+        }
+
+        function showNextButton() {
+          var btn = document.getElementById("nextPlanetBtn");
+          if (btn) btn.classList.add("visible");
+        }
+
+        /* ═══════════ END SCREEN ═══════════ */
+        function showEndScreen(won) {
+          clearInterval(planetTimer);
+          showScreen("endScreen");
+
+          var title = document.getElementById("endTitle");
+          var subtitle = document.getElementById("endSubtitle");
+
+          if (won) {
+            title.className = "end-title victory";
+            title.textContent = "Mission Complete!";
+            subtitle.textContent =
+              "You navigated the galaxy and mastered two-variable relationships!";
+            launchConfetti();
+          } else {
+            title.className = "end-title defeat";
+            title.textContent = "Mission Failed";
+            subtitle.textContent =
+              "You ran out of fuel! Review the concepts and try again.";
+          }
+
+          // Stars (1 for completing, 1 for >60% correct, 1 for any perfect planets)
+          var starsEarned = 0;
+          if (won) starsEarned++;
+          if (totalCorrect > 0 && totalCorrect / questionsAnswered >= 0.6)
+            starsEarned++;
+          if (totalBonusStars > 0) starsEarned++;
+
+          var starHTML = "";
+          for (var i = 0; i < 3; i++) {
+            starHTML +=
+              '<span class="star-icon ' +
+              (i < starsEarned ? "earned" : "") +
+              '">&#9733;</span>';
+          }
+          document.getElementById("starDisplay").innerHTML = starHTML;
+
+          // Stats
+          var totalQ = 0;
+          PLANETS.forEach(function (p) {
+            totalQ += p.questions.length;
+          });
+
+          document.getElementById("endStats").innerHTML =
+            '<div class="end-stat"><div class="end-stat-val">' +
+            score +
+            '</div><div class="end-stat-label">Points</div></div>' +
+            '<div class="end-stat"><div class="end-stat-val">' +
+            totalCorrect +
+            "/" +
+            totalQ +
+            '</div><div class="end-stat-label">Correct</div></div>' +
+            '<div class="end-stat"><div class="end-stat-val">' +
+            starsEarned +
+            '/3</div><div class="end-stat-label">Stars</div></div>';
+
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: totalCorrect,
+                maxScore: totalQ,
+                stars: starsEarned,
+                problemsCorrect: totalCorrect,
+                problemsAttempted: totalQ,
+                standard: "6.EE.C.9",
+              });
+          } catch (e) {}
+        }
+
+        function launchConfetti() {
+          var colors = [
+            "#14d4c2",
+            "#ffd666",
+            "#c45a3c",
+            "#1a6fb5",
+            "#2d874b",
+            "#a78bfa",
+          ];
+          for (var i = 0; i < 60; i++) {
+            var piece = document.createElement("div");
+            piece.className = "confetti-piece";
+            piece.style.left = Math.random() * 100 + "vw";
+            piece.style.top = "-20px";
+            piece.style.background =
+              colors[Math.floor(Math.random() * colors.length)];
+            piece.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+            var size = Math.random() * 8 + 6;
+            piece.style.width = size + "px";
+            piece.style.height = size + "px";
+            piece.style.setProperty("--fall-dur", Math.random() * 2 + 2 + "s");
+            piece.style.animationDelay = Math.random() * 1.5 + "s";
+            document.body.appendChild(piece);
+            (function (p) {
+              setTimeout(function () {
+                p.remove();
+              }, 5000);
+            })(piece);
+          }
+        }
+      })();
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

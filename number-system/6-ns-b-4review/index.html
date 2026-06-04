@@ -1,543 +1,759 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<title>6.NS.B.4 — Factor & Multiple Review Lab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-:root {
-    --bg: #080c14;
-    --surface: #111827;
-    --card: #1a2438;
-    --border: #2a3a55;
-    --accent: #10b981;
-    --accent2: #38bdf8;
-    --accent3: #f59e0b;
-    --danger: #ef4444;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-    --glow: 0 0 20px rgba(16,185,129,0.3);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* === HERO HEADER === */
-  .hero {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    padding: 36px 20px 28px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.15) 0%, transparent 70%);
-  }
-  .hero-badge {
-    display: inline-block;
-    background: rgba(16,185,129,0.15);
-    border: 1px solid rgba(16,185,129,0.4);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 4px 14px;
-    border-radius: 20px;
-    margin-bottom: 12px;
-  }
-  .hero h1 {
-    font-size: clamp(22px, 4vw, 38px);
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    background: linear-gradient(90deg, #f1f5f9, #38bdf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .hero p { color: var(--muted); font-size: 14px; margin-top: 6px; }
-
-  /* === PROGRESS BAR === */
-  .progress-bar-outer {
-    max-width: 480px;
-    margin: 18px auto 0;
-    height: 6px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .progress-bar-inner {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    transition: width 0.5s ease;
-    width: 0%;
-  }
-  .progress-label { color: var(--muted); font-size: 12px; text-align: center; margin-top: 6px; }
-
-  /* === TABS === */
-  .tab-bar {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 20px 16px 10px;
-    max-width: 960px;
-    margin: auto;
-  }
-  .tab-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 9px 16px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-  .tab-btn:hover { border-color: var(--accent2); color: var(--text); }
-  .tab-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #000;
-    box-shadow: var(--glow);
-  }
-  .tab-icon { font-size: 15px; }
-
-  /* === MAIN PANEL === */
-  .tab-content {
-    display: none;
-    max-width: 800px;
-    margin: 0 auto 40px;
-    padding: 0 16px;
-  }
-  .tab-content.active { display: block; }
-
-  /* === SECTION CARDS === */
-  .section-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-top: 14px;
-  }
-  .section-card h2 {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--accent2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .section-card h2 .hicon { font-size: 22px; }
-
-  /* === CONCEPT CARDS === */
-  .concept-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 20px;
-  }
-  @media(max-width:560px){ .concept-grid { grid-template-columns: 1fr; } }
-
-  .concept-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-  }
-  .concept-card .cc-label {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .concept-card .cc-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 8px;
-  }
-  .concept-card.lcm .cc-title { color: var(--accent2); }
-  .concept-card .cc-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
-
-  .dist-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-  }
-  .dist-box .eq {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--text);
-    margin: 8px 0;
-  }
-  .dist-box .eq span { color: var(--accent3); }
-  .dist-box .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-  /* === PROBLEMS === */
-  .problem {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
-    transition: border-color 0.3s;
-  }
-  .problem.solved { border-color: var(--accent); }
-  .problem-label {
-    flex: 1;
-    font-size: 15px;
-    font-weight: 600;
-    min-width: 140px;
-  }
-  .problem input {
-    width: 80px;
-    padding: 8px 12px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 15px;
-    font-family: inherit;
-    text-align: center;
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  .problem input:focus { border-color: var(--accent2); }
-  .check-btn {
-    padding: 8px 16px;
-    background: linear-gradient(135deg, var(--accent2), #0ea5e9);
-    border: none;
-    border-radius: 8px;
-    color: #000;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: opacity 0.2s;
-  }
-  .check-btn:hover { opacity: 0.85; }
-  .result-badge {
-    font-size: 13px;
-    font-weight: 700;
-    padding: 5px 12px;
-    border-radius: 20px;
-    display: none;
-  }
-  .result-badge.correct { display: inline-block; background: rgba(16,185,129,0.15); color: var(--accent); }
-  .result-badge.wrong   { display: inline-block; background: rgba(239,68,68,0.15);  color: var(--danger); }
-
-  /* === REAL WORLD === */
-  .story-box {
-    background: linear-gradient(135deg, #0f2a1a, #0c2233);
-    border: 1px solid rgba(56,189,248,0.25);
-    border-radius: 14px;
-    padding: 22px;
-    margin-bottom: 18px;
-  }
-  .story-box p { color: var(--muted); line-height: 1.7; font-size: 14px; }
-  .story-box .highlight { color: var(--accent3); font-weight: 700; }
-
-  /* === FOOTER === */
-  .footer {
-    text-align: center;
-    padding: 24px;
-    color: var(--muted);
-    font-size: 12px;
-    border-top: 1px solid var(--border);
-  }
-
-  /* === SCOREBOARD === */
-  .scoreboard {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 12px;
-  }
-  .score-chip {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 30px;
-    padding: 7px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-  }
-  .score-chip span { color: var(--accent3); font-weight: 800; }
-
-  /* Toast */
-  #toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--accent);
-    color: #000;
-    font-weight: 700;
-    padding: 12px 24px;
-    border-radius: 30px;
-    font-size: 14px;
-    transition: transform 0.4s ease;
-    z-index: 999;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-</style>
-</head>
-<body>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-badge">6.NS.B.4 Interactive Review</div>
-  <h1>Factor &amp; Multiple Review Lab</h1>
-  <p>GCF · LCM · Distributive Property · Real-World Applications</p>
-  <div class="progress-bar-outer">
-    <div class="progress-bar-inner" id="progressBar"></div>
-  </div>
-  <div class="progress-label" id="progressLabel">0 of 9 problems solved</div>
-</div>
-
-<!-- SCOREBOARD -->
-<div class="scoreboard">
-  <div class="score-chip">Correct: <span id="totalCorrect">0</span></div>
-  <div class="score-chip">Streak: <span id="streak">0</span> 🔥</div>
-  <div class="score-chip">Points: <span id="points">0</span></div>
-</div>
-
-<!-- TABS -->
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="openTab(0)"><span class="tab-icon">📘</span>Concept</button>
-  <button class="tab-btn" onclick="openTab(1)"><span class="tab-icon">🔢</span>GCF Practice</button>
-  <button class="tab-btn" onclick="openTab(2)"><span class="tab-icon">🔗</span>LCM Practice</button>
-  <button class="tab-btn" onclick="openTab(3)"><span class="tab-icon">➗</span>Distributive</button>
-  <button class="tab-btn" onclick="openTab(4)"><span class="tab-icon">🌍</span>Real-World</button>
-  <button class="tab-btn" onclick="openTab(5)"><span class="tab-icon">⚡</span>Challenge</button>
-</div>
-
-<!-- TAB 0: CONCEPT -->
-<div id="tab0" class="tab-content active">
-  <div class="section-card">
-    <h2><span class="hicon">📘</span>Key Concepts</h2>
-    <div class="concept-grid">
-      <div class="concept-card gcf">
-        <div class="cc-label">GCF</div>
-        <div class="cc-title">Greatest Common Factor</div>
-        <div class="cc-body">The <strong>largest</strong> number that divides two or more numbers evenly with no remainder.</div>
-      </div>
-      <div class="concept-card lcm">
-        <div class="cc-label">LCM</div>
-        <div class="cc-title">Least Common Multiple</div>
-        <div class="cc-body">The <strong>smallest</strong> non-zero number that is a multiple of two or more numbers.</div>
-      </div>
-    </div>
-    <div class="dist-box">
-      <div class="cc-label" style="margin-bottom:8px">Distributive Property Connection</div>
-      <div class="eq">36 + 24 = <span>12</span>(3 + 2)</div>
-      <div class="eq" style="font-size:14px; color:var(--muted)">The GCF is factored out</div>
-      <div class="sub">GCF(36, 24) = 12 &nbsp;·&nbsp; Factor pairs: (3, 2)</div>
-    </div>
-  </div>
-</div>
-
-<!-- TAB 1: GCF -->
-<div id="tab1" class="tab-content">
-  <div class="section-card">
-    <h2><span class="hicon">🔢</span>Find the GCF</h2>
-    <div class="problem" id="p_g1">
-      <div class="problem-label">GCF(18, 24) =</div>
-      <input id="g1" type="number" placeholder="?" onkeydown="handleKey(event,'g1',6)">
-      <button class="check-btn" onclick="check('g1',6)">Check</button>
-      <span class="result-badge" id="r_g1"></span>
-    </div>
-    <div class="problem" id="p_g2">
-      <div class="problem-label">GCF(30, 45) =</div>
-      <input id="g2" type="number" placeholder="?" onkeydown="handleKey(event,'g2',15)">
-      <button class="check-btn" onclick="check('g2',15)">Check</button>
-      <span class="result-badge" id="r_g2"></span>
-    </div>
-    <div class="problem" id="p_g3">
-      <div class="problem-label">GCF(16, 28) =</div>
-      <input id="g3" type="number" placeholder="?" onkeydown="handleKey(event,'g3',4)">
-      <button class="check-btn" onclick="check('g3',4)">Check</button>
-      <span class="result-badge" id="r_g3"></span>
-    </div>
-  </div>
-</div>
-
-<!-- TAB 2: LCM -->
-<div id="tab2" class="tab-content">
-  <div class="section-card">
-    <h2><span class="hicon">🔗</span>Find the LCM</h2>
-    <div class="problem" id="p_l1">
-      <div class="problem-label">LCM(4, 6) =</div>
-      <input id="l1" type="number" placeholder="?" onkeydown="handleKey(event,'l1',12)">
-      <button class="check-btn" onclick="check('l1',12)">Check</button>
-      <span class="result-badge" id="r_l1"></span>
-    </div>
-    <div class="problem" id="p_l2">
-      <div class="problem-label">LCM(5, 8) =</div>
-      <input id="l2" type="number" placeholder="?" onkeydown="handleKey(event,'l2',40)">
-      <button class="check-btn" onclick="check('l2',40)">Check</button>
-      <span class="result-badge" id="r_l2"></span>
-    </div>
-    <div class="problem" id="p_l3">
-      <div class="problem-label">LCM(6, 9) =</div>
-      <input id="l3" type="number" placeholder="?" onkeydown="handleKey(event,'l3',18)">
-      <button class="check-btn" onclick="check('l3',18)">Check</button>
-      <span class="result-badge" id="r_l3"></span>
-    </div>
-  </div>
-</div>
-
-<!-- TAB 3: DISTRIBUTIVE -->
-<div id="tab3" class="tab-content">
-  <div class="section-card">
-    <h2><span class="hicon">➗</span>Factor Using the GCF</h2>
-    <p style="color:var(--muted);font-size:13px;margin-bottom:16px">Type the GCF — the number factored out front.</p>
-    <div class="problem" id="p_d1">
-      <div class="problem-label">20 + 30 = <em style="color:var(--accent3)">?</em>( __ + __ )</div>
-      <input id="d1" type="number" placeholder="GCF?" onkeydown="handleKey(event,'d1',10)">
-      <button class="check-btn" onclick="check('d1',10)">Check GCF</button>
-      <span class="result-badge" id="r_d1"></span>
-    </div>
-    <div class="problem" id="p_d2">
-      <div class="problem-label">14 + 21 = <em style="color:var(--accent3)">?</em>( __ + __ )</div>
-      <input id="d2" type="number" placeholder="GCF?" onkeydown="handleKey(event,'d2',7)">
-      <button class="check-btn" onclick="check('d2',7)">Check GCF</button>
-      <span class="result-badge" id="r_d2"></span>
-    </div>
-  </div>
-</div>
-
-<!-- TAB 4: REAL WORLD -->
-<div id="tab4" class="tab-content">
-  <div class="section-card">
-    <h2><span class="hicon">🌍</span>Real-World Problem</h2>
-    <div class="story-box">
-      <p>Two machines on the factory floor blink lights at different rates.</p>
-      <p style="margin-top:10px">🔴 <strong>Machine A</strong> blinks every <span class="highlight">6 seconds</span><br>
-         🔵 <strong>Machine B</strong> blinks every <span class="highlight">8 seconds</span></p>
-      <p style="margin-top:10px">If both blink <strong>at the same moment</strong>, how many seconds until they blink <strong>together again</strong>?</p>
-    </div>
-    <div class="problem" id="p_rw1">
-      <div class="problem-label">Next shared blink (seconds) =</div>
-      <input id="rw1" type="number" placeholder="?" onkeydown="handleKey(event,'rw1',24)">
-      <button class="check-btn" onclick="check('rw1',24)">Check</button>
-      <span class="result-badge" id="r_rw1"></span>
-    </div>
-  </div>
-</div>
-
-<!-- TAB 5: CHALLENGE -->
-<div id="tab5" class="tab-content">
-  <div class="section-card">
-    <h2><span class="hicon">⚡</span>Challenge</h2>
-    <div class="story-box">
-      <p>You have <span class="highlight">24 red tiles</span> and <span class="highlight">36 blue tiles</span>.</p>
-      <p style="margin-top:8px">You want to arrange all tiles into <strong>identical groups</strong> — each group has the same number of red and the same number of blue tiles, with <em>no tiles left over</em>.</p>
-      <p style="margin-top:8px">What is the <strong>greatest number of groups</strong> you can make?</p>
-    </div>
-    <div class="problem" id="p_c1">
-      <div class="problem-label">Greatest number of groups =</div>
-      <input id="c1" type="number" placeholder="?" onkeydown="handleKey(event,'c1',12)">
-      <button class="check-btn" onclick="check('c1',12)">Check</button>
-      <span class="result-badge" id="r_c1"></span>
-    </div>
-  </div>
-</div>
-
-<div class="footer">6.NS.B.4 Interactive Review Lab &nbsp;·&nbsp; Factor &amp; Multiple Mastery</div>
-
-<div id="toast">🎉 Correct! Keep going!</div>
-
-<script>
-  const TOTAL = 9;
-  let solved = new Set();
-  let streak = 0;
-  let points = 0;
-
-  function openTab(n) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab' + n).classList.add('active');
-    document.querySelectorAll('.tab-btn')[n].classList.add('active');
-  }
-
-  function handleKey(e, id, ans) {
-    if (e.key === 'Enter') check(id, ans);
-  }
-
-  function check(id, ans) {
-    const input = document.getElementById(id);
-    const badge = document.getElementById('r_' + id);
-    const prob  = document.getElementById('p_' + id);
-    const val   = Number(input.value);
-
-    badge.classList.remove('correct','wrong');
-    badge.style.display = 'none';
-
-    if (val === ans) {
-      badge.textContent = '✔ Correct!';
-      badge.classList.add('correct');
-      prob.classList.add('solved');
-      if (!solved.has(id)) {
-        solved.add(id);
-        streak++;
-        points += 10 + (streak >= 3 ? 5 : 0);
-        updateStats();
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <title>6.NS.B.4 — Factor & Multiple Review Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      :root {
+        --bg: #080c14;
+        --surface: #111827;
+        --card: #1a2438;
+        --border: #2a3a55;
+        --accent: #10b981;
+        --accent2: #38bdf8;
+        --accent3: #f59e0b;
+        --danger: #ef4444;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --glow: 0 0 20px rgba(16, 185, 129, 0.3);
       }
-      showToast(streak >= 3 ? '🔥 ' + streak + '-streak! +15 pts' : '✅ Correct! +10 pts');
-    } else {
-      badge.textContent = '✘ Try again';
-      badge.classList.add('wrong');
-      streak = 0;
-      updateStats();
-    }
-    badge.style.display = 'inline-block';
-  }
 
-  function updateStats() {
-    document.getElementById('totalCorrect').textContent = solved.size;
-    document.getElementById('streak').textContent = streak;
-    document.getElementById('points').textContent = points;
-    const pct = Math.round((solved.size / TOTAL) * 100);
-    document.getElementById('progressBar').style.width = pct + '%';
-    document.getElementById('progressLabel').textContent = solved.size + ' of ' + TOTAL + ' problems solved';
-  }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-  let toastTimer;
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
-  }
-</script>
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
 
+      /* === HERO HEADER === */
+      .hero {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        padding: 36px 20px 28px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 50% 0%,
+          rgba(16, 185, 129, 0.15) 0%,
+          transparent 70%
+        );
+      }
+      .hero-badge {
+        display: inline-block;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 14px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+      }
+      .hero h1 {
+        font-size: clamp(22px, 4vw, 38px);
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(90deg, #f1f5f9, #38bdf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* === PROGRESS BAR === */
+      .progress-bar-outer {
+        max-width: 480px;
+        margin: 18px auto 0;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .progress-bar-inner {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        width: 0%;
+      }
+      .progress-label {
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+        margin-top: 6px;
+      }
+
+      /* === TABS === */
+      .tab-bar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 20px 16px 10px;
+        max-width: 960px;
+        margin: auto;
+      }
+      .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 9px 16px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .tab-btn:hover {
+        border-color: var(--accent2);
+        color: var(--text);
+      }
+      .tab-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #000;
+        box-shadow: var(--glow);
+      }
+      .tab-icon {
+        font-size: 15px;
+      }
+
+      /* === MAIN PANEL === */
+      .tab-content {
+        display: none;
+        max-width: 800px;
+        margin: 0 auto 40px;
+        padding: 0 16px;
+      }
+      .tab-content.active {
+        display: block;
+      }
+
+      /* === SECTION CARDS === */
+      .section-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px;
+        margin-top: 14px;
+      }
+      .section-card h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--accent2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-card h2 .hicon {
+        font-size: 22px;
+      }
+
+      /* === CONCEPT CARDS === */
+      .concept-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      @media (max-width: 560px) {
+        .concept-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px;
+      }
+      .concept-card .cc-label {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .concept-card .cc-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+      .concept-card.lcm .cc-title {
+        color: var(--accent2);
+      }
+      .concept-card .cc-body {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .dist-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+      }
+      .dist-box .eq {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--text);
+        margin: 8px 0;
+      }
+      .dist-box .eq span {
+        color: var(--accent3);
+      }
+      .dist-box .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* === PROBLEMS === */
+      .problem {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        transition: border-color 0.3s;
+      }
+      .problem.solved {
+        border-color: var(--accent);
+      }
+      .problem-label {
+        flex: 1;
+        font-size: 15px;
+        font-weight: 600;
+        min-width: 140px;
+      }
+      .problem input {
+        width: 80px;
+        padding: 8px 12px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 15px;
+        font-family: inherit;
+        text-align: center;
+        transition: border-color 0.2s;
+        outline: none;
+      }
+      .problem input:focus {
+        border-color: var(--accent2);
+      }
+      .check-btn {
+        padding: 8px 16px;
+        background: linear-gradient(135deg, var(--accent2), #0ea5e9);
+        border: none;
+        border-radius: 8px;
+        color: #000;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: opacity 0.2s;
+      }
+      .check-btn:hover {
+        opacity: 0.85;
+      }
+      .result-badge {
+        font-size: 13px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 20px;
+        display: none;
+      }
+      .result-badge.correct {
+        display: inline-block;
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--accent);
+      }
+      .result-badge.wrong {
+        display: inline-block;
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+
+      /* === REAL WORLD === */
+      .story-box {
+        background: linear-gradient(135deg, #0f2a1a, #0c2233);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .story-box p {
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 14px;
+      }
+      .story-box .highlight {
+        color: var(--accent3);
+        font-weight: 700;
+      }
+
+      /* === FOOTER === */
+      .footer {
+        text-align: center;
+        padding: 24px;
+        color: var(--muted);
+        font-size: 12px;
+        border-top: 1px solid var(--border);
+      }
+
+      /* === SCOREBOARD === */
+      .scoreboard {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .score-chip {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        padding: 7px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .score-chip span {
+        color: var(--accent3);
+        font-weight: 800;
+      }
+
+      /* Toast */
+      #toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--accent);
+        color: #000;
+        font-weight: 700;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 14px;
+        transition: transform 0.4s ease;
+        z-index: 999;
+      }
+      #toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-badge">6.NS.B.4 Interactive Review</div>
+      <h1>Factor &amp; Multiple Review Lab</h1>
+      <p>GCF · LCM · Distributive Property · Real-World Applications</p>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar"></div>
+      </div>
+      <div class="progress-label" id="progressLabel">
+        0 of 9 problems solved
+      </div>
+    </div>
+
+    <!-- SCOREBOARD -->
+    <div class="scoreboard">
+      <div class="score-chip">Correct: <span id="totalCorrect">0</span></div>
+      <div class="score-chip">Streak: <span id="streak">0</span> 🔥</div>
+      <div class="score-chip">Points: <span id="points">0</span></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="openTab(0)">
+        <span class="tab-icon">📘</span>Concept
+      </button>
+      <button class="tab-btn" onclick="openTab(1)">
+        <span class="tab-icon">🔢</span>GCF Practice
+      </button>
+      <button class="tab-btn" onclick="openTab(2)">
+        <span class="tab-icon">🔗</span>LCM Practice
+      </button>
+      <button class="tab-btn" onclick="openTab(3)">
+        <span class="tab-icon">➗</span>Distributive
+      </button>
+      <button class="tab-btn" onclick="openTab(4)">
+        <span class="tab-icon">🌍</span>Real-World
+      </button>
+      <button class="tab-btn" onclick="openTab(5)">
+        <span class="tab-icon">⚡</span>Challenge
+      </button>
+    </div>
+
+    <!-- TAB 0: CONCEPT -->
+    <div id="tab0" class="tab-content active">
+      <div class="section-card">
+        <h2><span class="hicon">📘</span>Key Concepts</h2>
+        <div class="concept-grid">
+          <div class="concept-card gcf">
+            <div class="cc-label">GCF</div>
+            <div class="cc-title">Greatest Common Factor</div>
+            <div class="cc-body">
+              The <strong>largest</strong> number that divides two or more
+              numbers evenly with no remainder.
+            </div>
+          </div>
+          <div class="concept-card lcm">
+            <div class="cc-label">LCM</div>
+            <div class="cc-title">Least Common Multiple</div>
+            <div class="cc-body">
+              The <strong>smallest</strong> non-zero number that is a multiple
+              of two or more numbers.
+            </div>
+          </div>
+        </div>
+        <div class="dist-box">
+          <div class="cc-label" style="margin-bottom: 8px">
+            Distributive Property Connection
+          </div>
+          <div class="eq">36 + 24 = <span>12</span>(3 + 2)</div>
+          <div class="eq" style="font-size: 14px; color: var(--muted)">
+            The GCF is factored out
+          </div>
+          <div class="sub">
+            GCF(36, 24) = 12 &nbsp;·&nbsp; Factor pairs: (3, 2)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: GCF -->
+    <div id="tab1" class="tab-content">
+      <div class="section-card">
+        <h2><span class="hicon">🔢</span>Find the GCF</h2>
+        <div class="problem" id="p_g1">
+          <div class="problem-label">GCF(18, 24) =</div>
+          <input
+            id="g1"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'g1', 6)"
+          />
+          <button class="check-btn" onclick="check('g1', 6)">Check</button>
+          <span class="result-badge" id="r_g1"></span>
+        </div>
+        <div class="problem" id="p_g2">
+          <div class="problem-label">GCF(30, 45) =</div>
+          <input
+            id="g2"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'g2', 15)"
+          />
+          <button class="check-btn" onclick="check('g2', 15)">Check</button>
+          <span class="result-badge" id="r_g2"></span>
+        </div>
+        <div class="problem" id="p_g3">
+          <div class="problem-label">GCF(16, 28) =</div>
+          <input
+            id="g3"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'g3', 4)"
+          />
+          <button class="check-btn" onclick="check('g3', 4)">Check</button>
+          <span class="result-badge" id="r_g3"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: LCM -->
+    <div id="tab2" class="tab-content">
+      <div class="section-card">
+        <h2><span class="hicon">🔗</span>Find the LCM</h2>
+        <div class="problem" id="p_l1">
+          <div class="problem-label">LCM(4, 6) =</div>
+          <input
+            id="l1"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'l1', 12)"
+          />
+          <button class="check-btn" onclick="check('l1', 12)">Check</button>
+          <span class="result-badge" id="r_l1"></span>
+        </div>
+        <div class="problem" id="p_l2">
+          <div class="problem-label">LCM(5, 8) =</div>
+          <input
+            id="l2"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'l2', 40)"
+          />
+          <button class="check-btn" onclick="check('l2', 40)">Check</button>
+          <span class="result-badge" id="r_l2"></span>
+        </div>
+        <div class="problem" id="p_l3">
+          <div class="problem-label">LCM(6, 9) =</div>
+          <input
+            id="l3"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'l3', 18)"
+          />
+          <button class="check-btn" onclick="check('l3', 18)">Check</button>
+          <span class="result-badge" id="r_l3"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DISTRIBUTIVE -->
+    <div id="tab3" class="tab-content">
+      <div class="section-card">
+        <h2><span class="hicon">➗</span>Factor Using the GCF</h2>
+        <p style="color: var(--muted); font-size: 13px; margin-bottom: 16px">
+          Type the GCF — the number factored out front.
+        </p>
+        <div class="problem" id="p_d1">
+          <div class="problem-label">
+            20 + 30 = <em style="color: var(--accent3)">?</em>( __ + __ )
+          </div>
+          <input
+            id="d1"
+            type="number"
+            placeholder="GCF?"
+            onkeydown="handleKey(event, 'd1', 10)"
+          />
+          <button class="check-btn" onclick="check('d1', 10)">Check GCF</button>
+          <span class="result-badge" id="r_d1"></span>
+        </div>
+        <div class="problem" id="p_d2">
+          <div class="problem-label">
+            14 + 21 = <em style="color: var(--accent3)">?</em>( __ + __ )
+          </div>
+          <input
+            id="d2"
+            type="number"
+            placeholder="GCF?"
+            onkeydown="handleKey(event, 'd2', 7)"
+          />
+          <button class="check-btn" onclick="check('d2', 7)">Check GCF</button>
+          <span class="result-badge" id="r_d2"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: REAL WORLD -->
+    <div id="tab4" class="tab-content">
+      <div class="section-card">
+        <h2><span class="hicon">🌍</span>Real-World Problem</h2>
+        <div class="story-box">
+          <p>
+            Two machines on the factory floor blink lights at different rates.
+          </p>
+          <p style="margin-top: 10px">
+            🔴 <strong>Machine A</strong> blinks every
+            <span class="highlight">6 seconds</span><br />
+            🔵 <strong>Machine B</strong> blinks every
+            <span class="highlight">8 seconds</span>
+          </p>
+          <p style="margin-top: 10px">
+            If both blink <strong>at the same moment</strong>, how many seconds
+            until they blink <strong>together again</strong>?
+          </p>
+        </div>
+        <div class="problem" id="p_rw1">
+          <div class="problem-label">Next shared blink (seconds) =</div>
+          <input
+            id="rw1"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'rw1', 24)"
+          />
+          <button class="check-btn" onclick="check('rw1', 24)">Check</button>
+          <span class="result-badge" id="r_rw1"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: CHALLENGE -->
+    <div id="tab5" class="tab-content">
+      <div class="section-card">
+        <h2><span class="hicon">⚡</span>Challenge</h2>
+        <div class="story-box">
+          <p>
+            You have <span class="highlight">24 red tiles</span> and
+            <span class="highlight">36 blue tiles</span>.
+          </p>
+          <p style="margin-top: 8px">
+            You want to arrange all tiles into
+            <strong>identical groups</strong> — each group has the same number
+            of red and the same number of blue tiles, with
+            <em>no tiles left over</em>.
+          </p>
+          <p style="margin-top: 8px">
+            What is the <strong>greatest number of groups</strong> you can make?
+          </p>
+        </div>
+        <div class="problem" id="p_c1">
+          <div class="problem-label">Greatest number of groups =</div>
+          <input
+            id="c1"
+            type="number"
+            placeholder="?"
+            onkeydown="handleKey(event, 'c1', 12)"
+          />
+          <button class="check-btn" onclick="check('c1', 12)">Check</button>
+          <span class="result-badge" id="r_c1"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      6.NS.B.4 Interactive Review Lab &nbsp;·&nbsp; Factor &amp; Multiple
+      Mastery
+    </div>
+
+    <div id="toast">🎉 Correct! Keep going!</div>
+
+    <script>
+      const TOTAL = 9;
+      let solved = new Set();
+      let streak = 0;
+      let points = 0;
+
+      function openTab(n) {
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("tab" + n).classList.add("active");
+        document.querySelectorAll(".tab-btn")[n].classList.add("active");
+      }
+
+      function handleKey(e, id, ans) {
+        if (e.key === "Enter") check(id, ans);
+      }
+
+      function check(id, ans) {
+        const input = document.getElementById(id);
+        const badge = document.getElementById("r_" + id);
+        const prob = document.getElementById("p_" + id);
+        const val = Number(input.value);
+
+        badge.classList.remove("correct", "wrong");
+        badge.style.display = "none";
+
+        if (val === ans) {
+          badge.textContent = "✔ Correct!";
+          badge.classList.add("correct");
+          prob.classList.add("solved");
+          if (!solved.has(id)) {
+            solved.add(id);
+            streak++;
+            points += 10 + (streak >= 3 ? 5 : 0);
+            updateStats();
+          }
+          showToast(
+            streak >= 3
+              ? "🔥 " + streak + "-streak! +15 pts"
+              : "✅ Correct! +10 pts",
+          );
+        } else {
+          badge.textContent = "✘ Try again";
+          badge.classList.add("wrong");
+          streak = 0;
+          updateStats();
+        }
+        badge.style.display = "inline-block";
+      }
+
+      function updateStats() {
+        document.getElementById("totalCorrect").textContent = solved.size;
+        document.getElementById("streak").textContent = streak;
+        document.getElementById("points").textContent = points;
+        const pct = Math.round((solved.size / TOTAL) * 100);
+        document.getElementById("progressBar").style.width = pct + "%";
+        document.getElementById("progressLabel").textContent =
+          solved.size + " of " + TOTAL + " problems solved";
+        if (solved.size === TOTAL) {
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: solved.size,
+                maxScore: TOTAL,
+                problemsCorrect: solved.size,
+                problemsAttempted: TOTAL,
+                standard: "6.NS.B.4",
+              });
+          } catch (e) {}
+        }
+      }
+
+      let toastTimer;
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+      }
+    </script>
+
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

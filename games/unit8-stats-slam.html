@@ -1,0 +1,2154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stats Slam — Sports Manager</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0f172a;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <script>
+      // Stats Slam — Sports Manager
+      // Grade 6: 6.SP.1–6.SP.5 (Statistical questions & data)
+      // Neft Teacher
+
+      const W = 1024,
+        H = 768;
+      const LS_KEY = "statsSlam_highScore";
+
+      // --- SFX ---
+      class SFX {
+        constructor() {
+          this.ctx = null;
+        }
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        }
+        tone(f, d, t = "sine", v = 0.1) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        }
+        noise(d, v = 0.05) {
+          if (!this.ctx) return;
+          try {
+            const bufSize = this.ctx.sampleRate * d;
+            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++)
+              data[i] = (Math.random() * 2 - 1) * v;
+            const src = this.ctx.createBufferSource();
+            const g = this.ctx.createGain();
+            src.buffer = buf;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            src.connect(g);
+            g.connect(this.ctx.destination);
+            src.start();
+          } catch (e) {}
+        }
+        buzzer() {
+          this.tone(440, 0.08);
+          setTimeout(() => this.tone(554, 0.08), 60);
+          setTimeout(() => this.tone(659, 0.12), 120);
+        }
+        miss() {
+          this.tone(200, 0.3, "sawtooth");
+          setTimeout(() => this.tone(150, 0.25, "sawtooth"), 120);
+        }
+        glassBreak() {
+          this.noise(0.5, 0.12);
+          this.tone(2000, 0.05, "sine", 0.08);
+          setTimeout(() => this.noise(0.3, 0.06), 100);
+        }
+        click() {
+          this.tone(500, 0.04);
+        }
+        hover() {
+          this.tone(700, 0.03, "sine", 0.03);
+        }
+        whistle() {
+          this.tone(900, 0.15);
+          setTimeout(() => this.tone(1100, 0.1), 100);
+          setTimeout(() => this.tone(900, 0.2), 200);
+        }
+        crowd() {
+          for (let i = 0; i < 5; i++)
+            setTimeout(
+              () =>
+                this.tone(200 + Math.random() * 400, 0.15, "triangle", 0.03),
+              i * 60,
+            );
+        }
+        crowdRoar() {
+          for (let i = 0; i < 10; i++)
+            setTimeout(
+              () => this.tone(150 + Math.random() * 600, 0.2, "triangle", 0.04),
+              i * 40,
+            );
+        }
+        win() {
+          [523, 659, 784, 880, 1047].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.12), i * 80),
+          );
+        }
+        victory3Star() {
+          const melody = [523, 659, 784, 1047, 784, 1047, 1319, 1568];
+          melody.forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.2, "sine", 0.12), i * 100),
+          );
+        }
+        lose() {
+          [400, 350, 300, 250].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "sawtooth"), i * 100),
+          );
+        }
+        streak3() {
+          [660, 880, 1100].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.1, "square", 0.08), i * 60),
+          );
+        }
+        streak5() {
+          [523, 659, 784, 1047, 1319].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.12, "square", 0.1), i * 50),
+          );
+        }
+        streak7() {
+          [523, 659, 784, 880, 1047, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "sine", 0.12), i * 45),
+          );
+        }
+        powerup() {
+          [400, 600, 800, 1200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.1, "sine", 0.1), i * 50),
+          );
+        }
+        phaseTransition() {
+          [300, 400, 500, 600, 800, 1000].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "triangle", 0.08), i * 70),
+          );
+        }
+        timeBonus() {
+          this.tone(1200, 0.08, "sine", 0.06);
+          setTimeout(() => this.tone(1500, 0.08, "sine", 0.06), 60);
+        }
+        swoosh() {
+          this.tone(300, 0.1, "sine", 0.04);
+          setTimeout(() => this.tone(600, 0.08, "sine", 0.03), 50);
+        }
+        ambientCrowd() {
+          for (let i = 0; i < 3; i++) {
+            setTimeout(
+              () => this.tone(100 + Math.random() * 150, 0.6, "triangle", 0.01),
+              i * 200,
+            );
+          }
+        }
+      }
+      const sfx = new SFX();
+
+      // --- QUESTION BANK ---
+      function genQuestions() {
+        const qs = [];
+        function shuf(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
+        }
+        function mk(text, correct, wrongs, explain, tier, phase, data) {
+          const opts = shuf([correct, ...wrongs]);
+          return {
+            text,
+            correct,
+            options: opts,
+            explain,
+            tier,
+            phase,
+            data: data || "",
+          };
+        }
+        // PHASE 1: Scouting (Tier 1) - Mean, median, mode, range
+        const d1 = [12, 18, 15, 21, 14];
+        qs.push(
+          mk(
+            "Scout Report: Player scored " +
+              d1.join(", ") +
+              " points in 5 games. What is the mean?",
+            "16",
+            ["15", "18", "14"],
+            "Mean = (12+18+15+21+14)/5 = 80/5 = 16",
+            1,
+            "Scout",
+            d1.join(", "),
+          ),
+        );
+        const d2 = [8, 3, 7, 12, 5];
+        qs.push(
+          mk(
+            "Scout: Assists per match: " +
+              d2.join(", ") +
+              ". What is the median?",
+            "7",
+            ["8", "5", "3"],
+            "Sort: 3,5,7,8,12. Middle value = 7",
+            1,
+            "Scout",
+            d2.join(", "),
+          ),
+        );
+        const d3 = [22, 18, 22, 15, 22, 18];
+        qs.push(
+          mk(
+            "Goalie saves per game: " + d3.join(", ") + ". What is the mode?",
+            "22",
+            ["18", "20", "15"],
+            "22 appears 3 times (most frequent) = mode",
+            1,
+            "Scout",
+            d3.join(", "),
+          ),
+        );
+        const d4 = [45, 52, 38, 61, 44];
+        qs.push(
+          mk(
+            "Sprint times: " + d4.join(", ") + " sec. What is the range?",
+            "23",
+            ["17", "16", "38"],
+            "Range = 61 - 38 = 23",
+            1,
+            "Scout",
+            d4.join(", "),
+          ),
+        );
+        const d5 = [10, 8, 12, 6];
+        qs.push(
+          mk(
+            "Games won per set: " + d5.join(", ") + ". What is the mean?",
+            "9",
+            ["10", "8", "11"],
+            "Mean = (10+8+12+6)/4 = 36/4 = 9",
+            1,
+            "Scout",
+            d5.join(", "),
+          ),
+        );
+
+        // PHASE 2: Draft Day (Tier 2) - Statistical questions, complex stats
+        qs.push(
+          mk(
+            "Which is a statistical question?",
+            "How do points scored vary game to game?",
+            [
+              "How many points last Tuesday?",
+              "Who is tallest on roster?",
+              "What color are jerseys?",
+            ],
+            "A statistical question expects variability in answers.",
+            2,
+            "Draft",
+            "",
+          ),
+        );
+        const d6 = [24, 31, 28, 35, 22, 18, 26];
+        qs.push(
+          mk(
+            "Lap times: " +
+              d6.join(", ") +
+              " sec. Mean (round to nearest tenth)?",
+            "26.3",
+            ["28.0", "26.0", "27.5"],
+            "Mean = 184/7 ≈ 26.3",
+            2,
+            "Draft",
+            d6.join(", "),
+          ),
+        );
+        qs.push(
+          mk(
+            "Batting avgs: .278, .282, .291, .285, .288, .279, .294. Range?",
+            ".016",
+            [".015", ".012", ".022"],
+            "Range = .294 - .278 = .016",
+            2,
+            "Draft",
+            ".278, .282, .291, .285, .288, .279, .294",
+          ),
+        );
+        const d7 = [14, 17, 19, 22, 25, 28];
+        qs.push(
+          mk(
+            "Long jump distances: " + d7.join(", ") + " ft. Median?",
+            "20.5",
+            ["19", "22", "21"],
+            "6 values: median = (19+22)/2 = 20.5",
+            2,
+            "Draft",
+            d7.join(", "),
+          ),
+        );
+        qs.push(
+          mk(
+            "Box plot: Min=55, Q1=65, Med=72, Q3=80, Max=92. What is the IQR?",
+            "15",
+            ["37", "7", "12"],
+            "IQR = Q3 - Q1 = 80 - 65 = 15",
+            2,
+            "Draft",
+            "Min 55 | Q1 65 | Med 72 | Q3 80 | Max 92",
+          ),
+        );
+
+        // PHASE 3: Championship (Tier 3) - MAD, outliers, comparing data
+        const d8 = [70, 75, 80, 85, 90];
+        qs.push(
+          mk(
+            "Gymnast scores: " + d8.join(", ") + ". What is the MAD?",
+            "6",
+            ["5", "8", "10"],
+            "Mean=80. Deviations: 10,5,0,5,10. MAD=30/5=6",
+            3,
+            "Champ",
+            d8.join(", "),
+          ),
+        );
+        qs.push(
+          mk(
+            "Goals: 8,10,9,11,42. The 42 is an error. Removing it changes mean by:",
+            "Mean decreases by 6.5",
+            ["Mean decreases by 3", "Mean increases by 6.5", "Mean stays same"],
+            "With 42: mean=16. Without: mean=9.5. Diff=6.5",
+            3,
+            "Champ",
+            "8, 10, 9, 11, 42",
+          ),
+        );
+        qs.push(
+          mk(
+            "Times: 3,4,4,5,5,5,6,25. Best measure of center?",
+            "Median",
+            ["Mean", "Mode", "Range"],
+            "Outlier 25 skews mean to 7.125. Median (5) resists outliers.",
+            3,
+            "Champ",
+            "3, 4, 4, 5, 5, 5, 6, 25",
+          ),
+        );
+        qs.push(
+          mk(
+            "Team A: 72-88 (range 16). Team B: 60-95 (range 35). Which is true?",
+            "Team A more consistent (smaller range)",
+            [
+              "Team B more consistent",
+              "Same consistency",
+              "A is better because higher mean",
+            ],
+            "Smaller range = less spread = more consistent",
+            3,
+            "Champ",
+            "A: 72-88 | B: 60-95",
+          ),
+        );
+        const d9 = [15, 18, 22, 25, 20];
+        qs.push(
+          mk(
+            "Rebounds: " + d9.join(", ") + ". MAD?",
+            "2.8",
+            ["3.2", "4.0", "2.0"],
+            "Mean=20. Devs: 5,2,2,5,0. MAD=14/5=2.8",
+            3,
+            "Champ",
+            d9.join(", "),
+          ),
+        );
+
+        return shuf(qs).slice(0, 15);
+      }
+
+      // --- BOOT ---
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          this.scene.start("Title");
+        }
+      }
+
+      // --- TITLE ---
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          sfx.init();
+          const cx = W / 2;
+          this.cameras.main.setBackgroundColor("#0f172a");
+
+          // Ambient floating particles (arena dust/confetti)
+          this.add.particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 5, max: 15 },
+            angle: { min: 250, max: 290 },
+            scale: { start: 0.12, end: 0 },
+            alpha: { start: 0.35, end: 0 },
+            lifespan: { min: 3000, max: 6000 },
+            tint: [0xef4444, 0xfbbf24, 0x3b82f6],
+            quantity: 1,
+            frequency: 250,
+            blendMode: "ADD",
+          });
+
+          // Court floor
+          this.add.rectangle(cx, H - 120, W, 240, 0x8b4513, 0.15);
+          // Court lines
+          this.add
+            .rectangle(cx, H - 120, W - 100, 220, 0x000000, 0)
+            .setStrokeStyle(2, 0xfbbf24, 0.3);
+          this.add
+            .circle(cx, H - 120, 60, 0x000000, 0)
+            .setStrokeStyle(2, 0xfbbf24, 0.3);
+
+          // Basketball with bounce + spin
+          const ball = this.add.graphics().setPosition(cx, 310);
+          ball.fillStyle(0xf97316);
+          ball.fillCircle(0, 0, 45);
+          ball.lineStyle(2, 0x000000, 0.4);
+          ball.strokeCircle(0, 0, 45);
+          ball.lineBetween(-45, 0, 45, 0);
+          ball.lineBetween(0, -45, 0, 45);
+          ball.beginPath();
+          ball.arc(
+            -15,
+            0,
+            30,
+            Phaser.Math.DegToRad(270),
+            Phaser.Math.DegToRad(90),
+            false,
+          );
+          ball.strokePath();
+          ball.beginPath();
+          ball.arc(
+            15,
+            0,
+            30,
+            Phaser.Math.DegToRad(90),
+            Phaser.Math.DegToRad(270),
+            false,
+          );
+          ball.strokePath();
+          this.tweens.add({
+            targets: ball,
+            y: 295,
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Bounce.easeOut",
+          });
+          this.tweens.add({
+            targets: ball,
+            angle: 360,
+            duration: 3000,
+            repeat: -1,
+            ease: "Linear",
+          });
+
+          // Ball shadow
+          const shadow = this.add
+            .ellipse(cx, 360, 60, 12, 0x000000, 0.2)
+            .setDepth(0);
+          this.tweens.add({
+            targets: shadow,
+            scaleX: 0.8,
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Bounce.easeOut",
+          });
+
+          // Title with pulse animation
+          const titleStats = this.add
+            .text(cx, 80, "STATS", {
+              fontSize: "72px",
+              fontFamily: "monospace",
+              color: "#ef4444",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          const titleSlam = this.add
+            .text(cx, 155, "SLAM", {
+              fontSize: "80px",
+              fontFamily: "monospace",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          this.tweens.add({
+            targets: titleStats,
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          this.tweens.add({
+            targets: titleSlam,
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 1800,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+            delay: 400,
+          });
+
+          this.add
+            .text(cx, 210, "Sports Manager", {
+              fontSize: "22px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 240, "6.SP.1–6.SP.5 | Neft Teacher", {
+              fontSize: "13px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5);
+
+          // High score display
+          const highScore = parseInt(localStorage.getItem(LS_KEY) || "0");
+          if (highScore > 0) {
+            this.add
+              .text(cx, 265, `HIGH SCORE: ${highScore}`, {
+                fontSize: "14px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+          }
+
+          // Season phases with float animation
+          const phases = [
+            { name: "SCOUTING", sub: "Evaluate player stats", color: 0x22c55e },
+            { name: "DRAFT DAY", sub: "Statistical analysis", color: 0xf59e0b },
+            {
+              name: "CHAMPIONSHIP",
+              sub: "Advanced data decisions",
+              color: 0xef4444,
+            },
+          ];
+          phases.forEach((p, i) => {
+            const px = cx - 280 + i * 280,
+              py = 440;
+            const box = this.add
+              .rectangle(px, py, 230, 80, 0x1e293b)
+              .setStrokeStyle(2, p.color);
+            this.add
+              .text(px, py - 15, p.name, {
+                fontSize: "16px",
+                color: "#" + p.color.toString(16).padStart(6, "0"),
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(px, py + 12, p.sub, { fontSize: "12px", color: "#94a3b8" })
+              .setOrigin(0.5);
+            this.tweens.add({
+              targets: box,
+              y: py - 3,
+              duration: 1400 + i * 300,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+          });
+
+          // Scoreboard
+          this.add
+            .rectangle(cx, 545, 400, 40, 0x1e293b)
+            .setStrokeStyle(1, 0x334155);
+          this.add
+            .text(
+              cx,
+              545,
+              "15 Questions | 3 Phases | Manage Your Team to Victory!",
+              {
+                fontSize: "13px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5);
+
+          // Start button with glow
+          const btnGlow = this.add
+            .rectangle(cx, 620, 260, 68, 0xef4444, 0.3)
+            .setDepth(0);
+          this.tweens.add({
+            targets: btnGlow,
+            scaleX: 1.1,
+            scaleY: 1.15,
+            alpha: 0.15,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          const btn = this.add
+            .rectangle(cx, 620, 250, 60, 0xef4444)
+            .setStrokeStyle(2, 0xf87171)
+            .setInteractive({ useHandCursor: true });
+          const btnText = this.add
+            .text(cx, 620, "TIP OFF!", {
+              fontSize: "26px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => {
+            btn.setFillStyle(0xdc2626);
+            this.tweens.add({
+              targets: [btn, btnText],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+            sfx.hover();
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(0xef4444);
+            this.tweens.add({
+              targets: [btn, btnText],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+          btn.on("pointerdown", () => {
+            sfx.whistle();
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
+          });
+          this.add
+            .text(
+              cx,
+              680,
+              "Click or keys 1-4 to answer | F = 50/50 | D = Double Points",
+              {
+                fontSize: "12px",
+                color: "#475569",
+              },
+            )
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              sfx.whistle();
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            }
+          });
+        }
+      }
+
+      // --- GAME ---
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        create() {
+          sfx.init();
+          this.questions = genQuestions();
+          this.qIndex = 0;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.bestStreak = 0;
+          this.comboMultiplier = 1;
+          this.totalQ = Math.min(15, this.questions.length);
+          this.answered = false;
+          this.startTime = Date.now();
+          this.questionStartTime = Date.now();
+          this.selectedIdx = -1;
+          this.wins = 0;
+          this.losses = 0;
+          this.lastPhase = "";
+          this.doublePointsActive = false;
+          // Power-ups
+          this.powerUps = { fiftyFifty: 1, doublePoints: 1 };
+
+          this.cameras.main.setBackgroundColor("#0f172a");
+          this.cameras.main.fadeIn(400);
+
+          // Ambient crowd sound
+          this.ambientTimer = this.time.addEvent({
+            delay: 4000,
+            callback: () => sfx.ambientCrowd(),
+            loop: true,
+          });
+
+          this.buildCourt();
+          this.buildHUD();
+          this.buildScoreboard();
+          this.loadQuestion();
+          this.input.keyboard.on("keydown", this.handleKey, this);
+        }
+
+        // Floating score text popup
+        showFloatingText(x, y, text, color, size = "20px") {
+          const ft = this.add
+            .text(x, y, text, {
+              fontSize: size,
+              color: color,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(25)
+            .setAlpha(1);
+          this.tweens.add({
+            targets: ft,
+            y: y - 60,
+            alpha: 0,
+            scaleX: 1.5,
+            scaleY: 1.5,
+            duration: 1200,
+            ease: "Power2",
+            onComplete: () => ft.destroy(),
+          });
+        }
+
+        // Confetti burst
+        spawnConfetti(x, y, count) {
+          const colors = [
+            0xef4444, 0xfbbf24, 0x22c55e, 0x3b82f6, 0xff6600, 0xa78bfa,
+          ];
+          const emitter = this.add.particles(x, y, "__WHITE", {
+            speed: { min: 100, max: 350 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 0.5, end: 0 },
+            lifespan: { min: 600, max: 1200 },
+            tint: colors,
+            quantity: count,
+            emitting: false,
+            blendMode: "ADD",
+          });
+          emitter.explode(count);
+          this.time.delayedCall(1500, () => emitter.destroy());
+        }
+
+        // Screen shake scaled to streak
+        streakShake() {
+          const intensity = Math.min(0.003 + this.streak * 0.002, 0.015);
+          const dur = Math.min(100 + this.streak * 25, 300);
+          this.cameras.main.shake(dur, intensity);
+        }
+
+        buildCourt() {
+          // Court floor
+          this.add.rectangle(W / 2, H - 80, W, 160, 0x8b4513, 0.08).setDepth(0);
+          // Court markings
+          this.add
+            .rectangle(W / 2, H - 80, W - 40, 140, 0x000000, 0)
+            .setStrokeStyle(1, 0xfbbf24, 0.15)
+            .setDepth(0);
+          this.add
+            .circle(W / 2, H - 80, 40, 0x000000, 0)
+            .setStrokeStyle(1, 0xfbbf24, 0.15)
+            .setDepth(0);
+          // Hoop
+          this.add.rectangle(W - 60, H - 180, 6, 60, 0x64748b).setDepth(0);
+          this.add.rectangle(W - 60, H - 210, 40, 3, 0xef4444).setDepth(0);
+          this.add
+            .circle(W - 40, H - 210, 15, 0x000000, 0)
+            .setStrokeStyle(2, 0xef4444, 0.5)
+            .setDepth(0);
+
+          // Ambient arena particles
+          this.add.particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 100, max: H },
+            speed: { min: 2, max: 6 },
+            angle: { min: 260, max: 280 },
+            scale: { start: 0.08, end: 0 },
+            alpha: { start: 0.2, end: 0 },
+            lifespan: { min: 4000, max: 8000 },
+            tint: [0xfbbf24, 0xef4444],
+            quantity: 1,
+            frequency: 400,
+            blendMode: "ADD",
+          });
+
+          // Players (small sprites)
+          this.courtPlayers = [];
+          for (let i = 0; i < 5; i++) {
+            const px = 150 + i * 160,
+              py = H - 80 + Phaser.Math.Between(-20, 20);
+            const pg = this.add.graphics().setPosition(px, py).setDepth(1);
+            pg.fillStyle(i < 3 ? 0x3b82f6 : 0xef4444);
+            pg.fillCircle(0, -15, 10);
+            pg.fillRoundedRect(-8, -5, 16, 20, 3);
+            pg.fillStyle(0x64748b);
+            pg.fillRect(-6, 15, 5, 12);
+            pg.fillRect(1, 15, 5, 12);
+            this.tweens.add({
+              targets: pg,
+              y: py - 5,
+              x: px + Phaser.Math.Between(-10, 10),
+              duration: 800 + i * 200,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+            this.courtPlayers.push(pg);
+          }
+        }
+
+        buildHUD() {
+          this.hudBg = this.add
+            .rectangle(W / 2, 22, W, 44, 0x000000, 0.8)
+            .setDepth(10);
+          this.hudQ = this.add
+            .text(15, 10, "", {
+              fontSize: "14px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudScore = this.add
+            .text(140, 10, "", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudLives = this.add
+            .text(290, 10, "", { fontSize: "14px", color: "#ef4444" })
+            .setDepth(11);
+          this.hudStreak = this.add
+            .text(450, 10, "", { fontSize: "14px", color: "#f59e0b" })
+            .setDepth(11);
+          this.hudMultiplier = this.add
+            .text(600, 10, "", { fontSize: "14px", color: "#a78bfa" })
+            .setDepth(11);
+          this.hudPhase = this.add
+            .text(720, 10, "", { fontSize: "14px", color: "#a78bfa" })
+            .setDepth(11);
+          this.hudTimer = this.add
+            .text(W - 100, 10, "", { fontSize: "14px", color: "#94a3b8" })
+            .setDepth(11);
+
+          // Progress bar
+          this.progBg = this.add
+            .rectangle(W / 2, 44, W - 20, 6, 0x334155)
+            .setDepth(10);
+          this.progFill = this.add
+            .rectangle(10, 44, 0, 6, 0xef4444)
+            .setOrigin(0, 0.5)
+            .setDepth(10);
+
+          // Progress dots
+          this.progDots = [];
+          const dotSpacing = (W - 40) / this.totalQ;
+          for (let i = 0; i < this.totalQ; i++) {
+            const dot = this.add
+              .circle(20 + i * dotSpacing, 54, 3, 0x334155)
+              .setDepth(10);
+            this.progDots.push(dot);
+          }
+
+          // Speed indicator
+          this.speedIndicator = this.add
+            .text(W - 50, 55, "", { fontSize: "11px", color: "#22c55e" })
+            .setOrigin(0.5)
+            .setDepth(11);
+        }
+
+        buildScoreboard() {
+          this.sbBg = this.add
+            .rectangle(W / 2, 70, 300, 30, 0x1e293b, 0.9)
+            .setStrokeStyle(1, 0x334155)
+            .setDepth(5);
+          this.sbText = this.add
+            .text(W / 2, 70, "", {
+              fontSize: "14px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(6);
+        }
+
+        showPhaseTransition(newPhase) {
+          const phaseNames = {
+            Scout: "SCOUTING",
+            Draft: "DRAFT DAY",
+            Champ: "CHAMPIONSHIP",
+          };
+          const phaseColors = {
+            Scout: "#22c55e",
+            Draft: "#f59e0b",
+            Champ: "#ef4444",
+          };
+          sfx.phaseTransition();
+
+          const overlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.9)
+            .setDepth(50);
+          const phaseText = this.add
+            .text(W / 2, H / 2 - 20, phaseNames[newPhase] || newPhase, {
+              fontSize: "42px",
+              color: phaseColors[newPhase] || "#fff",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0)
+            .setScale(0.5);
+          const subText = this.add
+            .text(W / 2, H / 2 + 30, "ENTERING NEW PHASE", {
+              fontSize: "16px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0);
+
+          this.tweens.add({
+            targets: phaseText,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 400,
+            ease: "Back.easeOut",
+          });
+          this.tweens.add({
+            targets: subText,
+            alpha: 1,
+            duration: 400,
+            delay: 200,
+          });
+          this.time.delayedCall(1200, () => {
+            this.tweens.add({
+              targets: [overlay, phaseText, subText],
+              alpha: 0,
+              duration: 400,
+              onComplete: () => {
+                overlay.destroy();
+                phaseText.destroy();
+                subText.destroy();
+              },
+            });
+          });
+        }
+
+        loadQuestion() {
+          if (this.qIndex >= this.totalQ || this.lives <= 0) {
+            this.endGame();
+            return;
+          }
+          this.answered = false;
+          this.selectedIdx = -1;
+          this.questionStartTime = Date.now();
+          this.doublePointsActive = false;
+          const q = this.questions[this.qIndex];
+
+          // Phase transition
+          if (q.phase !== this.lastPhase && this.qIndex > 0) {
+            this.showPhaseTransition(q.phase);
+          }
+          this.lastPhase = q.phase;
+
+          this.updateHUD();
+
+          // Animated progress bar
+          this.tweens.add({
+            targets: this.progFill,
+            width: (this.qIndex / this.totalQ) * (W - 20),
+            duration: 300,
+            ease: "Power2",
+          });
+
+          this.sbText.setText(
+            `Season Record: ${this.wins}W - ${this.losses}L | Game ${this.qIndex + 1}`,
+          );
+
+          // Clean up old
+          if (this.qGroup) this.qGroup.destroy(true);
+          this.qGroup = this.add.group();
+          if (this.powerUpGroup) this.powerUpGroup.destroy(true);
+          this.powerUpGroup = this.add.group();
+
+          // Phase label
+          const phaseColors = {
+            Scout: 0x22c55e,
+            Draft: 0xf59e0b,
+            Champ: 0xef4444,
+          };
+          const phaseNames = {
+            Scout: "SCOUTING",
+            Draft: "DRAFT DAY",
+            Champ: "CHAMPIONSHIP",
+          };
+          // Question card
+          const cardY = 170;
+          const cardH = q.data ? 200 : 160;
+          const card = this.add
+            .rectangle(
+              W / 2,
+              cardY + cardH / 2 - 20,
+              700,
+              cardH,
+              0x1e293b,
+              0.95,
+            )
+            .setStrokeStyle(2, phaseColors[q.phase] || 0x334155)
+            .setDepth(5);
+          this.qGroup.add(card);
+
+          // Card enter animation
+          card.setAlpha(0).setScale(0.95);
+          this.tweens.add({
+            targets: card,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 300,
+            ease: "Power2",
+          });
+
+          // Phase badge
+          const badge = this.add
+            .text(W / 2 - 320, cardY - 10, phaseNames[q.phase] || q.phase, {
+              fontSize: "11px",
+              color: "#fff",
+              backgroundColor:
+                "#" +
+                (phaseColors[q.phase] || 0x334155)
+                  .toString(16)
+                  .padStart(6, "0"),
+              padding: { x: 8, y: 3 },
+              fontStyle: "bold",
+            })
+            .setDepth(6);
+          this.qGroup.add(badge);
+
+          // Tier
+          const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
+          const tierNames = ["Tier 1", "Tier 2", "Tier 3"];
+          const tier = this.add
+            .text(W / 2 - 320, cardY + 15, tierNames[q.tier - 1], {
+              fontSize: "11px",
+              color: tierColors[q.tier - 1],
+            })
+            .setDepth(6);
+          this.qGroup.add(tier);
+
+          // Question text
+          const qt = this.add
+            .text(W / 2, cardY + 50, q.text, {
+              fontSize: "18px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: 650 },
+            })
+            .setOrigin(0.5)
+            .setDepth(6)
+            .setAlpha(0);
+          this.qGroup.add(qt);
+          this.tweens.add({ targets: qt, alpha: 1, duration: 300, delay: 100 });
+
+          // Data display
+          if (q.data) {
+            const dataBox = this.add
+              .rectangle(W / 2, cardY + 100, 600, 35, 0x0f172a)
+              .setStrokeStyle(1, 0x334155)
+              .setDepth(5);
+            const dataText = this.add
+              .text(W / 2, cardY + 100, q.data, {
+                fontSize: "15px",
+                color: "#60a5fa",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(6);
+            this.qGroup.add(dataBox);
+            this.qGroup.add(dataText);
+            // Mini bar chart visualization
+            const vals = q.data
+              .split(",")
+              .map((v) => parseFloat(v.trim()))
+              .filter((v) => !isNaN(v));
+            if (vals.length > 0 && vals.length <= 10) {
+              const chartX = W / 2 - vals.length * 18,
+                chartY = cardY + 145;
+              const maxV = Math.max(...vals);
+              vals.forEach((v, i) => {
+                const barH = Math.max(5, (v / maxV) * 40);
+                const bar = this.add
+                  .rectangle(
+                    chartX + i * 36,
+                    chartY - barH / 2,
+                    28,
+                    barH,
+                    phaseColors[q.phase] || 0x3b82f6,
+                    0.6,
+                  )
+                  .setDepth(5);
+                // Animate bars growing
+                bar.setScale(1, 0);
+                this.tweens.add({
+                  targets: bar,
+                  scaleY: 1,
+                  duration: 300,
+                  delay: 200 + i * 50,
+                  ease: "Back.easeOut",
+                });
+                this.qGroup.add(bar);
+              });
+            }
+          }
+
+          // Answer options
+          this.answerBtns = [];
+          const optY = q.data ? cardY + cardH + 30 : cardY + cardH + 10;
+          q.options.forEach((opt, i) => {
+            const isLong = opt.length > 40;
+            const bw = isLong ? 680 : 320;
+            const bx = isLong ? W / 2 : i % 2 === 0 ? W / 2 - 175 : W / 2 + 175;
+            const by = isLong ? optY + i * 55 : optY + Math.floor(i / 2) * 55;
+            const bg = this.add
+              .rectangle(bx, by, bw, 45, 0x1e293b)
+              .setStrokeStyle(2, 0x475569)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(6);
+            const num = this.add
+              .text(bx - bw / 2 + 10, by - 6, String(i + 1), {
+                fontSize: "10px",
+                color: "#64748b",
+              })
+              .setDepth(7);
+            const txt = this.add
+              .text(bx, by, opt, {
+                fontSize: "15px",
+                color: "#e2e8f0",
+                align: "center",
+                wordWrap: { width: bw - 30 },
+              })
+              .setOrigin(0.5)
+              .setDepth(7);
+
+            // Enter animation
+            bg.setAlpha(0).setScale(0.9);
+            txt.setAlpha(0);
+            num.setAlpha(0);
+            this.tweens.add({
+              targets: bg,
+              alpha: 1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 200,
+              delay: 150 + i * 60,
+              ease: "Back.easeOut",
+            });
+            this.tweens.add({
+              targets: [txt, num],
+              alpha: 1,
+              duration: 200,
+              delay: 200 + i * 60,
+            });
+
+            bg.on("pointerover", () => {
+              if (!this.answered) {
+                bg.setStrokeStyle(3, 0xfbbf24);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1.04,
+                  scaleY: 1.04,
+                  duration: 80,
+                });
+                this.tweens.add({
+                  targets: txt,
+                  scaleX: 1.03,
+                  scaleY: 1.03,
+                  duration: 80,
+                });
+                sfx.hover();
+              }
+            });
+            bg.on("pointerout", () => {
+              if (!this.answered && this.selectedIdx !== i) {
+                bg.setStrokeStyle(2, 0x475569);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 80,
+                });
+                this.tweens.add({
+                  targets: txt,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 80,
+                });
+              }
+            });
+            bg.on("pointerdown", () => {
+              if (!this.answered) this.submitAnswer(i);
+            });
+            this.qGroup.add(bg);
+            this.qGroup.add(txt);
+            this.qGroup.add(num);
+            this.answerBtns.push({ bg, txt, num, optText: opt });
+          });
+
+          // Power-up buttons
+          this.buildPowerUpButtons();
+
+          // Feedback
+          this.fbObj = this.add
+            .text(W / 2, H - 50, "", {
+              fontSize: "14px",
+              color: "#94a3b8",
+              align: "center",
+              wordWrap: { width: 700 },
+            })
+            .setOrigin(0.5)
+            .setDepth(8);
+          this.qGroup.add(this.fbObj);
+
+          // Shot clock (visual countdown)
+          this.shotClock = 30;
+          this.shotText = this.add
+            .text(W - 50, 70, String(this.shotClock), {
+              fontSize: "22px",
+              color: "#f59e0b",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(6);
+          this.qGroup.add(this.shotText);
+
+          // Shot clock ring
+          this.shotRing = this.add.graphics().setDepth(5);
+          this.drawShotClockRing(1);
+
+          this.shotTimer = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+              if (this.answered) return;
+              this.shotClock--;
+              this.shotText.setText(String(Math.max(0, this.shotClock)));
+              this.drawShotClockRing(this.shotClock / 30);
+              if (this.shotClock <= 5) {
+                this.shotText.setColor("#ef4444");
+                // Pulse effect on low time
+                this.tweens.add({
+                  targets: this.shotText,
+                  scaleX: 1.3,
+                  scaleY: 1.3,
+                  duration: 100,
+                  yoyo: true,
+                });
+              }
+              if (this.shotClock <= 0) this.timeOut();
+            },
+            repeat: 29,
+          });
+        }
+
+        drawShotClockRing(pct) {
+          if (!this.shotRing) return;
+          this.shotRing.clear();
+          const cx = W - 50,
+            cy = 70,
+            r = 18;
+          const color = pct > 0.3 ? 0xf59e0b : 0xef4444;
+          this.shotRing.lineStyle(3, color, 0.5);
+          this.shotRing.beginPath();
+          this.shotRing.arc(
+            cx,
+            cy,
+            r,
+            Phaser.Math.DegToRad(-90),
+            Phaser.Math.DegToRad(-90 + 360 * pct),
+            false,
+          );
+          this.shotRing.strokePath();
+        }
+
+        buildPowerUpButtons() {
+          const puDefs = [
+            { key: "fiftyFifty", label: "50/50", color: 0x3b82f6, hotkey: "F" },
+            {
+              key: "doublePoints",
+              label: "2x PTS",
+              color: 0xa78bfa,
+              hotkey: "D",
+            },
+          ];
+          puDefs.forEach((pu, i) => {
+            if (this.powerUps[pu.key] <= 0) return;
+            const px = 30 + i * 100,
+              py = H - 30;
+            const bg = this.add
+              .rectangle(px + 35, py, 80, 26, pu.color, 0.3)
+              .setStrokeStyle(1, pu.color)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(9);
+            const txt = this.add
+              .text(px + 35, py, `${pu.label} (${pu.hotkey})`, {
+                fontSize: "10px",
+                color: "#fff",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(10);
+            const countTxt = this.add
+              .text(px + 70, py - 11, `x${this.powerUps[pu.key]}`, {
+                fontSize: "9px",
+                color: "#fbbf24",
+              })
+              .setDepth(10);
+            bg.on("pointerdown", () => this.usePowerUp(pu.key));
+            bg.on("pointerover", () => bg.setFillStyle(pu.color, 0.6));
+            bg.on("pointerout", () => bg.setFillStyle(pu.color, 0.3));
+            this.powerUpGroup.add(bg);
+            this.powerUpGroup.add(txt);
+            this.powerUpGroup.add(countTxt);
+          });
+        }
+
+        usePowerUp(key) {
+          if (this.answered || this.powerUps[key] <= 0) return;
+          const q = this.questions[this.qIndex];
+          if (key === "fiftyFifty") {
+            this.powerUps.fiftyFifty--;
+            sfx.powerup();
+            let removed = 0;
+            this.answerBtns.forEach((b) => {
+              if (b.optText !== q.correct && removed < 2) {
+                b.bg.setAlpha(0.3);
+                b.txt.setAlpha(0.3);
+                b.bg.disableInteractive();
+                b.eliminated = true;
+                removed++;
+              }
+            });
+            this.showFloatingText(W / 2, H / 2, "50/50!", "#3b82f6", "22px");
+          } else if (key === "doublePoints") {
+            this.powerUps.doublePoints--;
+            this.doublePointsActive = true;
+            sfx.powerup();
+            this.showFloatingText(
+              W / 2,
+              H / 2,
+              "DOUBLE POINTS!",
+              "#a78bfa",
+              "22px",
+            );
+          }
+          if (this.powerUpGroup) this.powerUpGroup.destroy(true);
+          this.powerUpGroup = this.add.group();
+          this.buildPowerUpButtons();
+        }
+
+        timeOut() {
+          if (this.answered) return;
+          this.answered = true;
+          this.lives--;
+          this.streak = 0;
+          this.comboMultiplier = 1;
+          this.losses++;
+          const q = this.questions[this.qIndex];
+
+          if (this.progDots[this.qIndex]) {
+            this.progDots[this.qIndex].setFillStyle(0xef4444);
+          }
+
+          const ci = this.answerBtns.findIndex((b) => b.optText === q.correct);
+          if (ci >= 0) {
+            this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
+            this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
+          }
+          this.fbObj.setText("SHOT CLOCK VIOLATION! Answer: " + q.correct);
+          this.fbObj.setColor("#ef4444");
+          sfx.miss();
+          sfx.glassBreak();
+          this.cameras.main.shake(300, 0.02);
+          this.cameras.main.flash(200, 255, 0, 0, true);
+          this.showFloatingText(
+            W / 2,
+            H / 2 - 50,
+            "TIME OUT!",
+            "#ef4444",
+            "28px",
+          );
+          this.updateHUD();
+          this.time.delayedCall(2500, () => {
+            this.qIndex++;
+            this.loadQuestion();
+          });
+        }
+
+        submitAnswer(idx) {
+          if (this.answered) return;
+          if (this.answerBtns[idx].eliminated) return;
+          this.answered = true;
+          if (this.shotTimer) this.shotTimer.remove();
+          const q = this.questions[this.qIndex];
+          const chosen = this.answerBtns[idx].optText;
+          const correct = chosen === q.correct;
+          const elapsed = (Date.now() - this.questionStartTime) / 1000;
+          const fastAnswer = elapsed < 5;
+
+          if (correct) {
+            // Calculate score
+            let basePoints = q.tier * 10;
+            let streakBonus = Math.min(this.streak, 5) * 5;
+            let timeBonus = fastAnswer ? 10 : this.shotClock > 20 ? 5 : 0;
+            let subtotal = basePoints + streakBonus + timeBonus;
+            if (this.doublePointsActive) subtotal *= 2;
+
+            this.score += subtotal;
+            this.streak++;
+            this.wins++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            this.comboMultiplier = Math.min(
+              1 + Math.floor(this.streak / 2) * 0.5,
+              4,
+            );
+
+            // Update progress dots
+            if (this.progDots[this.qIndex]) {
+              this.progDots[this.qIndex].setFillStyle(0x22c55e);
+            }
+
+            this.answerBtns[idx].bg.setFillStyle(0x22c55e);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
+
+            // Floating score text
+            const btn = this.answerBtns[idx];
+            this.showFloatingText(
+              btn.bg.x,
+              btn.bg.y - 30,
+              `+${subtotal}`,
+              "#22c55e",
+            );
+
+            if (fastAnswer) {
+              sfx.timeBonus();
+              this.showFloatingText(
+                W / 2,
+                100,
+                "SPEED BONUS!",
+                "#00d4ff",
+                "16px",
+              );
+            }
+            if (this.doublePointsActive) {
+              this.showFloatingText(W / 2, 120, "DOUBLE!", "#a78bfa", "16px");
+            }
+
+            // Streak milestone effects
+            if (this.streak === 3) {
+              sfx.streak3();
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 60,
+                "STREAK x3!",
+                "#f59e0b",
+                "28px",
+              );
+              this.spawnConfetti(W / 2, H / 2, 30);
+              sfx.crowd();
+            } else if (this.streak === 5) {
+              sfx.streak5();
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 60,
+                "ON FIRE x5!",
+                "#ff6600",
+                "32px",
+              );
+              this.spawnConfetti(W / 2, H / 2, 50);
+              sfx.crowdRoar();
+            } else if (this.streak === 7) {
+              sfx.streak7();
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 60,
+                "UNSTOPPABLE x7!",
+                "#ef4444",
+                "36px",
+              );
+              this.spawnConfetti(W / 2, H / 2, 80);
+              sfx.crowdRoar();
+              // Bonus power-up
+              this.powerUps.fiftyFifty++;
+            }
+
+            this.fbObj.setText(
+              "SCORE! +" +
+                subtotal +
+                " pts" +
+                (this.streak >= 3 ? " STREAK x" + this.streak + "!" : ""),
+            );
+            this.fbObj.setColor("#22c55e");
+            sfx.buzzer();
+            if (this.streak < 3) sfx.crowd();
+
+            // Basketball animation
+            const ball = this.add
+              .circle(W / 2, H - 100, 15, 0xf97316)
+              .setDepth(9);
+            sfx.swoosh();
+            this.tweens.add({
+              targets: ball,
+              x: W - 40,
+              y: H - 210,
+              duration: 600,
+              ease: "Quad.easeOut",
+              onComplete: () => {
+                // Hoop particles
+                this.add
+                  .particles(W - 40, H - 210, "__WHITE", {
+                    speed: { min: 30, max: 120 },
+                    angle: { min: 0, max: 360 },
+                    scale: { start: 0.4, end: 0 },
+                    lifespan: 500,
+                    tint: [0xfbbf24, 0xef4444, 0x22c55e],
+                    quantity: 12,
+                    emitting: false,
+                    blendMode: "ADD",
+                  })
+                  .explode(18);
+                ball.destroy();
+              },
+            });
+
+            // Screen shake scaled to streak
+            this.streakShake();
+
+            // Confetti at answer button
+            this.spawnConfetti(btn.bg.x, btn.bg.y, 10 + this.streak * 2);
+          } else {
+            this.lives--;
+            this.streak = 0;
+            this.comboMultiplier = 1;
+            this.losses++;
+
+            // Update progress dots
+            if (this.progDots[this.qIndex]) {
+              this.progDots[this.qIndex].setFillStyle(0xef4444);
+            }
+
+            this.answerBtns[idx].bg.setFillStyle(0xef4444);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
+            const ci = this.answerBtns.findIndex(
+              (b) => b.optText === q.correct,
+            );
+            if (ci >= 0) {
+              this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
+              this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
+            }
+            this.fbObj.setText("MISS! " + q.explain);
+            this.fbObj.setColor("#ef4444");
+            sfx.miss();
+            sfx.glassBreak();
+
+            this.showFloatingText(
+              this.answerBtns[idx].bg.x,
+              this.answerBtns[idx].bg.y - 30,
+              "MISS!",
+              "#ef4444",
+              "22px",
+            );
+
+            // Heavy screen shake + red flash
+            this.cameras.main.shake(400, 0.025);
+            this.cameras.main.flash(300, 255, 0, 0, true);
+
+            // Red vignette overlay
+            const vignette = this.add
+              .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
+              .setDepth(15);
+            this.tweens.add({
+              targets: vignette,
+              alpha: 0,
+              duration: 800,
+              onComplete: () => vignette.destroy(),
+            });
+          }
+          this.updateHUD();
+          this.time.delayedCall(correct ? 1500 : 2500, () => {
+            this.qIndex++;
+            this.loadQuestion();
+          });
+        }
+
+        handleKey(e) {
+          if (this.answered) return;
+          if (e.key >= "1" && e.key <= "4") {
+            const i = parseInt(e.key) - 1;
+            if (i < this.answerBtns.length && !this.answerBtns[i].eliminated)
+              this.submitAnswer(i);
+          }
+          if (e.key === "f" || e.key === "F") this.usePowerUp("fiftyFifty");
+          if (e.key === "d" || e.key === "D") this.usePowerUp("doublePoints");
+          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+            this.selectedIdx = Math.min(
+              this.selectedIdx + 1,
+              this.answerBtns.length - 1,
+            );
+            if (this.selectedIdx < 0) this.selectedIdx = 0;
+            this.highlightSel();
+          }
+          if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+            this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            this.highlightSel();
+          }
+          if (e.key === "Enter" && this.selectedIdx >= 0)
+            this.submitAnswer(this.selectedIdx);
+        }
+
+        highlightSel() {
+          this.answerBtns.forEach((b, i) => {
+            if (b.eliminated) return;
+            const sel = i === this.selectedIdx;
+            b.bg.setStrokeStyle(sel ? 3 : 2, sel ? 0xfbbf24 : 0x475569);
+            if (sel) {
+              this.tweens.add({
+                targets: b.bg,
+                scaleX: 1.04,
+                scaleY: 1.04,
+                duration: 80,
+              });
+            } else {
+              this.tweens.add({
+                targets: b.bg,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 80,
+              });
+            }
+          });
+          sfx.click();
+        }
+
+        updateHUD() {
+          const q = this.questions[this.qIndex];
+          const phaseNames = {
+            Scout: "SCOUTING",
+            Draft: "DRAFT",
+            Champ: "FINALS",
+          };
+          this.hudQ.setText(`Q${this.qIndex + 1}/${this.totalQ}`);
+          this.hudScore.setText(`SCORE: ${this.score}`);
+          this.hudLives.setText(
+            "LIVES: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives),
+          );
+
+          // Streak with color scaling
+          if (this.streak >= 2) {
+            this.hudStreak.setText(`STREAK ${this.streak}x`);
+            if (this.streak >= 5) this.hudStreak.setColor("#ef4444");
+            else if (this.streak >= 3) this.hudStreak.setColor("#ff6600");
+            else this.hudStreak.setColor("#f59e0b");
+          } else {
+            this.hudStreak.setText("");
+          }
+
+          // Multiplier
+          if (this.comboMultiplier > 1) {
+            this.hudMultiplier.setText(`x${this.comboMultiplier}`);
+          } else {
+            this.hudMultiplier.setText("");
+          }
+
+          this.hudPhase.setText(q ? phaseNames[q.phase] || "" : "");
+          const el = Math.floor((Date.now() - this.startTime) / 1000);
+          const m = Math.floor(el / 60),
+            s = el % 60;
+          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+
+          // Speed indicator
+          if (!this.answered) {
+            const qEl = (Date.now() - this.questionStartTime) / 1000;
+            if (qEl < 5) {
+              this.speedIndicator.setText("FAST").setColor("#22c55e");
+            } else if (qEl < 10) {
+              this.speedIndicator.setText("OK").setColor("#fbbf24");
+            } else {
+              this.speedIndicator.setText("").setColor("#ef4444");
+            }
+          } else {
+            this.speedIndicator.setText("");
+          }
+        }
+
+        update() {
+          this.updateHUD();
+        }
+
+        endGame() {
+          if (this.shotTimer) this.shotTimer.remove();
+          if (this.ambientTimer) this.ambientTimer.remove();
+          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+
+          // Save high score
+          const prevBest = parseInt(localStorage.getItem(LS_KEY) || "0");
+          const isNewHighScore = this.score > prevBest;
+          if (isNewHighScore) {
+            localStorage.setItem(LS_KEY, String(this.score));
+          }
+
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.wins,
+                maxScore: this.totalQ,
+                problemsCorrect: this.wins,
+                problemsAttempted: this.totalQ,
+                percent: this.totalQ
+                  ? Math.round((this.wins / this.totalQ) * 100)
+                  : 0,
+                standard: "6.SP",
+              });
+          } catch (e) {}
+
+          this.cameras.main.fade(500, 0, 0, 0);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              total: this.totalQ,
+              correct: this.wins,
+              bestStreak: this.bestStreak,
+              time: elapsed,
+              wins: this.wins,
+              losses: this.losses,
+              isNewHighScore: isNewHighScore,
+              prevBest: prevBest,
+            });
+          });
+        }
+      }
+
+      // --- RESULTS ---
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          sfx.init();
+          const d = this.d,
+            cx = W / 2;
+          this.cameras.main.setBackgroundColor("#0f172a");
+          this.cameras.main.fadeIn(500);
+
+          const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
+          const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+          // Ambient particles
+          this.add.particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 2, max: 8 },
+            angle: { min: 250, max: 290 },
+            scale: { start: 0.1, end: 0 },
+            alpha: { start: 0.3, end: 0 },
+            lifespan: { min: 3000, max: 6000 },
+            tint: stars >= 2 ? [0xfbbf24, 0xef4444] : [0x4a5568, 0x718096],
+            quantity: 1,
+            frequency: 200,
+            blendMode: "ADD",
+          });
+
+          if (stars >= 2) {
+            if (stars === 3) sfx.victory3Star();
+            else sfx.win();
+            // Elaborate confetti
+            for (let i = 0; i < 6; i++) {
+              this.time.delayedCall(i * 200, () => {
+                const px = Phaser.Math.Between(100, W - 100);
+                this.add
+                  .particles(px, 0, "__WHITE", {
+                    speed: { min: 80, max: 300 },
+                    angle: { min: 60, max: 120 },
+                    scale: { start: 0.5, end: 0 },
+                    lifespan: 1500,
+                    tint: [0xef4444, 0xfbbf24, 0x22c55e, 0x3b82f6, 0xa78bfa],
+                    quantity: 20,
+                    emitting: false,
+                  })
+                  .explode(25);
+              });
+            }
+          } else sfx.lose();
+
+          const titles = [
+            "Bench Warmer",
+            "Solid Starter",
+            "All-Star!",
+            "MVP! CHAMPION!",
+          ];
+          const titleText = this.add
+            .text(cx, 55, titles[stars], {
+              fontSize: "42px",
+              color: stars >= 2 ? "#fbbf24" : "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5);
+          this.tweens.add({
+            targets: titleText,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 600,
+            ease: "Back.easeOut",
+          });
+
+          // Animated star fill
+          for (let i = 0; i < 3; i++) {
+            const filled = i < stars;
+            const starText = this.add
+              .text(cx - 60 + i * 60, 115, filled ? "★" : "☆", {
+                fontSize: "48px",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0)
+              .setScale(0);
+            this.tweens.add({
+              targets: starText,
+              alpha: 1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 400,
+              delay: 600 + i * 300,
+              ease: "Back.easeOut",
+              onStart: () => {
+                if (filled) sfx.click();
+              },
+            });
+            if (filled) {
+              this.time.delayedCall(700 + i * 300, () => {
+                this.add
+                  .particles(cx - 60 + i * 60, 115, "__WHITE", {
+                    speed: { min: 20, max: 60 },
+                    angle: { min: 0, max: 360 },
+                    scale: { start: 0.3, end: 0 },
+                    lifespan: 400,
+                    tint: 0xfbbf24,
+                    quantity: 8,
+                    emitting: false,
+                  })
+                  .explode(10);
+              });
+            }
+          }
+
+          // New high score
+          if (d.isNewHighScore) {
+            const hsText = this.add
+              .text(cx, 160, "NEW HIGH SCORE!", {
+                fontSize: "24px",
+                color: "#ff6600",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: hsText,
+              alpha: 1,
+              duration: 300,
+              delay: 1800,
+            });
+            this.tweens.add({
+              targets: hsText,
+              scaleX: 1.1,
+              scaleY: 1.1,
+              duration: 500,
+              yoyo: true,
+              repeat: -1,
+              delay: 1800,
+              ease: "Sine.easeInOut",
+            });
+          }
+
+          // Scoreboard
+          this.add
+            .rectangle(cx, 200, 300, 60, 0x1e293b)
+            .setStrokeStyle(2, 0xef4444);
+          this.add
+            .text(cx, 190, `${d.wins}W — ${d.losses}L`, {
+              fontSize: "28px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 215, "Season Record", {
+              fontSize: "12px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5);
+
+          // Score circle with animated counter
+          this.add.circle(cx, 300, 55, 0x1e293b).setStrokeStyle(3, 0xef4444);
+          const scoreText = this.add
+            .text(cx, 290, "0%", {
+              fontSize: "30px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 315, "Accuracy", { fontSize: "12px", color: "#64748b" })
+            .setOrigin(0.5);
+
+          let counter = { val: 0 };
+          this.tweens.add({
+            targets: counter,
+            val: pct,
+            duration: 1500,
+            delay: 500,
+            ease: "Power2",
+            onUpdate: () => {
+              scoreText.setText(Math.round(counter.val) + "%");
+            },
+          });
+
+          const stats = [
+            { l: "Points", v: d.score, c: "#fbbf24" },
+            { l: "Correct", v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: "Best Streak", v: d.bestStreak, c: "#f59e0b" },
+            {
+              l: "Time",
+              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
+              c: "#94a3b8",
+            },
+          ];
+          stats.forEach((s, i) => {
+            const x = cx - 240 + i * 165,
+              y = 405;
+            const box = this.add
+              .rectangle(x, y, 135, 60, 0x1e293b)
+              .setStrokeStyle(1, 0x334155)
+              .setAlpha(0);
+            const val = this.add
+              .text(x, y - 8, String(s.v), {
+                fontSize: "20px",
+                color: s.c,
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            const label = this.add
+              .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: [box, val, label],
+              alpha: 1,
+              duration: 300,
+              delay: 800 + i * 150,
+            });
+          });
+
+          // Previous best
+          if (d.prevBest > 0 && !d.isNewHighScore) {
+            this.add
+              .text(cx, 460, `Personal Best: ${d.prevBest}`, {
+                fontSize: "13px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+
+          // Buttons with hover effects
+          const btn1 = this.add
+            .rectangle(cx - 110, 510, 190, 50, 0xef4444)
+            .setStrokeStyle(2, 0xf87171)
+            .setInteractive({ useHandCursor: true });
+          const btn1Text = this.add
+            .text(cx - 110, 510, "NEW SEASON", {
+              fontSize: "17px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn1.on("pointerdown", () => {
+            sfx.click();
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
+          });
+          btn1.on("pointerover", () => {
+            btn1.setFillStyle(0xdc2626);
+            this.tweens.add({
+              targets: [btn1, btn1Text],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn1.on("pointerout", () => {
+            btn1.setFillStyle(0xef4444);
+            this.tweens.add({
+              targets: [btn1, btn1Text],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
+          const btn2 = this.add
+            .rectangle(cx + 110, 510, 190, 50, 0x334155)
+            .setStrokeStyle(2, 0x475569)
+            .setInteractive({ useHandCursor: true });
+          const btn2Text = this.add
+            .text(cx + 110, 510, "MAIN MENU", {
+              fontSize: "17px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn2.on("pointerdown", () => {
+            sfx.click();
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Title"));
+          });
+          btn2.on("pointerover", () => {
+            btn2.setFillStyle(0x475569);
+            this.tweens.add({
+              targets: [btn2, btn2Text],
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn2.on("pointerout", () => {
+            btn2.setFillStyle(0x334155);
+            this.tweens.add({
+              targets: [btn2, btn2Text],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
+          this.add
+            .text(cx, H - 25, "Stats Slam — Neft Teacher — 6.SP.1–6.SP.5", {
+              fontSize: "11px",
+              color: "#475569",
+            })
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            }
+            if (e.key === "Escape") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Title"));
+            }
+          });
+        }
+      }
+
+      // --- CONFIG ---
+      new Phaser.Game({
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0f172a",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        input: { keyboard: true, mouse: true, touch: true },
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

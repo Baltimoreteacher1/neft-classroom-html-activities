@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>6B Properties of Operations Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>6B | Properties of Operations Study Guide</h1>
+        <div class="guide-meta">
+          Unit 6: Expressions &amp; Equations &bull; Lesson 6.6 &bull; Standard:
+          6.EE.3
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Commutative Property</strong> &mdash; you can swap the order
+          and get the same answer (a + b = b + a).
+          <span class="spanish">(propiedad conmutativa)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Associative Property</strong> &mdash; you can regroup the
+          numbers and get the same answer ((a + b) + c = a + (b + c)).
+          <span class="spanish">(propiedad asociativa)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Distributive Property</strong> &mdash; multiply a number by
+          each term inside the parentheses: a(b + c) = ab + ac.
+          <span class="spanish">(propiedad distributiva)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Identity Property</strong> &mdash; adding 0 or multiplying by
+          1 does not change the number.
+          <span class="spanish">(propiedad de identidad)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLES -->
+      <div class="guide-section">
+        <h2>Visual Examples</h2>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap">
+          <div class="example-box" style="flex: 1; min-width: 220px">
+            <strong>Commutative (swap order)</strong><br />
+            3 + 7 = 7 + 3 = 10<br />
+            4 &times; 5 = 5 &times; 4 = 20<br />
+            <em>Think: "commute" = move around</em>
+          </div>
+          <div class="example-box" style="flex: 1; min-width: 220px">
+            <strong>Associative (regroup)</strong><br />
+            (2 + 3) + 4 = 2 + (3 + 4) = 9<br />
+            (2 &times; 3) &times; 4 = 2 &times; (3 &times; 4) = 24<br />
+            <em>Think: "associate" = group with friends</em>
+          </div>
+        </div>
+        <div class="example-box">
+          <strong>Distributive (distribute = share)</strong><br />
+          5(x + 3) = 5 &middot; x + 5 &middot; 3 = 5x + 15<br />
+          3(2x &minus; 4) = 3 &middot; 2x &minus; 3 &middot; 4 = 6x &minus;
+          12<br />
+          <em>Think: pass out the multiplier to EACH term inside</em>
+        </div>
+        <div class="example-box">
+          <strong>Identity (stay the same)</strong><br />
+          7 + 0 = 7 &nbsp;&nbsp;(additive identity)<br />
+          7 &times; 1 = 7 &nbsp;&nbsp;(multiplicative identity)
+        </div>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step: Using the Distributive Property</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> Look for a number outside the
+            parentheses.
+          </li>
+          <li>
+            <span class="step-num">2</span> Multiply that number by EACH term
+            inside the parentheses.
+          </li>
+          <li>
+            <span class="step-num">3</span> Write the new expression without
+            parentheses.
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Example:</strong> 4(x + 6)<br />
+          = 4 &middot; x + 4 &middot; 6<br />
+          = <strong>4x + 24</strong>
+        </div>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Formula Box</h2>
+        <div class="formula-highlight">
+          Distributive Property: a(b + c) = ab + ac
+        </div>
+        <div class="formula-highlight">
+          Commutative: a + b = b + a &nbsp;&nbsp;|&nbsp;&nbsp; a &times; b = b
+          &times; a
+        </div>
+        <div class="formula-highlight">
+          Associative: (a + b) + c = a + (b + c)
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong
+              >Commutative does NOT work for subtraction or division.</strong
+            >
+            5 &minus; 3 &ne; 3 &minus; 5. Only addition and multiplication can
+            swap.
+          </li>
+          <li>
+            <strong>Distribute to EVERY term inside.</strong> 3(x + 4) = 3x +
+            12, NOT 3x + 4.
+          </li>
+          <li>
+            <strong>Watch the signs!</strong> 2(x &minus; 5) = 2x &minus; 10.
+            The minus stays minus.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> Use the distributive property to expand: 3(x +
+            7). Write your answer without parentheses.
+          </p>
+          <input
+            type="text"
+            id="q1"
+            placeholder="Type your answer (e.g., 3x+21)..."
+          />
+          <button class="check-btn" onclick="checkExpr('q1', ['3x+21'], 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> Which property does this show? 9 + 4 = 4 + 9.
+            Type: commutative, associative, or distributive.
+          </p>
+          <input type="text" id="q2" placeholder="Type the property name..." />
+          <button
+            class="check-btn"
+            onclick="checkAnswer('q2', 'commutative', 'fb2')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> Use the distributive property to expand: 5(2x
+            &minus; 3). Write your answer without parentheses.
+          </p>
+          <input type="text" id="q3" placeholder="Type your answer..." />
+          <button
+            class="check-btn"
+            onclick="checkExpr('q3', ['10x-15'], 'fb3')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> Which property does this show? (5 + 2) + 8 = 5 +
+            (2 + 8). Type: commutative, associative, or distributive.
+          </p>
+          <input type="text" id="q4" placeholder="Type the property name..." />
+          <button
+            class="check-btn"
+            onclick="checkAnswer('q4', 'associative', 'fb4')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (val === correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkExpr(inputId, accepted, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "").toLowerCase();
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else if (accepted.indexOf(val) !== -1) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent =
+            "Not quite. Remember to distribute (multiply) to every term inside the parentheses.";
+        }
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

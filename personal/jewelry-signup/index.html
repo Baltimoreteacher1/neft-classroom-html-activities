@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jewelry Event Sign-Up</title>
+  <meta name="description" content="Join the jewelry event email list for updates, new pieces, and events." />
+  <style>
+    :root{
+      --ink:#1f2933;
+      --muted:#637083;
+      --bg:#fff9f4;
+      --card:#ffffff;
+      --accent:#8a5a44;
+      --accent-dark:#5f3b2e;
+      --accent-soft:#f3e2d7;
+      --line:#ead8cf;
+      --good:#0f766e;
+      --danger:#9f1239;
+      --shadow:0 18px 45px rgba(70, 45, 32, .15);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, #fff4e6 0, transparent 35%),
+        linear-gradient(135deg, #fffaf6 0%, #f7ebe4 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+    .wrap{width:min(680px, 100%)}
+    .card{
+      background:rgba(255,255,255,.95);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hero{
+      padding:30px 28px 20px;
+      background:linear-gradient(135deg, #fffdf9, #f3e2d7);
+      border-bottom:1px solid var(--line);
+      text-align:center;
+    }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--accent-dark);
+      background:rgba(255,255,255,.72);
+      border:1px solid var(--line);
+      padding:8px 12px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
+      letter-spacing:.02em;
+    }
+    h1{font-size:clamp(32px, 7vw, 54px); line-height:1.02; margin:18px 0 10px; color:#2b211d;}
+    .sub{font-size:18px; line-height:1.45; color:var(--muted); margin:0 auto; max-width:560px;}
+    form{padding:26px 24px 24px; display:grid; gap:18px;}
+    label{font-weight:800; font-size:15px; color:#2b211d; display:block; margin-bottom:8px;}
+    input[type="text"], input[type="email"]{
+      width:100%; min-height:56px; border:2px solid #ead8cf; background:#fff; border-radius:16px;
+      padding:0 16px; font-size:19px; color:var(--ink); outline:none;
+    }
+    input:focus{border-color:var(--accent); box-shadow:0 0 0 4px rgba(138,90,68,.14)}
+    .chips{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px;}
+    .chip{position:relative;}
+    .chip input{position:absolute; opacity:0; pointer-events:none;}
+    .chip span{
+      display:flex; align-items:center; justify-content:center; min-height:50px; border:2px solid #ead8cf;
+      border-radius:16px; background:#fff; font-weight:800; color:#4b3a31; text-align:center; padding:8px 10px;
+    }
+    .chip input:checked + span{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-dark);}
+    .consent{
+      display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid var(--line);
+      background:#fffaf6; border-radius:16px;
+    }
+    .consent input{width:24px; height:24px; margin-top:2px; accent-color:var(--accent-dark);}
+    .consent label{margin:0; font-size:14px; line-height:1.35; font-weight:700; color:#3d312c;}
+    .fine{font-size:12px; line-height:1.35; color:var(--muted); margin-top:-6px;}
+    button{
+      border:none; border-radius:18px; min-height:58px; padding:0 20px; font-size:20px; font-weight:900;
+      color:white; background:linear-gradient(135deg, var(--accent), var(--accent-dark));
+      cursor:pointer; box-shadow:0 12px 25px rgba(95,59,46,.22);
+    }
+    button:disabled{opacity:.55; cursor:not-allowed; box-shadow:none;}
+    .status{display:none; border-radius:16px; padding:14px 16px; font-weight:800; line-height:1.35;}
+    .status.show{display:block;}
+    .status.ok{background:#ecfdf5; border:1px solid #99f6e4; color:#115e59;}
+    .status.err{background:#fff1f2; border:1px solid #fecdd3; color:#9f1239;}
+    .footer{padding:16px 22px 22px; text-align:center; color:var(--muted); font-size:12px;}
+    .admin{margin-top:14px; text-align:center; font-size:12px; color:var(--muted)}
+    .admin button{min-height:auto; font-size:12px; padding:9px 12px; border-radius:999px; background:#ffffff; color:#5f3b2e; border:1px solid var(--line); box-shadow:none;}
+    @media (max-width:520px){.chips{grid-template-columns:1fr}.hero{padding:26px 20px 18px} form{padding:22px 18px}.sub{font-size:16px}}
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" aria-labelledby="title">
+      <div class="hero">
+        <div class="eyebrow">Jewelry Event Sign-Up</div>
+        <h1 id="title">Stay connected</h1>
+        <p class="sub">Join the list for new pieces, event updates, and custom jewelry announcements.</p>
+      </div>
+      <form id="signupForm">
+        <div>
+          <label for="firstName">First name</label>
+          <input id="firstName" name="firstName" type="text" autocomplete="given-name" required />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div>
+          <label>What are you most interested in?</label>
+          <div class="chips" role="group" aria-label="Jewelry interests">
+            <label class="chip"><input type="checkbox" name="interest" value="Earrings"><span>Earrings</span></label>
+            <label class="chip"><input type="checkbox" name="interest" value="Necklaces"><span>Necklaces</span></label>
+            <label class="chip"><input type="checkbox" name="interest" value="Bracelets"><span>Bracelets</span></label>
+            <label class="chip"><input type="checkbox" name="interest" value="Judaica"><span>Judaica</span></label>
+            <label class="chip"><input type="checkbox" name="interest" value="Custom piece"><span>Custom piece</span></label>
+            <label class="chip"><input type="checkbox" name="interest" value="Gift"><span>Gift</span></label>
+          </div>
+        </div>
+        <div class="consent">
+          <input id="consent" name="consent" type="checkbox" required />
+          <label for="consent">Yes, send me occasional email updates about jewelry, events, new pieces, and custom designs.</label>
+        </div>
+        <p class="fine">We will not sell your information. You can unsubscribe at any time.</p>
+        <button id="submitBtn" type="submit">Sign me up</button>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </form>
+      <div class="footer">Thank you for supporting handmade jewelry.</div>
+    </section>
+    <div class="admin">
+      <button type="button" id="exportBtn">Export backup CSV from this device</button>
+    </div>
+  </main>
+
+<script>
+  // After deploying Apps Script, paste the web app URL between the quotes below.
+  // Until then, entries are safely saved in this device's browser and can be exported with the backup CSV button.
+  const SCRIPT_URL = "";
+  const EVENT_NAME = "Jewelry Event - 2026-05-31";
+  const STORAGE_KEY = "jewelry_event_signups_2026_05_31";
+
+  const form = document.getElementById('signupForm');
+  const statusBox = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+  const exportBtn = document.getElementById('exportBtn');
+
+  function showStatus(message, type='ok'){
+    statusBox.textContent = message;
+    statusBox.className = `status show ${type}`;
+  }
+
+  function getStored(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch { return []; }
+  }
+
+  function saveLocal(row){
+    const all = getStored();
+    all.push(row);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  }
+
+  function csvEscape(value){
+    const s = String(value ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  async function postToSheet(payload){
+    if(!SCRIPT_URL) return false;
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    return true;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusBox.className = 'status';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+
+    const interests = [...form.querySelectorAll('input[name="interest"]:checked')].map(x => x.value);
+    const payload = {
+      timestamp: new Date().toISOString(),
+      firstName: form.firstName.value.trim(),
+      email: form.email.value.trim().toLowerCase(),
+      interests,
+      consent: form.consent.checked,
+      event: EVENT_NAME,
+      source: 'QR code signup page'
+    };
+
+    if(!payload.firstName || !payload.email || !payload.consent){
+      showStatus('Please add your name, email, and permission to receive updates.', 'err');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign me up';
+      return;
+    }
+
+    saveLocal(payload);
+    try{
+      const synced = await postToSheet(payload);
+      showStatus(synced ? 'You are signed up. Thank you!' : 'You are signed up. Thank you!', 'ok');
+      form.reset();
+    }catch(err){
+      showStatus('You are signed up on this device. Thank you!', 'ok');
+      form.reset();
+    }finally{
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign me up';
+    }
+  });
+
+  exportBtn.addEventListener('click', () => {
+    const rows = getStored();
+    const header = ['Timestamp','First Name','Email','Interested In','Consent','Event','Source'];
+    const csvRows = [header.join(',')].concat(rows.map(r => [
+      r.timestamp, r.firstName, r.email, (r.interests || []).join('; '), r.consent ? 'Yes' : 'No', r.event, r.source
+    ].map(csvEscape).join(',')));
+    const blob = new Blob([csvRows.join('\n')], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'jewelry-event-signups-backup.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+</script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

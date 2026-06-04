@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neft Teacher Class Dashboard &amp; Gradebook</title>
+    <meta
+      name="description"
+      content="Local-first teacher gradebook: an at-a-glance view of student lesson results saved on this device, with mastery bands, reteach flags, and CSV export."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="app" id="app">
+      <aside class="sidebar" aria-label="Class Dashboard navigation">
+        <div class="brand">
+          <span class="badge info">Local-first</span>
+          <h1>Neft Teacher Class Dashboard</h1>
+          <p>One at-a-glance view of the results your lessons already save.</p>
+        </div>
+        <nav class="nav" role="tablist" aria-label="Dashboard views">
+          <button
+            class="active"
+            data-tab="grid"
+            type="button"
+            role="tab"
+            id="tab-grid"
+            aria-controls="grid"
+            aria-selected="true"
+          >
+            Gradebook Grid
+          </button>
+          <button
+            data-tab="students"
+            type="button"
+            role="tab"
+            id="tab-students"
+            aria-controls="students"
+            aria-selected="false"
+          >
+            By Student
+          </button>
+          <button
+            data-tab="standards"
+            type="button"
+            role="tab"
+            id="tab-standards"
+            aria-controls="standards"
+            aria-selected="false"
+          >
+            By Standard
+          </button>
+          <button
+            data-tab="reteach"
+            type="button"
+            role="tab"
+            id="tab-reteach"
+            aria-controls="reteach"
+            aria-selected="false"
+          >
+            Who to Pull
+          </button>
+          <button
+            data-tab="about"
+            type="button"
+            role="tab"
+            id="tab-about"
+            aria-controls="about"
+            aria-selected="false"
+          >
+            About &amp; Privacy
+          </button>
+        </nav>
+        <div class="sidebar-foot">
+          v1.0 · reads <code>rma_gradebook</code> on this device
+        </div>
+      </aside>
+
+      <main class="main" id="main">
+        <header class="topbar">
+          <div>
+            <h2 id="pageTitle">Gradebook Grid</h2>
+            <p id="pageSubtitle">
+              Students down the side, lessons or standards across the top.
+            </p>
+          </div>
+          <div class="top-actions">
+            <span class="badge neutral" id="countBadge">0 results</span>
+            <span class="badge neutral" id="saveBadge">On this device</span>
+            <button class="btn" id="refreshBtn" type="button">Refresh</button>
+            <button class="btn" id="exportBtn" type="button">Export CSV</button>
+            <button class="btn" id="themeBtn" type="button">Theme</button>
+          </div>
+        </header>
+
+        <section class="body">
+          <!-- Shared filter bar -->
+          <div class="card filters" id="filterBar">
+            <div class="filter-grid">
+              <label class="field">
+                Search student
+                <input
+                  type="search"
+                  id="searchInput"
+                  placeholder="Name, ID, or initials…"
+                  autocomplete="off"
+                />
+              </label>
+              <label class="field">
+                Period
+                <select id="periodFilter"></select>
+              </label>
+              <label class="field">
+                Standard
+                <select id="standardFilter"></select>
+              </label>
+              <label class="field">
+                Group columns by
+                <select id="groupBy">
+                  <option value="lesson">Lesson</option>
+                  <option value="standard">Standard</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Empty state (shown when no data) -->
+          <div class="empty-state" id="emptyState" hidden>
+            <strong>No saved results yet.</strong>
+            <p class="muted" id="emptyMsg"></p>
+            <ol class="how">
+              <li>Open any lesson and have a student complete it.</li>
+              <li>
+                On the completion screen the lesson saves a result to this
+                browser (the <code>rma_gradebook</code> key in localStorage).
+              </li>
+              <li>Come back here and press <strong>Refresh</strong>.</li>
+            </ol>
+            <p class="muted small">
+              Results are stored per device and per browser. Open this dashboard
+              on the same device students used.
+            </p>
+          </div>
+
+          <!-- GRID VIEW -->
+          <section
+            id="grid"
+            class="screen active"
+            role="tabpanel"
+            aria-labelledby="tab-grid"
+          >
+            <div class="legend" aria-hidden="false">
+              <span class="muted small">Mastery bands:</span>
+              <span class="badge ok"
+                ><span class="cue">●</span> Strong ≥85</span
+              >
+              <span class="badge info"
+                ><span class="cue">●</span> Likely Ready ≥70</span
+              >
+              <span class="badge warn"
+                ><span class="cue">●</span> Approaching ≥60</span
+              >
+              <span class="badge bad"
+                ><span class="cue">●</span> Needs Reteach &lt;60</span
+              >
+            </div>
+            <div class="table-wrap" id="gridWrap"></div>
+          </section>
+
+          <!-- BY STUDENT -->
+          <section
+            id="students"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-students"
+            hidden
+          >
+            <div id="studentList" class="grid g2"></div>
+          </section>
+
+          <!-- BY STANDARD -->
+          <section
+            id="standards"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-standards"
+            hidden
+          >
+            <div class="table-wrap" id="standardWrap"></div>
+          </section>
+
+          <!-- WHO TO PULL -->
+          <section
+            id="reteach"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-reteach"
+            hidden
+          >
+            <div class="notice">
+              These students scored <strong>Approaching</strong> or
+              <strong>Needs Reteach</strong> on at least one result. Pull them
+              for targeted support.
+            </div>
+            <div id="reteachList"></div>
+          </section>
+
+          <!-- ABOUT -->
+          <section
+            id="about"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-about"
+            hidden
+          >
+            <div class="card">
+              <h3>What this is</h3>
+              <p>
+                A read-only, at-a-glance gradebook for the results your lessons
+                save automatically. It reads the <code>rma_gradebook</code>
+                array from this browser's localStorage and summarizes it three
+                ways: a gradebook grid, a per-student card, and a per-standard
+                class view.
+              </p>
+              <h3>Privacy</h3>
+              <p class="notice privacy">
+                Everything is local-first. Nothing leaves this browser — no
+                network calls, no accounts. Data lives on
+                <strong>this device, in this browser</strong> only. For student
+                privacy, prefer student IDs or initials over full names when
+                students type their name into a lesson.
+              </p>
+              <h3>Need deeper analysis?</h3>
+              <p>
+                This dashboard is a quick view, not a forecasting tool. For
+                readiness forecasts, flexible small-group planning, and
+                printable reports, use the
+                <a class="btn" href="../forecast-engine/"
+                  >Neft Learning Forecast Engine →</a
+                >
+              </p>
+              <p class="muted small">
+                Tip: the lesson completion screen exports a CSV that imports
+                directly into the Forecast Engine.
+              </p>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script src="./app.js"></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>

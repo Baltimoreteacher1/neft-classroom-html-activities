@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Interactive, auto-graded Maryland MCAP Grade 6 math practice test 5 from Neft Teacher. 40 questions with instant scoring, domain breakdown, and explanations." />
+    <title>MCAP Practice Test 5 &middot; Grade 6 Math &middot; Neft Teacher</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --primary: #0d9488;
+        --primary-light: #14b8a6;
+        --primary-dark: #0f766e;
+        --bg: #fffbeb;
+        --text: #1e293b;
+        --card: #ffffff;
+        --correct: #16a34a;
+        --incorrect: #dc2626;
+        --border: #e2e8f0;
+        --muted: #64748b;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container { max-width: 760px; margin: 0 auto; padding: 20px; }
+      .breadcrumb { font-size: 0.85rem; color: var(--muted); margin-bottom: 14px; }
+      .breadcrumb a { color: var(--primary-dark); text-decoration: none; }
+      .breadcrumb a:hover { text-decoration: underline; }
+      .breadcrumb span { margin: 0 6px; }
+      .mcap-note {
+        display: inline-block; text-align: center; font-size: 0.78rem; font-weight: 700;
+        letter-spacing: 0.04em; color: var(--primary-dark); background: #f0fdfa;
+        border: 1px solid #99f6e4; border-radius: 20px; padding: 5px 14px; margin-bottom: 14px;
+      }
+      h1 { color: var(--primary-dark); font-size: 1.9rem; text-align: center; margin-bottom: 4px; }
+      .subtitle { text-align: center; color: var(--muted); font-size: 0.95rem; margin-bottom: 18px; }
+      .intro-card, .question-card, .summary-card {
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+      }
+      .intro-card p { margin-bottom: 8px; font-size: 0.95rem; }
+      .intro-card ul { margin: 8px 0 8px 22px; font-size: 0.9rem; color: var(--muted); }
+      .progress-bar { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; margin-bottom: 6px; }
+      .progress-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s; }
+      .progress-text { text-align: center; font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; }
+      .q-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+      .q-number {
+        flex-shrink: 0; background: var(--primary); color: #fff; min-width: 30px; height: 30px;
+        border-radius: 50%; text-align: center; line-height: 30px; font-size: 0.85rem; font-weight: 700; padding: 0 4px;
+      }
+      .q-domain {
+        margin-left: auto; flex-shrink: 0; font-size: 0.72rem; font-weight: 700; color: var(--primary-dark);
+        background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 2px 9px;
+      }
+      .q-text { font-weight: 600; font-size: 1.02rem; }
+      .q-note { font-size: 0.85rem; color: var(--muted); font-style: italic; margin: 6px 0 4px; }
+      .options { list-style: none; margin-top: 10px; }
+      .option {
+        display: block; border: 2px solid var(--border); border-radius: 10px; padding: 11px 14px;
+        margin-bottom: 9px; cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 0.95rem;
+      }
+      .option:hover { border-color: var(--primary-light); }
+      .option input { margin-right: 10px; accent-color: var(--primary); }
+      .option.sel { border-color: var(--primary); background: #f0fdfa; }
+      .option.correct { border-color: var(--correct); background: #f0fdf4; }
+      .option.incorrect { border-color: var(--incorrect); background: #fef2f2; }
+      .fr-input {
+        width: 100%; max-width: 280px; padding: 10px 12px; border: 2px solid var(--border);
+        border-radius: 10px; font-size: 1rem; margin-top: 8px;
+      }
+      .fr-input:focus { outline: none; border-color: var(--primary); }
+      .hint-toggle {
+        background: none; border: none; color: var(--primary-dark); font-size: 0.85rem; font-weight: 600;
+        cursor: pointer; padding: 4px 0; margin-top: 6px; text-decoration: underline;
+      }
+      .hint-box {
+        background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px;
+        padding: 8px 12px; margin-top: 8px; font-size: 0.88rem;
+      }
+      .explain-box {
+        border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 0.9rem;
+        background: #f8fafc; border: 1px solid var(--border);
+      }
+      .explain-box .verdict { font-weight: 700; margin-bottom: 4px; }
+      .verdict.right { color: var(--correct); }
+      .verdict.wrong { color: var(--incorrect); }
+      .answered-correct { border-color: var(--correct); }
+      .answered-incorrect { border-color: var(--incorrect); }
+      .btn {
+        display: inline-block; border: none; border-radius: 10px; padding: 12px 28px;
+        font-size: 1rem; font-weight: 600; cursor: pointer; margin: 6px;
+      }
+      .btn-primary { background: var(--primary); color: #fff; }
+      .btn-primary:hover { background: var(--primary-dark); }
+      .btn-reset { background: #64748b; color: #fff; }
+      .btn-reset:hover { background: #475569; }
+      .btn-row { text-align: center; margin: 22px 0; }
+      .summary-card { text-align: center; }
+      .score-big { font-size: 3rem; font-weight: 800; color: var(--primary-dark); }
+      .score-pct { font-size: 1.1rem; color: var(--muted); margin-bottom: 14px; }
+      .domain-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.92rem; }
+      .domain-table th, .domain-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+      .domain-table th { color: var(--primary-dark); }
+      .domain-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .dbar { background: #e2e8f0; border-radius: 10px; height: 9px; overflow: hidden; margin-top: 4px; }
+      .dbar > div { background: var(--primary); height: 100%; }
+      .footer {
+        text-align: center; padding: 20px; color: #94a3b8; font-size: 0.8rem; margin-top: 10px;
+      }
+      .stretch-note {
+        font-size: 0.85rem; color: var(--muted); background: #f0fdfa; border: 1px dashed #99f6e4;
+        border-radius: 8px; padding: 8px 12px; margin-top: 10px;
+      }
+      .hidden { display: none !important; }
+      .focus-target:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+      @media (max-width: 600px) {
+        .container { padding: 12px; }
+        h1 { font-size: 1.45rem; }
+        .intro-card, .question-card, .summary-card { padding: 15px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { transition-duration: 0.001ms !important; }
+      }
+      @media print {
+        body { background: #fff; }
+        .no-print { display: none !important; }
+        .question-card, .intro-card, .summary-card { box-shadow: none; page-break-inside: avoid; }
+        .hint-box, .explain-box { display: block !important; }
+        .option { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="container">
+      <nav class="breadcrumb no-print" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/mcap-review/">MCAP &amp; General Review</a><span>/</span>Practice Test 5
+      </nav>
+      <div style="text-align: center">
+        <span class="mcap-note">Maryland MCAP &middot; Grade 6 &middot; Full-length</span>
+      </div>
+      <h1>Practice Test 5</h1>
+      <p class="subtitle">Grade 6 Mathematics &bull; 40 questions &bull; Calculator not permitted</p>
+
+      <div class="intro-card no-print">
+        <p><strong>How this works:</strong> Answer all 40 questions, then press <em>Submit &amp; Grade</em>. You'll get your score, a domain breakdown, and a worked explanation for every question.</p>
+        <ul>
+          <li>Your answers save automatically on this device. Use <em>Reset</em> to start fresh.</li>
+          <li>Need a nudge? Each question has an optional <strong>Level 1 hint</strong>. Explanations stay hidden until you submit &mdash; no peeking!</li>
+          <li>Domains are tagged (6.RP, 6.NS, 6.EE, 6.G, 6.SP) so you can see your strengths.</li>
+        </ul>
+      </div>
+
+      <div class="progress-bar no-print" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="40">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text no-print" id="progressText">0 of 40 answered</p>
+
+      <form id="quizForm" onsubmit="return false;"></form>
+
+      <div class="btn-row no-print">
+        <button type="button" class="btn btn-primary focus-target" id="submitBtn" onclick="gradeTest()">Submit &amp; Grade</button>
+        <button type="button" class="btn btn-reset focus-target" onclick="resetTest()">Reset</button>
+      </div>
+
+      <div id="summary" class="summary-card hidden" tabindex="-1"></div>
+
+      <div class="btn-row no-print" id="postRow" style="display:none">
+        <button type="button" class="btn btn-reset focus-target" onclick="resetTest()">Reset &amp; Try Again</button>
+        <button type="button" class="btn btn-primary focus-target" onclick="window.print()">Print</button>
+        <a class="btn btn-reset focus-target" href="/mcap-review/">Back to MCAP Review</a>
+      </div>
+
+      <div class="footer">
+        Neft Teacher &bull; Maryland MCAP &middot; Grade 6 Mathematics &bull; Practice Test 5 &bull;
+        <a href="/mcap-review/" style="color:#0f766e">All MCAP practice</a>
+        &bull; &copy; <span id="yr"></span>
+      </div>
+    </div>
+
+    <script>
+      const TEST_NUM = 5;
+      const STORAGE_KEY = "mcapPracticeTest_5_v1";
+      const DOMAIN_NAMES = {"6.RP": "Ratios & Proportional Relationships", "6.NS": "The Number System", "6.EE": "Expressions & Equations", "6.G": "Geometry", "6.SP": "Statistics & Probability"};
+      const QUESTIONS = [{"id": 1, "domain": "6.RP", "type": "mc", "text": "A pizza is divided into equal slices. The shaded (eaten) part is 25% of the pizza. What percentage is NOT eaten?", "explain": "Not eaten = 100% − 25% = 75%.", "hint": "The whole pizza is 100%. Subtract the eaten part.", "options": ["25%", "40%", "60%", "75%"], "answer": 3}, {"id": 2, "domain": "6.RP", "type": "mc", "text": "A survey of 200 students: Math 35%, Science 28%, English 22%, History 15%. How many more students chose Math than History?", "explain": "Math = 0.35 × 200 = 70; History = 0.15 × 200 = 30; 70 − 30 = 40 students.", "hint": "Find each count from its percent, then subtract.", "options": ["35 students", "40 students", "45 students", "50 students"], "answer": 1}, {"id": 3, "domain": "6.EE", "type": "fr", "text": "Simplify the expression: 4x + 8 − 2x + 3", "explain": "Combine like terms: 4x − 2x = 2x and 8 + 3 = 11, giving 2x + 11.", "hint": "Group the x-terms together and the numbers together.", "answer": "2x+11", "accept": ["2x+11", "2x + 11"]}, {"id": 4, "domain": "6.SP", "type": "mc", "text": "A bar graph shows how 150 students travel to school; the Walk bar reaches 2 on a scale where each unit = 10 students. How many students walk?", "explain": "2 units × 10 students = 20 students walk.", "hint": "Multiply the bar's height by what each unit represents.", "options": ["10", "12", "15", "20"], "answer": 3}, {"id": 5, "domain": "6.NS", "type": "mc", "text": "Calculate: 3 1/2 − 1 3/4 + 2 1/8", "explain": "Use eighths: 28/8 − 14/8 + 17/8 = 31/8 = 3 7/8.", "hint": "Convert all to improper fractions with denominator 8, then combine.", "options": ["3 7/8", "3 5/8", "4 1/8", "4 3/8"], "answer": 0}, {"id": 6, "domain": "6.EE", "type": "fr", "text": "Solve for y: y/3 + 7 = 15", "explain": "Subtract 7: y/3 = 8; multiply by 3: y = 24.", "hint": "Undo the +7, then undo the division by 3.", "answer": "24", "accept": ["24", "y=24", "y = 24"]}, {"id": 7, "domain": "6.RP", "type": "mc", "text": "A laptop costs $800, marked down 20%, then an extra 10% off the sale price. What is the final price?", "explain": "After 20%: 800 − 160 = $640; after 10%: 640 − 64 = $576.", "hint": "Take the first discount, then take the second discount on the new price.", "options": ["$560", "$576", "$592", "$608"], "answer": 1}, {"id": 8, "domain": "6.SP", "type": "mc", "text": "Test scores: 78, 82, 95, 88, 91, 79, 85, 92. What is the range of these scores?", "explain": "Range = 95 − 78 = 17.", "hint": "Range = highest score minus lowest score.", "options": ["13", "15", "17", "19"], "answer": 2}, {"id": 9, "domain": "6.G", "type": "mc", "text": "A 24 cm by 16 cm rectangle is cut into squares with side 4 cm. How many squares can be made?", "explain": "24÷4 = 6 across, 16÷4 = 4 down, so 6 × 4 = 24 squares.", "hint": "Find how many squares fit across and down, then multiply.", "options": ["16 squares", "20 squares", "24 squares", "28 squares"], "answer": 2}, {"id": 10, "domain": "6.G", "type": "mc", "text": "A shaded figure splits into a rectangle (11 by 8) and a right triangle (base 6, height 4). What is the area of the figure?", "explain": "Rectangle 11×8 = 88; triangle 1/2×6×4 = 12; total 88 + 12 = 100 cm².", "hint": "Find each shape's area, then add.", "options": ["92 cm²", "96 cm²", "100 cm²", "104 cm²"], "answer": 2}, {"id": 11, "domain": "6.RP", "type": "mc", "text": "The ratio of apples to oranges is 5:3. If there are 240 pieces of fruit total, how many more apples are there than oranges?", "explain": "5x + 3x = 240 → x = 30; apples 150, oranges 90; difference = 60.", "hint": "Find the value of one ratio part, then compare apples and oranges.", "options": ["50", "60", "70", "80"], "answer": 1}, {"id": 12, "domain": "6.EE", "type": "mc", "text": "A number is multiplied by 4, then 15 is added. The final answer is 47. What is the original number?", "explain": "4x + 15 = 47 → 4x = 32 → x = 8.", "hint": "Undo the +15 first, then undo the ×4.", "options": ["6", "7", "8", "9"], "answer": 2}, {"id": 13, "domain": "6.EE", "type": "fr", "text": "Calculate: 2⁴ + 3³ − 5²", "explain": "2⁴ = 16, 3³ = 27, 5² = 25; 16 + 27 − 25 = 18.", "hint": "Evaluate each power first, then add and subtract.", "answer": "18", "accept": ["18"]}, {"id": 14, "domain": "6.G", "type": "mc", "text": "What is the surface area of a rectangular prism with length 8 m, width 4 m, and height 5 m?", "explain": "SA = 2(8×4 + 8×5 + 4×5) = 2(32 + 40 + 20) = 2(92) = 184 m².", "hint": "Surface area = 2(lw + lh + wh).", "options": ["184 m²", "230 m²", "236 m²", "250 m²"], "answer": 0}, {"id": 15, "domain": "6.NS", "type": "mc", "text": "Maria has 2 1/3 yards of fabric and uses 3/4 of it to make a dress. How many yards does she have left?", "explain": "2 1/3 = 7/3; used 3/4 × 7/3 = 7/4; left = 7/3 − 7/4 = 28/12 − 21/12 = 7/12 yards.", "hint": "Find the amount used, then subtract it from the total.", "options": ["7/12 yards", "5/8 yards", "7/8 yards", "1 1/12 yards"], "answer": 0}, {"id": 16, "domain": "6.NS", "type": "mc", "text": "In a 6-hour (360-minute) session: Emma spends 2/3 reading, Carlos spends 1/4 on practice. How many more minutes did Emma read than Carlos practiced?", "explain": "Emma 2/3 × 360 = 240; Carlos 1/4 × 360 = 90; difference = 150 minutes.", "hint": "Convert the session to minutes, find each amount, then subtract.", "options": ["120 minutes", "150 minutes", "180 minutes", "210 minutes"], "answer": 1}, {"id": 17, "domain": "6.EE", "type": "mc", "text": "Jason has $45. Each book costs $8 and he also wants a $5 bookmark. What is the maximum number of books he can buy?", "explain": "8n + 5 ≤ 45 → 8n ≤ 40 → n ≤ 5; at most 5 books.", "hint": "Subtract the bookmark cost, then see how many $8 books fit.", "options": ["4 books", "5 books", "6 books", "7 books"], "answer": 1}, {"id": 18, "domain": "6.SP", "type": "mc", "text": "Heights (inches): 72, 75, 68, 71, 74, 69, 73. What is the median height?", "explain": "In order: 68, 69, 71, 72, 73, 74, 75; middle value = 72 inches.", "hint": "Order the heights and find the middle value.", "options": ["71 inches", "72 inches", "73 inches", "74 inches"], "answer": 1}, {"id": 19, "domain": "6.SP", "type": "mc", "text": "Sports clubs: Soccer 45, Basketball 30, Baseball 55, Tennis 25, Swimming 40. How many more participated in Baseball than in Tennis and Basketball combined?", "explain": "Tennis + Basketball = 25 + 30 = 55; Baseball 55; difference = 0.", "hint": "Add Tennis and Basketball, then compare to Baseball.", "options": ["0 students", "5 students", "10 students", "15 students"], "answer": 0}, {"id": 20, "domain": "6.NS", "type": "fr", "text": "A bar model shows 2/3 and 1/6. Use the model to find the sum 2/3 + 1/6.", "explain": "2/3 = 4/6, so 4/6 + 1/6 = 5/6.", "hint": "Rewrite 2/3 with a denominator of 6, then add.", "answer": "5/6", "accept": ["5/6"]}, {"id": 21, "domain": "6.RP", "type": "mc", "text": "In a survey of 250 students, 60% like pizza, and 40% of those also like hamburgers. How many students like both?", "explain": "Pizza lovers = 0.60 × 250 = 150; both = 0.40 × 150 = 60 students.", "hint": "Find the pizza group first, then take 40% of that group.", "options": ["50 students", "60 students", "70 students", "80 students"], "answer": 1}, {"id": 22, "domain": "6.G", "type": "mc", "text": "On a protractor, ray BA aligns with 180° and ray BC aligns with 125°. What is the measure of angle ABC?", "explain": "Angle = 180° − 125° = 55°.", "hint": "Subtract the two protractor readings.", "options": ["45°", "55°", "65°", "75°"], "answer": 1}, {"id": 23, "domain": "6.SP", "type": "mc", "text": "A line plot has data at 0, 10, 25, and 35 minutes. Which statement is correct about the gaps?", "explain": "There are no data points between 20 and 25, so the gap is from 20 to 25 minutes.", "hint": "A gap is a range with no data points between two marked values.", "options": ["There is a gap from 5 to 15 minutes.", "There is a gap from 20 to 25 minutes.", "There is a gap from 30 to 40 minutes.", "There is a gap from 10 to 30 minutes."], "answer": 1}, {"id": 24, "domain": "6.RP", "type": "mc", "text": "A book's price is increased by 25%, then decreased by 20%. If the original price was $16, what is the final price?", "explain": "16 × 1.25 = $20; 20 − 20% of 20 = 20 − 4 = $16.00.", "hint": "Apply the 25% increase first, then take 20% off that new price.", "options": ["$15.20", "$16.00", "$16.80", "$17.60"], "answer": 1}, {"id": 25, "domain": "6.SP", "type": "mc", "text": "Temperatures (°F): Houston 78, Dallas 82, Austin 75, El Paso 88, San Antonio 77. What is the mean temperature?", "explain": "Sum = 400; 400 ÷ 5 = 80°F.", "hint": "Add the five temperatures and divide by 5.", "options": ["78°F", "80°F", "82°F", "85°F"], "answer": 1}, {"id": 26, "domain": "6.EE", "type": "mc", "text": "Solve for x: 2x/3 − 4 = 8", "explain": "Add 4: 2x/3 = 12; multiply by 3: 2x = 36; divide by 2: x = 18.", "hint": "Undo the −4, then clear the fraction, then divide by 2.", "options": ["x = 12", "x = 15", "x = 18", "x = 21"], "answer": 2}, {"id": 27, "domain": "6.EE", "type": "mc", "text": "A figure pattern has 3, 5, 7 squares for Figures 1, 2, 3. If the pattern continues, how many squares will Figure 6 have?", "explain": "Counts increase by 2 (3, 5, 7, 9, 11, 13), so Figure 6 has 13 squares.", "hint": "Find how many squares are added each step, then continue to Figure 6.", "options": ["11 squares", "12 squares", "13 squares", "15 squares"], "answer": 2}, {"id": 28, "domain": "6.SP", "type": "mc", "text": "A spinner has 8 equal sections: 3 red, 3 blue, 2 green. What is the probability of spinning red or green?", "explain": "Red or green = 3 + 2 = 5 of 8 sections: 5/8.", "hint": "Add the red and green sections, then divide by 8.", "options": ["3/8", "1/2", "5/8", "3/4"], "answer": 2}, {"id": 29, "domain": "6.RP", "type": "fr", "text": "A recipe calls for 750 milliliters of milk. If milk costs $3.20 per liter, how much will the milk cost?", "explain": "750 mL = 0.75 L; 0.75 × $3.20 = $2.40.", "hint": "Convert mL to liters first (1000 mL = 1 L), then multiply by the price.", "answer": "2.40", "accept": ["2.40", "$2.40", "2.4"]}, {"id": 30, "domain": "6.G", "type": "mc", "text": "A composite shape is a trapezoid (bases 20 cm and 12 cm, height 6 cm) plus a triangle (base 12 cm, height 10 cm). What is the total area?", "explain": "Trapezoid 1/2(20+12)×6 = 96; triangle 1/2×12×10 = 60; total 156 cm².", "hint": "Find each shape's area separately, then add.", "options": ["126 square centimeters", "144 square centimeters", "156 square centimeters", "162 square centimeters"], "answer": 2}, {"id": 31, "domain": "6.EE", "type": "mc", "text": "Which number line represents the solution to x − 4 ≤ 1? (Closed circle at 5, shaded left.)", "explain": "x − 4 ≤ 1 → x ≤ 5; closed circle at 5 shading left matches Line B.", "hint": "Solve for x first (add 4), then 'less than or equal to' uses a closed circle.", "options": ["Line A", "Line B", "Line C", "Line D"], "answer": 1}, {"id": 32, "domain": "6.EE", "type": "mc", "text": "Which expression is equivalent to 4(x + 3) − 2x?", "explain": "4(x + 3) = 4x + 12; 4x + 12 − 2x = 2x + 12.", "hint": "Distribute the 4, then combine like terms.", "options": ["2x + 3", "2x + 12", "6x + 3", "6x + 12"], "answer": 1}, {"id": 33, "domain": "6.NS", "type": "mc", "text": "Which of the following is equivalent to 7/8?", "explain": "7 ÷ 8 = 0.875.", "hint": "Divide the numerator by the denominator (7 ÷ 8).", "options": ["0.75", "0.825", "0.875", "0.925"], "answer": 2}, {"id": 34, "domain": "6.RP", "type": "mc", "text": "In a parking lot the ratio of cars to motorcycles is 7:2. If there are 14 motorcycles, how many vehicles are there in total?", "explain": "Cars = 7/2 × 14 = 49; total = 49 + 14 = 63 vehicles.", "hint": "Find the number of cars from the ratio, then add the motorcycles.", "options": ["56 vehicles", "63 vehicles", "70 vehicles", "77 vehicles"], "answer": 1}, {"id": 35, "domain": "6.G", "type": "mc", "text": "A parallelogram has a base of 15 cm and a height of 8 cm. What is its area?", "explain": "Area = base × height = 15 × 8 = 120 cm².", "hint": "Parallelogram area = base × height.", "options": ["92 cm²", "105 cm²", "120 cm²", "135 cm²"], "answer": 2}, {"id": 36, "domain": "6.G", "type": "mc", "text": "An L-shaped garden splits into a 12 m by 6 m rectangle and a 6 m by 8 m rectangle. What is the total area of the flower bed?", "explain": "12×6 = 72 and 6×8 = 48; total 72 + 48 = 120 m².", "hint": "Split the L into two rectangles, find each area, then add.", "options": ["96 square meters", "102 square meters", "120 square meters", "144 square meters"], "answer": 2}, {"id": 37, "domain": "6.NS", "type": "mc", "text": "A cafeteria serves 480 students. 3/8 buy pizza, and 1/4 of the remaining students buy salad. How many buy salad?", "explain": "Pizza = 3/8 × 480 = 180; remaining 300; salad = 1/4 × 300 = 75 students.", "hint": "Find the pizza buyers, subtract to get the remainder, then take 1/4 of that.", "options": ["60 students", "75 students", "90 students", "120 students"], "answer": 1}, {"id": 38, "domain": "6.SP", "type": "mc", "text": "Weights of five cats (pounds): 8, 10, 12, 14, 16. What is the mean weight?", "explain": "Sum = 60; 60 ÷ 5 = 12 pounds.", "hint": "Add the weights and divide by 5.", "options": ["10 pounds", "11 pounds", "12 pounds", "13 pounds"], "answer": 2}, {"id": 39, "domain": "6.SP", "type": "mc", "text": "Books read: Grade 4 85, Grade 5 92, Grade 6 115, Grade 7 108. How many more books did Grade 6 read than Grade 5?", "explain": "115 − 92 = 23 books.", "hint": "Subtract Grade 5's total from Grade 6's.", "options": ["18 books", "20 books", "23 books", "25 books"], "answer": 2}, {"id": 40, "domain": "6.G", "type": "mc", "text": "On a coordinate plane, point A is at (2, 3) and point B is at (8, 3). What is the distance from A to B?", "explain": "Same y-value: distance = |8 − 2| = 6 units.", "hint": "When points share a y-value, subtract their x-values.", "options": ["5 units", "6 units", "7 units", "8 units"], "answer": 1}];
+      let graded = false;
+
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+      function buildQuiz() {
+        const form = document.getElementById("quizForm");
+        form.innerHTML = "";
+        QUESTIONS.forEach(function (q) {
+          const card = document.createElement("div");
+          card.className = "question-card";
+          card.id = "qcard-" + q.id;
+
+          let h = '<div class="q-head">';
+          h += '<span class="q-number">' + q.id + '</span>';
+          h += '<span class="q-text">' + esc(q.text) + '</span>';
+          h += '<span class="q-domain" title="' + esc(DOMAIN_NAMES[q.domain]) + '">' + q.domain + '</span>';
+          h += '</div>';
+          if (q.note) h += '<p class="q-note">' + esc(q.note) + '</p>';
+
+          if (q.type === "mc") {
+            h += '<ul class="options">';
+            q.options.forEach(function (opt, i) {
+              const oid = "q" + q.id + "_o" + i;
+              h += '<li><label class="option" for="' + oid + '">';
+              h += '<input type="radio" name="q' + q.id + '" id="' + oid + '" value="' + i + '" onchange="onAnswer(' + q.id + ')"> ';
+              h += esc(opt) + '</label></li>';
+            });
+            h += '</ul>';
+          } else {
+            h += '<input type="text" class="fr-input" name="q' + q.id + '" id="q' + q.id + '_fr" ';
+            h += 'placeholder="Type your answer" autocomplete="off" oninput="onAnswer(' + q.id + ')" aria-label="Answer for question ' + q.id + '">';
+          }
+
+          if (q.hint) {
+            h += '<button type="button" class="hint-toggle no-print" onclick="toggleHint(' + q.id + ')" id="hintbtn-' + q.id + '">Show Level 1 hint</button>';
+            h += '<div class="hint-box hidden" id="hint-' + q.id + '"><strong>Level 1:</strong> ' + esc(q.hint) + '</div>';
+          }
+          if (q.stretch) {
+            h += '<div class="stretch-note"><strong>Level 2 stretch:</strong> ' + esc(q.stretch) + '</div>';
+          }
+          h += '<div class="explain-box hidden" id="explain-' + q.id + '"></div>';
+          card.innerHTML = h;
+          form.appendChild(card);
+        });
+      }
+
+      function toggleHint(id) {
+        const box = document.getElementById("hint-" + id);
+        const btn = document.getElementById("hintbtn-" + id);
+        const hidden = box.classList.toggle("hidden");
+        btn.textContent = hidden ? "Show Level 1 hint" : "Hide Level 1 hint";
+      }
+
+      function getResponse(q) {
+        if (q.type === "mc") {
+          const sel = document.querySelector('input[name="q' + q.id + '"]:checked');
+          return sel ? parseInt(sel.value, 10) : null;
+        } else {
+          const el = document.getElementById("q" + q.id + "_fr");
+          return el && el.value.trim() !== "" ? el.value.trim() : null;
+        }
+      }
+
+      function onAnswer(id) {
+        if (id) {
+          const q = QUESTIONS.find(function(x){return x.id===id;});
+          if (q && q.type === "mc") {
+            const labels = document.querySelectorAll('#qcard-' + id + ' .option');
+            labels.forEach(function(l){ l.classList.remove("sel"); });
+            const sel = document.querySelector('input[name="q' + id + '"]:checked');
+            if (sel) sel.closest(".option").classList.add("sel");
+          }
+        }
+        saveProgress();
+        updateProgress();
+      }
+
+      function updateProgress() {
+        let answered = 0;
+        QUESTIONS.forEach(function (q) { if (getResponse(q) !== null) answered++; });
+        document.getElementById("progressFill").style.width = (answered / QUESTIONS.length * 100) + "%";
+        document.getElementById("progressText").textContent = answered + " of " + QUESTIONS.length + " answered";
+      }
+
+      function saveProgress() {
+        const data = {};
+        QUESTIONS.forEach(function (q) {
+          const r = getResponse(q);
+          if (r !== null) data[q.id] = r;
+        });
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+      }
+
+      function loadProgress() {
+        let data;
+        try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) { data = {}; }
+        QUESTIONS.forEach(function (q) {
+          if (!(q.id in data)) return;
+          if (q.type === "mc") {
+            const inp = document.querySelector('input[name="q' + q.id + '"][value="' + data[q.id] + '"]');
+            if (inp) { inp.checked = true; inp.closest(".option").classList.add("sel"); }
+          } else {
+            const el = document.getElementById("q" + q.id + "_fr");
+            if (el) el.value = data[q.id];
+          }
+        });
+      }
+
+      function normalizeFR(s) {
+        return String(s).toLowerCase().replace(/\s+/g, " ").replace(/[$,°]/g, "")
+          .replace(/\s*\/\s*/g, "/").trim();
+      }
+
+      function checkFR(q, resp) {
+        const given = normalizeFR(resp);
+        const list = (q.accept || [String(q.answer)]);
+        for (let i = 0; i < list.length; i++) {
+          if (normalizeFR(list[i]) === given) return true;
+        }
+        return false;
+      }
+
+      function gradeTest() {
+        graded = true;
+        let correct = 0;
+        const byDomain = {};
+        Object.keys(DOMAIN_NAMES).forEach(function (d) { byDomain[d] = { c: 0, t: 0 }; });
+
+        QUESTIONS.forEach(function (q) {
+          const card = document.getElementById("qcard-" + q.id);
+          const resp = getResponse(q);
+          let isCorrect = false;
+          byDomain[q.domain].t++;
+
+          if (q.type === "mc") {
+            const labels = card.querySelectorAll(".option");
+            labels.forEach(function (l, i) {
+              l.classList.remove("sel");
+              if (i === q.answer) l.classList.add("correct");
+              if (resp !== null && i === resp && resp !== q.answer) l.classList.add("incorrect");
+              l.querySelector("input").disabled = true;
+            });
+            isCorrect = resp !== null && resp === q.answer;
+          } else {
+            const el = document.getElementById("q" + q.id + "_fr");
+            isCorrect = resp !== null && checkFR(q, resp);
+            if (el) el.disabled = true;
+          }
+
+          if (isCorrect) { correct++; byDomain[q.domain].c++; }
+          card.classList.add(isCorrect ? "answered-correct" : "answered-incorrect");
+
+          const ex = document.getElementById("explain-" + q.id);
+          let verdict;
+          if (resp === null) verdict = '<span class="verdict wrong">Not answered</span>';
+          else if (isCorrect) verdict = '<span class="verdict right">Correct</span>';
+          else verdict = '<span class="verdict wrong">Incorrect</span>';
+          let ans = q.type === "mc" ? esc(q.options[q.answer]) : esc(String(q.answer));
+          ex.innerHTML = '<div class="verdict-line">' + verdict + '</div>' +
+            '<div><strong>Answer:</strong> ' + ans + '</div>' +
+            '<div>' + esc(q.explain) + '</div>';
+          ex.classList.remove("hidden");
+        });
+
+        showSummary(correct, byDomain);
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("submitBtn").style.opacity = 0.5;
+        document.getElementById("postRow").style.display = "block";
+        const sum = document.getElementById("summary");
+        sum.scrollIntoView({ behavior: "smooth", block: "start" });
+        sum.focus();
+      }
+
+      function showSummary(correct, byDomain) {
+        const total = QUESTIONS.length;
+        const pct = Math.round((correct / total) * 100);
+        let msg;
+        if (pct >= 90) msg = "Outstanding work!";
+        else if (pct >= 75) msg = "Great job &mdash; you're MCAP-ready!";
+        else if (pct >= 60) msg = "Solid effort. Review the misses below.";
+        else msg = "Keep practicing &mdash; the explanations will help.";
+
+        let h = '<div class="score-big">' + correct + " / " + total + "</div>";
+        h += '<div class="score-pct">' + pct + "% &bull; " + msg + "</div>";
+        h += '<table class="domain-table"><thead><tr><th>Domain</th><th class="num">Score</th></tr></thead><tbody>';
+        Object.keys(DOMAIN_NAMES).forEach(function (d) {
+          const b = byDomain[d];
+          if (b.t === 0) return;
+          const dp = Math.round((b.c / b.t) * 100);
+          h += '<tr><td>' + d + " &middot; " + esc(DOMAIN_NAMES[d]) +
+            '<div class="dbar"><div style="width:' + dp + '%"></div></div></td>' +
+            '<td class="num">' + b.c + "/" + b.t + " (" + dp + "%)</td></tr>";
+        });
+        h += "</tbody></table>";
+        h += '<p style="margin-top:14px;font-size:0.88rem;color:var(--muted)">Scroll up to see the correct answer and a worked explanation under every question.</p>';
+        const sum = document.getElementById("summary");
+        sum.innerHTML = h;
+        sum.classList.remove("hidden");
+      }
+
+      function resetTest() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        graded = false;
+        buildQuiz();
+        document.getElementById("summary").classList.add("hidden");
+        document.getElementById("postRow").style.display = "none";
+        const sb = document.getElementById("submitBtn");
+        sb.disabled = false; sb.style.opacity = 1;
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      buildQuiz();
+      loadProgress();
+      updateProgress();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

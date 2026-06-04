@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neft Teacher — Theme Toggle Demo</title>
+
+    <!-- Drop-in theme contract + toggle (relative paths so the file opens offline). -->
+    <link rel="stylesheet" href="./neft-theme.css" />
+    <script src="./neft-theme.js" defer></script>
+
+    <style>
+      /* Demo page styled ONLY with the --nt-* contract variables. */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 64px 20px 80px;
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 20px 22px;
+        margin: 18px 0;
+      }
+      a,
+      .accent {
+        color: var(--nt-accent);
+      }
+      .btn {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      input {
+        width: 100%;
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      code {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 6px;
+        padding: 1px 6px;
+      }
+    </style>
+  </head>
+  <!-- add nt-theme-aware for smooth transitions + opt-in focus rings -->
+  <body class="nt-theme-aware">
+    <main class="wrap">
+      <h1>Neft Teacher — Theme Toggle</h1>
+      <p class="muted">
+        Use the ☀️/🌙 button at the top-right (or press Tab to focus it, then
+        Enter/Space). Your choice is saved and survives reloads.
+      </p>
+
+      <div class="card">
+        <h2 style="margin-top: 0">Sample activity card</h2>
+        <p>
+          This panel uses <code>--nt-surface</code>, <code>--nt-text</code>,
+          <code>--nt-border</code>, and links use <a href="#">--nt-accent</a>.
+        </p>
+        <label>
+          Try a focus ring:
+          <input type="text" placeholder="Tab into me" />
+        </label>
+        <div>
+          <button class="btn" onclick="NeftTheme.toggle()">
+            Toggle via NeftTheme.toggle()
+          </button>
+        </div>
+      </div>
+
+      <p class="muted">
+        Current theme: <strong id="now" class="accent">…</strong>
+      </p>
+    </main>
+
+    <script>
+      var now = document.getElementById("now");
+      function render() {
+        now.textContent = window.NeftTheme.get();
+      }
+      window.addEventListener("neft-theme-change", render);
+      window.addEventListener("DOMContentLoaded", render);
+    </script>
+  </body>
+</html>

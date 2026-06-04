@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Unit 5 — Architect | Area &amp; Geometry (6.G.A.1)</title>
+    <link rel="stylesheet" href="/assets/design-tokens.css" />
+    <!-- Shared clarity/onboarding kit (start overlay, how-to-play, HUD, end
+         screen). The kit JS is imported by game.js; this preloads its CSS so the
+         overlays render without a flash. -->
+    <link rel="stylesheet" href="/games/3d/_clarity/clarity-kit.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--navy, #12355b);
+        font-family: var(--font-body, system-ui, sans-serif);
+      }
+      #game {
+        position: fixed;
+        inset: 0;
+      }
+      .e3d-intro {
+        position: absolute;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        color: #fff;
+        font-size: 13px;
+        opacity: 0.78;
+        z-index: 16;
+        pointer-events: none;
+        text-align: center;
+        max-width: 92%;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      .e3d-boot-title {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        z-index: 16;
+        pointer-events: none;
+        font-family: var(--font-display, system-ui, sans-serif);
+        font-weight: 700;
+        font-size: 15px;
+        opacity: 0.85;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      .e3d-fallback {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        color: #fff;
+        text-align: center;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/games/engine3d/vendor/three/build/three.module.js",
+          "three/addons/": "/games/engine3d/vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body>
+    <div
+      id="game"
+      role="application"
+      tabindex="0"
+      aria-label="Area Architect — build structures to the target area. Interactive 3D math game for area of rectangles, composite figures, and right triangles."
+      aria-describedby="e3d-intro"
+    ></div>
+    <div class="e3d-boot-title">Area Architect — Build to the Target Area</div>
+    <p class="e3d-intro" id="e3d-intro">
+      Goal: fill the gold shape. Move with arrows or tap. Press Space to set a
+      corner, then Space again to drop a block. Area = length × width
+      (triangles: leg × leg ÷ 2). Fill each shape exactly to win.
+    </p>
+    <div class="e3d-fallback" id="fallback">
+      <div>
+        <h2>Couldn't start the 3D game</h2>
+        <p>
+          This game needs a browser with WebGL turned on. Try refreshing once,
+          or open it in a different browser or on another device.
+        </p>
+        <p class="e3d-fallback-2d" style="margin-top: 14px">
+          <a
+            href="/games/unit5-area-architect.html"
+            style="
+              display: inline-block;
+              padding: 10px 18px;
+              border-radius: 10px;
+              background: #1fa6a2;
+              color: #fff;
+              font-weight: 600;
+              text-decoration: none;
+            "
+            >Play the 2D version instead →</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <script type="module">
+      import { mountGame } from "/games/engine3d/index.js";
+      import unit5Architect from "/games/3d/unit-5/game.js";
+
+      try {
+        // Omit `level` to show the Level 1 / Level 2 selector first.
+        mountGame(document.getElementById("game"), unit5Architect, {
+          sceneOpts: { background: 0x0e2542, cameraPos: [0, 9, 11] },
+        });
+      } catch (err) {
+        console.error("Failed to mount Unit 5 game:", err);
+        document.getElementById("fallback").style.display = "flex";
+      }
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

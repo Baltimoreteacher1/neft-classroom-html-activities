@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R5 · Lesson 1: Introduction to Ratios — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: compare two quantities with a ratio, understand part-to-part vs part-to-whole, and explore equivalent ratios. Builds toward Grade 6 ratio concepts (6.RP.1)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#0e8a7d 0%, #1a6fb5 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .ratio-visual { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 12px 0; }
+      .counter { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #fff; }
+      .c-red { background: #c0392b; }
+      .c-blue { background: #2980b9; }
+      .ratio-table { width: 100%; border-collapse: collapse; margin: 12px 0; text-align: center; font-size: 15px; }
+      .ratio-table th, .ratio-table td { border: 1px solid var(--line); padding: 10px; }
+      .ratio-table th { background: var(--navy); color: #fff; font-size: 13px; }
+      .ratio-table td { font-size: 18px; font-weight: 700; color: var(--blue); }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="phero">
+      <div class="deco">📐</div>
+      <h1>Introduction to Ratios</h1>
+      <p>Compare two quantities with a ratio, understand part-to-part vs part-to-whole, and find equivalent ratios.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R5 · Lesson 1</span>
+        <span class="tag">Builds 6.RP.1</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> In Grade 6 you write and
+        describe ratios to compare quantities (6.RP.1) and use ratio reasoning to
+        solve real-world problems (6.RP.3). Understanding what a ratio means — and
+        how to write equivalent ratios — is the foundation for all of that work.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>What Is a Ratio?</h2></div></div>
+
+        <p>A <strong>ratio</strong> compares two quantities. You can write it three ways:</p>
+        <div class="example">
+          <strong>3 red counters and 2 blue counters</strong><br><br>
+          <div class="ratio-visual">
+            <span class="counter c-red">R</span><span class="counter c-red">R</span><span class="counter c-red">R</span>
+            &nbsp;&nbsp;
+            <span class="counter c-blue">B</span><span class="counter c-blue">B</span>
+          </div>
+          Red to blue: <strong>3 to 2</strong> &nbsp;|&nbsp; <strong>3:2</strong> &nbsp;|&nbsp; <strong>3/2</strong><br>
+          This is a <em>part-to-part</em> ratio — it compares one part (red) to another part (blue).
+        </div>
+
+        <p><strong>Part-to-whole</strong> ratios compare one part to the total.</p>
+        <div class="example">
+          Same counters: 3 red out of 5 total → red to total = <strong>3:5</strong><br>
+          Blue to total = <strong>2:5</strong>
+        </div>
+
+        <p><strong>Equivalent ratios</strong> name the same comparison — just scaled up or down (like equivalent fractions).</p>
+        <div class="example">
+          <table class="ratio-table">
+            <tr><th>Multiply both by 2</th><th>Multiply both by 3</th><th>Multiply both by 4</th></tr>
+            <tr><td>1:2</td><td>1:2</td><td>1:2</td></tr>
+            <tr><td>2:4</td><td>3:6</td><td>4:8</td></tr>
+          </table>
+          All of these — 1:2, 2:4, 3:6, 4:8 — are <strong>equivalent ratios</strong>.
+          They all describe the same relationship: 1 part for every 2 parts.
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. A bag has 4 green marbles and 6 yellow marbles. What is the ratio of green to yellow?</p>
+          <div class="opts" data-mc="t1" data-ans="b">
+            <button class="opt" data-v="a">6:4</button>
+            <button class="opt" data-v="b">4:6</button>
+            <button class="opt" data-v="c">4:10</button>
+            <button class="opt" data-v="d">6:10</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Green to yellow — list green first. There are 4 green and 6 yellow, so the ratio is 4:6.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Using the same bag (4 green, 6 yellow, 10 total), what is the part-to-whole ratio of yellow marbles to total marbles?</p>
+          <div class="opts" data-mc="t2" data-ans="c">
+            <button class="opt" data-v="a">4:10</button>
+            <button class="opt" data-v="b">6:4</button>
+            <button class="opt" data-v="c">6:10</button>
+            <button class="opt" data-v="d">4:6</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>Part-to-whole: yellow (the part) to total. Yellow = 6, total = 10, so 6:10.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. A recipe uses 2 cups of flour for every 3 cups of oats. Which ratio correctly describes flour to oats?</p>
+          <div class="opts" data-mc="p3" data-ans="a">
+            <button class="opt" data-v="a">2:3</button>
+            <button class="opt" data-v="b">3:2</button>
+            <button class="opt" data-v="c">2:5</button>
+            <button class="opt" data-v="d">5:2</button>
+          </div>
+          <button class="btn" onclick="checkMC('p3')">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>Flour comes first in "flour to oats." 2 cups flour : 3 cups oats = 2:3.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. Which ratio is equivalent to 2:5?</p>
+          <div class="opts" data-mc="p4" data-ans="c">
+            <button class="opt" data-v="a">3:6</button>
+            <button class="opt" data-v="b">4:9</button>
+            <button class="opt" data-v="c">4:10</button>
+            <button class="opt" data-v="d">6:15 — wait, is that right too?</button>
+          </div>
+          <button class="btn" onclick="checkMC('p4')">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>Multiply both parts of 2:5 by the same number. 2×2 = 4, 5×2 = 10, so 4:10 is equivalent to 2:5.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. A class has 12 boys and 15 girls. What is the ratio of boys to the total number of students?</p>
+          <div class="opts" data-mc="p5" data-ans="b">
+            <button class="opt" data-v="a">12:15</button>
+            <button class="opt" data-v="b">12:27</button>
+            <button class="opt" data-v="c">15:27</button>
+            <button class="opt" data-v="d">15:12</button>
+          </div>
+          <button class="btn" onclick="checkMC('p5')">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>Total = 12 + 15 = 27. Boys to total = 12:27.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. A fruit bowl has 5 apples and 3 oranges. What is the ratio of oranges to apples?</p>
+          <div class="opts" data-mc="x6" data-ans="b">
+            <button class="opt" data-v="a">5:3</button>
+            <button class="opt" data-v="b">3:5</button>
+            <button class="opt" data-v="c">3:8</button>
+            <button class="opt" data-v="d">5:8</button>
+          </div>
+          <button class="btn" onclick="checkMC('x6')">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>Oranges to apples: oranges first = 3, apples = 5. So 3:5.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. Fill in the blank: 3:4 = ___:8 &nbsp; (What number goes in the blank?)</p>
+          <input type="number" id="x7" placeholder="?" />
+          <button class="btn" onclick="checkNum('x7', 6)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>4 was multiplied by 2 to get 8, so multiply 3 by 2 as well: 3 × 2 = 6.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r5/">← Unit R5 Home</a>
+        <a href="/math/remediation/unit-r5/lesson-2/">Next: Rates &amp; Unit Rates →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R5 · Lesson 1 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

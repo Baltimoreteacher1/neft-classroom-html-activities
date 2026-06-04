@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Start-Up City — Grade 6 Year-End Capstone</title>
+    <meta
+      name="description"
+      content="Grade 6 year-end capstone project. Design and run a small business using ratios, percents, geometry, expressions, equations, statistics, and integers."
+    />
+    <style>
+      :root {
+        --navy:       #1b1a3b;
+        --purple:     #5b3fcf;
+        --purple-lt:  #ede8fb;
+        --orange:     #e06b1a;
+        --orange-lt:  #fdf1e6;
+        --teal:       #0e8a7d;
+        --teal-lt:    #e4f5f3;
+        --green:      #2d874b;
+        --green-lt:   #e6f4eb;
+        --rose:       #c63a5b;
+        --rose-lt:    #fce8ed;
+        --blue:       #1a6fb5;
+        --blue-lt:    #e8f2fc;
+        --gold:       #d4952a;
+        --gold-lt:    #fdf3e0;
+        --ink:        #1a2633;
+        --muted:      #5e6e7e;
+        --line:       #e2e7ec;
+        --bg:         #f7f8fc;
+        --card:       #ffffff;
+        --radius:     16px;
+        --shadow:     0 4px 18px rgba(27, 26, 59, 0.11);
+        --font:       "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+
+      .wrap { max-width: 920px; margin: 0 auto; padding: 0 20px 70px; }
+
+      /* ── HERO ── */
+      .phero {
+        background: linear-gradient(135deg, #1b1a3b 0%, #3a2ba8 45%, #e06b1a 100%);
+        color: #fff;
+        padding: 44px 24px 36px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 70% 30%, rgba(255,255,255,.08) 0%, transparent 65%);
+        pointer-events: none;
+      }
+      .phero .deco { font-size: 60px; line-height: 1; position: relative; }
+      .phero h1 {
+        font-size: clamp(28px, 5.5vw, 44px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.025em;
+        position: relative;
+      }
+      .phero p {
+        max-width: 640px; margin: 0 auto;
+        color: rgba(255,255,255,.87); font-size: 17px;
+        position: relative;
+      }
+      .tags { margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1400; }
+      .tag.orange { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+      /* ── BREADCRUMB ── */
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--purple); text-decoration: none; font-weight: 600; }
+      .breadcrumb a:hover { text-decoration: underline; }
+
+      /* ── PROGRESS BAR ── */
+      .progress-wrap {
+        position: sticky; top: 0; z-index: 10;
+        background: var(--bg); padding: 10px 0 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, var(--purple), var(--orange));
+        transition: width .45s ease;
+      }
+
+      /* ── BUSINESS DASHBOARD ── */
+      .dashboard {
+        background: var(--navy);
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 20px 24px;
+        margin: 24px 0 10px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        box-shadow: var(--shadow);
+      }
+      .dashboard h3 {
+        grid-column: 1 / -1;
+        margin: 0 0 6px;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: rgba(255,255,255,.6);
+      }
+      .dash-cell { text-align: center; }
+      .dash-label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: rgba(255,255,255,.55); margin-bottom: 4px; }
+      .dash-val {
+        font-size: 22px; font-weight: 800;
+        color: #fff; transition: color .3s;
+      }
+      .dash-val.good { color: #6fffa5; }
+      .dash-val.bad  { color: #ff8080; }
+
+      /* ── INTRO CARD ── */
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line);
+        border-left: 6px solid var(--gold);
+        border-radius: var(--radius); padding: 22px 24px; margin: 18px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card p  { font-size: 15.5px; color: var(--ink); margin: 0; }
+
+      /* ── PHASE CARDS ── */
+      .phase {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 26px 26px 22px;
+        margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 46px; height: 46px; border-radius: 13px;
+        background: var(--purple); color: #fff; font-weight: 800; font-size: 21px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 3px 10px rgba(91,63,207,.35);
+      }
+      /* Phase accent colours */
+      .phase:nth-of-type(1) .phase-num  { background: var(--purple); }
+      .phase:nth-of-type(2) .phase-num  { background: var(--orange); box-shadow: 0 3px 10px rgba(224,107,26,.35); }
+      .phase:nth-of-type(3) .phase-num  { background: var(--teal);   box-shadow: 0 3px 10px rgba(14,138,125,.35); }
+      .phase:nth-of-type(4) .phase-num  { background: var(--rose);   box-shadow: 0 3px 10px rgba(198,58,91,.35); }
+      .phase:nth-of-type(5) .phase-num  { background: var(--blue);   box-shadow: 0 3px 10px rgba(26,111,181,.35); }
+      .phase:nth-of-type(6) .phase-num  { background: var(--green);  box-shadow: 0 3px 10px rgba(45,135,75,.35); }
+      .phase:nth-of-type(7) .phase-num  { background: var(--gold); color:#2a1400; box-shadow: 0 3px 10px rgba(212,149,42,.35); }
+      .phase:nth-of-type(8) .phase-num  { background: #8b5cf6; box-shadow: 0 3px 10px rgba(139,92,246,.35); }
+
+      .phase h2  { margin: 0; font-size: 22px; }
+      .phase .skill {
+        font-size: 12px; font-weight: 700; color: var(--muted);
+        text-transform: uppercase; letter-spacing: .04em;
+      }
+      .phase > p { color: var(--muted); margin-top: 6px; }
+
+      /* ── TASK BOX ── */
+      .task {
+        background: var(--purple-lt); border-radius: 12px;
+        padding: 14px 18px; margin: 16px 0;
+        border-left: 4px solid var(--purple);
+      }
+      .task strong { color: var(--navy); }
+
+      /* ── FORM CONTROLS ── */
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 5px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line);
+        border-radius: 10px; font-family: inherit; font-size: 15px; background: #fff;
+        transition: border-color .2s;
+      }
+      input:focus, select:focus, textarea:focus {
+        outline: none; border-color: var(--purple);
+      }
+      textarea { resize: vertical; min-height: 90px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      @media (max-width: 600px) {
+        .grid2 { grid-template-columns: 1fr; }
+        .grid3 { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 400px) {
+        .grid3 { grid-template-columns: 1fr; }
+      }
+
+      /* ── BUTTONS ── */
+      .btn {
+        background: var(--purple); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 22px; font-weight: 800; font-size: 15px;
+        cursor: pointer; font-family: inherit; margin-top: 14px;
+        transition: filter .15s;
+      }
+      .btn:hover  { filter: brightness(1.1); }
+      .btn.orange { background: var(--orange); }
+      .btn.teal   { background: var(--teal); }
+      .btn.rose   { background: var(--rose); }
+      .btn.blue   { background: var(--blue); }
+      .btn.green  { background: var(--green); }
+      .btn.gold   { background: var(--gold); color: #2a1400; }
+      .btn.navy   { background: var(--navy); }
+
+      /* ── READOUT ── */
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px;
+        font-size: 15px; background: var(--teal-lt);
+        border: 1px solid #b0ddd8; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); line-height: 1.2; }
+      .readout .big.purple { color: var(--purple); }
+      .readout .big.orange { color: var(--orange); }
+      .readout .big.rose   { color: var(--rose); }
+      .readout .big.blue   { color: var(--blue); }
+      .readout .big.green  { color: var(--green); }
+      .readout .big.gold   { color: var(--gold); }
+      .readout table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+      .readout th, .readout td { border: 1px solid var(--line); padding: 7px 10px; }
+      .readout th { background: var(--navy); color: #fff; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+
+      /* ── FEEDBACK ── */
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; font-size: 15px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--rose); }
+
+      /* ── HINT BOX ── */
+      .hintbox { margin-top: 14px; }
+      .hintbox summary {
+        cursor: pointer; font-weight: 700; color: var(--purple); font-size: 14px;
+        user-select: none;
+      }
+      .hintbox p {
+        background: var(--gold-lt); border-radius: 10px;
+        padding: 12px 14px; margin: 8px 0 0; font-size: 14px;
+        border-left: 4px solid var(--gold);
+      }
+
+      /* ── RUBRIC TABLE ── */
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 12px; letter-spacing: .03em; }
+      .rubric td:first-child { font-weight: 700; background: #f9f8ff; width: 24%; }
+
+      /* ── CHECKLIST ── */
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li {
+        display: flex; gap: 12px; align-items: flex-start;
+        padding: 9px 0; border-bottom: 1px solid var(--line);
+        font-size: 15px;
+      }
+      .checklist input[type="checkbox"] {
+        width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto;
+        accent-color: var(--purple);
+      }
+
+      /* ── FOOTER ── */
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 44px; }
+
+      /* ── PRINT ── */
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox, .dashboard { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+        .readout.show { border: 1px solid #ccc; }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+
+    <!-- ═══ HERO ═══ -->
+    <header class="phero">
+      <div class="deco">🏙️</div>
+      <h1>Start-Up City</h1>
+      <p>You are the founder of your own small business. Design your product, price it, build your store, crunch the numbers — and open your doors. Every Grade 6 math strand powers your decisions.</p>
+      <div class="tags">
+        <span class="tag gold">Year-End Capstone</span>
+        <span class="tag orange">Grade 6</span>
+        <span class="tag">All Units</span>
+        <span class="tag">6.RP · 6.NS · 6.EE · 6.G · 6.SP</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <!-- BREADCRUMB -->
+
+      <!-- STICKY PROGRESS BAR -->
+      <div class="progress-wrap">
+        <div class="progress-label">Business progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <!-- BUSINESS DASHBOARD -->
+      <div class="dashboard" id="dashboard">
+        <h3>📊 Business Dashboard</h3>
+        <div class="dash-cell">
+          <div class="dash-label">Startup Budget</div>
+          <div class="dash-val" id="dash-budget">$500.00</div>
+        </div>
+        <div class="dash-cell">
+          <div class="dash-label">Unit Price</div>
+          <div class="dash-val" id="dash-price">—</div>
+        </div>
+        <div class="dash-cell">
+          <div class="dash-label">Total Costs</div>
+          <div class="dash-val" id="dash-costs">—</div>
+        </div>
+        <div class="dash-cell">
+          <div class="dash-label">Projected Revenue</div>
+          <div class="dash-val" id="dash-revenue">—</div>
+        </div>
+        <div class="dash-cell">
+          <div class="dash-label">Profit / Loss</div>
+          <div class="dash-val" id="dash-profit">—</div>
+        </div>
+      </div>
+
+      <!-- INTRO CARD -->
+      <div class="intro-card">
+        <h2>🗺️ Your Mission</h2>
+        <p>
+          You have a <strong>$500 startup budget</strong> and a big idea. Work through 8 phases — each one uses a different Grade 6 math strand. Fill in every calculator, hit <em>Calculate</em>, check your hints if you're stuck, and finish the business plan and checklist at the end. Then print your pitch for investors!
+        </p>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 1 — RATIOS (6.RP.1/3)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Ratios &amp; Proportional Relationships · 6.RP.1 · 6.RP.3</div>
+            <h2>Product Mix — Ingredient Ratios</h2>
+          </div>
+        </div>
+        <p>Your product requires two key ingredients (or components). Set your recipe ratio, simplify it, and scale it up so you know exactly what to order.</p>
+        <div class="task">
+          <strong>Example:</strong> A custom candle uses 3 parts wax : 2 parts fragrance oil. The simplified ratio stays 3 : 2, and a double batch uses 6 : 4.
+        </div>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="r-a">Ingredient A (parts)</label>
+            <input type="number" id="r-a" value="3" min="1" max="999" />
+          </div>
+          <div>
+            <label class="fld" for="r-b">Ingredient B (parts)</label>
+            <input type="number" id="r-b" value="2" min="1" max="999" />
+          </div>
+        </div>
+        <label class="fld" for="r-name-a">Ingredient A name (optional)</label>
+        <input type="text" id="r-name-a" placeholder="e.g. Wax" value="Ingredient A" />
+        <label class="fld" for="r-name-b">Ingredient B name (optional)</label>
+        <input type="text" id="r-name-b" placeholder="e.g. Fragrance Oil" value="Ingredient B" />
+
+        <button class="btn" onclick="calcRatio()">Generate Ratio Table</button>
+        <div class="readout" id="ratio-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>To simplify a ratio a : b, find the GCF of a and b, then divide both by it. Example: 6 : 4 → GCF = 2 → simplified is 3 : 2. To scale up, multiply both parts by 2, 3, etc.</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 2 — PERCENTS (6.RP.3c)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Percents · 6.RP.3c</div>
+            <h2>Pricing — Markup, Discount &amp; Sales Tax</h2>
+          </div>
+        </div>
+        <p>Start with your unit cost, apply a markup to earn profit, give a launch discount, then add sales tax. The final price is what customers pay.</p>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="p-cost">Unit cost to produce ($)</label>
+            <input type="number" id="p-cost" value="4.50" step="0.01" min="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="p-markup">Markup % (your profit margin)</label>
+            <input type="number" id="p-markup" value="80" step="1" min="0" max="1000" />
+          </div>
+          <div>
+            <label class="fld" for="p-discount">Discount % (launch sale)</label>
+            <input type="number" id="p-discount" value="10" step="1" min="0" max="99" />
+          </div>
+          <div>
+            <label class="fld" for="p-tax">Sales tax %</label>
+            <input type="number" id="p-tax" value="6" step="0.1" min="0" max="30" />
+          </div>
+        </div>
+        <button class="btn orange" onclick="calcPrice()">Calculate Final Price</button>
+        <div class="readout" id="price-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>Step 1 — After markup: price = cost × (1 + markup/100). Step 2 — After discount: discounted = price × (1 − discount/100). Step 3 — After tax: final = discounted × (1 + tax/100). All percent conversions use ÷ 100.</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 3 — AREA (6.G.1)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Area of Polygons · 6.G.1</div>
+            <h2>Store Layout — Flooring Cost</h2>
+          </div>
+        </div>
+        <p>Your storefront is <strong>L-shaped</strong> — two rectangles joined together. Find the total floor area, then calculate how much your flooring will cost.</p>
+        <div class="task">
+          <strong>Diagram:</strong> Section A is the main showroom. Section B is the back storage/display area. Together they form an L-shape. Area = (A₁ = L₁ × W₁) + (A₂ = L₂ × W₂).
+        </div>
+
+        <p style="margin:0 0 4px;font-weight:700;font-size:15px;">Section A — Main Showroom</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="a-l1">Length (ft)</label>
+            <input type="number" id="a-l1" value="20" min="1" step="0.5" />
+          </div>
+          <div>
+            <label class="fld" for="a-w1">Width (ft)</label>
+            <input type="number" id="a-w1" value="15" min="1" step="0.5" />
+          </div>
+        </div>
+        <p style="margin:12px 0 4px;font-weight:700;font-size:15px;">Section B — Back Display Area</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="a-l2">Length (ft)</label>
+            <input type="number" id="a-l2" value="10" min="1" step="0.5" />
+          </div>
+          <div>
+            <label class="fld" for="a-w2">Width (ft)</label>
+            <input type="number" id="a-w2" value="8" min="1" step="0.5" />
+          </div>
+        </div>
+        <div>
+          <label class="fld" for="a-cost">Flooring cost ($ per sq ft)</label>
+          <input type="number" id="a-cost" value="3.50" step="0.25" min="0.01" />
+        </div>
+        <button class="btn teal" onclick="calcArea()">Calculate Flooring Cost</button>
+        <div class="readout" id="area-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>Area of a rectangle = base × height (length × width). Add the two areas: total = A₁ + A₂. Then multiply by cost per sq ft. Make sure both sections use the same units (feet).</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 4 — VOLUME & SURFACE AREA (6.G.2/4)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Volume &amp; Surface Area · 6.G.2 · 6.G.4</div>
+            <h2>Packaging — Box Dimensions</h2>
+          </div>
+        </div>
+        <p>Design the box that holds your product. Find the <strong>volume</strong> (how much fits inside) and <strong>surface area</strong> (how much cardboard you need), then calculate material cost.</p>
+
+        <div class="grid3">
+          <div>
+            <label class="fld" for="v-l">Length (in)</label>
+            <input type="number" id="v-l" value="8" min="0.1" step="0.5" />
+          </div>
+          <div>
+            <label class="fld" for="v-w">Width (in)</label>
+            <input type="number" id="v-w" value="5" min="0.1" step="0.5" />
+          </div>
+          <div>
+            <label class="fld" for="v-h">Height (in)</label>
+            <input type="number" id="v-h" value="3" min="0.1" step="0.5" />
+          </div>
+        </div>
+        <div>
+          <label class="fld" for="v-mat">Cardboard cost ($ per sq inch)</label>
+          <input type="number" id="v-mat" value="0.02" step="0.005" min="0.001" />
+        </div>
+        <button class="btn rose" onclick="calcVolume()">Calculate Box Stats</button>
+        <div class="readout" id="vol-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>Volume of a rectangular prism: V = l × w × h. Surface area: SA = 2(lw + lh + wh). There are 6 faces — two of each pair (top/bottom, front/back, left/right). Multiply SA by material cost to find total cardboard cost.</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 5 — EXPRESSIONS (6.EE.2)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">5</div>
+          <div>
+            <div class="skill">Expressions &amp; Variables · 6.EE.2</div>
+            <h2>Revenue Formula — Evaluate Your Expression</h2>
+          </div>
+        </div>
+        <p>Write and evaluate the <strong>profit expression</strong>: Profit = price × q − fixed costs, where q is the number of units sold.</p>
+        <div class="task">
+          <strong>Expression:</strong> P = p × q − C, where p = unit price, q = quantity sold, C = total fixed costs. Bonus: a <strong>bulk bonus</strong> doubles profit on orders of q² or more units (exponent concept).
+        </div>
+
+        <div class="grid3">
+          <div>
+            <label class="fld" for="e-price">Unit price (p) from Phase 2 ($)</label>
+            <input type="number" id="e-price" value="8.10" step="0.01" min="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="e-qty">Units sold (q)</label>
+            <input type="number" id="e-qty" value="50" min="1" max="99999" />
+          </div>
+          <div>
+            <label class="fld" for="e-fixed">Fixed costs (C) ($)</label>
+            <input type="number" id="e-fixed" value="200" step="0.01" min="0" />
+          </div>
+        </div>
+        <button class="btn blue" onclick="calcExpression()">Evaluate the Expression</button>
+        <div class="readout" id="expr-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>Substitute your values: P = p × q − C. Follow order of operations — multiply first, then subtract. Example: if p = $8.10, q = 50, C = $200, then P = 8.10 × 50 − 200 = 405 − 200 = $205. For the bulk bonus, q² means q × q.</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 6 — EQUATIONS (6.EE.7)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">6</div>
+          <div>
+            <div class="skill">One-Variable Equations · 6.EE.7</div>
+            <h2>Break-Even — How Many Units Must You Sell?</h2>
+          </div>
+        </div>
+        <p>Solve the equation <strong>price × x = fixedCosts</strong> for x, the minimum number of units you must sell to cover all costs and not lose money.</p>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="be-price">Selling price per unit ($)</label>
+            <input type="number" id="be-price" value="8.10" step="0.01" min="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="be-fixed">Total fixed costs ($)</label>
+            <input type="number" id="be-fixed" value="200" step="0.01" min="0" />
+          </div>
+        </div>
+        <button class="btn green" onclick="calcBreakEven()">Solve the Equation</button>
+        <div class="readout" id="be-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>The equation is: price × x = fixedCosts. To solve for x, divide both sides by price: x = fixedCosts ÷ price. Since you can't sell a fraction of a unit, always round UP with Math.ceil(). Check: substitute x back in — price × x ≥ fixedCosts? ✅</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 7 — STATISTICS (6.SP.3/5)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">7</div>
+          <div>
+            <div class="skill">Statistics &amp; Data · 6.SP.3 · 6.SP.5</div>
+            <h2>Customer Survey — Analyze Ratings</h2>
+          </div>
+        </div>
+        <p>You surveyed customers on a scale of 1–10. Enter 5–7 ratings, and find the <strong>mean</strong> (average) and <strong>median</strong> (middle value) to understand customer satisfaction.</p>
+        <div class="task">
+          <strong>Tip:</strong> Mean = sum of all values ÷ number of values. Median = middle number after sorting. These measures of center describe what is typical.
+        </div>
+
+        <label class="fld" for="stat-input">Enter ratings separated by commas (1–10, at least 5 values)</label>
+        <input type="text" id="stat-input" value="8, 7, 9, 6, 8, 7, 10" placeholder="e.g. 8, 7, 9, 6, 8" />
+        <button class="btn gold" onclick="calcStats()">Analyze Survey Data</button>
+        <div class="readout" id="stat-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>Sort ratings from least to greatest first. For median with an odd count, pick the middle number. For an even count, average the two middle numbers. Mean = total ÷ count. Compare mean and median — if they're close, your data is balanced!</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           PHASE 8 — INTEGERS (6.NS.5)
+      ══════════════════════════════════════════ -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">8</div>
+          <div>
+            <div class="skill">Integers &amp; Absolute Value · 6.NS.5</div>
+            <h2>Cash Flow — Profit or Loss?</h2>
+          </div>
+        </div>
+        <p>Real businesses track profit and loss as <strong>signed numbers</strong>. A positive balance means profit. A negative balance means you owe money — a loss. Absolute value shows the magnitude.</p>
+        <div class="task">
+          <strong>Remember:</strong> Revenue − Costs = Balance. If costs &gt; revenue, the balance is <em>negative</em>. That means the business lost money this period.
+        </div>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="cf-revenue">Total revenue earned ($)</label>
+            <input type="number" id="cf-revenue" value="405.00" step="0.01" min="0" />
+          </div>
+          <div>
+            <label class="fld" for="cf-costs">Total costs / expenses ($)</label>
+            <input type="number" id="cf-costs" value="200.00" step="0.01" min="0" />
+          </div>
+        </div>
+        <button class="btn" style="background:#8b5cf6;" onclick="calcCashFlow()">Calculate Cash Flow</button>
+        <div class="readout" id="cf-out"></div>
+
+        <details class="hintbox">
+          <summary>💡 Need a hint?</summary>
+          <p>Balance = Revenue − Costs. If the result is positive (+), you made a profit — shown on a number line to the right of zero. If negative (−), you have a loss — to the left of zero. |Balance| is the absolute value (distance from zero, always positive).</p>
+        </details>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           FINAL DELIVERABLE
+      ══════════════════════════════════════════ -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--gold);color:#2a1400;">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Business Plan — Pitch to Investors</h2>
+          </div>
+        </div>
+        <p>Write your business plan using your real numbers from the phases above. Use the sentence starters below to guide you.</p>
+
+        <textarea id="plan" placeholder="My business idea is ___.
+My ingredient ratio is ___ : ___ (simplified from ___ : ___).
+My unit selling price is $___ after a ___% markup, ___% discount, and ___% sales tax.
+My store is ___ sq ft and flooring costs $___. My box has a volume of ___ cubic inches.
+The profit expression is P = ___×q − ___, and with q = ___ units I earn $___.
+I need to sell ___ units to break even.
+My customers rated my product an average of ___ out of 10 (median: ___).
+My current cash balance is $___ which is a [profit/loss]."></textarea>
+
+        <h3 style="margin:24px 0 8px;">✅ Strand Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> <span><strong>Ratios (6.RP.1/3):</strong> I found and simplified my ingredient ratio and scaled it up in a table.</span></li>
+          <li><input type="checkbox" /> <span><strong>Percents (6.RP.3c):</strong> I applied markup, discount, and sales tax correctly using ÷100 math.</span></li>
+          <li><input type="checkbox" /> <span><strong>Area (6.G.1):</strong> I calculated the L-shaped store area as two rectangles and found flooring cost.</span></li>
+          <li><input type="checkbox" /> <span><strong>Volume &amp; Surface Area (6.G.2/4):</strong> I found V = l×w×h and SA = 2(lw+lh+wh) for my box.</span></li>
+          <li><input type="checkbox" /> <span><strong>Expressions (6.EE.2):</strong> I wrote and evaluated the profit expression with my own values.</span></li>
+          <li><input type="checkbox" /> <span><strong>Equations (6.EE.7):</strong> I solved price·x = costs for x and verified by substitution.</span></li>
+          <li><input type="checkbox" /> <span><strong>Statistics (6.SP.3/5):</strong> I found the mean and median of my customer ratings and interpreted them.</span></li>
+          <li><input type="checkbox" /> <span><strong>Integers (6.NS.5):</strong> I expressed my profit/loss as a signed number and explained its meaning.</span></li>
+        </ul>
+
+        <button class="btn printbtn" onclick="window.print()" style="margin-right:10px;">🖨️ Print My Business Plan</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Strand</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Ratios (6.RP)</td>
+            <td>Ratio simplified correctly using GCF; scaling table complete and accurate; explanation clear</td>
+            <td>Ratio simplified and table correct</td>
+            <td>Ratio attempted; minor error in GCF or scaling</td>
+          </tr>
+          <tr>
+            <td>Percents (6.RP)</td>
+            <td>All three percent steps correct to the cent; can explain each ÷100 conversion</td>
+            <td>Final price correct; steps shown</td>
+            <td>One step correct; missing a step or rounding error</td>
+          </tr>
+          <tr>
+            <td>Geometry — Area (6.G)</td>
+            <td>L-shape decomposed correctly; both rectangle areas accurate; total and cost correct</td>
+            <td>Both areas and total cost correct</td>
+            <td>One rectangle correct; error in sum or cost</td>
+          </tr>
+          <tr>
+            <td>Geometry — Vol &amp; SA (6.G)</td>
+            <td>V and SA both correct with formulas shown; material cost accurate</td>
+            <td>Both formulas applied correctly</td>
+            <td>Volume correct but SA error, or vice versa</td>
+          </tr>
+          <tr>
+            <td>Expressions &amp; Equations (6.EE)</td>
+            <td>Expression correctly written and evaluated; break-even solved, verified, and ceiled correctly</td>
+            <td>Expression and equation both correct</td>
+            <td>One correct; minor substitution or solving error</td>
+          </tr>
+          <tr>
+            <td>Statistics (6.SP)</td>
+            <td>Mean and median both correct; data interpreted with reference to what is "typical"</td>
+            <td>Both measures of center correct</td>
+            <td>One measure correct; minor sorting or calculation error</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Business plan uses every calculated number and clearly connects math to decisions</td>
+            <td>Business plan references most numbers</td>
+            <td>Plan is incomplete or numbers are missing/inconsistent</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Year-End Capstone · Start-Up City · <span id="yr"></span></p>
+    </div><!-- /.wrap -->
+
+    <!-- ═══ JAVASCRIPT ═══ -->
+    <script>
+      "use strict";
+
+      /* ── Year ── */
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      /* ══════════════════════════════════════
+         UTILITIES
+      ══════════════════════════════════════ */
+      function gcd(a, b) {
+        a = Math.abs(Math.round(a));
+        b = Math.abs(Math.round(b));
+        while (b) { var t = b; b = a % b; a = t; }
+        return a;
+      }
+
+      function show(id, html) {
+        var el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+        updateDashboard();
+      }
+
+      function fmt(n) { return "$" + Number(n).toFixed(2); }
+
+      /* ── Dashboard state ── */
+      var dashState = {
+        price: null,
+        costs: null,
+        revenue: null
+      };
+
+      function updateDashboard() {
+        var p = dashState.price   != null ? fmt(dashState.price)   : "—";
+        var c = dashState.costs   != null ? fmt(dashState.costs)   : "—";
+        var r = dashState.revenue != null ? fmt(dashState.revenue) : "—";
+
+        document.getElementById("dash-price").textContent   = p;
+        document.getElementById("dash-costs").textContent   = c;
+        document.getElementById("dash-revenue").textContent = r;
+
+        if (dashState.price != null && dashState.costs != null && dashState.revenue != null) {
+          var profit = dashState.revenue - dashState.costs;
+          var el = document.getElementById("dash-profit");
+          el.textContent = (profit >= 0 ? "+" : "") + fmt(profit);
+          el.className = "dash-val " + (profit >= 0 ? "good" : "bad");
+        }
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 1 — RATIOS
+      ══════════════════════════════════════ */
+      function calcRatio() {
+        var a = Math.round(+document.getElementById("r-a").value);
+        var b = Math.round(+document.getElementById("r-b").value);
+        var nameA = document.getElementById("r-name-a").value.trim() || "Ingredient A";
+        var nameB = document.getElementById("r-name-b").value.trim() || "Ingredient B";
+
+        if (!a || !b || a < 1 || b < 1) {
+          show("ratio-out", "<p>⚠️ Please enter positive whole numbers for both parts.</p>");
+          return;
+        }
+
+        var g = gcd(a, b);
+        var sa = a / g;
+        var sb = b / g;
+
+        var tableRows = "";
+        for (var i = 1; i <= 3; i++) {
+          tableRows += "<tr><td>" + i + "x batch</td><td>" + (sa * i) + " parts</td><td>" + (sb * i) + " parts</td></tr>";
+        }
+
+        show("ratio-out",
+          '<div class="big purple">' + sa + " : " + sb + "</div>" +
+          "<p><strong>Simplified ratio:</strong> " + a + " : " + b + " ÷ GCF(" + a + ", " + b + ") = " + g +
+          " → <strong>" + sa + " : " + sb + "</strong></p>" +
+          (g === 1
+            ? "<p>ℹ️ " + a + " and " + b + " share only a factor of 1, so the ratio is already in simplest form.</p>"
+            : "<p>✅ Divided both parts by " + g + " to simplify.</p>") +
+          "<table><tr><th>Batch Size</th><th>" + nameA + "</th><th>" + nameB + "</th></tr>" +
+          tableRows + "</table>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 2 — PERCENTS
+      ══════════════════════════════════════ */
+      function calcPrice() {
+        var cost     = +document.getElementById("p-cost").value;
+        var markup   = +document.getElementById("p-markup").value;
+        var discount = +document.getElementById("p-discount").value;
+        var tax      = +document.getElementById("p-tax").value;
+
+        if (isNaN(cost) || cost <= 0) {
+          show("price-out", "<p>⚠️ Please enter a positive unit cost.</p>");
+          return;
+        }
+        if (isNaN(markup) || markup < 0) {
+          show("price-out", "<p>⚠️ Please enter a valid markup percentage (0 or more).</p>");
+          return;
+        }
+        if (isNaN(discount) || discount < 0) {
+          show("price-out", "<p>⚠️ Please enter a valid discount percentage (0 or more).</p>");
+          return;
+        }
+        if (isNaN(tax) || tax < 0) {
+          show("price-out", "<p>⚠️ Please enter a valid sales tax percentage (0 or more).</p>");
+          return;
+        }
+
+        var afterMarkup   = cost * (1 + markup / 100);
+        var afterDiscount = afterMarkup * (1 - discount / 100);
+        var afterTax      = afterDiscount * (1 + tax / 100);
+
+        dashState.price = afterTax;
+        // Pre-populate phase 5 and 6 price fields
+        document.getElementById("e-price").value = afterTax.toFixed(2);
+        document.getElementById("be-price").value = afterTax.toFixed(2);
+
+        show("price-out",
+          '<div class="big orange">' + fmt(afterTax) + " final price</div>" +
+          "<table>" +
+          "<tr><th>Step</th><th>Calculation</th><th>Amount</th></tr>" +
+          "<tr><td>Unit cost</td><td>—</td><td>" + fmt(cost) + "</td></tr>" +
+          "<tr><td>+ Markup (" + markup + "%)</td><td>" + fmt(cost) + " × (1 + " + markup + "/100)</td><td>" + fmt(afterMarkup) + "</td></tr>" +
+          "<tr><td>− Discount (" + discount + "%)</td><td>" + fmt(afterMarkup) + " × (1 − " + discount + "/100)</td><td>" + fmt(afterDiscount) + "</td></tr>" +
+          "<tr><td>+ Sales Tax (" + tax + "%)</td><td>" + fmt(afterDiscount) + " × (1 + " + tax + "/100)</td><td><strong>" + fmt(afterTax) + "</strong></td></tr>" +
+          "</table>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 3 — AREA
+      ══════════════════════════════════════ */
+      function calcArea() {
+        var l1 = +document.getElementById("a-l1").value;
+        var w1 = +document.getElementById("a-w1").value;
+        var l2 = +document.getElementById("a-l2").value;
+        var w2 = +document.getElementById("a-w2").value;
+        var costPerSqFt = +document.getElementById("a-cost").value;
+
+        if (isNaN(l1) || isNaN(w1) || isNaN(l2) || isNaN(w2) || isNaN(costPerSqFt) ||
+            l1 <= 0 || w1 <= 0 || l2 <= 0 || w2 <= 0 || costPerSqFt <= 0) {
+          show("area-out", "<p>⚠️ Please enter valid positive numbers for all dimensions and flooring cost.</p>");
+          return;
+        }
+
+        var a1 = l1 * w1;
+        var a2 = l2 * w2;
+        var total = a1 + a2;
+        var flooringCost = total * costPerSqFt;
+
+        // Add flooring to costs
+        if (dashState.costs == null) dashState.costs = 0;
+        dashState._flooringCost = flooringCost;
+        recalcCosts();
+
+        show("area-out",
+          '<div class="big">' + total + " sq ft total</div>" +
+          "<table>" +
+          "<tr><th>Section</th><th>Dimensions</th><th>Area</th></tr>" +
+          "<tr><td>Section A (Showroom)</td><td>" + l1 + " × " + w1 + " ft</td><td>" + a1 + " sq ft</td></tr>" +
+          "<tr><td>Section B (Display)</td><td>" + l2 + " × " + w2 + " ft</td><td>" + a2 + " sq ft</td></tr>" +
+          "<tr><td><strong>Total (A + B)</strong></td><td>—</td><td><strong>" + total + " sq ft</strong></td></tr>" +
+          "<tr><td colspan='2'>Flooring @ " + fmt(costPerSqFt) + "/sq ft</td><td><strong>" + fmt(flooringCost) + "</strong></td></tr>" +
+          "</table>" +
+          "<p>✅ Your L-shaped store is <strong>" + total + " sq ft</strong> and flooring costs <strong>" + fmt(flooringCost) + "</strong>.</p>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 4 — VOLUME & SURFACE AREA
+      ══════════════════════════════════════ */
+      function calcVolume() {
+        var l   = +document.getElementById("v-l").value;
+        var w   = +document.getElementById("v-w").value;
+        var h   = +document.getElementById("v-h").value;
+        var mat = +document.getElementById("v-mat").value;
+
+        if (isNaN(l) || isNaN(w) || isNaN(h) || isNaN(mat) ||
+            l <= 0 || w <= 0 || h <= 0 || mat <= 0) {
+          show("vol-out", "<p>⚠️ Please enter valid positive numbers for all box dimensions and material cost.</p>");
+          return;
+        }
+
+        var vol = l * w * h;
+        var sa  = 2 * (l * w + l * h + w * h);
+        var matCost = sa * mat;
+
+        dashState._packagingCost = matCost;
+        recalcCosts();
+
+        show("vol-out",
+          '<div class="big rose">V = ' + vol.toFixed(1) + ' in³</div>' +
+          "<p><strong>Volume:</strong> V = l × w × h = " + l + " × " + w + " × " + h + " = <strong>" + vol.toFixed(1) + " cubic inches</strong></p>" +
+          "<p><strong>Surface Area:</strong> SA = 2(lw + lh + wh) = 2(" +
+            (l * w).toFixed(1) + " + " + (l * h).toFixed(1) + " + " + (w * h).toFixed(1) + ") = " +
+            "2(" + (l * w + l * h + w * h).toFixed(1) + ") = <strong>" + sa.toFixed(1) + " sq in</strong></p>" +
+          "<table>" +
+          "<tr><th>Measure</th><th>Formula</th><th>Result</th></tr>" +
+          "<tr><td>Volume</td><td>l × w × h</td><td>" + vol.toFixed(1) + " in³</td></tr>" +
+          "<tr><td>Surface Area</td><td>2(lw + lh + wh)</td><td>" + sa.toFixed(1) + " in²</td></tr>" +
+          "<tr><td>Cardboard cost</td><td>" + sa.toFixed(1) + " in² × " + fmt(mat) + "</td><td><strong>" + fmt(matCost) + "</strong></td></tr>" +
+          "</table>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 5 — EXPRESSIONS
+      ══════════════════════════════════════ */
+      function calcExpression() {
+        var p = +document.getElementById("e-price").value;
+        var q = +document.getElementById("e-qty").value;
+        var c = +document.getElementById("e-fixed").value;
+
+        if (isNaN(p) || isNaN(q) || isNaN(c) || p <= 0 || q <= 0 || c < 0) {
+          show("expr-out", "<p>⚠️ Please enter a positive price, a positive quantity, and a non-negative fixed cost.</p>");
+          return;
+        }
+
+        var revenue = p * q;
+        var profit  = revenue - c;
+        var bulkThreshold = q * q;  // q²
+        var bulkBonus     = profit * 2;
+
+        dashState.revenue = revenue;
+        dashState.costs   = c;
+        recalcCosts();
+
+        show("expr-out",
+          '<div class="big blue">' + (profit >= 0 ? "+" : "") + fmt(profit) + " profit</div>" +
+          "<p><strong>Expression:</strong> P = p × q − C</p>" +
+          "<p><strong>Substituting:</strong> P = " + fmt(p) + " × " + q + " − " + fmt(c) + "</p>" +
+          "<p>P = " + fmt(revenue) + " − " + fmt(c) + " = <strong>" + fmt(profit) + "</strong></p>" +
+          (profit >= 0
+            ? "<p>✅ Your business earns <strong>" + fmt(profit) + "</strong> in profit at " + q + " units sold.</p>"
+            : "<p>⚠️ At " + q + " units you are <strong>" + fmt(Math.abs(profit)) + " in the red</strong>. Try selling more units or lowering costs.</p>") +
+          "<p>📦 <strong>Bulk Bonus:</strong> If you sell q² = " + q + "² = <strong>" + bulkThreshold + " or more units</strong>, a bulk deal doubles profit to <strong>" + fmt(bulkBonus) + "</strong>!</p>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 6 — EQUATIONS (BREAK-EVEN)
+      ══════════════════════════════════════ */
+      function calcBreakEven() {
+        var price = +document.getElementById("be-price").value;
+        var fixed = +document.getElementById("be-fixed").value;
+
+        if (!price || price <= 0) {
+          show("be-out", "<p>⚠️ Please enter a positive price per unit.</p>");
+          return;
+        }
+        if (fixed < 0) {
+          show("be-out", "<p>⚠️ Fixed costs cannot be negative.</p>");
+          return;
+        }
+
+        var exact   = fixed / price;
+        var ceiled  = Math.ceil(exact);
+        var verify  = price * ceiled;
+
+        show("be-out",
+          '<div class="big green">' + ceiled + " units</div>" +
+          "<p><strong>Equation:</strong> price × x = fixedCosts</p>" +
+          "<p><strong>Solve:</strong> " + fmt(price) + " × x = " + fmt(fixed) + "</p>" +
+          "<p>x = " + fmt(fixed) + " ÷ " + fmt(price) + " = <strong>" + exact.toFixed(4) + "</strong></p>" +
+          "<p>Since you can't sell a fraction of a unit, round <strong>up</strong>: x = <strong>" + ceiled + " units</strong></p>" +
+          "<p>✅ <strong>Verification:</strong> " + fmt(price) + " × " + ceiled + " = " + fmt(verify) + " ≥ " + fmt(fixed) + " ✓</p>" +
+          "<p>Sell at least <strong>" + ceiled + " units</strong> to cover all your fixed costs.</p>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 7 — STATISTICS
+      ══════════════════════════════════════ */
+      function calcStats() {
+        var raw = document.getElementById("stat-input").value;
+        var nums = raw.split(",").map(function(s) { return parseFloat(s.trim()); }).filter(function(n) { return !isNaN(n); });
+
+        if (nums.length < 5) {
+          show("stat-out", "<p>⚠️ Please enter at least 5 valid numbers separated by commas.</p>");
+          return;
+        }
+        var outOfRange = nums.some(function(n) { return n < 1 || n > 10; });
+        if (outOfRange) {
+          show("stat-out", "<p>⚠️ Ratings should be between 1 and 10. Please check your data.</p>");
+          return;
+        }
+
+        var sorted  = nums.slice().sort(function(a, b) { return a - b; });
+        var n       = sorted.length;
+        var sum     = nums.reduce(function(acc, v) { return acc + v; }, 0);
+        var mean    = sum / n;
+
+        var median;
+        if (n % 2 === 1) {
+          median = sorted[Math.floor(n / 2)];
+        } else {
+          median = (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+        }
+
+        // Simple bar chart using Unicode blocks
+        var bars = "";
+        sorted.forEach(function(v) {
+          var bar = "█".repeat(Math.round(v));
+          bars += "<tr><td>" + v + "</td><td style='font-size:12px;color:var(--purple);letter-spacing:1px;'>" + bar + "</td></tr>";
+        });
+
+        var interpretation = "";
+        if (mean >= 8) interpretation = "🌟 Excellent! Customers love your product.";
+        else if (mean >= 6) interpretation = "👍 Good. Most customers are satisfied.";
+        else interpretation = "🔧 Room for improvement. Consider product changes.";
+
+        show("stat-out",
+          '<div class="big gold">Mean: ' + mean.toFixed(2) + " / 10</div>" +
+          "<p><strong>Sorted data:</strong> " + sorted.join(", ") + "</p>" +
+          "<p><strong>Mean:</strong> (" + nums.join(" + ") + ") ÷ " + n + " = " + sum + " ÷ " + n + " = <strong>" + mean.toFixed(2) + "</strong></p>" +
+          "<p><strong>Median:</strong> Middle value of sorted data = <strong>" + median + "</strong></p>" +
+          "<p>" + interpretation + "</p>" +
+          "<table><tr><th>Rating</th><th>Bar</th></tr>" + bars + "</table>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         PHASE 8 — CASH FLOW / INTEGERS
+      ══════════════════════════════════════ */
+      function calcCashFlow() {
+        var revenue = +document.getElementById("cf-revenue").value;
+        var costs   = +document.getElementById("cf-costs").value;
+
+        if (isNaN(revenue) || isNaN(costs) || revenue < 0 || costs < 0) {
+          show("cf-out", "<p>⚠️ Please enter valid non-negative numbers for revenue and costs.</p>");
+          return;
+        }
+
+        var balance  = revenue - costs;
+        var absVal   = Math.abs(balance);
+        var isProfit = balance >= 0;
+
+        dashState.revenue = revenue;
+        dashState.costs   = costs;
+        updateDashboard();
+
+        var numberLine = "";
+        // Show position on a simplified number line
+        var pos = Math.max(-5, Math.min(5, Math.round(balance / Math.max(absVal, 1) * 4)));
+        var line = "";
+        for (var i = -5; i <= 5; i++) {
+          line += (i === pos ? "▲" : (i === 0 ? "0" : "·"));
+          if (i < 5) line += "—";
+        }
+
+        show("cf-out",
+          '<div class="big ' + (isProfit ? "green" : "rose") + '">' +
+            (isProfit ? "+" : "") + fmt(balance) +
+          "</div>" +
+          "<p><strong>Balance = Revenue − Costs</strong></p>" +
+          "<p>Balance = " + fmt(revenue) + " − " + fmt(costs) + " = <strong>" +
+            (isProfit ? "+" : "") + fmt(balance) + "</strong></p>" +
+          "<p><strong>|Balance|</strong> = |" + (isProfit ? "+" : "") + balance.toFixed(2) + "| = <strong>" + fmt(absVal) + "</strong> (absolute value — distance from zero)</p>" +
+          "<p>" +
+            (isProfit
+              ? "✅ <strong>Profit!</strong> Your balance is a <em>positive integer</em> — you earned " + fmt(balance) + " more than you spent."
+              : "⚠️ <strong>Loss.</strong> Your balance is a <em>negative integer</em> — you spent " + fmt(absVal) + " more than you earned. Increase sales or cut costs!") +
+          "</p>" +
+          "<p style='font-family:monospace;font-size:15px;letter-spacing:2px;'>−←&nbsp;&nbsp;" + line + "&nbsp;&nbsp;→+</p>"
+        );
+      }
+
+      /* ══════════════════════════════════════
+         HELPER: Recalculate cumulative costs
+      ══════════════════════════════════════ */
+      function recalcCosts() {
+        var total = 0;
+        if (dashState._flooringCost)  total += dashState._flooringCost;
+        if (dashState._packagingCost) total += dashState._packagingCost;
+        // If phase 5 set costs directly, use that if it's larger
+        if (dashState.costs && dashState.costs > total) {
+          // costs already set by expression phase; keep it
+        } else if (total > 0) {
+          dashState.costs = total;
+        }
+        updateDashboard();
+      }
+
+      /* ══════════════════════════════════════
+         PROGRESS BAR
+         Max = 8 readouts + 8 checklist items + 1 plan = 17
+      ══════════════════════════════════════ */
+      function updateProgress() {
+        var readouts = document.querySelectorAll(".readout.show").length;   // max 8
+        var checks   = document.querySelectorAll("#checklist input:checked").length; // max 8
+        var plan     = document.getElementById("plan").value.trim().length > 30 ? 1 : 0; // max 1
+        var total    = readouts + checks + plan;
+        var pct      = Math.min(100, Math.round((total / 17) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent   = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("plan").addEventListener("input", updateProgress);
+
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

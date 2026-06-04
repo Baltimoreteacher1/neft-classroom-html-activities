@@ -1,0 +1,1552 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="One-Step Solver Arena: An interactive Neft Teacher activity for Grade 6 (6.EE.B.5–8) where students solve one-step equations on a balance scale and graph one-step inequalities on a number line, with auto-grading and leveled hints."
+    />
+    <title>One-Step Solver Arena | Neft Teacher</title>
+    <style>
+      :root {
+        --bg: #071421;
+        --panel: #0e2233;
+        --panel2: #143247;
+        --ink: #eaf6ff;
+        --muted: #8fb3cc;
+        --cyan: #36d6e7;
+        --teal: #23c4a8;
+        --violet: #9b6cff;
+        --gold: #ffd35c;
+        --green: #34d399;
+        --red: #ff6b7a;
+        --line: #1d3c52;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Arial,
+          sans-serif;
+        background: radial-gradient(
+          1100px 560px at 50% -8%,
+          #0f3047 0%,
+          var(--bg) 62%
+        );
+        color: var(--ink);
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+      a {
+        color: var(--cyan);
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+      }
+      .brand .logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+        background: linear-gradient(135deg, var(--cyan), var(--teal));
+        box-shadow: 0 6px 18px rgba(54, 214, 231, 0.35);
+      }
+      .backlink {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .backlink:hover {
+        background: var(--panel2);
+        color: var(--ink);
+      }
+      header.hero {
+        background: linear-gradient(135deg, var(--panel), var(--panel2));
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px 22px;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      header.hero::after {
+        content: "⚖️";
+        position: absolute;
+        right: 16px;
+        top: 8px;
+        font-size: 80px;
+        opacity: 0.1;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 1.7rem;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .std {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(54, 214, 231, 0.14);
+        border: 1px solid var(--cyan);
+        color: var(--cyan);
+        font-size: 0.78rem;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 14px 0;
+      }
+      .seg {
+        display: inline-flex;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px;
+        gap: 4px;
+      }
+      .seg button {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 8px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .seg button.active {
+        background: linear-gradient(135deg, var(--cyan), var(--teal));
+        color: #04222a;
+      }
+      .seg button:hover:not(.active) {
+        color: var(--ink);
+      }
+      .lang-toggle {
+        margin-left: auto;
+      }
+      .scorebar {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px 16px;
+        margin-bottom: 14px;
+      }
+      .pill {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .pill b {
+        color: var(--gold);
+        font-size: 1.05rem;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .prompt {
+        font-size: 1.05rem;
+        margin: 0 0 4px;
+      }
+      .prompt-es {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 12px;
+        font-style: italic;
+      }
+      .equation {
+        display: inline-block;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 2.1rem;
+        font-weight: 700;
+        background: #06131f;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 26px;
+        margin: 6px 0;
+        letter-spacing: 1px;
+      }
+      /* balance scale */
+      .stage {
+        background: #06131f;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px;
+        margin: 14px 0;
+        text-align: center;
+      }
+      .stage svg {
+        max-width: 100%;
+        height: auto;
+      }
+      /* answer input */
+      .ans-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 14px 0;
+      }
+      .ans-row input {
+        width: 90px;
+        font-size: 1.5rem;
+        text-align: center;
+        font-family: inherit;
+        font-weight: 700;
+        background: #06131f;
+        color: var(--ink);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 8px;
+      }
+      .ans-row input:focus {
+        outline: none;
+        border-color: var(--cyan);
+      }
+      .ans-row input.ok {
+        border-color: var(--green);
+      }
+      .ans-row input.no {
+        border-color: var(--red);
+      }
+      /* inequality builder */
+      .ineq-pick {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+      .chip {
+        background: var(--panel2);
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 16px;
+        cursor: pointer;
+        font-weight: 700;
+        transition: 0.15s;
+        user-select: none;
+      }
+      .chip:hover {
+        border-color: var(--cyan);
+      }
+      .chip.sel {
+        border-color: var(--gold);
+        background: #1c2f44;
+        color: var(--gold);
+      }
+      .numline-wrap {
+        background: #06131f;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px;
+        margin: 12px 0;
+        text-align: center;
+      }
+      .numline-wrap svg {
+        max-width: 100%;
+        height: auto;
+        touch-action: none;
+      }
+      .nl-instr {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--cyan), var(--teal));
+        color: #04222a;
+        box-shadow: 0 6px 16px rgba(54, 214, 231, 0.3);
+      }
+      .btn-primary:hover {
+        filter: brightness(1.06);
+        transform: translateY(-1px);
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        color: var(--ink);
+        background: var(--panel2);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        align-items: center;
+      }
+      .feedback {
+        margin-top: 14px;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 0.95rem;
+        display: none;
+        border: 1px solid var(--line);
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.35s;
+      }
+      .feedback.good {
+        background: rgba(52, 211, 153, 0.12);
+        border-color: var(--green);
+      }
+      .feedback.bad {
+        background: rgba(255, 107, 122, 0.1);
+        border-color: var(--red);
+      }
+      .feedback h4 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+      }
+      .feedback .es {
+        color: var(--muted);
+        font-style: italic;
+        font-size: 0.88rem;
+        margin-top: 6px;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      details.hint {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 14px;
+        margin-top: 12px;
+      }
+      details.hint summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--gold);
+        font-size: 0.9rem;
+      }
+      details.hint .body {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .lvl {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-right: 6px;
+      }
+      .lvl1 {
+        background: rgba(54, 214, 231, 0.16);
+        color: var(--cyan);
+        border: 1px solid var(--cyan);
+      }
+      .lvl2 {
+        background: rgba(255, 211, 92, 0.16);
+        color: var(--gold);
+        border: 1px solid var(--gold);
+      }
+      .win {
+        display: none;
+        text-align: center;
+        padding: 26px;
+        background: linear-gradient(135deg, #103247, #1a2c4a);
+        border: 1px solid var(--gold);
+        border-radius: 18px;
+        margin-bottom: 16px;
+      }
+      .win.show {
+        display: block;
+        animation: fade 0.4s;
+      }
+      .win h2 {
+        margin: 0 0 6px;
+        font-size: 1.6rem;
+        color: var(--gold);
+      }
+      footer {
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-align: center;
+        border-top: 1px solid var(--line);
+        margin-top: 24px;
+        padding: 18px 0 8px;
+      }
+      footer .mk {
+        color: var(--cyan);
+        font-weight: 700;
+      }
+      .spark {
+        position: fixed;
+        pointer-events: none;
+        font-size: 1.4rem;
+        z-index: 50;
+        animation: rise 1s ease-out forwards;
+      }
+      @keyframes rise {
+        0% {
+          opacity: 1;
+          transform: translateY(0) scale(0.6);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-90px) scale(1.3);
+        }
+      }
+      @media (max-width: 560px) {
+        h1 {
+          font-size: 1.35rem;
+        }
+        .equation {
+          font-size: 1.6rem;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+          color: #000;
+        }
+        .topbar,
+        .controls,
+        .actions,
+        .lang-toggle,
+        .backlink,
+        .btn,
+        details.hint {
+          display: none !important;
+        }
+        .card,
+        header.hero,
+        .scorebar {
+          border-color: #999;
+        }
+        .feedback {
+          display: block !important;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand"><span class="logo">⚖️</span> Neft Teacher</div>
+        <a class="backlink" href="../../index.html">&larr; Back to Hub</a>
+      </div>
+
+      <header class="hero">
+        <h1>One-Step Solver Arena</h1>
+        <p class="sub">
+          Balance the scale to solve one-step equations &mdash; then graph
+          one-step inequalities on the number line.
+        </p>
+        <p class="sub" id="subEs" style="font-style: italic">
+          Equilibra la balanza para resolver ecuaciones de un paso &mdash; luego
+          grafica desigualdades en la recta num&eacute;rica.
+        </p>
+        <span class="std"
+          >Standards 6.EE.B.5 &middot; B.6 &middot; B.7 &middot; B.8</span
+        >
+      </header>
+
+      <div class="controls">
+        <div class="seg" role="tablist" aria-label="Activity mode">
+          <button id="mEq" class="active" onclick="setMode('equation')">
+            ⚖️ Equations
+          </button>
+          <button id="mIneq" onclick="setMode('inequality')">
+            ↔️ Inequalities
+          </button>
+        </div>
+        <div class="seg" role="group" aria-label="Difficulty level">
+          <button id="lvl1" class="active" onclick="setLevel(1)">
+            Level 1
+          </button>
+          <button id="lvl2" onclick="setLevel(2)">Level 2</button>
+        </div>
+        <div class="seg lang-toggle" role="group" aria-label="Language">
+          <button id="langEN" class="active" onclick="setLang('en')">EN</button>
+          <button id="langES" onclick="setLang('es')">ES</button>
+        </div>
+      </div>
+
+      <div class="scorebar">
+        <span class="pill" id="lblQ">Round <b id="qNum">1</b> / <b>8</b></span>
+        <span class="pill" id="lblScore">Solved: <b id="score">0</b></span>
+        <span class="pill" id="lblStreak">⚡ Streak: <b id="streak">0</b></span>
+        <span class="pill" id="lblLevel" style="margin-left: auto"
+          >Mode: <b id="lvlLabel">Level 1 · Support</b></span
+        >
+      </div>
+
+      <div class="win" id="winBanner">
+        <h2 id="winTitle">🏆 Arena Champion!</h2>
+        <p id="winMsg"></p>
+        <button class="btn btn-primary" id="winBtn" onclick="restart()">
+          Play Again
+        </button>
+      </div>
+
+      <div class="card" id="gameCard">
+        <p class="prompt" id="prompt">Solve for x. Keep the scale balanced!</p>
+        <p class="prompt-es" id="promptEs">
+          Resuelve para x. ¡Mantén la balanza equilibrada!
+        </p>
+        <div style="text-align: center">
+          <span class="equation" id="equation">x + 5 = 12</span>
+        </div>
+
+        <!-- EQUATION MODE: balance scale -->
+        <div id="equationArea">
+          <div class="stage">
+            <svg
+              id="scaleSvg"
+              viewBox="0 0 480 200"
+              role="img"
+              aria-label="Balance scale model"
+            ></svg>
+          </div>
+          <div class="ans-row">
+            <label for="ansX" id="ansLabel">x =</label>
+            <input id="ansX" inputmode="numeric" aria-label="value of x" />
+          </div>
+        </div>
+
+        <!-- INEQUALITY MODE: number line -->
+        <div id="inequalityArea" style="display: none">
+          <p class="nl-instr" id="ineqStep1" style="margin-bottom: 4px"></p>
+          <div class="ans-row">
+            <label for="ineqX" id="ineqLabel">x =</label>
+            <input id="ineqX" inputmode="numeric" aria-label="boundary value" />
+          </div>
+          <p class="nl-instr" id="ineqStep2"></p>
+          <div class="ineq-pick" id="ineqPick"></div>
+          <div class="numline-wrap">
+            <svg
+              id="numSvg"
+              viewBox="0 0 480 110"
+              role="img"
+              aria-label="Number line"
+            ></svg>
+            <div class="nl-instr" id="nlInstr">
+              Tap the number line where the boundary point goes.
+            </div>
+          </div>
+        </div>
+
+        <div class="feedback" id="feedback" role="status" aria-live="polite">
+          <h4 id="fbTitle"></h4>
+          <div id="fbBody"></div>
+          <div class="es" id="fbEs"></div>
+        </div>
+
+        <details class="hint" id="hintBox">
+          <summary id="hintSummary">💡 Need a hint?</summary>
+          <div class="body">
+            <p>
+              <span class="lvl lvl1">Level 1 · Support</span>
+              <span id="hint1"></span>
+            </p>
+            <p>
+              <span class="lvl lvl2">Level 2 · Challenge</span>
+              <span id="hint2"></span>
+            </p>
+          </div>
+        </details>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="checkBtn" onclick="checkAnswer()">
+            Check Answer
+          </button>
+          <button
+            class="btn btn-ghost"
+            id="nextBtn"
+            onclick="nextRound()"
+            disabled
+          >
+            Next &rarr;
+          </button>
+          <button class="btn btn-ghost" id="resetBtn" onclick="restart()">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <footer>
+        <div>
+          Built for Grade 6 mathematicians &middot;
+          <span class="mk">Neft Teacher</span> &middot; Standards 6.EE.B.5–8
+        </div>
+        <div style="margin-top: 4px">
+          Solving an equation means finding the value that makes both sides
+          equal; a solution to an inequality makes it true.
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      "use strict";
+      /* ======= One-Step Solver Arena — 6.EE.B.5–8 ======= */
+
+      var TOTAL = 8;
+      var lang = "en";
+      var mode = "equation"; // 'equation' | 'inequality'
+      var level = 1; // 1 support | 2 challenge
+      var qNum = 0,
+        score = 0,
+        streak = 0,
+        answered = false;
+      var current = null;
+
+      /* inequality interactive state */
+      var ineqOp = null; // chosen operator: '>','<','>=','<='
+      var nlPoint = null; // chosen boundary x clicked on number line
+
+      /* ---------- problem generators ---------- */
+      function randInt(lo, hi) {
+        return Math.floor(Math.random() * (hi - lo + 1)) + lo;
+      }
+
+      function makeEquation() {
+        // Level 1: x + b = c, x - b = c  (addition/subtraction), positive whole answers
+        // Level 2: also a*x = c (multiplication, exact), x/a = c (division)
+        var t;
+        if (level === 1) {
+          t = Math.random() < 0.5 ? "add" : "sub";
+        } else {
+          var r = Math.random();
+          t = r < 0.3 ? "add" : r < 0.5 ? "sub" : r < 0.75 ? "mul" : "div";
+        }
+        var x, b, c, eq, op;
+        if (t === "add") {
+          x = randInt(1, 15);
+          b = randInt(1, 12);
+          c = x + b;
+          eq = "x + " + b + " = " + c;
+          op = "+";
+        } else if (t === "sub") {
+          b = randInt(1, 9);
+          x = randInt(b + 1, 18);
+          c = x - b;
+          eq = "x − " + b + " = " + c;
+          op = "-";
+        } else if (t === "mul") {
+          b = randInt(2, 6);
+          x = randInt(2, 9);
+          c = b * x;
+          eq = b + "x = " + c;
+          op = "*";
+        } else {
+          b = randInt(2, 5);
+          x = randInt(2, 8);
+          c = x * b;
+          eq = "x ÷ " + b + " = " + c;
+          op = "/";
+        } // x/b=c -> x=c*b but display x÷b=c with c=x/b
+        // for division ensure integer: x is multiple of b
+        if (t === "div") {
+          x = b * randInt(2, 6);
+          c = x / b;
+          eq = "x ÷ " + b + " = " + c;
+        }
+        return { kind: t, x: x, b: b, c: c, eq: eq, op: op, ans: x };
+      }
+
+      function makeInequality() {
+        // forms: x + b > c, x - b < c, x > c, etc. Level1: add/sub & direct; Level2: includes mult/div (positive coeff, no flip needed at G6)
+        var ops = [">", "<", ">=", "<="];
+        var op = ops[randInt(0, 3)];
+        var kind, b, bound, display;
+        var r = Math.random();
+        if (level === 1) {
+          if (r < 0.5) {
+            // x + b OP c
+            b = randInt(1, 9);
+            var c = randInt(b + 1, 18);
+            bound = c - b;
+            kind = "add";
+            display = "x + " + b + " " + symbol(op) + " " + c;
+          } else {
+            // x - b OP c
+            b = randInt(1, 8);
+            var c2 = randInt(1, 12);
+            bound = c2 + b;
+            kind = "sub";
+            display = "x − " + b + " " + symbol(op) + " " + c2;
+          }
+        } else {
+          if (r < 0.5) {
+            // a x OP c  (a divides c)
+            b = randInt(2, 5);
+            var k = randInt(2, 8);
+            var c3 = b * k;
+            bound = k;
+            kind = "mul";
+            display = b + "x " + symbol(op) + " " + c3;
+          } else {
+            // x ÷ a OP c
+            b = randInt(2, 5);
+            var c4 = randInt(2, 7);
+            bound = c4 * b;
+            kind = "div";
+            display = "x ÷ " + b + " " + symbol(op) + " " + c4;
+          }
+        }
+        return {
+          kind: kind,
+          b: b,
+          op: op,
+          bound: bound,
+          display: display,
+          ans: bound,
+        };
+      }
+
+      function symbol(op) {
+        return op === ">" ? ">" : op === "<" ? "<" : op === ">=" ? "≥" : "≤";
+      }
+
+      /* deck building */
+      var deck = [];
+      function freshDeck() {
+        deck = [];
+        for (var i = 0; i < TOTAL; i++) {
+          deck.push(mode === "equation" ? makeEquation() : makeInequality());
+        }
+      }
+
+      /* ---------- balance scale SVG ---------- */
+      function drawScale(p, tilt) {
+        // tilt: -1 left heavy, 0 balanced, +1 right heavy
+        var svg = document.getElementById("scaleSvg");
+        var cx = 240,
+          beamY = 58,
+          pivotY = 70,
+          len = 150;
+        var dy = (tilt || 0) * 16;
+        var lx = cx - len,
+          rx = cx + len;
+        var ly = beamY + dy,
+          ry = beamY - dy;
+        var s = "";
+        // base + post
+        s +=
+          '<rect x="' +
+          (cx - 40) +
+          '" y="180" width="80" height="10" rx="3" fill="#1d3c52"/>';
+        s +=
+          '<rect x="' +
+          (cx - 6) +
+          '" y="' +
+          pivotY +
+          '" width="12" height="112" fill="#1d3c52"/>';
+        s +=
+          '<circle cx="' + cx + '" cy="' + pivotY + '" r="9" fill="#36d6e7"/>';
+        // beam
+        s +=
+          '<line x1="' +
+          lx +
+          '" y1="' +
+          ly +
+          '" x2="' +
+          rx +
+          '" y2="' +
+          ry +
+          '" stroke="#36d6e7" stroke-width="6" stroke-linecap="round"/>';
+        // pans
+        function pan(x, y, label, sub) {
+          s +=
+            '<line x1="' +
+            x +
+            '" y1="' +
+            y +
+            '" x2="' +
+            x +
+            '" y2="' +
+            (y + 28) +
+            '" stroke="#5b7e94" stroke-width="2"/>';
+          s +=
+            '<path d="M' +
+            (x - 34) +
+            " " +
+            (y + 28) +
+            " Q" +
+            x +
+            " " +
+            (y + 58) +
+            " " +
+            (x + 34) +
+            " " +
+            (y + 28) +
+            ' Z" fill="#143247" stroke="#5b7e94" stroke-width="2"/>';
+          s +=
+            '<text x="' +
+            x +
+            '" y="' +
+            (y + 44) +
+            '" fill="#eaf6ff" font-size="18" font-weight="700" text-anchor="middle" font-family="Cambria Math,Georgia,serif">' +
+            label +
+            "</text>";
+          if (sub)
+            s +=
+              '<text x="' +
+              x +
+              '" y="' +
+              (y + 74) +
+              '" fill="#8fb3cc" font-size="11" text-anchor="middle">' +
+              sub +
+              "</text>";
+        }
+        // left = expression with x, right = constant
+        var leftLabel, rightLabel;
+        if (p.kind === "add") {
+          leftLabel = "x+" + p.b;
+          rightLabel = "" + p.c;
+        } else if (p.kind === "sub") {
+          leftLabel = "x−" + p.b;
+          rightLabel = "" + p.c;
+        } else if (p.kind === "mul") {
+          leftLabel = p.b + "x";
+          rightLabel = "" + p.c;
+        } else {
+          leftLabel = "x÷" + p.b;
+          rightLabel = "" + p.c;
+        }
+        pan(lx, ly, leftLabel, lang === "es" ? "lado izquierdo" : "left side");
+        pan(rx, ry, rightLabel, lang === "es" ? "lado derecho" : "right side");
+        svg.innerHTML = s;
+      }
+
+      /* ---------- number line SVG ---------- */
+      var NL_MIN = -2,
+        NL_MAX = 20; // adjusted per-problem
+      function drawNumberLine() {
+        var svg = document.getElementById("numSvg");
+        var W = 480,
+          y = 56,
+          padL = 24,
+          padR = 24;
+        var span = NL_MAX - NL_MIN;
+        var usable = W - padL - padR;
+        function xOf(v) {
+          return padL + ((v - NL_MIN) / span) * usable;
+        }
+        var s = "";
+        // axis
+        s +=
+          '<line x1="' +
+          padL +
+          '" y1="' +
+          y +
+          '" x2="' +
+          (W - padR) +
+          '" y2="' +
+          y +
+          '" stroke="#5b7e94" stroke-width="3"/>';
+        // arrows
+        s +=
+          '<polygon points="' +
+          (W - padR) +
+          "," +
+          y +
+          " " +
+          (W - padR - 10) +
+          "," +
+          (y - 6) +
+          " " +
+          (W - padR - 10) +
+          "," +
+          (y + 6) +
+          '" fill="#5b7e94"/>';
+        s +=
+          '<polygon points="' +
+          padL +
+          "," +
+          y +
+          " " +
+          (padL + 10) +
+          "," +
+          (y - 6) +
+          " " +
+          (padL + 10) +
+          "," +
+          (y + 6) +
+          '" fill="#5b7e94"/>';
+        // ticks
+        for (var v = NL_MIN; v <= NL_MAX; v++) {
+          var x = xOf(v);
+          var major = v % 2 === 0;
+          s +=
+            '<line x1="' +
+            x +
+            '" y1="' +
+            (y - (major ? 7 : 4)) +
+            '" x2="' +
+            x +
+            '" y2="' +
+            (y + (major ? 7 : 4)) +
+            '" stroke="#5b7e94" stroke-width="' +
+            (major ? 2 : 1) +
+            '"/>';
+          if (major)
+            s +=
+              '<text x="' +
+              x +
+              '" y="' +
+              (y + 24) +
+              '" fill="#8fb3cc" font-size="11" text-anchor="middle">' +
+              v +
+              "</text>";
+        }
+        // ray + point if both op and point chosen
+        if (nlPoint !== null && ineqOp) {
+          var px = xOf(nlPoint);
+          var strict = ineqOp === ">" || ineqOp === "<";
+          var dir = ineqOp === ">" || ineqOp === ">=" ? 1 : -1;
+          var endx = dir > 0 ? W - padR : padL;
+          s +=
+            '<line x1="' +
+            px +
+            '" y1="' +
+            y +
+            '" x2="' +
+            endx +
+            '" y2="' +
+            y +
+            '" stroke="#ffd35c" stroke-width="5"/>';
+          s +=
+            '<polygon points="' +
+            endx +
+            "," +
+            y +
+            " " +
+            (endx - dir * 12) +
+            "," +
+            (y - 7) +
+            " " +
+            (endx - dir * 12) +
+            "," +
+            (y + 7) +
+            '" fill="#ffd35c"/>';
+          s +=
+            '<circle cx="' +
+            px +
+            '" cy="' +
+            y +
+            '" r="8" fill="' +
+            (strict ? "#06131f" : "#ffd35c") +
+            '" stroke="#ffd35c" stroke-width="3"/>';
+        } else if (nlPoint !== null) {
+          var px2 = xOf(nlPoint);
+          s +=
+            '<circle cx="' +
+            px2 +
+            '" cy="' +
+            y +
+            '" r="7" fill="#143247" stroke="#36d6e7" stroke-width="3"/>';
+        }
+        svg.innerHTML = s;
+        // store mapping for click
+        svg.__xOf = xOf;
+        svg.__padL = padL;
+        svg.__padR = padR;
+        svg.__W = W;
+        svg.__span = span;
+        svg.__usable = usable;
+      }
+      function setupNumberLineClicks() {
+        var svg = document.getElementById("numSvg");
+        svg.onclick = function (ev) {
+          if (answered) return;
+          var rect = svg.getBoundingClientRect();
+          var sx = ((ev.clientX - rect.left) / rect.width) * 480;
+          var v = Math.round(
+            NL_MIN + ((sx - svg.__padL) / svg.__usable) * svg.__span,
+          );
+          if (v < NL_MIN) v = NL_MIN;
+          if (v > NL_MAX) v = NL_MAX;
+          nlPoint = v;
+          drawNumberLine();
+        };
+      }
+
+      /* ---------- render ---------- */
+      function render() {
+        answered = false;
+        ineqOp = null;
+        nlPoint = null;
+        document.getElementById("feedback").className = "feedback";
+        document.getElementById("nextBtn").disabled = true;
+        document.getElementById("checkBtn").disabled = false;
+        document.getElementById("hintBox").open = false;
+        current = deck[qNum];
+        document.getElementById("qNum").textContent = qNum + 1;
+
+        if (mode === "equation") {
+          document.getElementById("equationArea").style.display = "";
+          document.getElementById("inequalityArea").style.display = "none";
+          document.getElementById("equation").textContent = current.eq;
+          var ax = document.getElementById("ansX");
+          ax.value = "";
+          ax.disabled = false;
+          ax.className = "";
+          drawScale(current, 0);
+        } else {
+          document.getElementById("equationArea").style.display = "none";
+          document.getElementById("inequalityArea").style.display = "";
+          document.getElementById("equation").textContent = current.display;
+          var ix = document.getElementById("ineqX");
+          ix.value = "";
+          ix.disabled = false;
+          ix.className = "";
+          // operator chips
+          var ops = [
+            [">", ">"],
+            ["<", "<"],
+            [">=", "≥"],
+            ["<=", "≤"],
+          ];
+          var html = "";
+          for (var i = 0; i < ops.length; i++) {
+            html +=
+              '<div class="chip" data-op="' +
+              ops[i][0] +
+              '" onclick="pickOp(this)">x ' +
+              ops[i][1] +
+              " ?</div>";
+          }
+          document.getElementById("ineqPick").innerHTML = html;
+          // set number line range around bound
+          NL_MIN = Math.min(-2, current.bound - 6);
+          NL_MAX = Math.max(current.bound + 6, 10);
+          drawNumberLine();
+          setupNumberLineClicks();
+        }
+        applyLang();
+      }
+
+      function pickOp(el) {
+        if (answered) return;
+        var all = document.querySelectorAll(".chip");
+        for (var i = 0; i < all.length; i++) all[i].classList.remove("sel");
+        el.classList.add("sel");
+        ineqOp = el.getAttribute("data-op");
+        drawNumberLine();
+      }
+
+      /* ---------- hints ---------- */
+      function setHints() {
+        var h1 = "",
+          h2 = "";
+        var es = lang === "es";
+        if (mode === "equation") {
+          var inv;
+          if (current.kind === "add")
+            inv = es
+              ? "Resta " + current.b + " a ambos lados."
+              : "Subtract " + current.b + " from both sides.";
+          else if (current.kind === "sub")
+            inv = es
+              ? "Suma " + current.b + " a ambos lados."
+              : "Add " + current.b + " to both sides.";
+          else if (current.kind === "mul")
+            inv = es
+              ? "Divide ambos lados entre " + current.b + "."
+              : "Divide both sides by " + current.b + ".";
+          else
+            inv = es
+              ? "Multiplica ambos lados por " + current.b + "."
+              : "Multiply both sides by " + current.b + ".";
+          h1 =
+            (es
+              ? "Usa la operación inversa para aislar x. "
+              : "Use the inverse operation to get x alone. ") + inv;
+          h2 = es
+            ? "Comprueba tu respuesta sustituyéndola en la ecuación original."
+            : "Check your answer by substituting it back into the original equation.";
+        } else {
+          h1 = es
+            ? "Resuelve igual que una ecuación: usa la operación inversa para despejar x. Eso te da el punto límite."
+            : "Solve it like an equation: use the inverse operation to isolate x. That gives the boundary point.";
+          h2 = es
+            ? "Para > y < usa un círculo abierto (vacío); para ≥ y ≤ usa un círculo cerrado (relleno). La flecha apunta hacia los valores que cumplen."
+            : "For > and < use an open (hollow) circle; for ≥ and ≤ use a closed (filled) circle. The arrow points toward the values that make it true.";
+        }
+        document.getElementById("hint1").innerHTML = h1;
+        document.getElementById("hint2").innerHTML = h2;
+      }
+
+      /* ---------- check ---------- */
+      function checkAnswer() {
+        if (answered) return;
+        if (mode === "equation") checkEquation();
+        else checkInequality();
+      }
+
+      function checkEquation() {
+        var inp = document.getElementById("ansX");
+        var v = parseInt(inp.value, 10);
+        if (isNaN(v)) {
+          flashHint();
+          return;
+        }
+        answered = true;
+        inp.disabled = true;
+        var right = v === current.ans;
+        inp.className = right ? "ok" : "no";
+        // animate scale: balanced if right, tips toward heavier side if wrong
+        drawScale(current, right ? 0 : v > current.ans ? -1 : 1);
+        if (right) onCorrect();
+        else onWrong();
+        finishRound();
+      }
+
+      function checkInequality() {
+        var inp = document.getElementById("ineqX");
+        var v = parseInt(inp.value, 10);
+        if (isNaN(v) || !ineqOp || nlPoint === null) {
+          flashHint();
+          return;
+        }
+        answered = true;
+        inp.disabled = true;
+        var okBound = v === current.ans;
+        var okOp = ineqOp === current.op;
+        var okPoint = nlPoint === current.ans;
+        inp.className = okBound ? "ok" : "no";
+        var right = okBound && okOp && okPoint;
+        if (right) onCorrect();
+        else onWrong();
+        finishRound();
+      }
+
+      function onCorrect() {
+        score++;
+        streak++;
+        document.getElementById("score").textContent = score;
+        document.getElementById("streak").textContent = streak;
+        var fb = document.getElementById("feedback");
+        fb.className = "feedback good show";
+        document.getElementById("fbTitle").textContent =
+          streak >= 3
+            ? "⚡ " +
+              (lang === "es"
+                ? "¡Racha de " + streak + "!"
+                : streak + " in a row!")
+            : "✅ " + (lang === "es" ? "¡Resuelto!" : "Solved!");
+        document.getElementById("fbBody").innerHTML = explain("en");
+        document.getElementById("fbEs").innerHTML =
+          lang === "es" ? "" : explain("es");
+        sparks();
+      }
+      function onWrong() {
+        streak = 0;
+        document.getElementById("streak").textContent = 0;
+        var fb = document.getElementById("feedback");
+        fb.className = "feedback bad show";
+        document.getElementById("fbTitle").textContent =
+          "❌ " +
+          (lang === "es"
+            ? "Aún no — revisa la solución"
+            : "Not yet — check the solution");
+        document.getElementById("fbBody").innerHTML = explain("en");
+        document.getElementById("fbEs").innerHTML =
+          lang === "es" ? "" : explain("es");
+        // reveal correct inequality graph
+        if (mode === "inequality") {
+          ineqOp = current.op;
+          nlPoint = current.ans;
+          drawNumberLine();
+        }
+      }
+
+      function explain(L) {
+        var es = L === "es";
+        if (mode === "equation") {
+          var step;
+          if (current.kind === "add")
+            step = es
+              ? "Resta " +
+                current.b +
+                ": x = " +
+                current.c +
+                " − " +
+                current.b +
+                " = " +
+                current.ans +
+                "."
+              : "Subtract " +
+                current.b +
+                ": x = " +
+                current.c +
+                " − " +
+                current.b +
+                " = " +
+                current.ans +
+                ".";
+          else if (current.kind === "sub")
+            step = es
+              ? "Suma " +
+                current.b +
+                ": x = " +
+                current.c +
+                " + " +
+                current.b +
+                " = " +
+                current.ans +
+                "."
+              : "Add " +
+                current.b +
+                ": x = " +
+                current.c +
+                " + " +
+                current.b +
+                " = " +
+                current.ans +
+                ".";
+          else if (current.kind === "mul")
+            step = es
+              ? "Divide entre " +
+                current.b +
+                ": x = " +
+                current.c +
+                " ÷ " +
+                current.b +
+                " = " +
+                current.ans +
+                "."
+              : "Divide by " +
+                current.b +
+                ": x = " +
+                current.c +
+                " ÷ " +
+                current.b +
+                " = " +
+                current.ans +
+                ".";
+          else
+            step = es
+              ? "Multiplica por " +
+                current.b +
+                ": x = " +
+                current.c +
+                " × " +
+                current.b +
+                " = " +
+                current.ans +
+                "."
+              : "Multiply by " +
+                current.b +
+                ": x = " +
+                current.c +
+                " × " +
+                current.b +
+                " = " +
+                current.ans +
+                ".";
+          return "<b>x = " + current.ans + "</b>. " + step;
+        } else {
+          var solText = "x " + symbol(current.op) + " " + current.ans;
+          var circ =
+            current.op === ">" || current.op === "<"
+              ? es
+                ? "círculo abierto"
+                : "open circle"
+              : es
+                ? "círculo cerrado"
+                : "closed circle";
+          var dirTxt =
+            current.op === ">" || current.op === ">="
+              ? es
+                ? "a la derecha"
+                : "to the right"
+              : es
+                ? "a la izquierda"
+                : "to the left";
+          return (
+            "<b>" +
+            solText +
+            "</b>. " +
+            (es
+              ? "Punto límite en " +
+                current.ans +
+                " (" +
+                circ +
+                "), flecha " +
+                dirTxt +
+                "."
+              : "Boundary point at " +
+                current.ans +
+                " (" +
+                circ +
+                "), arrow " +
+                dirTxt +
+                ".")
+          );
+        }
+      }
+
+      function finishRound() {
+        document.getElementById("checkBtn").disabled = true;
+        document.getElementById("nextBtn").disabled = false;
+      }
+      function nextRound() {
+        if (qNum + 1 >= TOTAL) {
+          showWin();
+          return;
+        }
+        qNum++;
+        render();
+        document.getElementById("feedback").className = "feedback";
+      }
+
+      function showWin() {
+        var pct = Math.round((score / TOTAL) * 100);
+        document.getElementById("winBanner").classList.add("show");
+        document.getElementById("gameCard").style.display = "none";
+        var title;
+        if (pct === 100)
+          title =
+            "🏆 " +
+            (lang === "es" ? "¡Campeón de la Arena!" : "Arena Champion!");
+        else if (pct >= 70)
+          title =
+            "⭐ " + (lang === "es" ? "¡Gran Solucionador!" : "Strong Solver!");
+        else
+          title =
+            "💪 " + (lang === "es" ? "¡Sigue entrenando!" : "Keep Training!");
+        document.getElementById("winTitle").textContent = title;
+        document.getElementById("winMsg").textContent =
+          lang === "es"
+            ? "Resolviste " + score + " de " + TOTAL + " (" + pct + "%)."
+            : "You solved " + score + " of " + TOTAL + " (" + pct + "%).";
+        document.getElementById("winBtn").textContent =
+          lang === "es" ? "Jugar de nuevo" : "Play Again";
+      }
+
+      function restart() {
+        score = 0;
+        streak = 0;
+        qNum = 0;
+        answered = false;
+        document.getElementById("score").textContent = 0;
+        document.getElementById("streak").textContent = 0;
+        document.getElementById("winBanner").classList.remove("show");
+        document.getElementById("gameCard").style.display = "";
+        freshDeck();
+        render();
+      }
+
+      function setMode(m) {
+        if (mode === m) return;
+        mode = m;
+        document
+          .getElementById("mEq")
+          .classList.toggle("active", m === "equation");
+        document
+          .getElementById("mIneq")
+          .classList.toggle("active", m === "inequality");
+        restart();
+      }
+      function setLevel(L) {
+        if (level === L) return;
+        level = L;
+        document.getElementById("lvl1").classList.toggle("active", L === 1);
+        document.getElementById("lvl2").classList.toggle("active", L === 2);
+        applyLang();
+        restart();
+      }
+
+      /* ---------- language ---------- */
+      function setLang(L) {
+        lang = L;
+        document
+          .getElementById("langEN")
+          .classList.toggle("active", L === "en");
+        document
+          .getElementById("langES")
+          .classList.toggle("active", L === "es");
+        applyLang();
+      }
+      function applyLang() {
+        var es = lang === "es";
+        document.getElementById("prompt").textContent =
+          mode === "equation"
+            ? es
+              ? "Resuelve para x. ¡Mantén la balanza equilibrada!"
+              : "Solve for x. Keep the scale balanced!"
+            : es
+              ? "Resuelve, luego grafica la desigualdad en la recta numérica."
+              : "Solve, then graph the inequality on the number line.";
+        document.getElementById("promptEs").style.display = "block";
+        document.getElementById("promptEs").textContent =
+          mode === "equation"
+            ? es
+              ? "(Usa la operación inversa para despejar x.)"
+              : "(Use the inverse operation to isolate x.)"
+            : es
+              ? "(Elige el símbolo y toca el punto límite.)"
+              : "(Pick the symbol and tap the boundary point.)";
+        document.getElementById("lblQ").firstChild.textContent = es
+          ? "Ronda "
+          : "Round ";
+        document.getElementById("lblScore").firstChild.textContent = es
+          ? "Resueltas: "
+          : "Solved: ";
+        document.getElementById("lblStreak").firstChild.textContent = es
+          ? "⚡ Racha: "
+          : "⚡ Streak: ";
+        document.getElementById("lblLevel").firstChild.textContent = es
+          ? "Modo: "
+          : "Mode: ";
+        document.getElementById("lvlLabel").textContent =
+          level === 1
+            ? es
+              ? "Nivel 1 · Apoyo"
+              : "Level 1 · Support"
+            : es
+              ? "Nivel 2 · Reto"
+              : "Level 2 · Challenge";
+        document.getElementById("checkBtn").textContent = es
+          ? "Comprobar"
+          : "Check Answer";
+        document.getElementById("nextBtn").innerHTML = es
+          ? "Siguiente &rarr;"
+          : "Next &rarr;";
+        document.getElementById("resetBtn").textContent = es
+          ? "Reiniciar"
+          : "Reset";
+        document.getElementById("hintSummary").textContent = es
+          ? "💡 ¿Necesitas una pista?"
+          : "💡 Need a hint?";
+        document.getElementById("ineqStep1").textContent = es
+          ? "Paso 1 · Resuelve para el punto límite:"
+          : "Step 1 · Solve for the boundary value:";
+        document.getElementById("ineqStep2").textContent = es
+          ? "Paso 2 · Elige el símbolo de desigualdad:"
+          : "Step 2 · Choose the inequality symbol:";
+        document.getElementById("nlInstr").textContent = es
+          ? "Toca la recta numérica donde va el punto límite."
+          : "Tap the number line where the boundary point goes.";
+        document.getElementById("ineqLabel").textContent = es ? "x =" : "x =";
+        document.getElementById("ansLabel").textContent = "x =";
+        if (current) setHints();
+        if (current && mode === "equation")
+          drawScale(
+            current,
+            answered
+              ? parseInt(document.getElementById("ansX").value, 10) ===
+                current.ans
+                ? 0
+                : 0
+              : 0,
+          );
+        if (current && mode === "inequality") drawNumberLine();
+      }
+
+      /* ---------- effects ---------- */
+      function sparks() {
+        var emo = ["✨", "⚡", "⭐", "🎯"];
+        for (var i = 0; i < 7; i++) {
+          (function (i) {
+            var el = document.createElement("div");
+            el.className = "spark";
+            el.textContent = emo[Math.floor(Math.random() * emo.length)];
+            el.style.left = 40 + Math.random() * 40 + "%";
+            el.style.top = 35 + Math.random() * 20 + "%";
+            el.style.animationDelay = i * 0.05 + "s";
+            document.body.appendChild(el);
+            setTimeout(function () {
+              el.remove();
+            }, 1100);
+          })(i);
+        }
+      }
+      function flashHint() {
+        document.getElementById("hintBox").open = true;
+      }
+
+      /* ---------- boot ---------- */
+      freshDeck();
+      render();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

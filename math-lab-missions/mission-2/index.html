@@ -1,0 +1,1746 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.NS.B.4 · Unit 1" data-standard="6.NS.B.4" data-unit="1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 2: Prime Factorization (6.NS.B.4) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 340px;
+        height: auto;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+
+      .language-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .language-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid,
+        .vocab-grid,
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a href="../mission-1/">Previous Mission</a>
+          <a href="../mission-3/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 2 &middot; Unit 1</p>
+          <h1 id="mission-title">Prime Factorization</h1>
+          <span class="standards">6.NS.B.4 &middot; Unit 1</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Break numbers into prime factors and use them to find GCF and LCM.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="scenario">
+            The school band and the school choir are performing together at the
+            spring concert. The band plays a repeating pattern every
+            <strong>18 beats</strong> and the choir claps every
+            <strong>24 beats</strong>. The music director needs to know:
+            <em
+              >When will the band pattern and the choir clap land on the exact
+              same beat for the first time?</em
+            >
+            Your team will use prime factorization and factor trees to find the
+            LCM and answer this question.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 340 400"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Factor trees for 18 and 24 growing from musical notes"
+          >
+            <!-- Background -->
+            <rect width="340" height="400" rx="16" fill="#edf5ff" />
+            <!-- Title -->
+            <text
+              x="170"
+              y="32"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Spring Concert Beat Sync
+            </text>
+            <text
+              x="170"
+              y="52"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              When do the band and choir land on the same beat?
+            </text>
+            <!-- Musical notes decoration -->
+            <circle cx="40" cy="75" r="8" fill="#b7791f" />
+            <line
+              x1="48"
+              y1="75"
+              x2="48"
+              y2="45"
+              stroke="#b7791f"
+              stroke-width="2.5"
+            />
+            <path d="M48 45 Q58 42 55 52" fill="#b7791f" />
+            <circle cx="300" cy="75" r="8" fill="#207a7a" />
+            <line
+              x1="308"
+              y1="75"
+              x2="308"
+              y2="45"
+              stroke="#207a7a"
+              stroke-width="2.5"
+            />
+            <path d="M308 45 Q318 42 315 52" fill="#207a7a" />
+            <!-- Factor tree for 18 (left side) -->
+            <rect
+              x="15"
+              y="90"
+              width="145"
+              height="270"
+              rx="10"
+              fill="rgba(255,255,255,0.7)"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="87"
+              y="115"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Factor Tree: 18
+            </text>
+            <!-- 18 -->
+            <circle cx="87" cy="145" r="18" fill="#23395d" />
+            <text
+              x="87"
+              y="150"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#fff"
+            >
+              18
+            </text>
+            <!-- branches to 2 and 9 -->
+            <line
+              x1="75"
+              y1="160"
+              x2="52"
+              y2="195"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="99"
+              y1="160"
+              x2="122"
+              y2="195"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <!-- 2 (prime) -->
+            <circle cx="52" cy="210" r="16" fill="#207a7a" />
+            <text
+              x="52"
+              y="215"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              2
+            </text>
+            <!-- 9 -->
+            <circle cx="122" cy="210" r="16" fill="#23395d" />
+            <text
+              x="122"
+              y="215"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              9
+            </text>
+            <!-- branches from 9 to 3 and 3 -->
+            <line
+              x1="112"
+              y1="224"
+              x2="95"
+              y2="258"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="132"
+              y1="224"
+              x2="140"
+              y2="258"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <!-- 3 (prime) -->
+            <circle cx="95" cy="272" r="16" fill="#207a7a" />
+            <text
+              x="95"
+              y="277"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              3
+            </text>
+            <!-- 3 (prime) -->
+            <circle cx="140" cy="272" r="16" fill="#207a7a" />
+            <text
+              x="140"
+              y="277"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              3
+            </text>
+            <!-- Result -->
+            <text
+              x="87"
+              y="320"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              18 = 2 x 3 x 3
+            </text>
+            <text
+              x="87"
+              y="340"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              18 = 2 x 3&#178;
+            </text>
+            <!-- Factor tree for 24 (right side) -->
+            <rect
+              x="180"
+              y="90"
+              width="145"
+              height="270"
+              rx="10"
+              fill="rgba(255,255,255,0.7)"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="252"
+              y="115"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Factor Tree: 24
+            </text>
+            <!-- 24 -->
+            <circle cx="252" cy="145" r="18" fill="#23395d" />
+            <text
+              x="252"
+              y="150"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#fff"
+            >
+              24
+            </text>
+            <!-- branches to 4 and 6 -->
+            <line
+              x1="240"
+              y1="160"
+              x2="217"
+              y2="195"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="264"
+              y1="160"
+              x2="287"
+              y2="195"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <!-- 4 -->
+            <circle cx="217" cy="210" r="16" fill="#23395d" />
+            <text
+              x="217"
+              y="215"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              4
+            </text>
+            <!-- 6 -->
+            <circle cx="287" cy="210" r="16" fill="#23395d" />
+            <text
+              x="287"
+              y="215"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              6
+            </text>
+            <!-- branches from 4 to 2 and 2 -->
+            <line
+              x1="207"
+              y1="224"
+              x2="197"
+              y2="258"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="227"
+              y1="224"
+              x2="237"
+              y2="258"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <circle cx="197" cy="272" r="16" fill="#207a7a" />
+            <text
+              x="197"
+              y="277"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              2
+            </text>
+            <circle cx="237" cy="272" r="16" fill="#207a7a" />
+            <text
+              x="237"
+              y="277"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              2
+            </text>
+            <!-- branches from 6 to 2 and 3 -->
+            <line
+              x1="277"
+              y1="224"
+              x2="267"
+              y2="258"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="297"
+              y1="224"
+              x2="307"
+              y2="258"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <circle cx="267" cy="272" r="16" fill="#207a7a" />
+            <text
+              x="267"
+              y="277"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              2
+            </text>
+            <circle cx="307" cy="272" r="16" fill="#207a7a" />
+            <text
+              x="307"
+              y="277"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              3
+            </text>
+            <!-- Result -->
+            <text
+              x="252"
+              y="320"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              24 = 2 x 2 x 2 x 3
+            </text>
+            <text
+              x="252"
+              y="340"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              24 = 2&#179; x 3
+            </text>
+            <!-- LCM banner -->
+            <rect
+              x="60"
+              y="370"
+              width="220"
+              height="24"
+              rx="12"
+              fill="#b7791f"
+            />
+            <text
+              x="170"
+              y="387"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="900"
+              fill="#fff"
+            >
+              LCM = ? beats
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the concert beat problem aloud, makes sure every person
+                  builds at least one factor tree, and tracks the phase
+                  timer.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Draws factor trees for 18 and 24, writes the prime
+                  factorization using exponents, and builds the Venn diagram of
+                  shared primes.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Multiplies the prime factors back to check each tree,
+                  verifies the LCM by confirming both 18 and 24 divide evenly
+                  into it.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: explains the factor trees, shows how
+                  LCM was found, and describes one revision the team made.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>
+                The school band repeats its pattern every
+                <strong>18 beats</strong>. The choir claps every
+                <strong>24 beats</strong>. Both start at beat 0.
+              </p>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>
+                  Build a factor tree for 18 and write its prime factorization.
+                </li>
+                <li>
+                  Build a factor tree for 24 and write its prime factorization.
+                </li>
+                <li>
+                  Use the prime factorizations to find the LCM (the first beat
+                  where both patterns land together).
+                </li>
+                <li>
+                  Verify by listing multiples of both numbers until they match.
+                </li>
+                <li>
+                  Find the GCF of 18 and 24 using the same prime factorizations.
+                </li>
+              </ol>
+            </div>
+
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 560 200"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Venn diagram showing shared and unique prime factors of 18 and 24"
+              >
+                <!-- Venn diagram -->
+                <ellipse
+                  cx="210"
+                  cy="105"
+                  rx="140"
+                  ry="80"
+                  fill="#ecf8f6"
+                  stroke="#207a7a"
+                  stroke-width="2"
+                  opacity="0.7"
+                />
+                <ellipse
+                  cx="350"
+                  cy="105"
+                  rx="140"
+                  ry="80"
+                  fill="#edf5ff"
+                  stroke="#23395d"
+                  stroke-width="2"
+                  opacity="0.7"
+                />
+                <!-- Labels -->
+                <text
+                  x="150"
+                  y="45"
+                  text-anchor="middle"
+                  font-size="15"
+                  font-weight="900"
+                  fill="#207a7a"
+                >
+                  18
+                </text>
+                <text
+                  x="410"
+                  y="45"
+                  text-anchor="middle"
+                  font-size="15"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  24
+                </text>
+                <!-- Only in 18 -->
+                <text
+                  x="140"
+                  y="100"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="800"
+                  fill="#207a7a"
+                >
+                  3
+                </text>
+                <text
+                  x="140"
+                  y="125"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#5b6573"
+                >
+                  (extra 3)
+                </text>
+                <!-- Shared -->
+                <text
+                  x="280"
+                  y="85"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  2
+                </text>
+                <text
+                  x="280"
+                  y="115"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  3
+                </text>
+                <text
+                  x="280"
+                  y="145"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#5b6573"
+                >
+                  shared
+                </text>
+                <!-- Only in 24 -->
+                <text
+                  x="420"
+                  y="100"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  2
+                </text>
+                <text
+                  x="420"
+                  y="125"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  2
+                </text>
+                <text
+                  x="420"
+                  y="150"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#5b6573"
+                >
+                  (extra 2s)
+                </text>
+                <!-- LCM formula at bottom -->
+                <text
+                  x="280"
+                  y="195"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  LCM = all unique primes at highest power = 2&#179; x 3&#178; =
+                  ?
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Build a factor tree for 18</strong>
+                Start by splitting 18 into any two factors (like 2 x 9 or 3 x
+                6). Keep splitting until every bottom number is prime. Circle
+                the prime numbers.
+                <p class="guiding-q">
+                  Does it matter which pair you start with? Will you get
+                  different prime factors?
+                </p>
+              </li>
+              <li>
+                <strong>Build a factor tree for 24</strong>
+                Do the same for 24. Try starting with a different pair than
+                another team member (one person tries 4 x 6, another tries 2 x
+                12). Compare results.
+                <p class="guiding-q">
+                  Did different starting points give the same prime
+                  factorization? Why does that happen?
+                </p>
+              </li>
+              <li>
+                <strong
+                  >Write each as a product of primes with exponents</strong
+                >
+                18 = 2 x 3 x 3 = 2 x 3&#178;. Write 24 the same way. Using
+                exponents makes it easier to compare the structures.
+                <p class="guiding-q">
+                  Which prime appears more times in 24 than in 18?
+                </p>
+              </li>
+              <li>
+                <strong>Find the LCM using prime factorizations</strong>
+                Take each prime that appears in EITHER factorization. Use the
+                HIGHEST power of that prime. Multiply them together.
+                <p class="guiding-q">
+                  Why do we use the highest power, not the lowest?
+                </p>
+              </li>
+              <li>
+                <strong>Verify by listing multiples</strong>
+                Write multiples of 18: 18, 36, 54, 72... Write multiples of 24:
+                24, 48, 72... The first number on BOTH lists is the LCM. Does it
+                match your answer from step 4?
+                <p class="guiding-q">
+                  How does the list method confirm (or correct) your factor-tree
+                  method?
+                </p>
+              </li>
+              <li>
+                <strong>Find the GCF using the same factorizations</strong>
+                For the GCF, take each prime that appears in BOTH factorizations
+                and use the LOWEST power. Multiply. Check: does LCM x GCF = 18 x
+                24?
+                <p class="guiding-q">
+                  Why does the relationship LCM x GCF = product of the two
+                  numbers always work?
+                </p>
+              </li>
+            </ol>
+
+            <!-- Language SUPPORT -->
+            <div class="language-box">
+              <h3>Language Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Prime number:</strong> A number with exactly 2
+                  factors: 1 and itself (like 2, 3, 5, 7)
+                </div>
+                <div class="vocab-item">
+                  <strong>Composite number:</strong> A number with more than 2
+                  factors (like 4, 6, 9, 12)
+                </div>
+                <div class="vocab-item">
+                  <strong>Factor tree:</strong> A diagram that breaks a number
+                  into smaller and smaller factors until all are prime
+                </div>
+                <div class="vocab-item">
+                  <strong>Prime factorization:</strong> Writing a number as a
+                  product of only prime numbers
+                </div>
+                <div class="vocab-item">
+                  <strong>LCM:</strong> Least Common Multiple - the smallest
+                  number that both numbers divide into
+                </div>
+                <div class="vocab-item">
+                  <strong>Exponent:</strong> The small number that shows how
+                  many times to multiply a base (3&#178; means 3 x 3)
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "The prime factorization of ___ is ___ because those are the
+                  only prime numbers that multiply to ___."
+                </li>
+                <li>"I split ___ into ___ and ___ because ___ x ___ = ___."</li>
+                <li>
+                  "The LCM is ___ because it uses the highest power of each
+                  prime: ___."
+                </li>
+                <li>
+                  "I know ___ is prime because its only factors are 1 and ___."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>Factor Tree</h4>
+                <p>
+                  Branch diagram splitting a number down to its prime factors at
+                  the leaves.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Venn Diagram</h4>
+                <p>
+                  Place shared primes in the overlap. Unique primes go in each
+                  circle. LCM = all, GCF = overlap.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Listing Multiples</h4>
+                <p>
+                  Write multiples of both numbers. The first match is the LCM.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <!-- TIMED PHASES -->
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Launch phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  03:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="3"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">3 min</span>
+                  <span class="phase-title">Launch</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the concert problem aloud. Assign roles. Underline 18,
+                    24, and the question about when the beats sync. Discuss:
+                    what does "land on the same beat" mean mathematically?
+                  </p>
+                  <p class="guiding-q">
+                    How is this question related to multiples?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: every member can explain what LCM means in
+                    this problem.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span>
+                  <span class="phase-title">Build</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Model Builder draws factor trees for both 18 and 24. Try
+                    different starting splits. Write the prime factorization
+                    with exponents. Create a Venn diagram to sort shared vs.
+                    unique primes.
+                  </p>
+                  <p class="guiding-q">
+                    If you start 18 as 3 x 6 instead of 2 x 9, do you get the
+                    same primes at the bottom?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: both factor trees are complete and prime
+                    factorizations written with exponents.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span>
+                  <span class="phase-title">Solve</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Use the Venn diagram to find LCM (all primes at highest
+                    power) and GCF (shared primes at lowest power). Verify by
+                    listing multiples. Check: does LCM x GCF = 18 x 24?
+                  </p>
+                  <p class="guiding-q">
+                    What beat number is the LCM? List the first 5 multiples of
+                    each to confirm.
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: LCM verified two ways, GCF found, and the
+                    product check works.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span>
+                  <span class="phase-title">Defend</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares: show both factor trees, explain the Venn
+                    diagram, state the LCM as the answer, and show the
+                    verification. Describe one mistake the team caught.
+                  </p>
+                  <p class="guiding-q">
+                    How would you explain to the music director why the beats
+                    sync at that number?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: Reporter can present the full solution in
+                    under 60 seconds.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                A drummer joins the concert and plays a fill every
+                <strong>30 beats</strong>. Now find the LCM of 18, 24, and 30
+                using prime factorization. On which beat do ALL three patterns
+                align for the first time?
+              </p>
+            </div>
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                the choir changed to every 20 beats? Would the LCM get bigger or
+                smaller?
+              </li>
+              <li>
+                the band pattern was every 36 beats instead of 18? How does
+                doubling affect the factor tree?
+              </li>
+              <li>
+                one of the numbers was already prime (like 17)? What would its
+                factor tree look like?
+              </li>
+            </ul>
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Traffic lights at intersections use LCM thinking. If one light
+              cycles every 45 seconds and another every 60 seconds, engineers
+              need to know when both turn green together to manage traffic flow.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>
+                Show both factor trees. How do you know you reached all prime
+                factors?
+              </li>
+              <li>
+                What is the prime factorization of each number using exponents?
+              </li>
+              <li>How did you use the Venn diagram to find the LCM?</li>
+              <li>Why is the LCM the FIRST beat where both patterns sync?</li>
+              <li>Does LCM x GCF = 18 x 24? Show your check.</li>
+            </ol>
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>"The prime factorization of 18 is ___ and of 24 is ___."</li>
+              <li>
+                "We found the LCM by taking the highest power of each prime:
+                ___."
+              </li>
+              <li>"The band and choir will sync on beat ___ because..."</li>
+              <li>
+                "We verified by listing multiples: 18 goes ___, and 24 goes
+                ___."
+              </li>
+            </ul>
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Clear Claim</strong>State the LCM and what it means in
+                context
+              </div>
+              <div class="rubric-item">
+                <strong>Math Evidence</strong>Show factor trees, exponents, and
+                Venn diagram
+              </div>
+              <div class="rubric-item">
+                <strong>Verification</strong>Confirm with listing method and
+                product check
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>Factor trees for 18 and 24 with primes circled</li>
+                <li>Prime factorizations written with exponents</li>
+                <li>Venn diagram showing shared and unique primes</li>
+                <li>LCM calculation with explanation</li>
+                <li>Verification using the listing method</li>
+                <li>
+                  Three-sentence defense: claim, evidence, and verification
+                  check
+                </li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Factor Tree for 18:</strong></p>
+        <br /><br />
+        <p><strong>Factor Tree for 24:</strong></p>
+        <br /><br />
+        <p><strong>Prime Factorizations:</strong></p>
+        <br />
+        <p><strong>Venn Diagram:</strong></p>
+        <br /><br />
+        <p><strong>LCM and GCF:</strong></p>
+        <br />
+        <p><strong>Defense:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0,
+          remainingSeconds = phases[0].minutes * 60,
+          timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay");
+        var activePhaseLabel = document.getElementById("activePhaseLabel");
+        var phaseList = document.getElementById("phaseList");
+
+        function formatTime(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+        function selectPhase(i) {
+          stopTimer();
+          activePhaseIndex = i;
+          remainingSeconds = phases[i].minutes * 60;
+          activePhaseLabel.textContent = phases[i].title + " phase";
+          timerDisplay.textContent = formatTime(remainingSeconds);
+          phaseList.querySelectorAll(".phase").forEach(function (a, idx) {
+            a.classList.toggle("is-open", idx === i);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              idx === i ? "true" : "false",
+            );
+          });
+        }
+        phaseList.addEventListener("click", function (e) {
+          var t = e.target.closest(".phase-toggle");
+          if (t) selectPhase(Number(t.dataset.phase));
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent =
+                  phases[activePhaseIndex].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            selectPhase(activePhaseIndex);
+          });
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

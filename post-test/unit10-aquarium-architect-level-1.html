@@ -1,0 +1,4623 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Aquarium Architect — Volume &amp; 3D Geometry | Level 1 | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Theme: Ocean Teal / Coral / Deep Blue / Sand ── */
+      :root {
+        --aq-teal: #0d9488;
+        --aq-teal-dark: #0f766e;
+        --aq-teal-light: #14b8a6;
+        --aq-coral: #f97316;
+        --aq-coral-light: #fb923c;
+        --aq-deep: #1e3a5f;
+        --aq-deep-dark: #172554;
+        --aq-sand: #fde68a;
+        --aq-sand-light: #fef3c7;
+        --aq-surface: rgba(240, 253, 250, 0.92);
+        --aq-card: rgba(240, 253, 250, 0.88);
+        --aq-glass: rgba(13, 148, 136, 0.06);
+        --aq-text: #1e3a5f;
+        --aq-muted: #4b6a8a;
+        --aq-line: rgba(30, 58, 95, 0.12);
+        --aq-success: #15803d;
+        --aq-warn: #d97706;
+        --aq-error: #dc2626;
+        --radius: 14px;
+        --shadow: 0 8px 32px rgba(30, 58, 95, 0.12);
+        --font:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--aq-text);
+        line-height: 1.6;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* ── Ocean Background ── */
+      .ocean-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse at 30% 80%,
+            rgba(13, 148, 136, 0.12),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 20%,
+            rgba(249, 115, 22, 0.06),
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 50% 50%,
+            rgba(30, 58, 95, 0.04),
+            transparent 60%
+          ),
+          linear-gradient(
+            180deg,
+            #f0fdfa 0%,
+            #ecfdf5 30%,
+            #e0f7fa 70%,
+            #cffafe 100%
+          );
+      }
+
+      /* ── Bubbles ── */
+      .bubbles {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .bubble {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(255, 255, 255, 0.6),
+          rgba(13, 148, 136, 0.08)
+        );
+        border: 1px solid rgba(13, 148, 136, 0.1);
+        animation: bubbleRise linear infinite;
+      }
+      .bubble:nth-child(1) {
+        width: 20px;
+        height: 20px;
+        left: 10%;
+        animation-duration: 12s;
+        animation-delay: 0s;
+      }
+      .bubble:nth-child(2) {
+        width: 14px;
+        height: 14px;
+        left: 30%;
+        animation-duration: 16s;
+        animation-delay: 2s;
+      }
+      .bubble:nth-child(3) {
+        width: 24px;
+        height: 24px;
+        left: 55%;
+        animation-duration: 14s;
+        animation-delay: 4s;
+      }
+      .bubble:nth-child(4) {
+        width: 10px;
+        height: 10px;
+        left: 75%;
+        animation-duration: 18s;
+        animation-delay: 1s;
+      }
+      .bubble:nth-child(5) {
+        width: 16px;
+        height: 16px;
+        left: 90%;
+        animation-duration: 15s;
+        animation-delay: 3s;
+      }
+      .bubble:nth-child(6) {
+        width: 12px;
+        height: 12px;
+        left: 45%;
+        animation-duration: 20s;
+        animation-delay: 5s;
+      }
+      @keyframes bubbleRise {
+        0% {
+          bottom: -30px;
+          opacity: 0;
+          transform: translateX(0);
+        }
+        10% {
+          opacity: 0.6;
+        }
+        90% {
+          opacity: 0.3;
+        }
+        100% {
+          bottom: 110%;
+          opacity: 0;
+          transform: translateX(40px);
+        }
+      }
+
+      /* ── Coral Floor ── */
+      .coral-floor {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        z-index: 0;
+        pointer-events: none;
+        background: linear-gradient(
+          180deg,
+          transparent 0%,
+          rgba(13, 148, 136, 0.06) 50%,
+          rgba(13, 148, 136, 0.12) 100%
+        );
+      }
+
+      /* ── Shell ── */
+      .app-shell {
+        position: relative;
+        z-index: 1;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+
+      /* ── Progress Bar ── */
+      .progress-bar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(240, 253, 250, 0.95);
+        border-bottom: 2px solid var(--aq-line);
+        padding: 12px 24px;
+        border-radius: 0 0 var(--radius) var(--radius);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 16px rgba(30, 58, 95, 0.08);
+      }
+      .progress-bar .phase-dots {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+      }
+      .phase-dot {
+        width: 100%;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(30, 58, 95, 0.08);
+        transition: background 0.4s;
+      }
+      .phase-dot.completed {
+        background: var(--aq-success);
+      }
+      .phase-dot.active {
+        background: var(--aq-teal);
+        box-shadow: 0 0 12px rgba(13, 148, 136, 0.4);
+      }
+      .progress-label {
+        font-size: 0.82rem;
+        color: var(--aq-muted);
+        white-space: nowrap;
+        font-weight: 700;
+      }
+
+      /* ── Mode Toggle ── */
+      .mode-bar {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        padding: 12px 0;
+        margin-bottom: 8px;
+      }
+      .mode-btn {
+        padding: 8px 20px;
+        border: 2px solid var(--aq-line);
+        border-radius: 99px;
+        background: transparent;
+        color: var(--aq-muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font);
+      }
+      .mode-btn:hover {
+        border-color: var(--aq-teal);
+        color: var(--aq-teal);
+      }
+      .mode-btn.active {
+        background: var(--aq-teal);
+        border-color: var(--aq-teal);
+        color: #fff;
+      }
+      .challenge-only {
+        display: none;
+      }
+      .support-only {
+        display: none;
+      }
+      body.challenge-mode .challenge-only {
+        display: block;
+      }
+      body.support-mode .support-only {
+        display: block;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--aq-card);
+        border: 2px solid var(--aq-line);
+        border-radius: var(--radius);
+        padding: 32px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(8px);
+        position: relative;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--aq-teal),
+          var(--aq-coral),
+          var(--aq-teal)
+        );
+        border-radius: var(--radius) var(--radius) 0 0;
+      }
+      .card-glow {
+        border-color: rgba(13, 148, 136, 0.25);
+        box-shadow:
+          0 0 40px rgba(13, 148, 136, 0.06),
+          var(--shadow);
+      }
+      .card h2 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, var(--aq-deep), var(--aq-teal));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .card h3 {
+        font-size: 1.15rem;
+        color: var(--aq-teal-dark);
+        margin-bottom: 12px;
+      }
+      .card p,
+      .card li {
+        color: var(--aq-text);
+        line-height: 1.7;
+      }
+
+      /* ── Phase Sections ── */
+      .phase {
+        display: none;
+        animation: fadeUp 0.5s ease;
+      }
+      .phase.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .phase-header {
+        text-align: center;
+        padding: 40px 20px 32px;
+        position: relative;
+      }
+      .phase-header .phase-number {
+        display: inline-block;
+        padding: 6px 18px;
+        background: linear-gradient(135deg, var(--aq-teal), var(--aq-coral));
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        color: #fff;
+      }
+      .phase-header h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        background: linear-gradient(135deg, var(--aq-deep), var(--aq-teal));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .phase-header p {
+        color: var(--aq-muted);
+        max-width: 640px;
+        margin: 0 auto;
+        font-size: 1.05rem;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font);
+      }
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--aq-teal),
+          var(--aq-teal-dark)
+        );
+        color: #fff;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(13, 148, 136, 0.3);
+      }
+      .btn-coral {
+        background: linear-gradient(
+          135deg,
+          var(--aq-coral),
+          var(--aq-coral-light)
+        );
+        color: #fff;
+      }
+      .btn-coral:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--aq-line);
+        color: var(--aq-text);
+      }
+      .btn-outline:hover {
+        border-color: var(--aq-teal);
+        color: var(--aq-teal);
+      }
+      .btn-sm {
+        padding: 8px 18px;
+        font-size: 0.85rem;
+      }
+      .btn-block {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* ── Forms ── */
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--aq-teal-dark);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid var(--aq-line);
+        border-radius: var(--radius);
+        color: var(--aq-text);
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        font-family: var(--font);
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--aq-teal);
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+      }
+      .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 640px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Task Cards ── */
+      .task {
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid var(--aq-line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+      }
+      .task.completed {
+        border-color: var(--aq-success);
+      }
+      .task-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .task-number {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--aq-teal), var(--aq-coral));
+        border-radius: 50%;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .task-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      .task-check {
+        margin-left: auto;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid var(--aq-line);
+        display: grid;
+        place-items: center;
+        transition: all 0.3s;
+      }
+      .task.completed .task-check {
+        background: var(--aq-success);
+        border-color: var(--aq-success);
+      }
+
+      /* ── SVG Containers ── */
+      .svg-scene {
+        display: flex;
+        justify-content: center;
+        margin: 24px 0;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius);
+        border: 1px solid var(--aq-line);
+        overflow-x: auto;
+      }
+      .svg-scene svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ── Hint System ── */
+      .hint-box {
+        margin-top: 12px;
+        border: 1px dashed rgba(13, 148, 136, 0.3);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .hint-toggle {
+        width: 100%;
+        padding: 10px 16px;
+        background: rgba(13, 148, 136, 0.05);
+        border: none;
+        color: var(--aq-teal-dark);
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-align: left;
+        font-family: var(--font);
+      }
+      .hint-toggle:hover {
+        background: rgba(13, 148, 136, 0.1);
+      }
+      .hint-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        padding: 0 16px;
+        background: rgba(13, 148, 136, 0.03);
+      }
+      .hint-box.open .hint-content {
+        max-height: 500px;
+        padding: 12px 16px;
+      }
+      .hint-content p {
+        font-size: 0.9rem;
+        color: var(--aq-muted);
+        margin-bottom: 0;
+      }
+
+      /* ── Tool Panels ── */
+      .tool-panel {
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid rgba(13, 148, 136, 0.15);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 20px 0;
+      }
+      .tool-panel h4 {
+        font-size: 1rem;
+        color: var(--aq-teal-dark);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tool-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .tool-input {
+        padding: 8px 14px;
+        width: 80px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid var(--aq-line);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--aq-text);
+        font-family: "Courier New", monospace;
+      }
+      .tool-input:focus {
+        outline: none;
+        border-color: var(--aq-teal);
+      }
+      .tool-result {
+        padding: 12px 16px;
+        background: rgba(13, 148, 136, 0.05);
+        border-radius: 8px;
+        font-weight: 600;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* ── 3D Tank Visual ── */
+      .tank-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+        margin: 16px 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius);
+        border: 1px solid var(--aq-line);
+      }
+      .tank-canvas {
+        max-width: 100%;
+        touch-action: none;
+      }
+
+      /* ── Slider Controls ── */
+      .slider-group {
+        margin-bottom: 16px;
+      }
+      .slider-group label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--aq-teal-dark);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .slider-group label span {
+        background: var(--aq-teal);
+        color: #fff;
+        padding: 2px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-family: "Courier New", monospace;
+      }
+      .slider-group input[type="range"] {
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: rgba(13, 148, 136, 0.15);
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .slider-group input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--aq-teal);
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+      }
+
+      /* ── Layout Helpers ── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+      }
+      @media (max-width: 768px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+      .mb-0 {
+        margin-bottom: 0;
+      }
+      .mt-20 {
+        margin-top: 20px;
+      }
+
+      /* ── Rubric ── */
+      .rubric-grid {
+        display: grid;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .rubric-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: center;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        border: 1px solid var(--aq-line);
+      }
+      .rubric-row > label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: none;
+        color: var(--aq-text);
+        letter-spacing: 0;
+      }
+      .rubric-options {
+        display: flex;
+        gap: 6px;
+      }
+      .rubric-options input[type="radio"] {
+        display: none;
+      }
+      .rubric-options label {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid var(--aq-line);
+        border-radius: 50%;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--aq-text);
+      }
+      .rubric-options input[type="radio"]:checked + label {
+        background: var(--aq-teal);
+        border-color: var(--aq-teal);
+        color: #fff;
+      }
+
+      .badge-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      /* ── Net Unfolder ── */
+      .net-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin: 16px 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius);
+        border: 1px solid var(--aq-line);
+      }
+
+      /* ── Print ── */
+      @media print {
+        .progress-bar,
+        .mode-bar,
+        .btn,
+        .hint-box,
+        .no-print,
+        .bubbles,
+        .coral-floor {
+          display: none !important;
+        }
+        body {
+          background: #fff !important;
+          color: #000 !important;
+        }
+        .ocean-bg {
+          display: none !important;
+        }
+        .app-shell {
+          padding: 0;
+          max-width: 100%;
+        }
+        .card,
+        .task {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+          background: #fff;
+        }
+        .card h2,
+        .card h3,
+        .phase-header h1 {
+          -webkit-text-fill-color: initial;
+          background: none;
+          color: #000;
+        }
+        .phase {
+          display: block !important;
+        }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 1366px) {
+        .app-shell {
+          max-width: 960px;
+        }
+      }
+      @media (max-width: 768px) {
+        .app-shell {
+          padding: 16px 12px 60px;
+        }
+        .card {
+          padding: 20px;
+        }
+        .task {
+          padding: 16px;
+        }
+        .phase-header {
+          padding: 24px 12px 20px;
+        }
+      }
+
+      /* ═══ ENHANCEMENT: Visual Polish ═══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.15);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes countUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes badgeBounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.12);
+        }
+      }
+      .task {
+        animation: cardEntrance 0.4s ease-out both;
+      }
+      .task:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .task:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .btn:not(:disabled):hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+      .btn:not(:disabled):active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      .xp-bar-wrap {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: rgba(15, 15, 25, 0.92);
+        backdrop-filter: blur(10px);
+        padding: 6px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-top: 2px solid rgba(13, 148, 136, 0.3);
+        font-family: var(--font);
+        transition: transform 0.3s;
+      }
+      .xp-bar-wrap.hidden {
+        transform: translateY(100%);
+      }
+      .xp-level {
+        color: #0d9488;
+        font-weight: 800;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+      .xp-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #0d9488, #f97316);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .xp-pts {
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+      .xp-toggle {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0 4px;
+      }
+      @media print {
+        .xp-bar-wrap {
+          display: none !important;
+        }
+      }
+
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1.5px solid rgba(13, 148, 136, 0.3);
+        background: rgba(13, 148, 136, 0.04);
+        color: #0d9488;
+        transition: all 0.2s;
+        margin-top: 6px;
+        font-family: var(--font);
+      }
+      .example-toggle:hover {
+        background: rgba(13, 148, 136, 0.1);
+      }
+      .example-content {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 14px;
+        background: rgba(13, 148, 136, 0.05);
+        border-left: 3px solid #0d9488;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.85rem;
+        animation: slideInLeft 0.3s ease-out;
+      }
+      .example-content.visible {
+        display: block;
+      }
+
+      .word-bank {
+        margin: 8px 0;
+        padding: 8px 12px;
+        background: rgba(249, 115, 22, 0.04);
+        border: 1px dashed rgba(249, 115, 22, 0.3);
+        border-radius: 8px;
+        font-size: 0.82rem;
+      }
+      .word-bank-label {
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #f97316;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        display: inline-block;
+        padding: 2px 8px;
+        margin: 2px;
+        background: rgba(249, 115, 22, 0.1);
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .word-chip:hover {
+        background: rgba(249, 115, 22, 0.2);
+        transform: scale(1.05);
+      }
+
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px 32px;
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        animation: popIn 0.5s ease-out;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 4px solid rgba(13, 148, 136, 0.15);
+        border-radius: 20px;
+        margin: 8px;
+        pointer-events: none;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 8px;
+        animation: badgeBounce 2s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #1e3a5f;
+        margin-bottom: 4px;
+      }
+      .cert-subtitle {
+        font-size: 0.92rem;
+        color: #6b7280;
+        margin-bottom: 16px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0d9488;
+        margin-bottom: 4px;
+      }
+      .cert-score {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #0d9488;
+        margin: 8px 0;
+        animation: countUp 0.6s ease-out;
+      }
+      .cert-xp {
+        font-size: 0.88rem;
+        color: #f97316;
+        font-weight: 600;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .cert-stat {
+        padding: 8px;
+        background: #f8fafc;
+        border-radius: 8px;
+      }
+      .cert-stat-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0d9488;
+      }
+      .cert-stat-lbl {
+        font-size: 0.7rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 10px;
+        background: #0d9488;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .cert-close:hover {
+        filter: brightness(1.1);
+      }
+      @media print {
+        .certificate-overlay {
+          display: none !important;
+        }
+      }
+    </style>
+  
+    <style id="NEFT-UPGRADE-6-10-css">
+      /* === Neft Teacher readability + help upgrade (units 6-10) === */
+      html { font-size: 18px; }
+      body { line-height: 1.65; }
+      /* Scale up text-bearing elements without touching SVG labels */
+      p, li, td, th, label, input, textarea, select, button,
+      .ref-body, .ref-title, .ref-code, .slot-time, .slot-name,
+      .budget-label, .drag-chip, figcaption, .hint, .hint-content {
+        font-size: 1rem;
+      }
+      p, li, td, th, label, .ref-body { line-height: 1.65; }
+      h1 { line-height: 1.2; }
+      h2, h3, h4 { line-height: 1.3; }
+      /* Never enlarge inside SVG (chart labels stay as authored) */
+      svg, svg * { font-size: revert; }
+
+      /* === Glossary tooltips === */
+      .neft-term {
+        border-bottom: 2px dotted currentColor;
+        cursor: help;
+        position: relative;
+        font-weight: 600;
+      }
+      .neft-term:focus { outline: 3px solid #2563eb; outline-offset: 2px; border-radius: 3px; }
+      .neft-tip {
+        position: absolute;
+        left: 0; bottom: 125%;
+        z-index: 10050;
+        width: max-content;
+        max-width: 280px;
+        background: #1e1b4b;
+        color: #fff;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.15s;
+        pointer-events: none;
+      }
+      .neft-term:hover .neft-tip,
+      .neft-term:focus .neft-tip { opacity: 1; visibility: visible; }
+
+      /* === Level banner === */
+      .neft-level-banner {
+        max-width: 1000px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1.2rem;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      }
+      .neft-level-banner.lvl1 { background: #ecfdf5; color: #065f46; border: 2px solid #34d399; }
+      .neft-level-banner.lvl2 { background: #eef2ff; color: #3730a3; border: 2px solid #818cf8; }
+      .neft-level-banner .nb-icon { font-size: 1.4rem; line-height: 1; }
+
+      /* === Resource panel (Need help?) === */
+      .neft-help-panel {
+        max-width: 1000px;
+        margin: 1.5rem auto;
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      }
+      .neft-help-summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 1rem 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .neft-help-summary::-webkit-details-marker { display: none; }
+      .neft-help-summary:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; }
+      .neft-help-body { padding: 1rem 1.2rem 1.3rem; }
+      .neft-help-body p { margin: 0 0 0.6rem; }
+      .neft-help-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+      .neft-help-links a {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.7rem 0.9rem;
+        background: #f1f5f9;
+        border-radius: 10px;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .neft-help-links a:hover,
+      .neft-help-links a:focus-visible { background: #dbeafe; outline: none; }
+      .neft-glossary-list { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+      .neft-glossary-list li { margin-bottom: 0.35rem; }
+
+      @media (max-width: 600px) {
+        html { font-size: 17px; }
+        .neft-tip { max-width: 220px; }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="neft-level-banner lvl1" role="note">
+      <span class="nb-icon" aria-hidden="true">&#129504;</span>
+      <span><strong>Level 1 — Support version.</strong> This version uses simpler
+      language, smaller numbers, extra step-by-step hints, and vocabulary help with pictures.
+      Tap any <em>underlined word</em> for its meaning, and use the <strong>Show Hint</strong>
+      buttons whenever you get stuck.</span>
+    </div>
+
+    <div class="ocean-bg"></div>
+    <div class="bubbles">
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+    </div>
+    <div class="coral-floor"></div>
+
+    <div class="app-shell">
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="phase-dots">
+          <div class="phase-dot active"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+        </div>
+        <span class="progress-label" id="progressLabel">Phase 1 of 5</span>
+      </div>
+
+      <!-- Mode Toggle -->
+      <div class="mode-bar no-print">
+        <button
+          class="mode-btn"
+          data-mode="support"
+          onclick="setMode('support')"
+        >
+          &#127754; Support Mode (Level 1)
+        </button>
+        <button
+          class="mode-btn active"
+          data-mode="standard"
+          onclick="setMode('standard')"
+        >
+          &#9881;&#65039; Standard
+        </button>
+        <button
+          class="mode-btn"
+          data-mode="challenge"
+          onclick="setMode('challenge')"
+        >
+          &#128300; Challenge Mode
+        </button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 1: MISSION BRIEFING                       -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase active" id="phase1">
+        <div class="phase-header">
+          <div class="phase-number">Phase 1 of 5</div>
+          <h1>Mission Briefing</h1>
+          <p>
+            Welcome, Architect! The city aquarium needs your geometry skills to
+            design brand-new marine exhibits.
+          </p>
+        </div>
+
+        <!-- Hero SVG -->
+        <div class="svg-scene">
+          <svg
+            viewBox="0 0 800 340"
+            width="800"
+            height="340"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#cffafe" />
+                <stop offset="100%" stop-color="#0e7490" />
+              </linearGradient>
+              <linearGradient id="sandGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fde68a" />
+                <stop offset="100%" stop-color="#d97706" />
+              </linearGradient>
+              <linearGradient id="glassGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.3)" />
+                <stop offset="100%" stop-color="rgba(255,255,255,0.05)" />
+              </linearGradient>
+            </defs>
+            <!-- Background -->
+            <rect width="800" height="340" fill="#ecfdf5" />
+            <!-- Tank 1 (large) -->
+            <g transform="translate(80,40)">
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="200"
+                rx="8"
+                fill="url(#waterGrad)"
+                stroke="#0d9488"
+                stroke-width="3"
+              />
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="200"
+                rx="8"
+                fill="url(#glassGrad)"
+              />
+              <!-- Sand -->
+              <path
+                d="M5 170 Q70 160 140 172 Q210 180 275 168 L275 195 Q140 200 5 195 Z"
+                fill="#fde68a"
+              />
+              <!-- Fish -->
+              <g transform="translate(60,70)">
+                <ellipse cx="0" cy="0" rx="22" ry="12" fill="#f97316" />
+                <polygon points="-22,0 -35,-10 -35,10" fill="#fb923c" />
+                <circle cx="12" cy="-3" r="3" fill="#1e3a5f" />
+                <circle cx="13" cy="-4" r="1" fill="#fff" />
+              </g>
+              <g transform="translate(180,100)">
+                <ellipse cx="0" cy="0" rx="18" ry="10" fill="#3b82f6" />
+                <polygon points="18,0 30,-8 30,8" fill="#60a5fa" />
+                <circle cx="-8" cy="-3" r="2.5" fill="#1e3a5f" />
+              </g>
+              <g transform="translate(120,140)">
+                <ellipse cx="0" cy="0" rx="14" ry="8" fill="#14b8a6" />
+                <polygon points="-14,0 -24,-7 -24,7" fill="#5eead4" />
+                <circle cx="6" cy="-2" r="2" fill="#1e3a5f" />
+              </g>
+              <!-- Coral -->
+              <g transform="translate(40,165)">
+                <path
+                  d="M0,0 Q-5,-20 0,-35 Q5,-20 10,-30 Q12,-15 15,-25 Q18,-10 20,0"
+                  fill="#f97316"
+                  opacity="0.7"
+                />
+              </g>
+              <g transform="translate(220,160)">
+                <path
+                  d="M0,0 Q5,-25 0,-40 Q-5,-25 -10,-35 Q-12,-15 -15,-28 Q-18,-8 -20,0"
+                  fill="#fb923c"
+                  opacity="0.6"
+                />
+              </g>
+              <!-- Bubbles -->
+              <circle cx="100" cy="50" r="3" fill="rgba(255,255,255,0.4)" />
+              <circle cx="105" cy="35" r="2" fill="rgba(255,255,255,0.3)" />
+              <circle cx="200" cy="60" r="2.5" fill="rgba(255,255,255,0.3)" />
+              <!-- Label -->
+              <text
+                x="140"
+                y="225"
+                text-anchor="middle"
+                fill="#0d9488"
+                font-size="11"
+                font-weight="700"
+              >
+                TROPICAL REEF TANK
+              </text>
+              <!-- Dimension arrows -->
+              <text
+                x="140"
+                y="-8"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="10"
+              >
+                L = 28 in
+              </text>
+              <text
+                x="295"
+                y="100"
+                fill="#4b6a8a"
+                font-size="10"
+                transform="rotate(90,295,100)"
+              >
+                H = 20 in
+              </text>
+            </g>
+            <!-- Tank 2 (small) -->
+            <g transform="translate(440,80)">
+              <rect
+                x="0"
+                y="0"
+                width="160"
+                height="120"
+                rx="6"
+                fill="url(#waterGrad)"
+                stroke="#0d9488"
+                stroke-width="2.5"
+              />
+              <rect
+                x="0"
+                y="0"
+                width="160"
+                height="120"
+                rx="6"
+                fill="url(#glassGrad)"
+              />
+              <path
+                d="M5 100 Q40 92 80 102 Q120 108 155 98 L155 115 Q80 120 5 115 Z"
+                fill="#fde68a"
+              />
+              <!-- Seahorse -->
+              <g transform="translate(80,50)">
+                <path
+                  d="M0,-20 Q10,-15 5,-5 Q0,5 -5,15 Q-10,20 -5,25"
+                  fill="none"
+                  stroke="#f97316"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <circle cx="0" cy="-20" r="5" fill="#fb923c" />
+                <circle cx="-1" cy="-21" r="1.5" fill="#1e3a5f" />
+              </g>
+              <!-- Seaweed -->
+              <g transform="translate(30,95)">
+                <path
+                  d="M0,0 Q-5,-15 0,-30 Q5,-15 0,-45"
+                  fill="none"
+                  stroke="#15803d"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+              </g>
+              <text
+                x="80"
+                y="145"
+                text-anchor="middle"
+                fill="#0d9488"
+                font-size="10"
+                font-weight="700"
+              >
+                SEAHORSE HABITAT
+              </text>
+            </g>
+            <!-- Tank 3 (tall) -->
+            <g transform="translate(640,30)">
+              <rect
+                x="0"
+                y="0"
+                width="100"
+                height="220"
+                rx="6"
+                fill="url(#waterGrad)"
+                stroke="#0d9488"
+                stroke-width="2.5"
+              />
+              <rect
+                x="0"
+                y="0"
+                width="100"
+                height="220"
+                rx="6"
+                fill="url(#glassGrad)"
+              />
+              <path
+                d="M5 200 Q25 195 50 202 Q75 207 95 198 L95 215 Q50 220 5 215 Z"
+                fill="#fde68a"
+              />
+              <!-- Jellyfish -->
+              <g transform="translate(50,60)">
+                <ellipse
+                  cx="0"
+                  cy="0"
+                  rx="16"
+                  ry="10"
+                  fill="rgba(249,115,22,0.4)"
+                  stroke="rgba(249,115,22,0.6)"
+                  stroke-width="1"
+                />
+                <path
+                  d="M-10,8 Q-12,25 -8,35"
+                  fill="none"
+                  stroke="rgba(249,115,22,0.4)"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M0,10 Q2,28 -2,40"
+                  fill="none"
+                  stroke="rgba(249,115,22,0.4)"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M10,8 Q12,25 8,38"
+                  fill="none"
+                  stroke="rgba(249,115,22,0.4)"
+                  stroke-width="1.5"
+                />
+              </g>
+              <g transform="translate(50,140)">
+                <ellipse
+                  cx="0"
+                  cy="0"
+                  rx="12"
+                  ry="8"
+                  fill="rgba(13,148,136,0.3)"
+                  stroke="rgba(13,148,136,0.5)"
+                  stroke-width="1"
+                />
+                <path
+                  d="M-6,6 Q-8,18 -4,25"
+                  fill="none"
+                  stroke="rgba(13,148,136,0.3)"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M6,6 Q8,18 4,25"
+                  fill="none"
+                  stroke="rgba(13,148,136,0.3)"
+                  stroke-width="1.5"
+                />
+              </g>
+              <text
+                x="50"
+                y="240"
+                text-anchor="middle"
+                fill="#0d9488"
+                font-size="9"
+                font-weight="700"
+              >
+                JELLYFISH TOWER
+              </text>
+            </g>
+            <!-- Title -->
+            <text
+              x="400"
+              y="300"
+              text-anchor="middle"
+              fill="#1e3a5f"
+              font-size="22"
+              font-weight="800"
+              letter-spacing="2"
+            >
+              AQUARIUM ARCHITECT
+            </text>
+            <text
+              x="400"
+              y="322"
+              text-anchor="middle"
+              fill="#4b6a8a"
+              font-size="12"
+              font-weight="600"
+              letter-spacing="4"
+            >
+              VOLUME &amp; 3D GEOMETRY
+            </text>
+            <!-- Measuring tape decoration -->
+            <g transform="translate(20,290)">
+              <rect
+                width="60"
+                height="8"
+                rx="2"
+                fill="#fde68a"
+                stroke="#d97706"
+                stroke-width="1"
+              />
+              <line
+                x1="10"
+                y1="0"
+                x2="10"
+                y2="8"
+                stroke="#d97706"
+                stroke-width="0.5"
+              />
+              <line
+                x1="20"
+                y1="0"
+                x2="20"
+                y2="8"
+                stroke="#d97706"
+                stroke-width="0.5"
+              />
+              <line
+                x1="30"
+                y1="0"
+                x2="30"
+                y2="8"
+                stroke="#d97706"
+                stroke-width="0.5"
+              />
+              <line
+                x1="40"
+                y1="0"
+                x2="40"
+                y2="8"
+                stroke="#d97706"
+                stroke-width="0.5"
+              />
+              <line
+                x1="50"
+                y1="0"
+                x2="50"
+                y2="8"
+                stroke="#d97706"
+                stroke-width="0.5"
+              />
+            </g>
+          </svg>
+        </div>
+
+        <!-- Student Info -->
+        <div class="card">
+          <h2>Architect Registration</h2>
+          <p>Enter your details to begin designing your aquarium.</p>
+          <div class="form-row" style="margin-top: 16px">
+            <div class="form-group mb-0">
+              <label>Architect Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="studentName"
+                placeholder="Your name"
+              />
+            </div>
+            <div class="form-group mb-0">
+              <label>Design Team (Class Period)</label>
+              <select class="form-select" id="classPeriod">
+                <option value="">Select period...</option>
+                <option>Period 1</option>
+                <option>Period 2</option>
+                <option>Period 3</option>
+                <option>Period 4</option>
+                <option>Period 5</option>
+                <option>Period 6</option>
+                <option>Period 7</option>
+              </select>
+            </div>
+            <div class="form-group mb-0">
+              <label>Project Date</label>
+              <input type="date" class="form-input" id="activityDate" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Mission Overview -->
+        <div class="card">
+          <h2>Your Mission</h2>
+          <p>
+            The city aquarium is expanding! As the lead Architect, you must
+            design tanks for different marine habitats. Use
+            <strong>volume, surface area, and 3D geometry</strong> to create the
+            perfect environments for each species.
+          </p>
+          <div class="grid-2" style="margin-top: 20px">
+            <div
+              style="
+                padding: 16px;
+                background: rgba(13, 148, 136, 0.05);
+                border-radius: var(--radius);
+                border-left: 4px solid var(--aq-teal);
+              "
+            >
+              <strong style="color: var(--aq-teal-dark)"
+                >Skills You'll Use:</strong
+              >
+              <ul
+                style="margin-top: 8px; padding-left: 20px; font-size: 0.95rem"
+              >
+                <li>Volume of rectangular prisms (V = L &#215; W &#215; H)</li>
+                <li>Surface area of rectangular prisms</li>
+                <li>Nets of 3D shapes</li>
+                <li>Unit conversions (cubic inches to gallons)</li>
+                <li>Comparing volumes and dimensions</li>
+              </ul>
+            </div>
+            <div
+              style="
+                padding: 16px;
+                background: rgba(249, 115, 22, 0.05);
+                border-radius: var(--radius);
+                border-left: 4px solid var(--aq-coral);
+              "
+            >
+              <strong style="color: var(--aq-coral)"
+                >Aquarium Design Guide:</strong
+              >
+              <ul
+                style="margin-top: 8px; padding-left: 20px; font-size: 0.95rem"
+              >
+                <li>&#128032; Tropical Fish need at least 20 gallons</li>
+                <li>&#129416; Seahorses need tall, narrow tanks</li>
+                <li>&#128025; Sharks need at least 200 gallons</li>
+                <li>&#127754; 1 gallon &#8776; 231 cubic inches</li>
+                <li>&#128207; Glass is measured by surface area</li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="support-only"
+            style="
+              margin-top: 16px;
+              padding: 16px;
+              background: rgba(13, 148, 136, 0.05);
+              border-radius: var(--radius);
+              border-left: 4px solid var(--aq-teal);
+            "
+          >
+            <strong style="color: var(--aq-teal-dark)"
+              >Level 1 Support &#8212; Key Vocabulary:</strong
+            >
+            <ul style="margin-top: 8px; padding-left: 20px; font-size: 0.95rem">
+              <li>
+                <strong>Volume</strong> = the amount of space inside a 3D shape,
+                measured in cubic units
+              </li>
+              <li>
+                <strong>Rectangular prism</strong> = a 3D box shape with 6 flat
+                faces (like a fish tank)
+              </li>
+              <li>
+                <strong>Surface area</strong> = the total area of all the
+                outside faces added together
+              </li>
+              <li>
+                <strong>Net</strong> = a flat pattern that folds up into a 3D
+                shape
+              </li>
+              <li>
+                <strong>Dimensions</strong> = the length, width, and height
+                measurements
+              </li>
+              <li>
+                <strong>Cubic inches (in&#179;)</strong> = a unit for measuring
+                volume
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 20px">
+          <button class="btn btn-coral" onclick="goToPhase(2)">
+            &#128032; Begin Marine Research &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 2: MARINE RESEARCH                        -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase2">
+        <div class="phase-header">
+          <div class="phase-number">Phase 2 of 5</div>
+          <h1>Marine Research</h1>
+          <p>
+            Study 3D shapes, learn volume formulas, and explore how tanks are
+            built.
+          </p>
+        </div>
+
+        <!-- Volume Calculator Tool -->
+        <div class="card card-glow">
+          <h2>3D Tank Volume Calculator</h2>
+          <p>
+            Adjust the length, width, and height to see the volume change in
+            real time!
+          </p>
+          <div class="grid-2">
+            <div>
+              <div class="slider-group">
+                <label>Length (in) <span id="lenVal">12</span></label>
+                <input
+                  type="range"
+                  id="tankLen"
+                  min="2"
+                  max="48"
+                  value="12"
+                  oninput="updateTankVisual()"
+                />
+              </div>
+              <div class="slider-group">
+                <label>Width (in) <span id="widVal">8</span></label>
+                <input
+                  type="range"
+                  id="tankWid"
+                  min="2"
+                  max="30"
+                  value="8"
+                  oninput="updateTankVisual()"
+                />
+              </div>
+              <div class="slider-group">
+                <label>Height (in) <span id="hgtVal">10</span></label>
+                <input
+                  type="range"
+                  id="tankHgt"
+                  min="2"
+                  max="36"
+                  value="10"
+                  oninput="updateTankVisual()"
+                />
+              </div>
+              <div
+                class="tool-result"
+                id="tankCalcResult"
+                style="
+                  margin-top: 12px;
+                  flex-direction: column;
+                  align-items: flex-start;
+                  gap: 4px;
+                "
+              >
+                <div>
+                  Volume = 12 &#215; 8 &#215; 10 =
+                  <strong style="color: var(--aq-teal)">960 in&#179;</strong>
+                </div>
+                <div>
+                  Water capacity &#8776;
+                  <strong style="color: var(--aq-coral)">4.16 gallons</strong>
+                </div>
+              </div>
+            </div>
+            <div class="tank-visual">
+              <canvas
+                id="tankCanvas"
+                class="tank-canvas"
+                width="300"
+                height="280"
+              ></canvas>
+            </div>
+          </div>
+          <div
+            class="support-only"
+            style="
+              margin-top: 12px;
+              padding: 12px;
+              background: rgba(13, 148, 136, 0.05);
+              border-radius: 8px;
+            "
+          >
+            <strong>Volume formula:</strong> Volume = Length &#215; Width &#215;
+            Height. Multiply all three numbers together. The answer is in cubic
+            units (like in&#179;). To convert to gallons: divide by 231.
+          </div>
+        </div>
+
+        <!-- Task 1 -->
+        <div class="task" id="task1">
+          <div class="task-header">
+            <div class="task-number">1</div>
+            <div class="task-title">Volume of Rectangular Prisms</div>
+            <div class="task-check"></div>
+          </div>
+          <p>Calculate the volume for each aquarium tank.</p>
+          <div class="form-group">
+            <label
+              >Clownfish Tank: L = 24 in, W = 12 in, H = 16 in. Volume =
+              ?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t1a"
+              placeholder="V = L x W x H = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Seahorse Column: L = 10 in, W = 10 in, H = 30 in. Volume =
+              ?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t1b"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Coral Display: L = 36 in, W = 18 in, H = 20 in. Volume = ?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t1c"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Which tank holds the most water? Explain how you know.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t1d"
+              placeholder="The ___ tank holds the most because..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint1">
+            <button class="hint-toggle" onclick="toggleHint('hint1')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Volume = L &#215; W &#215; H. Multiply all three dimensions.
+                Compare the results to find the largest.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task" id="task2">
+          <div class="task-header">
+            <div class="task-number">2</div>
+            <div class="task-title">Gallons Conversion</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Convert each tank's volume from cubic inches to gallons. (1 gallon
+            &#8776; 231 in&#179;)
+          </p>
+          <div class="form-group">
+            <label
+              >Clownfish Tank (your answer from Task 1) &#247; 231 = ?
+              gallons</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t2a"
+              placeholder="&#8776; ? gallons (round to nearest tenth)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Seahorse Column &#247; 231 = ? gallons</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t2b"
+              placeholder="&#8776; ? gallons"
+            />
+          </div>
+          <div class="form-group">
+            <label>Coral Display &#247; 231 = ? gallons</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t2c"
+              placeholder="&#8776; ? gallons"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Which tanks have enough water for tropical fish (at least 20
+              gallons)?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t2d"
+              placeholder="The tanks with enough water are..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint2">
+            <button class="hint-toggle" onclick="toggleHint('hint2')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Take the volume in cubic inches and divide by 231. Round to the
+                nearest tenth. Then compare to 20 gallons.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task" id="task3">
+          <div class="task-header">
+            <div class="task-number">3</div>
+            <div class="task-title">Identifying Faces, Edges, and Vertices</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            A rectangular prism (fish tank) has specific geometric features.
+            Identify them.
+          </p>
+          <!-- 3D Wireframe SVG -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 400 300"
+              width="400"
+              height="300"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="400" height="300" fill="rgba(13,148,136,0.02)" />
+              <!-- 3D rectangular prism wireframe -->
+              <!-- Front face -->
+              <polygon
+                points="80,200 250,200 250,80 80,80"
+                fill="rgba(13,148,136,0.1)"
+                stroke="#0d9488"
+                stroke-width="2"
+              />
+              <!-- Top face -->
+              <polygon
+                points="80,80 250,80 320,40 150,40"
+                fill="rgba(13,148,136,0.05)"
+                stroke="#0d9488"
+                stroke-width="2"
+              />
+              <!-- Right face -->
+              <polygon
+                points="250,80 320,40 320,160 250,200"
+                fill="rgba(13,148,136,0.08)"
+                stroke="#0d9488"
+                stroke-width="2"
+              />
+              <!-- Hidden edges (dashed) -->
+              <line
+                x1="80"
+                y1="200"
+                x2="150"
+                y2="160"
+                stroke="#0d9488"
+                stroke-width="1"
+                stroke-dasharray="5,4"
+              />
+              <line
+                x1="150"
+                y1="160"
+                x2="320"
+                y2="160"
+                stroke="#0d9488"
+                stroke-width="1"
+                stroke-dasharray="5,4"
+              />
+              <line
+                x1="150"
+                y1="160"
+                x2="150"
+                y2="40"
+                stroke="#0d9488"
+                stroke-width="1"
+                stroke-dasharray="5,4"
+              />
+              <!-- Vertex dots -->
+              <circle cx="80" cy="200" r="4" fill="#f97316" />
+              <circle cx="250" cy="200" r="4" fill="#f97316" />
+              <circle cx="250" cy="80" r="4" fill="#f97316" />
+              <circle cx="80" cy="80" r="4" fill="#f97316" />
+              <circle cx="150" cy="40" r="4" fill="#f97316" />
+              <circle cx="320" cy="40" r="4" fill="#f97316" />
+              <circle cx="320" cy="160" r="4" fill="#f97316" />
+              <circle cx="150" cy="160" r="4" fill="#f97316" opacity="0.5" />
+              <!-- Labels -->
+              <text
+                x="165"
+                y="150"
+                fill="#1e3a5f"
+                font-size="10"
+                font-weight="600"
+              >
+                Length
+              </text>
+              <text
+                x="280"
+                y="120"
+                fill="#1e3a5f"
+                font-size="10"
+                font-weight="600"
+                transform="rotate(-50,280,120)"
+              >
+                Width
+              </text>
+              <text
+                x="255"
+                y="145"
+                fill="#1e3a5f"
+                font-size="10"
+                font-weight="600"
+              >
+                Height
+              </text>
+              <text
+                x="200"
+                y="270"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="11"
+                font-style="italic"
+              >
+                Rectangular Prism (Fish Tank)
+              </text>
+            </svg>
+          </div>
+          <div class="form-group">
+            <label>How many faces does a rectangular prism have?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t3a"
+              placeholder="number of faces"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many edges does a rectangular prism have?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t3b"
+              placeholder="number of edges"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >How many vertices (corners) does a rectangular prism have?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t3c"
+              placeholder="number of vertices"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Which faces are identical (same size)? Describe the pairs.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t3d"
+              placeholder="The top and bottom faces are both... The front and back..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint3">
+            <button class="hint-toggle" onclick="toggleHint('hint3')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                A rectangular prism has 6 faces (3 pairs of identical
+                rectangles), 12 edges (3 groups of 4 equal edges), and 8
+                vertices (corners).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task" id="task4">
+          <div class="task-header">
+            <div class="task-number">4</div>
+            <div class="task-title">Comparing Tank Shapes</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Two tanks have the same volume but different shapes. Investigate!
+          </p>
+          <div
+            style="
+              padding: 16px;
+              background: rgba(249, 115, 22, 0.05);
+              border-radius: var(--radius);
+              border-left: 4px solid var(--aq-coral);
+              margin-bottom: 16px;
+            "
+          >
+            <strong>Tank A:</strong> 20 in &#215; 10 in &#215; 12 in<br />
+            <strong>Tank B:</strong> 15 in &#215; 16 in &#215; 10 in
+          </div>
+          <div class="form-group">
+            <label>Volume of Tank A:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t4a"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label>Volume of Tank B:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t4b"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Are the volumes equal? Which tank would be better for seahorses
+              (they prefer taller tanks)? Why?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t4c"
+              placeholder="The volumes are... For seahorses I would choose..."
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint4">
+            <button class="hint-toggle" onclick="toggleHint('hint4')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Calculate both volumes using V = L &#215; W &#215; H. Seahorses
+                swim vertically, so look at which tank has the greater height.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; padding: 20px"
+        >
+          <button class="btn btn-outline" onclick="goToPhase(1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-coral" onclick="goToPhase(3)">
+            Tank Planning &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 3: TANK PLANNING                          -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase3">
+        <div class="phase-header">
+          <div class="phase-number">Phase 3 of 5</div>
+          <h1>Tank Planning</h1>
+          <p>
+            Calculate surface area for glass, explore nets, and plan your
+            exhibit layouts.
+          </p>
+        </div>
+
+        <!-- Surface Area Calculator -->
+        <div class="card card-glow">
+          <h2>Surface Area Calculator</h2>
+          <p>
+            Calculate how much glass is needed to build a tank (surface area of
+            a rectangular prism).
+          </p>
+          <div class="tool-panel">
+            <h4>&#128207; Glass Needed Calculator</h4>
+            <div class="tool-row">
+              <span style="font-weight: 700">Length:</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="saL"
+                placeholder="L"
+              />
+              <span style="font-weight: 700">Width:</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="saW"
+                placeholder="W"
+              />
+              <span style="font-weight: 700">Height:</span>
+              <input
+                type="number"
+                class="tool-input"
+                id="saH"
+                placeholder="H"
+              />
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="calcSurfaceArea()">
+              Calculate Surface Area
+            </button>
+            <div class="tool-result" id="saResult" style="margin-top: 12px">
+              Enter L, W, H and click Calculate.
+            </div>
+          </div>
+          <div
+            class="support-only"
+            style="
+              margin-top: 12px;
+              padding: 12px;
+              background: rgba(13, 148, 136, 0.05);
+              border-radius: 8px;
+            "
+          >
+            <strong>Surface Area formula:</strong> SA = 2(L&#215;W) +
+            2(L&#215;H) + 2(W&#215;H). This adds up the area of all 6 faces. For
+            an open-top tank: SA = L&#215;W + 2(L&#215;H) + 2(W&#215;H).
+          </div>
+        </div>
+
+        <!-- Water Volume Converter -->
+        <div class="card">
+          <h2>Water Volume Converter</h2>
+          <p>Convert between different volume units for your tank designs.</p>
+          <div class="tool-panel">
+            <h4>&#127754; Unit Converter</h4>
+            <div class="tool-row">
+              <input
+                type="number"
+                class="tool-input"
+                id="convVal"
+                placeholder="value"
+                style="width: 120px"
+              />
+              <select
+                class="form-select"
+                id="convFrom"
+                style="width: 160px; padding: 8px"
+              >
+                <option value="in3">Cubic inches (in&#179;)</option>
+                <option value="gal">Gallons</option>
+                <option value="lit">Liters</option>
+                <option value="ft3">Cubic feet (ft&#179;)</option>
+              </select>
+              <span style="font-weight: 700">&#8594;</span>
+              <select
+                class="form-select"
+                id="convTo"
+                style="width: 160px; padding: 8px"
+              >
+                <option value="gal">Gallons</option>
+                <option value="in3">Cubic inches (in&#179;)</option>
+                <option value="lit">Liters</option>
+                <option value="ft3">Cubic feet (ft&#179;)</option>
+              </select>
+              <button class="btn btn-sm btn-primary" onclick="convertVolume()">
+                Convert
+              </button>
+            </div>
+            <div class="tool-result" id="convResult" style="margin-top: 8px">
+              Enter a value and click Convert.
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 5 -->
+        <div class="task" id="task5">
+          <div class="task-header">
+            <div class="task-number">5</div>
+            <div class="task-title">Surface Area for Glass</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Calculate how much glass is needed (surface area) for each tank.
+            Assume tanks have all 6 faces.
+          </p>
+          <div class="form-group">
+            <label
+              >Mini Display: L = 12 in, W = 8 in, H = 10 in. Surface Area =
+              ?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t5a"
+              placeholder="SA = 2(12x8) + 2(12x10) + 2(8x10) = ? in&#178;"
+            />
+          </div>
+          <div class="form-group">
+            <label>Show your work for the Mini Display calculation:</label>
+            <textarea
+              class="form-textarea"
+              id="t5b"
+              placeholder="2(96) + 2(120) + 2(80) = ..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Large Reef Tank: L = 36 in, W = 18 in, H = 24 in. Surface Area =
+              ?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t5c"
+              placeholder="SA = ? in&#178;"
+            />
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: The large tank is open on top (no lid). How much
+                glass is needed now? What is the difference?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t5d"
+                placeholder="Open-top SA = L&#215;W + 2(L&#215;H) + 2(W&#215;H) = ..."
+                style="min-height: 70px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint5">
+            <button class="hint-toggle" onclick="toggleHint('hint5')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                SA = 2(L&#215;W) + 2(L&#215;H) + 2(W&#215;H). Calculate each
+                pair of faces separately, then add them all together.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="task" id="task6">
+          <div class="task-header">
+            <div class="task-number">6</div>
+            <div class="task-title">Nets of Rectangular Prisms</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            A net is the flat pattern that folds into a 3D shape. Study the net
+            below and answer the questions.
+          </p>
+          <!-- Net SVG -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 520 360"
+              width="520"
+              height="360"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="520" height="360" fill="rgba(13,148,136,0.02)" />
+              <!-- Cross-shaped net of a rectangular prism -->
+              <!-- Top face -->
+              <rect
+                x="160"
+                y="10"
+                width="100"
+                height="70"
+                fill="rgba(13,148,136,0.15)"
+                stroke="#0d9488"
+                stroke-width="2"
+              />
+              <text
+                x="210"
+                y="50"
+                text-anchor="middle"
+                fill="#0d9488"
+                font-size="11"
+                font-weight="700"
+              >
+                TOP
+              </text>
+              <text
+                x="210"
+                y="65"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="9"
+              >
+                L &#215; W
+              </text>
+              <!-- Front face -->
+              <rect
+                x="160"
+                y="80"
+                width="100"
+                height="80"
+                fill="rgba(249,115,22,0.12)"
+                stroke="#f97316"
+                stroke-width="2"
+              />
+              <text
+                x="210"
+                y="125"
+                text-anchor="middle"
+                fill="#f97316"
+                font-size="11"
+                font-weight="700"
+              >
+                FRONT
+              </text>
+              <text
+                x="210"
+                y="140"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="9"
+              >
+                L &#215; H
+              </text>
+              <!-- Bottom face -->
+              <rect
+                x="160"
+                y="160"
+                width="100"
+                height="70"
+                fill="rgba(13,148,136,0.15)"
+                stroke="#0d9488"
+                stroke-width="2"
+              />
+              <text
+                x="210"
+                y="200"
+                text-anchor="middle"
+                fill="#0d9488"
+                font-size="11"
+                font-weight="700"
+              >
+                BOTTOM
+              </text>
+              <text
+                x="210"
+                y="215"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="9"
+              >
+                L &#215; W
+              </text>
+              <!-- Back face -->
+              <rect
+                x="160"
+                y="230"
+                width="100"
+                height="80"
+                fill="rgba(249,115,22,0.12)"
+                stroke="#f97316"
+                stroke-width="2"
+              />
+              <text
+                x="210"
+                y="275"
+                text-anchor="middle"
+                fill="#f97316"
+                font-size="11"
+                font-weight="700"
+              >
+                BACK
+              </text>
+              <text
+                x="210"
+                y="290"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="9"
+              >
+                L &#215; H
+              </text>
+              <!-- Left face -->
+              <rect
+                x="60"
+                y="80"
+                width="100"
+                height="80"
+                fill="rgba(253,230,138,0.3)"
+                stroke="#d97706"
+                stroke-width="2"
+              />
+              <text
+                x="110"
+                y="125"
+                text-anchor="middle"
+                fill="#d97706"
+                font-size="11"
+                font-weight="700"
+              >
+                LEFT
+              </text>
+              <text
+                x="110"
+                y="140"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="9"
+              >
+                W &#215; H
+              </text>
+              <!-- Right face -->
+              <rect
+                x="260"
+                y="80"
+                width="100"
+                height="80"
+                fill="rgba(253,230,138,0.3)"
+                stroke="#d97706"
+                stroke-width="2"
+              />
+              <text
+                x="310"
+                y="125"
+                text-anchor="middle"
+                fill="#d97706"
+                font-size="11"
+                font-weight="700"
+              >
+                RIGHT
+              </text>
+              <text
+                x="310"
+                y="140"
+                text-anchor="middle"
+                fill="#4b6a8a"
+                font-size="9"
+              >
+                W &#215; H
+              </text>
+              <!-- Fold lines -->
+              <line
+                x1="160"
+                y1="80"
+                x2="260"
+                y2="80"
+                stroke="#0d9488"
+                stroke-width="1"
+                stroke-dasharray="4,3"
+              />
+              <line
+                x1="160"
+                y1="160"
+                x2="260"
+                y2="160"
+                stroke="#0d9488"
+                stroke-width="1"
+                stroke-dasharray="4,3"
+              />
+              <text
+                x="420"
+                y="120"
+                fill="#4b6a8a"
+                font-size="10"
+                font-style="italic"
+              >
+                &#8592; Fold along dashed lines
+              </text>
+              <text
+                x="420"
+                y="140"
+                fill="#4b6a8a"
+                font-size="10"
+                font-style="italic"
+              >
+                to make a 3D box
+              </text>
+            </svg>
+          </div>
+          <div class="form-group">
+            <label
+              >How many rectangles are in the net of a rectangular prism?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t6a"
+              placeholder="number of rectangles"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >If L = 10 in, W = 6 in, H = 8 in, what is the area of the FRONT
+              face?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t6b"
+              placeholder="Front = L x H = ? in&#178;"
+            />
+          </div>
+          <div class="form-group">
+            <label>What is the area of the RIGHT face?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t6c"
+              placeholder="Right = W x H = ? in&#178;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >What is the total surface area using the net? (Add all 6 face
+              areas)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t6d"
+              placeholder="Total SA = ? in&#178;"
+            />
+          </div>
+          <div class="hint-box" id="hint6">
+            <button class="hint-toggle" onclick="toggleHint('hint6')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Find each face area: Top/Bottom = 10&#215;6 = 60. Front/Back =
+                10&#215;8 = 80. Left/Right = 6&#215;8 = 48. Total = 2(60) +
+                2(80) + 2(48).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 7 -->
+        <div class="task" id="task7">
+          <div class="task-header">
+            <div class="task-number">7</div>
+            <div class="task-title">Design a Tank for a Specific Fish</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            A clownfish needs at least 20 gallons (4,620 in&#179;). Design a
+            tank that meets this requirement!
+          </p>
+          <div class="form-group">
+            <label>Your tank Length (in):</label>
+            <input
+              type="number"
+              class="form-input"
+              id="t7a"
+              placeholder="Choose a length..."
+            />
+          </div>
+          <div class="form-group">
+            <label>Your tank Width (in):</label>
+            <input
+              type="number"
+              class="form-input"
+              id="t7b"
+              placeholder="Choose a width..."
+            />
+          </div>
+          <div class="form-group">
+            <label>Your tank Height (in):</label>
+            <input
+              type="number"
+              class="form-input"
+              id="t7c"
+              placeholder="Choose a height..."
+            />
+          </div>
+          <div class="form-group">
+            <label>Calculate: Volume = L &#215; W &#215; H = ? in&#179;</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t7d"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Is your volume at least 4,620 in&#179;? How many gallons is
+              it?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t7e"
+              placeholder="My tank holds ___ in&#179; which is ___ gallons. This is / is not enough because..."
+              style="min-height: 70px"
+            ></textarea>
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: What is the minimum height if L = 24 in and W = 12
+                in? Show your algebra.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t7f"
+                placeholder="4620 = 24 x 12 x H, so H = ..."
+                style="min-height: 70px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint7">
+            <button class="hint-toggle" onclick="toggleHint('hint7')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Pick reasonable dimensions (like L=24, W=12, H=18). Multiply
+                them together and check if the result is at least 4,620. If not,
+                increase a dimension.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; padding: 20px"
+        >
+          <button class="btn btn-outline" onclick="goToPhase(2)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-coral" onclick="goToPhase(4)">
+            Aquarium Build &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 4: AQUARIUM BUILD                         -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase4">
+        <div class="phase-header">
+          <div class="phase-number">Phase 4 of 5</div>
+          <h1>Aquarium Build</h1>
+          <p>
+            Design complete exhibits, solve real-world tank problems, and build
+            your aquarium layout.
+          </p>
+        </div>
+
+        <!-- Task 8 -->
+        <div class="task" id="task8">
+          <div class="task-header">
+            <div class="task-number">8</div>
+            <div class="task-title">Glass Cost Calculation</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Glass costs $0.05 per square inch. Calculate the glass cost for each
+            tank (open-top, no lid).
+          </p>
+          <div
+            class="support-only"
+            style="
+              margin: 12px 0;
+              padding: 12px;
+              background: rgba(13, 148, 136, 0.05);
+              border-radius: 8px;
+            "
+          >
+            <strong>Open-top SA formula:</strong> Bottom + 2(Front/Back) +
+            2(Left/Right) = (L&#215;W) + 2(L&#215;H) + 2(W&#215;H)
+          </div>
+          <div class="form-group">
+            <label>Small Tank: L=18, W=10, H=12. Open-top SA = ?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8a"
+              placeholder="SA = (18x10) + 2(18x12) + 2(10x12) = ? in&#178;"
+            />
+          </div>
+          <div class="form-group">
+            <label>Glass cost for Small Tank (SA &#215; $0.05) = ?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8b"
+              placeholder="$?.??"
+            />
+          </div>
+          <div class="form-group">
+            <label>Large Tank: L=48, W=24, H=20. Open-top SA = ?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8c"
+              placeholder="SA = ? in&#178;"
+            />
+          </div>
+          <div class="form-group">
+            <label>Glass cost for Large Tank = ?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t8d"
+              placeholder="$?.??"
+            />
+          </div>
+          <div class="hint-box" id="hint8">
+            <button class="hint-toggle" onclick="toggleHint('hint8')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Open-top SA = (L&#215;W) + 2(L&#215;H) + 2(W&#215;H). For the
+                small tank: 180 + 432 + 240 = 852 in&#178;. Then 852 &#215;
+                $0.05 = $42.60.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 9 -->
+        <div class="task" id="task9">
+          <div class="task-header">
+            <div class="task-number">9</div>
+            <div class="task-title">Fill Time Challenge</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            A water hose fills at a rate of 3 gallons per minute. How long to
+            fill each tank?
+          </p>
+          <div class="form-group">
+            <label>Tank holding 30 gallons: Time = ? minutes</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t9a"
+              placeholder="30 &#247; 3 = ? minutes"
+            />
+          </div>
+          <div class="form-group">
+            <label>Tank holding 55 gallons: Time = ? minutes</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t9b"
+              placeholder="? minutes"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Giant display tank holding 200 gallons: Time = ? minutes. Convert
+              to hours and minutes.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t9c"
+              placeholder="? minutes = ? hours and ? minutes"
+            />
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: If two hoses work together (3 gal/min each), how
+                long for the 200-gallon tank? Show the math.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t9d"
+                placeholder="Combined rate = ... so time = ..."
+                style="min-height: 70px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint9">
+            <button class="hint-toggle" onclick="toggleHint('hint9')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Time = Volume &#247; Rate. For 200 &#247; 3 = 66.67 minutes.
+                That is 1 hour and about 7 minutes.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 10 -->
+        <div class="task" id="task10">
+          <div class="task-header">
+            <div class="task-number">10</div>
+            <div class="task-title">Design a Multi-Tank Exhibit</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Design a 3-tank exhibit for the aquarium. Each tank must house a
+            different species with specific volume requirements.
+          </p>
+          <div
+            style="
+              padding: 16px;
+              background: rgba(249, 115, 22, 0.05);
+              border-radius: var(--radius);
+              border-left: 4px solid var(--aq-coral);
+              margin-bottom: 16px;
+            "
+          >
+            <strong>Species Requirements:</strong><br />
+            &#128032; Tropical Fish: minimum 20 gallons (4,620 in&#179;)<br />
+            &#129416; Seahorses: minimum 15 gallons (3,465 in&#179;), height
+            must be &#8805; 20 in<br />
+            &#128025; Small Shark: minimum 100 gallons (23,100 in&#179;)
+          </div>
+          <div class="form-group">
+            <label
+              >Tropical Fish Tank &#8212; Dimensions (L &#215; W &#215; H) and
+              Volume:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t10a"
+              placeholder="L = ?, W = ?, H = ?. Volume = ? in&#179; = ? gallons"
+              style="min-height: 60px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Seahorse Tank &#8212; Dimensions (L &#215; W &#215; H) and
+              Volume:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t10b"
+              placeholder="L = ?, W = ?, H = ? (must be &#8805; 20). Volume = ? in&#179; = ? gallons"
+              style="min-height: 60px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Small Shark Tank &#8212; Dimensions (L &#215; W &#215; H) and
+              Volume:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t10c"
+              placeholder="L = ?, W = ?, H = ?. Volume = ? in&#179; = ? gallons"
+              style="min-height: 60px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Total water needed for all 3 tanks combined (in gallons):</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t10d"
+              placeholder="? + ? + ? = ? gallons"
+            />
+          </div>
+        </div>
+
+        <!-- Task 11 -->
+        <div class="task" id="task11">
+          <div class="task-header">
+            <div class="task-number">11</div>
+            <div class="task-title">Volume Doubling Investigation</div>
+            <div class="task-check"></div>
+          </div>
+          <p>Explore what happens to volume when you change dimensions.</p>
+          <div class="form-group">
+            <label>Original tank: L=10, W=8, H=6. Volume = ?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t11a"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Double ONLY the length (L=20, W=8, H=6). New volume = ?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t11b"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Double ALL dimensions (L=20, W=16, H=12). New volume = ?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t11c"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >When you double one dimension, the volume ___. When you double
+              ALL dimensions, the volume ___. Explain the pattern.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t11d"
+              placeholder="I noticed that doubling one dimension... and doubling all dimensions..."
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+          <div class="hint-box" id="hint11">
+            <button class="hint-toggle" onclick="toggleHint('hint11')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Original: 480. Doubled length: 960 (2&#215; original). All
+                doubled: 3,840 (8&#215; original). When you double all 3, you
+                multiply by 2&#215;2&#215;2 = 8!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 12 -->
+        <div class="task" id="task12">
+          <div class="task-header">
+            <div class="task-number">12</div>
+            <div class="task-title">Exhibit Floor Plan</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            The aquarium has a room that is 120 inches long and 96 inches wide.
+            Plan where to place your 3 tanks from Task 10.
+          </p>
+          <div class="form-group">
+            <label>Calculate the floor area of the room (L &#215; W):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t12a"
+              placeholder="120 x 96 = ? in&#178;"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Calculate the floor footprint of each tank (L &#215; W only).
+              List all three:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t12b"
+              placeholder="Tank 1: ? x ? = ? in&#178;&#10;Tank 2: ? x ? = ? in&#178;&#10;Tank 3: ? x ? = ? in&#178;"
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Total floor space used by all 3 tanks:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t12c"
+              placeholder="? + ? + ? = ? in&#178;"
+            />
+          </div>
+          <div class="form-group">
+            <label>What percentage of the room floor do the tanks cover?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t12d"
+              placeholder="(total tank area &#247; room area) x 100 = ?%"
+            />
+          </div>
+          <div class="challenge-only">
+            <div class="form-group">
+              <label
+                >Challenge: If you need 18 inches of walking space between tanks
+                and walls, can all 3 tanks fit? Show your reasoning.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t12e"
+                placeholder="With 18 in clearance on each side..."
+                style="min-height: 70px"
+              ></textarea>
+            </div>
+          </div>
+          <div class="hint-box" id="hint12">
+            <button class="hint-toggle" onclick="toggleHint('hint12')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Room area = 120 &#215; 96 = 11,520 in&#178;. For percentage:
+                (total tank floor area &#247; 11,520) &#215; 100.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 13 -->
+        <div class="task" id="task13">
+          <div class="task-header">
+            <div class="task-number">13</div>
+            <div class="task-title">Composite Shape Tanks</div>
+            <div class="task-check"></div>
+          </div>
+          <p>
+            Some exhibits combine two rectangular prisms into one L-shaped tank.
+            Calculate the total volume!
+          </p>
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 400 240"
+              width="400"
+              height="240"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="400" height="240" fill="rgba(13,148,136,0.02)" />
+              <!-- L-shaped tank (top view) -->
+              <rect
+                x="50"
+                y="30"
+                width="200"
+                height="80"
+                fill="rgba(13,148,136,0.15)"
+                stroke="#0d9488"
+                stroke-width="2"
+              />
+              <rect
+                x="50"
+                y="110"
+                width="100"
+                height="100"
+                fill="rgba(249,115,22,0.12)"
+                stroke="#f97316"
+                stroke-width="2"
+              />
+              <!-- Dimensions -->
+              <text
+                x="150"
+                y="25"
+                text-anchor="middle"
+                fill="#0d9488"
+                font-size="10"
+                font-weight="700"
+              >
+                20 in
+              </text>
+              <text
+                x="40"
+                y="75"
+                text-anchor="end"
+                fill="#0d9488"
+                font-size="10"
+                font-weight="700"
+              >
+                8 in
+              </text>
+              <text
+                x="40"
+                y="165"
+                text-anchor="end"
+                fill="#f97316"
+                font-size="10"
+                font-weight="700"
+              >
+                10 in
+              </text>
+              <text
+                x="100"
+                y="220"
+                text-anchor="middle"
+                fill="#f97316"
+                font-size="10"
+                font-weight="700"
+              >
+                10 in
+              </text>
+              <text
+                x="280"
+                y="75"
+                fill="#4b6a8a"
+                font-size="10"
+                font-style="italic"
+              >
+                Height = 12 in
+              </text>
+              <text
+                x="280"
+                y="95"
+                fill="#4b6a8a"
+                font-size="10"
+                font-style="italic"
+              >
+                (for both sections)
+              </text>
+              <!-- Labels -->
+              <text
+                x="150"
+                y="75"
+                text-anchor="middle"
+                fill="#0d9488"
+                font-size="11"
+                font-weight="700"
+              >
+                Section A
+              </text>
+              <text
+                x="100"
+                y="165"
+                text-anchor="middle"
+                fill="#f97316"
+                font-size="11"
+                font-weight="700"
+              >
+                Section B
+              </text>
+            </svg>
+          </div>
+          <div class="form-group">
+            <label>Volume of Section A (20 &#215; 8 &#215; 12):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t13a"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label>Volume of Section B (10 &#215; 10 &#215; 12):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t13b"
+              placeholder="V = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label>Total volume of the L-shaped tank:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t13c"
+              placeholder="Total = A + B = ? in&#179;"
+            />
+          </div>
+          <div class="form-group">
+            <label>Convert total to gallons:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t13d"
+              placeholder="? &#247; 231 &#8776; ? gallons"
+            />
+          </div>
+          <div class="hint-box" id="hint13">
+            <button class="hint-toggle" onclick="toggleHint('hint13')">
+              &#128161; Need a hint?
+            </button>
+            <div class="hint-content">
+              <p>
+                Break the L-shape into two rectangular prisms. Find each volume,
+                then add them together. Section A: 20&#215;8&#215;12 = 1,920.
+                Section B: 10&#215;10&#215;12 = 1,200.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 14 -->
+        <div class="task" id="task14">
+          <div class="task-header">
+            <div class="task-number">14</div>
+            <div class="task-title">Aquarium Budget Planner</div>
+            <div class="task-check"></div>
+          </div>
+          <p>You have a $500 budget for materials. Plan your aquarium build!</p>
+          <div
+            style="
+              padding: 16px;
+              background: rgba(13, 148, 136, 0.05);
+              border-radius: var(--radius);
+              border-left: 4px solid var(--aq-teal);
+              margin-bottom: 16px;
+            "
+          >
+            <strong>Material Costs:</strong><br />
+            Glass: $0.05 per in&#178; &bull; Silicone sealant: $8 per tank
+            &bull; Gravel: $0.02 per in&#179; of tank volume &bull; Water
+            treatment: $3 per 10 gallons
+          </div>
+          <div class="form-group">
+            <label
+              >Choose tank dimensions and calculate total glass cost (open-top
+              SA &#215; $0.05):</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t14a"
+              placeholder="My tank: L = ?, W = ?, H = ?&#10;Open-top SA = ? in&#178;&#10;Glass cost = ? x $0.05 = $?"
+              style="min-height: 90px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Gravel cost (volume of 2-inch gravel layer = L &#215; W &#215; 2,
+              times $0.02):</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t14b"
+              placeholder="Gravel volume = ?, cost = $?"
+            />
+          </div>
+          <div class="form-group">
+            <label>Water treatment cost (gallons &#247; 10 &#215; $3):</label>
+            <input type="text" class="form-input" id="t14c" placeholder="$?" />
+          </div>
+          <div class="form-group">
+            <label
+              >Total cost (Glass + Silicone + Gravel + Water treatment):</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t14d"
+              placeholder="$? + $8 + $? + $? = $?"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Are you under the $500 budget? How much money is left?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t14e"
+              placeholder="$500 - $? = $? remaining"
+              style="min-height: 60px"
+            ></textarea>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; padding: 20px"
+        >
+          <button class="btn btn-outline" onclick="goToPhase(3)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-coral" onclick="goToPhase(5)">
+            Architect Portfolio &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- PHASE 5: ARCHITECT PORTFOLIO                    -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="phase" id="phase5">
+        <div class="phase-header">
+          <div class="phase-number">Phase 5 of 5</div>
+          <h1>Architect Portfolio</h1>
+          <p>
+            Reflect on your designs, assess your skills, and earn your Architect
+            Certificate!
+          </p>
+        </div>
+
+        <!-- Task 15 -->
+        <div class="task" id="task15">
+          <div class="task-header">
+            <div class="task-number">15</div>
+            <div class="task-title">Real-World Volume Connections</div>
+            <div class="task-check"></div>
+          </div>
+          <div class="form-group">
+            <label
+              >Name 3 real-world objects that are rectangular prisms:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t15a"
+              placeholder="1. ... 2. ... 3. ..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Why is volume important when building things like pools, shipping
+              containers, or storage rooms?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t15b"
+              placeholder="Volume is important because..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >If you were actually building an aquarium, what other math would
+              you need beyond volume?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t15c"
+              placeholder="I would also need to know..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="card">
+          <h2>Architect Self-Assessment</h2>
+          <p>
+            Rate your mastery of each skill (1 = Still Learning, 4 = Expert
+            Architect).
+          </p>
+          <div class="rubric-grid">
+            <div class="rubric-row">
+              <label
+                >I can calculate the volume of rectangular prisms using V = L
+                &#215; W &#215; H.</label
+              >
+              <div class="rubric-options">
+                <input type="radio" name="rubric1" value="1" id="r1a" /><label
+                  for="r1a"
+                  >1</label
+                >
+                <input type="radio" name="rubric1" value="2" id="r1b" /><label
+                  for="r1b"
+                  >2</label
+                >
+                <input type="radio" name="rubric1" value="3" id="r1c" /><label
+                  for="r1c"
+                  >3</label
+                >
+                <input type="radio" name="rubric1" value="4" id="r1d" /><label
+                  for="r1d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label
+                >I can calculate surface area using SA = 2(LW) + 2(LH) +
+                2(WH).</label
+              >
+              <div class="rubric-options">
+                <input type="radio" name="rubric2" value="1" id="r2a" /><label
+                  for="r2a"
+                  >1</label
+                >
+                <input type="radio" name="rubric2" value="2" id="r2b" /><label
+                  for="r2b"
+                  >2</label
+                >
+                <input type="radio" name="rubric2" value="3" id="r2c" /><label
+                  for="r2c"
+                  >3</label
+                >
+                <input type="radio" name="rubric2" value="4" id="r2d" /><label
+                  for="r2d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label
+                >I understand nets of rectangular prisms and can identify
+                faces.</label
+              >
+              <div class="rubric-options">
+                <input type="radio" name="rubric3" value="1" id="r3a" /><label
+                  for="r3a"
+                  >1</label
+                >
+                <input type="radio" name="rubric3" value="2" id="r3b" /><label
+                  for="r3b"
+                  >2</label
+                >
+                <input type="radio" name="rubric3" value="3" id="r3c" /><label
+                  for="r3c"
+                  >3</label
+                >
+                <input type="radio" name="rubric3" value="4" id="r3d" /><label
+                  for="r3d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label>I can convert between cubic inches and gallons.</label>
+              <div class="rubric-options">
+                <input type="radio" name="rubric4" value="1" id="r4a" /><label
+                  for="r4a"
+                  >1</label
+                >
+                <input type="radio" name="rubric4" value="2" id="r4b" /><label
+                  for="r4b"
+                  >2</label
+                >
+                <input type="radio" name="rubric4" value="3" id="r4c" /><label
+                  for="r4c"
+                  >3</label
+                >
+                <input type="radio" name="rubric4" value="4" id="r4d" /><label
+                  for="r4d"
+                  >4</label
+                >
+              </div>
+            </div>
+            <div class="rubric-row">
+              <label
+                >I can design 3D shapes to meet specific real-world
+                requirements.</label
+              >
+              <div class="rubric-options">
+                <input type="radio" name="rubric5" value="1" id="r5a" /><label
+                  for="r5a"
+                  >1</label
+                >
+                <input type="radio" name="rubric5" value="2" id="r5b" /><label
+                  for="r5b"
+                  >2</label
+                >
+                <input type="radio" name="rubric5" value="3" id="r5c" /><label
+                  for="r5c"
+                  >3</label
+                >
+                <input type="radio" name="rubric5" value="4" id="r5d" /><label
+                  for="r5d"
+                  >4</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reflections -->
+        <div class="card">
+          <h2>Architect's Journal &#8212; Reflection</h2>
+          <div class="form-group">
+            <label
+              >What was the most interesting thing you learned about volume and
+              3D geometry?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect1"
+              placeholder="I found it interesting that..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Which task was the most challenging? How did you work through
+              it?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect2"
+              placeholder="The hardest task was..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >What surprised you about the relationship between dimensions and
+              volume?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect3"
+              placeholder="I was surprised that..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >If you could add one more exhibit to your aquarium, what species
+              and what tank dimensions?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect4"
+              placeholder="I would add a ___ exhibit with a tank that is..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Portfolio -->
+        <div class="card card-glow" id="portfolioSummary">
+          <h2>Architect Certificate</h2>
+          <div id="portfolioContent">
+            <p>
+              Click "Generate Certificate" to create your project summary and
+              Architect Badge!
+            </p>
+          </div>
+          <div
+            style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px"
+          >
+            <button class="btn btn-coral" onclick="generatePortfolio()">
+              &#128220; Generate Certificate
+            </button>
+            <button class="btn btn-primary" onclick="ntDownloadResultsCSV()">
+              &#128202; Download Results (CSV for teacher)
+            </button>
+            <button class="btn btn-primary" onclick="copyPortfolio()">
+              &#128203; Copy to Clipboard
+            </button>
+            <button class="btn btn-outline" onclick="downloadPortfolio()">
+              &#128229; Download as Text
+            </button>
+            <button class="btn btn-outline" onclick="shareToClassroom()">
+              &#127891; Google Classroom
+            </button>
+            <button class="btn btn-outline" onclick="window.print()">
+              &#128424; Print
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end app-shell -->
+
+    <script>
+      /* ══════════════════════════════════════ */
+      /* AQUARIUM ARCHITECT — JS ENGINE        */
+      /* ══════════════════════════════════════ */
+
+      let currentPhase = 1;
+      let currentMode = "standard";
+      const STORAGE_KEY = "neft_aquarium_architect_v2";
+
+      /* ── Phase Navigation ── */
+      function goToPhase(n) {
+        document
+          .querySelectorAll(".phase")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("phase" + n).classList.add("active");
+        currentPhase = n;
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        saveState();
+      }
+
+      function updateProgress() {
+        document.querySelectorAll(".phase-dot").forEach((dot, i) => {
+          dot.classList.remove("active", "completed");
+          if (i + 1 < currentPhase) dot.classList.add("completed");
+          if (i + 1 === currentPhase) dot.classList.add("active");
+        });
+        document.getElementById("progressLabel").textContent =
+          `Phase ${currentPhase} of 5`;
+      }
+
+      /* ── Mode ── */
+      function setMode(mode) {
+        currentMode = mode;
+        document.body.classList.remove("challenge-mode", "support-mode");
+        if (mode === "challenge") document.body.classList.add("challenge-mode");
+        if (mode === "support") document.body.classList.add("support-mode");
+        document.querySelectorAll(".mode-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.mode === mode);
+        });
+        saveState();
+      }
+
+      /* ── Hints ── */
+      function toggleHint(id) {
+        document.getElementById(id).classList.toggle("open");
+      }
+
+      /* ── 3D Tank Visual ── */
+      function updateTankVisual() {
+        const L = parseInt(document.getElementById("tankLen").value);
+        const W = parseInt(document.getElementById("tankWid").value);
+        const H = parseInt(document.getElementById("tankHgt").value);
+        document.getElementById("lenVal").textContent = L;
+        document.getElementById("widVal").textContent = W;
+        document.getElementById("hgtVal").textContent = H;
+
+        const vol = L * W * H;
+        const gal = (vol / 231).toFixed(2);
+        document.getElementById("tankCalcResult").innerHTML =
+          `<div>Volume = ${L} &#215; ${W} &#215; ${H} = <strong style="color:var(--aq-teal)">${vol.toLocaleString()} in&#179;</strong></div>` +
+          `<div>Water capacity &#8776; <strong style="color:var(--aq-coral)">${gal} gallons</strong></div>`;
+
+        drawTank3D(L, W, H);
+        saveState();
+      }
+
+      function drawTank3D(L, W, H) {
+        const canvas = document.getElementById("tankCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const cw = canvas.width,
+          ch = canvas.height;
+        ctx.clearRect(0, 0, cw, ch);
+
+        // Scale to fit
+        const maxDim = Math.max(L, W, H);
+        const scale = Math.min(120 / maxDim, 5);
+        const sl = L * scale,
+          sw = W * scale * 0.5,
+          sh = H * scale;
+
+        // Isometric-ish offsets
+        const ox = (cw - sl - sw) / 2;
+        const oy = ch - 40;
+
+        // Front face
+        ctx.fillStyle = "rgba(13,148,136,0.15)";
+        ctx.strokeStyle = "#0d9488";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(ox + sl, oy);
+        ctx.lineTo(ox + sl, oy - sh);
+        ctx.lineTo(ox, oy - sh);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Top face
+        ctx.fillStyle = "rgba(13,148,136,0.08)";
+        ctx.beginPath();
+        ctx.moveTo(ox, oy - sh);
+        ctx.lineTo(ox + sl, oy - sh);
+        ctx.lineTo(ox + sl + sw, oy - sh - sw);
+        ctx.lineTo(ox + sw, oy - sh - sw);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Right face
+        ctx.fillStyle = "rgba(13,148,136,0.12)";
+        ctx.beginPath();
+        ctx.moveTo(ox + sl, oy);
+        ctx.lineTo(ox + sl + sw, oy - sw);
+        ctx.lineTo(ox + sl + sw, oy - sh - sw);
+        ctx.lineTo(ox + sl, oy - sh);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Water fill (front face, 85% full)
+        const waterH = sh * 0.85;
+        ctx.fillStyle = "rgba(34,211,238,0.25)";
+        ctx.beginPath();
+        ctx.moveTo(ox + 2, oy - 1);
+        ctx.lineTo(ox + sl - 1, oy - 1);
+        ctx.lineTo(ox + sl - 1, oy - waterH);
+        // Wave effect
+        const waveY = oy - waterH;
+        ctx.quadraticCurveTo(ox + sl * 0.75, waveY - 3, ox + sl * 0.5, waveY);
+        ctx.quadraticCurveTo(ox + sl * 0.25, waveY + 3, ox + 2, waveY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Dimension labels
+        ctx.fillStyle = "#1e3a5f";
+        ctx.font = "bold 11px ui-sans-serif, system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(`L=${L}"`, ox + sl / 2, oy + 18);
+        ctx.save();
+        ctx.translate(ox - 12, oy - sh / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(`H=${H}"`, 0, 0);
+        ctx.restore();
+        ctx.fillText(`W=${W}"`, ox + sl + sw / 2 + 5, oy - sw / 2 + 15);
+
+        // Tiny fish
+        if (sl > 60 && sh > 40) {
+          ctx.fillStyle = "#f97316";
+          const fx = ox + sl * 0.4,
+            fy = oy - waterH * 0.5;
+          ctx.beginPath();
+          ctx.ellipse(fx, fy, 8, 5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(fx - 8, fy);
+          ctx.lineTo(fx - 15, fy - 5);
+          ctx.lineTo(fx - 15, fy + 5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#1e3a5f";
+          ctx.beginPath();
+          ctx.arc(fx + 4, fy - 1, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      /* ── Surface Area Calculator ── */
+      function calcSurfaceArea() {
+        const L = parseFloat(document.getElementById("saL").value);
+        const W = parseFloat(document.getElementById("saW").value);
+        const H = parseFloat(document.getElementById("saH").value);
+        const el = document.getElementById("saResult");
+        if ([L, W, H].some(isNaN) || L <= 0 || W <= 0 || H <= 0) {
+          el.innerHTML =
+            '<span style="color:var(--aq-error)">Enter valid L, W, and H values.</span>';
+          return;
+        }
+        const lw = L * W,
+          lh = L * H,
+          wh = W * H;
+        const sa = 2 * (lw + lh + wh);
+        const saOpen = lw + 2 * lh + 2 * wh;
+        el.innerHTML =
+          `<div>` +
+          `<strong>Full box:</strong> SA = 2(${lw}) + 2(${lh}) + 2(${wh}) = <strong style="color:var(--aq-teal)">${sa} in&#178;</strong><br>` +
+          `<strong>Open-top:</strong> SA = ${lw} + 2(${lh}) + 2(${wh}) = <strong style="color:var(--aq-coral)">${saOpen} in&#178;</strong>` +
+          `</div>`;
+      }
+
+      /* ── Volume Converter ── */
+      function convertVolume() {
+        const val = parseFloat(document.getElementById("convVal").value);
+        const from = document.getElementById("convFrom").value;
+        const to = document.getElementById("convTo").value;
+        const el = document.getElementById("convResult");
+        if (isNaN(val)) {
+          el.innerHTML =
+            '<span style="color:var(--aq-error)">Enter a valid number.</span>';
+          return;
+        }
+
+        // Convert to cubic inches first
+        let inCubic;
+        switch (from) {
+          case "in3":
+            inCubic = val;
+            break;
+          case "gal":
+            inCubic = val * 231;
+            break;
+          case "lit":
+            inCubic = val * 61.024;
+            break;
+          case "ft3":
+            inCubic = val * 1728;
+            break;
+        }
+
+        // Convert from cubic inches to target
+        let result;
+        switch (to) {
+          case "in3":
+            result = inCubic;
+            break;
+          case "gal":
+            result = inCubic / 231;
+            break;
+          case "lit":
+            result = inCubic / 61.024;
+            break;
+          case "ft3":
+            result = inCubic / 1728;
+            break;
+        }
+
+        const units = { in3: "in³", gal: "gallons", lit: "liters", ft3: "ft³" };
+        el.innerHTML = `<div><strong style="color:var(--aq-teal)">${val} ${units[from]} = ${result.toFixed(2)} ${units[to]}</strong></div>`;
+      }
+
+      /* ── Portfolio ── */
+      function generatePortfolio() {
+        const name =
+          document.getElementById("studentName").value || "Unnamed Architect";
+        const period = document.getElementById("classPeriod").value || "N/A";
+        const date =
+          document.getElementById("activityDate").value ||
+          new Date().toLocaleDateString();
+
+        const toolIds = [
+          "saL",
+          "saW",
+          "saH",
+          "convVal",
+          "tankLen",
+          "tankWid",
+          "tankHgt",
+        ];
+        let filled = 0,
+          total = 0;
+        document
+          .querySelectorAll(".form-input, .form-textarea, .form-select")
+          .forEach((el) => {
+            if (toolIds.includes(el.id) || el.type === "range") return;
+            total++;
+            if (el.value && el.value.trim()) filled++;
+          });
+        const pct = Math.round((filled / total) * 100);
+
+        const rubricScore = [1, 2, 3, 4, 5].reduce((s, i) => {
+          const c = document.querySelector(`input[name="rubric${i}"]:checked`);
+          return s + (c ? parseInt(c.value) : 0);
+        }, 0);
+
+        let badgeColor = "#dc2626",
+          badgeLabel = "Apprentice",
+          badgeIcon = "&#128032;";
+        if (pct >= 90) {
+          badgeColor = "#0d9488";
+          badgeLabel = "Master Architect";
+          badgeIcon = "&#127942;";
+        } else if (pct >= 70) {
+          badgeColor = "#1e3a5f";
+          badgeLabel = "Senior Designer";
+          badgeIcon = "&#128025;";
+        } else if (pct >= 50) {
+          badgeColor = "#f97316";
+          badgeLabel = "Junior Builder";
+          badgeIcon = "&#129416;";
+        }
+
+        document.getElementById("portfolioContent").innerHTML = `
+          <div style="text-align:center;margin-bottom:24px">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(30,58,95,0.1)" stroke-width="10"/>
+              <circle cx="80" cy="80" r="72" fill="none" stroke="${badgeColor}" stroke-width="10"
+                stroke-dasharray="${(pct / 100) * 452} 452" stroke-linecap="round" transform="rotate(-90 80 80)"/>
+              <text x="80" y="70" text-anchor="middle" fill="${badgeColor}" font-size="32" font-weight="800">${pct}%</text>
+              <text x="80" y="92" text-anchor="middle" fill="var(--aq-muted)" font-size="11" font-weight="600">COMPLETE</text>
+            </svg>
+          </div>
+          <div class="badge-row">
+            <svg width="120" height="140" viewBox="0 0 120 140">
+              <polygon points="60,5 75,40 112,45 85,72 92,110 60,92 28,110 35,72 8,45 45,40" fill="${badgeColor}" stroke="#1e3a5f" stroke-width="1.5"/>
+              <text x="60" y="65" text-anchor="middle" fill="#fff" font-size="28">${badgeIcon}</text>
+              <text x="60" y="130" text-anchor="middle" fill="var(--aq-text)" font-size="10" font-weight="700">${badgeLabel}</text>
+            </svg>
+          </div>
+          <div class="grid-2" style="gap:16px;margin-bottom:20px">
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--aq-muted)">ARCHITECT</div>
+              <div style="font-weight:700;font-size:1.1rem">${name}</div>
+            </div>
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--aq-muted)">TEAM / DATE</div>
+              <div style="font-weight:700;font-size:1.1rem">${period} | ${date}</div>
+            </div>
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--aq-muted)">TASKS COMPLETED</div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--aq-teal)">${filled} / ${total}</div>
+            </div>
+            <div style="padding:16px;background:rgba(255,255,255,0.4);border-radius:var(--radius)">
+              <div style="font-size:0.82rem;color:var(--aq-muted)">SELF-ASSESSMENT</div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--aq-coral)">${rubricScore} / 20</div>
+            </div>
+          </div>
+          <div style="padding:16px;background:rgba(13,148,136,0.05);border:2px solid rgba(13,148,136,0.2);border-radius:var(--radius)">
+            <strong style="color:var(--aq-teal)">Project Status:</strong>
+            ${
+              pct >= 90
+                ? '<span style="color:var(--aq-success)"> GRAND OPENING! Outstanding architecture, Lead Designer!</span>'
+                : pct >= 70
+                  ? '<span style="color:var(--aq-teal)"> EXHIBIT APPROVED! Great engineering work!</span>'
+                  : pct >= 50
+                    ? '<span style="color:var(--aq-warn)"> STILL UNDER CONSTRUCTION! Keep building!</span>'
+                    : '<span style="color:var(--aq-error)"> NEEDS MORE DESIGN WORK! Consult your Lead Architect (teacher).</span>'
+            }
+          </div>`;
+      }
+
+      function copyPortfolio() {
+        const name = document.getElementById("studentName").value || "Unnamed";
+        const period = document.getElementById("classPeriod").value || "N/A";
+        const toolIds = [
+          "saL",
+          "saW",
+          "saH",
+          "convVal",
+          "tankLen",
+          "tankWid",
+          "tankHgt",
+        ];
+        let text = `AQUARIUM ARCHITECT — Portfolio\nArchitect: ${name} | Team: ${period}\n\n`;
+        document
+          .querySelectorAll(".form-input, .form-textarea")
+          .forEach((el) => {
+            if (
+              el.value &&
+              el.value.trim() &&
+              !toolIds.includes(el.id) &&
+              el.type !== "range"
+            ) {
+              const lbl =
+                el.closest(".form-group")?.querySelector("label")
+                  ?.textContent || el.id;
+              text += `${lbl}: ${el.value}\n\n`;
+            }
+          });
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("Portfolio copied to clipboard!"));
+      }
+
+      function downloadPortfolio() {
+        const name = document.getElementById("studentName").value || "Unnamed";
+        const toolIds = [
+          "saL",
+          "saW",
+          "saH",
+          "convVal",
+          "tankLen",
+          "tankWid",
+          "tankHgt",
+        ];
+        let text = `AQUARIUM ARCHITECT — Volume & 3D Geometry\nArchitect: ${name}\n${"=".repeat(50)}\n\n`;
+        document.querySelectorAll(".task, .card").forEach((sec) => {
+          const h = sec.querySelector("h3, .task-title, h2");
+          if (h) text += `--- ${h.textContent} ---\n`;
+          sec.querySelectorAll(".form-input, .form-textarea").forEach((el) => {
+            if (
+              el.value &&
+              el.value.trim() &&
+              !toolIds.includes(el.id) &&
+              el.type !== "range"
+            ) {
+              const lbl =
+                el.closest(".form-group")?.querySelector("label")
+                  ?.textContent || el.id;
+              text += `${lbl}\n${el.value}\n\n`;
+            }
+          });
+        });
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Aquarium_Architect_${name.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      function shareToClassroom() {
+        const name = document.getElementById("studentName").value || "Student";
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent("Aquarium Architect - " + name);
+        window.open(
+          `https://classroom.google.com/share?url=${url}&title=${title}`,
+          "_blank",
+        );
+      }
+
+      /* ── Auto-Save ── */
+      function saveState() {
+        const data = { phase: currentPhase, mode: currentMode, fields: {} };
+        document
+          .querySelectorAll(
+            '.form-input, .form-textarea, .form-select, input[type="range"]',
+          )
+          .forEach((el) => {
+            if (el.id) data.fields[el.id] = el.value;
+          });
+        document
+          .querySelectorAll('input[type="radio"]:checked')
+          .forEach((el) => {
+            data.fields[el.name] = el.value;
+          });
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (data.phase) goToPhase(data.phase);
+          if (data.mode) setMode(data.mode);
+          if (data.fields) {
+            Object.entries(data.fields).forEach(([id, val]) => {
+              const el = document.getElementById(id);
+              if (el) {
+                el.value = val;
+                if (el.type === "range") el.dispatchEvent(new Event("input"));
+              }
+              if (!el && val) {
+                const r = document.querySelector(
+                  `input[name="${id}"][value="${val}"]`,
+                );
+                if (r) r.checked = true;
+              }
+            });
+          }
+        } catch (e) {}
+      }
+
+      document.addEventListener("input", () => {
+        clearTimeout(window._saveTimer);
+        window._saveTimer = setTimeout(saveState, 500);
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadState();
+        updateTankVisual();
+        if (!document.getElementById("activityDate").value) {
+          document.getElementById("activityDate").value = new Date()
+            .toISOString()
+            .split("T")[0];
+        }
+
+        /* ═══════════════════════════════════════════════════
+           ENHANCEMENT MODULE — XP, Sound, Certificate
+           ═══════════════════════════════════════════════════ */
+        var _xp = parseInt(localStorage.getItem("neft_xp_u10_aq") || "0");
+        var _xpPerLevel = 100;
+
+        // XP Bar
+        var bar = document.createElement("div");
+        bar.className = "xp-bar-wrap";
+        bar.innerHTML =
+          '<button class="xp-toggle" onclick="this.parentElement.classList.toggle(\'hidden\')" title="Toggle XP bar">&#9660;</button><span class="xp-level" id="xpLevelDisp">LVL 1</span><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><span class="xp-pts" id="xpPtsDisp">0 XP</span>';
+        document.body.appendChild(bar);
+
+        function _updateXPDisplay() {
+          var lvl = document.getElementById("xpLevelDisp");
+          var fill = document.getElementById("xpFill");
+          var pts = document.getElementById("xpPtsDisp");
+          if (!lvl) return;
+          var level = Math.floor(_xp / _xpPerLevel) + 1;
+          lvl.textContent = "LVL " + level;
+          fill.style.width = ((_xp % _xpPerLevel) / _xpPerLevel) * 100 + "%";
+          pts.textContent = _xp + " XP";
+        }
+        _updateXPDisplay();
+
+        var _audioCtx = null;
+        function _getAudio() {
+          if (!_audioCtx) {
+            try {
+              _audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          }
+          return _audioCtx;
+        }
+        function _playSound(type) {
+          var ctx = _getAudio();
+          if (!ctx) return;
+          try {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            if (type === "xp") {
+              osc.frequency.value = 880;
+              osc.type = "sine";
+              gain.gain.setValueAtTime(0.04, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.15,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.15);
+            } else if (type === "phase") {
+              osc.frequency.value = 440;
+              osc.type = "triangle";
+              gain.gain.setValueAtTime(0.06, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.2,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.2);
+            } else if (type === "complete") {
+              [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) {
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.frequency.value = f;
+                o.type = "sine";
+                g.gain.setValueAtTime(0.06, ctx.currentTime + i * 0.15);
+                g.gain.exponentialRampToValueAtTime(
+                  0.001,
+                  ctx.currentTime + i * 0.15 + 0.4,
+                );
+                o.start(ctx.currentTime + i * 0.15);
+                o.stop(ctx.currentTime + i * 0.15 + 0.4);
+              });
+            }
+          } catch (e) {}
+        }
+
+        function _addXP(pts, reason) {
+          _xp += pts;
+          try {
+            localStorage.setItem("neft_xp_u10_aq", String(_xp));
+          } catch (e) {}
+          _updateXPDisplay();
+          _playSound("xp");
+          var toast = document.createElement("div");
+          toast.style.cssText =
+            "position:fixed;top:20px;right:20px;z-index:10001;padding:10px 18px;border-radius:10px;background:#0d9488;color:#fff;font-weight:700;font-size:0.88rem;animation:popIn 0.3s ease-out;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2)";
+          toast.textContent = "+" + pts + " XP — " + (reason || "Nice work!");
+          document.body.appendChild(toast);
+          setTimeout(function () {
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.4s";
+          }, 1800);
+          setTimeout(function () {
+            toast.remove();
+          }, 2400);
+        }
+
+        function _showCertificate(name, pct, xpTotal) {
+          var existing = document.getElementById("certOverlay");
+          if (existing) existing.remove();
+          var overlay = document.createElement("div");
+          overlay.id = "certOverlay";
+          overlay.className = "certificate-overlay visible";
+          var level = Math.floor(xpTotal / _xpPerLevel) + 1;
+          var badge =
+            pct >= 90
+              ? "\u{1F3C6}"
+              : pct >= 70
+                ? "⭐"
+                : pct >= 50
+                  ? "\u{1F4AA}"
+                  : "\u{1F331}";
+          var rank =
+            pct >= 90
+              ? "Outstanding"
+              : pct >= 70
+                ? "Excellent"
+                : pct >= 50
+                  ? "Good Work"
+                  : "Keep Growing";
+          overlay.innerHTML =
+            '<div class="certificate-card"><div class="cert-badge">' +
+            badge +
+            '</div><div class="cert-title">Certificate of Completion</div><div class="cert-subtitle">Aquarium Architect</div><div class="cert-name">' +
+            (name || "Architect") +
+            '</div><div class="cert-score">' +
+            pct +
+            '%</div><div class="cert-xp">&#128032; ' +
+            rank +
+            " — Level " +
+            level +
+            " (" +
+            xpTotal +
+            ' XP)</div><div class="cert-stats"><div class="cert-stat"><div class="cert-stat-val">' +
+            level +
+            '</div><div class="cert-stat-lbl">Level</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            xpTotal +
+            '</div><div class="cert-stat-lbl">Total XP</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            pct +
+            '%</div><div class="cert-stat-lbl">Complete</div></div></div><button class="cert-close" onclick="document.getElementById(\'certOverlay\').classList.remove(\'visible\')">Close</button></div>';
+          document.body.appendChild(overlay);
+          _playSound("complete");
+        }
+
+        // Enhanced goToPhase
+        var _phasesVisited = {};
+        var _origGTP = goToPhase;
+        goToPhase = function (n) {
+          _origGTP(n);
+          if (!_phasesVisited[n] && n > 1) {
+            _phasesVisited[n] = true;
+            _addXP(15, "Phase " + n + " started!");
+          }
+          _playSound("phase");
+        };
+
+        // Enhanced generatePortfolio
+        var _origGenPort = generatePortfolio;
+        generatePortfolio = function () {
+          _origGenPort();
+          var name =
+            (document.getElementById("studentName") || {}).value || "Architect";
+          var filled = 0,
+            total = 0;
+          document
+            .querySelectorAll(".form-input, .form-textarea, .form-select")
+            .forEach(function (el) {
+              if (el.type === "range") return;
+              total++;
+              if (el.value && el.value.trim()) filled++;
+            });
+          var pct = total > 0 ? Math.round((filled / total) * 100) : 0;
+          _addXP(
+            pct >= 90 ? 50 : pct >= 70 ? 30 : pct >= 50 ? 20 : 10,
+            "Portfolio generated!",
+          );
+          setTimeout(function () {
+            _showCertificate(name, pct, _xp);
+          }, 800);
+        };
+
+        // Auto-XP for fields
+        var _xpFieldsAwarded = {};
+        document.addEventListener("input", function (e) {
+          var el = e.target;
+          if (el.matches && el.matches(".form-input, .form-textarea")) {
+            clearTimeout(window._fxpT);
+            window._fxpT = setTimeout(function () {
+              if (!el.id || _xpFieldsAwarded[el.id]) return;
+              if (el.value && el.value.trim().length >= 3) {
+                _xpFieldsAwarded[el.id] = true;
+                _addXP(2, "Answer entered");
+              }
+            }, 1500);
+          }
+        });
+      });
+    </script>
+  
+    <details class="neft-help-panel" id="neftHelpPanel">
+      <summary class="neft-help-summary">
+        <span aria-hidden="true">&#128218;</span> Need help? Explore these resources
+      </summary>
+      <div class="neft-help-body">
+        <p>These trusted, free websites can help you review <strong>finding volume and surface area of rectangular prisms</strong>.
+        They open in a new tab so you keep your work.</p>
+        <ul class="neft-help-links"><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Khan Academy: Geometry (area & volume)</a></li><li><a href="https://www.mathsisfun.com/geometry/cuboids-rectangular-prisms.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Volume</a></li><li><a href="https://www.mathsisfun.com/geometry/surface-area.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Surface Area</a></li></ul>
+        
+        <p style="margin-top:1rem"><strong>Key vocabulary:</strong></p>
+        <ul class="neft-glossary-list"><li><strong>volume:</strong> The amount of space inside a 3D shape, measured in cubic units.</li><li><strong>surface area:</strong> The total area of all the faces of a 3D shape.</li><li><strong>rectangular prism:</strong> A 3D box shape with six rectangular faces.</li><li><strong>face:</strong> A flat surface of a 3D shape.</li><li><strong>edge:</strong> A line where two faces of a 3D shape meet.</li><li><strong>cubic unit:</strong> A cube one unit wide, used to measure volume.</li></ul>
+      </div>
+    </details>
+  
+    <script id="NEFT-UPGRADE-6-10-js">
+    (function () {
+      var GLOSS = {"volume": "The amount of space inside a 3D shape, measured in cubic units.", "surface area": "The total area of all the faces of a 3D shape.", "rectangular prism": "A 3D box shape with six rectangular faces.", "face": "A flat surface of a 3D shape.", "edge": "A line where two faces of a 3D shape meet.", "cubic unit": "A cube one unit wide, used to measure volume."};
+      var keys = Object.keys(GLOSS).sort(function (a, b) { return b.length - a.length; });
+      var SKIP = { SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1, OPTION:1, BUTTON:1,
+                   svg:1, SVG:1, CODE:1, A:1, SUMMARY:1, H1:1 };
+      function inSkip(node) {
+        var p = node.parentNode;
+        while (p && p.nodeType === 1) {
+          if (SKIP[p.tagName] || (p.className && String(p.className).indexOf('neft-') === 0)) return true;
+          if (p.classList && p.classList.contains('neft-term')) return true;
+          p = p.parentNode;
+        }
+        return false;
+      }
+      function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+      function wrapTerm(term) {
+        var def = GLOSS[term];
+        var re = new RegExp('\\b(' + esc(term) + ')\\b', 'i');
+        var counted = 0, MAXPER = 1;
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+        var nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(function (node) {
+          if (counted >= MAXPER) return;
+          if (!node.nodeValue || !re.test(node.nodeValue)) return;
+          if (inSkip(node)) return;
+          var m = node.nodeValue.match(re);
+          if (!m) return;
+          var idx = m.index;
+          var before = node.nodeValue.slice(0, idx);
+          var word = node.nodeValue.slice(idx, idx + m[1].length);
+          var after = node.nodeValue.slice(idx + m[1].length);
+          var span = document.createElement('span');
+          span.className = 'neft-term';
+          span.setAttribute('tabindex', '0');
+          span.setAttribute('role', 'button');
+          span.setAttribute('aria-label', word + ': ' + def);
+          span.textContent = word;
+          var tip = document.createElement('span');
+          tip.className = 'neft-tip';
+          tip.setAttribute('role', 'tooltip');
+          tip.textContent = def;
+          span.appendChild(tip);
+          var frag = document.createDocumentFragment();
+          if (before) frag.appendChild(document.createTextNode(before));
+          frag.appendChild(span);
+          if (after) frag.appendChild(document.createTextNode(after));
+          node.parentNode.replaceChild(frag, node);
+          counted++;
+        });
+      }
+      function run() { keys.forEach(wrapTerm); }
+      if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', run);
+      else run();
+    })();
+    </script>
+  
+    <section class="neft-help-panel" aria-label="Level 1 study helper" style="border-color:#34d399">
+      <div class="neft-help-summary" style="background:#ecfdf5;cursor:default">
+        <span aria-hidden="true">&#129504;</span> How to work through this (Level 1)
+      </div>
+      <div class="neft-help-body">
+        <p>Take it one small step at a time:</p>
+        <ol style="padding-left:1.2rem;line-height:1.7">
+          <li><strong>Read slowly.</strong> Underlined words have a meaning bubble &mdash; tap them.</li>
+          <li><strong>Find the numbers</strong> in the problem and write them down.</li>
+          <li><strong>Pick the operation</strong> (+, &minus;, &times;, &divide;). Ask: am I joining, taking away, grouping, or sharing?</li>
+          <li><strong>Use the <span style="white-space:nowrap">&#128161; Show Hint</span> buttons</strong> any time you feel stuck.</li>
+          <li><strong>Check your answer.</strong> Does it make sense for the story?</li>
+        </ol>
+        <p style="margin-top:0.8rem;background:#f0fdf4;padding:0.7rem 0.9rem;border-radius:10px">
+          <strong>Tip:</strong> It is okay to use smaller, friendlier numbers to practice first.
+          The hints walk you through each step.</p>
+      </div>
+    </section>
+  
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      /* nt-results wiring — reuses this game's real completion + self-rating tallies. */
+      function ntResultsTally() {
+        var sel = document.querySelectorAll(
+          '.form-input, .form-textarea, .form-select, input[type=text], textarea, select'
+        );
+        var total = 0, filled = 0, seen = {};
+        sel.forEach(function (el) {
+          if (seen[el]) return; seen[el] = 1;
+          var id = el.id || '';
+          if (/^calc/i.test(id)) return;            // skip calculator helper fields
+          if (/^rubric/i.test(el.name || '')) return;
+          if (el.type === 'radio' || el.type === 'checkbox') return;
+          total++;
+          if (el.value && String(el.value).trim()) filled++;
+        });
+        // Self-rating: radios named rubric* OR selected rubric-cells.
+        var rubric = 0, rubricMax = 0;
+        var radios = {};
+        document.querySelectorAll('input[name^=rubric]').forEach(function (r) {
+          radios[r.name] = Math.max(radios[r.name] || 0, parseInt(r.value, 10) || 0);
+        });
+        var radioNames = Object.keys(radios);
+        if (radioNames.length) {
+          radioNames.forEach(function (n) {
+            rubricMax += radios[n];
+            var c = document.querySelector('input[name="' + n + '"]:checked');
+            if (c) rubric += parseInt(c.value, 10) || 0;
+          });
+        } else {
+          var groups = {};
+          document.querySelectorAll('.rubric-cell').forEach(function (cell) {
+            var m = /selectRubric\(\s*['\"]([^'\"]+)['\"]\s*,\s*(\d+)/.exec(
+              cell.getAttribute('onclick') || ''
+            );
+            if (!m) return;
+            var key = m[1], val = parseInt(m[2], 10) || 0;
+            groups[key] = Math.max(groups[key] || 0, val);
+            if (cell.classList.contains('selected')) {
+              cell._sel = val;
+            }
+          });
+          Object.keys(groups).forEach(function (k) { rubricMax += groups[k]; });
+          document.querySelectorAll('.rubric-cell.selected').forEach(function (cell) {
+            var m = /,\s*(\d+)\s*,/.exec(cell.getAttribute('onclick') || '');
+            if (m) rubric += parseInt(m[1], 10) || 0;
+          });
+        }
+        return { filled: filled, total: total, rubric: rubric, rubricMax: rubricMax };
+      }
+      function ntDownloadResultsCSV() {
+        var nameEl = document.getElementById('studentName');
+        var student = (nameEl && nameEl.value && nameEl.value.trim()) || 'Student';
+        var t = ntResultsTally();
+        var sections = [
+          { name: 'Completion', correct: t.filled, total: t.total }
+        ];
+        if (t.rubricMax > 0)
+          sections.push({ name: 'Self-rating', correct: t.rubric, total: t.rubricMax });
+        NTResults.finish({
+          student: student,
+          assessment: 'Unit 10 Post-Test: Aquarium Architect',
+          standard: '6.G.2',
+        level: '1',
+          sections: sections,
+          correct: t.filled,
+          total: t.total,
+        });
+      }
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

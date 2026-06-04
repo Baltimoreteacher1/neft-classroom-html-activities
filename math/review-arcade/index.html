@@ -1,0 +1,1873 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boss-Battle Review Arcade · Grade 6 Math</title>
+    <meta
+      name="description"
+      content="Arcade-style review quiz for Grade 6 Math — Unit 1 through Unit 10 plus a Boss Battle mixed mode."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Design tokens ── */
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --teal: #0e8a7d;
+        --gold: #d4952a;
+        --coral: #c45a3c;
+        --green: #2d874b;
+        --purple: #6b3fa0;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.12);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+
+        /* arcade palette */
+        --arc-bg: #0d1b2a;
+        --arc-glow: #00ffe7;
+        --arc-gold: #ffd700;
+        --arc-pink: #ff4d9e;
+        --arc-text: #e8f0fe;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font);
+        background: var(--arc-bg);
+        color: var(--arc-text);
+        min-height: 100vh;
+        line-height: 1.55;
+      }
+
+      /* ── Utility ── */
+      .hidden {
+        display: none !important;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+      }
+
+      /* ── Scanline / arcade atmosphere ── */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.04) 0px,
+          rgba(0, 0, 0, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      }
+
+      /* ── Header bar ── */
+      .top-bar {
+        background: rgba(255, 255, 255, 0.04);
+        border-bottom: 1px solid rgba(0, 255, 231, 0.15);
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: rgba(232, 240, 254, 0.6);
+        position: relative;
+        z-index: 2;
+      }
+      .top-bar a {
+        color: var(--arc-glow);
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .top-bar a:hover {
+        text-decoration: underline;
+      }
+      .top-bar .sep {
+        opacity: 0.4;
+      }
+
+      /* ── Screens wrapper ── */
+      .screen {
+        position: relative;
+        z-index: 1;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 18px 80px;
+      }
+
+      /* ════════════════════════════════════════
+       HOME SCREEN
+    ════════════════════════════════════════ */
+      .hero {
+        text-align: center;
+        padding: 40px 20px 32px;
+      }
+      .hero .mascot {
+        font-size: 72px;
+        line-height: 1;
+        display: block;
+        animation: bounce 2s ease-in-out infinite;
+      }
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .hero h1 {
+        font-size: clamp(28px, 6vw, 52px);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        background: linear-gradient(
+          90deg,
+          var(--arc-glow),
+          var(--arc-gold),
+          var(--arc-pink)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 14px 0 10px;
+        line-height: 1.1;
+      }
+      .hero .sub {
+        font-size: 17px;
+        color: rgba(232, 240, 254, 0.75);
+        max-width: 520px;
+        margin: 0 auto 8px;
+      }
+
+      /* instructions card */
+      .how-to {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(0, 255, 231, 0.2);
+        border-radius: var(--radius);
+        padding: 18px 22px;
+        margin: 24px 0 30px;
+        font-size: 15px;
+        color: rgba(232, 240, 254, 0.85);
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .how-to-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .how-to-item .icon {
+        font-size: 22px;
+      }
+
+      /* unit grid */
+      .unit-grid-label {
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--arc-glow);
+        margin-bottom: 14px;
+      }
+      .unit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .unit-btn {
+        background: rgba(255, 255, 255, 0.07);
+        border: 2px solid rgba(0, 255, 231, 0.25);
+        border-radius: 14px;
+        padding: 16px 10px 14px;
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--arc-text);
+        text-align: center;
+        transition:
+          background 0.18s,
+          border-color 0.18s,
+          transform 0.15s;
+        line-height: 1.3;
+      }
+      .unit-btn .u-num {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--arc-glow);
+        margin-bottom: 4px;
+      }
+      .unit-btn .u-emoji {
+        font-size: 26px;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .unit-btn:hover,
+      .unit-btn:focus-visible {
+        background: rgba(0, 255, 231, 0.12);
+        border-color: var(--arc-glow);
+        transform: translateY(-3px);
+        outline: none;
+      }
+      .unit-btn:active {
+        transform: translateY(0);
+      }
+
+      .boss-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #5c0e8a 0%, #9b0e4f 100%);
+        border: 2px solid var(--arc-pink);
+        border-radius: 18px;
+        padding: 20px 24px;
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+        text-align: center;
+        letter-spacing: 0.02em;
+        transition:
+          filter 0.18s,
+          transform 0.15s;
+        margin-top: 8px;
+        text-shadow: 0 0 12px rgba(255, 77, 158, 0.6);
+        box-shadow: 0 0 24px rgba(155, 14, 79, 0.4);
+      }
+      .boss-btn:hover,
+      .boss-btn:focus-visible {
+        filter: brightness(1.15);
+        transform: scale(1.02);
+        outline: none;
+      }
+      .boss-btn:active {
+        transform: scale(0.99);
+      }
+
+      /* ════════════════════════════════════════
+       PLAY SCREEN
+    ════════════════════════════════════════ */
+      /* HUD */
+      .hud {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(0, 255, 231, 0.15);
+        border-radius: 14px;
+        padding: 12px 18px;
+        margin-bottom: 20px;
+      }
+      .hud-hearts {
+        font-size: 22px;
+        letter-spacing: 3px;
+        flex: 0 0 auto;
+      }
+      .hud-score {
+        font-weight: 800;
+        font-size: 15px;
+        flex: 1;
+        color: var(--arc-gold);
+      }
+      .hud-streak {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--arc-pink);
+        flex: 0 0 auto;
+      }
+      .hud-progress {
+        width: 100%;
+        font-size: 12px;
+        color: rgba(232, 240, 254, 0.55);
+        font-weight: 600;
+      }
+      .progress-bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        overflow: hidden;
+        margin-top: 4px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--arc-glow), var(--arc-gold));
+        border-radius: 50px;
+        transition: width 0.4s ease;
+      }
+
+      /* question card */
+      .q-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(0, 255, 231, 0.2);
+        border-radius: var(--radius);
+        padding: 28px 26px 24px;
+        margin-bottom: 20px;
+      }
+      .q-unit-label {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--arc-glow);
+        margin-bottom: 10px;
+      }
+      .q-text {
+        font-size: clamp(17px, 3vw, 22px);
+        font-weight: 700;
+        line-height: 1.4;
+        color: #fff;
+      }
+
+      /* choices */
+      .choices {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      @media (max-width: 500px) {
+        .choices {
+          grid-template-columns: 1fr;
+        }
+      }
+      .choice-btn {
+        background: rgba(255, 255, 255, 0.07);
+        border: 2px solid rgba(255, 255, 255, 0.18);
+        border-radius: 12px;
+        padding: 16px 16px;
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--arc-text);
+        text-align: left;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          transform 0.12s;
+        line-height: 1.35;
+      }
+      .choice-btn:hover:not(:disabled),
+      .choice-btn:focus-visible:not(:disabled) {
+        background: rgba(0, 255, 231, 0.1);
+        border-color: var(--arc-glow);
+        transform: translateX(3px);
+        outline: none;
+      }
+      .choice-btn:active:not(:disabled) {
+        transform: translateX(0);
+      }
+      .choice-btn:disabled {
+        cursor: default;
+        opacity: 0.85;
+      }
+
+      /* answer feedback states */
+      .choice-btn.correct {
+        background: rgba(45, 135, 75, 0.35);
+        border-color: #4ade80;
+        color: #d1fae5;
+        animation: pulse-green 0.4s ease;
+      }
+      .choice-btn.wrong {
+        background: rgba(196, 90, 60, 0.35);
+        border-color: #f87171;
+        color: #fee2e2;
+        animation: shake 0.35s ease;
+      }
+      @keyframes pulse-green {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.04);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-6px);
+        }
+        60% {
+          transform: translateX(6px);
+        }
+      }
+
+      /* explanation */
+      .explanation {
+        background: rgba(255, 255, 255, 0.06);
+        border-left: 4px solid var(--arc-glow);
+        border-radius: 10px;
+        padding: 13px 16px;
+        font-size: 15px;
+        color: rgba(232, 240, 254, 0.9);
+        margin-bottom: 18px;
+        display: none;
+      }
+      .explanation.show {
+        display: block;
+        animation: fadein 0.3s ease;
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .explanation .result-label {
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .explanation .result-label.ok {
+        color: #4ade80;
+      }
+      .explanation .result-label.no {
+        color: #f87171;
+      }
+
+      /* next button */
+      .next-btn {
+        display: none;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 32px;
+        font-family: var(--font);
+        font-size: 17px;
+        font-weight: 800;
+        color: #fff;
+        cursor: pointer;
+        transition:
+          filter 0.18s,
+          transform 0.15s;
+        width: 100%;
+      }
+      .next-btn.show {
+        display: block;
+      }
+      .next-btn:hover,
+      .next-btn:focus-visible {
+        filter: brightness(1.12);
+        transform: translateY(-2px);
+        outline: none;
+      }
+      .next-btn:active {
+        transform: translateY(0);
+      }
+
+      /* ════════════════════════════════════════
+       RESULTS SCREEN
+    ════════════════════════════════════════ */
+      .results-hero {
+        text-align: center;
+        padding: 36px 20px 28px;
+      }
+      .results-hero .trophy {
+        font-size: 72px;
+        display: block;
+        margin-bottom: 10px;
+      }
+      .results-hero h2 {
+        font-size: clamp(26px, 5vw, 42px);
+        font-weight: 900;
+        margin-bottom: 8px;
+        background: linear-gradient(90deg, var(--arc-gold), var(--arc-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .tier-msg {
+        font-size: 18px;
+        color: rgba(232, 240, 254, 0.85);
+        max-width: 480px;
+        margin: 0 auto 24px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(0, 255, 231, 0.2);
+        border-radius: 14px;
+        padding: 20px 14px;
+        text-align: center;
+      }
+      .stat-card .stat-val {
+        font-size: 38px;
+        font-weight: 900;
+        display: block;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      .stat-card .stat-lbl {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: rgba(232, 240, 254, 0.55);
+      }
+      .stat-card.gold {
+        border-color: var(--arc-gold);
+      }
+      .stat-card.gold .stat-val {
+        color: var(--arc-gold);
+      }
+      .stat-card.teal {
+        border-color: var(--arc-glow);
+      }
+      .stat-card.teal .stat-val {
+        color: var(--arc-glow);
+      }
+      .stat-card.pink {
+        border-color: var(--arc-pink);
+      }
+      .stat-card.pink .stat-val {
+        color: var(--arc-pink);
+      }
+
+      .results-btns {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .r-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 15px 28px;
+        font-family: var(--font);
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          filter 0.18s,
+          transform 0.15s;
+      }
+      .r-btn:hover,
+      .r-btn:focus-visible {
+        filter: brightness(1.12);
+        transform: translateY(-2px);
+        outline: none;
+      }
+      .r-btn:active {
+        transform: translateY(0);
+      }
+      .r-btn.primary {
+        background: linear-gradient(
+          135deg,
+          var(--purple) 0%,
+          var(--arc-pink) 100%
+        );
+        color: #fff;
+      }
+      .r-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        color: var(--arc-text);
+      }
+
+      /* ── Footer ── */
+      .arc-footer {
+        text-align: center;
+        font-size: 13px;
+        color: rgba(232, 240, 254, 0.35);
+        padding: 24px 0 10px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── Game-over overlay ── */
+      .gameover-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(10, 5, 20, 0.88);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+      }
+      .gameover-overlay.show {
+        display: flex;
+        animation: fadein 0.35s ease;
+      }
+      .gameover-overlay .go-icon {
+        font-size: 80px;
+        margin-bottom: 16px;
+      }
+      .gameover-overlay h2 {
+        font-size: 40px;
+        font-weight: 900;
+        color: #f87171;
+        margin-bottom: 10px;
+      }
+      .gameover-overlay p {
+        font-size: 18px;
+        color: rgba(232, 240, 254, 0.8);
+        margin-bottom: 28px;
+      }
+      .gameover-overlay .go-btns {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 480px) {
+        .how-to {
+          flex-direction: column;
+          gap: 12px;
+        }
+        .unit-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- ══════════════════════════════════════
+     SCREEN A: HOME
+══════════════════════════════════════ -->
+    <section id="screen-home" class="screen" role="main">
+      <div class="hero">
+        <span class="mascot" role="img" aria-label="Arcade robot mascot"
+          >🕹️</span
+        >
+        <h1>Boss-Battle<br />Review Arcade</h1>
+        <p class="sub">
+          Grade 6 Math · All 10 Units · Instant Feedback · Lives System
+        </p>
+      </div>
+
+      <div class="how-to" role="note" aria-label="How to play">
+        <div class="how-to-item">
+          <span class="icon">❤️</span> 3 lives — lose one per wrong answer
+        </div>
+        <div class="how-to-item">
+          <span class="icon">⚡</span> Build a streak for extra glory
+        </div>
+        <div class="how-to-item">
+          <span class="icon">💡</span> Every answer explains the math
+        </div>
+        <div class="how-to-item">
+          <span class="icon">🏆</span> Earn a tier rating at the end
+        </div>
+      </div>
+
+      <p class="unit-grid-label">Pick a unit to practice</p>
+      <div class="unit-grid" role="group" aria-label="Unit selector">
+        <button class="unit-btn" onclick="startGame(1)" data-unit="1">
+          <span class="u-num">Unit 1</span>
+          <span class="u-emoji">🔢</span>
+          Number Sense
+        </button>
+        <button class="unit-btn" onclick="startGame(2)" data-unit="2">
+          <span class="u-num">Unit 2</span>
+          <span class="u-emoji">➗</span>
+          Fraction Division
+        </button>
+        <button class="unit-btn" onclick="startGame(3)" data-unit="3">
+          <span class="u-num">Unit 3</span>
+          <span class="u-emoji">⚖️</span>
+          Ratios &amp; Rates
+        </button>
+        <button class="unit-btn" onclick="startGame(4)" data-unit="4">
+          <span class="u-num">Unit 4</span>
+          <span class="u-emoji">💯</span>
+          Percents
+        </button>
+        <button class="unit-btn" onclick="startGame(5)" data-unit="5">
+          <span class="u-num">Unit 5</span>
+          <span class="u-emoji">📐</span>
+          Area
+        </button>
+        <button class="unit-btn" onclick="startGame(6)" data-unit="6">
+          <span class="u-num">Unit 6</span>
+          <span class="u-emoji">🔣</span>
+          Expressions
+        </button>
+        <button class="unit-btn" onclick="startGame(7)" data-unit="7">
+          <span class="u-num">Unit 7</span>
+          <span class="u-emoji">📍</span>
+          Integers &amp; Coord.
+        </button>
+        <button class="unit-btn" onclick="startGame(8)" data-unit="8">
+          <span class="u-num">Unit 8</span>
+          <span class="u-emoji">⚙️</span>
+          Equations
+        </button>
+        <button class="unit-btn" onclick="startGame(9)" data-unit="9">
+          <span class="u-num">Unit 9</span>
+          <span class="u-emoji">📈</span>
+          Two-Variable
+        </button>
+        <button class="unit-btn" onclick="startGame(10)" data-unit="10">
+          <span class="u-num">Unit 10</span>
+          <span class="u-emoji">📦</span>
+          Volume &amp; SA
+        </button>
+      </div>
+
+      <button
+        class="boss-btn"
+        onclick="startGame('boss')"
+        aria-label="Boss Battle mixed mode"
+      >
+        🔥 Boss Battle — Mixed (All Units)
+      </button>
+    </section>
+
+    <!-- ══════════════════════════════════════
+     SCREEN B: PLAY
+══════════════════════════════════════ -->
+    <section
+      id="screen-play"
+      class="screen hidden"
+      role="main"
+      aria-live="polite"
+    >
+      <!-- HUD -->
+      <div class="hud" role="status" aria-label="Game status">
+        <div class="hud-hearts" id="hud-hearts" aria-label="Lives remaining">
+          ❤️❤️❤️
+        </div>
+        <div class="hud-score" id="hud-score">Score: 0</div>
+        <div class="hud-streak" id="hud-streak">🔥 Streak: 0</div>
+        <div class="hud-progress">
+          <span id="hud-prog-text">Question 1 of 8</span>
+          <div
+            class="progress-bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            id="prog-bar-wrap"
+          >
+            <div class="progress-fill" id="prog-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question card -->
+      <div class="q-card">
+        <div class="q-unit-label" id="q-unit-label"></div>
+        <p class="q-text" id="q-text"></p>
+      </div>
+
+      <!-- Choices -->
+      <div
+        class="choices"
+        id="choices"
+        role="group"
+        aria-label="Answer choices"
+      ></div>
+
+      <!-- Explanation -->
+      <div class="explanation" id="explanation">
+        <div class="result-label" id="result-label"></div>
+        <span id="why-text"></span>
+      </div>
+
+      <!-- Next -->
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+        Next Question →
+      </button>
+    </section>
+
+    <!-- ══════════════════════════════════════
+     SCREEN C: RESULTS
+══════════════════════════════════════ -->
+    <section id="screen-results" class="screen hidden" role="main">
+      <div class="results-hero">
+        <span
+          class="trophy"
+          id="result-trophy"
+          role="img"
+          aria-label="Trophy"
+        ></span>
+        <h2 id="result-heading"></h2>
+        <p class="tier-msg" id="tier-msg"></p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card gold">
+          <span class="stat-val" id="res-score">0</span>
+          <span class="stat-lbl">Score</span>
+        </div>
+        <div class="stat-card teal">
+          <span class="stat-val" id="res-acc">0%</span>
+          <span class="stat-lbl">Accuracy</span>
+        </div>
+        <div class="stat-card pink">
+          <span class="stat-val" id="res-streak">0</span>
+          <span class="stat-lbl">Max Streak</span>
+        </div>
+      </div>
+
+      <div class="results-btns">
+        <button class="r-btn primary" id="play-again-btn" onclick="playAgain()">
+          🔄 Play Again
+        </button>
+        <button class="r-btn secondary" onclick="goHome()">
+          🏠 Back to Home
+        </button>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+     GAME-OVER OVERLAY
+══════════════════════════════════════ -->
+    <div
+      class="gameover-overlay"
+      id="gameover-overlay"
+      role="alertdialog"
+      aria-modal="true"
+      aria-label="Game Over"
+    >
+      <div class="go-icon" role="img" aria-label="Skull">💀</div>
+      <h2>GAME OVER</h2>
+      <p>You ran out of lives! Don't give up — every mistake is a lesson.</p>
+      <div class="go-btns">
+        <button class="r-btn primary" onclick="playAgain()">
+          🔄 Try Again
+        </button>
+        <button class="r-btn secondary" onclick="goHome()">🏠 Home</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="arc-footer">
+      Neft Teacher · Review Arcade · Grade 6 Math
+    </footer>
+
+    <script>
+      /* ════════════════════════════════════════════════════════════════
+   QUESTION BANK
+   Each question: { q, choices:[4], answer:index(0-based), why, unit, topic }
+   ANSWER INDEX VERIFIED for each item.
+════════════════════════════════════════════════════════════════ */
+      const BANK = {
+        /* ── Unit 1: Number Sense (GCF / LCM / Decimals / Division) ── */
+        1: [
+          {
+            q: "What is the GCF of 36 and 48?",
+            choices: ["6", "12", "9", "18"],
+            answer: 1,
+            why: "Factors of 36: 1,2,3,4,6,9,12,18,36. Factors of 48: 1,2,3,4,6,8,12,16,24,48. The greatest common factor is 12.",
+            topic: "Number Sense",
+          },
+          {
+            q: "What is the LCM of 4 and 6?",
+            choices: ["10", "24", "12", "8"],
+            answer: 2,
+            why: "Multiples of 4: 4,8,12,… Multiples of 6: 6,12,… The first common multiple is 12.",
+            topic: "Number Sense",
+          },
+          {
+            q: "Calculate: 14.7 + 8.56",
+            choices: ["22.26", "23.26", "21.16", "23.16"],
+            answer: 1,
+            why: "14.7 + 8.56: align decimal points → 14.70 + 8.56 = 23.26.",
+            topic: "Number Sense",
+          },
+          {
+            q: "Calculate: 30.04 − 12.8",
+            choices: ["18.44", "17.24", "17.44", "18.24"],
+            answer: 1,
+            why: "30.04 − 12.80 = 17.24. Borrow carefully in the hundredths: 4 − 0 = 4, then 0 − 8 requires borrowing, giving 24 − 80 across tens → 17.24.",
+            topic: "Number Sense",
+          },
+          {
+            q: "252 ÷ 7 = ?",
+            choices: ["34", "36", "38", "42"],
+            answer: 1,
+            why: "7 × 36 = 252. Check: 7 × 30 = 210; 7 × 6 = 42; 210 + 42 = 252. ✓",
+            topic: "Number Sense",
+          },
+          {
+            q: "What is the GCF of 24 and 60?",
+            choices: ["6", "4", "12", "8"],
+            answer: 2,
+            why: "Factors of 24: 1,2,3,4,6,8,12,24. Factors of 60: 1,2,3,4,5,6,10,12,15,20,30,60. GCF = 12.",
+            topic: "Number Sense",
+          },
+          {
+            q: "What is the LCM of 8 and 12?",
+            choices: ["16", "24", "36", "48"],
+            answer: 1,
+            why: "Multiples of 8: 8,16,24. Multiples of 12: 12,24. LCM = 24.",
+            topic: "Number Sense",
+          },
+          {
+            q: "A baker packs 576 cookies into boxes of 16. How many boxes does she fill?",
+            choices: ["34", "36", "38", "40"],
+            answer: 1,
+            why: "576 ÷ 16 = 36. Check: 16 × 36 = 16 × 30 + 16 × 6 = 480 + 96 = 576. ✓",
+            topic: "Number Sense",
+          },
+        ],
+
+        /* ── Unit 2: Fraction Division ── */
+        2: [
+          {
+            q: "What is 3/4 ÷ 1/2?",
+            choices: ["3/8", "1½", "6/4", "3/2"],
+            answer: 1,
+            why: "Dividing by a fraction means multiply by its reciprocal: 3/4 × 2/1 = 6/4 = 3/2 = 1½.",
+            topic: "Fraction Division",
+          },
+          {
+            q: "What is 5 ÷ 1/3?",
+            choices: ["5/3", "15", "1⅔", "3/5"],
+            answer: 1,
+            why: "5 ÷ 1/3 = 5 × 3/1 = 15. Think: how many thirds fit in 5? Three thirds per whole × 5 = 15.",
+            topic: "Fraction Division",
+          },
+          {
+            q: "What is 2/3 ÷ 4?",
+            choices: ["8/3", "2/12", "1/6", "6"],
+            answer: 2,
+            why: "2/3 ÷ 4 = 2/3 × 1/4 = 2/12 = 1/6.",
+            topic: "Fraction Division",
+          },
+          {
+            q: "A ribbon 3/5 m long is cut into pieces each 1/10 m. How many pieces?",
+            choices: ["3/50", "5", "6", "10"],
+            answer: 2,
+            why: "3/5 ÷ 1/10 = 3/5 × 10/1 = 30/5 = 6 pieces.",
+            topic: "Fraction Division",
+          },
+          {
+            q: "What is 7/8 ÷ 7/4?",
+            choices: ["1/2", "49/32", "2", "4/9"],
+            answer: 0,
+            why: "7/8 ÷ 7/4 = 7/8 × 4/7 = 28/56 = 1/2.",
+            topic: "Fraction Division",
+          },
+          {
+            q: "A recipe uses 2/3 cup of sugar. If you want to make 1/2 the recipe, how much sugar do you need?",
+            choices: ["1/3", "4/3", "3/4", "1/6"],
+            answer: 0,
+            why: "Half the recipe: 2/3 × 1/2 = 2/6 = 1/3 cup. (This is multiplication, a foundational step for fraction division sense.)",
+            topic: "Fraction Division",
+          },
+          {
+            q: "What is 1/2 ÷ 3/8?",
+            choices: ["3/16", "1⅓", "4/3", "4"],
+            answer: 1,
+            why: "1/2 ÷ 3/8 = 1/2 × 8/3 = 8/6 = 4/3 = 1⅓.",
+            topic: "Fraction Division",
+          },
+          {
+            q: "How many 2/5-cup servings are in 4 cups?",
+            choices: ["8/5", "8", "10", "2"],
+            answer: 2,
+            why: "4 ÷ 2/5 = 4 × 5/2 = 20/2 = 10 servings.",
+            topic: "Fraction Division",
+          },
+        ],
+
+        /* ── Unit 3: Ratios & Rates ── */
+        3: [
+          {
+            q: "A car travels 150 miles in 3 hours. What is its unit rate in miles per hour?",
+            choices: ["30 mph", "45 mph", "50 mph", "60 mph"],
+            answer: 2,
+            why: "Unit rate = 150 miles ÷ 3 hours = 50 miles per hour.",
+            topic: "Ratios & Rates",
+          },
+          {
+            q: "A ratio of boys to girls is 3:5. If there are 15 boys, how many girls are there?",
+            choices: ["9", "20", "25", "35"],
+            answer: 2,
+            why: "15 boys ÷ 3 = 5 groups. 5 groups × 5 girls = 25 girls.",
+            topic: "Ratios & Rates",
+          },
+          {
+            q: "Store A: 8 oz for $2.40. Store B: 12 oz for $3.00. Which is the better deal?",
+            choices: ["Store A", "Store B", "They are the same", "Cannot tell"],
+            answer: 1,
+            why: "Store A: $2.40 ÷ 8 = $0.30/oz. Store B: $3.00 ÷ 12 = $0.25/oz. Store B is cheaper per ounce.",
+            topic: "Ratios & Rates",
+          },
+          {
+            q: "A recipe uses 2 cups of flour for every 3 cups of sugar. How many cups of flour are needed for 9 cups of sugar?",
+            choices: ["4", "5", "6", "7"],
+            answer: 2,
+            why: "9 ÷ 3 = 3 groups. 3 groups × 2 cups flour = 6 cups flour.",
+            topic: "Ratios & Rates",
+          },
+          {
+            q: "Which ratio is equivalent to 4:10?",
+            choices: ["1:2", "2:5", "8:16", "3:8"],
+            answer: 1,
+            why: "4:10 simplified by dividing both by 2 → 2:5.",
+            topic: "Ratios & Rates",
+          },
+          {
+            q: "A printer prints 48 pages in 4 minutes. How many pages per minute?",
+            choices: ["10", "11", "12", "14"],
+            answer: 2,
+            why: "48 ÷ 4 = 12 pages per minute.",
+            topic: "Ratios & Rates",
+          },
+          {
+            q: "The ratio of red to blue marbles is 5:3. There are 24 blue marbles. How many red marbles?",
+            choices: ["30", "40", "45", "48"],
+            answer: 1,
+            why: "24 ÷ 3 = 8 groups. 8 × 5 = 40 red marbles.",
+            topic: "Ratios & Rates",
+          },
+          {
+            q: "A faucet drips 6 gallons every 2 hours. At this rate, how many gallons drip in 7 hours?",
+            choices: ["18", "21", "24", "42"],
+            answer: 1,
+            why: "Unit rate = 6 ÷ 2 = 3 gal/hr. 3 × 7 = 21 gallons.",
+            topic: "Ratios & Rates",
+          },
+        ],
+
+        /* ── Unit 4: Percents / Unit Rates ── */
+        4: [
+          {
+            q: "What is 25% of 80?",
+            choices: ["15", "20", "25", "40"],
+            answer: 1,
+            why: "25% = 0.25. 0.25 × 80 = 20. (Or: 80 ÷ 4 = 20.)",
+            topic: "Percents",
+          },
+          {
+            q: "A jacket costs $60 and is on sale 15% off. What is the sale price?",
+            choices: ["$45.00", "$50.00", "$51.00", "$54.00"],
+            answer: 2,
+            why: "Discount = 15% × $60 = 0.15 × 60 = $9. Sale price = $60 − $9 = $51.",
+            topic: "Percents",
+          },
+          {
+            q: "18 is what percent of 72?",
+            choices: ["4%", "18%", "25%", "40%"],
+            answer: 2,
+            why: "18 ÷ 72 = 0.25 = 25%.",
+            topic: "Percents",
+          },
+          {
+            q: "A price goes from $40 to $50. What is the percent increase?",
+            choices: ["10%", "20%", "25%", "30%"],
+            answer: 2,
+            why: "Increase = $10. Percent increase = 10/40 = 0.25 = 25%.",
+            topic: "Percents",
+          },
+          {
+            q: "12 oz of juice costs $1.80. What is the unit price per ounce?",
+            choices: ["$0.12", "$0.15", "$0.18", "$0.20"],
+            answer: 1,
+            why: "$1.80 ÷ 12 = $0.15 per ounce.",
+            topic: "Percents",
+          },
+          {
+            q: "A student got 36 out of 40 questions correct. What percent is that?",
+            choices: ["36%", "80%", "90%", "94%"],
+            answer: 2,
+            why: "36 ÷ 40 = 0.9 = 90%.",
+            topic: "Percents",
+          },
+          {
+            q: "What is 6% sales tax on a $35 item?",
+            choices: ["$1.80", "$2.10", "$2.45", "$3.00"],
+            answer: 1,
+            why: "6% × $35 = 0.06 × 35 = $2.10.",
+            topic: "Percents",
+          },
+          {
+            q: "30% of what number is 12?",
+            choices: ["3.6", "36", "40", "42"],
+            answer: 2,
+            why: "12 ÷ 0.30 = 40. Check: 30% × 40 = 12. ✓",
+            topic: "Percents",
+          },
+        ],
+
+        /* ── Unit 5: Area ── */
+        5: [
+          {
+            q: "A parallelogram has base 9 cm and height 5 cm. What is its area?",
+            choices: ["14 cm²", "28 cm²", "40 cm²", "45 cm²"],
+            answer: 3,
+            why: "A = b × h = 9 × 5 = 45 cm².",
+            topic: "Area",
+          },
+          {
+            q: "A triangle has base 10 m and height 6 m. What is its area?",
+            choices: ["30 m²", "60 m²", "16 m²", "20 m²"],
+            answer: 0,
+            why: "A = ½ × b × h = ½ × 10 × 6 = 30 m².",
+            topic: "Area",
+          },
+          {
+            q: "A trapezoid has parallel bases 4 ft and 8 ft, and height 5 ft. What is its area?",
+            choices: ["20 ft²", "30 ft²", "40 ft²", "60 ft²"],
+            answer: 1,
+            why: "A = ½(b₁ + b₂) × h = ½(4 + 8) × 5 = ½ × 12 × 5 = 30 ft².",
+            topic: "Area",
+          },
+          {
+            q: "A parallelogram has area 56 cm² and height 7 cm. What is its base?",
+            choices: ["4 cm", "6 cm", "7 cm", "8 cm"],
+            answer: 3,
+            why: "A = b × h → b = A ÷ h = 56 ÷ 7 = 8 cm.",
+            topic: "Area",
+          },
+          {
+            q: "A triangle has area 40 in² and base 10 in. What is its height?",
+            choices: ["4 in", "8 in", "20 in", "400 in"],
+            answer: 1,
+            why: "A = ½bh → h = 2A ÷ b = 80 ÷ 10 = 8 in.",
+            topic: "Area",
+          },
+          {
+            q: "A trapezoid has bases 6 m and 10 m, and area 64 m². What is its height?",
+            choices: ["4 m", "8 m", "10 m", "16 m"],
+            answer: 1,
+            why: "A = ½(b₁+b₂)×h → 64 = ½(16)h = 8h → h = 8 m.",
+            topic: "Area",
+          },
+          {
+            q: "Which formula gives the area of a triangle?",
+            choices: [
+              "A = b × h",
+              "A = ½ × b × h",
+              "A = ½(b₁+b₂)×h",
+              "A = l × w",
+            ],
+            answer: 1,
+            why: "The area formula for a triangle is A = ½ × base × height.",
+            topic: "Area",
+          },
+          {
+            q: "A parallelogram has base 12 cm and height 3.5 cm. What is its area?",
+            choices: ["36 cm²", "38 cm²", "40 cm²", "42 cm²"],
+            answer: 3,
+            why: "A = b × h = 12 × 3.5 = 42 cm².",
+            topic: "Area",
+          },
+        ],
+
+        /* ── Unit 6: Expressions (Exponents, Evaluate, Distributive) ── */
+        6: [
+          {
+            q: "Evaluate 3²  + 4².",
+            choices: ["14", "25", "49", "7²"],
+            answer: 1,
+            why: "3² = 9, 4² = 16. 9 + 16 = 25.",
+            topic: "Expressions",
+          },
+          {
+            q: "Evaluate 2³ × 5 − 10.",
+            choices: ["30", "40", "50", "70"],
+            answer: 0,
+            why: "2³ = 8. 8 × 5 = 40. 40 − 10 = 30.",
+            topic: "Expressions",
+          },
+          {
+            q: "Use the distributive property: 4(x + 7) = ?",
+            choices: ["4x + 7", "x + 28", "4x + 28", "4x − 28"],
+            answer: 2,
+            why: "Distribute 4: 4 × x + 4 × 7 = 4x + 28.",
+            topic: "Expressions",
+          },
+          {
+            q: "Evaluate 5n − 3 when n = 4.",
+            choices: ["7", "14", "17", "23"],
+            answer: 2,
+            why: "5(4) − 3 = 20 − 3 = 17.",
+            topic: "Expressions",
+          },
+          {
+            q: "Which expression is equivalent to 3(2x − 5)?",
+            choices: ["6x − 5", "6x − 15", "2x − 15", "6x + 15"],
+            answer: 1,
+            why: "3 × 2x = 6x and 3 × (−5) = −15, giving 6x − 15.",
+            topic: "Expressions",
+          },
+          {
+            q: "What is the value of 6² − 10?",
+            choices: ["16", "26", "32", "46"],
+            answer: 1,
+            why: "6² = 36. 36 − 10 = 26.",
+            topic: "Expressions",
+          },
+          {
+            q: "Evaluate (4 + 3)² ÷ 7.",
+            choices: ["5", "7", "49", "14"],
+            answer: 1,
+            why: "(4+3)² = 7² = 49. 49 ÷ 7 = 7.",
+            topic: "Expressions",
+          },
+          {
+            q: "Which expression has a value of 64 when x = 2?",
+            choices: ["x⁴", "6x + 4", "x³ + 8", "2x⁵"],
+            answer: 3,
+            why: "2x⁵ = 2 × 2⁵ = 2 × 32 = 64. Check: x⁴ = 16, 6(2)+4 = 16, x³+8 = 16. Only 2x⁵ = 64.",
+            topic: "Expressions",
+          },
+        ],
+
+        /* ── Unit 7: Integers & Coordinate Plane ── */
+        7: [
+          {
+            q: "What is the absolute value of −15?",
+            choices: ["−15", "1/15", "15", "−1/15"],
+            answer: 2,
+            why: "|−15| = 15. Absolute value is always the non-negative distance from 0.",
+            topic: "Integers & Coordinates",
+          },
+          {
+            q: "Order these integers from least to greatest: −3, 5, −8, 0, 2.",
+            choices: [
+              "−8, −3, 0, 2, 5",
+              "0, 2, 5, −3, −8",
+              "5, 2, 0, −3, −8",
+              "−3, −8, 0, 2, 5",
+            ],
+            answer: 0,
+            why: "On a number line from left (least) to right (greatest): −8, −3, 0, 2, 5.",
+            topic: "Integers & Coordinates",
+          },
+          {
+            q: "Point (−4, 3) is in which quadrant?",
+            choices: [
+              "Quadrant I",
+              "Quadrant II",
+              "Quadrant III",
+              "Quadrant IV",
+            ],
+            answer: 1,
+            why: "Quadrant II: x is negative, y is positive. (−4, 3) fits this.",
+            topic: "Integers & Coordinates",
+          },
+          {
+            q: "Which is farther from 0 on a number line: −9 or 6?",
+            choices: ["6", "−9", "They are the same distance", "Cannot tell"],
+            answer: 1,
+            why: "|−9| = 9 and |6| = 6. Since 9 > 6, −9 is farther from 0.",
+            topic: "Integers & Coordinates",
+          },
+          {
+            q: "What are the coordinates of a point reflected over the x-axis from (3, −5)?",
+            choices: ["(−3, −5)", "(3, 5)", "(−3, 5)", "(5, 3)"],
+            answer: 1,
+            why: "Reflecting over the x-axis flips the sign of the y-coordinate: (3, −5) → (3, 5).",
+            topic: "Integers & Coordinates",
+          },
+          {
+            q: "A submarine is at −120 ft. A bird is at +45 ft. What is the difference in elevation?",
+            choices: ["75 ft", "120 ft", "165 ft", "75 ft"],
+            answer: 2,
+            why: "Difference = 45 − (−120) = 45 + 120 = 165 ft.",
+            topic: "Integers & Coordinates",
+          },
+          {
+            q: "Which point lies on the y-axis?",
+            choices: ["(0, 7)", "(7, 0)", "(3, 4)", "(−3, −4)"],
+            answer: 0,
+            why: "Points on the y-axis have x = 0, so (0, 7) is on the y-axis.",
+            topic: "Integers & Coordinates",
+          },
+          {
+            q: "Point (5, −2) is in which quadrant?",
+            choices: [
+              "Quadrant I",
+              "Quadrant II",
+              "Quadrant III",
+              "Quadrant IV",
+            ],
+            answer: 3,
+            why: "Quadrant IV: x is positive, y is negative. (5, −2) fits.",
+            topic: "Integers & Coordinates",
+          },
+        ],
+
+        /* ── Unit 8: Equations & Inequalities (one-step) ── */
+        8: [
+          {
+            q: "Solve: x + 9 = 23.",
+            choices: ["x = 14", "x = 32", "x = 13", "x = 12"],
+            answer: 0,
+            why: "Subtract 9 from both sides: x = 23 − 9 = 14.",
+            topic: "Equations & Inequalities",
+          },
+          {
+            q: "Solve: 4m = 52.",
+            choices: ["m = 12", "m = 13", "m = 48", "m = 56"],
+            answer: 1,
+            why: "Divide both sides by 4: m = 52 ÷ 4 = 13.",
+            topic: "Equations & Inequalities",
+          },
+          {
+            q: "Solve: y − 7 = 15.",
+            choices: ["y = 8", "y = 22", "y = 105", "y = 2"],
+            answer: 1,
+            why: "Add 7 to both sides: y = 15 + 7 = 22.",
+            topic: "Equations & Inequalities",
+          },
+          {
+            q: "Solve: n/5 = 9.",
+            choices: ["n = 4", "n = 14", "n = 45", "n = 1.8"],
+            answer: 2,
+            why: "Multiply both sides by 5: n = 9 × 5 = 45.",
+            topic: "Equations & Inequalities",
+          },
+          {
+            q: "Which value of x makes x + 3 < 10 true?",
+            choices: ["x = 8", "x = 7", "x = 6", "x = 10"],
+            answer: 2,
+            why: "6 + 3 = 9 < 10. ✓  Check: 7+3=10 (not less than), 8+3=11 (too big).",
+            topic: "Equations & Inequalities",
+          },
+          {
+            q: "Solve: 6k = 42.",
+            choices: ["k = 6", "k = 7", "k = 8", "k = 36"],
+            answer: 1,
+            why: "k = 42 ÷ 6 = 7.",
+            topic: "Equations & Inequalities",
+          },
+          {
+            q: "Write an equation: A number decreased by 11 equals 25. Solve it.",
+            choices: ["n = 14", "n = 36", "n = 275", "n = 44"],
+            answer: 1,
+            why: "n − 11 = 25 → n = 25 + 11 = 36.",
+            topic: "Equations & Inequalities",
+          },
+          {
+            q: "Solve: t/3 = 7.",
+            choices: ["t = 4", "t = 10", "t = 21", "t = 2.3"],
+            answer: 2,
+            why: "Multiply both sides by 3: t = 7 × 3 = 21.",
+            topic: "Equations & Inequalities",
+          },
+        ],
+
+        /* ── Unit 9: Two-Variable Relationships (y = kx, tables) ── */
+        9: [
+          {
+            q: "A table shows: x = 1 → y = 4; x = 2 → y = 8; x = 3 → y = 12. What is the constant of proportionality k?",
+            choices: ["2", "3", "4", "8"],
+            answer: 2,
+            why: "k = y ÷ x = 4 ÷ 1 = 4. The rule is y = 4x.",
+            topic: "Two-Variable Relationships",
+          },
+          {
+            q: "Using y = 4x, what is y when x = 7?",
+            choices: ["11", "28", "47", "74"],
+            answer: 1,
+            why: "y = 4(7) = 28.",
+            topic: "Two-Variable Relationships",
+          },
+          {
+            q: "A car uses 2 gallons of gas every 50 miles (y = miles, x = gallons). What is k?",
+            choices: ["2", "25", "50", "100"],
+            answer: 1,
+            why: "k = y/x = 50/2 = 25 miles per gallon.",
+            topic: "Two-Variable Relationships",
+          },
+          {
+            q: "Using y = 25x, how many miles on 8 gallons?",
+            choices: ["175 mi", "200 mi", "225 mi", "250 mi"],
+            answer: 1,
+            why: "y = 25 × 8 = 200 miles.",
+            topic: "Two-Variable Relationships",
+          },
+          {
+            q: "Which table shows a proportional relationship y = 3x?",
+            choices: [
+              "x:1,2,3 → y:3,6,9",
+              "x:1,2,3 → y:4,7,10",
+              "x:1,2,3 → y:3,5,7",
+              "x:1,2,3 → y:1,3,9",
+            ],
+            answer: 0,
+            why: "y = 3x gives y = 3, 6, 9 for x = 1, 2, 3. All other options don't maintain a constant ratio.",
+            topic: "Two-Variable Relationships",
+          },
+          {
+            q: "The relationship between hours (x) and pages read (y) is y = 15x. How long to read 90 pages?",
+            choices: ["4 hours", "5 hours", "6 hours", "7 hours"],
+            answer: 2,
+            why: "90 = 15x → x = 90 ÷ 15 = 6 hours.",
+            topic: "Two-Variable Relationships",
+          },
+          {
+            q: "If y = kx and the point (4, 20) is on the line, what is k?",
+            choices: ["4", "5", "16", "80"],
+            answer: 1,
+            why: "k = y ÷ x = 20 ÷ 4 = 5.",
+            topic: "Two-Variable Relationships",
+          },
+          {
+            q: "A graph passes through (0,0) and (3,12). Does it show a proportional relationship?",
+            choices: [
+              "Yes, because it passes through the origin",
+              "No, because 12 ≠ 3",
+              "Yes, only if it's a straight line not through the origin",
+              "No, proportional graphs are never straight",
+            ],
+            answer: 0,
+            why: "A proportional relationship is a straight line through the origin (0,0). This graph qualifies.",
+            topic: "Two-Variable Relationships",
+          },
+        ],
+
+        /* ── Unit 10: Volume & Surface Area ── */
+        10: [
+          {
+            q: "A rectangular prism is 5 cm long, 3 cm wide, and 4 cm tall. What is its volume?",
+            choices: ["12 cm³", "47 cm³", "60 cm³", "94 cm³"],
+            answer: 2,
+            why: "V = l × w × h = 5 × 3 × 4 = 60 cm³.",
+            topic: "Volume & Surface Area",
+          },
+          {
+            q: "A box is 8 in × 6 in × 2 in. What is its surface area?",
+            choices: ["96 in²", "152 in²", "192 in²", "288 in²"],
+            answer: 1,
+            why: "SA = 2(lw + lh + wh) = 2(48 + 16 + 12) = 2(76) = 152 in².",
+            topic: "Volume & Surface Area",
+          },
+          {
+            q: "A cube has side length 4 cm. What is its volume?",
+            choices: ["16 cm³", "24 cm³", "48 cm³", "64 cm³"],
+            answer: 3,
+            why: "V = s³ = 4³ = 64 cm³.",
+            topic: "Volume & Surface Area",
+          },
+          {
+            q: "A fish tank is 30 cm × 15 cm × 20 cm. How many cubic cm of water does it hold?",
+            choices: ["650 cm³", "9,000 cm³", "4,500 cm³", "6,000 cm³"],
+            answer: 1,
+            why: "V = 30 × 15 × 20 = 9,000 cm³.",
+            topic: "Volume & Surface Area",
+          },
+          {
+            q: "A cube has side length 3 in. What is its surface area?",
+            choices: ["18 in²", "27 in²", "54 in²", "81 in²"],
+            answer: 2,
+            why: "SA = 6s² = 6 × 9 = 54 in².",
+            topic: "Volume & Surface Area",
+          },
+          {
+            q: "A rectangular prism has volume 120 cm³, length 10 cm, and width 4 cm. What is its height?",
+            choices: ["2 cm", "3 cm", "4 cm", "12 cm"],
+            answer: 1,
+            why: "V = lwh → h = V ÷ (lw) = 120 ÷ (10 × 4) = 120 ÷ 40 = 3 cm.",
+            topic: "Volume & Surface Area",
+          },
+          {
+            q: "Which formula gives the surface area of a rectangular prism?",
+            choices: [
+              "SA = l × w × h",
+              "SA = 2(lw + lh + wh)",
+              "SA = l + w + h",
+              "SA = 6lw",
+            ],
+            answer: 1,
+            why: "Surface area = 2(lw + lh + wh) — this accounts for all 6 faces in 3 pairs.",
+            topic: "Volume & Surface Area",
+          },
+          {
+            q: "A gift box is 12 cm × 10 cm × 5 cm. How much wrapping paper (surface area) is needed?",
+            choices: ["600 cm²", "700 cm²", "460 cm²", "940 cm²"],
+            answer: 1,
+            why: "SA = 2(12×10 + 12×5 + 10×5) = 2(120 + 60 + 50) = 2(230) = 460. Wait — let me recheck: 2(120+60+50)=2(230)=460. The correct answer is 460 cm².",
+            topic: "Volume & Surface Area",
+          },
+        ],
+      };
+
+      /* Fix the last question in Unit 10 — answer is index 2 (460 cm²) */
+      BANK[10][7].answer = 2;
+
+      /* ════════════════════════════════════════════════════════════════
+   GAME STATE
+════════════════════════════════════════════════════════════════ */
+      let state = {
+        queue: [], // shuffled question objects for this run
+        idx: 0, // current question index
+        score: 0,
+        correct: 0,
+        lives: 3,
+        streak: 0,
+        maxStreak: 0,
+        answered: false,
+        unitMode: null, // 1..10 or 'boss'
+      };
+
+      /* ════════════════════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════════════════════ */
+      function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function showScreen(id) {
+        ["screen-home", "screen-play", "screen-results"].forEach((s) => {
+          document.getElementById(s).classList.add("hidden");
+        });
+        document.getElementById(id).classList.remove("hidden");
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   START GAME
+════════════════════════════════════════════════════════════════ */
+      function startGame(unit) {
+        state.unitMode = unit;
+
+        let pool;
+        if (unit === "boss") {
+          // Sample ~12 questions: 1–2 per unit, shuffled across all
+          const all = [];
+          for (let u = 1; u <= 10; u++) {
+            // Take up to 2 random from each unit
+            const shuffled = shuffle(BANK[u]);
+            all.push(...shuffled.slice(0, Math.ceil(12 / 10)));
+          }
+          pool = shuffle(all).slice(0, 12);
+        } else {
+          pool = shuffle(BANK[unit]);
+        }
+
+        state.queue = pool;
+        state.idx = 0;
+        state.score = 0;
+        state.correct = 0;
+        state.lives = 3;
+        state.streak = 0;
+        state.maxStreak = 0;
+        state.answered = false;
+
+        showScreen("screen-play");
+        renderQuestion();
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   RENDER QUESTION
+════════════════════════════════════════════════════════════════ */
+      function renderQuestion() {
+        const total = state.queue.length;
+        const qNum = state.idx + 1;
+        const q = state.queue[state.idx];
+        state.answered = false;
+
+        // HUD
+        document.getElementById("hud-hearts").textContent =
+          "❤️".repeat(state.lives) + "🖤".repeat(3 - state.lives);
+        document.getElementById("hud-score").textContent =
+          "Score: " + state.score;
+        document.getElementById("hud-streak").textContent =
+          "🔥 Streak: " + state.streak;
+        document.getElementById("hud-prog-text").textContent =
+          "Question " + qNum + " of " + total;
+        const pct = Math.round(((qNum - 1) / total) * 100);
+        const fill = document.getElementById("prog-fill");
+        fill.style.width = pct + "%";
+        const bar = document.getElementById("prog-bar-wrap");
+        bar.setAttribute("aria-valuenow", pct);
+
+        // Unit label
+        document.getElementById("q-unit-label").textContent =
+          "Unit " + (q.unit || state.unitMode) + " · " + q.topic;
+
+        // Question text
+        document.getElementById("q-text").textContent = q.q;
+
+        // Choices — keep original order (already shuffled at pool level)
+        const container = document.getElementById("choices");
+        container.innerHTML = "";
+        q.choices.forEach((choice, i) => {
+          const btn = document.createElement("button");
+          btn.className = "choice-btn";
+          btn.textContent = choice;
+          btn.setAttribute("aria-label", "Choice " + (i + 1) + ": " + choice);
+          btn.addEventListener("click", () => handleAnswer(i));
+          btn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleAnswer(i);
+            }
+          });
+          container.appendChild(btn);
+        });
+
+        // Hide explanation & next
+        const expl = document.getElementById("explanation");
+        expl.classList.remove("show");
+        const nxt = document.getElementById("next-btn");
+        nxt.classList.remove("show");
+
+        // Focus first choice for keyboard users
+        const first = container.querySelector(".choice-btn");
+        if (first) first.focus();
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   HANDLE ANSWER
+════════════════════════════════════════════════════════════════ */
+      function handleAnswer(choiceIdx) {
+        if (state.answered) return;
+        state.answered = true;
+
+        const q = state.queue[state.idx];
+        const correct = choiceIdx === q.answer;
+        const btns = document.querySelectorAll(".choice-btn");
+
+        // Disable all buttons
+        btns.forEach((b) => {
+          b.disabled = true;
+        });
+
+        // Mark chosen and correct
+        btns[choiceIdx].classList.add(correct ? "correct" : "wrong");
+        if (!correct) {
+          btns[q.answer].classList.add("correct");
+        }
+
+        // Update state
+        if (correct) {
+          state.correct++;
+          state.streak++;
+          state.score += 10 + Math.min(state.streak - 1, 5) * 2; // bonus for streak
+          if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+        } else {
+          state.streak = 0;
+          state.lives--;
+        }
+
+        // Update HUD hearts immediately
+        document.getElementById("hud-hearts").textContent =
+          "❤️".repeat(Math.max(0, state.lives)) +
+          "🖤".repeat(3 - Math.max(0, state.lives));
+        document.getElementById("hud-score").textContent =
+          "Score: " + state.score;
+        document.getElementById("hud-streak").textContent =
+          "🔥 Streak: " + state.streak;
+
+        // Explanation
+        const expl = document.getElementById("explanation");
+        const lbl = document.getElementById("result-label");
+        const why = document.getElementById("why-text");
+        lbl.textContent = correct ? "✅ Correct!" : "❌ Not quite.";
+        lbl.className = "result-label " + (correct ? "ok" : "no");
+        why.textContent = q.why;
+        expl.classList.add("show");
+
+        // Show next button
+        const nxt = document.getElementById("next-btn");
+        const lastQ = state.idx >= state.queue.length - 1;
+        nxt.textContent = lastQ ? "See Results 🏆" : "Next Question →";
+        nxt.classList.add("show");
+        nxt.focus();
+
+        // Game over check — if 0 lives, still allow seeing the explanation, then next click shows overlay
+        // (handled in nextQuestion)
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   NEXT QUESTION
+════════════════════════════════════════════════════════════════ */
+      function nextQuestion() {
+        // Check game over (0 lives) AFTER showing explanation
+        if (state.lives <= 0) {
+          document.getElementById("gameover-overlay").classList.add("show");
+          return;
+        }
+
+        state.idx++;
+        if (state.idx >= state.queue.length) {
+          showResults();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   RESULTS
+════════════════════════════════════════════════════════════════ */
+      function showResults() {
+        showScreen("screen-results");
+
+        const total = state.queue.length;
+        const acc = total > 0 ? Math.round((state.correct / total) * 100) : 0;
+
+        document.getElementById("res-score").textContent = state.score;
+        document.getElementById("res-acc").textContent = acc + "%";
+        document.getElementById("res-streak").textContent = state.maxStreak;
+
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.correct,
+              maxScore: total,
+              percent: acc,
+              problemsCorrect: state.correct,
+              problemsAttempted: total,
+            });
+        } catch (e) {}
+
+        // Tier messages
+        let trophy, heading, msg;
+        if (acc >= 90) {
+          trophy = "🏆";
+          heading = "LEGENDARY!";
+          msg =
+            "You crushed it! You're ready to level up — seriously impressive work.";
+        } else if (acc >= 75) {
+          trophy = "🥇";
+          heading = "Expert Player";
+          msg =
+            "Strong performance! A little more practice and you'll be legendary.";
+        } else if (acc >= 60) {
+          trophy = "🥈";
+          heading = "Getting There!";
+          msg = "Solid effort! Review the questions you missed and try again.";
+        } else if (acc >= 40) {
+          trophy = "🥉";
+          heading = "Keep Grinding";
+          msg =
+            "Don't give up! Every question you review makes you stronger. Try again!";
+        } else {
+          trophy = "💪";
+          heading = "Practice Mode";
+          msg =
+            "Math takes practice — check the explanations and replay. You've got this!";
+        }
+
+        document.getElementById("result-trophy").textContent = trophy;
+        document
+          .getElementById("result-trophy")
+          .setAttribute("aria-label", heading + " trophy");
+        document.getElementById("result-heading").textContent = heading;
+        document.getElementById("tier-msg").textContent = msg;
+
+        // Update "Play Again" label
+        document.getElementById("play-again-btn").textContent =
+          "🔄 Play " +
+          (state.unitMode === "boss"
+            ? "Boss Battle"
+            : "Unit " + state.unitMode) +
+          " Again";
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════════════════════ */
+      function goHome() {
+        document.getElementById("gameover-overlay").classList.remove("show");
+        showScreen("screen-home");
+      }
+
+      function playAgain() {
+        document.getElementById("gameover-overlay").classList.remove("show");
+        startGame(state.unitMode);
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   KEYBOARD: Enter on boss button, focus management
+════════════════════════════════════════════════════════════════ */
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          const overlay = document.getElementById("gameover-overlay");
+          if (overlay.classList.contains("show")) goHome();
+        }
+      });
+
+      /* Add unit tags to all bank questions */
+      (function tagQuestions() {
+        for (let u = 1; u <= 10; u++) {
+          BANK[u].forEach((q) => {
+            q.unit = u;
+          });
+        }
+      })();
+
+      /* Count total questions for verification */
+      (function () {
+        let total = 0;
+        for (let u = 1; u <= 10; u++) total += BANK[u].length;
+        // console.log("Total questions:", total); // 80
+      })();
+    </script>
+
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

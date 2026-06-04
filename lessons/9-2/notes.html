@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Integers and Absolute Value — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Integers and Absolute Value · Standard 6.NS.7";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+}
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="9-2-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/9-2-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/9-2-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 9 · Standard 6.NS.7</p>
+    <h1>Integers and Absolute Value </h1>
+    <p class="meta">Lesson 9-2</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  
+  <section class="section vocab">
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/integer.svg" alt="Illustration of Integer: A whole number that can be positive, negative, or zero." onerror="this.style.display='none'" />
+    <p class="vocab-caption">... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center</p>
+  </div>
+  <h3 class="vocab-term">Integer</h3>
+  <p class="vocab-def">A whole number that can be positive, negative, or zero.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/positive.svg" alt="Illustration of Positive: A number bigger than zero, to the right of zero on a number line." onerror="this.style.display='none'" />
+    <p class="vocab-caption">+5 means 5 above zero, like 5 floors above ground level</p>
+  </div>
+  <h3 class="vocab-term">Positive</h3>
+  <p class="vocab-def">A number bigger than zero, to the right of zero on a number line.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/negative.svg" alt="Illustration of Negative: A number smaller than zero, to the left of zero on a number line." onerror="this.style.display='none'" />
+    <p class="vocab-caption">-3 means 3 below zero, like 3 floors underground</p>
+  </div>
+  <h3 class="vocab-term">Negative</h3>
+  <p class="vocab-def">A number smaller than zero, to the left of zero on a number line.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/absolute-value.svg" alt="Illustration of Absolute value: How far a number is from zero. It is never negative." onerror="this.style.display='none'" />
+    <p class="vocab-caption">|-5| = 5 and |5| = 5 — both are 5 units from 0</p>
+  </div>
+  <h3 class="vocab-term">Absolute value</h3>
+  <p class="vocab-def">How far a number is from zero. It is never negative.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/opposite.svg" alt="Illustration of Opposite: Two numbers the same distance from zero, on opposite sides, like 3 and -3." onerror="this.style.display='none'" />
+    <p class="vocab-caption">3 and -3 are opposites — both are 3 units from 0</p>
+  </div>
+  <h3 class="vocab-term">Opposite</h3>
+  <p class="vocab-def">Two numbers the same distance from zero, on opposite sides, like 3 and -3.</p>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can identify integers and find their absolute value.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">Captain Vega's treasure map has clues hidden at different elevations!</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can identify integers and find their absolute value.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Integer</span><span class="notes-word-chip">Positive</span><span class="notes-word-chip">Negative</span><span class="notes-word-chip">Absolute value</span><span class="notes-word-chip">Opposite</span></div>
+    </div></div>
+  <div class="think-block">
+    <h3>🤔 Think About It</h3>
+    <ul class="prompt-list"><li>What does the negative sign tell you about the treasure chest's location?</li><li>Which location is farther from sea level — the chest at -4 or the tower at +6?</li><li>How can you find the distance from sea level without worrying about direction?</li></ul>
+  </div>
+  <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the absolute value of -9?</p>
+      <ol class="try-choices" type="A"><li>9</li><li>-9</li><li>0</li><li>1</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Absolute value is the distance from zero.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> -9 is 9 units from zero, so |-9| = 9.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 9</p>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p>
+      <ol class="try-choices" type="A"><li>7</li><li>-5</li><li>-3</li><li>2</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is |0|?</p>
+      <ol class="try-choices" type="A"><li>0</li><li>1</li><li>-1</li><li>There is no answer</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+  </div>
+</section>
+  <section class="section turn-and-talk">
+  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
+  <div class="tt-card">
+  <span class="tt-phase">Launch</span>
+  <p class="tt-question">Why are -5 and 5 both the same distance from zero on the number line, even though one is negative and one is positive?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> -5 and 5 are the same distance from zero because ___.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;integer&quot; or &quot;absolute value&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">Both numbers are ___ units from zero.</span><span class="twr-es">Ambos numeros estan a ___ unidades del cero.</span></p><p class="twr-frame"><span class="twr-en">They are different because one is ___ and one is ___.</span><span class="twr-es">Son diferentes porque uno es ___ y el otro es ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">integer</span><span class="tt-word">absolute value</span><span class="tt-word">opposite</span><span class="tt-word">positive</span><span class="tt-word">negative</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student says both are 5 units from zero (same absolute value) but are opposites because of their signs.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Push students to explain why absolute value can never be negative.</p>
+    <ul class="tt-extend-stems"><li>Absolute value is never negative because ___.</li><li>The absolute value of any number tells me ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Explore</span>
+  <p class="tt-question">A diver is at -30 feet and a hawk is at +30 feet. How can absolute value help you describe how far each is from sea level?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Absolute value tells me how far each animal is from ___.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;integer&quot; or &quot;absolute value&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The diver is ___ feet from sea level because |-30| = ___.</span><span class="twr-es">El buzo esta a ___ pies del nivel del mar porque |-30| = ___.</span></p><p class="twr-frame"><span class="twr-en">The hawk is ___ feet from sea level because |30| = ___.</span><span class="twr-es">El halcon esta a ___ pies del nivel del mar porque |30| = ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">integer</span><span class="tt-word">absolute value</span><span class="tt-word">positive</span><span class="tt-word">negative</span><span class="tt-word">opposite</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student uses absolute value to show both are 30 feet from sea level (zero), ignoring direction.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Ask students to decide who is truly farther from sea level and justify using both the integers and their absolute values.</p>
+    <ul class="tt-extend-stems"><li>They are the same distance from sea level because ___.</li><li>The sign tells me the direction, while the absolute value tells me ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Connect</span>
+  <p class="tt-question">How is the opposite of a number different from the absolute value of a number?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> The opposite changes ___, but the absolute value gives ___.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;integer&quot; or &quot;absolute value&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The opposite of 7 is ___.</span><span class="twr-es">El opuesto de 7 es ___.</span></p><p class="twr-frame"><span class="twr-en">The absolute value of -7 is ___.</span><span class="twr-es">El valor absoluto de -7 es ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">integer</span><span class="tt-word">absolute value</span><span class="tt-word">opposite</span><span class="tt-word">positive</span><span class="tt-word">negative</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student explains the opposite flips the sign while absolute value always gives the non-negative distance from zero.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Push students to find a number whose opposite and absolute value are equal, and explain why.</p>
+    <ul class="tt-extend-stems"><li>The opposite and absolute value are equal when the number is ___.</li><li>This works because ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Reflect</span>
+  <p class="tt-question">Think of a real situation where a negative integer makes sense. What does zero mean in that situation?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> A negative integer makes sense when ___, and zero means ___.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;integer&quot; or &quot;negative&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">A negative number could describe ___.</span><span class="twr-es">Un numero negativo podria describir ___.</span></p><p class="twr-frame"><span class="twr-en">In that situation, zero means ___.</span><span class="twr-es">En esa situacion, el cero significa ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">integer</span><span class="tt-word">negative</span><span class="tt-word">positive</span><span class="tt-word">absolute value</span><span class="tt-word">opposite</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student gives a real context (temperature, elevation, money) and explains zero as the reference point between positive and negative.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Ask students to critique whether absolute value would be useful in their chosen situation and why.</p>
+    <ul class="tt-extend-stems"><li>Absolute value would help in my situation because ___.</li><li>It would tell me ___ no matter the direction.</li></ul>
+  </div>
+</div>
+</section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 9 Project — Coordinate Plane &amp; Integers in Action</h3>
+      </div>
+      <p class="project-desc">Apply graphing, integers, and the coordinate plane to a real-world capstone challenge for Unit 9.</p>
+      <div class="project-links">
+        <a href="/math/unit-7/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🌡️</span>
+        <h3 class="project-title">Temperature Explorer</h3>
+      </div>
+      <p class="project-desc">Use positive and negative integers to read and compare temperatures (6.NS.5).</p>
+      <div class="project-links">
+        <a href="/number-system/6-ns-c-5game/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏔️</span>
+        <h3 class="project-title">Sub-Zero Ledger &amp; Altitude Compass</h3>
+      </div>
+      <p class="project-desc">Model integers and absolute value with altitude and below-zero values (6.NS.7).</p>
+      <div class="project-links">
+        <a href="/number-system/subzero-ledger/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain my reasoning using the words integer, positive, negative, absolute value, and opposite.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Integer is a whole number that can be positive, negative, or zero.<span class="twr-es">Número entero es un número entero que puede ser positivo, negativo o cero.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about integer. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre número entero. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Integer matters in math<span class="twr-es">Número entero importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Integer matters in math because ___.</span><span class="twr-es">Número entero importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Integer matters in math, but ___.</span><span class="twr-es">Número entero importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Integer matters in math, so ___.</span><span class="twr-es">Número entero importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about integer.<span class="twr-es">Di un hecho verdadero sobre integer.</span></p>
+        <p class="twr-frame"><span class="twr-en">Integer ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about integer.<span class="twr-es">Haz una pregunta sobre integer.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about integer.<span class="twr-es">Muestra entusiasmo sobre integer.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with integer.<span class="twr-es">Dile a un compañero qué hacer con integer.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">Both numbers are ___ units from zero.</span><span class="twr-es">Ambos numeros estan a ___ unidades del cero.</span></p><p class="twr-frame"><span class="twr-en">They are different because one is ___ and one is ___.</span><span class="twr-es">Son diferentes porque uno es ___ y el otro es ___.</span></p><p class="twr-frame"><span class="twr-en">The diver is ___ feet from sea level because |-30| = ___.</span><span class="twr-es">El buzo esta a ___ pies del nivel del mar porque |-30| = ___.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. What is |6| + |-4|?</p>
+  <ol class="try-choices" type="A"><li>10</li><li>2</li><li>-10</li><li>24</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A diver is at -30 feet and a bird at +30 feet. What is true about their distances from sea level?</p>
+  <ol class="try-choices" type="A"><li>They are the same distance from 0</li><li>The diver is farther</li><li>The bird is farther</li><li>They are both at 0</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">A submarine is at -150 meters and a bird is flying at +150 meters. A student says the submarine is closer to sea level because -150 is less than 150. Is the student correct? Explain using absolute value.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> The student is ___ because absolute value measures ___. Since |-150| = ___ and |150| = ___, both are ___ from sea level. The student confused ___ with ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">Which integer has an absolute value of 8 and is located to the LEFT of zero on the number line?</p>
+  <ol class="try-choices" type="A"><li>8</li><li>-8</li><li>0</li><li>-80</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key &amp; Teacher Guide</h2>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 7 <span class="ak-why">— |-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7.</span></li><li><strong>You Try (notes):</strong> A. 0 <span class="ak-why">— Zero is 0 units from itself on the number line, so |0| = 0.</span></li><li><strong>Try It 1:</strong> A. 10 <span class="ak-why">— |6| = 6 and |-4| = 4; 6 + 4 = 10.</span></li><li><strong>Try It 2:</strong> A. They are the same distance from 0 <span class="ak-why">— |-30| = |30| = 30, so both are 30 feet from sea level.</span></li><li><strong>Exit Ticket:</strong> B. -8 <span class="ak-why">— To the left of zero means negative. The integer -8 has an absolute value of 8 because it is 8 units from zero.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Integer is a whole number that can be positive, negative, or zero.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 9-2 · Standard 6.NS.7</footer>
+</main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

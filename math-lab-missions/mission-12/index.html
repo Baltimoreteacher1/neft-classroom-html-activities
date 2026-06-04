@@ -1,0 +1,1911 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.G.A.2 · Unit 5" data-standard="6.G.A.2" data-unit="5" />
+    <title>Mission 12: Volume (6.G.A.2) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        margin: 0;
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--paper);
+        color: var(--ink);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.6;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      a {
+        color: inherit;
+      }
+      .page-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 48px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn:hover {
+        opacity: 0.88;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 24px;
+        align-items: start;
+        margin-bottom: 32px;
+      }
+      .hero-text {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: clamp(22px, 4vw, 38px);
+        box-shadow: var(--shadow);
+      }
+      .hero-text .eyebrow {
+        color: var(--teal);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        line-height: 1.08;
+        color: var(--navy);
+        margin: 0 0 12px;
+      }
+      .hero-text .standards {
+        display: inline-block;
+        background: var(--soft-teal);
+        color: var(--teal);
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+      }
+      .hero-svg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        min-height: 400px;
+      }
+      .section {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 28px;
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+      }
+      .section h2 {
+        color: var(--navy);
+        font-size: 1.5rem;
+        margin: 0 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--soft-teal);
+      }
+      .section h3 {
+        color: var(--teal);
+        font-size: 1.15rem;
+        margin: 20px 0 10px;
+      }
+      .problem-box {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+      }
+      .problem-box strong {
+        color: var(--gold);
+      }
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        background: #fafcff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 14px 14px 14px 54px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--teal);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .step-list .guiding-q {
+        color: var(--teal);
+        font-style: italic;
+        margin-top: 4px;
+        display: block;
+      }
+      .language-box {
+        background: var(--soft-green);
+        border: 2px solid #a3d9a5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .language-box h3 {
+        color: var(--green);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .vocab-card {
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .vocab-card strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        padding: 12px 16px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+      }
+      .rep-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .rep-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #115e60;
+        font-size: 1.05rem;
+      }
+      .role .mission-task {
+        color: var(--teal);
+        font-weight: 600;
+        font-style: italic;
+        margin-top: 6px;
+        display: block;
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px 16px;
+        cursor: pointer;
+        border: 0;
+        width: 100%;
+        background: transparent;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-header:hover {
+        background: #f8fafe;
+      }
+      .phase-time {
+        padding: 5px 10px;
+        border-radius: 99px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .phase-name {
+        font-weight: 800;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 16px 14px;
+        color: var(--muted);
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .checkpoint {
+        background: var(--soft-blue);
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin-top: 8px;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      .challenge-box {
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 12px;
+      }
+      .defense-questions ol {
+        padding-left: 20px;
+      }
+      .defense-questions li {
+        margin-bottom: 8px;
+      }
+      .sentence-starters {
+        background: var(--soft-teal);
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin-top: 12px;
+      }
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .rubric-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .rubric-item strong {
+        color: var(--navy);
+        display: block;
+        margin-bottom: 4px;
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        padding: 20px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .print-workspace {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .topbar,
+        .timer-bar,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .hero {
+          display: block;
+        }
+        .section,
+        .hero-text,
+        .hero-svg {
+          box-shadow: none;
+          break-inside: avoid;
+          border-color: #999;
+          margin-bottom: 12px;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+          page-break-before: always;
+        }
+        .print-workspace .work-area {
+          border: 1px solid #ccc;
+          min-height: 200px;
+          margin-bottom: 16px;
+          padding: 12px;
+        }
+      }
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .rep-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .page-shell {
+          padding: 14px 0 32px;
+        }
+        .timer-display {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="topbar" aria-label="Mission navigation">
+        <div class="nav-links">
+          <a class="btn btn-secondary" href="/math-lab-missions/"
+            >All Missions</a
+          >
+          <a class="btn btn-secondary" href="/math-lab-missions/mission-11/"
+            >Prev: Mission 11</a
+          >
+          <a class="btn btn-secondary" href="/math-lab-missions/mission-13/"
+            >Next: Mission 13</a
+          >
+        </div>
+        <a class="btn btn-primary" href="/">Neft Hub</a>
+      </nav>
+
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 12 &middot; Unit 5</p>
+          <h1 id="mission-title">Volume</h1>
+          <span class="standards">6.G.A.2 &middot; Unit 5</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Find the volume of right rectangular prisms with fractional edge lengths.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="scenario">
+            The school is building a time capsule! The students voted to bury a
+            rectangular box that is <strong>15 inches long</strong>,
+            <strong>9 inches wide</strong>, and <strong>8 inches tall</strong>.
+            The principal wants to know: (1) How many cubic inches of space is
+            inside the box? (2) Students plan to fill the bottom of the box with
+            a layer of foam cubes that are each <strong>1.5 inches</strong> on
+            every side. How many foam cubes fit in one layer on the bottom? How
+            many layers fit? How many total foam cubes fill the box? Your team
+            must calculate the volume and prove the cube-packing plan works.
+          </p>
+        </div>
+        <div
+          class="hero-svg"
+          aria-label="Illustration of time capsule box with foam cubes inside"
+        >
+          <svg
+            viewBox="0 0 400 440"
+            width="400"
+            height="440"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Rectangular prism time capsule with layers of cubes"
+          >
+            <text
+              x="200"
+              y="20"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Time Capsule Box
+            </text>
+            <!-- 3D box outline (isometric) -->
+            <!-- Front face -->
+            <rect
+              x="60"
+              y="80"
+              width="180"
+              height="120"
+              fill="#e3f2fd"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <!-- Top face -->
+            <polygon
+              points="60,80 120,45 300,45 240,80"
+              fill="#bbdefb"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <!-- Right face -->
+            <polygon
+              points="240,80 300,45 300,165 240,200"
+              fill="#90caf9"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+
+            <!-- Dimension labels -->
+            <text
+              x="150"
+              y="215"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#23395d"
+            >
+              15 in
+            </text>
+            <text
+              x="42"
+              y="145"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#23395d"
+            >
+              8 in
+            </text>
+            <text
+              x="275"
+              y="38"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#23395d"
+            >
+              9 in
+            </text>
+
+            <!-- Foam cubes visualization (bottom layer, partial grid) -->
+            <text
+              x="200"
+              y="245"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              Foam Cubes: 1.5 in each side
+            </text>
+
+            <!-- Bottom layer grid view -->
+            <rect
+              x="50"
+              y="260"
+              width="150"
+              height="90"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="1.5"
+              rx="4"
+            />
+            <text
+              x="125"
+              y="278"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Bottom Layer (top view)
+            </text>
+            <!-- Grid lines for 10 x 6 cubes -->
+            <line
+              x1="65"
+              y1="285"
+              x2="65"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="80"
+              y1="285"
+              x2="80"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="95"
+              y1="285"
+              x2="95"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="110"
+              y1="285"
+              x2="110"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="125"
+              y1="285"
+              x2="125"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="140"
+              y1="285"
+              x2="140"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="155"
+              y1="285"
+              x2="155"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="170"
+              y1="285"
+              x2="170"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="185"
+              y1="285"
+              x2="185"
+              y2="345"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <!-- Horizontal grid -->
+            <line
+              x1="50"
+              y1="295"
+              x2="200"
+              y2="295"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="50"
+              y1="305"
+              x2="200"
+              y2="305"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="50"
+              y1="315"
+              x2="200"
+              y2="315"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="50"
+              y1="325"
+              x2="200"
+              y2="325"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <line
+              x1="50"
+              y1="335"
+              x2="200"
+              y2="335"
+              stroke="#ead39d"
+              stroke-width="0.8"
+            />
+            <text
+              x="125"
+              y="352"
+              text-anchor="middle"
+              font-size="9"
+              fill="#5b6573"
+            >
+              10 cubes x 6 cubes = 60 per layer
+            </text>
+
+            <!-- Layers side view -->
+            <rect
+              x="230"
+              y="260"
+              width="140"
+              height="90"
+              fill="#ecf8f6"
+              stroke="#207a7a"
+              stroke-width="1.5"
+              rx="4"
+            />
+            <text
+              x="300"
+              y="278"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              Layers (side view)
+            </text>
+            <!-- 5 layers stacked -->
+            <rect
+              x="250"
+              y="286"
+              width="100"
+              height="11"
+              fill="#b2dfdb"
+              stroke="#207a7a"
+              stroke-width="1"
+            />
+            <rect
+              x="250"
+              y="299"
+              width="100"
+              height="11"
+              fill="#80cbc4"
+              stroke="#207a7a"
+              stroke-width="1"
+            />
+            <rect
+              x="250"
+              y="312"
+              width="100"
+              height="11"
+              fill="#b2dfdb"
+              stroke="#207a7a"
+              stroke-width="1"
+            />
+            <rect
+              x="250"
+              y="325"
+              width="100"
+              height="11"
+              fill="#80cbc4"
+              stroke="#207a7a"
+              stroke-width="1"
+            />
+            <rect
+              x="250"
+              y="338"
+              width="100"
+              height="11"
+              fill="#b2dfdb"
+              stroke="#207a7a"
+              stroke-width="1"
+            />
+            <text x="255" y="295" font-size="8" fill="#004d40">L1</text>
+            <text x="255" y="308" font-size="8" fill="#004d40">L2</text>
+            <text x="255" y="321" font-size="8" fill="#004d40">L3</text>
+            <text x="255" y="334" font-size="8" fill="#004d40">L4</text>
+            <text x="255" y="347" font-size="8" fill="#004d40">L5</text>
+            <text
+              x="300"
+              y="362"
+              text-anchor="middle"
+              font-size="9"
+              fill="#5b6573"
+            >
+              5 layers tall (rest is gap)
+            </text>
+
+            <!-- Result banner -->
+            <rect
+              x="50"
+              y="375"
+              width="300"
+              height="55"
+              rx="8"
+              fill="#23395d"
+            />
+            <text
+              x="200"
+              y="396"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#ffd700"
+            >
+              Box Volume = 15 x 9 x 8 = 1,080 in&sup3;
+            </text>
+            <text
+              x="200"
+              y="418"
+              text-anchor="middle"
+              font-size="12"
+              fill="#b2dfdb"
+            >
+              Foam cubes: 10 x 6 x 5 = 300 cubes (each 1.5 in&sup3; = 3.375
+              in&sup3;)
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Investigation -->
+      <section class="section" id="investigation">
+        <h2>Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> (A) Find the volume of the time capsule
+          box (15 in x 9 in x 8 in). (B) How many 1.5-inch foam cubes fit along
+          the length? Along the width? Along the height? (C) How many cubes in
+          one layer? How many layers? How many total cubes? (D) What is the
+          total volume of all the foam cubes? Is it the same as the box volume?
+          Why or why not?
+        </div>
+
+        <h3>Visual Model: Layers Build Volume</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 740 300"
+            width="740"
+            height="300"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Diagram showing how layers of cubes build up to volume"
+          >
+            <!-- Step 1: Base area -->
+            <rect
+              x="10"
+              y="10"
+              width="220"
+              height="270"
+              rx="8"
+              fill="#fff6df"
+              stroke="#ead39d"
+              stroke-width="1.5"
+            />
+            <text
+              x="120"
+              y="35"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              Step 1: Base Area
+            </text>
+            <rect
+              x="30"
+              y="50"
+              width="150"
+              height="90"
+              fill="#c8e6c9"
+              stroke="#2e7d32"
+              stroke-width="2"
+              rx="3"
+            />
+            <text
+              x="105"
+              y="100"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="800"
+              fill="#2e7d32"
+            >
+              15 x 9
+            </text>
+            <text
+              x="105"
+              y="118"
+              text-anchor="middle"
+              font-size="12"
+              fill="#2e7d32"
+            >
+              = 135 in&sup2;
+            </text>
+            <text
+              x="120"
+              y="165"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              The bottom of the box
+            </text>
+            <text
+              x="120"
+              y="180"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              is 135 square inches.
+            </text>
+            <text
+              x="120"
+              y="205"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              This is B (base area).
+            </text>
+
+            <!-- Arrow -->
+            <text x="242" y="140" font-size="24" fill="#23395d">&#8594;</text>
+
+            <!-- Step 2: Multiply by height -->
+            <rect
+              x="260"
+              y="10"
+              width="220"
+              height="270"
+              rx="8"
+              fill="#ecf8f6"
+              stroke="#a7d8d0"
+              stroke-width="1.5"
+            />
+            <text
+              x="370"
+              y="35"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              Step 2: Stack Layers
+            </text>
+            <!-- Stacked layers -->
+            <g transform="translate(290,50)">
+              <rect
+                x="0"
+                y="0"
+                width="120"
+                height="14"
+                fill="#b2dfdb"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <rect
+                x="0"
+                y="16"
+                width="120"
+                height="14"
+                fill="#80cbc4"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <rect
+                x="0"
+                y="32"
+                width="120"
+                height="14"
+                fill="#b2dfdb"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <rect
+                x="0"
+                y="48"
+                width="120"
+                height="14"
+                fill="#80cbc4"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <rect
+                x="0"
+                y="64"
+                width="120"
+                height="14"
+                fill="#b2dfdb"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <rect
+                x="0"
+                y="80"
+                width="120"
+                height="14"
+                fill="#80cbc4"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <rect
+                x="0"
+                y="96"
+                width="120"
+                height="14"
+                fill="#b2dfdb"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <rect
+                x="0"
+                y="112"
+                width="120"
+                height="14"
+                fill="#80cbc4"
+                stroke="#207a7a"
+                stroke-width="1"
+                rx="2"
+              />
+              <text
+                x="135"
+                y="65"
+                font-size="13"
+                font-weight="700"
+                fill="#23395d"
+              >
+                8 layers
+              </text>
+              <text x="135" y="80" font-size="11" fill="#5b6573">(height)</text>
+            </g>
+            <text
+              x="370"
+              y="205"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              V = B x h
+            </text>
+            <text
+              x="370"
+              y="223"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              V = 135 x 8
+            </text>
+            <text
+              x="370"
+              y="246"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              = 1,080 in&sup3;
+            </text>
+
+            <!-- Arrow -->
+            <text x="492" y="140" font-size="24" fill="#23395d">&#8594;</text>
+
+            <!-- Step 3: Cube packing -->
+            <rect
+              x="510"
+              y="10"
+              width="220"
+              height="270"
+              rx="8"
+              fill="#edf5ff"
+              stroke="#bed4ea"
+              stroke-width="1.5"
+            />
+            <text
+              x="620"
+              y="35"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Step 3: Foam Cubes
+            </text>
+            <text
+              x="620"
+              y="60"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              Each cube: 1.5 in per side
+            </text>
+            <text
+              x="620"
+              y="85"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              Along length:
+            </text>
+            <text
+              x="620"
+              y="102"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              15 &div; 1.5 = 10 cubes
+            </text>
+            <text
+              x="620"
+              y="125"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              Along width:
+            </text>
+            <text
+              x="620"
+              y="142"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              9 &div; 1.5 = 6 cubes
+            </text>
+            <text
+              x="620"
+              y="165"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              Along height:
+            </text>
+            <text
+              x="620"
+              y="182"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              8 &div; 1.5 = 5 R 0.5
+            </text>
+            <text
+              x="620"
+              y="200"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b42318"
+            >
+              (only 5 full layers fit!)
+            </text>
+
+            <rect
+              x="530"
+              y="215"
+              width="180"
+              height="55"
+              rx="6"
+              fill="#23395d"
+            />
+            <text
+              x="620"
+              y="237"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#ffd700"
+            >
+              One layer: 10 x 6 = 60 cubes
+            </text>
+            <text
+              x="620"
+              y="257"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#ffd700"
+            >
+              Total: 60 x 5 = 300 cubes
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Identify the three dimensions.</strong> The box is 15 in
+            long, 9 in wide, and 8 in tall. Write l = 15, w = 9, h = 8.
+            <span class="guiding-q"
+              >What is the difference between area (2 dimensions) and volume (3
+              dimensions)?</span
+            >
+          </li>
+          <li>
+            <strong>Find the base area (B).</strong> The base is the bottom
+            face: B = l x w = 15 x 9 = 135 in&sup2;. This tells you the area of
+            one layer.
+            <span class="guiding-q"
+              >Why is the base area measured in square inches, but volume is in
+              cubic inches?</span
+            >
+          </li>
+          <li>
+            <strong>Multiply by the height.</strong> V = B x h = 135 x 8 = 1,080
+            in&sup3;. Also check: V = l x w x h = 15 x 9 x 8 = 1,080 in&sup3;.
+            <span class="guiding-q"
+              >Why do both formulas (V = Bh and V = lwh) give the same
+              answer?</span
+            >
+          </li>
+          <li>
+            <strong>Figure out the cube packing.</strong> Each foam cube is 1.5
+            in on a side. Divide each box dimension by 1.5: Length: 15 / 1.5 =
+            10 cubes. Width: 9 / 1.5 = 6 cubes. Height: 8 / 1.5 = 5.33... so
+            only 5 full layers fit.
+            <span class="guiding-q"
+              >What happens to the 0.5 inches of leftover space at the top? Can
+              a partial cube fit?</span
+            >
+          </li>
+          <li>
+            <strong>Count the total cubes.</strong> One layer: 10 x 6 = 60
+            cubes. Total: 60 x 5 = 300 cubes. The volume of 300 cubes: 300 x
+            (1.5 x 1.5 x 1.5) = 300 x 3.375 = 1,012.5 in&sup3;.
+            <span class="guiding-q"
+              >Why is 1,012.5 less than 1,080? Where did the missing 67.5 cubic
+              inches go?</span
+            >
+          </li>
+          <li>
+            <strong>Compare box volume to cube volume.</strong> Box = 1,080
+            in&sup3;. Cubes = 1,012.5 in&sup3;. Difference = 67.5 in&sup3; of
+            empty space at the top (the gap where a 6th layer does not fit).
+            <span class="guiding-q"
+              >Is it possible to fill a box completely with cubes that do not
+              evenly divide the height? Why or why not?</span
+            >
+          </li>
+        </ol>
+
+        <!-- Language Box -->
+        <div class="language-box">
+          <h3>Language Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <strong>volume</strong> &mdash; the amount of space inside a 3-D
+              shape, measured in cubic units (in&sup3;)
+            </div>
+            <div class="vocab-card">
+              <strong>cubic unit</strong> &mdash; a small cube used to measure
+              volume; 1 in&sup3; = a cube 1 inch on each side
+            </div>
+            <div class="vocab-card">
+              <strong>layer</strong> &mdash; one flat level of cubes that fills
+              the base of the box
+            </div>
+            <div class="vocab-card">
+              <strong>base area (B)</strong> &mdash; the area of the bottom face
+              of a prism; B = length x width
+            </div>
+            <div class="vocab-card">
+              <strong>prism</strong> &mdash; a 3-D shape with two identical
+              bases and rectangular sides
+            </div>
+            <div class="vocab-card">
+              <strong>right rectangular prism</strong> &mdash; a box shape where
+              all angles are 90 degrees
+            </div>
+            <div class="vocab-card">
+              <strong>capacity</strong> &mdash; how much a container can hold
+              inside
+            </div>
+            <div class="vocab-card">
+              <strong>gap / leftover space</strong> &mdash; empty space where
+              cubes do not fit perfectly
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <h4 style="margin: 0 0 8px; color: var(--green)">
+              Sentence Frames
+            </h4>
+            <p>
+              "The volume of the box is _____ in&sup3; because I multiplied
+              _____ times _____ times _____."
+            </p>
+            <p>
+              "One layer has _____ cubes because _____ fit along the length and
+              _____ fit along the width."
+            </p>
+            <p>
+              "Only _____ full layers fit because _____ divided by 1.5 equals
+              _____ with _____ left over."
+            </p>
+          </div>
+        </div>
+
+        <!-- Multiple Representations -->
+        <h3>Multiple Representations</h3>
+        <div class="rep-grid">
+          <div class="rep-card">
+            <h4>Layer Diagram</h4>
+            <p>
+              Draw the bottom of the box as a rectangle. Divide it into a 10 x 6
+              grid of 1.5-inch squares. This is one layer (60 cubes). Then show
+              5 stacked layers from the side.
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: seeing how layers of cubes build volume
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Two Formulas</h4>
+            <p>
+              V = l x w x h = 15 x 9 x 8 = 1,080 in&sup3;<br />
+              V = B x h = (15 x 9) x 8 = 135 x 8 = 1,080 in&sup3;<br />
+              Both give the same answer. V = Bh is useful when you already know
+              the base area.
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: connecting the formula to the layer concept
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Packing Table</h4>
+            <p>
+              Table: Dimension | Box Size | Cube Size | How Many Fit |
+              Leftover<br />
+              Length: 15 / 1.5 = 10, 0 leftover<br />
+              Width: 9 / 1.5 = 6, 0 leftover<br />
+              Height: 8 / 1.5 = 5, 0.5 in leftover
+            </p>
+            <p style="color: var(--teal); font-weight: 600">
+              Best for: organizing the division and spotting the gap
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team Roles -->
+      <section class="section" id="roles">
+        <h2>Team Roles</h2>
+        <div class="role-grid">
+          <div class="role">
+            <strong>Facilitator</strong>
+            <span
+              >Keeps the group on track, watches the timer, makes sure everyone
+              speaks.</span
+            >
+            <span class="mission-task"
+              >Mission 12 task: Make sure the team finds the box volume, the
+              cubes per layer, total cubes, AND explains the leftover
+              space.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Model Builder</strong>
+            <span
+              >Draws the layer diagram, labels dimensions, and creates the
+              packing table.</span
+            >
+            <span class="mission-task"
+              >Mission 12 task: Draw a top-view grid showing 10 x 6 cubes in one
+              layer, and a side view showing 5 stacked layers with the gap at
+              the top.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Precision Checker</strong>
+            <span
+              >Checks all multiplication and division, verifies units
+              (in&sup3;), compares V = lwh with V = Bh.</span
+            >
+            <span class="mission-task"
+              >Mission 12 task: Verify that 300 x 3.375 = 1,012.5 in&sup3;, and
+              that 1,080 - 1,012.5 = 67.5 in&sup3; of gap. Check both volume
+              formulas match.</span
+            >
+          </div>
+          <div class="role">
+            <strong>Reporter</strong>
+            <span
+              >Prepares the defense: claim, evidence, and one mistake the team
+              caught.</span
+            >
+            <span class="mission-task"
+              >Mission 12 task: Explain why the cubes do not fill the box
+              completely and what the gap means. Connect layers to the volume
+              formula.</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Timed Phases -->
+      <section class="section" id="phases">
+        <h2>Timed Lab Phases</h2>
+        <div class="timer-bar">
+          <div>
+            <strong id="activePhaseLabel">Ready</strong>
+            <div style="color: var(--muted); font-size: 0.9rem">
+              Click a phase, then press Start.
+            </div>
+          </div>
+          <div class="timer-display" id="timerDisplay" aria-live="polite">
+            03:00
+          </div>
+          <div class="timer-controls">
+            <button class="btn btn-primary" id="startTimer">Start</button>
+            <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+            <button class="btn btn-secondary" id="resetTimer">Reset</button>
+          </div>
+        </div>
+        <div class="phase-cards" id="phaseCards">
+          <article class="phase-card open" data-minutes="3">
+            <button class="phase-header" data-phase="0">
+              <span class="phase-time">3 min</span>
+              <span class="phase-name">Launch</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Read the scenario out loud.</strong> Assign roles.
+                Underline the box dimensions and the cube size.
+              </p>
+              <ul>
+                <li>
+                  What are the 3 dimensions of the box? What is the cube size?
+                </li>
+                <li>What is the difference between area and volume?</li>
+                <li>
+                  Estimate: is the volume closer to 500, 1,000, or 2,000 cubic
+                  inches?
+                </li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: Every teammate can state the 3 dimensions and knows
+                the volume formula.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="6">
+            <button class="phase-header" data-phase="1">
+              <span class="phase-time">6 min</span>
+              <span class="phase-name">Build</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Calculate the box volume two ways.</strong> Then start
+                the cube-packing analysis.
+              </p>
+              <ul>
+                <li>V = l x w x h = 15 x 9 x 8 = ?</li>
+                <li>V = B x h: first find B = 15 x 9, then multiply by 8.</li>
+                <li>Do both formulas give the same answer?</li>
+                <li>Start dividing: 15 / 1.5, 9 / 1.5, 8 / 1.5.</li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: Volume = 1,080 in&sup3; using both formulas.
+                Division for cubes is started.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="5">
+            <button class="phase-header" data-phase="2">
+              <span class="phase-time">5 min</span>
+              <span class="phase-name">Solve</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Complete the cube packing.</strong> Find total cubes and
+                calculate the gap.
+              </p>
+              <ul>
+                <li>
+                  One layer: 10 x 6 = 60 cubes. Layers: 5. Total: 60 x 5 = 300.
+                </li>
+                <li>
+                  Volume of all cubes: 300 x (1.5)&sup3; = 300 x 3.375 = ?
+                </li>
+                <li>Gap = 1,080 - 1,012.5 = ? What does this gap mean?</li>
+                <li>Draw the layer diagram and label the gap.</li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: 300 cubes, 1,012.5 in&sup3; filled, 67.5 in&sup3;
+                gap explained.
+              </div>
+            </div>
+          </article>
+          <article class="phase-card" data-minutes="4">
+            <button class="phase-header" data-phase="3">
+              <span class="phase-time">4 min</span>
+              <span class="phase-name">Defend</span>
+              <span>+</span>
+            </button>
+            <div class="phase-body">
+              <p>
+                <strong>Prepare your presentation.</strong> Connect layers to
+                volume. Explain the gap.
+              </p>
+              <ul>
+                <li>State the box volume and how you calculated it.</li>
+                <li>
+                  Show the layer diagram: how cubes fill the base, how layers
+                  stack.
+                </li>
+                <li>Explain why 300 cubes do not fill the entire box.</li>
+                <li>Share one mistake your team caught and fixed.</li>
+              </ul>
+              <div class="checkpoint">
+                Checkpoint: Reporter can present volume, cube count, and gap
+                explanation in under 60 seconds.
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Challenge -->
+      <section class="section" id="challenge">
+        <h2>Challenge Zone</h2>
+        <div class="challenge-box">
+          <strong>Extension:</strong> If the foam cubes were 2 inches on each
+          side instead of 1.5 inches, how many would fit? (Hint: 15/2 = 7.5, so
+          only 7 fit along the length.) How does changing the cube size affect
+          the gap? Is there a cube size where the gap is exactly zero?
+        </div>
+        <div class="whatif">
+          <strong>What If?</strong> What if the box were 15 in x 9 in x 12 in
+          instead (taller)? Calculate the new volume. Now how many layers of
+          1.5-inch cubes fit? Is the gap bigger, smaller, or the same?
+        </div>
+        <div class="whatif">
+          <strong>Real-Life Connection:</strong> Think about packing a moving
+          box with books. Each book takes up space (volume). When you stack
+          them, some space is always wasted between the books. Volume tells you
+          the maximum capacity, but packing is never 100% efficient. This is why
+          real shipping companies care about both volume and packing patterns.
+        </div>
+      </section>
+
+      <!-- Defense Preparation -->
+      <section class="section" id="defense">
+        <h2>Defense Preparation</h2>
+        <div class="defense-questions">
+          <h3>Questions Your Team Must Answer</h3>
+          <ol>
+            <li>What is the volume of the time capsule? Show both formulas.</li>
+            <li>
+              How many foam cubes fit in one layer? How did you figure that out?
+            </li>
+            <li>Why do only 5 layers fit even though 8 / 1.5 = 5.33?</li>
+            <li>
+              What is the gap, and what does it mean for the time capsule?
+            </li>
+            <li>
+              How are V = lwh and V = Bh connected? When would you use each one?
+            </li>
+          </ol>
+        </div>
+        <div class="sentence-starters">
+          <h3 style="margin-top: 0">Sentence Starters for Your Defense</h3>
+          <p>
+            "The volume is _____ in&sup3; because _____ times _____ times _____
+            equals _____."
+          </p>
+          <p>
+            "Each layer holds _____ cubes, and _____ layers fit, giving _____
+            cubes total."
+          </p>
+          <p>
+            "The gap of _____ in&sup3; exists because 1.5 does not divide evenly
+            into _____."
+          </p>
+          <p>
+            "V = Bh means volume equals the base area times the height. This
+            works because _____."
+          </p>
+        </div>
+        <div class="rubric-grid">
+          <div class="rubric-item">
+            <strong>Accuracy (4 pts)</strong>
+            Volume is correct (1,080 in&sup3;). Cube count is correct (300). Gap
+            is correct (67.5 in&sup3;).
+          </div>
+          <div class="rubric-item">
+            <strong>Model (4 pts)</strong>
+            Layer diagram shows top view and side view. Both V formulas are
+            shown.
+          </div>
+          <div class="rubric-item">
+            <strong>Reasoning (4 pts)</strong>
+            Team explains the connection between layers and V = Bh, and why the
+            gap exists.
+          </div>
+          <div class="rubric-item">
+            <strong>Communication (4 pts)</strong>
+            Reporter uses vocabulary (volume, layer, base area, cubic units,
+            gap) and teammates can explain.
+          </div>
+        </div>
+      </section>
+
+      <!-- Exit Product -->
+      <section class="section" id="exit">
+        <h2>Exit Product</h2>
+        <div class="exit-box">
+          <h3 style="margin-top: 0; color: var(--navy)">
+            Deliver: Time Capsule Packing Report
+          </h3>
+          <p>Your team submits a one-page report that includes:</p>
+          <ul class="checklist">
+            <li>Box volume using V = lwh</li>
+            <li>Box volume using V = Bh (show B first)</li>
+            <li>Cube-packing division for all 3 dimensions</li>
+            <li>Layer diagram (top view + side view)</li>
+            <li>Total cube count and total cube volume</li>
+            <li>Gap calculation with explanation</li>
+            <li>
+              A 3-sentence defense: claim, evidence, and reasonableness check
+            </li>
+          </ul>
+          <h4 style="color: var(--navy); margin-top: 16px">Self-Assessment</h4>
+          <ul class="checklist">
+            <li>
+              I can calculate volume using two formulas and get the same answer.
+            </li>
+            <li>
+              I can explain what a "layer" is and how it connects to V = Bh.
+            </li>
+            <li>
+              I can divide to find how many cubes fit along each dimension.
+            </li>
+            <li>I can explain why the cubes do not fill the box completely.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Print workspace -->
+      <section class="print-workspace">
+        <h2>Student Work Space</h2>
+        <p><strong>Volume Calculation (both formulas):</strong></p>
+        <div class="work-area" style="min-height: 150px"></div>
+        <p><strong>Cube Packing Division:</strong></p>
+        <div class="work-area" style="min-height: 150px"></div>
+        <p><strong>Layer Diagram (top view and side view):</strong></p>
+        <div class="work-area" style="min-height: 250px"></div>
+        <p><strong>Gap Calculation:</strong></p>
+        <div class="work-area" style="min-height: 100px"></div>
+        <p><strong>Defense (Claim, Evidence, Reasonableness):</strong></p>
+        <div class="work-area"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var activePhase = 0,
+          remaining = phases[0].minutes * 60,
+          tid = null;
+        var display = document.getElementById("timerDisplay");
+        var label = document.getElementById("activePhaseLabel");
+        var cards = document.querySelectorAll(".phase-card");
+        function fmt(s) {
+          var m = Math.floor(s / 60),
+            r = s % 60;
+          return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+        }
+        function setPhase(i) {
+          activePhase = i;
+          remaining = phases[i].minutes * 60;
+          label.textContent = phases[i].name + " phase";
+          display.textContent = fmt(remaining);
+          cards.forEach(function (c, j) {
+            c.classList.toggle("open", j === i);
+          });
+        }
+        function stop() {
+          if (tid) {
+            clearInterval(tid);
+            tid = null;
+          }
+        }
+        document
+          .getElementById("phaseCards")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            stop();
+            setPhase(Number(h.dataset.phase));
+          });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (tid) return;
+            tid = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              display.textContent = fmt(remaining);
+              if (remaining === 0) {
+                stop();
+                label.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document.getElementById("pauseTimer").addEventListener("click", stop);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stop();
+            setPhase(activePhase);
+          });
+        setPhase(0);
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

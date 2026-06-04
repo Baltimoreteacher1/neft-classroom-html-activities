@@ -1,370 +1,1260 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Data Detective | 6.SP.B.5 — Enterprise Statistics Academy</title>
-<style>
-/* [Original CSS unchanged until the broken line...] */
-
-/* Fix the broken rule here */
-.mode-card h3{font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:8px;line-height:1.3}
-.mode-card p{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:0}
-
-/* Add game screen styles */
-#screen-game{
-  flex-direction:column;padding:36px 24px;gap:24px;
-}
-.game-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.game-back{display:flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:14px;font-weight:500;cursor:pointer;transition:var(--transition)}
-.game-back:hover{color:var(--accent-teal)}
-.stats-panel{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px}
-.stat-item{text-align:center}
-.stat-val{font-size:24px;font-weight:800;color:var(--text-primary);margin-bottom:4px}
-.stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
-
-/* Question area */
-.question-area{background:var(--bg-card);border:1px solid var(--border-active);border-radius:var(--radius-xl);padding:32px;text-align:center;position:relative;overflow:hidden}
-.question-area::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,170,0.05),rgba(59,130,246,0.05));opacity:0.5}
-.question-title{font-size:20px;font-weight:700;margin-bottom:16px;line-height:1.4}
-.question-data{font-size:16px;color:var(--text-secondary);margin-bottom:24px;line-height:1.6}
-
-/* Answer options */
-.options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:24px}
-.option-btn{
-  background:var(--bg-card);border:2px solid var(--border-subtle);color:var(--text-primary);
-  padding:16px;border-radius:var(--radius-md);cursor:pointer;font-size:14px;font-weight:600;
-  transition:var(--transition);position:relative;overflow:hidden;
-}
-.option-btn:hover{border-color:var(--accent-teal);transform:translateY(-2px);box-shadow:var(--shadow-glow)}
-.option-btn.correct{background:var(--accent-green);border-color:var(--accent-green);color:#000}
-.option-btn.incorrect{background:var(--accent-red);border-color:var(--accent-red);color:#000}
-.option-btn:disabled{cursor:not-allowed;opacity:0.5}
-
-/* Progress and feedback */
-.feedback{display:none;text-align:center;padding:20px;border-radius:var(--radius-md);margin:24px 0}
-.feedback.show{display:block}
-.feedback.success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--accent-green)}
-.feedback.error{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:var(--accent-red)}
-
-/* [Rest of original CSS unchanged] */
-</style>
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Detective Lab — 6.SP.B.5</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
-<body>
-<div class="bg-grid"></div>
-<div class="bg-glow-1"></div>
-<div class="bg-glow-2"></div>
-
-<div class="app">
-  <!-- [Original header unchanged] -->
-
-  <div class="screen active" id="screen-start">
-    <!-- [Original start screen unchanged] -->
-  </div>
-
-  <div class="screen" id="screen-home">
-    <!-- [Original home/missions unchanged] -->
-  </div>
-
-  <div class="screen" id="screen-mode">
-    <div class="mode-header">
-      <h2>Select Game Mode</h2>
-      <p>Choose your challenge level and play style</p>
-    </div>
-    <div class="modes-grid">
-      <div class="mode-card" data-mode="practice">
-        <h3>Practice Mode</h3>
-        <p>Master statistics concepts with guided missions</p>
-      </div>
-      <div class="mode-card locked" data-mode="endless">
-        <h3>Endless Mode</h3>
-        <p>Unlimited challenges - beat your high score</p>
-        <div class="lock-icon">🔒 Unlock at Level 5</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-game">
-    <div class="game-header">
-      <div class="game-back" id="gameBack">
-        <span>←</span> Back to Missions
-      </div>
-      <div class="stats-panel">
-        <div class="stat-item">
-          <div class="stat-val" id="currentXP">0</div>
-          <div class="stat-label">XP</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-val" id="levelNum">1</div>
-          <div class="stat-label">Level</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-val" id="questionNum">1</div>
-          <div class="stat-label">of 10</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-val" id="streakNum">0</div>
-          <div class="stat-label">Streak</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="question-area">
-      <h2 class="question-title" id="questionTitle">Summarizing Numerical Data</h2>
-      <div class="question-data" id="questionData">The test scores of 8 students are: 85, 92, 78, 95, 88, 91, 84, 89. What is the median score?</div>
-    </div>
-
-    <div class="options-grid" id="optionsGrid">
-      <!-- Options populated by JS -->
-    </div>
-
-    <div class="feedback" id="feedback">
-      <h3 id="feedbackTitle"></h3>
-      <p id="feedbackText"></p>
-    </div>
-  </div>
-</div>
-
-<script>
-class GameManager {
-  constructor() {
-    this.screens = {
-      start: document.getElementById('screen-start'),
-      home: document.getElementById('screen-home'),
-      mode: document.getElementById('screen-mode'),
-      game: document.getElementById('screen-game')
-    };
-    this.player = {
-      xp: 0,
-      level: 1,
-      streak: 0,
-      completedMissions: [],
-      highScore: 0,
-      lastPlayed: null
-    };
-    this.currentMission = null;
-    this.currentQuestion = 0;
-    this.questions = [];
-    this.gameState = 'menu'; // menu, playing, paused
-    this.init();
-  }
-
-  init() {
-    this.loadProgress();
-    this.updateUI();
-    this.bindEvents();
-    this.showScreen('start');
-    this.generateQuestions();
-  }
-
-  loadProgress() {
-    const saved = localStorage.getItem('dataDetectiveSave');
-    if (saved) {
-      Object.assign(this.player, JSON.parse(saved));
-      const today = new Date().toDateString();
-      if (this.player.lastPlayed !== today) {
-        this.player.streak = 0;
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
       }
-    }
-  }
-
-  saveProgress() {
-    this.player.lastPlayed = new Date().toDateString();
-    localStorage.setItem('dataDetectiveSave', JSON.stringify(this.player));
-  }
-
-  updateUI() {
-    // Update header stats
-    document.querySelector('.hstat-val.xp').textContent = this.player.xp;
-    document.querySelector('.hstat-lbl.xp').textContent = `Level ${this.player.level}`;
-    const nextLevelXP = 100 + (this.player.level - 1) * 150;
-    const progress = Math.min((this.player.xp % nextLevelXP) / nextLevelXP * 100, 100);
-    document.querySelector('.xp-bar-fill').style.width = progress + '%';
-
-    // Update streak
-    document.querySelector('.streak-badge').textContent = `🔥 ${this.player.streak}d`;
-
-    // Update game screen stats
-    if (document.getElementById('currentXP')) {
-      document.getElementById('currentXP').textContent = this.player.xp;
-      document.getElementById('levelNum').textContent = this.player.level;
-      document.getElementById('streakNum').textContent = this.player.streak;
-    }
-  }
-
-  bindEvents() {
-    // Start button
-    document.querySelector('.start-cta').addEventListener('click', () => {
-      this.showScreen('home');
-    });
-
-    // Mission cards
-    document.querySelectorAll('.mission-card:not(.locked)').forEach(card => {
-      card.addEventListener('click', () => {
-        this.currentMission = card.dataset.mission;
-        this.showScreen('mode');
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
       });
-    });
+    </script>
+    <script>
+      (() => {
+        "use strict";
 
-    // Mode selection
-    document.querySelectorAll('.mode-card:not(.locked)').forEach(card => {
-      card.addEventListener('click', () => {
-        this.startGame(card.dataset.mode);
-      });
-    });
+        /* =========================================================
+   DATA DETECTIVE LAB — 6.SP.B.5
+   Forensics workstation. The player COMPUTES BY DOING:
+   - MEDIAN  : drag/sort the evidence numbers ascending, middle highlights.
+   - RANGE   : drag min & max markers on a number line, submit max-min.
+   - OUTLIER : click the outlier point on a dot plot.
+   - MODE    : click the most-frequent value chip.
+   Phaser 3 single-file game. Touch + keyboard.
+   ========================================================= */
 
-    // Game back
-    document.getElementById('gameBack').addEventListener('click', () => {
-      this.endGame();
-    });
-  }
+        const W = 960;
+        const H = 600;
 
-  showScreen(screenName) {
-    Object.values(this.screens).forEach(screen => {
-      screen.classList.remove('active');
-    });
-    this.screens[screenName].classList.add('active');
-  }
+        /* ---------- Sound ---------- */
+        const SFX = {
+          ctx: null,
+          init() {
+            if (!this.ctx) {
+              const A = window.AudioContext || window.webkitAudioContext;
+              if (A) this.ctx = new A();
+            }
+          },
+          play(type) {
+            this.init();
+            if (!this.ctx) return;
+            if (this.ctx.state === "suspended") this.ctx.resume();
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain(),
+              t = this.ctx.currentTime;
+            const P = {
+              correct: { w: "sine", f: [520, 780], d: 0.18, v: 0.06 },
+              wrong: { w: "sawtooth", f: [300, 180], d: 0.22, v: 0.05 },
+              click: { w: "sine", f: [440, 480], d: 0.08, v: 0.04 },
+              combo: { w: "sine", f: [600, 900], d: 0.25, v: 0.06 },
+              whoosh: { w: "sine", f: [200, 600], d: 0.15, v: 0.03 },
+              levelup: { w: "sine", f: [440, 660, 880], d: 0.35, v: 0.06 },
+              snap: { w: "triangle", f: [600, 400], d: 0.07, v: 0.04 },
+            };
+            const p = P[type] || P.click;
+            o.type = p.w;
+            o.frequency.setValueAtTime(p.f[0], t);
+            if (p.f.length === 3) {
+              o.frequency.linearRampToValueAtTime(p.f[1], t + p.d * 0.5);
+              o.frequency.linearRampToValueAtTime(p.f[2], t + p.d);
+            } else o.frequency.linearRampToValueAtTime(p.f[1], t + p.d);
+            g.gain.setValueAtTime(0.001, t);
+            g.gain.linearRampToValueAtTime(p.v, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, t + p.d);
+            o.connect(g).connect(this.ctx.destination);
+            o.start(t);
+            o.stop(t + p.d + 0.01);
+          },
+        };
 
-  generateQuestions() {
-    // Sample 6.SP.B.5 statistics questions (median, mean, etc.)
-    this.questions = [
-      {
-        title: "Summarizing Numerical Data",
-        data: "Test scores: 85, 92, 78, 95, 88, 91, 84, 89. Median?",
-        options: ["85", "88", "89", "91"],
-        correct: 1,
-        explanation: "Sorted: 78,84,85,88,89,91,92,95. Median is average of 88 & 89 = 88.5, but closest 88."
-      },
-      {
-        title: "Mean Calculation",
-        data: "Daily sales: $200, $250, $180, $300, $220. Mean?",
-        options: ["$230", "$210", "$250", "$240"],
-        correct: 0,
-        explanation: "Sum=1150, mean=1150/5=$230."
-      },
-      // Add 8 more similar questions for full mission
-      // ... (premium feature: procedurally generated)
-    ];
-  }
+        /* ---------- Helpers ---------- */
+        function shuffle(a) {
+          a = a.slice();
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        }
+        const rint = (lo, hi) => Math.floor(Math.random() * (hi - lo + 1)) + lo;
+        function medianOf(arr) {
+          const s = arr.slice().sort((x, y) => x - y);
+          const n = s.length;
+          const m = Math.floor(n / 2);
+          return n % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
 
-  startGame(mode) {
-    this.currentQuestion = 0;
-    this.showScreen('game');
-    this.loadQuestion();
-  }
+        /* =========================================================
+           TASK GENERATORS
+           Each returns: {type, prompt, ...data, answer}
+           difficulty: 0 easy, 1 medium, 2 hard  -> dataset size
+           ========================================================= */
+        const CTX = [
+          "Fingerprint depths (mm)",
+          "Tire-track widths (cm)",
+          "Footprint lengths (cm)",
+          "Glass shard masses (g)",
+          "Witness response times (s)",
+          "Hair-fiber lengths (mm)",
+          "Paint-chip sizes (mm)",
+          "Soil sample weights (g)",
+        ];
+        const pickCtx = () => CTX[rint(0, CTX.length - 1)];
 
-  loadQuestion() {
-    if (this.currentQuestion >= 10) {
-      this.completeMission();
-      return;
-    }
+        function genMedian(diff) {
+          const n = diff === 0 ? 5 : diff === 1 ? 7 : 9; // always odd -> single middle, clean
+          const vals = [];
+          while (vals.length < n) vals.push(rint(2, 40));
+          return {
+            type: "median",
+            ctx: pickCtx(),
+            values: vals,
+            answer: medianOf(vals),
+          };
+        }
+        function genRange(diff) {
+          const n = diff === 0 ? 5 : diff === 1 ? 6 : 8;
+          const vals = [];
+          while (vals.length < n) {
+            const v = rint(1, 25);
+            if (vals.indexOf(v) === -1 || vals.length > 12) vals.push(v);
+          }
+          const mn = Math.min(...vals),
+            mx = Math.max(...vals);
+          return {
+            type: "range",
+            ctx: pickCtx(),
+            values: vals,
+            min: mn,
+            max: mx,
+            answer: mx - mn,
+          };
+        }
+        function genOutlier(diff) {
+          const n = diff === 0 ? 6 : diff === 1 ? 8 : 10;
+          // base high enough that a low outlier (cluster-min minus 6-9) stays >= 1
+          const base = rint(14, 22);
+          const spread = diff === 0 ? 2 : 3;
+          const vals = [];
+          for (let i = 0; i < n - 1; i++)
+            vals.push(base + rint(-spread, spread));
+          // outlier far from cluster, clamped non-negative for realistic contexts
+          const lo = Math.min(...vals),
+            hi = Math.max(...vals);
+          const outlier =
+            Math.random() < 0.5
+              ? Math.max(1, lo - rint(6, 9))
+              : hi + rint(6, 9);
+          vals.push(outlier);
+          return {
+            type: "outlier",
+            ctx: pickCtx(),
+            values: shuffle(vals),
+            answer: outlier,
+          };
+        }
+        function genMode(diff) {
+          const n = diff === 0 ? 6 : diff === 1 ? 8 : 10;
+          const pool = [];
+          for (let i = 0; i < 4 + diff; i++) pool.push(rint(2, 20));
+          const uniq = Array.from(new Set(pool));
+          const modeVal = uniq[rint(0, uniq.length - 1)];
+          const vals = [];
+          // ensure mode appears clearly most often
+          const modeCount = diff === 0 ? 3 : diff === 1 ? 3 : 4;
+          for (let i = 0; i < modeCount; i++) vals.push(modeVal);
+          while (vals.length < n) {
+            const v = uniq[rint(0, uniq.length - 1)];
+            const c = vals.filter((x) => x === v).length;
+            // keep others strictly below modeCount
+            if (v === modeVal || c < modeCount - 1) vals.push(v);
+          }
+          return {
+            type: "mode",
+            ctx: pickCtx(),
+            values: shuffle(vals),
+            answer: modeVal,
+          };
+        }
 
-    const q = this.questions[this.currentQuestion % this.questions.length];
-    document.getElementById('questionTitle').textContent = q.title;
-    document.getElementById('questionData').textContent = q.data;
-    document.getElementById('questionNum').textContent = this.currentQuestion + 1;
+        function buildTasks(diff, count) {
+          const gens = [genMedian, genRange, genOutlier, genMode];
+          const tasks = [];
+          // round-robin so variety is guaranteed, then shuffle order
+          let i = 0;
+          while (tasks.length < count) {
+            tasks.push(gens[i % gens.length](diff));
+            i++;
+          }
+          return shuffle(tasks);
+        }
 
-    const grid = document.getElementById('optionsGrid');
-    grid.innerHTML = '';
-    q.options.forEach((opt, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.textContent = opt;
-      btn.dataset.index = i;
-      btn.addEventListener('click', () => this.selectAnswer(i === q.correct, q.explanation));
-      grid.appendChild(btn);
-    });
-  }
+        /* =========================================================
+           COLORS / STYLE
+           ========================================================= */
+        const C = {
+          bg: 0x0a0f1e,
+          panel: 0x132038,
+          panel2: 0x1b2c4a,
+          line: 0x2e4a78,
+          accent: 0x35c2ff,
+          accentDk: 0x1d7fb0,
+          good: 0x4ade80,
+          bad: 0xf87171,
+          warn: 0xfbbf24,
+          chip: 0x21406e,
+          chipHi: 0x2f73c4,
+          text: "#dbe7ff",
+          dim: "#7e93b8",
+        };
+        const FONT = "system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
 
-  selectAnswer(isCorrect, explanation) {
-    const buttons = document.querySelectorAll('.option-btn');
-    buttons.forEach((btn, i) => {
-      btn.disabled = true;
-      if (parseInt(btn.dataset.index) === this.questions[this.currentQuestion % this.questions.length].correct) {
-        btn.classList.add('correct');
-      }
-    });
+        /* =========================================================
+           BOOT SCENE
+           ========================================================= */
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
+          }
+          create() {
+            this.scene.start("Title");
+          }
+        }
 
-    const feedback = document.getElementById('feedback');
-    const title = document.getElementById('feedbackTitle');
-    const text = document.getElementById('feedbackText');
+        /* =========================================================
+           TITLE SCENE
+           ========================================================= */
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg);
+            const g = this.add.graphics();
+            // backdrop grid
+            g.lineStyle(1, 0x1a2c4a, 0.6);
+            for (let x = 0; x <= W; x += 40) g.lineBetween(x, 0, x, H);
+            for (let y = 0; y <= H; y += 40) g.lineBetween(0, y, W, y);
 
-    if (isCorrect) {
-      this.awardXP(50 + this.player.level * 10);
-      this.player.streak++;
-      title.textContent = 'Correct! 🎉';
-      text.textContent = explanation;
-      feedback.className = 'feedback success show';
-    } else {
-      title.textContent = 'Try Again ❌';
-      text.textContent = explanation;
-      feedback.className = 'feedback error show';
-    }
+            this.add
+              .text(W / 2, 92, "🔬 DATA DETECTIVE LAB", {
+                fontFamily: FONT,
+                fontSize: "44px",
+                fontStyle: "bold",
+                color: "#35c2ff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 142, "Forensic Statistics Workstation · 6.SP.B.5", {
+                fontFamily: FONT,
+                fontSize: "18px",
+                color: C.text,
+              })
+              .setOrigin(0.5);
 
-    setTimeout(() => {
-      feedback.classList.remove('show');
-      this.currentQuestion++;
-      this.loadQuestion();
-    }, 3000);
-  }
+            const how = [
+              "Solve evidence tasks by DOING the math:",
+              "• MEDIAN — tap/drag numbers to sort them, find the middle",
+              "• RANGE — drag the min & max markers, submit max − min",
+              "• OUTLIER — click the point that doesn't fit the cluster",
+              "• MODE — click the value that appears most often",
+              "",
+              "Keys: ◄ ► adjust · Enter/Space submit · touch & drag too",
+              "12 cases · 3 lives · combo bonus · win at 60%+",
+            ];
+            this.add
+              .text(W / 2, 300, how.join("\n"), {
+                fontFamily: FONT,
+                fontSize: "18px",
+                color: C.text,
+                align: "center",
+                lineSpacing: 8,
+              })
+              .setOrigin(0.5);
 
-  awardXP(amount) {
-    this.player.xp += amount;
-    const prevLevel = this.player.level;
-    while (this.player.xp >= 100 + (this.player.level - 1) * 150) {
-      this.player.xp -= 100 + (this.player.level - 1) * 150;
-      this.player.level++;
-    }
-    if (this.player.level > prevLevel) {
-      this.showLevelUp();
-    }
-    this.updateUI();
-    this.saveProgress();
-  }
+            const diffs = [
+              { label: "ROOKIE", d: 0, x: W / 2 - 200 },
+              { label: "DETECTIVE", d: 1, x: W / 2 },
+              { label: "PROFILER", d: 2, x: W / 2 + 200 },
+            ];
+            diffs.forEach((df) => this.makeBtn(df.x, 470, df.label, df.d));
 
-  showLevelUp() {
-    // Premium animation toast
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-      position:fixed;top:20px;right:20px;background:linear-gradient(135deg,var(--accent-gold),var(--accent-teal));
-      color:#000;padding:20px 24px;border-radius:var(--radius-xl);font-weight:800;font-size:18px;
-      box-shadow:var(--shadow-glow);z-index:1000;animation:levelUp 0.6s cubic-bezier(0.4,0,0.2,1);
-    `;
-    toast.textContent = `Level Up! 🎖️ Level ${this.player.level}`;
-    toast.innerHTML += '<div style="font-size:12px;margin-top:8px;">New missions unlocked</div>';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
-  }
+            this.add
+              .text(W / 2, 540, "Choose a difficulty to begin", {
+                fontFamily: FONT,
+                fontSize: "15px",
+                color: C.dim,
+              })
+              .setOrigin(0.5);
 
-  completeMission() {
-    this.player.completedMissions.push(this.currentMission);
-    this.awardXP(500);
-    setTimeout(() => {
-      alert('Mission Complete! 🌟\n+500 XP Bonus\nNew missions unlocked');
-      this.endGame();
-    }, 500);
-  }
+            // keyboard: 1/2/3
+            this.input.keyboard.on("keydown-ONE", () => this.go(0));
+            this.input.keyboard.on("keydown-TWO", () => this.go(1));
+            this.input.keyboard.on("keydown-THREE", () => this.go(2));
+          }
+          makeBtn(x, y, label, d) {
+            const w = 170,
+              h = 56;
+            const c = this.add.container(x, y);
+            const bg = this.add
+              .rectangle(0, 0, w, h, C.panel2)
+              .setStrokeStyle(2, C.accent);
+            const t = this.add
+              .text(0, -8, label, {
+                fontFamily: FONT,
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            const sub = this.add
+              .text(0, 15, "Lv " + (d + 1), {
+                fontFamily: FONT,
+                fontSize: "12px",
+                color: C.dim,
+              })
+              .setOrigin(0.5);
+            c.add([bg, t, sub]);
+            bg.setInteractive({ useHandCursor: true });
+            bg.on("pointerover", () => bg.setFillStyle(C.chipHi));
+            bg.on("pointerout", () => bg.setFillStyle(C.panel2));
+            bg.on("pointerdown", () => {
+              SFX.play("click");
+              this.go(d);
+            });
+          }
+          go(d) {
+            SFX.play("whoosh");
+            this.scene.start("Game", { diff: d });
+          }
+        }
 
-  endGame() {
-    this.showScreen('home');
-    this.saveProgress();
-  }
-}
+        /* =========================================================
+           GAME SCENE
+           ========================================================= */
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("Game");
+          }
+          init(data) {
+            this.diff = data && typeof data.diff === "number" ? data.diff : 0;
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.score = 0;
+            this.combo = 0;
+            this.lives = 3;
+            this.idx = 0;
+            this.locked = false;
+            this.tasks = buildTasks(this.diff, 12);
+            this.activeRefs = []; // destroyable objects per task
 
-// CSS for level up animation (add to <style>)
-const style = document.createElement('style');
-style.textContent = `
-@keyframes levelUp {
-  0% {transform:translateX(100%) scale(0.8);opacity:0;}
-  100% {transform:translateX(0) scale(1);opacity:1;}
-}
-`;
-document.head.appendChild(style);
+            this.drawFrame();
+            this.drawHUD();
+            this.loadTask();
+          }
 
-// Initialize game
-const game = new GameManager();
-</script>
+          drawFrame() {
+            const g = this.add.graphics();
+            g.lineStyle(1, 0x16263f, 0.7);
+            for (let x = 0; x <= W; x += 48) g.lineBetween(x, 0, x, H);
+            for (let y = 0; y <= H; y += 48) g.lineBetween(0, y, W, y);
+            // top bar
+            this.add.rectangle(W / 2, 34, W, 68, C.panel).setOrigin(0.5);
+            this.add.rectangle(W / 2, 68, W, 2, C.line).setOrigin(0.5);
+          }
+
+          drawHUD() {
+            this.scoreT = this.add.text(20, 16, "SCORE 0", {
+              fontFamily: FONT,
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            });
+            this.comboT = this.add.text(20, 42, "", {
+              fontFamily: FONT,
+              fontSize: "14px",
+              color: "#fbbf24",
+            });
+            this.caseT = this.add
+              .text(W / 2, 28, "", {
+                fontFamily: FONT,
+                fontSize: "18px",
+                fontStyle: "bold",
+                color: C.text,
+              })
+              .setOrigin(0.5);
+            this.livesT = this.add
+              .text(W - 20, 28, "", {
+                fontFamily: FONT,
+                fontSize: "22px",
+                color: "#f87171",
+              })
+              .setOrigin(1, 0.5);
+            this.updateHUD();
+          }
+          updateHUD() {
+            this.scoreT.setText("SCORE " + this.score);
+            this.comboT.setText(this.combo > 1 ? "COMBO x" + this.combo : "");
+            this.caseT.setText(
+              "CASE " + (this.idx + 1) + " / " + this.tasks.length,
+            );
+            this.livesT.setText(
+              "❤".repeat(this.lives) + "·".repeat(3 - this.lives),
+            );
+          }
+
+          clearTask() {
+            this.activeRefs.forEach((o) => {
+              if (o && o.destroy) o.destroy();
+            });
+            this.activeRefs = [];
+            if (this.input.keyboard) this.input.keyboard.removeAllListeners();
+          }
+          reg(o) {
+            this.activeRefs.push(o);
+            return o;
+          }
+
+          loadTask() {
+            this.clearTask();
+            this.locked = false;
+            this.updateHUD();
+            if (this.idx >= this.tasks.length) {
+              this.finish();
+              return;
+            }
+            const task = this.tasks[this.idx];
+            // context strip
+            this.reg(
+              this.add
+                .text(W / 2, 96, "🧪 EVIDENCE: " + task.ctx, {
+                  fontFamily: FONT,
+                  fontSize: "17px",
+                  color: "#35c2ff",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0.5),
+            );
+            // re-bind global keys for submit
+            this.input.keyboard.on("keydown-ENTER", () => this.tryKeySubmit());
+            this.input.keyboard.on("keydown-SPACE", () => this.tryKeySubmit());
+
+            if (task.type === "median") this.buildMedian(task);
+            else if (task.type === "range") this.buildRange(task);
+            else if (task.type === "outlier") this.buildOutlier(task);
+            else if (task.type === "mode") this.buildMode(task);
+          }
+
+          tryKeySubmit() {
+            if (this._keySubmit) this._keySubmit();
+          }
+
+          /* ---------- shared submit button ---------- */
+          makeSubmit(label, cb) {
+            const c = this.reg(this.add.container(W / 2, H - 48));
+            const bg = this.add
+              .rectangle(0, 0, 230, 56, C.accentDk)
+              .setStrokeStyle(2, C.accent);
+            const t = this.add
+              .text(0, 0, label || "CONFIRM ✓", {
+                fontFamily: FONT,
+                fontSize: "22px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            c.add([bg, t]);
+            bg.setInteractive({ useHandCursor: true });
+            bg.on("pointerover", () => bg.setFillStyle(C.chipHi));
+            bg.on("pointerout", () => bg.setFillStyle(C.accentDk));
+            bg.on("pointerdown", () => {
+              SFX.play("click");
+              cb();
+            });
+            this._keySubmit = cb;
+            return c;
+          }
+
+          /* ---------- feedback / scoring ---------- */
+          resolve(correct, msg) {
+            if (this.locked) return;
+            this.locked = true;
+            this._keySubmit = null;
+            if (correct) {
+              this.combo++;
+              const pts = 100 + (this.combo > 1 ? this.combo * 20 : 0);
+              this.score += pts;
+              SFX.play(this.combo > 2 ? "combo" : "correct");
+              this.flash("✓ " + (msg || "Correct!") + "  +" + pts, C.good);
+            } else {
+              this.combo = 0;
+              this.lives--;
+              SFX.play("wrong");
+              this.flash("✗ " + (msg || "Not quite"), C.bad);
+            }
+            this.updateHUD();
+            this.time.delayedCall(1350, () => {
+              if (this.lives <= 0) {
+                this.finish();
+              } else {
+                this.idx++;
+                this.loadTask();
+              }
+            });
+          }
+          flash(text, color) {
+            const band = this.reg(
+              this.add.rectangle(W / 2, H / 2, W, 80, color, 0.16),
+            );
+            const t = this.reg(
+              this.add
+                .text(W / 2, H / 2, text, {
+                  fontFamily: FONT,
+                  fontSize: "30px",
+                  fontStyle: "bold",
+                  color: color === C.good ? "#4ade80" : "#f87171",
+                })
+                .setOrigin(0.5),
+            );
+            t.setScale(0.6);
+            this.tweens.add({
+              targets: t,
+              scale: 1,
+              duration: 220,
+              ease: "Back.Out",
+            });
+          }
+
+          /* =====================================================
+             MEDIAN TASK — drag chips into ascending order
+             ===================================================== */
+          buildMedian(task) {
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Drag the numbers into ASCENDING order, then CONFIRM.\nThe middle value is the MEDIAN.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            const n = task.values.length;
+            const chipW = Math.min(96, Math.floor((W - 80) / n) - 8);
+            const gap = 12;
+            const totalW = n * chipW + (n - 1) * gap;
+            const startX = (W - totalW) / 2 + chipW / 2;
+            const slotY = 300;
+
+            // slot positions
+            const slotX = [];
+            for (let i = 0; i < n; i++) slotX.push(startX + i * (chipW + gap));
+
+            // slot backgrounds
+            slotX.forEach((sx, i) => {
+              this.reg(
+                this.add
+                  .rectangle(sx, slotY, chipW, 70, 0x0e1830)
+                  .setStrokeStyle(1, C.line),
+              );
+              this.reg(
+                this.add
+                  .text(sx, slotY + 52, i + 1 + "", {
+                    fontFamily: FONT,
+                    fontSize: "12px",
+                    color: C.dim,
+                  })
+                  .setOrigin(0.5),
+              );
+            });
+
+            // chips placed in shuffled order, mapping slot->chip
+            const order = shuffle(task.values.map((_, i) => i)); // initial slot order of values
+            const chips = [];
+            const self = this;
+
+            // slotOf[i] = chip currently in slot i
+            this.medSlots = new Array(n).fill(null);
+
+            const shown = shuffle(task.values);
+            shown.forEach((val, i) => {
+              const sx = slotX[i];
+              const cont = this.reg(this.add.container(sx, slotY));
+              const bg = this.add
+                .rectangle(0, 0, chipW, 70, C.chip)
+                .setStrokeStyle(2, C.accent);
+              const t = this.add
+                .text(0, 0, val + "", {
+                  fontFamily: FONT,
+                  fontSize: "28px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              cont.add([bg, t]);
+              cont.setSize(chipW, 70);
+              cont.value = val;
+              cont.slot = i;
+              cont._bg = bg;
+              this.medSlots[i] = cont;
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(-chipW / 2, -35, chipW, 70),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              this.input.setDraggable(cont);
+              chips.push(cont);
+            });
+
+            // drag handlers
+            this.input.off("dragstart");
+            this.input.off("drag");
+            this.input.off("dragend");
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked) return;
+              obj.setDepth(10);
+              obj._bg.setStrokeStyle(3, C.warn);
+              SFX.play("click");
+            });
+            this.input.on("drag", (p, obj, dx, dy) => {
+              if (self.locked) return;
+              obj.x = dx;
+              obj.y = dy;
+            });
+            this.input.on("dragend", (p, obj) => {
+              if (self.locked) return;
+              obj.setDepth(1);
+              obj._bg.setStrokeStyle(2, C.accent);
+              // find nearest slot
+              let best = 0,
+                bd = 1e9;
+              for (let i = 0; i < n; i++) {
+                const d = Math.abs(obj.x - slotX[i]);
+                if (d < bd) {
+                  bd = d;
+                  best = i;
+                }
+              }
+              const from = obj.slot;
+              if (best !== from) {
+                // swap chips between slots
+                const other = self.medSlots[best];
+                self.medSlots[best] = obj;
+                self.medSlots[from] = other;
+                obj.slot = best;
+                if (other) {
+                  other.slot = from;
+                  self.tweens.add({
+                    targets: other,
+                    x: slotX[from],
+                    y: slotY,
+                    duration: 160,
+                    ease: "Quad.Out",
+                  });
+                }
+                SFX.play("snap");
+              }
+              self.tweens.add({
+                targets: obj,
+                x: slotX[best],
+                y: slotY,
+                duration: 160,
+                ease: "Quad.Out",
+              });
+            });
+
+            this.makeSubmit("CONFIRM ORDER ✓", () => {
+              if (self.locked) return;
+              const seq = self.medSlots.map((c) => c.value);
+              const sortedOK = seq.every((v, i) => i === 0 || seq[i - 1] <= v);
+              if (!sortedOK) {
+                self.resolve(false, "Not sorted yet — smallest to largest.");
+                return;
+              }
+              // highlight middle
+              const mid = Math.floor(n / 2);
+              const hi = self.medSlots[mid];
+              hi._bg.setStrokeStyle(4, C.good);
+              hi._bg.setFillStyle(0x14532d);
+              self.tweens.add({
+                targets: hi,
+                scale: 1.18,
+                duration: 200,
+                yoyo: true,
+              });
+              self.resolve(true, "Median = " + task.answer);
+            });
+          }
+
+          /* =====================================================
+             RANGE TASK — drag min & max markers on number line
+             ===================================================== */
+          buildRange(task) {
+            const self = this;
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Drag the BLUE marker to the smallest value and the\nORANGE marker to the largest. Range = max − min.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            const lo = 0;
+            const hi = Math.max(...task.values) + 2;
+            const axisY = 360;
+            const x0 = 120,
+              x1 = W - 120;
+            const toX = (v) => x0 + ((v - lo) / (hi - lo)) * (x1 - x0);
+
+            // axis
+            this.reg(
+              this.add.rectangle((x0 + x1) / 2, axisY, x1 - x0, 4, C.line),
+            );
+            for (let v = lo; v <= hi; v++) {
+              const x = toX(v);
+              const tall = v % 5 === 0;
+              this.reg(this.add.rectangle(x, axisY, 2, tall ? 16 : 8, C.line));
+              if (tall)
+                this.reg(
+                  this.add
+                    .text(x, axisY + 22, v + "", {
+                      fontFamily: FONT,
+                      fontSize: "13px",
+                      color: C.dim,
+                    })
+                    .setOrigin(0.5),
+                );
+            }
+
+            // data dots above axis
+            const counts = {};
+            task.values.forEach((v) => {
+              counts[v] = (counts[v] || 0) + 1;
+              const x = toX(v);
+              const y = axisY - 28 - (counts[v] - 1) * 16;
+              this.reg(this.add.circle(x, y, 7, C.accent));
+            });
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  210,
+                  "Data points: " +
+                    task.values
+                      .slice()
+                      .sort((a, b) => a - b)
+                      .join("  "),
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            // markers
+            const mkMarker = (val, color, label, yOff) => {
+              const cont = this.reg(this.add.container(toX(val), axisY + yOff));
+              const tri = this.add.triangle(
+                0,
+                0,
+                -14,
+                16,
+                14,
+                16,
+                0,
+                -4,
+                color,
+              );
+              const lab = this.add
+                .text(0, 30, label, {
+                  fontFamily: FONT,
+                  fontSize: "13px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              const valT = this.add
+                .text(0, -18, val + "", {
+                  fontFamily: FONT,
+                  fontSize: "16px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              cont.add([tri, lab, valT]);
+              cont.value = val;
+              cont._valT = valT;
+              cont.setSize(40, 50);
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(-20, -10, 40, 50),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              this.input.setDraggable(cont);
+              return cont;
+            };
+
+            const minM = mkMarker(lo, C.accent, "MIN", 14);
+            const maxM = mkMarker(hi, C.warn, "MAX", 46);
+            this.rangeMin = minM;
+            this.rangeMax = maxM;
+            this.rangeActive = minM; // for keyboard
+
+            const snap = (cont, yBase) => {
+              let v = Math.round(lo + ((cont.x - x0) / (x1 - x0)) * (hi - lo));
+              v = Phaser.Math.Clamp(v, lo, hi);
+              cont.value = v;
+              cont.x = toX(v);
+              cont.y = axisY + yBase;
+              cont._valT.setText(v + "");
+            };
+
+            this.input.off("dragstart");
+            this.input.off("drag");
+            this.input.off("dragend");
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked) return;
+              self.rangeActive = obj;
+              obj.setDepth(10);
+              SFX.play("click");
+            });
+            this.input.on("drag", (p, obj, dx) => {
+              if (self.locked) return;
+              obj.x = Phaser.Math.Clamp(dx, x0, x1);
+            });
+            this.input.on("dragend", (p, obj) => {
+              if (self.locked) return;
+              obj.setDepth(1);
+              snap(obj, obj === minM ? 14 : 46);
+              SFX.play("snap");
+            });
+
+            // keyboard nudge
+            this.input.keyboard.on("keydown-ONE", () => {
+              self.rangeActive = minM;
+            });
+            this.input.keyboard.on("keydown-TWO", () => {
+              self.rangeActive = maxM;
+            });
+            const nudge = (d) => {
+              if (self.locked) return;
+              const m = self.rangeActive;
+              m.value = Phaser.Math.Clamp(m.value + d, lo, hi);
+              m.x = toX(m.value);
+              m._valT.setText(m.value + "");
+              SFX.play("snap");
+            };
+            this.input.keyboard.on("keydown-LEFT", () => nudge(-1));
+            this.input.keyboard.on("keydown-RIGHT", () => nudge(1));
+
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  axisY + 86,
+                  "Tip: keys 1=MIN 2=MAX, ◄ ► to nudge",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "13px",
+                    color: C.dim,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            this.makeSubmit("SUBMIT RANGE ✓", () => {
+              if (self.locked) return;
+              const placedMin = minM.value;
+              const placedMax = maxM.value;
+              const userRange = placedMax - placedMin;
+              if (placedMin === task.min && placedMax === task.max) {
+                self.resolve(
+                  true,
+                  "Range = " +
+                    task.max +
+                    " − " +
+                    task.min +
+                    " = " +
+                    task.answer,
+                );
+              } else {
+                self.resolve(
+                  false,
+                  "Markers off. Answer: " +
+                    task.max +
+                    " − " +
+                    task.min +
+                    " = " +
+                    task.answer,
+                );
+              }
+            });
+          }
+
+          /* =====================================================
+             OUTLIER TASK — click the point off the cluster
+             ===================================================== */
+          buildOutlier(task) {
+            const self = this;
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Click the data point that does NOT fit the cluster.\nThat's the OUTLIER.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            const lo = Math.min(...task.values) - 1;
+            const hi = Math.max(...task.values) + 1;
+            const axisY = 380;
+            const x0 = 90,
+              x1 = W - 90;
+            const toX = (v) => x0 + ((v - lo) / (hi - lo)) * (x1 - x0);
+
+            this.reg(
+              this.add.rectangle((x0 + x1) / 2, axisY, x1 - x0, 4, C.line),
+            );
+            for (let v = lo; v <= hi; v++) {
+              const x = toX(v);
+              this.reg(this.add.rectangle(x, axisY, 2, 10, C.line));
+              if (v % 2 === 0)
+                this.reg(
+                  this.add
+                    .text(x, axisY + 20, v + "", {
+                      fontFamily: FONT,
+                      fontSize: "12px",
+                      color: C.dim,
+                    })
+                    .setOrigin(0.5),
+                );
+            }
+
+            const counts = {};
+            task.values.forEach((v) => {
+              counts[v] = (counts[v] || 0) + 1;
+              const x = toX(v);
+              const y = axisY - 26 - (counts[v] - 1) * 26;
+              const dot = this.reg(this.add.circle(x, y, 14, C.accent));
+              dot.value = v;
+              dot.setInteractive({ useHandCursor: true });
+              dot.on("pointerover", () => {
+                if (!self.locked) dot.setScale(1.25);
+              });
+              dot.on("pointerout", () => dot.setScale(1));
+              dot.on("pointerdown", () => {
+                if (self.locked) return;
+                SFX.play("click");
+                if (dot.value === task.answer) {
+                  dot.setFillStyle(C.good);
+                  self.resolve(true, "Outlier = " + task.answer);
+                } else {
+                  dot.setFillStyle(C.bad);
+                  self.resolve(
+                    false,
+                    "That's in the cluster. Outlier was " + task.answer,
+                  );
+                }
+              });
+            });
+
+            this._keySubmit = null; // no submit button; pure click
+          }
+
+          /* =====================================================
+             MODE TASK — click the most-frequent value chip
+             ===================================================== */
+          buildMode(task) {
+            const self = this;
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Click the value that appears MOST OFTEN.\nThat's the MODE.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            // show all values as scattered chips
+            const vals = task.values;
+            const n = vals.length;
+            const cols = Math.min(5, n);
+            const rows = Math.ceil(n / cols);
+            const cw = 110,
+              ch = 70,
+              gx = 18,
+              gy = 18;
+            const gridW = cols * cw + (cols - 1) * gx;
+            const startX = (W - gridW) / 2 + cw / 2;
+            const startY = 250;
+
+            vals.forEach((val, i) => {
+              const r = Math.floor(i / cols);
+              const cInRow = r === rows - 1 ? n - cols * (rows - 1) : cols; // last row count
+              const rowW = cInRow * cw + (cInRow - 1) * gx;
+              const rowStartX = (W - rowW) / 2 + cw / 2;
+              const cx = rowStartX + (i - r * cols) * (cw + gx);
+              const cy = startY + r * (ch + gy);
+
+              const cont = this.reg(this.add.container(cx, cy));
+              const bg = this.add
+                .rectangle(0, 0, cw, ch, C.chip)
+                .setStrokeStyle(2, C.accent);
+              const t = this.add
+                .text(0, 0, val + "", {
+                  fontFamily: FONT,
+                  fontSize: "30px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              cont.add([bg, t]);
+              cont.value = val;
+              cont.setSize(cw, ch);
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(-cw / 2, -ch / 2, cw, ch),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              cont.input.cursor = "pointer";
+              cont.on("pointerover", () => {
+                if (!self.locked) bg.setFillStyle(C.chipHi);
+              });
+              cont.on("pointerout", () => bg.setFillStyle(C.chip));
+              cont.on("pointerdown", () => {
+                if (self.locked) return;
+                SFX.play("click");
+                if (cont.value === task.answer) {
+                  // highlight all matching
+                  self.activeRefs.forEach((o) => {
+                    if (o && o.value === task.answer && o._isModeChip)
+                      o.list[0]
+                        .setFillStyle(0x14532d)
+                        .setStrokeStyle(3, C.good);
+                  });
+                  bg.setFillStyle(0x14532d).setStrokeStyle(3, C.good);
+                  self.resolve(true, "Mode = " + task.answer);
+                } else {
+                  bg.setFillStyle(C.bad);
+                  self.resolve(
+                    false,
+                    "Count them again. Mode was " + task.answer,
+                  );
+                }
+              });
+              cont._isModeChip = true;
+            });
+
+            this._keySubmit = null;
+          }
+
+          /* ---------- end ---------- */
+          finish() {
+            this.scene.start("Results", {
+              score: this.score,
+              total: this.tasks.length,
+              solved: this.idx,
+              lives: this.lives,
+              diff: this.diff,
+            });
+          }
+        }
+
+        /* =========================================================
+           RESULTS SCENE
+           ========================================================= */
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+          init(data) {
+            this.data = data || {};
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(C.bg);
+            const d = this.data;
+            const total = d.total || 12;
+            const maxScore = total * 100;
+            const pct = maxScore ? Math.round((d.score / maxScore) * 100) : 0;
+            const win = pct >= 60;
+
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: d.score,
+                  maxScore: maxScore,
+                  percent: pct,
+                  standard: "6.SP.B.5",
+                });
+            } catch (e) {}
+
+            const g = this.add.graphics();
+            g.lineStyle(1, 0x16263f, 0.7);
+            for (let x = 0; x <= W; x += 48) g.lineBetween(x, 0, x, H);
+            for (let y = 0; y <= H; y += 48) g.lineBetween(0, y, W, y);
+
+            this.add
+              .text(W / 2, 120, win ? "🏆 CASE CLOSED" : "🔍 CASE REOPENED", {
+                fontFamily: FONT,
+                fontSize: "46px",
+                fontStyle: "bold",
+                color: win ? "#4ade80" : "#fbbf24",
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(
+                W / 2,
+                185,
+                win
+                  ? "You cracked the forensic data! Detective rank earned."
+                  : "Evidence inconclusive — review the measures and retry.",
+                {
+                  fontFamily: FONT,
+                  fontSize: "18px",
+                  color: C.text,
+                },
+              )
+              .setOrigin(0.5);
+
+            const lines = [
+              "Final Score:   " + d.score,
+              "Accuracy:      " + pct + "%   (need 60% to win)",
+              "Lives left:    " + (d.lives || 0) + " / 3",
+            ];
+            this.add
+              .text(W / 2, 290, lines.join("\n"), {
+                fontFamily: FONT,
+                fontSize: "22px",
+                color: C.text,
+                align: "center",
+                lineSpacing: 12,
+              })
+              .setOrigin(0.5);
+
+            this.makeBtn(W / 2 - 130, 430, "PLAY AGAIN", () => {
+              SFX.play("click");
+              this.scene.start("Game", { diff: d.diff || 0 });
+            });
+            this.makeBtn(W / 2 + 130, 430, "MAIN MENU", () => {
+              SFX.play("click");
+              this.scene.start("Title");
+            });
+
+            this.add
+              .text(W / 2, 510, "Press Enter to play again", {
+                fontFamily: FONT,
+                fontSize: "14px",
+                color: C.dim,
+              })
+              .setOrigin(0.5);
+            this.input.keyboard.on("keydown-ENTER", () => {
+              this.scene.start("Game", { diff: d.diff || 0 });
+            });
+            if (win) SFX.play("levelup");
+          }
+          makeBtn(x, y, label, cb) {
+            const c = this.add.container(x, y);
+            const bg = this.add
+              .rectangle(0, 0, 210, 56, C.accentDk)
+              .setStrokeStyle(2, C.accent);
+            const t = this.add
+              .text(0, 0, label, {
+                fontFamily: FONT,
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            c.add([bg, t]);
+            bg.setInteractive({ useHandCursor: true });
+            bg.on("pointerover", () => bg.setFillStyle(C.chipHi));
+            bg.on("pointerout", () => bg.setFillStyle(C.accentDk));
+            bg.on("pointerdown", cb);
+          }
+        }
+
+        /* =========================================================
+           LAUNCH
+           ========================================================= */
+        new Phaser.Game({
+          type: Phaser.AUTO,
+          width: W,
+          height: H,
+          parent: document.body,
+          backgroundColor: "#0a0f1e",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          scene: [BootScene, TitleScene, GameScene, ResultsScene],
+          input: { touch: true },
+        });
+      })();
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

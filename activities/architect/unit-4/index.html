@@ -1,0 +1,2160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 4 — Greenway Park Commission | Rates, Percents &amp; Conversions
+      (6.RP.A.3)
+    </title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px 16px 72px;
+      }
+
+      /* ── Learning target ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #eef1ff;
+        background:
+          radial-gradient(
+            1100px 280px at 82% -40%,
+            rgba(51, 214, 166, 0.4),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #0b3c78, #0b1230);
+        border: 1px solid rgba(108, 140, 255, 0.35);
+      }
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #9fffd6;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 66ch;
+        color: #c9e8ff;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #e9ecff;
+      }
+
+      /* ── Design-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #d7eefc;
+        background: rgba(51, 214, 166, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9fffd6;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
+        font-weight: 700;
+        color: #eef1ff;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #33d6a6, #6c8cff);
+        transition: width 0.3s ease;
+      }
+
+      /* ── Cards / tasks ── */
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+      }
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Blueprint ── */
+      .bp {
+        background: #0b1230;
+        border: 1px solid rgba(108, 140, 255, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-grid {
+        stroke: rgba(108, 140, 255, 0.22);
+      }
+      .bp-edge {
+        fill: none;
+        stroke: #9fc0ff;
+        stroke-width: 2;
+      }
+      .bp-dim {
+        stroke: #ffcc66;
+        stroke-width: 1.2;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #9fc0ff;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .bp-dimtext {
+        fill: #ffcc66;
+        font:
+          700 12px ui-monospace,
+          monospace;
+      }
+      .bp-label {
+        fill: #eef1ff;
+        font:
+          700 14px system-ui,
+          sans-serif;
+      }
+      .bp-sub {
+        fill: #b9c4ee;
+        font:
+          600 11px system-ui,
+          sans-serif;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 150px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(56, 189, 248, 0.12);
+        border: 1px solid rgba(56, 189, 248, 0.5);
+      }
+      .lvl2 .pill {
+        background: #0277b3;
+      }
+      .lvl3 {
+        background: rgba(255, 204, 102, 0.14);
+        border: 1px solid rgba(255, 204, 102, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Sliders / interactive lab ── */
+      .lab-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 12px 0;
+        flex-wrap: wrap;
+      }
+      .lab-row label {
+        font-weight: 700;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--nt-accent);
+      }
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 22px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+      .verdict {
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+      }
+      .verdict.ok {
+        background: rgba(51, 214, 166, 0.14);
+        color: #0f9d6b;
+      }
+      .verdict.bad {
+        background: rgba(255, 107, 129, 0.14);
+        color: #d23f54;
+      }
+
+      /* ── Material chooser ── */
+      .matgrid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
+      }
+      @media (max-width: 560px) {
+        .matgrid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .matcard {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      .matcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.2);
+      }
+      .matcard .sw {
+        height: 40px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .matcard b {
+        font-size: 15px;
+      }
+      .matcard small {
+        color: var(--nt-muted);
+      }
+
+      /* ── Conversion table ── */
+      table.bt {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      table.bt th,
+      table.bt td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
+        text-align: left;
+        font-size: 15px;
+      }
+      table.bt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+
+      /* ── Reflection ── */
+      .reflection-wrap label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .reflection-wrap textarea {
+        font: inherit;
+        font-size: 17px;
+        width: 100%;
+        min-height: 110px;
+        padding: 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        resize: vertical;
+      }
+      .deliverable {
+        margin-top: 14px;
+        font-size: 16px;
+        border-left: 4px solid var(--nt-accent);
+        padding-left: 12px;
+        color: var(--nt-muted);
+      }
+      .deliverable strong {
+        color: var(--nt-text);
+      }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        margin-top: 6px;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 480px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      #ntkit {
+        margin-top: 18px;
+      }
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn {
+          display: none !important;
+        }
+        .wrap {
+          padding-bottom: 0;
+        }
+        .card {
+          break-inside: avoid;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+
+  <body class="nt-theme-aware">
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <div class="wrap">
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>
+            I can use a <strong>unit rate</strong> (amount per 1 unit) to solve
+            real measurement problems.
+          </li>
+          <li>
+            I can find a <strong>percent of a quantity</strong> and a
+            <strong>percent of change</strong>.
+          </li>
+          <li>
+            I can <strong>convert measurement units</strong> (metric and
+            customary) using ratio reasoning.
+          </li>
+          <li>
+            I can read an engineering drawing and use rates, percents, and
+            conversions to make a build decision.
+          </li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.RP.A.3 (a–d)</span>
+          <span>Time: ~40 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Engineering Brief."
+              Preview the three tools students must move between fluidly: unit
+              rates (per 1), percents (of a quantity and percent change), and
+              measurement conversions via ratio reasoning.
+            </li>
+            <li>
+              <strong>Design work (25–30 min):</strong> Students work the ramp,
+              tank, conversion, and budget questions in order, then make a
+              stamped recommendation that integrates all three skills.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Compare flow-rate reasoning
+              in Q4.1 and the percent-over result in the budget — both are
+              unit-rate comparisons in disguise.
+            </li>
+          </ul>
+          <h3>Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1.1 — Ramp grade:</strong> 1.5 ÷ 12 × 100 =
+              <strong>12.5%</strong>. This FAILS the 8.33% (1:12) ADA limit.
+            </li>
+            <li>
+              <strong>Q1.2 — Required run:</strong> 30 in ÷ 12 = 2.5 ft of rise;
+              at 1:12, run = 12 × 2.5 = <strong>30 ft</strong>.
+            </li>
+            <li>
+              <strong>Q2.1 — Drain time:</strong> 2,400 L ÷ 15 L/min =
+              <strong>160 minutes</strong>.
+            </li>
+            <li>
+              <strong>Q2.2 — Net fill rate:</strong> 20 in − 15 out =
+              <strong>5 L/min</strong> net filling.
+            </li>
+            <li>
+              <strong>Q3.1 — Tank in gallons:</strong> 2,400 ÷ 3.785 ≈
+              <strong>634 gallons</strong>.
+            </li>
+            <li>
+              <strong>Q3.2 — Footing in gallons:</strong> 40 ft³ × 7.48 gal/ft³
+              = <strong>299.2 gallons</strong>.
+            </li>
+            <li>
+              <strong>Q4.1 — Faster pump:</strong> A = 360 ÷ 24 = 15 L/min; B =
+              200 ÷ 16 = 12.5 L/min, so <strong>Pump A</strong> is faster.
+            </li>
+            <li>
+              <strong>Q5.1 — Percent of budget:</strong> 0.45 × 8,000 =
+              <strong>$3,600</strong>.
+            </li>
+            <li>
+              <strong>Q5.2 — Percent over budget:</strong> overage = 4,320 −
+              3,600 = 720; 720 ÷ 3,600 × 100 = <strong>20% over</strong>.
+            </li>
+          </ul>
+          <h3>Common Misconceptions</h3>
+          <ul>
+            <li>
+              Forgetting to ×100 when turning a ratio (1.5 ÷ 12) into a percent.
+            </li>
+            <li>
+              Dividing by the wrong conversion factor — keep units in the ratio
+              (L ÷ L/gal → gal) to self-check.
+            </li>
+            <li>
+              Computing percent change off the new value instead of the original
+              (use the original budget as the base in Q5.2).
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>
+            CCSS <strong>6.RP.A.3 (a–d)</strong> — Use ratio and rate reasoning
+            to solve real-world problems, including unit rates, percents, and
+            measurement-unit conversions.
+          </p>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag"
+          >Unit 4 · Math Architect · Rates, Percents &amp; Conversions
+          (6.RP.A.3)</span
+        >
+        <h1>Design Challenge: The Greenway Park Commission</h1>
+        <p class="lede">
+          The city hired your engineering firm to design
+          <strong>Greenway Park</strong>: an accessible entry ramp, a rainwater
+          tank with an irrigation pump, and a native-plant budget. Every
+          decision runs on the same three tools — <strong>unit rates</strong>,
+          <strong>percents</strong>, and
+          <strong>measurement conversions</strong>. Get the math right and the
+          park gets built. Get it wrong and it fails inspection.
+        </p>
+        <div class="badges">
+          <span class="badge">Standard 6.RP.A.3</span>
+          <span class="badge">Unit Rates</span>
+          <span class="badge">Percent of a Quantity</span>
+          <span class="badge">Measurement Conversion</span>
+          <span class="badge">STEM Design Cycle</span>
+        </div>
+        <div class="cycle">
+          <div><b>1 · Define</b>Read the brief, codes &amp; budget.</div>
+          <div>
+            <b>2 · Measure</b>Read rates &amp; dimensions off each drawing.
+          </div>
+          <div>
+            <b>3 · Calculate</b>Apply rate, percent &amp; conversion math.
+          </div>
+          <div><b>4 · Estimate</b>Turn the math into a build decision.</div>
+          <div><b>5 · Decide</b>Adjust to pass inspection &amp; budget.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Stations approved: <span id="pcount">0</span> / 9
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="9"
+            aria-label="Stations approved"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Engineering Brief</h2>
+        <p>
+          A civil engineer turns goals into measured, code-compliant plans. Work
+          through four design stations. Each gives you a tool, a drawing, and a
+          decision. Then write your stamped recommendation and submit.
+        </p>
+        <div class="grid3" style="margin-top: 14px">
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 1 · Rate</b><br />Size the ramp and pump using unit
+            rates.
+          </div>
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 2 · Percent</b><br />Check grade compliance and
+            budget allocation.
+          </div>
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 3 · Convert</b><br />Switch between metric and
+            customary units.
+          </div>
+        </div>
+        <div class="lvl lvl3" style="margin-top: 14px; margin-bottom: 0">
+          <b>Three tools every engineer uses:</b>&nbsp; Unit rate (amount ÷ 1
+          unit) &nbsp;·&nbsp; Percent (part ÷ whole × 100) &nbsp;·&nbsp;
+          Conversion (× a ratio equal to 1)
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            A <strong>grade</strong> (steepness) is a percent. A
+            <strong>flow rate</strong> is a unit rate. Reading a gauge in
+            liters, gallons, or cubic feet is a conversion. Engineers use these
+            three ideas every day.
+          </p>
+          <span class="es"
+            >Español: Una <strong>pendiente</strong> es un porcentaje. Un
+            <strong>caudal</strong> es una tasa por unidad. Leer un medidor en
+            litros, galones o pies cúbicos es una conversión.</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ STATION 1 · ACCESSIBLE RAMP (PERCENT GRADE) ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Station 1 · The Accessible Ramp
+          <span class="tag-shape">Percent · grade</span>
+        </h2>
+        <p>
+          The entrance sits on a rise. To be wheelchair-accessible (ADA code), a
+          ramp's <strong>grade</strong> — its steepness as a
+          <strong>percent</strong> — must be
+          <strong>no steeper than 8.33%</strong> (a 1 ft rise for every 12 ft of
+          run). Drag the slider; the grade and verdict update live.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              id="rampSvg"
+              viewBox="0 0 360 250"
+              role="img"
+              aria-label="Cross-section of an accessible ramp showing rise over a fixed 12 foot run, with a live grade percent."
+            >
+              <defs>
+                <pattern
+                  id="g18"
+                  width="18"
+                  height="18"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M18 0H0V18"
+                    fill="none"
+                    class="bp-grid"
+                    stroke-width="1"
+                  />
+                </pattern>
+                <marker
+                  id="arrow"
+                  markerWidth="9"
+                  markerHeight="9"
+                  refX="5"
+                  refY="3"
+                  orient="auto"
+                >
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#ffcc66" />
+                </marker>
+              </defs>
+              <rect x="20" y="14" width="324" height="206" fill="url(#g18)" />
+              <line
+                x1="40"
+                y1="200"
+                x2="320"
+                y2="200"
+                stroke="#9fc0ff"
+                stroke-width="2"
+              />
+              <polygon
+                id="rampTri"
+                points="80,200 300,200 300,120"
+                fill="rgba(51,214,166,.22)"
+                stroke="#33d6a6"
+                stroke-width="2"
+              />
+              <line
+                id="rampSurface"
+                x1="80"
+                y1="200"
+                x2="300"
+                y2="120"
+                stroke="#ffcc66"
+                stroke-width="3"
+              />
+              <line
+                x1="80"
+                y1="214"
+                x2="300"
+                y2="214"
+                stroke="#ffcc66"
+                stroke-width="1.2"
+                marker-start="url(#arrow)"
+                marker-end="url(#arrow)"
+              />
+              <text x="190" y="230" text-anchor="middle" class="bp-dimtext">
+                run = 12 ft
+              </text>
+              <line
+                id="riseLine"
+                x1="316"
+                y1="200"
+                x2="316"
+                y2="120"
+                stroke="#ffcc66"
+                stroke-width="1.2"
+                marker-start="url(#arrow)"
+                marker-end="url(#arrow)"
+              />
+              <text
+                id="riseLabel"
+                x="332"
+                y="165"
+                text-anchor="middle"
+                class="bp-dimtext"
+              >
+                rise
+              </text>
+              <text
+                id="gradeOnRamp"
+                x="175"
+                y="165"
+                text-anchor="middle"
+                class="bp-label"
+              >
+                8.3%
+              </text>
+              <circle cx="60" cy="186" r="6" fill="#cfe6ff" />
+              <rect x="56" y="192" width="8" height="8" rx="2" fill="#cfe6ff" />
+            </svg>
+            <div class="bp-cap">
+              <span>Section view · entry ramp</span
+              ><span>run fixed at 12 ft</span>
+            </div>
+          </div>
+          <div>
+            <div class="lab-row">
+              <label for="riseRange">Rise (vertical height)</label>
+              <span class="readout" style="margin: 0; padding: 6px 10px"
+                ><span class="v" id="riseVal">1.0</span>&nbsp;ft</span
+              >
+            </div>
+            <input
+              id="riseRange"
+              type="range"
+              min="0.5"
+              max="2.5"
+              step="0.1"
+              value="1.0"
+              aria-label="Ramp rise in feet"
+            />
+            <p class="scale" style="margin-top: 12px">
+              grade = (rise ÷ run) × 100 = (<span id="formRise">1.0</span> ÷ 12)
+              × 100 = <span id="formGrade">8.3</span>%
+            </p>
+            <div id="rampVerdict" class="verdict ok">
+              ✓ Compliant — within the 8.33% ADA limit.
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                "Per cent" means "per 100." A 8% grade rises 8 ft for every 100
+                ft you travel forward. Grade = rise ÷ run, written as a percent.
+              </p>
+              <span class="es"
+                >Español: "Por ciento" significa "por cada 100." Una pendiente
+                de 8% sube 8 ft por cada 100 ft de avance.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="q" data-q="ramp-grade">
+          <p class="lbl">
+            Q1.1 — The crew measured a <strong>rise of 1.5 ft</strong> over the
+            <strong>12 ft run</strong>. What is the grade, as a percent? (Round
+            to the nearest tenth.)
+          </p>
+          <div class="row">
+            <input
+              type="text"
+              inputmode="decimal"
+              id="q-ramp-grade"
+              data-ans="12.5"
+              data-tol="0.2"
+              data-why="grade = 1.5 ÷ 12 × 100 = 12.5%. That FAILS the 8.33% limit."
+              aria-label="Ramp grade percent"
+            />
+            <span class="unit">%</span>
+            <button type="button" class="btn" data-check="ramp-grade">
+              Check
+            </button>
+            <button type="button" class="btn ghost" data-hint="ramp-grade">
+              Hint
+            </button>
+          </div>
+          <p class="fb" id="fb-ramp-grade"></p>
+        </div>
+
+        <div class="lvl lvl2">
+          <span class="pill">Level 2 · Enrichment</span>
+          <p>
+            ADA requires a flat landing after <strong>30 in of rise</strong>.
+            The entry rise is 30 in. At the maximum 8.33% grade (a 1:12 ratio),
+            what is the <strong>minimum run, in feet</strong>?
+          </p>
+          <div class="q" data-q="ramp-run" style="margin-top: 10px">
+            <p class="lbl">
+              Q1.2 — Minimum run for a 30 in rise at 8.33% (1:12) grade?
+            </p>
+            <div class="row">
+              <input
+                type="text"
+                inputmode="decimal"
+                id="q-ramp-run"
+                data-ans="30"
+                data-tol="0.5"
+                data-why="30 in ÷ 12 = 2.5 ft of rise. At 1:12, run = 12 × 2.5 = 30 ft."
+                aria-label="Minimum ramp run in feet"
+              />
+              <span class="unit">ft</span>
+              <button type="button" class="btn" data-check="ramp-run">
+                Check
+              </button>
+              <button type="button" class="btn ghost" data-hint="ramp-run">
+                Hint
+              </button>
+            </div>
+            <p class="fb" id="fb-ramp-run"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATION 2 · RAINWATER TANK (UNIT RATE / FLOW) ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Station 2 · Rainwater Tank &amp; Flow Rate
+          <span class="tag-shape">Unit rate</span>
+        </h2>
+        <p>
+          The roof channels rain into a 2,400 L storage tank. The irrigation
+          pump has a <strong>flow rate</strong> — a unit rate in liters per
+          minute (L/min). Size the system so the tank drains on schedule.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 250"
+              role="img"
+              aria-label="Schematic of a roof catchment feeding a 2400 liter tank with a fill gauge and an outlet pump rated at 15 liters per minute."
+            >
+              <rect x="20" y="14" width="324" height="206" fill="url(#g18)" />
+              <polyline
+                points="40,60 130,34 130,60"
+                fill="none"
+                stroke="#9fc0ff"
+                stroke-width="3"
+              />
+              <line
+                x1="130"
+                y1="60"
+                x2="200"
+                y2="96"
+                stroke="#9fc0ff"
+                stroke-width="3"
+              />
+              <text x="70" y="52" class="bp-sub" fill="#b9c4ee">
+                roof catchment
+              </text>
+              <rect
+                x="190"
+                y="70"
+                width="120"
+                height="140"
+                rx="8"
+                fill="none"
+                stroke="#33d6a6"
+                stroke-width="2"
+              />
+              <rect
+                x="193"
+                y="135"
+                width="114"
+                height="72"
+                fill="rgba(108,140,255,.4)"
+              />
+              <line
+                x1="190"
+                y1="135"
+                x2="310"
+                y2="135"
+                stroke="#9fc0ff"
+                stroke-width="1.5"
+                stroke-dasharray="6 4"
+              />
+              <text x="250" y="180" text-anchor="middle" class="bp-label">
+                1,800 L
+              </text>
+              <text
+                x="250"
+                y="62"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="#b9c4ee"
+              >
+                capacity 2,400 L
+              </text>
+              <line
+                x1="318"
+                y1="70"
+                x2="318"
+                y2="210"
+                stroke="#9fc0ff"
+                stroke-width="1.2"
+              />
+              <text x="324" y="76" class="bp-sub" fill="#9fc0ff">full</text>
+              <text x="324" y="142" class="bp-sub" fill="#9fc0ff">½</text>
+              <text x="324" y="210" class="bp-sub" fill="#9fc0ff">empty</text>
+              <line
+                x1="190"
+                y1="200"
+                x2="120"
+                y2="200"
+                stroke="#ffcc66"
+                stroke-width="3"
+              />
+              <circle
+                cx="104"
+                cy="200"
+                r="15"
+                fill="none"
+                stroke="#ffcc66"
+                stroke-width="2"
+              />
+              <text
+                x="104"
+                y="204"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="#ffcc66"
+              >
+                PUMP
+              </text>
+              <text x="104" y="232" text-anchor="middle" class="bp-dimtext">
+                15 L/min
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Schematic · tank &amp; pump</span
+              ><span>pump = 15 L/min</span>
+            </div>
+          </div>
+          <div>
+            <table class="bt">
+              <thead>
+                <tr>
+                  <th>Time pumping</th>
+                  <th>Liters moved</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2 min</td>
+                  <td>30 L</td>
+                </tr>
+                <tr>
+                  <td>5 min</td>
+                  <td>75 L</td>
+                </tr>
+                <tr>
+                  <td>10 min</td>
+                  <td>150 L</td>
+                </tr>
+                <tr>
+                  <td><strong>1 min (unit rate)</strong></td>
+                  <td><strong>15 L</strong></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="q" data-q="tank-time">
+              <p class="lbl">
+                Q2.1 — At 15 L/min, how many <strong>minutes</strong> to empty
+                the full 2,400 L tank?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-tank-time"
+                  data-ans="160"
+                  data-tol="0.5"
+                  data-why="2,400 L ÷ 15 L/min = 160 minutes."
+                  aria-label="Minutes to empty tank"
+                />
+                <span class="unit">min</span>
+                <button type="button" class="btn" data-check="tank-time">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="tank-time">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-tank-time"></p>
+            </div>
+
+            <div class="q" data-q="tank-net">
+              <p class="lbl">
+                Q2.2 — A storm adds water at 20 L/min while the pump removes 15
+                L/min. What is the <strong>net fill rate</strong> (L/min)?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-tank-net"
+                  data-ans="5"
+                  data-tol="0.2"
+                  data-why="20 in − 15 out = net 5 L/min filling."
+                  aria-label="Net fill rate"
+                />
+                <span class="unit">L/min</span>
+                <button type="button" class="btn" data-check="tank-net">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="tank-net">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-tank-net"></p>
+            </div>
+
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                A unit rate is the amount for <strong>1</strong> unit. Time to
+                empty = total ÷ rate. Net rate = in − out.
+              </p>
+              <span class="es"
+                >Español: Una tasa por unidad es la cantidad por
+                <strong>1</strong>. Tiempo = total ÷ tasa. Tasa neta = entra −
+                sale.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="lvl lvl2">
+          <span class="pill">Level 2 · Enrichment</span>
+          <p>
+            Two pumps are for sale. <strong>Pump A:</strong> 360 L in 24 min.
+            <strong>Pump B:</strong> 200 L in 16 min. Which has the
+            <strong>faster unit rate</strong>? Type <strong>A</strong> or
+            <strong>B</strong>.
+          </p>
+          <div class="q" data-q="pump-pick" style="margin-top: 10px">
+            <p class="lbl">
+              Q2.3 — Which pump is faster — A (360 L in 24 min) or B (200 L in
+              16 min)? Type A or B.
+            </p>
+            <div class="row">
+              <input
+                type="text"
+                id="q-pump-pick"
+                data-ans="A"
+                data-text="1"
+                data-why="A: 360÷24 = 15 L/min. B: 200÷16 = 12.5 L/min. A is faster."
+                aria-label="Faster pump, A or B"
+                style="width: 90px"
+              />
+              <button type="button" class="btn" data-check="pump-pick">
+                Check
+              </button>
+              <button type="button" class="btn ghost" data-hint="pump-pick">
+                Hint
+              </button>
+            </div>
+            <p class="fb" id="fb-pump-pick"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATION 3 · CONVERSION LAB ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Station 3 · Conversion Lab
+          <span class="tag-shape">Measurement conversion</span>
+        </h2>
+        <p>
+          The pump is rated in <strong>liters</strong>, the city bill is in
+          <strong>gallons</strong>, and the contractor pours concrete in
+          <strong>cubic feet</strong>. Convert cleanly between systems.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 150"
+              role="img"
+              aria-label="Conversion ladder linking liters, gallons, and cubic feet with the ratios 3.785 liters equals 1 gallon and 7.48 gallons equals 1 cubic foot."
+            >
+              <defs>
+                <marker
+                  id="arrowConv"
+                  markerWidth="9"
+                  markerHeight="9"
+                  refX="5"
+                  refY="3"
+                  orient="auto"
+                >
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#ffcc66" />
+                </marker>
+                <marker
+                  id="arrowConvR"
+                  markerWidth="9"
+                  markerHeight="9"
+                  refX="1"
+                  refY="3"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#ffcc66" />
+                </marker>
+              </defs>
+              <rect x="10" y="10" width="340" height="130" fill="url(#g18)" />
+              <rect
+                x="20"
+                y="55"
+                width="86"
+                height="48"
+                rx="8"
+                fill="rgba(108,140,255,.3)"
+                stroke="#9fc0ff"
+                stroke-width="2"
+              />
+              <text x="63" y="78" text-anchor="middle" class="bp-label">
+                LITERS
+              </text>
+              <text x="63" y="94" text-anchor="middle" class="bp-sub">
+                metric
+              </text>
+              <rect
+                x="137"
+                y="55"
+                width="86"
+                height="48"
+                rx="8"
+                fill="rgba(51,214,166,.28)"
+                stroke="#33d6a6"
+                stroke-width="2"
+              />
+              <text x="180" y="78" text-anchor="middle" class="bp-label">
+                GALLONS
+              </text>
+              <text x="180" y="94" text-anchor="middle" class="bp-sub">
+                customary
+              </text>
+              <rect
+                x="254"
+                y="55"
+                width="86"
+                height="48"
+                rx="8"
+                fill="rgba(255,204,102,.25)"
+                stroke="#ffcc66"
+                stroke-width="2"
+              />
+              <text x="297" y="78" text-anchor="middle" class="bp-label">
+                CUBIC FT
+              </text>
+              <text x="297" y="94" text-anchor="middle" class="bp-sub">
+                concrete
+              </text>
+              <line
+                x1="109"
+                y1="79"
+                x2="134"
+                y2="79"
+                stroke="#ffcc66"
+                stroke-width="2"
+                marker-start="url(#arrowConvR)"
+                marker-end="url(#arrowConv)"
+              />
+              <text x="121" y="44" text-anchor="middle" class="bp-dimtext">
+                3.785 L = 1 gal
+              </text>
+              <line
+                x1="226"
+                y1="79"
+                x2="251"
+                y2="79"
+                stroke="#ffcc66"
+                stroke-width="2"
+                marker-start="url(#arrowConvR)"
+                marker-end="url(#arrowConv)"
+              />
+              <text x="238" y="44" text-anchor="middle" class="bp-dimtext">
+                7.48 gal = 1 ft³
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Conversion ladder</span><span>× a ratio equal to 1</span>
+            </div>
+          </div>
+          <div>
+            <div class="lvl lvl1" style="margin-top: 0">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                A conversion ratio equals 1, so multiplying never changes the
+                amount — only the unit label. Keep the unit you
+                <em>want</em> on top.
+              </p>
+              <span class="es"
+                >Español: Una razón de conversión es igual a 1. Multiplicar no
+                cambia la cantidad, solo la unidad.</span
+              >
+            </div>
+
+            <div class="q" data-q="conv-gal">
+              <p class="lbl">
+                Q3.1 — The tank holds 2,400 L. Using 3.785 L = 1 gal, about how
+                many <strong>gallons</strong> is that? (Nearest whole gallon.)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-conv-gal"
+                  data-ans="634"
+                  data-tol="2"
+                  data-why="2,400 ÷ 3.785 ≈ 634 gallons."
+                  aria-label="Tank volume in gallons"
+                />
+                <span class="unit">gal</span>
+                <button type="button" class="btn" data-check="conv-gal">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="conv-gal">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-conv-gal"></p>
+            </div>
+
+            <div class="q" data-q="conv-ft3">
+              <p class="lbl">
+                Q3.2 — The concrete footing needs <strong>40 ft³</strong>. Using
+                7.48 gal = 1 ft³, how many <strong>gallons</strong> of volume is
+                that?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-conv-ft3"
+                  data-ans="299.2"
+                  data-tol="0.5"
+                  data-why="40 ft³ × 7.48 gal/ft³ = 299.2 gallons."
+                  aria-label="Concrete volume in gallons"
+                />
+                <span class="unit">gal</span>
+                <button type="button" class="btn" data-check="conv-ft3">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="conv-ft3">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-conv-ft3"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lvl lvl2">
+          <span class="pill">Level 2 · Enrichment</span>
+          <p>
+            The pump moves water at 15 L/min. Write the conversion chain that
+            tells you how many <strong>gallons per minute</strong> that is,
+            using 3.785 L = 1 gal. (Show your ratio multiplication step by
+            step.)
+          </p>
+        </div>
+      </section>
+
+      <!-- ══ STATION 4 · PLANTING BUDGET (PERCENT + LIVE COST) ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Station 4 · Native-Planting Budget
+          <span class="tag-shape">Percent of a whole</span>
+        </h2>
+        <p>
+          The park has an <strong>$8,000</strong> landscaping budget allocated
+          by percent. Read the blueprint pie, verify a dollar amount, then
+          choose a headline tree species and watch the live cost.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 250"
+              role="img"
+              aria-label="Pie chart of the 8000 dollar landscaping budget: trees 45 percent, shrubs 25 percent, groundcover 20 percent, mulch 10 percent."
+            >
+              <rect x="10" y="10" width="340" height="230" fill="url(#g18)" />
+              <!-- center 120,130 r 90. Clockwise from 12 o'clock.
+                   Trees 45% -> 162deg; Shrubs 25% -> 252deg;
+                   Groundcover 20% -> 324deg; Mulch 10% -> 360deg. -->
+              <path
+                d="M120,130 L120,40 A90,90 0 0,1 147.8,215.6 Z"
+                fill="#6c8cff"
+              />
+              <path
+                d="M120,130 L147.8,215.6 A90,90 0 0,1 34.4,157.8 Z"
+                fill="#33d6a6"
+              />
+              <path
+                d="M120,130 L34.4,157.8 A90,90 0 0,1 67.1,57.2 Z"
+                fill="#ffcc66"
+              />
+              <path
+                d="M120,130 L67.1,57.2 A90,90 0 0,1 120,40 Z"
+                fill="#e08a9a"
+              />
+              <circle
+                cx="120"
+                cy="130"
+                r="90"
+                fill="none"
+                stroke="#0b1230"
+                stroke-width="2"
+              />
+              <g font-size="13">
+                <rect x="232" y="58" width="14" height="14" fill="#6c8cff" />
+                <text x="252" y="70" class="bp-label" font-size="13">
+                  Trees 45%
+                </text>
+                <rect x="232" y="92" width="14" height="14" fill="#33d6a6" />
+                <text x="252" y="104" class="bp-label" font-size="13">
+                  Shrubs 25%
+                </text>
+                <rect x="232" y="126" width="14" height="14" fill="#ffcc66" />
+                <text x="252" y="138" class="bp-label" font-size="13">
+                  Ground 20%
+                </text>
+                <rect x="232" y="160" width="14" height="14" fill="#e08a9a" />
+                <text x="252" y="172" class="bp-label" font-size="13">
+                  Mulch 10%
+                </text>
+              </g>
+              <text x="252" y="206" class="bp-dimtext">Budget $8,000</text>
+            </svg>
+            <div class="bp-cap">
+              <span>Budget allocation</span><span>total $8,000</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="trees-amt">
+              <p class="lbl">
+                Q4.1 — <strong>Trees</strong> get 45% of $8,000. How many
+                <strong>dollars</strong> is that?
+              </p>
+              <div class="row">
+                <span class="unit">$</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-trees-amt"
+                  data-ans="3600"
+                  data-tol="1"
+                  data-why="0.45 × 8000 = $3,600."
+                  aria-label="Tree budget dollars"
+                />
+                <button type="button" class="btn" data-check="trees-amt">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="trees-amt">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-trees-amt"></p>
+            </div>
+
+            <h3>Choose a headline tree species</h3>
+            <div
+              class="matgrid"
+              id="matChooser"
+              role="group"
+              aria-label="Tree species options priced per tree"
+            >
+              <button
+                type="button"
+                class="matcard"
+                data-mat="Red maple"
+                data-price="120"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #c0392b, #e08a9a)"
+                ></div>
+                <b>Red maple</b><br /><small>$120 / tree</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="Live oak"
+                data-price="180"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #2f8f5b, #33d6a6)"
+                ></div>
+                <b>Live oak</b><br /><small>$180 / tree</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="River birch"
+                data-price="90"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #6c8cff, #9b6cff)"
+                ></div>
+                <b>River birch</b><br /><small>$90 / tree</small>
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Species</span><br /><span class="v" id="matName"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">Tree budget</span><br /><span class="v"
+                  >$3,600</span
+                >
+              </div>
+              <div>
+                <span class="k">Trees you can buy</span><br /><span
+                  class="v"
+                  id="matCount"
+                  >—</span
+                >
+              </div>
+            </div>
+            <p class="muted" style="margin-bottom: 0">
+              Trees you can buy =
+              <span class="scale">$3,600 ÷ price per tree</span>
+              (a unit-rate use). Cheaper trees → more trees.
+            </p>
+          </div>
+        </div>
+
+        <div class="lvl lvl2">
+          <span class="pill">Level 2 · Enrichment</span>
+          <p>
+            After bids, trees actually cost <strong>$4,320</strong>. By what
+            <strong>percent</strong> did the tree budget go over its $3,600
+            plan? (Nearest whole percent.)
+          </p>
+          <div class="q" data-q="pct-over" style="margin-top: 10px">
+            <p class="lbl">
+              Q4.2 — Percent over budget: $4,320 actual vs. $3,600 planned.
+            </p>
+            <div class="row">
+              <input
+                type="text"
+                inputmode="decimal"
+                id="q-pct-over"
+                data-ans="20"
+                data-tol="0.5"
+                data-why="Overage = 4320 − 3600 = 720. 720 ÷ 3600 × 100 = 20% over."
+                aria-label="Percent over budget"
+              />
+              <span class="unit">% over</span>
+              <button type="button" class="btn" data-check="pct-over">
+                Check
+              </button>
+              <button type="button" class="btn ghost" data-hint="pct-over">
+                Hint
+              </button>
+            </div>
+            <p class="fb" id="fb-pct-over"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ DELIVERABLE / SIGN-OFF ══ -->
+      <section class="card reflection-wrap" aria-label="Architect sign-off">
+        <h2>Deliverable · Your Stamped Recommendation</h2>
+        <p class="muted" style="margin-top: 0">
+          Engineers don't just compute — they <strong>recommend</strong>. Use
+          your numbers to make the final call.
+        </p>
+        <label for="reflectionText">
+          Write 2–3 sentences: Is the ramp ADA-compliant at the measured 1.5 ft
+          rise? Does the tank/pump system work? Is the tree budget realistic?
+          Cite at least <em>two numbers</em> you calculated (use the words
+          <em>rate</em>, <em>percent</em>, or <em>convert</em>).
+        </label>
+        <textarea
+          id="reflectionText"
+          name="reflection"
+          rows="5"
+          placeholder="Example: The ramp at a 1.5 ft rise over 12 ft has a 12.5% grade, which FAILS the 8.33% ADA limit, so I recommend lengthening the run. The pump empties the 2,400 L tank in 160 minutes…"
+        ></textarea>
+        <p class="deliverable">
+          <strong>Deliverable:</strong> Complete all four stations, write your
+          recommendation above, enter your name in the field below, then press
+          <strong>Submit plan &amp; grade</strong> to save your score as a PDF
+          or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit plan &amp; grade
+        </button>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Greenway Park Commission (6.RP.A.3)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>9 / 9</td>
+                <td>
+                  Computes grade, flow rates, conversions, and percents
+                  correctly, including both enrichment items. Writes a clear,
+                  number-supported recommendation.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>7–8 / 9</td>
+                <td>
+                  Most rate, percent, and conversion items correct with at most
+                  one slip. Reaches a valid build recommendation.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>4–6 / 9</td>
+                <td>
+                  Some items correct but errors show partial understanding
+                  (e.g., inverts a conversion ratio or forgets ×100 for
+                  percent).
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–3 / 9</td>
+                <td>
+                  Few correct. Needs reteaching on unit rate, percent of a
+                  quantity, and converting with ratios.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,%\s]/g, ""));
+        }
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
+        }
+
+        var TREE_BUDGET = 3600;
+
+        /* Auto-graded problems */
+        var problems = [
+          {
+            id: "ramp-grade",
+            ans: "12.5",
+            skill: "Percent: grade from rise/run",
+            prompt: "Ramp grade: 1.5 ÷ 12 × 100",
+          },
+          {
+            id: "ramp-run",
+            ans: "30",
+            skill: "Percent/ratio: 1:12 ramp run",
+            prompt: "Min run for 30 in rise at 8.33%",
+          },
+          {
+            id: "tank-time",
+            ans: "160",
+            skill: "Unit rate: total ÷ rate",
+            prompt: "Minutes to empty 2,400 L at 15 L/min",
+          },
+          {
+            id: "tank-net",
+            ans: "5",
+            skill: "Net rate",
+            prompt: "Net fill rate: 20 in − 15 out",
+          },
+          {
+            id: "pump-pick",
+            ans: "A",
+            skill: "Compare unit rates",
+            prompt: "Faster pump (A: 15 L/min vs B: 12.5 L/min)",
+          },
+          {
+            id: "conv-gal",
+            ans: "634",
+            skill: "Convert L → gal",
+            prompt: "2,400 L ÷ 3.785 L/gal",
+          },
+          {
+            id: "conv-ft3",
+            ans: "299.2",
+            skill: "Convert ft³ → gal",
+            prompt: "40 ft³ × 7.48 gal/ft³",
+          },
+          {
+            id: "trees-amt",
+            ans: "3600",
+            skill: "Percent of a quantity",
+            prompt: "45% of $8,000",
+          },
+          {
+            id: "pct-over",
+            ans: "20",
+            skill: "Percent of change",
+            prompt: "$720 over $3,600 plan",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
+        }
+        function isCorrect(id) {
+          var inp = inputFor(id);
+          if (!inp) return false;
+          if (inp.getAttribute("data-text")) {
+            var want = String(inp.getAttribute("data-ans"))
+              .trim()
+              .toLowerCase();
+            return (inp.value || "").trim().toLowerCase() === want;
+          }
+          var got = num(inp.value);
+          var ans = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol")) || 0.5;
+          return !isNaN(got) && Math.abs(got - ans) <= tol;
+        }
+
+        function paint() {
+          var n = 0;
+          problems.forEach(function (p) {
+            if (correct[p.id]) n++;
+          });
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width =
+            (n / problems.length) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var inp = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          if (inp) {
+            inp.classList.toggle("ok", ok);
+            inp.classList.toggle("bad", !ok);
+          }
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Approved — " + inp.getAttribute("data-why")
+              : "✗ Not yet. Re-read the drawing, set up the rate/percent/ratio, then compute.";
+          }
+          correct[id] = ok;
+          live(ok ? "Station approved." : "Not correct yet, try again.");
+          paint();
+        }
+
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var inp = inputFor(id);
+            var fb = document.getElementById("fb-" + id);
+            if (inp && fb) {
+              fb.className = "fb";
+              fb.textContent =
+                "Hint: " +
+                inp.getAttribute("data-why").split(/[.=]/)[0].trim() +
+                " — set up the relationship first, then plug in the numbers.";
+            }
+          }
+        });
+
+        problems.forEach(function (p) {
+          var inp = inputFor(p.id);
+          if (inp)
+            inp.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                check(p.id);
+              }
+            });
+        });
+
+        /* Station 1: live ramp slider */
+        (function () {
+          var range = document.getElementById("riseRange");
+          var riseVal = document.getElementById("riseVal");
+          var formRise = document.getElementById("formRise");
+          var formGrade = document.getElementById("formGrade");
+          var gradeOnRamp = document.getElementById("gradeOnRamp");
+          var verdict = document.getElementById("rampVerdict");
+          var tri = document.getElementById("rampTri");
+          var surf = document.getElementById("rampSurface");
+          var riseLine = document.getElementById("riseLine");
+          var baseX1 = 80,
+            baseX2 = 300,
+            baseY = 200,
+            pxPerFt = 56;
+
+          function render() {
+            var rise = parseFloat(range.value);
+            var grade = (rise / 12) * 100;
+            riseVal.textContent = rise.toFixed(1);
+            formRise.textContent = rise.toFixed(1);
+            formGrade.textContent = grade.toFixed(1);
+            gradeOnRamp.textContent = grade.toFixed(1) + "%";
+            var topY = baseY - rise * pxPerFt;
+            if (topY < 30) topY = 30;
+            tri.setAttribute(
+              "points",
+              baseX1 +
+                "," +
+                baseY +
+                " " +
+                baseX2 +
+                "," +
+                baseY +
+                " " +
+                baseX2 +
+                "," +
+                topY,
+            );
+            surf.setAttribute("x1", baseX1);
+            surf.setAttribute("y1", baseY);
+            surf.setAttribute("x2", baseX2);
+            surf.setAttribute("y2", topY);
+            riseLine.setAttribute("y1", baseY);
+            riseLine.setAttribute("y2", topY);
+            if (grade <= 8.33) {
+              verdict.className = "verdict ok";
+              verdict.textContent =
+                "✓ Compliant — " +
+                grade.toFixed(1) +
+                "% is within the 8.33% ADA limit.";
+              surf.setAttribute("stroke", "#33d6a6");
+            } else {
+              verdict.className = "verdict bad";
+              verdict.textContent =
+                "✗ Too steep — " +
+                grade.toFixed(1) +
+                "% exceeds the 8.33% ADA limit.";
+              surf.setAttribute("stroke", "#ff6b81");
+            }
+          }
+          range.addEventListener("input", render);
+          render();
+        })();
+
+        /* Station 4: tree species chooser → live count */
+        var matName = document.getElementById("matName");
+        var matCount = document.getElementById("matCount");
+        document
+          .querySelectorAll("#matChooser .matcard")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll("#matChooser .matcard")
+                .forEach(function (b) {
+                  b.setAttribute("aria-pressed", "false");
+                });
+              btn.setAttribute("aria-pressed", "true");
+              var price = num(btn.getAttribute("data-price"));
+              var count = Math.floor(TREE_BUDGET / price);
+              if (matName) matName.textContent = btn.getAttribute("data-mat");
+              if (matCount) matCount.textContent = count + " trees";
+              live(
+                btn.getAttribute("data-mat") +
+                  " selected, " +
+                  count +
+                  " trees.",
+              );
+            });
+          });
+
+        /* Mount NTKit + grade on submit */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var items = problems.map(function (p) {
+              var inp = inputFor(p.id);
+              var sa = inp
+                ? inp.getAttribute("data-text")
+                  ? (inp.value || "").trim()
+                  : String(num(inp.value))
+                : "";
+              return {
+                prompt: p.prompt,
+                studentAnswer: sa,
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
+            });
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-4",
+                activityTitle:
+                  "Unit 4 · Math Architect — Greenway Park Commission (Rates, Percents & Conversion)",
+                standard: "6.RP.A.3",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return (
+                  String(x.studentAnswer).toLowerCase() ===
+                  String(x.correctAnswer).toLowerCase()
+                );
+              }).length;
+              alert(
+                "Plan submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " stations correct.",
+              );
+            }
+          });
+
+        paint();
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

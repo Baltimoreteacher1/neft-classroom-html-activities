@@ -1,872 +1,1122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Variable Velocity: Dependent & Independent | 6.EE.C.9</title>
-<script type="application/json" id="game-config">
-{
-  "schemaVersion": "4.1",
-  "standard": "6.EE.C.9",
-  "title": "Variable Velocity: Dependent & Independent",
-  "theme": "CYBER GRID",
-  "problems": [
-    {"id":"p001","tier":1,"concept":"identify-independent-variable","stem":"A robot charges $8 per hour of work. Which variable is INDEPENDENT?","visual":{"type":"none","data":{}},"choices":[{"value":"Hours worked","correct":true,"misconception":null},{"value":"Total earnings","correct":false,"misconception":"reversed-dependent-independent"},{"value":"Number of robots","correct":false,"misconception":"irrelevant-quantity"},{"value":"Hourly rate","correct":false,"misconception":"constant-as-variable"}],"hints":{"conceptual":"The independent variable is the one YOU choose or control.","procedural":"Step 1: Ask 'What do I decide first?' Step 2: That quantity is independent."},"workedExample":"You decide how many hours to work. Earnings DEPEND on hours. So hours = independent. If hours = 4, earnings = 8 × ___","workedExampleAnswer":"4"},
-    {"id":"p002","tier":1,"concept":"identify-dependent-variable","stem":"A drone flies 15 kilometers per minute. Which variable is DEPENDENT?","visual":{"type":"none","data":{}},"choices":[{"value":"Total distance flown","correct":true,"misconception":null},{"value":"Minutes flown","correct":false,"misconception":"reversed-dependent-independent"},{"value":"Speed of the drone","correct":false,"misconception":"constant-as-variable"},{"value":"Number of drones","correct":false,"misconception":"irrelevant-quantity"}],"hints":{"conceptual":"The dependent variable DEPENDS on — or changes because of — the other variable.","procedural":"Step 1: Ask 'What changes as a result?' Step 2: That quantity is dependent."},"workedExample":"Minutes flown is chosen. Distance RESULTS from time. distance = 15 × minutes. If minutes = 3, distance = 15 × ___","workedExampleAnswer":"3"},
-    {"id":"p003","tier":1,"concept":"write-equation","stem":"A server downloads 25 megabytes per second. Let t = seconds and d = total MB downloaded. Which equation is correct?","visual":{"type":"none","data":{}},"choices":[{"value":"d = 25t","correct":true,"misconception":null},{"value":"t = 25d","correct":false,"misconception":"reversed-dependent-independent"},{"value":"d = t + 25","correct":false,"misconception":"added-instead-of-multiplied"},{"value":"d = 25 ÷ t","correct":false,"misconception":"divided-instead-of-multiplied"}],"hints":{"conceptual":"The dependent variable = rate × independent variable.","procedural":"Step 1: d depends on t. Step 2: Rate is 25 MB/sec. Step 3: d = 25 × t."},"workedExample":"d is dependent. t is independent. Rate = 25. Equation: d = 25 × t. If t = 3 seconds, d = 25 × ___","workedExampleAnswer":"3"},
-    {"id":"p004","tier":1,"concept":"read-table","stem":"The table shows hours charged (h) and cost in dollars (c). Which equation matches the table?","visual":{"type":"table","data":{"headers":["Hours (h)","Cost (c)"],"rows":[["1","$12"],["2","$24"],["3","$36"],["5","$60"]]}},"choices":[{"value":"c = 12h","correct":true,"misconception":null},{"value":"c = h + 12","correct":false,"misconception":"added-instead-of-multiplied"},{"value":"h = 12c","correct":false,"misconception":"reversed-dependent-independent"},{"value":"c = 12 ÷ h","correct":false,"misconception":"divided-instead-of-multiplied"}],"hints":{"conceptual":"Look at how the cost changes each time hours increase by 1.","procedural":"Step 1: 1 hour → $12. Step 2: 2 hours → $24 = 12×2. Step 3: Pattern = c = 12×h."},"workedExample":"h=1, c=12. h=2, c=24. Each time: c = 12 × h. Check h=5: c = 12 × ___","workedExampleAnswer":"5"},
-    {"id":"p005","tier":1,"concept":"identify-independent-variable","stem":"At a power plant, energy output (e) depends on fuel used (f). Which is the independent variable?","visual":{"type":"none","data":{}},"choices":[{"value":"Fuel used (f)","correct":true,"misconception":null},{"value":"Energy output (e)","correct":false,"misconception":"reversed-dependent-independent"},{"value":"Both are independent","correct":false,"misconception":"both-independent"},{"value":"Neither — there is no relationship","correct":false,"misconception":"denies-relationship"}],"hints":{"conceptual":"One variable causes or controls the other.","procedural":"Step 1: 'e depends on f' → f is the cause. Step 2: The cause = independent."},"workedExample":"The problem says 'e depends on f.' The cause (f) = independent. The effect (e) = dependent.","workedExampleAnswer":"f"},
-    {"id":"p006","tier":1,"concept":"identify-dependent-variable","stem":"A 3D printer uses 5 grams of filament per layer. Let L = layers printed and g = grams used. Which is the dependent variable?","visual":{"type":"none","data":{}},"choices":[{"value":"g (grams used)","correct":true,"misconception":null},{"value":"L (layers printed)","correct":false,"misconception":"reversed-dependent-independent"},{"value":"5 (grams per layer)","correct":false,"misconception":"constant-as-variable"},{"value":"Both g and L","correct":false,"misconception":"both-dependent"}],"hints":{"conceptual":"Which quantity RESULTS from the other?","procedural":"Step 1: You decide how many layers to print. Step 2: Grams used results from that decision."},"workedExample":"You choose L. g results: g = 5 × L. If L = 10 layers, g = 5 × ___","workedExampleAnswer":"10"},
-    {"id":"p007","tier":2,"concept":"write-equation","stem":"A battery-powered rover moves at 3 meters per second but starts 10 meters from a sensor. Let t = seconds traveled and d = total distance from the start point. Which equation represents d?","visual":{"type":"none","data":{}},"choices":[{"value":"d = 3t + 10","correct":true,"misconception":null},{"value":"d = 3t","correct":false,"misconception":"ignored-initial-value"},{"value":"d = 10t + 3","correct":false,"misconception":"swapped-rate-and-initial"},{"value":"d = 3t − 10","correct":false,"misconception":"subtracted-instead-of-added"}],"hints":{"conceptual":"When something starts with an amount before the variable changes it, add that starting value.","procedural":"Step 1: Rate = 3 m/s → 3t. Step 2: Starts 10 m away → add 10. Step 3: d = 3t + 10."},"workedExample":"At t=0: d = 3(0) + 10 = 10 ✓ (started 10m away). At t=2: d = 3(2) + 10 = ___","workedExampleAnswer":"16"},
-    {"id":"p008","tier":2,"concept":"read-table","stem":"The table shows time (t) in hours and temperature (°F) in a server room. What equation models this data?","visual":{"type":"table","data":{"headers":["Time (t)","Temp (°F)"],"rows":[["0","68"],["1","71"],["2","74"],["4","80"]]}},"choices":[{"value":"Temp = 3t + 68","correct":true,"misconception":null},{"value":"Temp = 3t","correct":false,"misconception":"ignored-initial-value"},{"value":"Temp = 68t + 3","correct":false,"misconception":"swapped-rate-and-initial"},{"value":"Temp = 3t − 68","correct":false,"misconception":"subtracted-instead-of-added"}],"hints":{"conceptual":"Find the rate of change first, then look at the starting value.","procedural":"Step 1: From t=0 to t=1, temp goes 68→71 (+3). Step 2: Rate = 3°/hr. Step 3: At t=0, temp = 68 → add 68."},"workedExample":"Rate = 3 per hour. Start = 68. Equation: Temp = 3t + 68. Check t=4: 3(4)+68 = ___","workedExampleAnswer":"80"},
-    {"id":"p009","tier":2,"concept":"read-graph","stem":"A graph shows packets of data sent (x-axis) vs. time in milliseconds (y-axis). The line passes through (0,0) and (4, 20). What is the equation?","visual":{"type":"graph","data":{"xLabel":"Packets Sent","yLabel":"Time (ms)","points":[[0,0],[2,10],[4,20]],"highlightPoint":[4,20]}},"choices":[{"value":"y = 5x","correct":true,"misconception":null},{"value":"y = x + 5","correct":false,"misconception":"added-instead-of-multiplied"},{"value":"y = 4x","correct":false,"misconception":"used-x-coordinate-as-rate"},{"value":"x = 5y","correct":false,"misconception":"reversed-dependent-independent"}],"hints":{"conceptual":"The rate is the steepness of the line — rise ÷ run.","procedural":"Step 1: Rise = 20, Run = 4. Step 2: Rate = 20÷4 = 5. Step 3: y = 5x."},"workedExample":"Rise = 20 (time). Run = 4 (packets). Rate = 20 ÷ 4 = 5. y = 5x. Check (2,10): y = 5 × ___","workedExampleAnswer":"2"},
-    {"id":"p010","tier":2,"concept":"write-equation","stem":"A recycling machine compresses 6 cans per second. After t seconds, c = total cans compressed. Joel already loaded 18 cans before starting the timer. Which equation represents c?","visual":{"type":"none","data":{}},"choices":[{"value":"c = 6t + 18","correct":true,"misconception":null},{"value":"c = 6t","correct":false,"misconception":"ignored-initial-value"},{"value":"c = 18t + 6","correct":false,"misconception":"swapped-rate-and-initial"},{"value":"c = 6t × 18","correct":false,"misconception":"multiplied-initial-value"}],"hints":{"conceptual":"When a starting amount exists before the timer, it adds to the total.","procedural":"Step 1: Rate = 6 cans/sec → 6t. Step 2: Already 18 cans → + 18. Step 3: c = 6t + 18."},"workedExample":"t=0: c = 6(0)+18 = 18 ✓. t=5: c = 6(5)+18 = ___","workedExampleAnswer":"48"},
-    {"id":"p011","tier":2,"concept":"identify-independent-variable","stem":"The table shows the number of solar panels (p) installed and the monthly energy savings in dollars (s). Which variable is independent, and what is the rate?","visual":{"type":"table","data":{"headers":["Panels (p)","Savings (s)"],"rows":[["2","$30"],["4","$60"],["6","$90"],["10","$150"]]}},"choices":[{"value":"p is independent; rate = $15 per panel","correct":true,"misconception":null},{"value":"s is independent; rate = $15 per panel","correct":false,"misconception":"reversed-dependent-independent"},{"value":"p is independent; rate = $30 per panel","correct":false,"misconception":"misread-rate-from-table"},{"value":"p is independent; rate = $2 per dollar","correct":false,"misconception":"inverted-rate"}],"hints":{"conceptual":"You choose how many panels to install. Savings result from that choice.","procedural":"Step 1: p is chosen → independent. Step 2: From p=2 to p=4, s goes $30→$60. Step 3: Change = $30 for 2 panels = $15/panel."},"workedExample":"p=2→$30, p=4→$60. Increase: +2 panels, +$30. Rate = 30÷2 = $___/panel.","workedExampleAnswer":"15"},
-    {"id":"p012","tier":2,"concept":"read-graph","stem":"A graph of a linear relationship does NOT pass through the origin. The line crosses the y-axis at 4 and rises 2 units for every 1 unit right. Which equation fits?","visual":{"type":"graph","data":{"xLabel":"x","yLabel":"y","points":[[0,4],[1,6],[2,8],[3,10]],"highlightPoint":[0,4]}},"choices":[{"value":"y = 2x + 4","correct":true,"misconception":null},{"value":"y = 4x + 2","correct":false,"misconception":"swapped-rate-and-initial"},{"value":"y = 2x","correct":false,"misconception":"ignored-initial-value"},{"value":"y = 2x − 4","correct":false,"misconception":"subtracted-instead-of-added"}],"hints":{"conceptual":"Slope is the rise over run. The y-intercept is where x = 0.","procedural":"Step 1: Slope = rise/run = 2/1 = 2. Step 2: y-intercept = 4. Step 3: y = 2x + 4."},"workedExample":"Slope = 2, y-intercept = 4. Equation: y = 2x + 4. Check x=3: y = 2(3) + 4 = ___","workedExampleAnswer":"10"},
-    {"id":"p013","tier":3,"concept":"write-equation","stem":"A charging station bills a $5 connection fee plus $0.20 per minute of charging. Write the equation for total cost (c) in terms of minutes (m). Then find the cost for 45 minutes.","visual":{"type":"none","data":{}},"choices":[{"value":"c = 0.20m + 5; cost = $14.00","correct":true,"misconception":null},{"value":"c = 0.20m; cost = $9.00","correct":false,"misconception":"ignored-initial-value"},{"value":"c = 5m + 0.20; cost = $225.20","correct":false,"misconception":"swapped-rate-and-initial"},{"value":"c = 0.20m + 5; cost = $9.00","correct":false,"misconception":"arithmetic-error"}],"hints":{"conceptual":"Identify the flat fee (initial value) and the per-unit rate separately.","procedural":"Step 1: Rate = $0.20/min → 0.20m. Step 2: Flat fee = $5 → +5. Step 3: c = 0.20m + 5. Step 4: Substitute m = 45."},"workedExample":"c = 0.20m + 5. Substitute m = 45: c = 0.20(45) + 5 = 9 + 5 = ___","workedExampleAnswer":"14"},
-    {"id":"p014","tier":3,"concept":"analyze-relationship","stem":"Two drones collect data. Drone A: d = 4t. Drone B: d = 2t + 6. At what time t do they have the same total data?","visual":{"type":"none","data":{}},"choices":[{"value":"t = 3; both have collected 12 MB at that moment","correct":true,"misconception":null},{"value":"t = 6; both have collected 24 MB at that moment","correct":false,"misconception":"arithmetic-error"},{"value":"t = 2; Drone B always collects more data","correct":false,"misconception":"ignored-rate-comparison"},{"value":"They never have the same data because the equations are different","correct":false,"misconception":"denies-intersection"}],"hints":{"conceptual":"Same total data means the two equations are equal at that time.","procedural":"Step 1: Set 4t = 2t + 6. Step 2: Subtract 2t: 2t = 6. Step 3: t = 3. Step 4: Check: 4(3) = 12, 2(3)+6 = 12. ✓"},"workedExample":"4t = 2t + 6 → 2t = 6 → t = ___. At t=3: Drone A = 4(3) = 12. Drone B = 2(3)+6 = 12.","workedExampleAnswer":"3"},
-    {"id":"p015","tier":3,"concept":"analyze-relationship","stem":"The table shows hours (h) and data uploaded (GB). Is the relationship proportional? How do you know?","visual":{"type":"table","data":{"headers":["Hours (h)","Data (GB)"],"rows":[["0","0"],["1","5"],["2","10"],["3","15"]]}},"choices":[{"value":"Yes — constant rate of 5 GB/hr and passes through (0,0)","correct":true,"misconception":null},{"value":"No — the data keeps increasing","correct":false,"misconception":"increasing-means-nonproportional"},{"value":"Yes — but only because the numbers are easy","correct":false,"misconception":"surface-reasoning"},{"value":"No — proportional relationships only work with money","correct":false,"misconception":"context-confusion"}],"hints":{"conceptual":"A proportional relationship has a constant ratio AND passes through the origin.","procedural":"Step 1: Check each ratio — 5/1=5, 10/2=5, 15/3=5. Step 2: Check (0,0) in table. Step 3: Both true → proportional."},"workedExample":"Ratio check: 5÷1=5, 10÷2=5, 15÷3=___. Origin: h=0→GB=0. Both conditions met → proportional.","workedExampleAnswer":"5"},
-    {"id":"p016","tier":3,"concept":"analyze-relationship","stem":"Equation A: y = 7x. Equation B: y = 7x + 3. Which statement is TRUE?","visual":{"type":"none","data":{}},"choices":[{"value":"Both have rate 7, but only A passes through the origin; B is not proportional","correct":true,"misconception":null},{"value":"Both are proportional because they have the same rate","correct":false,"misconception":"rate-equals-proportional"},{"value":"B has a greater rate than A because it has +3","correct":false,"misconception":"misidentified-rate"},{"value":"A and B are the same relationship because the coefficient is 7 in both","correct":false,"misconception":"ignores-initial-value"}],"hints":{"conceptual":"The rate (slope) and the starting value (y-intercept) are two separate features.","procedural":"Step 1: Rate of A = 7. Rate of B = 7. Same. Step 2: A at x=0 → y=0. B at x=0 → y=3. Different starting points."},"workedExample":"A: x=0→y=0, x=1→y=7. B: x=0→y=3, x=1→y=10. Same slope (7), different start. A is proportional. B is ___ proportional.","workedExampleAnswer":"not"},
-    {"id":"p017","tier":3,"concept":"write-equation","stem":"Turbine A generates 40 kWh/hr and has already made 120 kWh. Turbine B generates 55 kWh/hr from 0. Write equations for each. When does Turbine B overtake Turbine A?","visual":{"type":"none","data":{}},"choices":[{"value":"A: y = 40t + 120; B: y = 55t; Overtakes at t = 8 hours","correct":true,"misconception":null},{"value":"A: y = 40t + 120; B: y = 55t; Overtakes at t = 4 hours","correct":false,"misconception":"arithmetic-error"},{"value":"A: y = 120t + 40; B: y = 55t; Never overtakes","correct":false,"misconception":"swapped-rate-and-initial"},{"value":"A: y = 40t; B: y = 55t + 120; Overtakes at t = 8 hours","correct":false,"misconception":"assigned-initial-to-wrong-turbine"}],"hints":{"conceptual":"Write each equation, then set them equal to find when they're the same.","procedural":"Step 1: A = 40t+120. B = 55t. Step 2: Set equal: 40t+120 = 55t. Step 3: 120 = 15t. Step 4: t = 8."},"workedExample":"40t + 120 = 55t → 120 = 55t − 40t → 120 = 15t → t = ___.","workedExampleAnswer":"8"},
-    {"id":"p018","tier":3,"concept":"analyze-relationship","stem":"A student says: 'In p = 9n, you can't tell which variable is dependent.' Is the student correct?","visual":{"type":"none","data":{}},"choices":[{"value":"No — context determines roles; if n = hours and p = pay, n is independent because hours are chosen first","correct":true,"misconception":null},{"value":"Yes — both variables can be independent depending on how you look at the equation","correct":false,"misconception":"context-free-thinking"},{"value":"No — the variable on the left (p) is always dependent","correct":false,"misconception":"position-determines-role"},{"value":"Yes — dependent and independent only matter in science class","correct":false,"misconception":"context-confusion"}],"hints":{"conceptual":"The equation alone shows a relationship — but real-world context tells you which variable you CONTROL.","procedural":"Step 1: Read the context. Step 2: Identify what is chosen or controlled. Step 3: That is the independent variable."},"workedExample":"p = 9n could mean: n = hours chosen → p = pay earned. Hours chosen first → n is independent. Pay results → p is dependent. The ___ determines which is which.","workedExampleAnswer":"context"}
-  ],
-  "concepts": ["identify-independent-variable","identify-dependent-variable","write-equation","read-table","read-graph","analyze-relationship"]
-}
-</script>
-<style>
-  :root {
-    --bg: #080010;
-    --accent1: #ec4899;
-    --accent2: #06b6d4;
-    --glass: rgba(236,72,153,0.15);
-    --text: #f0e6ff;
-    --correct: #34d399;
-    --incorrect: #f43f5e;
-    --streak: #facc15;
-    --particle: #f0abfc;
-    --tier1: #06b6d4;
-    --tier2: #ec4899;
-    --tier3: #a78bfa;
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  html{font-size:18px;scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;line-height:1.5}
-
-  /* GRID LINES BG */
-  body::before{
-    content:'';position:fixed;inset:0;
-    background-image:
-      linear-gradient(rgba(6,182,212,0.06) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(6,182,212,0.06) 1px,transparent 1px);
-    background-size:40px 40px;
-    pointer-events:none;z-index:0;
-  }
-  body::after{
-    content:'';position:fixed;inset:0;
-    background:radial-gradient(ellipse at 20% 20%,rgba(236,72,153,0.12) 0%,transparent 50%),
-              radial-gradient(ellipse at 80% 80%,rgba(6,182,212,0.10) 0%,transparent 50%);
-    pointer-events:none;z-index:0;
-  }
-
-  /* PARTICLES */
-  #particle-canvas{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.6}
-
-  /* SCREENS */
-  .screen{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;text-align:center}
-  .screen.hidden{display:none}
-
-  /* GLASS PANEL */
-  .glass{
-    background:rgba(8,0,16,0.55);
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
-    border:1px solid rgba(236,72,153,0.35);
-    border-radius:16px;
-    box-shadow:0 0 40px rgba(236,72,153,0.18),inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-
-  /* LOADING SCREEN */
-  #loading-screen{gap:1.5rem}
-  .load-logo{font-size:2.8rem;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .load-sub{color:rgba(240,230,255,0.6);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase}
-  .progress-bar-wrap{width:260px;height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden}
-  .progress-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:99px;transition:width 0.1s linear}
-  .load-pct{font-size:0.8rem;color:rgba(240,230,255,0.4);margin-top:0.4rem}
-
-  /* START SCREEN */
-  #start-screen{gap:1.5rem}
-  .start-card{padding:2.4rem 2.8rem;max-width:560px;width:100%;text-align:left}
-  .start-card h1{font-size:1.85rem;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;margin-bottom:0.3rem}
-  .start-card .std-badge{display:inline-block;background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);color:var(--accent2);font-size:0.75rem;font-weight:700;letter-spacing:1px;padding:0.25rem 0.7rem;border-radius:99px;margin-bottom:1rem}
-  .start-card p{font-size:0.95rem;color:rgba(240,230,255,0.75);line-height:1.6;margin-bottom:1.2rem}
-  .tier-chips{display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.4rem}
-  .tier-chip{padding:0.3rem 0.85rem;border-radius:99px;font-size:0.75rem;font-weight:700}
-  .tier-chip.t1{background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);color:var(--tier1)}
-  .tier-chip.t2{background:rgba(236,72,153,0.18);border:1px solid rgba(236,72,153,0.4);color:var(--tier2)}
-  .tier-chip.t3{background:rgba(167,139,250,0.18);border:1px solid rgba(167,139,250,0.4);color:var(--tier3)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.85rem 2.2rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;border:none;min-width:48px;min-height:48px;transition:transform 0.15s,box-shadow 0.15s;position:relative;overflow:hidden}
-  .btn:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
-  .btn-primary{background:linear-gradient(135deg,var(--accent1),#9333ea);color:#fff;box-shadow:0 4px 20px rgba(236,72,153,0.45)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(236,72,153,0.6)}
-  .btn-primary:active{transform:translateY(0)}
-  .btn-secondary{background:rgba(255,255,255,0.07);color:var(--text);border:1px solid rgba(255,255,255,0.15)}
-  .btn-secondary:hover{background:rgba(255,255,255,0.12)}
-  .btn-ghost{background:transparent;color:rgba(240,230,255,0.6);font-size:0.85rem;padding:0.5rem 1rem}
-  .btn-ghost:hover{color:var(--text)}
-
-  /* GAME SCREEN */
-  #game-screen{justify-content:flex-start;padding:0}
-  .game-layout{display:grid;grid-template-rows:auto 1fr;min-height:100vh;width:100%;max-width:860px;margin:0 auto;padding:0 1rem 1rem}
-
-  /* HUD */
-  .hud{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0;position:sticky;top:0;z-index:20;background:linear-gradient(to bottom,rgba(8,0,16,0.95) 80%,transparent)}
-  .hud-stat{display:flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.35rem 0.7rem;font-size:0.82rem}
-  .hud-label{color:rgba(240,230,255,0.45);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em}
-  .hud-value{font-weight:700;color:var(--text)}
-  .hud-streak .hud-value{color:var(--streak)}
-  .progress-wrap{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;min-width:60px}
-  .progress-inner{height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:99px;transition:width 0.4s ease;width:0%}
-  .tier-badge{padding:0.3rem 0.8rem;border-radius:99px;font-size:0.75rem;font-weight:700}
-  .hud-exit-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(240,230,255,0.5);border-radius:8px;padding:0.35rem 0.8rem;font-size:0.78rem;cursor:pointer;white-space:nowrap}
-  .hud-exit-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.35)}
-
-  /* QUESTION CARD */
-  .question-area{padding:1.4rem 1.8rem;margin-bottom:1rem}
-  .q-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem}
-  .q-num{font-size:0.78rem;color:rgba(240,230,255,0.4);font-weight:600}
-  .concept-tag{font-size:0.72rem;padding:0.2rem 0.65rem;border-radius:99px;background:rgba(236,72,153,0.15);border:1px solid rgba(236,72,153,0.3);color:var(--accent1);font-weight:600}
-  .q-stem{font-size:1.05rem;font-weight:500;line-height:1.65;color:var(--text);margin-bottom:1.2rem}
-
-  /* VISUAL TABLE */
-  .visual-table{width:100%;border-collapse:collapse;margin-bottom:1.2rem;font-size:0.88rem}
-  .visual-table th{background:rgba(6,182,212,0.15);color:var(--accent2);font-weight:700;padding:0.5rem 0.9rem;border:1px solid rgba(6,182,212,0.25);text-align:center}
-  .visual-table td{padding:0.45rem 0.9rem;border:1px solid rgba(255,255,255,0.07);text-align:center;color:var(--text)}
-  .visual-table tr:nth-child(even) td{background:rgba(255,255,255,0.03)}
-
-  /* GRAPH CANVAS */
-  .graph-wrap{margin-bottom:1.2rem;display:flex;justify-content:center}
-  canvas.graph-canvas{border-radius:8px;max-width:100%}
-
-  /* CHOICES */
-  .choices{display:grid;gap:0.65rem;margin-bottom:1rem}
-  .choice{display:flex;align-items:flex-start;gap:0.85rem;padding:0.9rem 1.1rem;border-radius:12px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);cursor:pointer;text-align:left;color:var(--text);font-size:0.92rem;line-height:1.5;transition:border-color 0.15s,background 0.15s;min-height:48px}
-  .choice:hover:not(:disabled){border-color:rgba(236,72,153,0.5);background:rgba(236,72,153,0.08)}
-  .choice:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
-  .choice.selected{border-color:var(--accent2);background:rgba(6,182,212,0.1)}
-  .choice.correct{border-color:var(--correct);background:rgba(52,211,153,0.1);pointer-events:none}
-  .choice.incorrect{border-color:var(--incorrect);background:rgba(244,63,94,0.08);pointer-events:none}
-  .choice.dimmed{opacity:0.4;pointer-events:none}
-  .choice-letter{width:26px;height:26px;min-width:26px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;margin-top:1px}
-  .choice.correct .choice-letter{border-color:var(--correct);color:var(--correct)}
-  .choice.incorrect .choice-letter{border-color:var(--incorrect);color:var(--incorrect)}
-
-  /* SUBMIT ROW */
-  .submit-row{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}
-
-  /* FEEDBACK BANNER */
-  .feedback-banner{border-radius:12px;padding:0.85rem 1.2rem;margin-bottom:0.8rem;font-size:0.9rem;display:none;align-items:flex-start;gap:0.75rem;border:1px solid transparent}
-  .feedback-banner.show{display:flex}
-  .feedback-banner.fb-correct{background:rgba(52,211,153,0.12);border-color:rgba(52,211,153,0.35);color:var(--correct)}
-  .feedback-banner.fb-incorrect{background:rgba(244,63,94,0.1);border-color:rgba(244,63,94,0.3);color:var(--incorrect)}
-  .feedback-icon{font-size:1.2rem;margin-top:1px}
-
-  /* HINT PANEL */
-  .hint-panel{border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem;display:none;border:1px solid rgba(250,204,21,0.3);background:rgba(250,204,21,0.07)}
-  .hint-panel.show{display:block}
-  .hint-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--streak);margin-bottom:0.4rem}
-  .hint-text{font-size:0.9rem;color:rgba(240,230,255,0.85);line-height:1.55}
-
-  /* WORKED EXAMPLE PANEL */
-  .we-panel{border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:0.8rem;display:none;border:1px solid rgba(167,139,250,0.35);background:rgba(167,139,250,0.08)}
-  .we-panel.show{display:block}
-  .we-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tier3);margin-bottom:0.6rem}
-  .we-body{font-size:0.9rem;color:rgba(240,230,255,0.85);line-height:1.6;margin-bottom:0.9rem;white-space:pre-wrap}
-  .we-input-row{display:flex;gap:0.7rem;align-items:center;flex-wrap:wrap}
-  .we-input{background:rgba(255,255,255,0.06);border:2px solid rgba(167,139,250,0.4);border-radius:8px;color:var(--text);font-size:0.95rem;padding:0.5rem 0.85rem;width:120px;outline:none}
-  .we-input:focus{border-color:var(--tier3)}
-  .we-input.we-correct{border-color:var(--correct);color:var(--correct)}
-  .we-input.we-wrong{border-color:var(--incorrect);color:var(--incorrect)}
-
-  /* MASCOT */
-  #mascot{position:fixed;bottom:1.2rem;left:1.2rem;z-index:30;width:56px;height:56px;pointer-events:none}
-  .mascot-body{width:56px;height:56px;position:relative}
-  .mascot-ring{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 0 20px rgba(236,72,153,0.5)}
-  .mascot-face{font-size:1.5rem;line-height:1;position:relative;z-index:2}
-  #mascot.idle .mascot-ring{animation:mascot-breathe 3s ease-in-out infinite}
-  #mascot.celebrate .mascot-ring{animation:mascot-jump 0.5s ease-in-out infinite}
-  #mascot.encourage .mascot-ring{animation:mascot-wave 0.6s ease-in-out 2}
-  #mascot.hidden{display:none}
-  @keyframes mascot-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-  @keyframes mascot-jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  @keyframes mascot-wave{0%,100%{transform:rotate(0deg)}30%{transform:rotate(12deg)}70%{transform:rotate(-8deg)}}
-
-  /* RESULTS SCREEN */
-  #results-screen{gap:1.2rem}
-  .results-card{padding:2rem 2.4rem;max-width:560px;width:100%;text-align:left}
-  .results-card h2{font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.2rem}
-  .star-row{display:flex;gap:0.4rem;font-size:2rem;margin:0.8rem 0}
-  .star{opacity:0.2;transition:opacity 0.4s,transform 0.4s;display:inline-block}
-  .star.lit{opacity:1;transform:scale(1.2)}
-  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1rem 0}
-  .stat-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.8rem 1rem}
-  .stat-card .s-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;color:rgba(240,230,255,0.45);margin-bottom:0.2rem}
-  .stat-card .s-value{font-size:1.35rem;font-weight:800;color:var(--text)}
-  .new-record-badge{display:none;background:linear-gradient(90deg,var(--streak),#f97316);color:#000;font-weight:800;font-size:0.8rem;letter-spacing:0.08em;padding:0.3rem 0.9rem;border-radius:99px;margin-bottom:0.75rem;text-transform:uppercase}
-  .new-record-badge.show{display:inline-block}
-  .achievement-row{background:rgba(250,204,21,0.08);border:1px solid rgba(250,204,21,0.25);border-radius:10px;padding:0.7rem 1rem;font-size:0.88rem;color:var(--streak);display:none;margin-bottom:0.5rem}
-  .achievement-row.show{display:block}
-  .results-btns{display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.5rem}
-
-  /* ACCESSIBILITY TOGGLE ROW */
-  .a11y-row{display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;padding:0.5rem 0}
-  .toggle-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:8px;color:rgba(240,230,255,0.6);font-size:0.78rem;padding:0.35rem 0.8rem;cursor:pointer}
-  .toggle-btn.active{background:rgba(6,182,212,0.2);border-color:rgba(6,182,212,0.5);color:var(--accent2)}
-
-  /* ARIA LIVE */
-  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-
-  /* RESPONSIVE */
-  @media(max-width:480px){
-    .start-card,.results-card{padding:1.6rem 1.4rem}
-    .question-area{padding:1rem 1.1rem}
-    .stat-grid{grid-template-columns:1fr 1fr}
-    .hud{gap:0.5rem}
-    .hud-stat{padding:0.3rem 0.5rem;font-size:0.75rem}
-    html{font-size:16px}
-  }
-  @media(min-width:1024px){
-    .choices{grid-template-columns:1fr 1fr}
-  }
-
-  /* REDUCED MOTION */
-  @media(prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important}
-    #particle-canvas{display:none}
-  }
-</style>
-</head>
-<body>
-<canvas id="particle-canvas" aria-hidden="true"></canvas>
-<div id="mascot" class="idle" aria-hidden="true">
-  <div class="mascot-body">
-    <div class="mascot-ring"><span class="mascot-face">🤖</span></div>
-  </div>
-</div>
-<div role="status" aria-live="polite" class="sr-only" id="live-region"></div>
-
-<!-- LOADING -->
-<div id="loading-screen" class="screen" role="main" aria-label="Loading">
-  <div class="load-logo">Variable Velocity</div>
-  <div class="load-sub">6.EE.C.9 · Dependent &amp; Independent</div>
-  <div class="progress-bar-wrap" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="load-bar-wrap">
-    <div class="progress-bar-fill" id="load-bar"></div>
-  </div>
-  <div class="load-pct" id="load-pct">0%</div>
-</div>
-
-<!-- START -->
-<div id="start-screen" class="screen hidden" role="main">
-  <div class="start-card glass">
-    <span class="std-badge">CCSS · 6.EE.C.9</span>
-    <h1>Variable Velocity</h1>
-    <p>Master dependent &amp; independent variables — identify them, write equations, analyze relationships.</p>
-    <div class="tier-chips">
-      <span class="tier-chip t1">Tier 1 · Identify</span>
-      <span class="tier-chip t2">Tier 2 · Apply</span>
-      <span class="tier-chip t3">Tier 3 · Analyze</span>
-    </div>
-    <div class="a11y-row" role="group" aria-label="Accessibility options">
-      <button class="toggle-btn" id="audio-toggle" aria-pressed="false">🔇 Sound Off</button>
-      <button class="toggle-btn" id="motion-toggle" aria-pressed="false">✦ Reduced Motion</button>
-    </div>
-    <br>
-    <button class="btn btn-primary" id="start-btn" aria-label="Start mission">⚡ Start Mission</button>
-  </div>
-</div>
-
-<!-- GAME -->
-<div id="game-screen" class="screen hidden" role="main" aria-label="Game in progress">
-  <div class="game-layout">
-    <!-- HUD -->
-    <div class="hud" role="toolbar" aria-label="Game status">
-      <div class="hud-stat hud-score" aria-label="Score">
-        <span class="hud-label">Score</span>
-        <span class="hud-value" id="score-display" aria-live="polite">0</span>
-      </div>
-      <div class="hud-stat hud-streak" aria-label="Streak">
-        <span class="hud-label">Streak</span>
-        <span class="hud-value" id="streak-display" aria-live="polite">0</span>
-      </div>
-      <div class="progress-wrap" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="15" id="game-progress-wrap" aria-label="Progress">
-        <div class="progress-inner" id="game-progress"></div>
-      </div>
-      <span class="tier-badge" id="tier-badge" style="background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);color:#06b6d4">Tier 1</span>
-      <button class="hud-exit-btn" id="hud-exit" aria-label="Exit to hub">Exit</button>
-    </div>
-
-    <!-- QUESTION CARD -->
-    <div class="question-area glass" id="question-card">
-      <div class="q-header">
-        <span class="q-num" id="q-num">Q1 of 15</span>
-        <span class="concept-tag" id="concept-tag"></span>
-      </div>
-      <p class="q-stem" id="q-stem"></p>
-      <div id="visual-area"></div>
-      <div class="hint-panel" id="hint-panel" aria-live="polite">
-        <div class="hint-label" id="hint-label">Hint</div>
-        <div class="hint-text" id="hint-text"></div>
-      </div>
-      <div class="we-panel" id="we-panel" aria-live="polite">
-        <div class="we-label">Worked Example</div>
-        <div class="we-body" id="we-body"></div>
-        <div class="we-input-row">
-          <input class="we-input" id="we-input" type="text" aria-label="Worked example answer" placeholder="Your answer…">
-          <button class="btn btn-secondary" id="we-submit" style="font-size:0.88rem;padding:0.5rem 1.1rem">Check</button>
-        </div>
-      </div>
-      <div class="feedback-banner" id="feedback-banner" aria-live="assertive">
-        <span class="feedback-icon" id="fb-icon"></span>
-        <span id="fb-text"></span>
-      </div>
-      <div class="choices" id="choices" role="group" aria-label="Answer choices"></div>
-      <div class="submit-row">
-        <button class="btn btn-primary" id="submit-btn" aria-label="Submit answer">Submit</button>
-        <button class="btn btn-ghost" id="hint-btn" aria-label="Get hint">💡 Hint</button>
-        <button class="btn btn-ghost" id="next-btn" style="display:none" aria-label="Next question">Next →</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- RESULTS -->
-<div id="results-screen" class="screen hidden" role="main" aria-label="Mission complete">
-  <div class="results-card glass">
-    <h2>Mission Complete!</h2>
-    <div class="star-row" id="star-row" aria-label="Stars earned">
-      <span class="star" id="s1" aria-label="Star 1">★</span>
-      <span class="star" id="s2" aria-label="Star 2">★</span>
-      <span class="star" id="s3" aria-label="Star 3">★</span>
-    </div>
-    <div class="new-record-badge" id="new-record" aria-live="polite">⚡ NEW RECORD</div>
-    <div class="achievement-row" id="achievement-row">🏆 <span id="achievement-text"></span></div>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="s-label">Score</div><div class="s-value" id="r-score">0</div></div>
-      <div class="stat-card"><div class="s-label">Accuracy</div><div class="s-value" id="r-acc">0%</div></div>
-      <div class="stat-card"><div class="s-label">Best Streak</div><div class="s-value" id="r-streak">0</div></div>
-      <div class="stat-card"><div class="s-label">Highest Tier</div><div class="s-value" id="r-tier">1</div></div>
-    </div>
-    <div class="results-btns">
-      <button class="btn btn-primary" id="play-again-btn">⚡ Play Again</button>
-      <button class="btn btn-secondary" id="exit-btn" aria-label="Exit to hub">Exit Hub</button>
-    </div>
-  </div>
-</div>
-
-<script>
-        const HUB_URL = '/';
-  const TOTAL_Q = 15;
-  const storage = {
-    _memory:{},
-    set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){this._memory[k]=v;}},
-    get(k,d=null){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):d;}catch(e){return this._memory[k]??d;}}
-  };
-
-  // --- STATE ---
-  let config, problems, shuffled=[], currentIdx=0, tier=1, score=0, streak=0, bestStreak=0,
-      wrongCount=0, lastAnswer=null, consecutiveCorrect=0, consecutiveWrong=0,
-      questionsAnswered=0, correctCount=0, hintStep=0, lastWrongValue=null, sameWrongCount=0,
-      audioEnabled=false, reducedMotion=false, audioCtx=null,
-      perf_start=null, perfTier=1, gameOver=false, weUnlocked=false;
-
-  // --- PERF ---
-  let frameTimings=[], lastFrame=null, perfLadder=['full','particles-15','no-parallax','linear-drift','no-shake','mascot-static','css-only'];
-  function rafLoop(ts){
-    if(lastFrame){frameTimings.push(ts-lastFrame);if(frameTimings.length>60)frameTimings.shift();}
-    lastFrame=ts;
-    updateParticles(ts);
-    requestAnimationFrame(rafLoop);
-  }
-  requestAnimationFrame(rafLoop);
-  setTimeout(()=>{
-    const avg=frameTimings.reduce((a,b)=>a+b,0)/(frameTimings.length||1);
-    if(avg>20&&perfTier<2){perfTier=2;}
-    if(avg>25&&perfTier<4){perfTier=4;}
-    if(reducedMotion) perfTier=7;
-  },500);
-
-  // --- PARTICLES ---
-  const pCanvas=document.getElementById('particle-canvas');
-  const pCtx=pCanvas.getContext('2d');
-  let particles=[];
-  function resizeCanvas(){pCanvas.width=innerWidth;pCanvas.height=innerHeight;}
-  window.addEventListener('resize',resizeCanvas);resizeCanvas();
-  function spawnParticle(){
-    if(perfTier>=7) return;
-    const maxP=perfTier>=2?15:30;
-    if(particles.length>=maxP) return;
-    particles.push({x:Math.random()*innerWidth,y:innerHeight+10,vx:(Math.random()-0.5)*0.6,vy:-(0.4+Math.random()*0.8),alpha:0.7+Math.random()*0.3,r:1+Math.random()*2.5,life:1});
-  }
-  setInterval(spawnParticle,200);
-  let lastPTS=0;
-  function updateParticles(ts){
-    if(perfTier>=7){pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);return;}
-    pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);
-    particles=particles.filter(p=>p.alpha>0.05);
-    for(const p of particles){
-      p.x+=p.vx;p.y+=p.vy;p.alpha-=0.003;
-      pCtx.save();pCtx.globalAlpha=p.alpha;pCtx.fillStyle='#f0abfc';
-      pCtx.beginPath();pCtx.arc(p.x,p.y,p.r,0,Math.PI*2);pCtx.fill();
-      pCtx.restore();
-    }
-  }
-
-  // --- AUDIO ---
-  function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
-  function playTone(freq,dur,type='sine',vol=0.18){
-    if(!audioEnabled||!audioCtx) return;
-    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-    o.connect(g);g.connect(audioCtx.destination);
-    o.type=type;o.frequency.value=freq;
-    g.gain.setValueAtTime(vol,audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
-    o.start();o.stop(audioCtx.currentTime+dur);
-  }
-  function playCorrect(){playTone(660,0.12);setTimeout(()=>playTone(880,0.15),100);}
-  function playIncorrect(){playTone(220,0.2,'sawtooth',0.1);}
-  function playHint(){playTone(440,0.1);}
-
-  // --- FISHER-YATES ---
-  function shuffle(arr){
-    const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;
-  }
-
-  // --- LOAD ---
-  window.addEventListener('load',init);
-  function init(){
-    const raw=JSON.parse(document.getElementById('game-config').textContent);
-    config=raw;
-    // Build tier pools
-    const t1=raw.problems.filter(p=>p.tier===1);
-    const t2=raw.problems.filter(p=>p.tier===2);
-    const t3=raw.problems.filter(p=>p.tier===3);
-    problems={1:shuffle(t1),2:shuffle(t2),3:shuffle(t3)};
-    // Load saved settings
-    audioEnabled=storage.get('ewl_audio',false);
-    reducedMotion=storage.get('ewl_reducedMotion',false)||window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    if(reducedMotion){perfTier=7;document.getElementById('particle-canvas').style.display='none';}
-    syncToggles();
-    // Loading animation
-    const bar=document.getElementById('load-bar');
-    const pct=document.getElementById('load-pct');
-    const wrap=document.getElementById('load-bar-wrap');
-    let p=0;
-    const iv=setInterval(()=>{
-      p=Math.min(p+(Math.random()*12+4),80);
-      bar.style.width=p+'%';pct.textContent=Math.round(p)+'%';
-      wrap.setAttribute('aria-valuenow',Math.round(p));
-      if(p>=80){clearInterval(iv);setTimeout(()=>{
-        bar.style.width='100%';pct.textContent='100%';
-        setTimeout(showStart,300);
-      },400);}
-    },100);
-  }
-
-  function showStart(){
-    show('start-screen');hide('loading-screen');
-    announce('Variable Velocity loaded. Press Start Mission to begin.');
-  }
-
-  // --- GAME START ---
-  function startGame(){
-    score=0;streak=0;bestStreak=0;wrongCount=0;consecutiveCorrect=0;consecutiveWrong=0;
-    questionsAnswered=0;correctCount=0;tier=1;currentIdx=0;gameOver=false;weUnlocked=false;
-    shuffled=[];
-    buildQueue();
-    show('game-screen');hide('start-screen');
-    setMascot('idle');
-    renderQuestion();
-  }
-
-  function buildQueue(){
-    // Build adaptive queue: starts Tier 1, advances/regresses
-    // We pre-generate a pool; actual tier is determined dynamically
-    shuffled=[];
-    const t1=shuffle(problems[1]);
-    const t2=shuffle(problems[2]);
-    const t3=shuffle(problems[3]);
-    // interleave: t1 questions first, then mixed
-    shuffled=[...t1,...t2,...t3];
-  }
-
-  function getNextProblem(){
-    // return from current tier pool, wrap if needed
-    const pool=shuffle(problems[tier]);
-    // avoid immediate repeat
-    for(let i=0;i<pool.length;i++){
-      const p=pool[i];
-      if(!p._seen) return p;
-    }
-    // all seen — reset
-    problems[tier].forEach(p=>delete p._seen);
-    return pool[0];
-  }
-
-  let currentProblem=null,selectedChoice=null;
-
-  function renderQuestion(){
-    if(questionsAnswered>=TOTAL_Q||gameOver){endGame();return;}
-    // Tier advancement
-    if(consecutiveCorrect>=3&&tier<2){tier=2;consecutiveCorrect=0;}
-    if(consecutiveCorrect>=2&&tier===2){tier=3;consecutiveCorrect=0;}
-    if(consecutiveWrong>=2&&tier>1){tier--;consecutiveWrong=0;}
-
-    currentProblem=getNextProblem();
-    currentProblem._seen=true;
-    selectedChoice=null;hintStep=0;lastWrongValue=null;sameWrongCount=0;weUnlocked=false;
-
-    // HUD
-    updateHUD();
-    document.getElementById('q-num').textContent=`Q${questionsAnswered+1} of ${TOTAL_Q}`;
-    document.getElementById('concept-tag').textContent=currentProblem.concept.replace(/-/g,' ');
-    document.getElementById('q-stem').textContent=currentProblem.stem;
-
-    // Visual
-    renderVisual(currentProblem.visual);
-
-    // Hints
-    hideHint();hideWE();hideFeedback();
-
-    // Choices
-    const choicesEl=document.getElementById('choices');
-    choicesEl.innerHTML='';
-    const letters=['A','B','C','D'];
-    const chs=shuffle([...currentProblem.choices]);
-    currentProblem._shuffledChoices=chs;
-    chs.forEach((c,i)=>{
-      const btn=document.createElement('button');
-      btn.className='choice';
-      btn.setAttribute('role','radio');
-      btn.setAttribute('aria-checked','false');
-      btn.setAttribute('tabindex','0');
-      btn.innerHTML=`<span class="choice-letter">${letters[i]}</span><span>${c.value}</span>`;
-      btn.addEventListener('click',()=>selectChoice(btn,c));
-      btn.addEventListener('keydown',e=>{
-        if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();const nx=btn.nextElementSibling;if(nx)nx.focus();}
-        if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();const pv=btn.previousElementSibling;if(pv)pv.focus();}
-      });
-      choicesEl.appendChild(btn);
-    });
-
-    document.getElementById('submit-btn').style.display='';
-    document.getElementById('next-btn').style.display='none';
-    document.getElementById('hint-btn').style.display='';
-    // Focus first choice
-    const first=choicesEl.querySelector('.choice');
-    if(first) setTimeout(()=>first.focus(),100);
-  }
-
-  function selectChoice(btn,choice){
-    if(document.getElementById('submit-btn').style.display==='none') return;
-    document.querySelectorAll('.choice').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-checked','false');});
-    btn.classList.add('selected');
-    btn.setAttribute('aria-checked','true');
-    selectedChoice=choice;
-  }
-
-  function submitAnswer(){
-    if(!selectedChoice) return;
-    questionsAnswered++;
-    const correct=selectedChoice.correct;
-    document.getElementById('submit-btn').style.display='none';
-    document.getElementById('hint-btn').style.display='none';
-    document.getElementById('next-btn').style.display='';
-
-    // Check stuck-hint: 3 identical wrong answers
-    if(!correct){
-      if(selectedChoice.value===lastWrongValue){sameWrongCount++;}else{sameWrongCount=1;lastWrongValue=selectedChoice.value;}
-      if(sameWrongCount>=3&&!weUnlocked){unlockWE();}
-    }
-
-    // Color choices
-    document.querySelectorAll('.choice').forEach(btn=>{
-      const cText=btn.querySelector('span:last-child').textContent;
-      const cObj=currentProblem._shuffledChoices.find(c=>c.value===cText);
-      if(!cObj) return;
-      btn.disabled=true;
-      if(cObj.correct) btn.classList.add('correct');
-      else if(cObj===selectedChoice&&!correct) btn.classList.add('incorrect');
-      else btn.classList.add('dimmed');
-    });
-
-    if(correct){
-      consecutiveCorrect++;consecutiveWrong=0;
-      streak++;if(streak>bestStreak)bestStreak=streak;
-      if(streak>10) document.getElementById('streak-display').textContent='10+';
-      correctCount++;
-      // XP
-      const combo=streak>=10?2:streak>=5?1.5:1;
-      const xp=Math.round((10+(tier*5)+(streak*2))*combo);
-      score+=xp;
-      showFeedback(true,`+${xp} XP`);
-      playCorrect();
-      setMascot('celebrate');
-      setTimeout(()=>setMascot('idle'),1200);
-    }else{
-      consecutiveWrong++;consecutiveCorrect=0;streak=0;
-      wrongCount++;
-      showFeedback(false,'Not quite. Try again next question!');
-      playIncorrect();
-      setMascot('hidden');
-    }
-    updateHUD();
-    announce(correct?`Correct! +score`:'Incorrect. Review the hint and try next question.');
-    // Auto-advance if answered 15
-    if(questionsAnswered>=TOTAL_Q){setTimeout(endGame,1200);}
-  }
-
-  function nextQuestion(){renderQuestion();}
-
-  // --- VISUALS ---
-  function renderVisual(visual){
-    const area=document.getElementById('visual-area');
-    area.innerHTML='';
-    if(!visual||visual.type==='none') return;
-    if(visual.type==='table'){
-      const t=document.createElement('table');t.className='visual-table';t.setAttribute('role','table');
-      const thead=document.createElement('thead');const tr=document.createElement('tr');
-      visual.data.headers.forEach(h=>{const th=document.createElement('th');th.textContent=h;tr.appendChild(th);});
-      thead.appendChild(tr);t.appendChild(thead);
-      const tbody=document.createElement('tbody');
-      visual.data.rows.forEach(row=>{const tr=document.createElement('tr');row.forEach(cell=>{const td=document.createElement('td');td.textContent=cell;tr.appendChild(td);});tbody.appendChild(tr);});
-      t.appendChild(tbody);area.appendChild(t);
-    }else if(visual.type==='graph'){
-      drawGraph(area,visual.data);
-    }
-  }
-
-  function drawGraph(container,data){
-    const wrap=document.createElement('div');wrap.className='graph-wrap';
-    const cv=document.createElement('canvas');cv.className='graph-canvas';
-    const W=300,H=240;cv.width=W;cv.height=H;cv.setAttribute('role','img');cv.setAttribute('aria-label',`Graph: ${data.xLabel} vs ${data.yLabel}`);
-    wrap.appendChild(cv);container.appendChild(wrap);
-    const ctx=cv.getContext('2d');
-    const pad={l:54,r:18,t:16,b:44};
-    const gW=W-pad.l-pad.r,gH=H-pad.t-pad.b;
-    // BG
-    ctx.fillStyle='rgba(8,0,16,0.6)';ctx.fillRect(0,0,W,H);
-    // Find max
-    const pts=data.points||[];
-    const hp=data.highlightPoint;
-    const allX=pts.map(p=>p[0]);const allY=pts.map(p=>p[1]);
-    if(hp){allX.push(hp[0]);allY.push(hp[1]);}
-    const maxX=Math.max(...allX,1);const maxY=Math.max(...allY,1);
-    const stepX=maxX<=5?1:maxX<=10?2:5;
-    const stepY=maxY<=10?2:maxY<=20?4:maxY<=50?10:20;
-    // Grid
-    ctx.strokeStyle='rgba(6,182,212,0.12)';ctx.lineWidth=0.7;
-    for(let x=0;x<=maxX;x+=stepX){
-      const px=pad.l+x/maxX*gW;
-      ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+gH);ctx.stroke();
-    }
-    for(let y=0;y<=maxY;y+=stepY){
-      const py=pad.t+gH-(y/maxY*gH);
-      ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(pad.l+gW,py);ctx.stroke();
-    }
-    // Axes
-    ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+gH);ctx.lineTo(pad.l+gW,pad.t+gH);ctx.stroke();
-    // Labels
-    ctx.fillStyle='rgba(240,230,255,0.55)';ctx.font='9px Segoe UI,sans-serif';ctx.textAlign='center';
-    for(let x=0;x<=maxX;x+=stepX){
-      const px=pad.l+x/maxX*gW;
-      ctx.fillText(x,px,pad.t+gH+14);
-    }
-    ctx.textAlign='right';
-    for(let y=0;y<=maxY;y+=stepY){
-      const py=pad.t+gH-(y/maxY*gH);
-      ctx.fillText(y,pad.l-5,py+3);
-    }
-    // Axis labels
-    ctx.fillStyle='rgba(240,230,255,0.7)';ctx.font='bold 10px Segoe UI,sans-serif';ctx.textAlign='center';
-    ctx.fillText(data.xLabel||'x',pad.l+gW/2,H-4);
-    ctx.save();ctx.translate(13,pad.t+gH/2);ctx.rotate(-Math.PI/2);ctx.fillText(data.yLabel||'y',0,0);ctx.restore();
-    // Line
-    if(pts.length>1){
-      ctx.strokeStyle='#ec4899';ctx.lineWidth=2.2;ctx.beginPath();
-      pts.forEach((p,i)=>{
-        const px=pad.l+p[0]/maxX*gW,py=pad.t+gH-p[1]/maxY*gH;
-        if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
-      });
-      ctx.stroke();
-    }
-    // Points
-    pts.forEach(p=>{
-      const px=pad.l+p[0]/maxX*gW,py=pad.t+gH-p[1]/maxY*gH;
-      ctx.fillStyle='#f0abfc';ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fill();
-    });
-    // Highlight
-    if(hp){
-      const px=pad.l+hp[0]/maxX*gW,py=pad.t+gH-hp[1]/maxY*gH;
-      ctx.fillStyle='#facc15';ctx.beginPath();ctx.arc(px,py,5.5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(250,204,21,0.25)';ctx.beginPath();ctx.arc(px,py,9,0,Math.PI*2);ctx.fill();
-    }
-  }
-
-  // --- HINTS ---
-  function showHintStep(){
-    playHint();
-    const p=currentProblem;
-    if(hintStep===0){
-      showHint('Conceptual Hint',p.hints.conceptual);hintStep=1;
-    }else if(hintStep===1){
-      showHint('Step-by-Step Hint',p.hints.procedural);hintStep=2;
-    }else if(hintStep===2){
-      showHint('Worked Example — find the missing answer!','');
-      unlockWE();hintStep=3;
-    }
-  }
-
-  function unlockWE(){
-    if(weUnlocked) return;
-    weUnlocked=true;
-    const p=currentProblem;
-    document.getElementById('we-body').textContent=p.workedExample;
-    document.getElementById('we-input').value='';
-    document.getElementById('we-input').className='we-input';
-    document.getElementById('we-panel').classList.add('show');
-    document.getElementById('we-input').focus();
-  }
-
-  function checkWE(){
-    const inp=document.getElementById('we-input');
-    const ans=inp.value.trim().toLowerCase().replace(/\s+/g,'');
-    const correct=String(currentProblem.workedExampleAnswer).toLowerCase().replace(/\s+/g,'');
-    if(ans===correct){
-      inp.classList.add('we-correct');
-      announce('Correct! Now try the main question with this understanding.');
-    }else{
-      inp.classList.add('we-wrong');
-      setTimeout(()=>{inp.className='we-input';inp.value='';inp.focus();},600);
-    }
-  }
-
-  function showHint(label,text){
-    document.getElementById('hint-label').textContent=label;
-    document.getElementById('hint-text').textContent=text||'';
-    document.getElementById('hint-panel').classList.add('show');
-  }
-  function hideHint(){document.getElementById('hint-panel').classList.remove('show');}
-  function hideWE(){document.getElementById('we-panel').classList.remove('show');}
-  function hideFeedback(){const fb=document.getElementById('feedback-banner');fb.classList.remove('show','fb-correct','fb-incorrect');}
-  function showFeedback(ok,msg){
-    const fb=document.getElementById('feedback-banner');
-    document.getElementById('fb-icon').textContent=ok?'✓':'✗';
-    document.getElementById('fb-text').textContent=msg;
-    fb.className='feedback-banner show '+(ok?'fb-correct':'fb-incorrect');
-  }
-
-  // --- HUD ---
-  function updateHUD(){
-    document.getElementById('score-display').textContent=score;
-    const sd=streak>10?'10+':streak;
-    document.getElementById('streak-display').textContent=sd;
-    const pct=Math.min(questionsAnswered/TOTAL_Q*100,100);
-    document.getElementById('game-progress').style.width=pct+'%';
-    document.getElementById('game-progress-wrap').setAttribute('aria-valuenow',questionsAnswered);
-    const badge=document.getElementById('tier-badge');
-    const colors={1:['rgba(6,182,212,0.18)','rgba(6,182,212,0.4)','#06b6d4'],2:['rgba(236,72,153,0.18)','rgba(236,72,153,0.4)','#ec4899'],3:['rgba(167,139,250,0.18)','rgba(167,139,250,0.4)','#a78bfa']};
-    const c=colors[tier];
-    badge.style.background=c[0];badge.style.border=`1px solid ${c[1]}`;badge.style.color=c[2];
-    badge.textContent=`Tier ${tier}`;
-  }
-
-  // --- END GAME ---
-  function endGame(){
-    gameOver=true;
-    const acc=questionsAnswered>0?Math.round(correctCount/questionsAnswered*100):0;
-    const prev=storage.get('ewl_6eec9_best',0);
-    const isRecord=score>prev;
-    if(isRecord) storage.set('ewl_6eec9_best',score);
-    document.getElementById('r-score').textContent=score;
-    document.getElementById('r-acc').textContent=acc+'%';
-    document.getElementById('r-streak').textContent=bestStreak;
-    document.getElementById('r-tier').textContent=tier;
-    if(isRecord) document.getElementById('new-record').classList.add('show');
-    // Stars
-    const s=acc>=95?3:acc>=80?2:acc>=60?1:0;
-    setTimeout(()=>{
-      for(let i=1;i<=s;i++){
-        setTimeout(()=>document.getElementById('s'+i).classList.add('lit'),i*180);
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Variable Velocity - Racing Game | 6.EE.C.9</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
       }
-    },300);
-    // Achievement
-    let ach='';
-    if(correctCount===questionsAnswered&&questionsAnswered>=10) ach='Perfect Run! No wrong answers.';
-    else if(tier===3&&consecutiveCorrect>=1) ach='Tier 3 Reached! Top analyst.';
-    else if(score===0&&correctCount>0) ach='First Completion!';
-    if(ach){document.getElementById('achievement-text').textContent=ach;document.getElementById('achievement-row').classList.add('show');}
-    setMascot('celebrate');
-    show('results-screen');hide('game-screen');
-    announce(`Mission complete! Score: ${score}. Accuracy: ${acc}%.`);
-  }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      #game-container {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // ============================================================
+      // VARIABLE VELOCITY — Racing Game (6.EE.C.9)
+      // Answer correctly to boost speed, wrong answers slow you down.
+      // Race through 3 laps with 15+ math questions woven in.
+      // ============================================================
 
-  // --- MASCOT ---
-  function setMascot(state){
-    const m=document.getElementById('mascot');
-    m.className=state==='hidden'?'hidden':state;
-  }
+      const QUESTIONS = [
+        {
+          stem: "A robot charges $8/hour. Which variable is INDEPENDENT?",
+          choices: [
+            "Hours worked",
+            "Total earnings",
+            "Number of robots",
+            "Hourly rate",
+          ],
+          correct: 0,
+          hint: "Independent = what you choose first.",
+          explain: "You choose hours; earnings depend on it.",
+        },
+        {
+          stem: "A drone flies 15 km/min. Which variable is DEPENDENT?",
+          choices: [
+            "Total distance",
+            "Minutes flown",
+            "Speed",
+            "Number of drones",
+          ],
+          correct: 0,
+          hint: "Dependent = changes because of the other.",
+          explain: "Distance depends on minutes flown.",
+        },
+        {
+          stem: "Server downloads 25 MB/sec. t=seconds, d=MB. Equation?",
+          choices: ["d = 25t", "t = 25d", "d = t + 25", "d = 25 / t"],
+          correct: 0,
+          hint: "Dependent = rate x independent.",
+          explain: "d = 25 x t, so d = 25t.",
+        },
+        {
+          stem: "Table: Hours(h) 1,2,3,5 | Cost(c) $12,$24,$36,$60. Equation?",
+          choices: ["c = 12h", "c = h + 12", "h = 12c", "c = 12/h"],
+          correct: 0,
+          hint: "Look at how cost changes per hour.",
+          explain: "c = 12 x h = 12h.",
+        },
+        {
+          stem: "Energy output (e) depends on fuel (f). Independent variable?",
+          choices: ["Fuel used (f)", "Energy output (e)", "Both", "Neither"],
+          correct: 0,
+          hint: "The cause is independent.",
+          explain: "f causes e, so f is independent.",
+        },
+        {
+          stem: "3D printer: 5g filament/layer. L=layers, g=grams. Dependent?",
+          choices: ["g (grams)", "L (layers)", "5 (rate)", "Both"],
+          correct: 0,
+          hint: "Which RESULTS from the other?",
+          explain: "Grams used results from layers chosen.",
+        },
+        {
+          stem: "Rover: 3 m/s, starts 10m from sensor. d = distance. Equation?",
+          choices: ["d = 3t + 10", "d = 3t", "d = 10t + 3", "d = 3t - 10"],
+          correct: 0,
+          hint: "Starting amount + rate x time.",
+          explain: "Starts at 10, adds 3 per second.",
+        },
+        {
+          stem: "Table: Time(t) 0,1,2,4 | Temp 68,71,74,80. Equation?",
+          choices: ["T = 3t + 68", "T = 3t", "T = 68t + 3", "T = 3t - 68"],
+          correct: 0,
+          hint: "Rate of change + starting value.",
+          explain: "Rate=3, start=68, so T = 3t + 68.",
+        },
+        {
+          stem: "Graph: packets vs time. Through (0,0) and (4,20). Equation?",
+          choices: ["y = 5x", "y = x + 5", "y = 4x", "x = 5y"],
+          correct: 0,
+          hint: "Rate = rise / run = 20/4.",
+          explain: "20/4 = 5, so y = 5x.",
+        },
+        {
+          stem: "Recycler: 6 cans/sec, 18 already loaded. c = total. Equation?",
+          choices: ["c = 6t + 18", "c = 6t", "c = 18t + 6", "c = 6t x 18"],
+          correct: 0,
+          hint: "Rate x time + starting amount.",
+          explain: "6 per second plus 18 already there.",
+        },
+        {
+          stem: "Solar panels(p) 2,4,6,10 | Savings(s) $30,$60,$90,$150. Rate?",
+          choices: [
+            "$15/panel; p independent",
+            "$15/panel; s independent",
+            "$30/panel",
+            "$2/dollar",
+          ],
+          correct: 0,
+          hint: "Rate = change in s / change in p.",
+          explain: "30/2 = 15 per panel, p is chosen first.",
+        },
+        {
+          stem: "Graph: y-intercept at 4, rises 2 per 1 unit right. Equation?",
+          choices: ["y = 2x + 4", "y = 4x + 2", "y = 2x", "y = 2x - 4"],
+          correct: 0,
+          hint: "Slope = 2, y-intercept = 4.",
+          explain: "y = 2x + 4.",
+        },
+        {
+          stem: "Charging station: $5 fee + $0.20/min. 45 minutes cost?",
+          choices: ["$14.00", "$9.00", "$225.20", "$9.00"],
+          correct: 0,
+          hint: "Fee + rate x minutes.",
+          explain: "0.20 x 45 + 5 = 14.",
+        },
+        {
+          stem: "Drone A: d=4t. Drone B: d=2t+6. Same data at t=?",
+          choices: ["t = 3", "t = 6", "t = 2", "Never"],
+          correct: 0,
+          hint: "Set 4t = 2t + 6 and solve.",
+          explain: "2t = 6, t = 3. Both have 12 at t=3.",
+        },
+        {
+          stem: "Table: h 0,1,2,3 | GB 0,5,10,15. Proportional?",
+          choices: [
+            "Yes - constant 5 GB/hr, through (0,0)",
+            "No - keeps increasing",
+            "Yes - easy numbers",
+            "No - only money works",
+          ],
+          correct: 0,
+          hint: "Constant ratio AND through origin.",
+          explain: "5/1=5, 10/2=5, starts at (0,0). Proportional.",
+        },
+        {
+          stem: "y=7x vs y=7x+3. Which is TRUE?",
+          choices: [
+            "Both rate 7, only A through origin",
+            "Both proportional",
+            "B has greater rate",
+            "They are the same",
+          ],
+          correct: 0,
+          hint: "Same slope but different y-intercept.",
+          explain: "Both have rate 7, but B starts at 3, not 0.",
+        },
+        {
+          stem: "Turbine A: y=40t+120. Turbine B: y=55t. B overtakes A at t=?",
+          choices: ["t = 8", "t = 4", "Never", "t = 3"],
+          correct: 0,
+          hint: "Set 40t+120 = 55t.",
+          explain: "120 = 15t, t = 8.",
+        },
+        {
+          stem: 'p = 9n. Student says "can\'t tell dependent." Correct?',
+          choices: [
+            "No - context determines roles",
+            "Yes - both can be independent",
+            "No - left is always dependent",
+            "Yes - only in science",
+          ],
+          correct: 0,
+          hint: "Context tells us which we choose first.",
+          explain: "If n=hours chosen, p=pay earned. Context decides.",
+        },
+      ];
 
-  // --- UTILS ---
-  function show(id){document.getElementById(id).classList.remove('hidden');}
-  function hide(id){document.getElementById(id).classList.add('hidden');}
-  function announce(msg){const r=document.getElementById('live-region');r.textContent='';setTimeout(()=>r.textContent=msg,50);}
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        tone(f, d, t = "sine", v = 0.1) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        },
+        boost() {
+          this.tone(523, 0.08);
+          setTimeout(() => this.tone(784, 0.1), 60);
+        },
+        slow() {
+          this.tone(180, 0.2, "sawtooth", 0.08);
+        },
+        engine() {
+          this.tone(120, 0.05, "square", 0.02);
+        },
+        finish() {
+          this.tone(523, 0.1);
+          setTimeout(() => this.tone(659, 0.1), 100);
+          setTimeout(() => this.tone(784, 0.15), 200);
+        },
+      };
 
-  function syncToggles(){
-    const ab=document.getElementById('audio-toggle');
-    const mb=document.getElementById('motion-toggle');
-    ab.textContent=audioEnabled?'🔊 Sound On':'🔇 Sound Off';
-    ab.classList.toggle('active',audioEnabled);
-    mb.classList.toggle('active',reducedMotion);
-    mb.setAttribute('aria-pressed',reducedMotion);
-    ab.setAttribute('aria-pressed',audioEnabled);
-  }
+      const W = 800,
+        H = 600;
 
-  // --- EVENT LISTENERS ---
-  document.getElementById('start-btn').addEventListener('click',()=>{initAudio();startGame();});
-  document.getElementById('start-btn').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();initAudio();startGame();}});
-  document.getElementById('submit-btn').addEventListener('click',submitAnswer);
-  document.getElementById('next-btn').addEventListener('click',nextQuestion);
-  document.getElementById('hint-btn').addEventListener('click',showHintStep);
-  document.getElementById('we-submit').addEventListener('click',checkWE);
-  document.getElementById('we-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkWE();});
-  document.getElementById('play-again-btn').addEventListener('click',()=>{hide('results-screen');startGame();});
-  document.getElementById('exit-btn').addEventListener('click',()=>{window.location.href=HUB_URL;});
-  document.getElementById('hud-exit').addEventListener('click',()=>{window.location.href=HUB_URL;});
-  document.getElementById('audio-toggle').addEventListener('click',()=>{
-    initAudio();audioEnabled=!audioEnabled;storage.set('ewl_audio',audioEnabled);syncToggles();
-  });
-  document.getElementById('motion-toggle').addEventListener('click',()=>{
-    reducedMotion=!reducedMotion;storage.set('ewl_reducedMotion',reducedMotion);
-    if(reducedMotion){perfTier=7;document.getElementById('particle-canvas').style.display='none';}
-    else{perfTier=1;document.getElementById('particle-canvas').style.display='';}
-    syncToggles();
-    announce(reducedMotion?'Reduced motion enabled.':'Reduced motion disabled.');
-  });
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
+          // Player car (top-down)
+          g.fillStyle(0x00ccff, 1);
+          g.fillRoundedRect(4, 0, 24, 40, 4);
+          g.fillStyle(0x0088dd, 1);
+          g.fillRect(8, 2, 16, 10); // windshield
+          g.fillStyle(0x003366, 1);
+          g.fillRect(0, 8, 32, 6);
+          g.fillRect(0, 30, 32, 6); // wheels
+          g.generateTexture("car", 32, 40);
+          g.clear();
+          // Rival car
+          g.fillStyle(0xff4444, 1);
+          g.fillRoundedRect(4, 0, 24, 40, 4);
+          g.fillStyle(0xcc2222, 1);
+          g.fillRect(8, 2, 16, 10);
+          g.fillStyle(0x660000, 1);
+          g.fillRect(0, 8, 32, 6);
+          g.fillRect(0, 30, 32, 6);
+          g.generateTexture("rival", 32, 40);
+          g.clear();
+          // Road stripe
+          g.fillStyle(0xffffff, 1);
+          g.fillRect(0, 0, 6, 30);
+          g.generateTexture("stripe", 6, 30);
+          g.clear();
+          // Tree
+          g.fillStyle(0x228833, 1);
+          g.fillCircle(12, 8, 12);
+          g.fillStyle(0x664422, 1);
+          g.fillRect(10, 16, 4, 12);
+          g.generateTexture("tree", 24, 28);
+          g.clear();
+          // Spark
+          g.fillStyle(0xffcc00, 1);
+          g.fillCircle(3, 3, 3);
+          g.generateTexture("spark", 6, 6);
+          g.clear();
+          // Boost icon
+          g.fillStyle(0x00ff88, 1);
+          g.fillTriangle(12, 0, 0, 24, 24, 24);
+          g.generateTexture("boostIcon", 24, 24);
+          g.clear();
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
 
-  // Global keyboard
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Enter'||e.key===' '){
-      initAudio();
-      // activate focused choice
-      const fc=document.activeElement;
-      if(fc&&fc.classList.contains('choice')){e.preventDefault();fc.click();}
-    }
-    if(e.key==='Escape'){
-      // Close hint/we panels
-      hideHint();hideWE();
-    }
-  });
-</script>
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          SFX.init();
+          this.cameras.main.setBackgroundColor(0x0a0a2e);
+
+          // Animated road lines
+          for (let i = 0; i < 20; i++) {
+            const y = i * 35;
+            const s = this.add.rectangle(W / 2, y, 6, 25, 0x444444, 0.4);
+            this.tweens.add({
+              targets: s,
+              y: H + 30,
+              duration: 2000,
+              repeat: -1,
+              delay: i * 100,
+            });
+          }
+
+          this.add
+            .text(W / 2, 100, "VARIABLE VELOCITY", {
+              fontSize: "48px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ccff",
+              stroke: "#002244",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(W / 2, 155, "Dependent & Independent Variables Racing", {
+              fontSize: "15px",
+              fontFamily: "Arial",
+              color: "#88aacc",
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(W / 2, 180, "CCSS 6.EE.C.9", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#6688aa",
+            })
+            .setOrigin(0.5);
+
+          // Car preview
+          const car = this.add.image(W / 2, 280, "car").setScale(3);
+          this.tweens.add({
+            targets: car,
+            y: 270,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          // Mode select
+          this.add
+            .text(W / 2, 360, "Choose Mode:", {
+              fontSize: "16px",
+              fontFamily: "Arial",
+              color: "#aaa",
+            })
+            .setOrigin(0.5);
+
+          const modes = [
+            { name: "Sprint", desc: "5 questions, fast race", qs: 5 },
+            { name: "Marathon", desc: "All 18 questions", qs: 18 },
+            {
+              name: "Time Trial",
+              desc: "10 questions, beat the clock",
+              qs: 10,
+            },
+          ];
+          this.selectedMode = 1;
+          const cards = [];
+          modes.forEach((m, i) => {
+            const x = W / 2 - 160 + i * 160;
+            const c = this.add
+              .rectangle(x, 420, 140, 70, 0x112244, 0.8)
+              .setStrokeStyle(2, 0x336699, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, 408, m.name, {
+                fontSize: "15px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, 430, m.desc, {
+                fontSize: "10px",
+                fontFamily: "Arial",
+                color: "#888",
+                wordWrap: { width: 120 },
+                align: "center",
+              })
+              .setOrigin(0.5);
+            c.on("pointerdown", () => {
+              this.selectedMode = i;
+              cards.forEach((cc, j) =>
+                cc.setStrokeStyle(
+                  j === i ? 3 : 2,
+                  j === i ? 0x00ccff : 0x336699,
+                  j === i ? 1 : 0.5,
+                ),
+              );
+            });
+            cards.push(c);
+          });
+          cards[1].setStrokeStyle(3, 0x00ccff, 1);
+
+          const btn = this.add
+            .text(W / 2, 510, "[ START RACE ]", {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+              padding: { x: 20, y: 10 },
+              backgroundColor: "rgba(0,255,200,0.1)",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          btn.on("pointerover", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
+          );
+          btn.on("pointerout", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
+          );
+          btn.on("pointerdown", () => {
+            SFX.init();
+            this.scene.start("Race", {
+              numQs: modes[this.selectedMode].qs,
+              modeName: modes[this.selectedMode].name,
+            });
+          });
+
+          // Info
+          [
+            "Arrow/WASD to steer",
+            "Correct = BOOST",
+            "Wrong = SLOW DOWN",
+            "Beat the rival!",
+          ].forEach((t, i) => {
+            this.add
+              .text(W / 2 - 180 + i * 120, 570, t, {
+                fontSize: "10px",
+                fontFamily: "Arial",
+                color: "#556677",
+                padding: { x: 4, y: 2 },
+                backgroundColor: "rgba(255,255,255,0.03)",
+              })
+              .setOrigin(0.5);
+          });
+        }
+      }
+
+      class RaceScene extends Phaser.Scene {
+        constructor() {
+          super("Race");
+        }
+        init(data) {
+          this.numQs = data.numQs || 10;
+          this.modeName = data.modeName || "Race";
+          this.score = 0;
+          this.speed = 3; // base scroll speed
+          this.maxSpeed = 8;
+          this.playerLane = 1; // 0=left, 1=center, 2=right
+          this.distance = 0;
+          this.totalDistance = this.numQs * 500;
+          this.qIndex = 0;
+          this.nextQAt = 400;
+          this.streak = 0;
+          this.bestStreak = 0;
+          this.correct = 0;
+          this.total = 0;
+          this.lives = 3;
+          this.combo = 1;
+          this.questionActive = false;
+          this.shuffledQs = Phaser.Utils.Array.Shuffle([...QUESTIONS]).slice(
+            0,
+            this.numQs,
+          );
+          this.rivalDist = 0;
+          this.rivalSpeed = 3.5;
+          this.boostTimer = 0;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(0x1a3a1a);
+
+          // Road
+          this.roadBg = this.add.rectangle(W / 2, H / 2, 360, H, 0x333333, 1);
+          this.add.rectangle(W / 2 - 180, H / 2, 4, H, 0xffffff, 0.3); // left edge
+          this.add.rectangle(W / 2 + 180, H / 2, 4, H, 0xffffff, 0.3); // right edge
+
+          // Stripes (center dashes)
+          this.stripes = [];
+          for (let i = 0; i < 15; i++) {
+            const s = this.add.image(W / 2, i * 50, "stripe").setAlpha(0.4);
+            this.stripes.push(s);
+          }
+
+          // Trees (scenery)
+          this.trees = [];
+          for (let i = 0; i < 12; i++) {
+            const side = i % 2 === 0 ? W / 2 - 230 : W / 2 + 230;
+            const t = this.add
+              .image(side + Phaser.Math.Between(-20, 20), i * 60, "tree")
+              .setScale(1.5)
+              .setAlpha(0.6);
+            this.trees.push(t);
+          }
+
+          // Lane positions
+          this.laneX = [W / 2 - 100, W / 2, W / 2 + 100];
+
+          // Player car
+          this.car = this.add.image(this.laneX[1], H - 80, "car").setScale(1.8);
+
+          // Rival car
+          this.rival = this.add
+            .image(this.laneX[2], H - 200, "rival")
+            .setScale(1.6)
+            .setAlpha(0.7);
+          this.rivalY = H - 200;
+
+          // Boost particles
+          this.boostEmitter = this.add.particles(0, 0, "spark", {
+            speed: { min: 50, max: 150 },
+            angle: { min: 80, max: 100 },
+            lifespan: 400,
+            scale: { start: 0.8, end: 0 },
+            alpha: { start: 1, end: 0 },
+            blendMode: "ADD",
+            emitting: false,
+          });
+
+          // HUD
+          this.add.rectangle(W / 2, 20, W, 40, 0x000000, 0.7).setDepth(100);
+          this.scoreText = this.add
+            .text(10, 8, "SCORE: 0", {
+              fontSize: "14px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+            })
+            .setDepth(101);
+          this.speedText = this.add
+            .text(W / 2, 8, "", {
+              fontSize: "13px",
+              fontFamily: "monospace",
+              color: "#00ff88",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+          this.livesText = this.add
+            .text(W - 10, 8, "", {
+              fontSize: "16px",
+              fontFamily: "monospace",
+              color: "#ff4444",
+            })
+            .setOrigin(1, 0)
+            .setDepth(101);
+          this.updateLives();
+          this.progressBar = this.add
+            .rectangle(W / 2, 35, W - 40, 6, 0x333333, 0.8)
+            .setDepth(101);
+          this.progressFill = this.add
+            .rectangle(20, 35, 0, 6, 0x00ccff, 1)
+            .setOrigin(0, 0.5)
+            .setDepth(102);
+          this.streakText = this.add
+            .text(W / 2, 22, "", {
+              fontSize: "10px",
+              fontFamily: "monospace",
+              color: "#ff8800",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+
+          // Question panel
+          this.qContainer = this.add
+            .container(W / 2, H / 2)
+            .setDepth(200)
+            .setVisible(false);
+          this.qBg = this.add
+            .rectangle(0, 0, 660, 300, 0x0a1a2e, 0.95)
+            .setStrokeStyle(2, 0x00ccff, 0.6);
+          this.qStem = this.add
+            .text(0, -120, "", {
+              fontSize: "15px",
+              fontFamily: "Arial",
+              fontStyle: "bold",
+              color: "#fff",
+              wordWrap: { width: 600 },
+              align: "center",
+            })
+            .setOrigin(0.5);
+          this.qHint = this.add
+            .text(0, -85, "", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#ffcc00",
+              wordWrap: { width: 580 },
+              align: "center",
+            })
+            .setOrigin(0.5);
+          this.qContainer.add([this.qBg, this.qStem, this.qHint]);
+
+          this.qBtns = [];
+          this.qTxts = [];
+          for (let i = 0; i < 4; i++) {
+            const y = -40 + i * 45;
+            const bg = this.add
+              .rectangle(0, y, 540, 38, 0x112244, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.6)
+              .setInteractive({ useHandCursor: true });
+            const txt = this.add
+              .text(0, y, "", {
+                fontSize: "14px",
+                fontFamily: "Arial",
+                color: "#ccddff",
+                wordWrap: { width: 500 },
+                align: "center",
+              })
+              .setOrigin(0.5);
+            const idx = i;
+            bg.on("pointerdown", () => this.answerQ(idx));
+            bg.on("pointerover", () => {
+              if (this.questionActive) bg.setStrokeStyle(2, 0x00ccff, 1);
+            });
+            bg.on("pointerout", () => {
+              if (this.questionActive) bg.setStrokeStyle(1, 0x336699, 0.6);
+            });
+            this.qContainer.add([bg, txt]);
+            this.qBtns.push(bg);
+            this.qTxts.push(txt);
+          }
+          this.qExplain = this.add
+            .text(0, 140, "", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#88ff88",
+              wordWrap: { width: 580 },
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setVisible(false);
+          this.qContainer.add(this.qExplain);
+
+          // Input
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+          this.input.keyboard.on("keydown-ONE", () => this.answerQ(0));
+          this.input.keyboard.on("keydown-TWO", () => this.answerQ(1));
+          this.input.keyboard.on("keydown-THREE", () => this.answerQ(2));
+          this.input.keyboard.on("keydown-FOUR", () => this.answerQ(3));
+
+          // Touch swipe
+          this.input.on("pointerdown", (p) => {
+            this.touchStart = { x: p.x, y: p.y };
+          });
+          this.input.on("pointerup", (p) => {
+            if (this.touchStart && !this.questionActive) {
+              const dx = p.x - this.touchStart.x;
+              if (Math.abs(dx) > 30) {
+                if (dx < 0 && this.playerLane > 0) this.playerLane--;
+                else if (dx > 0 && this.playerLane < 2) this.playerLane++;
+              }
+            }
+          });
+
+          // Countdown
+          this.showCountdown();
+        }
+
+        showCountdown() {
+          const nums = ["3", "2", "1", "GO!"];
+          let i = 0;
+          const show = () => {
+            if (i >= nums.length) {
+              this.racing = true;
+              return;
+            }
+            const t = this.add
+              .text(W / 2, H / 2 - 50, nums[i], {
+                fontSize: "72px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: i < 3 ? "#ffcc00" : "#00ff88",
+              })
+              .setOrigin(0.5)
+              .setDepth(300);
+            SFX.tone(i < 3 ? 440 : 880, 0.15);
+            this.tweens.add({
+              targets: t,
+              scale: { from: 1.5, to: 0.5 },
+              alpha: 0,
+              duration: 700,
+              onComplete: () => {
+                t.destroy();
+                i++;
+                show();
+              },
+            });
+          };
+          show();
+        }
+
+        updateLives() {
+          let h = "";
+          for (let i = 0; i < 3; i++) h += i < this.lives ? "♥" : "♡";
+          this.livesText.setText(h);
+        }
+
+        showQuestion() {
+          if (this.qIndex >= this.shuffledQs.length) return;
+          const q = this.shuffledQs[this.qIndex];
+          this.currentQ = q;
+          this.questionActive = true;
+          this.qContainer.setVisible(true);
+          this.qStem.setText(q.stem);
+          this.qHint.setText("").setVisible(false);
+          this.qExplain.setVisible(false);
+          this.hintShown = false;
+
+          q.choices.forEach((c, i) => {
+            this.qTxts[i]
+              .setText(String.fromCharCode(65 + i) + ". " + c)
+              .setStyle({ color: "#ccddff" });
+            this.qBtns[i]
+              .setFillStyle(0x112244, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.6)
+              .setInteractive();
+          });
+        }
+
+        answerQ(idx) {
+          if (!this.questionActive) return;
+          this.questionActive = false;
+          this.total++;
+          const q = this.currentQ;
+          const right = idx === q.correct;
+
+          this.qBtns.forEach((b, i) => {
+            b.disableInteractive();
+            if (i === q.correct) {
+              b.setFillStyle(0x004400, 0.9).setStrokeStyle(2, 0x00ff88, 1);
+              this.qTxts[i].setStyle({ color: "#00ff88" });
+            } else if (i === idx && !right) {
+              b.setFillStyle(0x440000, 0.9).setStrokeStyle(2, 0xff4444, 1);
+              this.qTxts[i].setStyle({ color: "#ff4444" });
+            }
+          });
+
+          if (right) {
+            this.correct++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            this.combo = Math.min(4, 1 + Math.floor(this.streak / 3));
+            const pts = 100 * this.combo;
+            this.score += pts;
+            this.speed = Math.min(this.maxSpeed, this.speed + 1.5);
+            this.boostTimer = 120;
+            SFX.boost();
+            this.cameras.main.flash(150, 0, 80, 0);
+            const pop = this.add
+              .text(W / 2, H / 2 - 170, "BOOST! +" + pts, {
+                fontSize: "24px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#00ff88",
+              })
+              .setOrigin(0.5)
+              .setDepth(300);
+            this.tweens.add({
+              targets: pop,
+              y: pop.y - 40,
+              alpha: 0,
+              duration: 1000,
+              onComplete: () => pop.destroy(),
+            });
+          } else {
+            this.streak = 0;
+            this.combo = 1;
+            this.speed = Math.max(1.5, this.speed - 1.5);
+            this.lives--;
+            this.updateLives();
+            SFX.slow();
+            this.cameras.main.shake(300, 0.01);
+            const pop = this.add
+              .text(W / 2, H / 2 - 170, "SLOW DOWN!", {
+                fontSize: "24px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#ff4444",
+              })
+              .setOrigin(0.5)
+              .setDepth(300);
+            this.tweens.add({
+              targets: pop,
+              y: pop.y - 40,
+              alpha: 0,
+              duration: 1000,
+              onComplete: () => pop.destroy(),
+            });
+          }
+
+          this.qExplain.setText(q.explain).setVisible(true);
+          this.scoreText.setText("SCORE: " + this.score);
+          this.streakText.setText(
+            this.streak >= 2 ? "STREAK x" + this.streak : "",
+          );
+
+          if (this.lives <= 0) {
+            this.time.delayedCall(1500, () =>
+              this.scene.start("Results", {
+                score: this.score,
+                correct: this.correct,
+                total: this.total,
+                bestStreak: this.bestStreak,
+                won: false,
+                modeName: this.modeName,
+              }),
+            );
+            return;
+          }
+
+          this.time.delayedCall(1800, () => {
+            this.qContainer.setVisible(false);
+            this.qIndex++;
+            this.nextQAt = this.distance + 400;
+          });
+        }
+
+        update() {
+          if (!this.racing) return;
+
+          // Scroll road
+          this.stripes.forEach((s) => {
+            s.y += this.speed * 3;
+            if (s.y > H + 30) s.y = -30;
+          });
+          this.trees.forEach((t) => {
+            t.y += this.speed * 2;
+            if (t.y > H + 30) t.y = -30;
+          });
+
+          // Distance
+          this.distance += this.speed;
+          this.rivalDist += this.rivalSpeed;
+
+          // Progress bar
+          const pct = Math.min(this.distance / this.totalDistance, 1);
+          this.progressFill.width = (W - 40) * pct;
+
+          // Speed display
+          const mph = Math.round(this.speed * 30);
+          this.speedText.setText(mph + " MPH");
+
+          // Boost effect
+          if (this.boostTimer > 0) {
+            this.boostTimer--;
+            this.boostEmitter.emitParticleAt(this.car.x, this.car.y + 25, 1);
+            if (this.boostTimer === 0)
+              this.speed = Math.max(3, this.speed - 0.5);
+          }
+
+          // Lane movement (keyboard)
+          if (!this.questionActive) {
+            if (
+              Phaser.Input.Keyboard.JustDown(this.cursors.left) ||
+              Phaser.Input.Keyboard.JustDown(this.wasd.A)
+            ) {
+              if (this.playerLane > 0) this.playerLane--;
+            }
+            if (
+              Phaser.Input.Keyboard.JustDown(this.cursors.right) ||
+              Phaser.Input.Keyboard.JustDown(this.wasd.D)
+            ) {
+              if (this.playerLane < 2) this.playerLane++;
+            }
+          }
+
+          // Smooth car position
+          const targetX = this.laneX[this.playerLane];
+          this.car.x += (targetX - this.car.x) * 0.15;
+
+          // Rival movement
+          const rivalTarget =
+            this.laneX[Math.floor(Math.sin(this.time.now / 3000) * 1.5 + 1)];
+          this.rival.x += (rivalTarget - this.rival.x) * 0.05;
+          const rDiff = this.distance - this.rivalDist;
+          const targetRivalY = H - 200 + rDiff * 0.3;
+          this.rivalY +=
+            (Phaser.Math.Clamp(targetRivalY, 50, H + 100) - this.rivalY) * 0.02;
+          this.rival.y = this.rivalY;
+
+          // Trigger questions
+          if (
+            !this.questionActive &&
+            this.distance >= this.nextQAt &&
+            this.qIndex < this.shuffledQs.length
+          ) {
+            this.showQuestion();
+          }
+
+          // Check finish
+          if (this.distance >= this.totalDistance && !this.questionActive) {
+            this.racing = false;
+            const won = this.distance >= this.rivalDist;
+            this.time.delayedCall(1000, () => {
+              SFX.finish();
+              this.scene.start("Results", {
+                score: this.score,
+                correct: this.correct,
+                total: this.total,
+                bestStreak: this.bestStreak,
+                won: won,
+                modeName: this.modeName,
+              });
+            });
+          }
+        }
+      }
+
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.finalScore = data.score || 0;
+          this.correct = data.correct || 0;
+          this.total = data.total || 0;
+          this.bestStreak = data.bestStreak || 0;
+          this.won = data.won !== undefined ? data.won : true;
+          this.modeName = data.modeName || "Race";
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(0x0a0a2e);
+          for (let i = 0; i < 60; i++)
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.FloatBetween(0.5, 1.5),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.15, 0.5),
+            );
+
+          const pct =
+            this.total > 0 ? Math.round((this.correct / this.total) * 100) : 0;
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.correct,
+                maxScore: this.total,
+                problemsCorrect: this.correct,
+                problemsAttempted: this.total,
+                percent: pct,
+                standard: "6.EE.C.9",
+              });
+          } catch (e) {}
+          const title = this.won ? "YOU WON THE RACE!" : "RACE OVER";
+          const titleColor = this.won ? "#ffcc00" : "#ff6644";
+
+          this.add
+            .text(W / 2, 60, title, {
+              fontSize: "40px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: titleColor,
+              stroke: "#333",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 110, this.modeName + " Mode", {
+              fontSize: "16px",
+              fontFamily: "Arial",
+              color: "#888",
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(W / 2, 170, String(this.finalScore), {
+              fontSize: "60px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 210, "POINTS", {
+              fontSize: "13px",
+              fontFamily: "monospace",
+              color: "#888",
+            })
+            .setOrigin(0.5);
+
+          let grade, gc;
+          if (pct >= 90) {
+            grade = "S RANK";
+            gc = "#ffcc00";
+          } else if (pct >= 80) {
+            grade = "A RANK";
+            gc = "#00ff88";
+          } else if (pct >= 70) {
+            grade = "B RANK";
+            gc = "#00ccff";
+          } else if (pct >= 60) {
+            grade = "C RANK";
+            gc = "#ff8800";
+          } else {
+            grade = "KEEP GOING";
+            gc = "#ff4444";
+          }
+          this.add
+            .text(W / 2, 250, grade, {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: gc,
+            })
+            .setOrigin(0.5);
+
+          [
+            { l: "Correct", v: this.correct + "/" + this.total },
+            { l: "Accuracy", v: pct + "%" },
+            { l: "Best Streak", v: String(this.bestStreak) },
+          ].forEach((s, i) => {
+            const x = W / 2 - 120 + i * 120;
+            this.add
+              .rectangle(x, 330, 100, 65, 0x112233, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.5);
+            this.add
+              .text(x, 318, s.v, {
+                fontSize: "22px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#00ccff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, 345, s.l, {
+                fontSize: "11px",
+                fontFamily: "Arial",
+                color: "#888",
+              })
+              .setOrigin(0.5);
+          });
+
+          const btn = this.add
+            .text(W / 2, 430, "[ RACE AGAIN ]", {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+              padding: { x: 20, y: 10 },
+              backgroundColor: "rgba(0,255,200,0.1)",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          btn.on("pointerover", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
+          );
+          btn.on("pointerout", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
+          );
+          btn.on("pointerdown", () => this.scene.start("Title"));
+
+          this.add
+            .text(W / 2, 520, "6.EE.C.9 -- Dependent & Independent Variables", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#556677",
+            })
+            .setOrigin(0.5);
+        }
+      }
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        scene: [BootScene, TitleScene, RaceScene, ResultsScene],
+        backgroundColor: "#0a0a2e",
+      };
+      new Phaser.Game(config);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>9E Coordinate Problem Solving Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>9E | Coordinate Problem Solving Study Guide</h1>
+        <div class="guide-meta">
+          Unit 7: Coordinate Plane &bull; Lesson 7.7 &bull; Standard: 6.NS.8
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Reflect</strong> &mdash; to flip a point or shape across an
+          axis, like a mirror image.
+          <span class="spanish">(reflejar)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Translate</strong> &mdash; to slide a point or shape to a new
+          position without turning it.
+          <span class="spanish">(trasladar)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Symmetry</strong> &mdash; when one half of a shape is a mirror
+          image of the other half.
+          <span class="spanish">(simetr&iacute;a)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>X-axis reflection</strong> &mdash; flip across the horizontal
+          axis. The x stays the same, but y changes sign.
+          <span class="spanish">(reflexi&oacute;n sobre el eje x)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Y-axis reflection</strong> &mdash; flip across the vertical
+          axis. The y stays the same, but x changes sign.
+          <span class="spanish">(reflexi&oacute;n sobre el eje y)</span>
+        </div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step: Reflections</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <strong>Reflect across the x-axis:</strong> Keep the x-value the
+            same. Change the SIGN of the y-value.<br />
+            (3, 4) &rarr; (3, &minus;4)
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <strong>Reflect across the y-axis:</strong> Keep the y-value the
+            same. Change the SIGN of the x-value.<br />
+            (3, 4) &rarr; (&minus;3, 4)
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <strong>Reflect across BOTH axes:</strong> Change the sign of BOTH x
+            and y.<br />
+            (3, 4) &rarr; (&minus;3, &minus;4)
+          </li>
+        </ol>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Reflection Rules</h2>
+        <div class="formula-highlight">
+          Across x-axis: (x, y) &rarr; (x, &minus;y)
+        </div>
+        <div class="formula-highlight">
+          Across y-axis: (x, y) &rarr; (&minus;x, y)
+        </div>
+        <div class="formula-highlight">
+          Across both: (x, y) &rarr; (&minus;x, &minus;y)
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Visual Example</h2>
+        <div class="example-box">
+          <pre style="font-size: 1rem; line-height: 1.5; text-align: center">
+             y
+             |
+   (&minus;3,4)   |   (3,4)    &larr; original
+      *      |      *
+             |
+  &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash; x
+             |
+   (&minus;3,&minus;4)  |   (3,&minus;4)   &larr; reflected across x-axis
+      *      |      *
+             |</pre
+          >
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>Reflecting across the x-axis changes y, NOT x.</strong>
+            Think: the x-axis is horizontal, so the point flips vertically
+            (up/down).
+          </li>
+          <li>
+            <strong>Reflecting across the y-axis changes x, NOT y.</strong> The
+            y-axis is vertical, so the point flips horizontally (left/right).
+          </li>
+          <li>
+            <strong
+              >A reflected point is the same distance from the axis</strong
+            >
+            as the original, just on the other side.
+          </li>
+          <li>
+            <strong>Points ON an axis don't move</strong> when reflected across
+            that axis. (0, 5) reflected across y-axis stays (0, 5).
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> Reflect (4, 7) across the x-axis. What is the
+            new y-coordinate?
+          </p>
+          <input type="text" id="q1" placeholder="Type the y-coordinate..." />
+          <button class="check-btn" onclick="checkAnswer('q1', '-7', 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> Reflect (&minus;5, 3) across the y-axis. What is
+            the new x-coordinate?
+          </p>
+          <input type="text" id="q2" placeholder="Type the x-coordinate..." />
+          <button class="check-btn" onclick="checkAnswer('q2', '5', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> Point A is at (2, &minus;6). If you reflect it
+            across the x-axis, what is the new point? Type as (x, y).
+          </p>
+          <input
+            type="text"
+            id="q3"
+            placeholder="Type your answer as (x, y)..."
+          />
+          <button class="check-btn" onclick="checkPoint('q3', '(2,6)', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> A building is at (3, 2) on a map. Its reflection
+            in a lake (the x-axis) is at what point? Type as (x, y).
+          </p>
+          <input
+            type="text"
+            id="q4"
+            placeholder="Type your answer as (x, y)..."
+          />
+          <button class="check-btn" onclick="checkPoint('q4', '(3,-2)', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "").replace(/−/g, "-");
+        var correct = String(correctAnswer).replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkPoint(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "").replace(/−/g, "-");
+        var correct = correctAnswer.replace(/\s+/g, "");
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else if (val === correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,2099 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escape Room Architect — Unit 8 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 8 Equations &amp; Inequalities culminating project. Build YOUR own math escape room with one-step equations and inverse operations, swap puzzles with a partner, then compare to sample escape rooms."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --purple: #6d3fa0;
+        --purple-light: #f0eafa;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .phero {
+        background: linear-gradient(
+          135deg,
+          #1a0533 0%,
+          #6d3fa0 60%,
+          #1a6fb5 100%
+        );
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
+      }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .intro-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--purple);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .intro-card .scenario {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      .phase {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .phase-num {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--purple);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--purple);
+        background: var(--purple-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background: var(--purple-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .task strong {
+        color: var(--purple);
+      }
+
+      .eq-display {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--navy);
+        text-align: center;
+        letter-spacing: 0.03em;
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .btn {
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.blue {
+        background: var(--blue);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--purple);
+        border: 2px solid var(--line);
+      }
+
+      .readout {
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--purple-light);
+        border: 1px solid #c8a8e8;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--purple);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
+
+      /* Number line SVG wrapper (reused from B's drawNumberLine for the L2 inequality lock) */
+      .nline-wrap {
+        margin-top: 16px;
+        overflow-x: auto;
+      }
+      .nline-wrap svg {
+        display: block;
+        margin: 0 auto;
+      }
+
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
+
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--purple), var(--blue));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
+      @media print {
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
+    <header class="phero">
+      <div class="deco">🔐</div>
+      <h1>Escape Room Architect</h1>
+      <p>
+        Design <strong>your own</strong> math escape room. Name it, pick a
+        theme, and set all four lock clues from <em>your own numbers</em>. Then
+        swap with a partner to crack each other's locks, and see how your room
+        compares to real sample escape rooms.
+      </p>
+      <div class="tags">
+        <span class="tag gold">Unit 8 · Equations &amp; Inequalities</span>
+        <span class="tag">6.EE.5</span>
+        <span class="tag">6.EE.6</span>
+        <span class="tag">6.EE.7</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u8ProjectA')">💾 Save</button>
+        <button
+          onclick="PK.load('u8ProjectA', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🗝️ Your Mission</h2>
+        <p class="scenario">
+          Build a real escape room in three steps.
+          <strong>Part 1 (Self):</strong> name your room, choose a theme, and
+          set all four lock clues using <em>your own</em> numbers.
+          <strong>Part 2 (Peer):</strong> swap rooms with a partner — they enter
+          your equations and try to crack the combinations, auto-checked against
+          your key. <strong>Part 3 (World):</strong> compare your hardest lock
+          to sample escape rooms. Finish the blueprint, checklist, and report.
+        </p>
+      </div>
+
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">🔤</span><b>Variable</b>
+            <p>A letter (like x) that stands for an unknown number.</p>
+            <p class="pk-es">
+              Variable: una letra (como x) que representa un número desconocido.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🔁</span><b>Inverse Operation</b>
+            <p>The operation that undoes another: + undoes −, × undoes ÷.</p>
+            <p class="pk-es">
+              Operación inversa: la que deshace otra: + deshace −, × deshace ÷.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">✖️</span><b>Coefficient</b>
+            <p>The number multiplied by the variable, like the 4 in 4x.</p>
+            <p class="pk-es">
+              Coeficiente: el número que multiplica a la variable, como el 4 en
+              4x.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🎯</span><b>Solution</b>
+            <p>The value of the variable that makes the equation true.</p>
+            <p class="pk-es">
+              Solución: el valor de la variable que hace verdadera la ecuación.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⚖️</span><b>Equation</b>
+            <p>A math sentence saying two amounts are equal, with an = sign.</p>
+            <p class="pk-es">
+              Ecuación: una oración matemática que dice que dos cantidades son
+              iguales (=).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🔎</span><b>Substitution</b>
+            <p>Putting your answer back into the equation to check it.</p>
+            <p class="pk-es">
+              Sustitución: poner tu respuesta en la ecuación para comprobarla.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">↔️</span><b>Inequality</b>
+            <p>Compares amounts with &gt;, &lt;, ≥, or ≤ instead of =.</p>
+            <p class="pk-es">
+              Desigualdad: compara cantidades con &gt;, &lt;, ≥ o ≤ en vez de =.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⚪</span><b>Open / Closed Circle</b>
+            <p>
+              Open circle = not included (&gt; or &lt;); closed = included (≥ or
+              ≤).
+            </p>
+            <p class="pk-es">
+              Círculo abierto = no incluido (&gt; o &lt;); cerrado = incluido (≥
+              o ≤).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⬆️</span><b>At Least / At Most</b>
+            <p>"At least" means ≥ (or more). "At most" means ≤ (or fewer).</p>
+            <p class="pk-es">
+              "Al menos" = ≥ (o más). "Como máximo" = ≤ (o menos).
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>Add/Subtract:</b> x + p = q → x = q − p</p>
+            <p><b>Multiply/Divide:</b> p·x = q → x = q ÷ p</p>
+            <p>
+              <b>Substitution check:</b> put x back in; both sides must match.
+            </p>
+            <p class="pk-lvl2">
+              <b>Two-step lock:</b> p·x + r = q → x = (q − r) ÷ p
+            </p>
+            <p class="pk-lvl2">
+              <b>Inequality direction:</b> "at least" → x ≥ value (closed
+              circle, shade right).
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>"My equation is ___ because the clue says ___."</p>
+            <p>"To solve, I used the inverse operation ___, so x = ___."</p>
+            <p>
+              "I checked by substitution: ___ + ___ = ___, so it is correct."
+            </p>
+            <p class="pk-es">
+              "Mi ecuación es ___ porque la pista dice ___. Para resolver usé la
+              operación inversa ___, así que x = ___."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <span class="arc-banner">Part 1 · Self — build your room</span>
+            <div class="skill">Write &amp; solve equations · 6.EE.6–7</div>
+            <h2>Build YOUR Escape Room</h2>
+          </div>
+        </div>
+        <p>
+          Name your room, pick a theme, and set
+          <strong>your own</strong> numbers for all four locks. Not sure yet?
+          Click <em>Use example numbers</em> to model the math, then change
+          everything to make it yours.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="roomName">Name your escape room</label>
+            <input
+              type="text"
+              id="roomName"
+              data-save
+              placeholder="example: The Vault of Numbers"
+              oninput="updateProgress()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="roomTheme">Pick a theme</label>
+            <select id="roomTheme" data-save onchange="updateProgress()">
+              <option value="">Choose a theme…</option>
+              <option>Haunted Library</option>
+              <option>Space Station</option>
+              <option>Pirate Ship</option>
+              <option>Secret Spy Lab</option>
+              <option>Pharaoh's Tomb</option>
+              <option>Wizard's Tower</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Lock A: addition -->
+        <h3 style="margin-top: 22px">🔒 Lock A — Addition clue (x + p = q)</h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: keep numbers small, like p = 5 and q = 12, so x is easy.
+        </p>
+        <div class="task">
+          <strong>Your clue:</strong> "When you add <em>p</em> to the secret
+          combination, you get <em>q</em>." The combination is the solution x.
+          Use q &gt; p so x is positive.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="a-p">p — amount added to x</label>
+            <input
+              type="number"
+              id="a-p"
+              data-save
+              min="1"
+              max="99"
+              placeholder="example: 8"
+              oninput="solveLockA()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="a-q">q — what the clue totals</label>
+            <input
+              type="number"
+              id="a-q"
+              data-save
+              min="2"
+              max="199"
+              placeholder="example: 15"
+              oninput="solveLockA()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="solveLockA()">
+          Solve &amp; Verify Lock A
+        </button>
+        <div class="readout" id="a-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Addition is undone by subtraction. For x + 8 = 15, subtract 8 from
+            both sides: x = 15 − 8 = 7. Verify: 7 + 8 = 15 ✓
+          </p>
+        </details>
+
+        <!-- Lock B: subtraction -->
+        <h3 style="margin-top: 24px">
+          🔒 Lock B — Subtraction clue (x − p = q)
+        </h3>
+        <div class="task">
+          <strong>Your clue:</strong> "When you take away <em>p</em> from the
+          combination, you get <em>q</em>." So x − p = q, which means x = q + p.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="b-p">p — amount taken away</label>
+            <input
+              type="number"
+              id="b-p"
+              data-save
+              min="1"
+              max="99"
+              placeholder="example: 6"
+              oninput="solveLockB()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="b-q">q — what is left</label>
+            <input
+              type="number"
+              id="b-q"
+              data-save
+              min="1"
+              max="199"
+              placeholder="example: 10"
+              oninput="solveLockB()"
+            />
+          </div>
+        </div>
+        <button class="btn blue" type="button" onclick="solveLockB()">
+          Solve &amp; Verify Lock B
+        </button>
+        <div class="readout" id="b-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Subtraction is undone by addition. For x − 6 = 10, add 6 to both
+            sides: x = 10 + 6 = 16. Verify: 16 − 6 = 10 ✓
+          </p>
+        </details>
+
+        <!-- Lock C: multiplication / division -->
+        <h3 style="margin-top: 24px">
+          🔒 Lock C — Multiplication clue (p·x = q)
+        </h3>
+        <div class="task">
+          <strong>Your clue:</strong> "The combination times <em>p</em> equals
+          <em>q</em>." Pick values so q ÷ p has no remainder (whole-number
+          combination). Example: p = 4, q = 28 → x = 7.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="c-p"
+              >p — coefficient (multiplied by x)</label
+            >
+            <input
+              type="number"
+              id="c-p"
+              data-save
+              min="2"
+              max="20"
+              placeholder="example: 4"
+              oninput="solveLockC()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="c-q"
+              >q — right side (must divide evenly by p)</label
+            >
+            <input
+              type="number"
+              id="c-q"
+              data-save
+              min="2"
+              max="400"
+              placeholder="example: 28"
+              oninput="solveLockC()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="solveLockC()">
+          Solve &amp; Verify Lock C
+        </button>
+        <div class="readout" id="c-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Multiplication is undone by division. For 4x = 28, divide both sides
+            by 4: x = 28 ÷ 4 = 7. Verify: 4 × 7 = 28 ✓. Make sure q ÷ p has no
+            remainder!
+          </p>
+        </details>
+
+        <!-- Lock D: Level 1 (division) vs Level 2 (two-step or inequality) -->
+        <div class="pk-lvl1">
+          <h3 style="margin-top: 24px">
+            🔒 Lock D — Division clue (x ÷ p = q)
+          </h3>
+          <div class="task">
+            <strong>Your clue:</strong> "The combination divided by
+            <em>p</em> equals <em>q</em>." So x ÷ p = q, which means x = q × p.
+          </div>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="d1-p">p — divisor</label>
+              <input
+                type="number"
+                id="d1-p"
+                data-save
+                min="2"
+                max="12"
+                placeholder="example: 3"
+                oninput="solveLockD1()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="d1-q">q — quotient (right side)</label>
+              <input
+                type="number"
+                id="d1-q"
+                data-save
+                min="1"
+                max="50"
+                placeholder="example: 5"
+                oninput="solveLockD1()"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="solveLockD1()">
+            Solve &amp; Verify Lock D
+          </button>
+          <div class="readout" id="d1-out"></div>
+        </div>
+
+        <div class="pk-lvl2">
+          <h3 style="margin-top: 24px">
+            🔒 Lock D — Two-step combo lock (p·x + r = q)
+          </h3>
+          <div class="task">
+            <strong>Level 2 challenge:</strong> Make a harder lock with two
+            steps: p·x + r = q, so x = (q − r) ÷ p. Choose values so the
+            combination is a whole number <strong>greater than 50</strong> to
+            make a tough final lock.
+          </div>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="d2-p">p — coefficient</label>
+              <input
+                type="number"
+                id="d2-p"
+                data-save
+                min="2"
+                max="9"
+                placeholder="example: 3"
+                oninput="solveLockD2()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="d2-r">r — number added</label>
+              <input
+                type="number"
+                id="d2-r"
+                data-save
+                min="1"
+                max="99"
+                placeholder="example: 7"
+                oninput="solveLockD2()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="d2-q">q — right side</label>
+              <input
+                type="number"
+                id="d2-q"
+                data-save
+                min="2"
+                max="999"
+                placeholder="example: 220"
+                oninput="solveLockD2()"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="solveLockD2()">
+            Solve &amp; Verify Lock D
+          </button>
+          <div class="readout" id="d2-out"></div>
+          <details class="hintbox">
+            <summary>Need a hint?</summary>
+            <p>
+              Undo in reverse order: first subtract r from both sides, then
+              divide by p. For 3x + 7 = 220, subtract 7 → 3x = 213, divide by 3
+              → x = 71. Verify: 3 × 71 + 7 = 220 ✓
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div>
+            <span class="arc-banner">Part 2 · Peer — swap &amp; crack</span>
+            <div class="skill">Solve &amp; verify by substitution · 6.EE.5</div>
+            <h2>Swap Rooms &amp; Crack the Locks</h2>
+          </div>
+        </div>
+        <p>
+          Hand your room to a partner. They read <strong>your</strong> Lock A
+          and Lock C equations (shown below) and type the combinations they get.
+          Their answers are auto-checked against your verified key by
+          substitution.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Sentence Frames</h3>
+          <p>"Your Lock A is ___, so I subtract ___ and get x = ___."</p>
+          <p>"Your Lock C is ___, so I divide by ___ and get x = ___."</p>
+          <p>"I checked by substitution: ___ , so my answer is right."</p>
+          <p class="pk-es">
+            "Tu candado A es ___, así que resto ___ y obtengo x = ___."
+          </p>
+        </div>
+        <label class="fld" for="partnerName">Partner name or initials</label>
+        <input
+          type="text"
+          id="partnerName"
+          data-save
+          placeholder="example: A.J."
+          oninput="updateProgress()"
+        />
+
+        <div class="eq-display" id="peer-eqA">
+          Set Lock A above to show its equation here.
+        </div>
+        <label class="fld" for="peerA"
+          >Partner solves Lock A — combination (x)</label
+        >
+        <input
+          type="number"
+          id="peerA"
+          data-save
+          placeholder="x = ?"
+          oninput="checkPeer()"
+        />
+        <div class="feedback" id="peerAFb"></div>
+
+        <div class="eq-display" id="peer-eqC" style="margin-top: 18px">
+          Set Lock C above to show its equation here.
+        </div>
+        <label class="fld" for="peerC"
+          >Partner solves Lock C — combination (x)</label
+        >
+        <input
+          type="number"
+          id="peerC"
+          data-save
+          placeholder="x = ?"
+          oninput="checkPeer()"
+        />
+        <div class="feedback" id="peerCFb"></div>
+
+        <button class="btn alt" type="button" onclick="checkPeer()">
+          Check partner's answers
+        </button>
+
+        <label class="fld" for="peerReflect" style="margin-top: 18px"
+          >Which of your locks was hardest for your partner, and why?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My partner found Lock ___ hardest because ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner">Part 3 · World — sample escape rooms</span>
+            <div class="skill">Compare to real designs · 6.EE.7</div>
+            <h2>How Does Your Room Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are sample student escape rooms with their number of locks and
+          the average combination (solution). Pick what to compare and see where
+          your room lands.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="locks">Number of locks</option>
+              <option value="avgSolution">
+                Average combination (solution)
+              </option>
+              <option value="hardest">Hardest lock combination</option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your value"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: for "hardest lock," type your biggest combination (Lock D is
+              usually it).
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>Sample Escape Rooms 🔐</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>Room</th>
+                  <th>Locks</th>
+                  <th>Avg sol.</th>
+                  <th>Hardest</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- What-If Lab: inequality lock (combo > 50 for Level 2) -->
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab — design an inequality lock</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Some escape rooms use an inequality instead of an exact number: the
+            lock opens only when the combination is <strong>at least</strong> a
+            target. Set a target and watch the solution set and number line
+            update live.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="ineqTarget"
+                >Lock opens when combination is at least…</label
+              >
+              <input
+                type="number"
+                id="ineqTarget"
+                data-save
+                min="1"
+                placeholder="example: 50"
+                oninput="runIneq()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="ineqTest"
+                >Try a combination — does it open the lock?</label
+              >
+              <input
+                type="number"
+                id="ineqTest"
+                data-save
+                placeholder="example: 71"
+                oninput="runIneq()"
+              />
+            </div>
+          </div>
+          <div class="pk-whatif" id="ineqBox" style="margin-top: 12px">
+            Enter a target to build the inequality lock.
+          </div>
+          <div class="nline-wrap" id="nline-wrap" style="display: none"></div>
+          <p
+            class="pk-lvl2"
+            style="font-size: 14px; color: var(--muted); margin-top: 12px"
+          >
+            Level 2: make your Lock D combination
+            <strong>greater than 50</strong> and use it as the target — players
+            must reach x ≥ 50 to escape.
+          </p>
+        </div>
+
+        <label class="fld" for="worldReflect" style="margin-top: 18px"
+          >Is your room harder or easier than the samples? Use a number to
+          explain.</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My hardest combination is ___, which is higher / lower than the sample average of ___, so my room is ___."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 question: A sample room's hardest lock is 5x − 3 = 97.
+            Solve it and explain each step.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="Add 3 to both sides → 5x = 100, divide by 5 → x = 20 because ___"
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Complete the Escape Room Blueprint</h2>
+          </div>
+        </div>
+        <p>
+          Write your blueprint (3–5 sentences) using your real numbers. Name
+          each lock, give its equation, and state the combination (solution).
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="My escape room is called ___ (theme: ___). Lock A: x + ___ = ___, combination = ___. Lock B: x − ___ = ___, combination = ___. Lock C: ___x = ___, combination = ___. Lock D: ___, combination = ___. Every combination was verified by substitution."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Blueprint Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I named my room and
+            picked a theme.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I solved an addition
+            and a subtraction lock and verified each by substitution.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I solved a
+            multiplication/division (or two-step) lock and verified it.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> A partner cracked my
+            locks and I checked their answers.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I compared my room to
+            the sample escape rooms.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> My blueprint names
+            every lock's equation and solution.
+          </li>
+        </ul>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="
+                PK.downloadText('escape-room-blueprint.txt', 'reportBox')
+              "
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your blueprint summary.
+        </div>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--navy)">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Writing Equations (6.EE.6)</td>
+            <td>All locks use a variable; clues match equations perfectly</td>
+            <td>Equations correct</td>
+            <td>Variable used but an equation has an error</td>
+          </tr>
+          <tr>
+            <td>Add/Sub Equations (6.EE.7)</td>
+            <td>Solutions correct; substitution check shown for each</td>
+            <td>Solutions correct</td>
+            <td>Attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Mult/Div (or 2-step) (6.EE.7)</td>
+            <td>Solution correct; inverse operations and substitution shown</td>
+            <td>Solution correct</td>
+            <td>Attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Checks partner work and compares to samples with reasoning</td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>
+              Blueprint names all locks with equations, solutions, and reasoning
+            </td>
+            <td>Blueprint names most locks with equations and solutions</td>
+            <td>Blueprint incomplete or missing solutions</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">
+        Neft Teacher · Unit 8 Culminating Project · Version A ·
+        <span id="yr"></span>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
+
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+      function hide(id) {
+        const el = $(id);
+        if (el) el.classList.remove("show");
+      }
+
+      // running state used by peer, world, report
+      const proj = {
+        aP: null,
+        aQ: null,
+        aX: null,
+        bP: null,
+        bQ: null,
+        bX: null,
+        cP: null,
+        cQ: null,
+        cX: null,
+        dX: null,
+        dEq: null,
+      };
+
+      /* ---- Lock A: x + p = q ---- */
+      function solveLockA() {
+        const p = num("a-p"),
+          q = num("a-q");
+        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
+          hide("a-out");
+          proj.aP = proj.aQ = proj.aX = null;
+          refreshPeerEqs();
+          return;
+        }
+        if (q <= p) {
+          show(
+            "a-out",
+            "⚠️ Make sure q is greater than p so the combination is positive.",
+          );
+          proj.aX = null;
+          refreshPeerEqs();
+          return;
+        }
+        const x = q - p,
+          verify = x + p;
+        proj.aP = p;
+        proj.aQ = q;
+        proj.aX = x;
+        show(
+          "a-out",
+          '<div class="big">x = ' +
+            x +
+            "</div>" +
+            "Equation: <strong>x + " +
+            p +
+            " = " +
+            q +
+            "</strong><br>" +
+            "Inverse operation: subtract " +
+            p +
+            " from both sides → x = " +
+            q +
+            " − " +
+            p +
+            " = <strong>" +
+            x +
+            "</strong><br>" +
+            "Substitution check: " +
+            x +
+            " + " +
+            p +
+            " = <strong>" +
+            verify +
+            "</strong>" +
+            (verify === q ? " ✅ Verified! Lock A combination." : " ❌"),
+        );
+        refreshPeerEqs();
+      }
+
+      /* ---- Lock B: x − p = q ---- */
+      function solveLockB() {
+        const p = num("b-p"),
+          q = num("b-q");
+        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
+          hide("b-out");
+          proj.bP = proj.bQ = proj.bX = null;
+          return;
+        }
+        const x = q + p,
+          verify = x - p;
+        proj.bP = p;
+        proj.bQ = q;
+        proj.bX = x;
+        show(
+          "b-out",
+          '<div class="big">x = ' +
+            x +
+            "</div>" +
+            "Equation: <strong>x − " +
+            p +
+            " = " +
+            q +
+            "</strong><br>" +
+            "Inverse operation: add " +
+            p +
+            " to both sides → x = " +
+            q +
+            " + " +
+            p +
+            " = <strong>" +
+            x +
+            "</strong><br>" +
+            "Substitution check: " +
+            x +
+            " − " +
+            p +
+            " = <strong>" +
+            verify +
+            "</strong>" +
+            (verify === q ? " ✅ Verified! Lock B combination." : " ❌"),
+        );
+      }
+
+      /* ---- Lock C: p·x = q ---- */
+      function solveLockC() {
+        const p = num("c-p"),
+          q = num("c-q");
+        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
+          hide("c-out");
+          proj.cP = proj.cQ = proj.cX = null;
+          refreshPeerEqs();
+          return;
+        }
+        if (q % p !== 0) {
+          show(
+            "c-out",
+            "⚠️ " +
+              q +
+              " ÷ " +
+              p +
+              " has a remainder. Pick q so it divides evenly by p (example: p = 4, q = 28).",
+          );
+          proj.cX = null;
+          refreshPeerEqs();
+          return;
+        }
+        const x = q / p,
+          verify = p * x;
+        proj.cP = p;
+        proj.cQ = q;
+        proj.cX = x;
+        show(
+          "c-out",
+          '<div class="big">x = ' +
+            x +
+            "</div>" +
+            "Equation: <strong>" +
+            p +
+            "x = " +
+            q +
+            "</strong><br>" +
+            "Inverse operation: divide both sides by " +
+            p +
+            " → x = " +
+            q +
+            " ÷ " +
+            p +
+            " = <strong>" +
+            x +
+            "</strong><br>" +
+            "Substitution check: " +
+            p +
+            " × " +
+            x +
+            " = <strong>" +
+            verify +
+            "</strong>" +
+            (verify === q ? " ✅ Verified! Lock C combination." : " ❌"),
+        );
+        refreshPeerEqs();
+      }
+
+      /* ---- Lock D (Level 1): x ÷ p = q ---- */
+      function solveLockD1() {
+        const p = num("d1-p"),
+          q = num("d1-q");
+        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
+          hide("d1-out");
+          proj.dX = null;
+          proj.dEq = null;
+          return;
+        }
+        const x = q * p,
+          verify = x / p;
+        proj.dX = x;
+        proj.dEq = "x ÷ " + p + " = " + q;
+        show(
+          "d1-out",
+          '<div class="big">x = ' +
+            x +
+            "</div>" +
+            "Equation: <strong>x ÷ " +
+            p +
+            " = " +
+            q +
+            "</strong><br>" +
+            "Inverse operation: multiply both sides by " +
+            p +
+            " → x = " +
+            q +
+            " × " +
+            p +
+            " = <strong>" +
+            x +
+            "</strong><br>" +
+            "Substitution check: " +
+            x +
+            " ÷ " +
+            p +
+            " = <strong>" +
+            verify +
+            "</strong>" +
+            (verify === q ? " ✅ Verified! Lock D combination." : " ❌"),
+        );
+      }
+
+      /* ---- Lock D (Level 2): p·x + r = q ---- */
+      function solveLockD2() {
+        const p = num("d2-p"),
+          r = num("d2-r"),
+          q = num("d2-q");
+        if (isNaN(p) || p <= 0 || isNaN(r) || r < 0 || isNaN(q) || q <= 0) {
+          hide("d2-out");
+          proj.dX = null;
+          proj.dEq = null;
+          return;
+        }
+        if (q <= r) {
+          show(
+            "d2-out",
+            "⚠️ Make q greater than r so the combination is positive.",
+          );
+          proj.dX = null;
+          return;
+        }
+        if ((q - r) % p !== 0) {
+          show(
+            "d2-out",
+            "⚠️ (q − r) ÷ p must be a whole number. Try q = " +
+              (p * Math.round((q - r) / p) + r) +
+              " with p = " +
+              p +
+              ", r = " +
+              r +
+              ".",
+          );
+          proj.dX = null;
+          return;
+        }
+        const x = (q - r) / p,
+          verify = p * x + r;
+        proj.dX = x;
+        proj.dEq = p + "x + " + r + " = " + q;
+        const tough =
+          x > 50
+            ? " 🔒 Tough final lock — combination is greater than 50!"
+            : " (Tip: aim for a combination greater than 50 for a tougher lock.)";
+        show(
+          "d2-out",
+          '<div class="big">x = ' +
+            x +
+            "</div>" +
+            "Equation: <strong>" +
+            p +
+            "x + " +
+            r +
+            " = " +
+            q +
+            "</strong><br>" +
+            "Step 1 — subtract " +
+            r +
+            ": " +
+            p +
+            "x = " +
+            (q - r) +
+            "<br>" +
+            "Step 2 — divide by " +
+            p +
+            ": x = " +
+            (q - r) +
+            " ÷ " +
+            p +
+            " = <strong>" +
+            x +
+            "</strong><br>" +
+            "Substitution check: " +
+            p +
+            " × " +
+            x +
+            " + " +
+            r +
+            " = <strong>" +
+            verify +
+            "</strong>" +
+            (verify === q ? " ✅ Verified!" + tough : " ❌"),
+        );
+      }
+
+      /* ---- Part 2: peer swap & crack (auto-check by substitution) ---- */
+      function refreshPeerEqs() {
+        $("peer-eqA").textContent =
+          proj.aX != null
+            ? "Lock A:  x + " + proj.aP + " = " + proj.aQ
+            : "Set Lock A above to show its equation here.";
+        $("peer-eqC").textContent =
+          proj.cX != null
+            ? "Lock C:  " + proj.cP + "x = " + proj.cQ
+            : "Set Lock C above to show its equation here.";
+      }
+      function checkPeer() {
+        // Lock A
+        const fbA = $("peerAFb");
+        const rawA = $("peerA").value.trim();
+        if (proj.aX == null) {
+          fbA.textContent = "Set your Lock A first.";
+          fbA.className = "feedback no";
+        } else if (rawA === "") {
+          fbA.textContent = "";
+          fbA.className = "feedback";
+        } else {
+          const v = num("peerA");
+          if (v === proj.aX) {
+            fbA.textContent =
+              "✅ Correct! " +
+              v +
+              " + " +
+              proj.aP +
+              " = " +
+              proj.aQ +
+              " — Lock A opens.";
+            fbA.className = "feedback ok";
+          } else {
+            fbA.textContent =
+              "❌ Not yet. Subtract " +
+              proj.aP +
+              " from " +
+              proj.aQ +
+              ". Substitution would not give " +
+              proj.aQ +
+              ".";
+            fbA.className = "feedback no";
+          }
+        }
+        // Lock C
+        const fbC = $("peerCFb");
+        const rawC = $("peerC").value.trim();
+        if (proj.cX == null) {
+          fbC.textContent = "Set your Lock C first.";
+          fbC.className = "feedback no";
+        } else if (rawC === "") {
+          fbC.textContent = "";
+          fbC.className = "feedback";
+        } else {
+          const v = num("peerC");
+          if (v === proj.cX) {
+            fbC.textContent =
+              "✅ Correct! " +
+              proj.cP +
+              " × " +
+              v +
+              " = " +
+              proj.cQ +
+              " — Lock C opens.";
+            fbC.className = "feedback ok";
+          } else {
+            fbC.textContent =
+              "❌ Not yet. Divide " +
+              proj.cQ +
+              " by " +
+              proj.cP +
+              ". Check by substitution.";
+            fbC.className = "feedback no";
+          }
+        }
+        updateProgress();
+      }
+
+      /* ---- Part 3: world dataset + meter ---- */
+      // [room, locks, avgSolution, hardest] — sample student escape rooms
+      const world = [
+        ["The Vault", 4, 11, 24],
+        ["Lost Temple", 5, 9, 30],
+        ["Cyber Heist", 6, 14, 48],
+        ["Ghost Manor", 3, 7, 18],
+        ["Sky Station", 5, 12, 55],
+        ["Pirate's Cove", 4, 10, 36],
+        ["Dragon Keep", 6, 16, 64],
+        ["Spy Bunker", 4, 8, 27],
+      ];
+      const wIdx = { locks: 1, avgSolution: 2, hardest: 3 };
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              "<tr><td>" +
+              r[0] +
+              "</td><td>" +
+              r[1] +
+              "</td><td>" +
+              r[2] +
+              "</td><td>" +
+              r[3] +
+              "</td></tr>",
+          )
+          .join("");
+      }
+      function worldSample() {
+        return world.map((r) => r[wIdx[$("worldCat").value]]);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        PK.worldMeter("worldMeter", worldSample(), my, {
+          mean: "Sample avg",
+          me: "Me",
+        });
+        updateProgress();
+      }
+
+      /* ---- What-If Lab: inequality lock (reuses drawNumberLine ported from Version B) ---- */
+      function runIneq() {
+        const goal = num("ineqTarget");
+        const test = $("ineqTest").value.trim();
+        if (isNaN(goal) || goal <= 0) {
+          $("ineqBox").innerHTML =
+            "Enter a target to build the inequality lock.";
+          $("nline-wrap").style.display = "none";
+          return;
+        }
+        let testHtml = "";
+        if (test !== "") {
+          const t = num("ineqTest");
+          testHtml =
+            "<br><b>Try " +
+            t +
+            ":</b> " +
+            t +
+            " ≥ " +
+            goal +
+            " → " +
+            (t >= goal
+              ? '<span style="color:var(--green)">✅ TRUE — the lock opens!</span>'
+              : '<span style="color:var(--coral)">❌ FALSE — combination too low, lock stays shut.</span>');
+        }
+        $("ineqBox").innerHTML =
+          "<b>Inequality lock:</b> x ≥ " +
+          goal +
+          " (closed circle at " +
+          goal +
+          ", shade right).<br>" +
+          "Solution set: every combination of " +
+          goal +
+          " or more — " +
+          goal +
+          ", " +
+          (goal + 1) +
+          ", " +
+          (goal + 5) +
+          ", " +
+          (goal + 20) +
+          " … on forever." +
+          testHtml;
+        drawNumberLine(goal, ">=", "≥", true, true);
+        $("nline-wrap").style.display = "block";
+        updateProgress();
+      }
+
+      // Ported from Version B — reusable inequality number line SVG
+      function drawNumberLine(goal, sym, symDisplay, isClosed, isRight) {
+        const W = 520,
+          H = 80,
+          cx = W / 2,
+          y = 44,
+          tickH = 10,
+          labelY = y + 22,
+          arrowLen = 18,
+          tickSpacing = 50;
+        const ticks = [];
+        for (let i = -4; i <= 4; i++)
+          ticks.push({ val: goal + i, x: cx + i * tickSpacing });
+        const shadeColor = "#6d3fa0",
+          shadeOpacity = "0.18";
+        let shadeX, shadeW;
+        if (isRight) {
+          shadeX = cx;
+          shadeW = cx + 4 * tickSpacing + arrowLen;
+        } else {
+          shadeX = cx - 4 * tickSpacing - arrowLen;
+          shadeW = cx;
+        }
+        const circleFill = isClosed ? shadeColor : "#fff";
+        let svg =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="' +
+          W +
+          '" height="' +
+          H +
+          '" viewBox="0 0 ' +
+          W +
+          " " +
+          H +
+          '" role="img" aria-label="Number line showing x ' +
+          symDisplay +
+          " " +
+          goal +
+          '">';
+        svg +=
+          '<rect x="' +
+          shadeX +
+          '" y="' +
+          (y - 6) +
+          '" width="' +
+          Math.abs(shadeW - shadeX) +
+          '" height="12" fill="' +
+          shadeColor +
+          '" opacity="' +
+          shadeOpacity +
+          '"/>';
+        svg +=
+          '<line x1="' +
+          (cx - 4 * tickSpacing - arrowLen) +
+          '" y1="' +
+          y +
+          '" x2="' +
+          (cx + 4 * tickSpacing + arrowLen) +
+          '" y2="' +
+          y +
+          '" stroke="#1a2633" stroke-width="2.5"/>';
+        svg +=
+          '<polygon points="' +
+          (cx + 4 * tickSpacing + arrowLen) +
+          "," +
+          y +
+          " " +
+          (cx + 4 * tickSpacing + arrowLen - 10) +
+          "," +
+          (y - 5) +
+          " " +
+          (cx + 4 * tickSpacing + arrowLen - 10) +
+          "," +
+          (y + 5) +
+          '" fill="#1a2633"/>';
+        svg +=
+          '<polygon points="' +
+          (cx - 4 * tickSpacing - arrowLen) +
+          "," +
+          y +
+          " " +
+          (cx - 4 * tickSpacing - arrowLen + 10) +
+          "," +
+          (y - 5) +
+          " " +
+          (cx - 4 * tickSpacing - arrowLen + 10) +
+          "," +
+          (y + 5) +
+          '" fill="#1a2633"/>';
+        ticks.forEach(function (t) {
+          if (Math.abs(t.val - goal) <= 2) {
+            svg +=
+              '<line x1="' +
+              t.x +
+              '" y1="' +
+              (y - tickH) +
+              '" x2="' +
+              t.x +
+              '" y2="' +
+              (y + tickH) +
+              '" stroke="#1a2633" stroke-width="1.5"/>';
+            svg +=
+              '<text x="' +
+              t.x +
+              '" y="' +
+              labelY +
+              '" text-anchor="middle" font-size="13" font-family="sans-serif" fill="#1a2633">' +
+              t.val +
+              "</text>";
+          }
+        });
+        svg +=
+          '<circle cx="' +
+          cx +
+          '" cy="' +
+          y +
+          '" r="7" fill="' +
+          circleFill +
+          '" stroke="' +
+          shadeColor +
+          '" stroke-width="2.5"/>';
+        svg +=
+          '<text x="' +
+          cx +
+          '" y="' +
+          (y - 14) +
+          '" text-anchor="middle" font-size="13" font-weight="700" font-family="sans-serif" fill="' +
+          shadeColor +
+          '">x ' +
+          symDisplay +
+          " " +
+          goal +
+          "</text>";
+        svg += "</svg>";
+        $("nline-wrap").innerHTML = svg;
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          roomName: "The Vault of Numbers",
+          roomTheme: "Secret Spy Lab",
+          "a-p": 8,
+          "a-q": 15,
+          "b-p": 6,
+          "b-q": 10,
+          "c-p": 4,
+          "c-q": 28,
+          "d1-p": 3,
+          "d1-q": 5,
+          "d2-p": 3,
+          "d2-r": 7,
+          "d2-q": 220,
+          ineqTarget: 50,
+          ineqTest: 71,
+          myWorld: "",
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      function recalcAll() {
+        solveLockA();
+        solveLockB();
+        solveLockC();
+        if (document.body.classList.contains("pk-level-2")) solveLockD2();
+        else solveLockD1();
+        checkPeer();
+        renderWorld();
+        worldGo();
+        runIneq();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f = (x) => (x == null ? "(not finished)" : x);
+        return (
+          "ESCAPE ROOM ARCHITECT — MY BLUEPRINT\n" +
+          "====================================\n\n" +
+          "Room name: " +
+          ($("roomName").value || "(unnamed)") +
+          "\n" +
+          "Theme: " +
+          ($("roomTheme").value || "(none)") +
+          "\n\n" +
+          "PART 1: MY LOCKS (SELF)\n" +
+          "Lock A (x + p = q): x + " +
+          f(proj.aP) +
+          " = " +
+          f(proj.aQ) +
+          "  →  x = " +
+          f(proj.aX) +
+          "\n" +
+          "Lock B (x − p = q): x − " +
+          f(proj.bP) +
+          " = " +
+          f(proj.bQ) +
+          "  →  x = " +
+          f(proj.bX) +
+          "\n" +
+          "Lock C (p·x = q): " +
+          f(proj.cP) +
+          "x = " +
+          f(proj.cQ) +
+          "  →  x = " +
+          f(proj.cX) +
+          "\n" +
+          "Lock D: " +
+          (proj.dEq || "(not finished)") +
+          "  →  x = " +
+          f(proj.dX) +
+          "\n\n" +
+          "PART 2: PEER (SWAP & CRACK)\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "Partner Lock A answer: " +
+          ($("peerA").value || "-") +
+          "  |  Lock C answer: " +
+          ($("peerC").value || "-") +
+          "\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "Comparison: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n\n" +
+          "BLUEPRINT PITCH:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["room_name", $("roomName").value],
+          ["theme", $("roomTheme").value],
+          ["lockA_eq", "x+" + proj.aP + "=" + proj.aQ],
+          ["lockA_x", proj.aX],
+          ["lockB_eq", "x-" + proj.bP + "=" + proj.bQ],
+          ["lockB_x", proj.bX],
+          ["lockC_eq", proj.cP + "x=" + proj.cQ],
+          ["lockC_x", proj.cX],
+          ["lockD_eq", proj.dEq],
+          ["lockD_x", proj.dX],
+          ["partner", $("partnerName").value],
+          ["partner_lockA", $("peerA").value],
+          ["partner_lockC", $("peerC").value],
+        ];
+        PK.downloadCsv("escape-room-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // up to 4 locks
+        const named =
+          $("roomName").value.trim() && $("roomTheme").value ? 1 : 0;
+        const peerA =
+          $("peerAFb").querySelector(".pk-ok") ||
+          $("peerAFb").classList.contains("ok")
+            ? 1
+            : 0;
+        const peerC =
+          $("peerCFb").querySelector(".pk-ok") ||
+          $("peerCFb").classList.contains("ok")
+            ? 1
+            : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + named + peerA + peerC + wrld + checks + pitch; // max 4+1+1+1+1+6+1 = 15
+        const pct = Math.min(100, Math.round((total / 15) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+      document
+        .getElementById("peerReflect")
+        .addEventListener("input", updateProgress);
+      document
+        .getElementById("worldReflect")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook ---- */
+      window.onLevelChange = function (level) {
+        // recompute Lock D in the correct mode when level changes
+        if (level === "level-2") solveLockD2();
+        else solveLockD1();
+        if (level === "level-1") {
+          const empty = !$("a-p").value && !$("a-q").value;
+          if (empty) {
+            $("a-p").value = 5;
+            $("a-q").value = 12;
+            solveLockA();
+          }
+        }
+        updateProgress();
+      };
+
+      /* ---- init ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u8ProjectA", default: "level-1" });
+        PK.load("u8ProjectA", { after: recalcAll });
+        refreshPeerEqs();
+        updateProgress();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

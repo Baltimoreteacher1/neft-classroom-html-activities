@@ -3,35 +3,598 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.EE.C.9 Proportional Reasoning Lab classroom activity.">
+  <meta name="description" content="Publisher-grade mathematical simulation lab. Plot coordinates in real-time to analyze proportional reasoning and equivalent ratios.">
   <title>6.EE.C.9 Proportional Reasoning Lab</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    :root {
+      --slate-deep: #0f172a;
+      --paper: #ffffff;
+      --navy: #1e3a8a;
+      --teal: #0d9488;
+      --teal-light: #f0fdfa;
+      --blue-dye: #2563eb;
+      --yellow-dye: #eab308;
+      --mint-accent: #14b8a6;
+      --slate-ink: #334155;
+      --slate-border: #cbd5e1;
+      --font-outfit: 'Outfit', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-outfit);
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      color: var(--slate-ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lab-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .lab-header {
+      background: var(--paper);
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .lab-title h1 {
+      margin: 0;
+      font-size: 1.65rem;
+      font-weight: 850;
+      color: var(--slate-deep);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lab-title p {
+      margin: 2px 0 0 0;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+    }
+
+    .glass-card {
+      background: var(--paper);
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card-heading {
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-heading h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-deep);
+    }
+
+    /* Simulation inputs */
+    .mixer-workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .dye-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dye-control {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .dye-control.blue {
+      border-left: 4px solid var(--blue-dye);
+    }
+
+    .dye-control.yellow {
+      border-left: 4px solid var(--yellow-dye);
+    }
+
+    .dye-label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+
+    /* Dynamic paint canvas */
+    .paint-fluid-preview {
+      background: #f1f5f9;
+      border: 1.5px dashed var(--slate-border);
+      border-radius: 16px;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .paint-fluid-cup {
+      width: 70px;
+      height: 90px;
+      border: 3px solid #334155;
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      background: transparent;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .fluid-fill {
+      width: 100%;
+      height: 60%;
+      background: #0d9488; /* dynamically updated */
+      transition: height 0.3s ease, background 0.3s;
+      box-shadow: inset 0 4px 6px rgba(255,255,255,0.2);
+    }
+
+    .paint-bucket-label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 10;
+    }
+
+    .ratio-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--paper);
+      border: 1px solid #cbd5e1;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    /* Programmatic Coordinate Graph */
+    .graph-viewport {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+    }
+
+    /* Table styling */
+    .signals-panel {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--slate-deep);
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      padding: 8px 10px;
+      border-bottom: 2px solid #e2e8f0;
+      text-align: center;
+    }
+
+    td {
+      padding: 8px;
+      text-align: center;
+      border-bottom: 1px solid #f1f5f9;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .btn-action {
+      border: none;
+      background: var(--teal);
+      color: #fff;
+      font-family: var(--font-outfit);
+      font-weight: 800;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-action:hover {
+      background: #0f766e;
+    }
+
+    .btn-action.secondary {
+      background: #cbd5e1;
+      color: var(--slate-ink);
+    }
+
+    .btn-action.secondary:hover {
+      background: #94a3b8;
+    }
+
+    .coach-feedback {
+      background: var(--teal-light);
+      border: 1px solid rgba(13, 148, 136, 0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .badge-check {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-check.fail {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions, Equations, and Variables</a><span>/</span><span>6.EE.C.9 Proportional Reasoning Lab</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.EE.C.9 Proportional Reasoning Lab</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <main class="lab-shell">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions &amp; Equations</a><span>/</span><span>Proportional Reasoning Lab</span>
+    </nav>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.EE.C.9Proportional-Reasoning-Lab</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/expressions-equations/6-ee-c-9proportional-reasoning-lab/</span></p>
+    <header class="lab-header">
+      <div class="lab-title">
+        <h1>🧪 Proportional Reasoning Simulation</h1>
+        <p>Interactive coordinate plane grapher · Equivalent Ratio Lab</p>
       </div>
-    </section>
+    </header>
 
-    <div class="button-row">
-      <a class="primary-button" href="/expressions-equations/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+    <div class="main-layout">
+      <!-- Controls -->
+      <section class="glass-card">
+        <div class="card-heading">
+          <h2>🎨 Interactive Paint Chamber</h2>
+          <span class="ratio-badge">Target Ratio: <span style="color:var(--teal)">2:3</span></span>
+        </div>
+
+        <p style="margin:0; font-size:0.92rem; color:#64748b; line-height:1.5;">
+          Combine cups of <strong>Blue Dye (x)</strong> and <strong>Yellow Dye (y)</strong>. Check how the mixed fluid turns into different green paint tones. Record your coordinates on the coordinate plane to verify if they are mathematically proportional!
+        </p>
+
+        <div class="mixer-workspace">
+          <div class="dye-slider-group">
+            <div class="dye-control blue">
+              <div class="dye-label">
+                <span>Blue Cups (x)</span>
+                <span id="blueVal" style="color:var(--blue-dye)">2</span>
+              </div>
+              <input type="range" id="blueSlider" min="1" max="10" value="2">
+            </div>
+
+            <div class="dye-control yellow">
+              <div class="dye-label">
+                <span>Yellow Cups (y)</span>
+                <span id="yellowVal" style="color:var(--yellow-dye)">3</span>
+              </div>
+              <input type="range" id="yellowSlider" min="1" max="10" value="3">
+            </div>
+          </div>
+
+          <div class="paint-fluid-preview">
+            <div class="paint-fluid-cup">
+              <div class="fluid-fill" id="fluidFill"></div>
+            </div>
+            <div class="paint-bucket-label" id="paintLabel">Standard Green</div>
+            <span class="ratio-badge" style="bottom:10px; top:auto; right:auto; left:50%; transform:translateX(-50%);" id="currentRatioBadge">2 : 3</span>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button class="btn-action" style="flex:1;" id="addPointBtn">Record Mixture &amp; Plot Point</button>
+          <button class="btn-action secondary" id="resetBtn">Reset Graph</button>
+        </div>
+
+        <div class="card-heading" style="border-top:2px solid #f1f5f9; padding-top:16px;">
+          <h2>📋 Recorded Coordinates</h2>
+        </div>
+
+        <div class="signals-panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Plot</th>
+                <th>Dye X (Blue)</th>
+                <th>Dye Y (Yellow)</th>
+                <th>Decimal Value (Y / X)</th>
+                <th>Proportional?</th>
+              </tr>
+            </thead>
+            <tbody id="coordinateTableBody">
+              <!-- Recorded points added here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Graph View -->
+      <section class="glass-card">
+        <div class="card-heading">
+          <h2>📈 Coordinate Plane</h2>
+        </div>
+
+        <!-- Pure Programmatic SVG coordinate grid, white background -->
+        <div class="graph-viewport">
+          <svg id="coordinatePlane" width="400" height="400" viewBox="0 0 400 400" style="background:white; border: 1.5px solid var(--slate-border); box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+            <!-- Grid lines -->
+            <!-- 0 to 10 on both axes, 1 unit = 32px. Margin bottom/left = 50px, top/right = 30px. Grid size = 320x320px -->
+            <!-- We draw lines at intervals of 32px -->
+            <g id="gridLines" stroke="#e2e8f0" stroke-width="1"></g>
+            
+            <!-- Axes -->
+            <line x1="50" y1="350" x2="370" y2="350" stroke="#475569" stroke-width="2" />
+            <line x1="50" y1="30" x2="50" y2="350" stroke="#475569" stroke-width="2" />
+            
+            <!-- Labels -->
+            <g id="axisLabels" font-family="Outfit" font-size="11" fill="#475569" text-anchor="middle"></g>
+            
+            <!-- Axes Title -->
+            <text x="210" y="385" font-family="Outfit" font-size="12" font-weight="700" fill="#1e293b" text-anchor="middle">Blue Dye cups (x)</text>
+            <text x="18" y="190" font-family="Outfit" font-size="12" font-weight="700" fill="#1e293b" text-anchor="middle" transform="rotate(-90 18 190)">Yellow Dye cups (y)</text>
+            
+            <!-- Dynamic Plots -->
+            <g id="plotPoints"></g>
+            <path id="trendLine" d="" fill="none" stroke="#0d9488" stroke-width="3" stroke-dasharray="4,4" />
+          </svg>
+        </div>
+
+        <div class="coach-feedback" id="coachFeedback">
+          🤖 <strong>Lab Coach:</strong> Adjust the sliders to mix Blue and Yellow cups. Click <strong>Record Mixture</strong> to plot your first point. Proportional mixtures will align perfectly on a straight line starting from (0,0).
+        </div>
+      </section>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
   </main>
+
   <script src="/assets/app.js" defer></script>
+  <script>
+    // Color Blender Engine
+    function blendBlueYellow(blueCups, yellowCups) {
+      // Calculate color blend dynamically
+      const total = blueCups + yellowCups;
+      const bPct = (blueCups / total) * 100;
+      const yPct = (yellowCups / total) * 100;
+
+      // Base dye parameters
+      // Blue: RGB(37, 99, 235)
+      // Yellow: RGB(234, 179, 8)
+      const r = Math.round((37 * bPct + 234 * yPct) / 100);
+      const g = Math.round((99 * bPct + 179 * yPct) / 100);
+      const b = Math.round((235 * bPct + 8 * yPct) / 100);
+
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    const blueSlider = document.getElementById("blueSlider");
+    const yellowSlider = document.getElementById("yellowSlider");
+    const blueVal = document.getElementById("blueVal");
+    const yellowVal = document.getElementById("yellowVal");
+    const fluidFill = document.getElementById("fluidFill");
+    const paintLabel = document.getElementById("paintLabel");
+    const currentRatioBadge = document.getElementById("currentRatioBadge");
+    const tableBody = document.getElementById("coordinateTableBody");
+    const coachFeedback = document.getElementById("coachFeedback");
+
+    const gridLines = document.getElementById("gridLines");
+    const axisLabels = document.getElementById("axisLabels");
+    const plotPoints = document.getElementById("plotPoints");
+    const trendLine = document.getElementById("trendLine");
+
+    let plottedPoints = [];
+
+    // Setup Coordinate Grid SVGs
+    function initGrid() {
+      gridLines.innerHTML = "";
+      axisLabels.innerHTML = "";
+      
+      // Draw grid rows & columns
+      for (let i = 0; i <= 10; i++) {
+        const offset = 50 + i * 30; // 30px per unit
+        
+        // vertical lines
+        gridLines.innerHTML += `<line x1="${offset}" y1="30" x2="${offset}" y2="350" stroke="${i === 0 ? '#475569' : '#e2e8f0'}" stroke-width="1" />`;
+        // horizontal lines
+        gridLines.innerHTML += `<line x1="50" y1="${350 - i * 30}" x2="370" y2="${350 - i * 30}" stroke="${i === 0 ? '#475569' : '#e2e8f0'}" stroke-width="1" />`;
+
+        // numeric labels
+        axisLabels.innerHTML += `<text x="${offset}" y="366" text-anchor="middle">${i}</text>`;
+        axisLabels.innerHTML += `<text x="40" y="${354 - i * 30}" text-anchor="end">${i}</text>`;
+      }
+    }
+
+    function getGreenLabel(ratio) {
+      if (Math.abs(ratio - 0.66) < 0.05) return "Sky Green Tint";
+      if (Math.abs(ratio - 1.5) < 0.05) return "Standard Green (Target)";
+      if (ratio > 1.5) return "Yellow-Green Lime";
+      return "Ocean Blue-Green";
+    }
+
+    function updateMixer() {
+      const b = Number(blueSlider.value);
+      const y = Number(yellowSlider.value);
+      blueVal.textContent = b;
+      yellowVal.textContent = y;
+
+      const mixedColor = blendBlueYellow(b, y);
+      fluidFill.style.background = mixedColor;
+
+      const currentRatio = (y / b).toFixed(2);
+      currentRatioBadge.textContent = `${b} : ${y}`;
+      paintLabel.textContent = getGreenLabel(y / b);
+      paintLabel.style.color = mixedColor;
+    }
+
+    function drawPlot() {
+      plotPoints.innerHTML = "";
+      if (plottedPoints.length === 0) {
+        trendLine.setAttribute("d", "");
+        return;
+      }
+
+      let linePath = "M 50 350"; // start at origin (0,0)
+      let proportional = true;
+      const refRatio = plottedPoints[0].y / plottedPoints[0].x;
+
+      plottedPoints.forEach(p => {
+        const cx = 50 + p.x * 30;
+        const cy = 350 - p.y * 30;
+        
+        plotPoints.innerHTML += `<circle cx="${cx}" cy="${cy}" r="7" fill="${blendBlueYellow(p.x, p.y)}" stroke="#0f172a" stroke-width="2" />`;
+        plotPoints.innerHTML += `<text x="${cx + 10}" y="${cy - 8}" font-family="Outfit" font-size="10" font-weight="700" fill="#0f172a">(${p.x}, ${p.y})</text>`;
+
+        if (Math.abs((p.y / p.x) - refRatio) > 0.001) {
+          proportional = false;
+        }
+      });
+
+      if (proportional) {
+        // Draw proportional trendline extending through max point
+        const maxPoint = plottedPoints.reduce((max, cur) => cur.x > max.x ? cur : max, plottedPoints[0]);
+        const ex = 50 + maxPoint.x * 30;
+        const ey = 350 - maxPoint.y * 30;
+        trendLine.setAttribute("d", `M 50 350 L ${ex} ${ey}`);
+        coachFeedback.innerHTML = `🌟 <strong>Lab Diagnostic:</strong> Excellent! Your recorded points have a constant ratio of <strong>1 : ${refRatio.toFixed(1)}</strong>. They form a straight proportional line that starts from the origin (0,0).`;
+      } else {
+        trendLine.setAttribute("d", "");
+        coachFeedback.innerHTML = `⚠️ <strong>Lab Diagnostic:</strong> Your coordinates represent *non-equivalent* ratios. The points do not align on a single straight line from (0,0). Try recording mixtures like (2,3), (4,6), and (6,9) to see a perfect proportional graph!`;
+      }
+    }
+
+    function addCoordinatePoint() {
+      const x = Number(blueSlider.value);
+      const y = Number(yellowSlider.value);
+      const dec = (y / x).toFixed(2);
+
+      // Check if duplicate
+      if (plottedPoints.some(p => p.x === x && p.y === y)) {
+        alert("This coordinate is already plotted on the plane.");
+        return;
+      }
+
+      const refRatio = plottedPoints.length > 0 ? plottedPoints[0].y / plottedPoints[0].x : y / x;
+      const isProp = Math.abs((y / x) - refRatio) <= 0.001;
+
+      plottedPoints.push({ x, y });
+      drawPlot();
+
+      // Append row in table
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:${blendBlueYellow(x, y)}; border:1px solid #000;"></span></td>
+        <td>${x}</td>
+        <td>${y}</td>
+        <td>${dec}</td>
+        <td><span class="badge-check ${isProp ? '' : 'fail'}">${isProp ? 'Yes' : 'No'}</span></td>
+      `;
+      tableBody.appendChild(tr);
+    }
+
+    blueSlider.addEventListener("input", updateMixer);
+    yellowSlider.addEventListener("input", updateMixer);
+    document.getElementById("addPointBtn").addEventListener("click", addCoordinatePoint);
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      plottedPoints = [];
+      tableBody.innerHTML = "";
+      drawPlot();
+      coachFeedback.innerHTML = `🤖 <strong>Lab Coach:</strong> Grid reset. Ready to plot fresh equivalent ratio coordinates.`;
+    });
+
+    // Initialize Grid
+    window.addEventListener("DOMContentLoaded", () => {
+      initGrid();
+      updateMixer();
+    });
+  </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

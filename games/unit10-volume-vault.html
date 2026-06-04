@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volume Vault — Crate Packer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0a0a;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #game {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror.
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="game"></div>
+    <script>
+      // ───────────────────────────────────────────────────────────
+      // VOLUME VAULT — CRATE PACKER  (Neft Teacher)
+      // Grade 6: 6.G.A.2 — Volume of rectangular prisms (V = l × w × h).
+      //
+      // REAL GAME: A physics-driven packing game. Unit cubes fall from a
+      // conveyor; you slide a crate left/right to catch them and pack the
+      // prism EXACTLY to its target volume. The math IS the mechanic — you
+      // build the prism layer-by-layer and the live volume counter teaches
+      // V = l × w × h as you fill the box. Over-pack and the crate jams;
+      // hit the exact volume to seal the vault and advance.
+      // ───────────────────────────────────────────────────────────
+      const W = 1024,
+        H = 768;
+      const LS_KEY = "volumevault_packer_hi";
+
+      // ── Web Audio SFX ──
+      class SFX {
+        constructor() {
+          this.ctx = null;
+        }
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        }
+        tone(f, d, t = "sine", v = 0.07) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        }
+        catch() {
+          this.tone(523, 0.08, "square", 0.05);
+          this.tone(784, 0.1, "sine", 0.05);
+        }
+        seal() {
+          this.tone(659, 0.12, "sine");
+          setTimeout(() => this.tone(988, 0.18, "sine"), 90);
+        }
+        jam() {
+          this.tone(160, 0.25, "sawtooth", 0.08);
+        }
+        miss() {
+          this.tone(220, 0.12, "triangle", 0.05);
+        }
+      }
+      const sfx = new SFX();
+
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+
+      // ── Level generation: pick a target prism l×w×h within grade range ──
+      function makeLevel(floor) {
+        // Difficulty scales the dimensions (and thus the target volume).
+        let lMax, hMax;
+        if (floor <= 2) {
+          lMax = 4;
+          hMax = 3;
+        } else if (floor <= 5) {
+          lMax = 5;
+          hMax = 4;
+        } else {
+          lMax = 6;
+          hMax = 5;
+        }
+        const l = randInt(2, lMax); // crate footprint length (columns)
+        const w = randInt(2, 3); // crate depth — affects cubes-per-cell weighting
+        const h = randInt(2, hMax); // target stack height (layers)
+        return { l, w, h, target: l * w * h };
+      }
+
+      // ════════════════════════════════════════════════════════════
+      //  BOOT
+      // ════════════════════════════════════════════════════════════
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          // procedural cube texture (isometric-ish gold ingot block)
+          const g = this.add.graphics();
+          const drawCube = (key, top, left, right) => {
+            g.clear();
+            g.fillStyle(top, 1);
+            g.fillPoints(
+              [
+                { x: 22, y: 0 },
+                { x: 44, y: 12 },
+                { x: 22, y: 24 },
+                { x: 0, y: 12 },
+              ],
+              true,
+            );
+            g.fillStyle(left, 1);
+            g.fillPoints(
+              [
+                { x: 0, y: 12 },
+                { x: 22, y: 24 },
+                { x: 22, y: 44 },
+                { x: 0, y: 32 },
+              ],
+              true,
+            );
+            g.fillStyle(right, 1);
+            g.fillPoints(
+              [
+                { x: 44, y: 12 },
+                { x: 22, y: 24 },
+                { x: 22, y: 44 },
+                { x: 44, y: 32 },
+              ],
+              true,
+            );
+            g.generateTexture(key, 44, 44);
+          };
+          drawCube("cube", 0xffe066, 0xf2b705, 0xd99e04);
+          drawCube("cubeBad", 0xff8585, 0xe05656, 0xc33d3d);
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════
+      //  TITLE
+      // ════════════════════════════════════════════════════════════
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#0c1733");
+          for (let i = 0; i < 40; i++) {
+            this.add
+              .rectangle(
+                randInt(0, W),
+                randInt(0, H),
+                2,
+                2,
+                0x3b5bdb,
+                Phaser.Math.FloatBetween(0.2, 0.7),
+              )
+              .setDepth(0);
+          }
+          this.add
+            .text(W / 2, 150, "VOLUME VAULT", {
+              fontFamily: "Segoe UI",
+              fontSize: "72px",
+              fontStyle: "900",
+              color: "#ffe066",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 222, "CRATE PACKER", {
+              fontFamily: "Segoe UI",
+              fontSize: "30px",
+              fontStyle: "700",
+              color: "#74c0fc",
+              letterSpacing: 8,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              330,
+              "Catch falling cubes and pack the crate to its EXACT volume.\nV = length × width × height. Fill every layer — no more, no less!",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "20px",
+                color: "#dbe4ff",
+                align: "center",
+                lineSpacing: 8,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              440,
+              "← →  or  A / D  to slide the crate    •    Catch cubes to stack layers",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5);
+
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          this.add
+            .text(W / 2, 500, "Best vault total: " + hi, {
+              fontFamily: "Segoe UI",
+              fontSize: "18px",
+              color: "#ffd43b",
+            })
+            .setOrigin(0.5);
+
+          const btn = this.add
+            .rectangle(W / 2, 600, 280, 70, 0xffe066)
+            .setInteractive({ useHandCursor: true });
+          const btnT = this.add
+            .text(W / 2, 600, "START HEIST", {
+              fontFamily: "Segoe UI",
+              fontSize: "28px",
+              fontStyle: "800",
+              color: "#0c1733",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: [btn, btnT],
+            scale: 1.05,
+            duration: 700,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.inOut",
+          });
+          const go = () => {
+            sfx.init();
+            this.scene.start("Game");
+          };
+          btn.on("pointerdown", go);
+          this.input.keyboard.once("keydown-ENTER", go);
+          this.input.keyboard.once("keydown-SPACE", go);
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════
+      //  GAME — the real packing loop
+      // ════════════════════════════════════════════════════════════
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#0c1733");
+          this.score = 0;
+          this.floor = 1;
+          this.lives = 3;
+          this.cubesInCrate = 0; // current packed volume
+          this.fallingCubes = [];
+          this.spawnTimer = 0;
+          this.spawnEvery = 1100;
+          this.gameOver = false;
+
+          // crate footprint geometry (in screen space)
+          this.CELL = 46;
+          this.crateY = H - 90;
+
+          // HUD
+          this.hudScore = this.add
+            .text(20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "700",
+              color: "#ffe066",
+            })
+            .setDepth(20);
+          this.hudFloor = this.add
+            .text(W - 20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "700",
+              color: "#74c0fc",
+            })
+            .setOrigin(1, 0)
+            .setDepth(20);
+          this.hudLives = this.add
+            .text(W / 2, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              color: "#ff8787",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(20);
+
+          // live volume equation display
+          this.eq = this.add
+            .text(W / 2, 58, "", {
+              fontFamily: "Consolas, monospace",
+              fontSize: "26px",
+              fontStyle: "700",
+              color: "#ffffff",
+              backgroundColor: "#11224a",
+              padding: { x: 14, y: 6 },
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(20);
+
+          // crate container (slides left/right)
+          this.crate = this.add.container(W / 2, this.crateY).setDepth(10);
+          this.cells = []; // packed cube sprites
+
+          // input
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.keyA = this.input.keyboard.addKey("A");
+          this.keyD = this.input.keyboard.addKey("D");
+          this.input.on("pointermove", (p) => {
+            this.targetX = Phaser.Math.Clamp(
+              p.x,
+              this.halfCrate,
+              W - this.halfCrate,
+            );
+          });
+
+          this.startFloor();
+        }
+
+        startFloor() {
+          this.level = makeLevel(this.floor);
+          this.cubesInCrate = 0;
+          this.fallingCubes.forEach((c) => c.destroy());
+          this.fallingCubes = [];
+          this.cells.forEach((c) => c.destroy());
+          this.cells = [];
+          this.crate.removeAll(true);
+
+          const { l, w } = this.level;
+          this.cols = l;
+          this.rows = w;
+          this.crateW = this.cols * this.CELL;
+          this.halfCrate = this.crateW / 2;
+          this.targetX = W / 2;
+          this.crate.x = W / 2;
+
+          // draw crate base + outline
+          const base = this.add
+            .rectangle(0, 14, this.crateW + 14, 20, 0x5a3d1f)
+            .setStrokeStyle(3, 0x3a2510);
+          this.crate.add(base);
+          // grid guides for each column
+          for (let c = 0; c < this.cols; c++) {
+            const x = -this.halfCrate + this.CELL / 2 + c * this.CELL;
+            const guide = this.add
+              .rectangle(
+                x,
+                -6,
+                this.CELL - 6,
+                this.level.h * 24 + 8,
+                0x1b2a52,
+                0.5,
+              )
+              .setStrokeStyle(1, 0x3b5bdb, 0.6);
+            this.crate.add(guide);
+          }
+          this.colHeights = new Array(this.cols).fill(0); // cubes stacked per column
+
+          // floor banner
+          const banner = this.add
+            .text(
+              W / 2,
+              H / 2 - 40,
+              `FLOOR ${this.floor}\nTarget volume: ${this.level.target} cubic units\n${this.level.l} × ${this.level.w} × ${this.level.h}`,
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "30px",
+                fontStyle: "800",
+                color: "#ffe066",
+                align: "center",
+                backgroundColor: "#0a142e",
+                padding: { x: 24, y: 16 },
+                lineSpacing: 8,
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(30);
+          this.crateLocked = true;
+          this.time.delayedCall(1600, () => {
+            banner.destroy();
+            this.crateLocked = false;
+          });
+          this.updateHUD();
+        }
+
+        spawnCube() {
+          // a cube falls down one of the columns' screen x-positions
+          const x = randInt(120, W - 120);
+          const bad = Math.random() < 0.18 && this.floor > 2; // hazard "lead" cube
+          const spr = this.add
+            .image(x, -30, bad ? "cubeBad" : "cube")
+            .setDepth(8)
+            .setData("bad", bad);
+          spr.vy = Phaser.Math.FloatBetween(2.4, 3.4) + this.floor * 0.15;
+          this.fallingCubes.push(spr);
+        }
+
+        catchCube(spr) {
+          const bad = spr.getData("bad");
+          if (bad) {
+            // lead cube jams the works
+            sfx.jam();
+            this.cameras.main.shake(180, 0.01);
+            this.loseLife();
+            this.flashEq("#ff6b6b");
+            return;
+          }
+          // place into the shortest column to keep stacking even & visible
+          let col = 0,
+            min = Infinity;
+          for (let c = 0; c < this.cols; c++) {
+            if (this.colHeights[c] < min) {
+              min = this.colHeights[c];
+              col = c;
+            }
+          }
+          this.cubesInCrate++;
+          const layerCap = this.cols * this.rows * this.level.h; // == target
+          const cx = -this.halfCrate + this.CELL / 2 + col * this.CELL;
+          const cy = -8 - this.colHeights[col] * 22;
+          const cube = this.add
+            .image(cx, cy - 40, "cube")
+            .setDepth(9)
+            .setScale(0.9);
+          this.crate.add(cube);
+          this.cells.push(cube);
+          this.colHeights[col]++;
+          this.tweens.add({
+            targets: cube,
+            y: cy,
+            duration: 180,
+            ease: "Bounce.out",
+          });
+          sfx.catch();
+          this.score += 5;
+
+          this.updateHUD();
+
+          if (this.cubesInCrate === this.level.target) {
+            this.sealVault();
+          } else if (this.cubesInCrate > this.level.target) {
+            // overfilled — crate jams
+            sfx.jam();
+            this.cameras.main.shake(200, 0.012);
+            this.flashEq("#ff6b6b");
+            this.loseLife();
+            // remove the overflow cube
+            const extra = this.cells.pop();
+            if (extra) extra.destroy();
+            this.cubesInCrate--;
+            this.colHeights[col]--;
+          }
+        }
+
+        sealVault() {
+          this.crateLocked = true;
+          sfx.seal();
+          this.score += 50 + this.floor * 10;
+          this.flashEq("#51cf66");
+          // sparkle
+          for (let i = 0; i < 18; i++) {
+            const s = this.add
+              .rectangle(this.crate.x, this.crateY - 30, 4, 4, 0xffe066)
+              .setDepth(40);
+            this.tweens.add({
+              targets: s,
+              x: this.crate.x + randInt(-160, 160),
+              y: this.crateY - 30 + randInt(-160, 60),
+              alpha: 0,
+              duration: 700,
+              onComplete: () => s.destroy(),
+            });
+          }
+          const msg = this.add
+            .text(
+              W / 2,
+              H / 2 - 30,
+              "VAULT SEALED!\n+" + (50 + this.floor * 10),
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "40px",
+                fontStyle: "900",
+                color: "#51cf66",
+                align: "center",
+                backgroundColor: "#0a142e",
+                padding: { x: 28, y: 18 },
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(40);
+          this.updateHUD();
+          this.time.delayedCall(1400, () => {
+            msg.destroy();
+            this.floor++;
+            if (this.floor > 10) this.endGame(true);
+            else this.startFloor();
+          });
+        }
+
+        loseLife() {
+          this.lives--;
+          this.updateHUD();
+          if (this.lives <= 0) this.endGame(false);
+        }
+
+        flashEq(color) {
+          this.eq.setColor(color);
+          this.time.delayedCall(350, () => this.eq.setColor("#ffffff"));
+        }
+
+        updateHUD() {
+          this.hudScore.setText("SCORE  " + this.score);
+          this.hudFloor.setText("FLOOR  " + this.floor + " / 10");
+          this.hudLives.setText("♥".repeat(Math.max(0, this.lives)));
+          if (this.level) {
+            const remaining = this.level.target - this.cubesInCrate;
+            this.eq.setText(
+              `PACKED ${this.cubesInCrate}  /  TARGET ${this.level.target}` +
+                `   (need ${remaining} more)`,
+            );
+          }
+        }
+
+        endGame(won) {
+          this.gameOver = true;
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          if (this.score > hi) localStorage.setItem(LS_KEY, this.score);
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.score,
+              });
+          } catch (e) {}
+          this.scene.start("Results", { score: this.score, won });
+        }
+
+        update(time, delta) {
+          if (this.gameOver) return;
+          // slide crate
+          if (!this.crateLocked) {
+            let dir = 0;
+            if (this.cursors.left.isDown || this.keyA.isDown) dir = -1;
+            else if (this.cursors.right.isDown || this.keyD.isDown) dir = 1;
+            if (dir !== 0) {
+              this.targetX = Phaser.Math.Clamp(
+                this.crate.x + dir * 9,
+                this.halfCrate,
+                W - this.halfCrate,
+              );
+            }
+            this.crate.x = Phaser.Math.Linear(
+              this.crate.x,
+              this.targetX ?? this.crate.x,
+              0.25,
+            );
+          }
+
+          // spawn
+          this.spawnTimer += delta;
+          if (this.spawnTimer > this.spawnEvery && !this.crateLocked) {
+            this.spawnTimer = 0;
+            this.spawnCube();
+          }
+
+          // move falling cubes + collision with crate mouth
+          const mouthL = this.crate.x - this.halfCrate;
+          const mouthR = this.crate.x + this.halfCrate;
+          for (let i = this.fallingCubes.length - 1; i >= 0; i--) {
+            const c = this.fallingCubes[i];
+            c.y += c.vy;
+            c.angle += 1.5;
+            // caught when reaching crate rim within mouth
+            if (c.y >= this.crateY - 50) {
+              if (c.x >= mouthL && c.x <= mouthR && !this.crateLocked) {
+                this.catchCube(c);
+              } else if (!c.getData("bad")) {
+                sfx.miss();
+              }
+              c.destroy();
+              this.fallingCubes.splice(i, 1);
+            } else if (c.y > H + 40) {
+              c.destroy();
+              this.fallingCubes.splice(i, 1);
+            }
+          }
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════
+      //  RESULTS
+      // ════════════════════════════════════════════════════════════
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(d) {
+          this.data2 = d || {};
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#0c1733");
+          const won = this.data2.won;
+          this.add
+            .text(W / 2, 200, won ? "VAULT CLEARED!" : "HEIST OVER", {
+              fontFamily: "Segoe UI",
+              fontSize: "60px",
+              fontStyle: "900",
+              color: won ? "#51cf66" : "#ff8787",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 300, "Score: " + (this.data2.score || 0), {
+              fontFamily: "Segoe UI",
+              fontSize: "34px",
+              color: "#ffe066",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 370, "Best: " + localStorage.getItem(LS_KEY), {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              color: "#74c0fc",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              440,
+              "Every sealed vault = length × width × height cubic units.",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5);
+          const btn = this.add
+            .rectangle(W / 2, 540, 240, 64, 0xffe066)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 540, "PLAY AGAIN", {
+              fontFamily: "Segoe UI",
+              fontSize: "26px",
+              fontStyle: "800",
+              color: "#0c1733",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerdown", () => this.scene.start("Title"));
+          this.input.keyboard.once("keydown-ENTER", () =>
+            this.scene.start("Title"),
+          );
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game",
+        backgroundColor: "#0c1733",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+      };
+      new Phaser.Game(config);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

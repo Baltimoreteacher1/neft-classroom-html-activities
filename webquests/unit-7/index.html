@@ -1,0 +1,1690 @@
+<!doctype html>
+<html lang="en" class="nt-theme-aware">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      WebQuest · Unit 7 · Vault Recovery — Equations &amp; Inequalities | Neft
+      Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 WebQuest: become a museum cryptographer who writes and solves one-step equations to crack vault dials, then writes and graphs inequalities to set safe climate and weight zones (6.EE.B.5, 6.EE.B.6, 6.EE.B.7, 6.EE.B.8)."
+    />
+
+    <!-- Shared Neft design system -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+
+    <style>
+      /* ============================================================
+     Unit 7 WebQuest — uses shared --nt-* theme variables.
+     Scoped styles only; visuals are SVG/divs (no ASCII art).
+     ============================================================ */
+      :root {
+        --wq-vault: #1e3a8a;
+        --wq-gold: #f59e0b;
+        --wq-steel: #64748b;
+        --wq-eq: #2563eb;
+        --wq-ineq: #0f766e;
+        --wq-danger: #ef4444;
+        --wq-safe: #10b981;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
+      }
+      .wq-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 18px 80px;
+      }
+
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #1e3a8a 55%,
+          #0f766e 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
+      }
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
+        display: inline-block;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #eef2ff;
+      }
+      .wq-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -8px;
+        bottom: -24px;
+        width: 220px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
+      }
+      .wq-l1 {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0f766e;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Move-reference cards ---------- */
+      .wq-move-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .wq-move {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-move .wq-mname {
+        font-weight: 700;
+        color: var(--nt-text, #17212f);
+        display: block;
+        margin-bottom: 4px;
+      }
+      .wq-move .wq-meq {
+        display: inline-block;
+        margin: 2px 0;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+        background: rgba(36, 94, 168, 0.1);
+        padding: 3px 10px;
+        border-radius: 8px;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-move .wq-mnote {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Mission / task panel ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-panel {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-bg, #f8fafc);
+        padding: 10px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Dial / vault tiles ---------- */
+      .wq-dials {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-top: 8px;
+      }
+      .wq-dial {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 12px;
+        background: var(--nt-surface, #fff);
+        text-align: center;
+      }
+      .wq-dial .wq-dlabel {
+        font-weight: 800;
+        color: var(--wq-vault);
+        letter-spacing: 0.5px;
+      }
+      .wq-dial .wq-deq {
+        display: inline-block;
+        margin-top: 8px;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: var(--nt-text, #17212f);
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Rubric table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 130px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-num:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
+
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
+      }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
+      }
+
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="ntkit"></div>
+
+    <main class="wq-wrap">
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker"
+          >Grade 6 Math WebQuest · Unit 7 · 6.EE.B.5–8</span
+        >
+        <h1>Vault Recovery: The Cryptographer's Shift</h1>
+        <p>
+          A power surge scrambled the smart-vault that protects the museum's
+          rarest artifacts. The locks still work — but every dial now shows a
+          mystery equation instead of a number, and the climate and weight
+          safety zones must be reset. As tonight's
+          <strong>junior cryptographer</strong>, you will solve one-step
+          equations to recover each dial code, then write and graph the
+          inequalities that keep the vault safe.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 2–3 class periods</span>
+          <span class="wq-badge">🔐 One-step equations</span>
+          <span class="wq-badge">📏 Write &amp; graph inequalities</span>
+          <span class="wq-badge">🧮 Real safety limits</span>
+        </div>
+        <!-- decorative vault-dial SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 200 200" aria-hidden="true">
+          <circle
+            cx="100"
+            cy="100"
+            r="86"
+            fill="#0b1f33"
+            stroke="#f59e0b"
+            stroke-width="4"
+          />
+          <circle
+            cx="100"
+            cy="100"
+            r="62"
+            fill="none"
+            stroke="#94a3b8"
+            stroke-width="3"
+          />
+          <g stroke="#cbd5e1" stroke-width="3">
+            <line x1="100" y1="38" x2="100" y2="54" />
+            <line x1="162" y1="100" x2="146" y2="100" />
+            <line x1="100" y1="162" x2="100" y2="146" />
+            <line x1="38" y1="100" x2="54" y2="100" />
+          </g>
+          <circle cx="100" cy="100" r="18" fill="#f59e0b" />
+          <line
+            x1="100"
+            y1="100"
+            x2="138"
+            y2="70"
+            stroke="#f59e0b"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+          <text
+            x="100"
+            y="106"
+            font-size="18"
+            fill="#0b1f33"
+            font-weight="700"
+            text-anchor="middle"
+          >
+            x
+          </text>
+        </svg>
+      </header>
+
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Your First Night
+          on the Job
+        </h2>
+        <p class="wq-lead">
+          A vault dial is really just a hidden number waiting to be found. The
+          surge replaced each code with a sentence like
+          <em>"a number plus 8 equals 21."</em> A cryptographer's whole job is
+          to <strong>undo</strong> what was done to that number until it stands
+          alone. In this WebQuest you become that cryptographer — and the same
+          "keep both sides balanced" thinking will reset the vault's safety
+          zones, too.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How can solving a one-step equation reveal an exact unknown, while
+            an inequality describes a whole range of safe values — and how do
+            you decide which one a real situation needs?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          An <strong>equation</strong> uses an equals sign (=) and has one exact
+          answer. An <strong>inequality</strong> uses &lt;, &gt;, ≤, or ≥ and
+          allows many answers. "Solve" means get the letter (the
+          <em>variable</em>) alone on one side.
+          <span class="wq-es"
+            >En español: Una <strong>ecuación</strong> usa el signo igual (=) y
+            tiene una sola respuesta. Una <strong>desigualdad</strong> usa &lt;,
+            &gt;, ≤ o ≥ y permite muchas respuestas. "Resolver" significa dejar
+            sola la letra (la variable) en un lado.</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Every equation is a balance scale: whatever you do to one side, you
+          must do to the other. To undo addition, subtract; to undo
+          multiplication, divide. The same inverse moves solve inequalities too
+          — and the symbol you choose (&lt; vs ≤) decides whether the boundary
+          value itself counts as inside the safe zone.
+        </div>
+      </section>
+
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of this WebQuest you will submit a
+              <strong>Vault Recovery Log</strong>. A complete log must:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                <strong>Recover four dial codes</strong> by solving one-step
+                equations (add, subtract, multiply, and divide).
+              </li>
+              <li>
+                Show the <strong>inverse move</strong> you used on each dial and
+                check your answer by substituting it back in.
+              </li>
+              <li>
+                <strong>Write two inequalities</strong> from the vault's safety
+                rules (a climate limit and a weight limit).
+              </li>
+              <li>
+                <strong>Graph each inequality</strong> on a number line with the
+                correct open or closed circle and arrow direction.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom to unlock the vault.
+              </li>
+            </ul>
+          </div>
+          <div class="wq-panel" aria-label="The four scrambled vault dials">
+            <svg viewBox="0 0 280 210" role="img" aria-labelledby="vault-title">
+              <title id="vault-title">
+                A vault door with four dials, each showing a scrambled one-step
+                equation
+              </title>
+              <rect
+                x="6"
+                y="6"
+                width="268"
+                height="198"
+                rx="14"
+                fill="var(--nt-surface,#fff)"
+                stroke="var(--wq-steel)"
+                stroke-width="3"
+              />
+              <!-- dial A -->
+              <circle
+                cx="76"
+                cy="66"
+                r="40"
+                fill="#0b1f33"
+                stroke="var(--wq-gold)"
+                stroke-width="3"
+              />
+              <text
+                x="76"
+                y="60"
+                font-size="13"
+                fill="#fff"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                A
+              </text>
+              <text
+                x="76"
+                y="80"
+                font-size="12"
+                fill="#fde68a"
+                text-anchor="middle"
+              >
+                x+8=21
+              </text>
+              <!-- dial B -->
+              <circle
+                cx="204"
+                cy="66"
+                r="40"
+                fill="#0b1f33"
+                stroke="var(--wq-gold)"
+                stroke-width="3"
+              />
+              <text
+                x="204"
+                y="60"
+                font-size="13"
+                fill="#fff"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                B
+              </text>
+              <text
+                x="204"
+                y="80"
+                font-size="12"
+                fill="#fde68a"
+                text-anchor="middle"
+              >
+                m−6=15
+              </text>
+              <!-- dial C -->
+              <circle
+                cx="76"
+                cy="150"
+                r="40"
+                fill="#0b1f33"
+                stroke="var(--wq-gold)"
+                stroke-width="3"
+              />
+              <text
+                x="76"
+                y="144"
+                font-size="13"
+                fill="#fff"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                C
+              </text>
+              <text
+                x="76"
+                y="164"
+                font-size="12"
+                fill="#fde68a"
+                text-anchor="middle"
+              >
+                4n=52
+              </text>
+              <!-- dial D -->
+              <circle
+                cx="204"
+                cy="150"
+                r="40"
+                fill="#0b1f33"
+                stroke="var(--wq-gold)"
+                stroke-width="3"
+              />
+              <text
+                x="204"
+                y="144"
+                font-size="13"
+                fill="#fff"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                D
+              </text>
+              <text
+                x="204"
+                y="164"
+                font-size="12"
+                fill="#fde68a"
+                text-anchor="middle"
+              >
+                p÷3=9
+              </text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work through the steps in order. Each step fills one section of your
+          Vault Recovery Log.
+        </p>
+
+        <h3>Step 1 — Learn the four inverse moves</h3>
+        <p>
+          Every one-step equation hides the variable behind a single operation.
+          Undo it with the <strong>inverse operation</strong> on
+          <em>both</em> sides. Keep this reference open.
+        </p>
+        <div class="wq-move-grid">
+          <div class="wq-move">
+            <span class="wq-mname">Undo addition</span>
+            <span class="wq-meq">x + 8 = 21 → x = 21 − 8</span>
+            <span class="wq-mnote">Subtract 8 from both sides.</span>
+          </div>
+          <div class="wq-move">
+            <span class="wq-mname">Undo subtraction</span>
+            <span class="wq-meq">m − 6 = 15 → m = 15 + 6</span>
+            <span class="wq-mnote">Add 6 to both sides.</span>
+          </div>
+          <div class="wq-move">
+            <span class="wq-mname">Undo multiplication</span>
+            <span class="wq-meq">4n = 52 → n = 52 ÷ 4</span>
+            <span class="wq-mnote">Divide both sides by 4.</span>
+          </div>
+          <div class="wq-move">
+            <span class="wq-mname">Undo division</span>
+            <span class="wq-meq">p ÷ 3 = 9 → p = 9 × 3</span>
+            <span class="wq-mnote">Multiply both sides by 3.</span>
+          </div>
+        </div>
+
+        <h3>Step 2 — Recover the four dial codes</h3>
+        <p>
+          Solve each dial's equation and record the code in your log. Then
+          <strong>check</strong> by putting your answer back into the original
+          equation.
+        </p>
+        <div class="wq-dials">
+          <div class="wq-dial">
+            <span class="wq-dlabel">Dial A</span><br />
+            <span class="wq-deq">x + 8 = 21</span>
+          </div>
+          <div class="wq-dial">
+            <span class="wq-dlabel">Dial B</span><br />
+            <span class="wq-deq">m − 6 = 15</span>
+          </div>
+          <div class="wq-dial">
+            <span class="wq-dlabel">Dial C</span><br />
+            <span class="wq-deq">4n = 52</span>
+          </div>
+          <div class="wq-dial">
+            <span class="wq-dlabel">Dial D</span><br />
+            <span class="wq-deq">p ÷ 3 = 9</span>
+          </div>
+        </div>
+        <div class="wq-example">
+          <p><b>Worked example — Dial A (x + 8 = 21):</b></p>
+          <p class="wq-work">
+            x + 8 = 21 → x + 8 <b>− 8</b> = 21 <b>− 8</b> → x = <b>13</b>.
+            &nbsp;Check: 13 + 8 = 21 ✓
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Ask yourself: "What is being <em>done</em> to the variable?" If it is
+          <em>plus</em>, do <em>minus</em>. If it is <em>times</em>, do
+          <em>divide</em>. Always do the same move to both sides of the =.
+          <span class="wq-es"
+            >En español: Pregúntate: "¿Qué le están haciendo a la variable?" Si
+            es <em>más</em>, haz <em>menos</em>. Si es <em>por</em>, haz
+            <em>dividir</em>. Haz el mismo paso en ambos lados del =.</span
+          >
+        </div>
+
+        <h3>Step 3 — Translate a safety rule into an inequality</h3>
+        <p>
+          The vault posts two safety rules. Each one describes a
+          <em>range</em> of allowed values, so it becomes an
+          <strong>inequality</strong>, not an equation. Match the words to the
+          correct symbol:
+        </p>
+        <ul>
+          <li>
+            <strong>Climate rule:</strong> "The temperature t must stay
+            <strong>below 68°F</strong>." → write the inequality.
+          </li>
+          <li>
+            <strong>Weight rule:</strong> "A single shelf can hold
+            <strong>at most 40 kg</strong> of artifacts (w)." → write the
+            inequality.
+          </li>
+        </ul>
+        <div class="wq-example">
+          <p><b>Word-to-symbol guide:</b></p>
+          <p class="wq-work">
+            "below / less than" → &lt; · "more than / above" → &gt; · "at most /
+            no more than" → ≤ · "at least / no less than" → ≥
+          </p>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          "At most 40 kg" includes exactly 40 kg, so the boundary value is
+          allowed: w ≤ 40. "Below 68°F" does <em>not</em> include 68, so it is t
+          &lt; 68. Predict: how would the graph change if the rule said "no
+          warmer than 68°F" instead?
+        </div>
+
+        <h3>Step 4 — Graph each inequality on a number line</h3>
+        <p>
+          Translate your inequality into a picture. Use the rules below, then
+          sketch both number lines in your log.
+        </p>
+        <ul>
+          <li>
+            <strong>Open circle ○</strong> for &lt; or &gt; (the boundary value
+            is <em>not</em> included).
+          </li>
+          <li>
+            <strong>Closed circle ●</strong> for ≤ or ≥ (the boundary value
+            <em>is</em> included).
+          </li>
+          <li>
+            <strong>The arrow points</strong> toward every number that makes the
+            inequality true (left for less-than, right for greater-than).
+          </li>
+        </ul>
+        <div class="wq-example">
+          <p><b>Worked example — graph of t &lt; 68:</b></p>
+          <svg
+            width="280"
+            height="60"
+            viewBox="0 0 280 60"
+            role="img"
+            aria-label="Number line showing t is less than 68: open circle at 68 with shading and an arrow pointing left"
+          >
+            <line
+              x1="20"
+              y1="34"
+              x2="260"
+              y2="34"
+              stroke="var(--nt-text,#17212f)"
+              stroke-width="2"
+            />
+            <g stroke="var(--nt-text,#17212f)" stroke-width="2">
+              <line x1="60" y1="29" x2="60" y2="39" />
+              <line x1="120" y1="29" x2="120" y2="39" />
+              <line x1="180" y1="29" x2="180" y2="39" />
+              <line x1="240" y1="29" x2="240" y2="39" />
+            </g>
+            <text x="60" y="54" font-size="11" text-anchor="middle">65</text>
+            <text x="120" y="54" font-size="11" text-anchor="middle">66</text>
+            <text x="180" y="54" font-size="11" text-anchor="middle">67</text>
+            <text
+              x="240"
+              y="54"
+              font-size="11"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              68
+            </text>
+            <!-- shading to the left of 68 -->
+            <line
+              x1="240"
+              y1="34"
+              x2="24"
+              y2="34"
+              stroke="var(--wq-ineq)"
+              stroke-width="5"
+            />
+            <polygon points="24,34 36,28 36,40" fill="var(--wq-ineq)" />
+            <!-- open circle at 68 -->
+            <circle
+              cx="240"
+              cy="34"
+              r="7"
+              fill="var(--nt-surface,#fff)"
+              stroke="var(--wq-ineq)"
+              stroke-width="3"
+            />
+          </svg>
+          <p class="wq-work">
+            Open circle at 68 (68 is not allowed); the arrow shades every
+            temperature below 68.
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Two quick checks for any graph: (1) Is the circle open ○ or closed ●?
+          Look at the symbol. (2) Which way does the arrow go? Test a number —
+          if it makes the inequality true, the arrow covers it.
+          <span class="wq-es"
+            >En español: Dos comprobaciones rápidas: (1) ¿El círculo es abierto
+            ○ o cerrado ●? Mira el símbolo. (2) ¿Hacia dónde va la flecha?
+            Prueba un número: si hace verdadera la desigualdad, la flecha lo
+            cubre.</span
+          >
+        </div>
+
+        <h3>Step 5 — Assemble and verify the Recovery Log</h3>
+        <p>
+          Put it all together: four checked dial codes, two written
+          inequalities, and two number-line graphs. Re-substitute each dial code
+          one last time, then run the self-check below to confirm the vault will
+          reopen.
+        </p>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-7/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 7 · 3D Equation Lab</span
+              ><span class="wq-rdesc"
+                >Balance both sides of an equation and watch the scale tip until
+                the variable is alone.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-7/">
+            <span class="wq-ricon" aria-hidden="true">📐</span>
+            <span
+              ><span class="wq-rtitle">Equation &amp; Inequality Architect</span
+              ><span class="wq-rdesc"
+                >Practice solving one-step equations and graphing inequalities
+                step by step.</span
+              ></span
+            >
+          </a>
+          <a href="/reveal-evidence-studio/">
+            <span class="wq-ricon" aria-hidden="true">🔍</span>
+            <span
+              ><span class="wq-rtitle">Reveal Evidence Studio</span
+              ><span class="wq-rdesc"
+                >Write your Claim–Evidence–Reasoning for the vault report.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <ul>
+          <li>
+            <strong>Equation / Ecuación</strong> — a math sentence with an
+            equals sign and one exact solution.
+          </li>
+          <li>
+            <strong>Inequality / Desigualdad</strong> — a sentence using &lt;,
+            &gt;, ≤, or ≥ that allows a range of solutions.
+          </li>
+          <li>
+            <strong>Variable / Variable</strong> — a letter that stands for an
+            unknown number.
+          </li>
+          <li>
+            <strong>Inverse operation / Operación inversa</strong> — the move
+            that undoes another (subtract undoes add; divide undoes multiply).
+          </li>
+          <li>
+            <strong>Solution / Solución</strong> — a value that makes the
+            sentence true.
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Vault Recovery Log will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Lead Cryptographer</th>
+                <th>3 · Analyst</th>
+                <th>2 · Trainee</th>
+                <th>1 · Getting started</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Solving equations</td>
+                <td>All 4 dial codes correct with the right inverse move.</td>
+                <td>3 of 4 codes correct.</td>
+                <td>2 codes correct.</td>
+                <td>0–1 codes correct.</td>
+              </tr>
+              <tr>
+                <td>Checking solutions</td>
+                <td>Every solution substituted back and verified.</td>
+                <td>Most solutions checked.</td>
+                <td>Some checks shown.</td>
+                <td>No checks shown.</td>
+              </tr>
+              <tr>
+                <td>Writing inequalities</td>
+                <td>Both inequalities use the correct symbol and variable.</td>
+                <td>One inequality fully correct.</td>
+                <td>Symbols attempted with errors.</td>
+                <td>No inequalities written.</td>
+              </tr>
+              <tr>
+                <td>Graphing on a number line</td>
+                <td>Both graphs: correct circle type and arrow direction.</td>
+                <td>One graph fully correct.</td>
+                <td>Circle or arrow error on each.</td>
+                <td>No usable graph.</td>
+              </tr>
+              <tr>
+                <td>Reasoning</td>
+                <td>Clear claim–evidence–reasoning explanation.</td>
+                <td>Explains most choices.</td>
+                <td>Brief or partial reasoning.</td>
+                <td>No explanation.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Vault Recovery · Recovery Log</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Vault Recovery Log</h3>
+          <ul>
+            <li><strong>Dial A:</strong> x + 8 = 21 → x = 21 − 8 = <strong>13</strong>. Check: 13 + 8 = 21 ✓.</li>
+            <li><strong>Dial B:</strong> m − 6 = 15 → m = 15 + 6 = <strong>21</strong>.</li>
+            <li><strong>Dial C:</strong> 4n = 52 → n = 52 ÷ 4 = <strong>13</strong>.</li>
+            <li><strong>Dial D:</strong> p ÷ 3 = 9 → p = 9 × 3 = <strong>27</strong>.</li>
+            <li><strong>Inequalities:</strong> "below 75°" → t &lt; 75 (open circle, arrow left); "at most 400 lb" → w ≤ 400 (closed circle, arrow left).</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Name the inverse operation on each dial and substitute back to check.</li>
+            <li>Open circle for &lt; / &gt;; closed circle for ≤ / ≥; arrow points toward the solutions.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.EE.B.5–8</strong>.</p>
+        </div>
+      </details>
+
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
+        <p>
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These match the dials and safety rules in your log.
+        </p>
+
+        <!-- Q1 dial A (add) -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="num"
+          data-answer="13"
+          data-tol="0.001"
+          data-skill="Solve one-step equation (subtract to undo +)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span>Dial A: solve <strong>x + 8 = 21</strong>. What is x?</span>
+          </div>
+          <label for="q1in" class="sr-only">Value of x for dial A</label>
+          <input
+            id="q1in"
+            class="wq-num"
+            type="number"
+            inputmode="numeric"
+            step="any"
+            placeholder="x ="
+          />
+          <div class="wq-hint">Hint / Pista: subtract 8 from both sides.</div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2 dial C (multiply) -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="13"
+          data-tol="0.001"
+          data-skill="Solve one-step equation (divide to undo ×)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span>Dial C: solve <strong>4n = 52</strong>. What is n?</span>
+          </div>
+          <label for="q2in" class="sr-only">Value of n for dial C</label>
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="numeric"
+            step="any"
+            placeholder="n ="
+          />
+          <div class="wq-hint">Hint / Pista: divide both sides by 4.</div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3 dial D (divide) -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="num"
+          data-answer="27"
+          data-tol="0.001"
+          data-skill="Solve one-step equation (multiply to undo ÷)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span>Dial D: solve <strong>p ÷ 3 = 9</strong>. What is p?</span>
+          </div>
+          <label for="q3in" class="sr-only">Value of p for dial D</label>
+          <input
+            id="q3in"
+            class="wq-num"
+            type="number"
+            inputmode="numeric"
+            step="any"
+            placeholder="p ="
+          />
+          <div class="wq-hint">Hint / Pista: multiply both sides by 3.</div>
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4 write inequality (climate) -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Write an inequality (below → <)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >The climate rule says: "The temperature t must stay
+              <strong>below 68°F</strong>." Which inequality matches?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="a" /> t &gt; 68</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="b" /> t &lt; 68</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="c" /> t ≤ 68</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="d" /> t = 68</label
+          >
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5 write inequality (weight, at most) -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="radio"
+          data-answer="c"
+          data-skill="Write an inequality (at most → ≤)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >The weight rule says: "A shelf holds
+              <strong>at most 40 kg</strong> (w)." Which inequality
+              matches?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="a" /> w &gt; 40</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="b" /> w &lt; 40</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="c" /> w ≤ 40</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="d" /> w ≥ 40</label
+          >
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6 read a graph -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Interpret a number-line graph of an inequality"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span>Which inequality does this number-line graph show?</span>
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="280"
+              height="60"
+              viewBox="0 0 280 60"
+              role="img"
+              aria-label="Number line with a closed circle at 40, shading and an arrow pointing left toward smaller numbers"
+            >
+              <line
+                x1="20"
+                y1="34"
+                x2="260"
+                y2="34"
+                stroke="var(--nt-text,#17212f)"
+                stroke-width="2"
+              />
+              <g stroke="var(--nt-text,#17212f)" stroke-width="2">
+                <line x1="60" y1="29" x2="60" y2="39" />
+                <line x1="120" y1="29" x2="120" y2="39" />
+                <line x1="180" y1="29" x2="180" y2="39" />
+                <line x1="240" y1="29" x2="240" y2="39" />
+              </g>
+              <text x="60" y="54" font-size="11" text-anchor="middle">10</text>
+              <text x="120" y="54" font-size="11" text-anchor="middle">20</text>
+              <text x="180" y="54" font-size="11" text-anchor="middle">30</text>
+              <text
+                x="240"
+                y="54"
+                font-size="11"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                40
+              </text>
+              <line
+                x1="240"
+                y1="34"
+                x2="24"
+                y2="34"
+                stroke="var(--wq-ineq)"
+                stroke-width="5"
+              />
+              <polygon points="24,34 36,28 36,40" fill="var(--wq-ineq)" />
+              <circle
+                cx="240"
+                cy="34"
+                r="7"
+                fill="var(--wq-ineq)"
+                stroke="var(--wq-ineq)"
+                stroke-width="3"
+              />
+            </svg>
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="a" /> w &lt; 40 (40 not
+            included)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="b" /> w ≤ 40 (40
+            included)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="c" /> w &gt; 40</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="d" /> w ≥ 40</label
+          >
+          <div class="wq-hint">
+            Hint / Pista: a filled (closed) circle means the boundary value is
+            included; the arrow shows which way the answers go.
+          </div>
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did what real cryptographers, engineers, and safety inspectors do:
+          you reversed the operations hiding an unknown to recover an exact code
+          (Dial A = 13, Dial C = 13, Dial D = 27), then used inequalities to
+          describe a whole <em>range</em> of safe conditions. With the dials
+          reset and the safety zones graphed, the vault reopens — the artifacts
+          are secure. Mission complete!
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              Invent a fifth dial whose answer is also 13 but uses a different
+              operation, plus a new shelf rule that needs ≥. Graph the new rule.
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              When does a situation need an equation (one answer) versus an
+              inequality (a range)? Explain in 2–3 sentences. ¿Cuándo se
+              necesita una ecuación y cuándo una desigualdad?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Cybersecurity analysts, structural engineers, and pharmacists all
+              solve equations and set safe-range inequalities — exactly the
+              skills you just used.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
+
+        var ACTIVITY_ID = "webquest-unit-7-vault";
+        var ACTIVITY_TITLE =
+          "WebQuest · Unit 7 · Vault Recovery (Equations & Inequalities)";
+        var STANDARD = "6.EE.B.5-8";
+
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
+        }
+
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the inverse move or the symbol and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u7-q" + card.getAttribute("data-q"),
+              skill:
+                card.getAttribute("data-skill") || "Equations & inequalities",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
+          });
+        }
+
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Vault unlocked — the artifacts are secure! ¡Felicidades!"
+                : " Review the dials and graphs marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              var input = card.querySelector("input.wq-num");
+              if (input) input.value = "";
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

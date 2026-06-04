@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="en" data-nt-level="2">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 7 Review: Equations and Inequalities 🔍 — Level 2 (Enrichment)
+    </title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --primary: #1e3a5f;
+        --bg: #fef3c7;
+        --accent: #f59e0b;
+        --correct: #16a34a;
+        --wrong: #dc2626;
+        --text: #1e3a5f;
+        --card-bg: #ffffff;
+        --shadow: 0 2px 8px rgba(30, 58, 95, 0.12);
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        text-align: center;
+      }
+      .login-screen h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+      .login-screen .emoji-hero {
+        font-size: 3.5rem;
+        margin-bottom: 12px;
+      }
+      .login-screen p {
+        color: #555;
+        margin-bottom: 24px;
+        max-width: 400px;
+      }
+      .login-screen input {
+        padding: 12px 16px;
+        font-size: 1.1rem;
+        border: 2px solid var(--primary);
+        border-radius: 8px;
+        width: 280px;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .login-screen input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      /* BUTTONS */
+      .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-accent {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+
+      /* PROGRESS */
+      .progress-bar-wrap {
+        background: #e5e7eb;
+        border-radius: 99px;
+        height: 12px;
+        margin: 16px 0 24px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px 10px 0 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      /* QUESTION CARD */
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .card-body {
+        padding: 20px;
+      }
+      .q-number {
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      /* MC OPTIONS */
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .option-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--accent);
+        background: #fffbeb;
+      }
+      .option-btn.selected {
+        border-color: var(--primary);
+        background: #dbeafe;
+      }
+      .option-btn.correct-answer {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .option-btn.wrong-answer {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+
+      /* FILL-IN */
+      .fill-input {
+        padding: 10px 14px;
+        font-size: 1.1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        width: 160px;
+        text-align: center;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .fill-input.correct-border {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .fill-input.wrong-border {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+
+      /* FEEDBACK */
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        display: none;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+        display: block;
+      }
+      .feedback.wrong {
+        background: #fee2e2;
+        color: #991b1b;
+        display: block;
+      }
+
+      /* SUMMARY */
+      .summary-screen {
+        display: none;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0 auto 20px;
+        color: #fff;
+      }
+      .score-a {
+        background: var(--correct);
+      }
+      .score-b {
+        background: var(--accent);
+      }
+      .score-c {
+        background: var(--wrong);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .study-tips {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary);
+        padding: 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 20px;
+      }
+      .study-tips h3 {
+        margin-bottom: 8px;
+      }
+      .study-tips li {
+        margin-bottom: 6px;
+      }
+
+      /* FOOTER */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 40px;
+      }
+
+      /* HIDDEN */
+      .hidden {
+        display: none !important;
+      }
+
+      /* NAV */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px;
+        }
+        .login-screen h1 {
+          font-size: 1.5rem;
+        }
+        .q-text {
+          font-size: 1rem;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="container" id="app">
+      <!-- LOGIN -->
+      <div class="login-screen" id="loginScreen">
+        <div class="emoji-hero">🔍</div>
+        <h1>Unit 7 Review</h1>
+        <h2 style="color: var(--accent); margin-bottom: 8px">
+          Equations &amp; Inequalities
+        </h2>
+        <p>
+          20 problems across 4 sections to help you prepare for the Unit 7 test.
+          Enter your name to begin!
+        </p>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter your name"
+          maxlength="30"
+          autocomplete="off"
+        />
+        <br />
+        <button class="btn btn-primary" onclick="startReview()">
+          Start Review 🔍
+        </button>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h2 id="sectionTitle" style="font-size: 1.1rem"></h2>
+          <span id="qCounter" style="font-size: 0.9rem; color: #6b7280"></span>
+        </div>
+        <div style="margin: 6px 0 0">
+          <span
+            style="
+              display: inline-block;
+              background: #ede9fe;
+              color: #5b21b6;
+              border: 1px solid #c4b5fd;
+              border-radius: 99px;
+              padding: 3px 12px;
+              font-size: 0.8rem;
+              font-weight: 700;
+            "
+            >Level 2 · Enrichment</span
+          >
+        </div>
+        <div class="progress-bar-wrap">
+          <div
+            class="progress-bar-fill"
+            id="progressBar"
+            style="width: 0%"
+          ></div>
+        </div>
+        <div id="questionArea"></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">
+            Next &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <div style="text-align: center">
+          <div class="emoji-hero">🔍</div>
+          <h1>Review Complete!</h1>
+          <p id="summaryName" style="font-size: 1.1rem; color: #6b7280"></p>
+        </div>
+        <div class="score-circle" id="scoreCircle"></div>
+        <div class="card"><div class="card-body" id="sectionScores"></div></div>
+        <div class="study-tips" id="studyTips"></div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn btn-primary" onclick="exportResults()">
+            Export Results 📄
+          </button>
+          <button class="btn btn-outline" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher) 📊
+          </button>
+          <button class="btn btn-accent" onclick="resetReview()">
+            Try Again 🔄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Neft Teacher &bull; Grade 6 &bull; Unit 7 Pre-Test Review
+    </div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      const STORAGE_KEY = "unit7Review_v1_L2";
+      const SECTIONS = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+      const SECTION_EMOJIS = ["📖", "⚡", "✏️", "🏆"];
+
+      // ===== QUESTIONS =====
+      const questions = [
+        // ── SECTION 1: VOCABULARY (5 MC) ──
+        {
+          section: 0,
+          type: "mc",
+          text: "What is a mathematical sentence that contains an equals sign (=)?",
+          choices: ["Expression", "Equation", "Inequality", "Variable"],
+          answer: 1,
+          explain:
+            "An equation is a mathematical sentence that uses an equals sign to show that two expressions have the same value.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "A letter or symbol used to represent an unknown value is called a:",
+          choices: ["Constant", "Coefficient", "Variable", "Term"],
+          answer: 2,
+          explain:
+            "A variable is a letter (like x or n) that represents an unknown number.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: 'Which symbol means "greater than or equal to"?',
+          choices: ["<", ">", "≤", "≥"],
+          answer: 3,
+          explain:
+            'The symbol ≥ means "greater than or equal to." The line under the > means "or equal to."',
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "What is a mathematical sentence that compares two expressions using <, >, ≤, or ≥?",
+          choices: ["Equation", "Expression", "Inequality", "Formula"],
+          answer: 2,
+          explain:
+            "An inequality uses comparison symbols (<, >, ≤, ≥) to show that two expressions are not necessarily equal.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "In the equation 3x + 5 = 20, the number 3 is called the:",
+          choices: ["Variable", "Constant", "Coefficient", "Exponent"],
+          answer: 2,
+          explain:
+            "A coefficient is the number multiplied by a variable. In 3x, the coefficient is 3.",
+        },
+
+        // ── SECTION 2: QUICK CHECK (5 MC) ──
+        {
+          section: 1,
+          type: "mc",
+          text: 'Which equation represents: "A number decreased by 7 is 15"?',
+          choices: ["n + 7 = 15", "n - 7 = 15", "7 - n = 15", "7n = 15"],
+          answer: 1,
+          explain:
+            '"Decreased by" means subtraction. A number (n) decreased by 7 equals 15 → n - 7 = 15.',
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Solve: x + 9 = 23",
+          choices: ["x = 12", "x = 14", "x = 32", "x = 16"],
+          answer: 1,
+          explain: "Subtract 9 from both sides: x + 9 - 9 = 23 - 9, so x = 14.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Solve: y - 12 = 30",
+          choices: ["y = 18", "y = 42", "y = 22", "y = 36"],
+          answer: 1,
+          explain: "Add 12 to both sides: y - 12 + 12 = 30 + 12, so y = 42.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: 'Which inequality represents: "x is at most 10"?',
+          choices: ["x > 10", "x < 10", "x ≥ 10", "x ≤ 10"],
+          answer: 3,
+          explain: '"At most 10" means 10 or less. That is x ≤ 10.',
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Solve: 6n = 54",
+          choices: ["n = 8", "n = 9", "n = 48", "n = 60"],
+          answer: 1,
+          explain: "Divide both sides by 6: 6n ÷ 6 = 54 ÷ 6, so n = 9.",
+        },
+
+        // ── SECTION 3: PRACTICE (5 fill-in) ──
+        {
+          section: 2,
+          type: "fill",
+          text: "Solve: x + 17 = 45. What is x?",
+          answer: "28",
+          explain: "Subtract 17 from both sides: 45 - 17 = 28, so x = 28.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Solve: m - 25 = 13. What is m?",
+          answer: "38",
+          explain: "Add 25 to both sides: 13 + 25 = 38, so m = 38.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Solve: 8p = 72. What is p?",
+          answer: "9",
+          explain: "Divide both sides by 8: 72 ÷ 8 = 9, so p = 9.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Solve: w ÷ 4 = 11. What is w?",
+          answer: "44",
+          explain: "Multiply both sides by 4: 11 × 4 = 44, so w = 44.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Solve: t + 36 = 100. What is t?",
+          answer: "64",
+          explain: "Subtract 36 from both sides: 100 - 36 = 64, so t = 64.",
+        },
+
+        // ── SECTION 4: CHALLENGE (5 MC word problems) ──
+        {
+          section: 3,
+          type: "mc",
+          text: "Maria has some stickers. After giving away 18 stickers, she has 47 left. Which equation models this, and how many stickers did she start with?",
+          choices: [
+            "s + 18 = 47; s = 29",
+            "s - 18 = 47; s = 65",
+            "s - 47 = 18; s = 65",
+            "18s = 47; s = 29",
+          ],
+          answer: 1,
+          explain:
+            "She started with s stickers and gave away 18, leaving 47. So s - 18 = 47. Adding 18 to both sides: s = 65.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "A gym charges a $15 monthly fee. Jake paid a total of $90. The equation 15m = 90 represents this. How many months did Jake pay for?",
+          choices: ["m = 5", "m = 6", "m = 75", "m = 105"],
+          answer: 1,
+          explain:
+            "Divide both sides by 15: 90 ÷ 15 = 6. Jake paid for 6 months.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "A store requires you to be at least 48 inches tall to ride a ride. Which inequality represents the allowed heights (h)?",
+          choices: ["h > 48", "h < 48", "h ≥ 48", "h ≤ 48"],
+          answer: 2,
+          explain:
+            '"At least 48 inches" means 48 or more. The inequality is h ≥ 48.',
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "Tyler split his baseball cards equally among 7 friends. Each friend got 12 cards. Which equation finds the total cards (c), and what is c?",
+          choices: [
+            "c + 7 = 12; c = 5",
+            "c - 7 = 12; c = 19",
+            "c ÷ 7 = 12; c = 84",
+            "7c = 12; c = 84",
+          ],
+          answer: 2,
+          explain:
+            "Total cards divided by 7 friends equals 12 each: c ÷ 7 = 12. Multiply both sides by 7: c = 84.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "Priya earned $24 babysitting and added it to her savings. She now has $61. The equation s + 24 = 61 models this. How much did Priya have before babysitting?",
+          choices: ["$85", "$37", "$47", "$24"],
+          answer: 1,
+          explain:
+            "Subtract 24 from both sides: s = 61 - 24 = 37. Priya had $37 before babysitting.",
+        },
+      ];
+
+      // ===== STATE =====
+      let playerName = "";
+      let currentQ = 0;
+      let answers = new Array(20).fill(null); // stored user answers
+      let graded = new Array(20).fill(false);
+      // Level 2 Enrichment: shuffled display order of MC choices per question.
+      // order[q] is an array of ORIGINAL choice indices in display order.
+      // answers[] always stores ORIGINAL indices, so scoring is unaffected.
+      let order = new Array(20).fill(null);
+
+      // Fisher–Yates shuffle returning a new permutation of [0..n-1]
+      function makeShuffledOrder(n) {
+        const arr = Array.from({ length: n }, (_, i) => i);
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ===== INIT =====
+      function startReview() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (!name) {
+          document.getElementById("nameInput").style.borderColor =
+            "var(--wrong)";
+          return;
+        }
+        playerName = name;
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        loadState();
+        renderQuestion();
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved && saved.name === playerName) {
+            answers = saved.answers || new Array(20).fill(null);
+            graded = saved.graded || new Array(20).fill(false);
+            order = saved.order || new Array(20).fill(null);
+            currentQ = saved.currentQ || 0;
+          }
+        } catch (e) {}
+      }
+
+      function saveState() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            name: playerName,
+            answers,
+            graded,
+            order,
+            currentQ,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+
+      // ===== RENDER =====
+      function renderQuestion() {
+        const q = questions[currentQ];
+        const sIdx = q.section;
+        const qInSection = currentQ - sIdx * 5 + 1;
+        document.getElementById("sectionTitle").textContent =
+          `${SECTION_EMOJIS[sIdx]} ${SECTIONS[sIdx]}`;
+        document.getElementById("qCounter").textContent =
+          `Question ${currentQ + 1} of 20`;
+        document.getElementById("progressBar").style.width =
+          `${((currentQ + 1) / 20) * 100}%`;
+
+        let html = `<div class="card">`;
+        if (qInSection === 1) {
+          html += `<div class="section-header">${SECTION_EMOJIS[sIdx]} Section ${sIdx + 1}: ${SECTIONS[sIdx]}</div>`;
+        }
+        html += `<div class="card-body">`;
+        html += `<div class="q-number">Question ${currentQ + 1}</div>`;
+        html += `<div class="q-text">${q.text}</div>`;
+
+        if (q.type === "mc") {
+          // Level 2 Enrichment: shuffle option order once per question (persisted).
+          if (!order[currentQ] || order[currentQ].length !== q.choices.length) {
+            order[currentQ] = makeShuffledOrder(q.choices.length);
+            saveState();
+          }
+          html += `<div class="options">`;
+          const labels = ["A", "B", "C", "D"];
+          // Render in shuffled DISPLAY order; orig is the ORIGINAL choice index.
+          order[currentQ].forEach((orig, pos) => {
+            let cls = "option-btn";
+            // Deferred feedback: no correct/incorrect styling here.
+            if (!graded[currentQ] && answers[currentQ] === orig) {
+              cls += " selected";
+            }
+            if (graded[currentQ]) cls += " locked";
+            html += `<button class="${cls}" onclick="selectMC(${orig})" ${graded[currentQ] ? "disabled" : ""}>${labels[pos]}. ${q.choices[orig]}</button>`;
+          });
+          html += `</div>`;
+        } else {
+          // fill-in (unaffected by shuffle)
+          let val = answers[currentQ] !== null ? answers[currentQ] : "";
+          let inputCls = "fill-input";
+          html += `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <input type="text" class="${inputCls}" id="fillInput" value="${val}" placeholder="Your answer"
+        ${graded[currentQ] ? "disabled" : ""} onkeydown="if(event.key==='Enter')submitAnswer()" oninput="onFillInput(this)">`;
+          if (!graded[currentQ]) {
+            html += `<button class="btn btn-accent" onclick="submitAnswer()" ${answers[currentQ] === null ? "disabled" : ""} id="submitBtn">Lock Answer</button>`;
+          }
+          html += `</div>`;
+        }
+
+        // Level 2 Enrichment: feedback is deferred — revealed only on the summary.
+
+        html += `</div></div>`;
+        document.getElementById("questionArea").innerHTML = html;
+
+        // Nav buttons
+        document.getElementById("prevBtn").style.visibility =
+          currentQ === 0 ? "hidden" : "visible";
+        document.getElementById("nextBtn").textContent =
+          currentQ === 19 ? "Finish ✓" : "Next →";
+      }
+
+      function selectMC(idx) {
+        if (graded[currentQ]) return;
+        // Level 2 Enrichment: selecting locks the answer and proceeds — no
+        // inline feedback. idx is the ORIGINAL choice index, so scoring is exact.
+        answers[currentQ] = idx;
+        graded[currentQ] = true;
+        saveState();
+        if (currentQ === 19) {
+          renderQuestion();
+        } else {
+          currentQ += 1;
+          saveState();
+          renderQuestion();
+        }
+      }
+
+      function onFillInput(el) {
+        answers[currentQ] = el.value.trim() || null;
+        const btn = document.getElementById("submitBtn");
+        if (btn) btn.disabled = !el.value.trim();
+        saveState();
+      }
+
+      function submitAnswer() {
+        if (graded[currentQ] || answers[currentQ] === null) return;
+        graded[currentQ] = true;
+        saveState();
+        renderQuestion();
+      }
+
+      function isCorrect(idx) {
+        const q = questions[idx];
+        if (q.type === "mc") return answers[idx] === q.answer;
+        return String(answers[idx]).trim() === String(q.answer);
+      }
+
+      function navigate(dir) {
+        const next = currentQ + dir;
+        if (next < 0) return;
+        if (next >= 20) {
+          // Check all answered
+          const unanswered = graded.filter((g) => !g).length;
+          if (unanswered > 0) {
+            if (
+              !confirm(
+                `You have ${unanswered} unanswered question(s). Finish anyway?`,
+              )
+            )
+              return;
+          }
+          showSummary();
+          return;
+        }
+        currentQ = next;
+        saveState();
+        renderQuestion();
+      }
+
+      // ===== SUMMARY =====
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        document.getElementById("summaryScreen").style.display = "block";
+
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / 20) * 100);
+        document.getElementById("summaryName").textContent =
+          `${playerName} — ${total}/20 (${pct}%)`;
+
+        const circle = document.getElementById("scoreCircle");
+        circle.textContent = `${pct}%`;
+        circle.className =
+          "score-circle " +
+          (pct >= 80 ? "score-a" : pct >= 60 ? "score-b" : "score-c");
+
+        // Section scores
+        let scoresHTML =
+          '<h3 style="margin-bottom:12px;">Section Breakdown</h3>';
+        const sectionResults = [];
+        for (let s = 0; s < 4; s++) {
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            if (graded[i] && isCorrect(i)) correct++;
+          }
+          sectionResults.push(correct);
+          const spct = (correct / 5) * 100;
+          scoresHTML += `<div class="section-score">
+      <span>${SECTION_EMOJIS[s]} ${SECTIONS[s]}</span>
+      <span style="font-weight:700;color:${spct >= 80 ? "var(--correct)" : spct >= 60 ? "var(--accent)" : "var(--wrong)"}">${correct}/5</span>
+    </div>`;
+        }
+        // Level 2 Enrichment: feedback was deferred — reveal every answer and
+        // explanation now, on the summary.
+        scoresHTML += '<h3 style="margin:20px 0 8px;">Answer Review</h3>';
+        for (let i = 0; i < 20; i++) {
+          const q = questions[i];
+          const ok = graded[i] && isCorrect(i);
+          const userAns =
+            q.type === "mc"
+              ? answers[i] !== null
+                ? q.choices[answers[i]]
+                : "No answer"
+              : answers[i] || "No answer";
+          const correctAns = q.type === "mc" ? q.choices[q.answer] : q.answer;
+          scoresHTML += `<div style="padding:10px 0;border-bottom:1px solid #e5e7eb;">
+      <div style="font-weight:600;">${ok ? "✅" : "❌"} Q${i + 1}: ${q.text}</div>
+      <div style="font-size:0.9rem;margin-top:4px;">Your answer: <strong>${userAns}</strong>${ok ? "" : ` &nbsp;|&nbsp; Correct: <strong>${correctAns}</strong>`}</div>
+      <div style="font-size:0.9rem;color:#475569;margin-top:4px;">${q.explain}</div>
+    </div>`;
+        }
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+
+        // Study tips
+        let tips = [];
+        if (sectionResults[0] < 4)
+          tips.push(
+            "Review vocabulary: equation, inequality, variable, coefficient, and comparison symbols (≤, ≥).",
+          );
+        if (sectionResults[1] < 4)
+          tips.push(
+            "Practice writing equations from word phrases and identifying the correct inequality symbol.",
+          );
+        if (sectionResults[2] < 4)
+          tips.push(
+            "Practice solving one-step equations using inverse operations (add/subtract, multiply/divide).",
+          );
+        if (sectionResults[3] < 4)
+          tips.push(
+            "Work on translating word problems into equations before solving. Identify the unknown first.",
+          );
+        if (tips.length === 0)
+          tips.push(
+            "Excellent work! You are well prepared for the Unit 7 test.",
+          );
+
+        let tipsHTML =
+          '<h3>📝 Study Tips</h3><ul style="margin-top:8px;padding-left:20px;">';
+        tips.forEach((t) => (tipsHTML += `<li>${t}</li>`));
+        tipsHTML += "</ul>";
+        document.getElementById("studyTips").innerHTML = tipsHTML;
+
+        saveState();
+      }
+
+      // ===== EXPORT =====
+      function exportResults() {
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / 20) * 100);
+        let text = `UNIT 7 REVIEW RESULTS — EQUATIONS & INEQUALITIES\n`;
+        text += `Student: ${playerName}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${total}/20 (${pct}%)\n\n`;
+
+        for (let s = 0; s < 4; s++) {
+          text += `--- ${SECTIONS[s]} ---\n`;
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            const q = questions[i];
+            const ok = graded[i] && isCorrect(i);
+            if (ok) correct++;
+            const userAns =
+              q.type === "mc" && answers[i] !== null
+                ? q.choices[answers[i]]
+                : answers[i] || "No answer";
+            const correctAns = q.type === "mc" ? q.choices[q.answer] : q.answer;
+            text += `Q${i + 1}: ${ok ? "✓" : "✗"} | Your answer: ${userAns} | Correct: ${correctAns}\n`;
+          }
+          text += `Section Score: ${correct}/5\n\n`;
+        }
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit7_Review_${playerName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      // ===== CSV EXPORT (teacher-importable, shared module) =====
+      function downloadResultsCSV() {
+        // Reuse the same tallies the summary computes.
+        const sections = [];
+        let total = 0;
+        for (let s = 0; s < 4; s++) {
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            if (graded[i] && isCorrect(i)) correct++;
+          }
+          sections.push({ name: SECTIONS[s], correct: correct, total: 5 });
+          total += correct;
+        }
+        NTResults.finish({
+          student: playerName,
+          assessment: "Unit 7 Review",
+          standard: "6.EE",
+          level: "2",
+          sections: sections,
+          correct: total,
+          total: 20,
+        });
+      }
+
+      function resetReview() {
+        if (!confirm("Reset all progress and start over?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        answers = new Array(20).fill(null);
+        graded = new Array(20).fill(false);
+        order = new Array(20).fill(null);
+        currentQ = 0;
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      // Enter key on login
+      document
+        .getElementById("nameInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") startReview();
+        });
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

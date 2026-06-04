@@ -1,0 +1,336 @@
+/* =============================================================================
+ * Neft Teacher — Save / Resume UI styles
+ * Scoped under #nsr-root so it cannot leak into or be overridden by host pages.
+ * High-contrast, large touch targets, no tiny text (min 0.95rem), keyboard-safe.
+ * ========================================================================== */
+#nsr-root,
+#nsr-root * {
+  box-sizing: border-box;
+}
+
+#nsr-root {
+  /* Design tokens — kept local so they never collide with lesson variables. */
+  --nsr-bg: #ffffff;
+  --nsr-fg: #14233b;
+  --nsr-muted: #4a5a72;
+  --nsr-accent: #1d4ed8; /* AA-contrast blue */
+  --nsr-accent-fg: #ffffff;
+  --nsr-ok: #15803d;
+  --nsr-warn: #b45309;
+  --nsr-err: #b91c1c;
+  --nsr-border: #c9d4e5;
+  --nsr-shadow: 0 10px 30px rgba(10, 25, 50, 0.25);
+  --nsr-radius: 14px;
+
+  position: fixed;
+  z-index: 2147483000; /* above almost everything, below nothing it needs */
+  right: 16px;
+  bottom: 16px;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--nsr-fg);
+}
+
+/* ---- Floating launcher ---- */
+#nsr-launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--nsr-accent);
+  color: var(--nsr-accent-fg);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--nsr-shadow);
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease;
+}
+#nsr-launcher:hover {
+  filter: brightness(1.05);
+}
+#nsr-launcher:active {
+  transform: translateY(1px);
+}
+#nsr-launcher:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+.nsr-launcher-ico {
+  font-size: 1.1rem;
+}
+.nsr-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  display: inline-block;
+}
+.nsr-dot-saving {
+  background: #fbbf24;
+}
+.nsr-dot-saved,
+.nsr-dot-saved-local {
+  background: #34d399;
+}
+.nsr-dot-offline {
+  background: #f59e0b;
+}
+.nsr-dot-error {
+  background: #f87171;
+}
+
+/* ---- Panel ---- */
+#nsr-panel {
+  position: absolute;
+  right: 0;
+  bottom: 58px;
+  width: min(340px, calc(100vw - 32px));
+  max-height: min(78vh, 640px);
+  overflow: auto;
+  background: var(--nsr-bg);
+  color: var(--nsr-fg);
+  border: 1px solid var(--nsr-border);
+  border-radius: var(--nsr-radius);
+  box-shadow: var(--nsr-shadow);
+  padding: 16px;
+  display: none;
+}
+#nsr-root.nsr-open #nsr-panel {
+  display: block;
+}
+#nsr-root.nsr-open #nsr-launcher {
+  border-color: #f59e0b;
+}
+
+.nsr-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.nsr-title {
+  font-size: 1.05rem;
+}
+.nsr-x {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--nsr-muted);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.nsr-x:hover {
+  background: #eef2f8;
+}
+.nsr-x:focus-visible {
+  outline: 3px solid var(--nsr-accent);
+}
+
+.nsr-status {
+  margin: 2px 0 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--nsr-muted);
+}
+.nsr-lead {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: var(--nsr-fg);
+}
+
+.nsr-field {
+  display: block;
+  margin-bottom: 10px;
+}
+.nsr-field > span {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--nsr-muted);
+}
+.nsr-field input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid var(--nsr-border);
+  border-radius: 10px;
+  color: var(--nsr-fg);
+  background: #fbfcfe;
+}
+.nsr-field input:focus-visible {
+  outline: 3px solid var(--nsr-accent);
+  outline-offset: 1px;
+}
+
+.nsr-btn {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  margin: 6px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid var(--nsr-border);
+  background: #f1f5fb;
+  color: var(--nsr-fg);
+  cursor: pointer;
+}
+.nsr-btn:hover {
+  filter: brightness(0.98);
+}
+.nsr-btn:focus-visible {
+  outline: 3px solid var(--nsr-accent);
+  outline-offset: 1px;
+}
+.nsr-btn-primary {
+  background: var(--nsr-accent);
+  color: var(--nsr-accent-fg);
+  border-color: var(--nsr-accent);
+}
+.nsr-btn-ghost {
+  background: transparent;
+  color: var(--nsr-muted);
+  border-color: transparent;
+  text-decoration: underline;
+}
+
+.nsr-or {
+  text-align: center;
+  color: var(--nsr-muted);
+  font-size: 0.85rem;
+  margin: 8px 0;
+}
+.nsr-err {
+  color: var(--nsr-err);
+  font-size: 0.9rem;
+  margin: 6px 0 0;
+  min-height: 1em;
+  font-weight: 600;
+}
+
+.nsr-code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-align: center;
+  background: #eef4ff;
+  border: 2px dashed var(--nsr-accent);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 6px 0 10px;
+  color: var(--nsr-fg);
+  user-select: all;
+}
+.nsr-code:focus-visible {
+  outline: 3px solid var(--nsr-accent);
+}
+
+.nsr-meta {
+  margin: 10px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.nsr-meta dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nsr-muted);
+  font-weight: 700;
+}
+.nsr-meta dd {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.nsr-foot {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: var(--nsr-muted);
+  text-align: center;
+}
+
+.nsr-hint {
+  margin: -2px 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--nsr-muted);
+}
+
+/* ---- Toast ---- */
+#nsr-toast {
+  position: absolute;
+  right: 0;
+  bottom: 58px;
+  background: var(--nsr-fg);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  box-shadow: var(--nsr-shadow);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  max-width: min(320px, calc(100vw - 32px));
+}
+#nsr-toast.nsr-toast-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Dark-mode friendliness (respects host pages that opt into dark) ---- */
+@media (prefers-color-scheme: dark) {
+  #nsr-root {
+    --nsr-bg: #0f1b2d;
+    --nsr-fg: #eaf1fb;
+    --nsr-muted: #a9b8cf;
+    --nsr-border: #2b3a52;
+    --nsr-accent: #3b82f6;
+  }
+  .nsr-field input {
+    background: #16243a;
+  }
+  .nsr-btn {
+    background: #1b2c46;
+  }
+  .nsr-code {
+    background: #16243a;
+  }
+  .nsr-x:hover {
+    background: #1b2c46;
+  }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  #nsr-launcher,
+  #nsr-toast {
+    transition: none;
+  }
+}
+
+/* ---- Print: hide the widget entirely ---- */
+@media print {
+  #nsr-root {
+    display: none !important;
+  }
+}

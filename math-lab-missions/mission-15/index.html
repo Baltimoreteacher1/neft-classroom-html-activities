@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.EE.B.8 · Unit 7" data-standard="6.EE.B.8" data-unit="7" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 15: Inequalities (6.EE.B.8) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #0f766e;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --soft-red: #fef2f1;
+      }
+      .mission-hero {
+        background: linear-gradient(135deg, #1a3a5c 0%, #0f766e 100%);
+        color: #fff;
+        border-radius: var(--radius);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin: 0 0 8px;
+        line-height: 1.1;
+      }
+      .hero-eyebrow {
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7dd3c0;
+        margin-bottom: 4px;
+      }
+      .hero-standard {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        margin-top: 8px;
+      }
+      .hero-scenario {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        opacity: 0.92;
+        margin-top: 12px;
+      }
+      .hero-svg {
+        width: 100%;
+        max-width: 380px;
+        height: auto;
+      }
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-bar a {
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .nav-bar a:hover {
+        background: var(--soft-teal);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 3vw, 28px);
+      }
+      .card h2 {
+        color: var(--navy);
+        margin-top: 0;
+        font-size: 1.4rem;
+      }
+      .card h3 {
+        color: var(--teal);
+        margin-top: 18px;
+        font-size: 1.1rem;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: start;
+      }
+      .problem-box {
+        background: var(--soft-blue);
+        border-left: 5px solid var(--navy);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 1.08rem;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .language-box {
+        background: #f0faf8;
+        border: 2px solid #a7d8d0;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-top: 16px;
+      }
+      .language-box h3 {
+        margin-top: 0;
+        color: var(--teal);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .vocab-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .sentence-frames {
+        background: var(--soft-gold);
+        padding: 14px;
+        border-radius: 6px;
+        margin-top: 10px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+        font-style: italic;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .rep-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: #fafcff;
+      }
+      .rep-card h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid #b9ddd8;
+      }
+      .role-facilitator {
+        background: #eef6ff;
+      }
+      .role-model {
+        background: #ecf8f6;
+      }
+      .role-checker {
+        background: #fff6df;
+      }
+      .role-reporter {
+        background: #fef2f1;
+      }
+      .role strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .role .role-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .timer-section {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .timer-display {
+        font-size: 3rem;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold);
+      }
+      .timer-label {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .timer-btn {
+        min-height: 40px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .timer-btn.start {
+        background: var(--green);
+        color: #fff;
+      }
+      .timer-btn.pause {
+        background: var(--gold);
+        color: #fff;
+      }
+      .timer-btn.reset {
+        background: var(--surface);
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+      }
+      .phase-header:hover {
+        background: #f8fafb;
+      }
+      .phase-time {
+        background: var(--soft-blue);
+        color: var(--navy);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .phase-name {
+        font-weight: 800;
+        flex: 1;
+      }
+      .phase-body {
+        padding: 0 14px 14px;
+        display: none;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-card.open .phase-arrow {
+        transform: rotate(90deg);
+      }
+      .phase-arrow {
+        transition: transform 0.2s;
+      }
+      .checkpoint {
+        background: var(--soft-green);
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.92rem;
+      }
+      .challenge-box {
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .rubric-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 2px solid #bed4ea;
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        font-size: 1.1rem;
+      }
+      .visual-model {
+        text-align: center;
+        margin: 16px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      @media print {
+        .nav-bar,
+        .timer-section,
+        .timer-controls,
+        .timer-btn,
+        .no-print {
+          display: none !important;
+        }
+        .card,
+        .mission-hero {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .mission-hero {
+          background: #23395d !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .print-only {
+          display: block !important;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero {
+          grid-template-columns: 1fr;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          max-width: 300px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="nav-bar" aria-label="Mission navigation">
+        <a href="/math-lab-missions/">Back to All Missions</a>
+        <div>
+          <a href="/math-lab-missions/mission-14/">Prev Mission</a>
+          <a href="/math-lab-missions/mission-16/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <div class="hero-eyebrow">Mission 15 &middot; Unit 6</div>
+          <h1 id="hero-title">Inequalities</h1>
+          <span class="hero-standard">6.EE.B.8 &middot; Unit 7</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Write and graph inequalities to represent real-world constraints.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="hero-scenario">
+            The 6th-grade class is planning a field trip to the science museum.
+            The bus holds a <strong>maximum of 48 passengers</strong>. There are
+            already <strong>6 adults</strong> confirmed. Students sign up in
+            groups. Your team must write and graph inequalities to figure out
+            <strong>how many student groups of different sizes</strong> can fit,
+            and advise the trip organizer on the sign-up limit.
+          </p>
+        </div>
+        <svg
+          class="hero-svg"
+          viewBox="0 0 380 400"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="School bus with passenger count constraint"
+        >
+          <!-- Sky -->
+          <rect x="0" y="0" width="380" height="400" rx="12" fill="#e8f4fd" />
+          <!-- Road -->
+          <rect x="0" y="300" width="380" height="100" rx="0" fill="#555" />
+          <rect
+            x="0"
+            y="340"
+            width="380"
+            height="4"
+            fill="#ffd700"
+            opacity="0.6"
+          />
+          <!-- Bus body -->
+          <rect
+            x="40"
+            y="160"
+            width="300"
+            height="130"
+            rx="10"
+            fill="#f5a623"
+          />
+          <rect x="40" y="150" width="300" height="20" rx="6" fill="#e8961e" />
+          <!-- Windows -->
+          <rect
+            x="60"
+            y="180"
+            width="45"
+            height="40"
+            rx="5"
+            fill="#cce5ff"
+            stroke="#d48b1a"
+            stroke-width="2"
+          />
+          <rect
+            x="115"
+            y="180"
+            width="45"
+            height="40"
+            rx="5"
+            fill="#cce5ff"
+            stroke="#d48b1a"
+            stroke-width="2"
+          />
+          <rect
+            x="170"
+            y="180"
+            width="45"
+            height="40"
+            rx="5"
+            fill="#cce5ff"
+            stroke="#d48b1a"
+            stroke-width="2"
+          />
+          <rect
+            x="225"
+            y="180"
+            width="45"
+            height="40"
+            rx="5"
+            fill="#cce5ff"
+            stroke="#d48b1a"
+            stroke-width="2"
+          />
+          <rect
+            x="280"
+            y="180"
+            width="45"
+            height="40"
+            rx="5"
+            fill="#cce5ff"
+            stroke="#d48b1a"
+            stroke-width="2"
+          />
+          <!-- Door -->
+          <rect
+            x="305"
+            y="240"
+            width="30"
+            height="50"
+            rx="4"
+            fill="#d48b1a"
+            stroke="#b37316"
+            stroke-width="2"
+          />
+          <!-- Wheels -->
+          <circle
+            cx="100"
+            cy="295"
+            r="22"
+            fill="#333"
+            stroke="#555"
+            stroke-width="3"
+          />
+          <circle cx="100" cy="295" r="10" fill="#888" />
+          <circle
+            cx="280"
+            cy="295"
+            r="22"
+            fill="#333"
+            stroke="#555"
+            stroke-width="3"
+          />
+          <circle cx="280" cy="295" r="10" fill="#888" />
+          <!-- Text on bus -->
+          <text
+            x="190"
+            y="270"
+            text-anchor="middle"
+            font-size="18"
+            font-weight="800"
+            fill="#fff"
+          >
+            SCHOOL BUS
+          </text>
+          <!-- Capacity badge -->
+          <rect x="130" y="60" width="120" height="60" rx="10" fill="#23395d" />
+          <text
+            x="190"
+            y="85"
+            text-anchor="middle"
+            font-size="12"
+            fill="#7dd3c0"
+            font-weight="700"
+          >
+            MAX CAPACITY
+          </text>
+          <text
+            x="190"
+            y="110"
+            text-anchor="middle"
+            font-size="26"
+            font-weight="900"
+            fill="#fff"
+          >
+            48
+          </text>
+          <!-- Adults badge -->
+          <rect x="20" y="80" width="90" height="50" rx="8" fill="#0f766e" />
+          <text
+            x="65"
+            y="100"
+            text-anchor="middle"
+            font-size="11"
+            fill="#b2f0e0"
+            font-weight="700"
+          >
+            ADULTS
+          </text>
+          <text
+            x="65"
+            y="122"
+            text-anchor="middle"
+            font-size="22"
+            font-weight="900"
+            fill="#fff"
+          >
+            6
+          </text>
+          <!-- Arrow -->
+          <text
+            x="190"
+            y="140"
+            text-anchor="middle"
+            font-size="15"
+            font-weight="700"
+            fill="#23395d"
+          >
+            6 + s &#8804; 48
+          </text>
+        </svg>
+      </section>
+
+      <!-- INVESTIGATION -->
+      <section class="card" aria-labelledby="investigation-title">
+        <h2 id="investigation-title">The Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> The bus holds at most 48 people. 6
+          adults are already going. Let <em>s</em> = the number of students.
+          Write an inequality to show how many students can go. Then graph the
+          solutions on a number line. Finally, determine: if students sign up in
+          groups of 7, what is the
+          <strong>maximum number of full groups</strong> that can go?
+        </div>
+
+        <h3>Visual Model: Number Line for 6 + s &le; 48</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 600 200"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Number line showing s is less than or equal to 42"
+            style="max-width: 600px"
+          >
+            <text
+              x="300"
+              y="24"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Number Line: s &le; 42
+            </text>
+            <!-- Number line -->
+            <line
+              x1="30"
+              y1="90"
+              x2="570"
+              y2="90"
+              stroke="#23395d"
+              stroke-width="3"
+            />
+            <!-- Tick marks and labels -->
+            <line
+              x1="50"
+              y1="80"
+              x2="50"
+              y2="100"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="50"
+              y="118"
+              text-anchor="middle"
+              font-size="13"
+              fill="#23395d"
+            >
+              0
+            </text>
+            <line
+              x1="130"
+              y1="80"
+              x2="130"
+              y2="100"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="130"
+              y="118"
+              text-anchor="middle"
+              font-size="13"
+              fill="#23395d"
+            >
+              10
+            </text>
+            <line
+              x1="210"
+              y1="80"
+              x2="210"
+              y2="100"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="210"
+              y="118"
+              text-anchor="middle"
+              font-size="13"
+              fill="#23395d"
+            >
+              20
+            </text>
+            <line
+              x1="290"
+              y1="80"
+              x2="290"
+              y2="100"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="290"
+              y="118"
+              text-anchor="middle"
+              font-size="13"
+              fill="#23395d"
+            >
+              30
+            </text>
+            <line
+              x1="370"
+              y1="80"
+              x2="370"
+              y2="100"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="370"
+              y="118"
+              text-anchor="middle"
+              font-size="13"
+              fill="#23395d"
+            >
+              40
+            </text>
+            <line
+              x1="386"
+              y1="80"
+              x2="386"
+              y2="100"
+              stroke="#b7791f"
+              stroke-width="3"
+            />
+            <text
+              x="386"
+              y="118"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              42
+            </text>
+            <line
+              x1="450"
+              y1="80"
+              x2="450"
+              y2="100"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="450"
+              y="118"
+              text-anchor="middle"
+              font-size="13"
+              fill="#23395d"
+            >
+              50
+            </text>
+            <!-- Shaded region: 0 to 42 -->
+            <rect
+              x="50"
+              y="83"
+              width="336"
+              height="14"
+              fill="#0f766e"
+              opacity="0.3"
+              rx="2"
+            />
+            <!-- Closed circle at 42 -->
+            <circle
+              cx="386"
+              cy="90"
+              r="8"
+              fill="#0f766e"
+              stroke="#0f766e"
+              stroke-width="2"
+            />
+            <!-- Arrow from 0 pointing left (s >= 0) -->
+            <circle
+              cx="50"
+              cy="90"
+              r="8"
+              fill="#0f766e"
+              stroke="#0f766e"
+              stroke-width="2"
+            />
+            <!-- Label -->
+            <text
+              x="220"
+              y="60"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              All values from 0 to 42 are solutions
+            </text>
+            <text
+              x="300"
+              y="155"
+              text-anchor="middle"
+              font-size="13"
+              fill="#555"
+            >
+              Closed circle at 42 means 42 IS included (&#8804; means "or equal
+              to")
+            </text>
+            <!-- Group markers -->
+            <text
+              x="300"
+              y="180"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Groups of 7: 7, 14, 21, 28, 35, 42 &#10004; (6 full groups)
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Identify the constraint.</strong> The bus holds at most 48
+            people. Write this as: total people &le; 48.
+            <em
+              >Guiding question: What does "at most" mean in math language?</em
+            >
+          </li>
+          <li>
+            <strong>Write the inequality.</strong> Total people = 6 adults + s
+            students. So: 6 + s &le; 48.
+            <em>Guiding question: Why do we use &le; instead of = or &lt;?</em>
+          </li>
+          <li>
+            <strong>Solve for s.</strong> Subtract 6 from both sides: s &le; 42.
+            <em>Guiding question: What operation undoes adding 6?</em>
+          </li>
+          <li>
+            <strong>Graph on a number line.</strong> Draw a number line. Place a
+            closed circle at 42. Shade to the left toward 0.
+            <em
+              >Guiding question: Why closed circle and not open? Why shade
+              left?</em
+            >
+          </li>
+          <li>
+            <strong>Test solutions.</strong> Is s = 42 a solution? Check: 6 + 42
+            = 48 &le; 48. Yes! Is s = 43 a solution? Check: 6 + 43 = 49. Is 49
+            &le; 48? No!
+            <em
+              >Guiding question: Why is testing the boundary value
+              important?</em
+            >
+          </li>
+          <li>
+            <strong>Answer the group question.</strong> If groups have 7
+            students, how many full groups fit? 42 &divide; 7 = 6 groups.
+            <em>Guiding question: What if groups had 8 students instead?</em>
+          </li>
+        </ol>
+
+        <!-- Language Support -->
+        <div class="language-box">
+          <h3>Language Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-item">
+              <strong>Inequality</strong><br />
+              A math sentence that uses &lt;, &gt;, &le;, or &ge; instead of =.
+            </div>
+            <div class="vocab-item">
+              <strong>At most</strong><br />
+              The biggest it can be. "At most 48" means 48 or less. Use &le;.
+            </div>
+            <div class="vocab-item">
+              <strong>At least</strong><br />
+              The smallest it can be. "At least 10" means 10 or more. Use &ge;.
+            </div>
+            <div class="vocab-item">
+              <strong>Solution</strong><br />
+              A value that makes the inequality true.
+            </div>
+            <div class="vocab-item">
+              <strong>Number line</strong><br />
+              A line with numbers in order, used to show solutions visually.
+            </div>
+            <div class="vocab-item">
+              <strong>Constraint</strong><br />
+              A limit or rule. The bus capacity is a constraint.
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <strong>Sentence Frames:</strong>
+            <p>
+              "The inequality is _____ because the bus can hold at most _____
+              people."
+            </p>
+            <p>"I used a closed/open circle because _____."</p>
+            <p>"The value s = _____ is/is not a solution because _____."</p>
+          </div>
+        </div>
+
+        <h3>Multiple Representations</h3>
+        <div class="representations">
+          <div class="rep-card">
+            <h4>Approach 1: Algebraic</h4>
+            <p>
+              6 + s &le; 48<br />s &le; 48 - 6<br />s &le; 42<br />The number of
+              students must be 42 or fewer.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 2: Number Line</h4>
+            <p>
+              Draw a line from 0 to 50. Place a filled circle at 42. Shade from
+              0 to 42. Every shaded value is a valid number of students.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 3: Table of Values</h4>
+            <p>
+              Test: s=40 &rarr; 46 &le; 48 &#10004;<br />s=42 &rarr; 48 &le; 48
+              &#10004;<br />s=43 &rarr; 49 &le; 48 &#10008;<br />s=50 &rarr; 56
+              &le; 48 &#10008;
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM ROLES -->
+      <section class="card" aria-labelledby="roles-title">
+        <h2 id="roles-title">Team Roles</h2>
+        <div class="role-grid">
+          <div class="role role-facilitator">
+            <span class="role-icon" aria-hidden="true">&#128218;</span>
+            <strong>Facilitator</strong>
+            Read the bus scenario aloud. Make sure everyone identifies the
+            constraint (at most 48). Keep the team on schedule.
+          </div>
+          <div class="role role-model">
+            <span class="role-icon" aria-hidden="true">&#9999;&#65039;</span>
+            <strong>Model Builder</strong>
+            Draw the number line on team paper. Mark 0 and 42. Use the correct
+            circle type (closed). Shade the solution region.
+          </div>
+          <div class="role role-checker">
+            <span class="role-icon" aria-hidden="true">&#128270;</span>
+            <strong>Precision Checker</strong>
+            Test at least 3 values: one below 42, one equal to 42, and one above
+            42. Confirm the circle type is correct. Check the group division.
+          </div>
+          <div class="role role-reporter">
+            <span class="role-icon" aria-hidden="true">&#128221;</span>
+            <strong>Reporter</strong>
+            Prepare the defense: state the inequality, explain the number line,
+            and give the group recommendation with evidence.
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMER & PHASES -->
+      <div class="two-col">
+        <section class="card" aria-labelledby="phases-title">
+          <h2 id="phases-title">Timed Lab Phases</h2>
+
+          <div class="timer-section no-print">
+            <div class="timer-label" id="activePhaseLabel">Launch Phase</div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">
+              03:00
+            </div>
+            <div class="timer-controls">
+              <button class="timer-btn start" id="startTimer">Start</button>
+              <button class="timer-btn pause" id="pauseTimer">Pause</button>
+              <button class="timer-btn reset" id="resetTimer">Reset</button>
+            </div>
+          </div>
+
+          <div class="phase-cards" id="phaseList">
+            <article class="phase-card open" data-minutes="3">
+              <button class="phase-header" aria-expanded="true">
+                <span class="phase-time">3 min</span>
+                <span class="phase-name">Launch</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Read the field trip scenario. Assign roles. Identify the
+                  constraint and the variable.
+                </p>
+                <ul>
+                  <li>What is the maximum number of people allowed?</li>
+                  <li>How many adults are already confirmed?</li>
+                  <li>What does s represent?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Everyone can say the constraint in their own
+                  words.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="6">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">6 min</span>
+                <span class="phase-name">Build</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Write the inequality 6 + s &le; 48. Solve for s. Model Builder
+                  draws the number line.
+                </p>
+                <ul>
+                  <li>What operation isolates s?</li>
+                  <li>Should the circle at 42 be open or closed? Why?</li>
+                  <li>Which direction do you shade?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Inequality written, solved, and graphed on a
+                  number line.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="5">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">5 min</span>
+                <span class="phase-name">Solve</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Test boundary values. Calculate maximum number of groups of 7.
+                </p>
+                <ul>
+                  <li>Does s = 42 satisfy 6 + s &le; 48?</li>
+                  <li>Does s = 43 satisfy it?</li>
+                  <li>42 &divide; 7 = ? How many full groups?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Three test values checked. Group answer
+                  calculated.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="4">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">4 min</span>
+                <span class="phase-name">Defend</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Reporter prepares the defense with claim, evidence, and
+                  recommendation.
+                </p>
+                <ul>
+                  <li>
+                    "The maximum number of students is _____ because _____."
+                  </li>
+                  <li>"We used a closed circle because _____."</li>
+                  <li>"We recommend _____ groups of 7 because _____."</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Defense has inequality, number line explanation,
+                  and group recommendation.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div>
+          <section class="card" aria-labelledby="challenge-title">
+            <h2 id="challenge-title">Challenge Extensions</h2>
+            <div class="challenge-box">
+              <strong>Extension Problem:</strong> The museum requires at least 3
+              adults per 15 students for safety. With 6 adults, write a new
+              inequality for the maximum students based on this chaperone rule.
+              Is this more or less restrictive than the bus capacity?
+            </div>
+            <h3>What If?</h3>
+            <ul>
+              <li>
+                What if the bus held 54 passengers? How does the inequality
+                change?
+              </li>
+              <li>
+                What if each student also brings a backpack that takes half a
+                seat? Rewrite the constraint.
+              </li>
+              <li>
+                Write an inequality for the minimum number of students needed
+                for the trip to happen (at least 20).
+              </li>
+            </ul>
+            <h3>Real-Life Connections</h3>
+            <p>
+              Inequalities set limits everywhere: elevator weight limits, age
+              requirements, spending budgets, speed limits, and food serving
+              sizes.
+            </p>
+          </section>
+
+          <section class="card" aria-labelledby="defense-title">
+            <h2 id="defense-title">Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                What inequality did you write? What does each part represent?
+              </li>
+              <li>Why is the circle at 42 closed instead of open?</li>
+              <li>
+                Name two values that are solutions and one that is not. How do
+                you know?
+              </li>
+              <li>How many full groups of 7 students can go? Show the math.</li>
+            </ol>
+            <strong>Sentence Starters:</strong>
+            <ul>
+              <li>"Our inequality is _____ which means _____."</li>
+              <li>
+                "We used a closed circle because the symbol &le; includes
+                _____."
+              </li>
+              <li>"S = 42 is a solution because _____."</li>
+            </ul>
+            <h3>Rubric</h3>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th>Criteria</th>
+                  <th>Excellent (4)</th>
+                  <th>Proficient (3)</th>
+                  <th>Developing (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Inequality</td>
+                  <td>Correct inequality with context explanation</td>
+                  <td>Correct inequality</td>
+                  <td>Inequality attempted</td>
+                </tr>
+                <tr>
+                  <td>Number line</td>
+                  <td>Correct circle, shading, and labels</td>
+                  <td>Minor labeling gaps</td>
+                  <td>Number line attempted</td>
+                </tr>
+                <tr>
+                  <td>Testing values</td>
+                  <td>3+ values tested at boundary</td>
+                  <td>2 values tested</td>
+                  <td>1 value tested</td>
+                </tr>
+                <tr>
+                  <td>Recommendation</td>
+                  <td>Group answer with clear reasoning</td>
+                  <td>Correct answer given</td>
+                  <td>Attempted</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </div>
+
+      <!-- EXIT PRODUCT -->
+      <section class="card" aria-labelledby="exit-title">
+        <h2 id="exit-title">Exit Product</h2>
+        <div class="exit-box">
+          <strong>Your team submits:</strong> A Field Trip Inequality Report
+          that includes:
+          <ul>
+            <li>
+              The inequality 6 + s &le; 48 with an explanation of each part
+            </li>
+            <li>Solution: s &le; 42 with algebraic steps shown</li>
+            <li>A number line graph with correct circle type and shading</li>
+            <li>At least 3 tested values (solution, boundary, non-solution)</li>
+            <li>
+              A recommendation: how many groups of 7 can go, with evidence
+            </li>
+          </ul>
+        </div>
+        <h3>Self-Assessment Checklist</h3>
+        <ul class="checklist">
+          <li>I can explain what "at most" means in math (use &le;).</li>
+          <li>I wrote and solved the inequality correctly.</li>
+          <li>
+            My number line has the correct circle type and shading direction.
+          </li>
+          <li>I tested values at the boundary to verify my solution.</li>
+          <li>I can explain the difference between &lt; and &le;.</li>
+          <li>
+            Our recommendation answers the group question with math evidence.
+          </li>
+        </ul>
+      </section>
+
+      <section class="card" style="display: none" aria-label="Print work space">
+        <h2>Work Space</h2>
+        <p>Inequality: 6 + s &le; 48</p>
+        <br />
+        <p>Solve for s:</p>
+        <br /><br />
+        <p>Number Line:</p>
+        <br /><br /><br />
+        <p>Test Values:</p>
+        <br /><br />
+        <p>Group Recommendation:</p>
+        <br /><br />
+        <p>Defense:</p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var currentPhase = 0,
+          remaining = phases[0].minutes * 60,
+          interval = null;
+        var display = document.getElementById("timerDisplay"),
+          label = document.getElementById("activePhaseLabel");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function upd() {
+          display.textContent = fmt(remaining);
+          label.textContent = phases[currentPhase].name + " Phase";
+        }
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (interval) return;
+            interval = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              upd();
+              if (remaining === 0) {
+                clearInterval(interval);
+                interval = null;
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+          });
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[currentPhase].minutes * 60;
+            upd();
+          });
+        document
+          .getElementById("phaseList")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            var card = h.parentElement,
+              all = document.querySelectorAll(".phase-card"),
+              idx = Array.prototype.indexOf.call(all, card);
+            all.forEach(function (c, i) {
+              c.classList.toggle("open", i === idx);
+              c.querySelector(".phase-header").setAttribute(
+                "aria-expanded",
+                i === idx ? "true" : "false",
+              );
+            });
+            currentPhase = idx;
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[idx].minutes * 60;
+            upd();
+          });
+        upd();
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

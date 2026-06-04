@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Neon Box Plot Detective: An interactive cyberpunk statistics visualizer. Analyze evidence distributions, compile five-number summaries, and solve cases with box-and-whisker plots.">
+  <title>Neon Box Plot Detective | Neft Studio</title>
+
+  <!-- Google Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Cyberpunk Neon Design Tokens ── */
+    :root {
+      --bg-base: #060713;
+      --bg-surface: #0c0e25;
+      --bg-card: rgba(18, 20, 50, 0.6);
+      --bg-glow: rgba(59, 130, 246, 0.08);
+      
+      --primary: #3b82f6; /* Electric Blue */
+      --primary-glow: rgba(59, 130, 246, 0.4);
+      --secondary: #10b981; /* Neon Emerald */
+      --secondary-glow: rgba(16, 185, 129, 0.4);
+      --accent: #ff4757; /* Neon Coral / Red */
+      --accent-glow: rgba(255, 71, 87, 0.4);
+      --warning: #f59e0b; /* Amber */
+      
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dark: #475569;
+      
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-gaze: 0 0 20px rgba(59, 130, 246, 0.2);
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(255, 71, 87, 0.05) 0%, transparent 40%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Breadcrumb & Navigation ── */
+    .breadcrumb {
+      margin: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .breadcrumb a:hover {
+      text-shadow: 0 0 8px var(--primary);
+    }
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    /* ── Hero Cyber banner ── */
+    .hero {
+      background: linear-gradient(135deg, #0e1130 0%, #060818 100%);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      border-left: 6px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 20px 24px;
+      box-shadow: var(--shadow-gaze);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
+    }
+    .hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 0 16px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+    }
+    .hero-chip {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-chip.accent {
+      background: rgba(255, 71, 87, 0.1);
+      border-color: rgba(255, 71, 87, 0.2);
+      color: var(--accent);
+    }
+
+    /* ── Main Layout grid ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brand-block h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* ── Quest List Cards ── */
+    .quest-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .quest-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .quest-card:hover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateY(-1px);
+    }
+    .quest-card.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+    }
+    .quest-card .quest-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .quest-card .quest-status {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+    .quest-card.active .quest-status {
+      color: var(--primary);
+    }
+    .quest-card.completed {
+      border-color: var(--secondary);
+      background: rgba(16, 185, 129, 0.05);
+    }
+    .quest-card.completed .quest-status {
+      color: var(--secondary);
+    }
+
+    /* ── Main Workspace ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .glass-panel {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+    .panel-meta h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── SVG Plot Viewport ── */
+    .model-viewport {
+      background: #020308;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-md);
+      min-height: 380px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .model-viewport svg {
+      width: 100%;
+      height: 380px;
+      display: block;
+    }
+
+    /* SVG Hover & Interactive elements styling */
+    .clue-node {
+      cursor: grab;
+      transition: fill 0.2s;
+    }
+    .clue-node:active {
+      cursor: grabbing;
+    }
+    .clue-node:hover {
+      fill: #fff !important;
+      filter: drop-shadow(0 0 8px var(--primary));
+    }
+    .glowing-box {
+      filter: drop-shadow(0 0 12px var(--primary));
+      stroke: var(--primary);
+    }
+    .glowing-whisker {
+      filter: drop-shadow(0 0 6px var(--primary));
+      stroke: var(--primary);
+    }
+    .glowing-median {
+      filter: drop-shadow(0 0 12px var(--accent));
+      stroke: var(--accent);
+    }
+    .outlier-node {
+      animation: pulseOutlier 1.5s infinite alternate;
+    }
+    @keyframes pulseOutlier {
+      0% { r: 6; fill: #ef4444; filter: drop-shadow(0 0 2px #ef4444); }
+      100% { r: 9; fill: #ff7675; filter: drop-shadow(0 0 10px #ff7675); }
+    }
+
+    /* ── Evidence Cards Dock ── */
+    .evidence-dock {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dock-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .dock-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .dock-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition);
+    }
+    .dock-card:hover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.06);
+      transform: translateY(-1px);
+    }
+    .dock-card.analyzing {
+      border-color: var(--secondary);
+      background: rgba(16, 185, 129, 0.06);
+    }
+    .dock-card .card-icon {
+      font-size: 1.5rem;
+    }
+    .dock-card .card-details {
+      display: flex;
+      flex-direction: column;
+    }
+    .dock-card .card-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .dock-card .card-val {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ── Case Objective HUD ── */
+    .objective-hud {
+      background: rgba(59, 130, 246, 0.03);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .hud-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .hud-item.done {
+      border-color: var(--secondary);
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--secondary);
+    }
+    .hud-item .item-icon {
+      font-size: 1.1rem;
+    }
+
+    /* ── ESOL Bilingual Glossary ── */
+    .glossary-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .glossary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .glossary-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .glossary-lang-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .lang-tab {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .glossary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .vocab-chip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vocab-chip:hover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.08);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .vocab-chip .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background: #090b1e;
+      color: var(--text-main);
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .vocab-chip:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* ── TWR Writing Reporter ── */
+    .writing-reporter {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .writing-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .writing-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .writing-header p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .twr-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .twr-lane {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lane-label {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+    .twr-lane:nth-child(2) .lane-label { color: var(--warning); }
+    .twr-lane:nth-child(3) .lane-label { color: var(--secondary); }
+    .lane-kernel {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .twr-textarea {
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      resize: none;
+      outline: none;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .twr-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+    }
+    .twr-conjunctions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .conj-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .conj-chip:hover {
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .report-pad-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+    }
+    .report-pad-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .report-pad-area {
+      width: 100%;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .report-pad-area:focus {
+      border-color: var(--secondary);
+    }
+    .report-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* ── Cyber Buttons ── */
+    .cyber-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    }
+    .cyber-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
+    }
+    .cyber-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .cyber-btn.sec {
+      background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .cyber-btn.sec:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+    .cyber-btn.outline {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+    .cyber-btn.outline:hover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    /* ── Diagnostics console overlay ── */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #05070f;
+      color: #00ff66;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 1px solid #14294a;
+      padding: 16px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #14294a;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .diag-line {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .diag-close {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: none;
+      }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/statistics-data/">Statistics and Data</a>
+    <span>/</span>
+    <span>Box Plot Detective</span>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-row">
+      <div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px">
+          <span class="hero-chip">Unit 10 · Statistics</span>
+          <span class="hero-chip accent" id="langIndicator">English Mode</span>
+        </div>
+        <h1 id="heroTitle">Neon Box Plot Detective</h1>
+        <p id="heroCopy">
+          Play as a cybersecurity analyst investigating digital footprints. Drag clues along the glowing 
+          axis, examine how coordinates shift data spreads in real-time, and solve the system overrides.
+        </p>
+        <div class="hero-stats">
+          <button class="cyber-btn outline" onclick="toggleLanguage()" id="btnLangToggle">
+            🌍 Translate to Spanish
+          </button>
+          <button class="cyber-btn outline" onclick="toggleDiagnostics()">
+            📊 Run System Checks
+          </button>
+          <button class="cyber-btn outline" id="btnSelfTest" onclick="triggerSelfTest()">
+            ⚙️ Run Self-Test
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-shell">
+    <!-- Sidebar: Mystery Quests -->
+    <aside class="sidebar-wrapper" aria-label="Mystery Cases">
+      <div class="brand-block">
+        <h2 id="sidebarTitle">🕵️‍♂️ Active Quests</h2>
+        <p id="sidebarSubtitle">Solve system overrides</p>
+      </div>
+
+      <div class="quest-catalog" id="questCatalog" role="radiogroup" aria-label="Select Case">
+        <!-- Dynamically populated quest cards -->
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="canvas-layout">
+      <!-- SVG Box Plot Sandbox -->
+      <section class="glass-panel" aria-labelledby="canvasHeading">
+        <div class="panel-meta">
+          <h3 id="canvasHeading">🔮 Glowing Evidence Analyzer</h3>
+          <button class="cyber-btn" onclick="resetActiveDataset()" id="btnResetData">
+            🔄 Reset Axis
+          </button>
+        </div>
+
+        <div class="model-viewport" id="viewport">
+          <svg id="canvasSvg" viewBox="0 0 800 380">
+            <!-- Programmatic axis line -->
+            <line x1="100" y1="260" x2="700" y2="260" stroke="#1e293b" stroke-width="4" />
+            <!-- Axis label -->
+            <text x="400" y="310" fill="#64748b" font-size="12" font-family="'Space Grotesk'" text-anchor="middle" letter-spacing="1">EVIDENCE VALUES (0 - 20)</text>
+            
+            <!-- Dynamic Grid ticks and numbers will be injected here -->
+            <g id="gridTicks"></g>
+            
+            <!-- Box-and-Whisker plot components group -->
+            <g id="boxPlotGroup"></g>
+            
+            <!-- Draggable nodes group -->
+            <g id="nodesGroup"></g>
+          </svg>
+        </div>
+
+        <!-- Case Objective HUD -->
+        <div class="objective-hud">
+          <div class="hud-title" id="hudTitle">📌 Case Goals Checklist</div>
+          <div class="hud-checklist" id="hudChecklist">
+            <!-- Injected active quest items -->
+          </div>
+        </div>
+
+        <!-- Evidence Dock -->
+        <div class="evidence-dock">
+          <div class="dock-title" id="dockTitle">🎒 Evidence Clues Locker (Add clues to axis)</div>
+          <div class="dock-cards" id="dockCards">
+            <!-- Clue cards -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ESOL Bilingual Glossary -->
+      <section class="glossary-card" aria-labelledby="glossaryHeading">
+        <div class="glossary-header">
+          <h4 id="glossaryHeading">📖 Interactive Math Dictionary</h4>
+          <div class="glossary-lang-tabs" id="glossaryLangTabs" role="tablist" aria-label="Glossary Language">
+            <button class="lang-tab active" role="tab" aria-selected="true" onclick="setGlossaryLanguage('en')" id="tabEn">English</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('es')" id="tabEs">Español</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('ar')" id="tabAr">العربية</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('vi')" id="tabVi">Tiếng Việt</button>
+          </div>
+        </div>
+        <div class="glossary-grid" id="glossaryGrid">
+          <!-- Injected bilingual vocab cards -->
+        </div>
+      </section>
+
+      <!-- TWR Writing Pad -->
+      <section class="writing-reporter" aria-labelledby="reporterHeading">
+        <div class="writing-header">
+          <h4 id="reporterHeading">✍️ The Writing Revolution (TWR) Detective Report</h4>
+          <p id="reporterSub">Expand your kernels using transition connectors to synthesize your analytical case report.</p>
+        </div>
+        
+        <div class="twr-lanes">
+          <div class="twr-lane">
+            <span class="lane-label">Because</span>
+            <span class="lane-kernel" id="kernelBecause">The median is 12 because...</span>
+            <textarea class="twr-textarea" id="textareaBecause" placeholder="Type reason..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaBecause', 'middle value')">middle value</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaBecause', 'sorted data')">sorted data</span>
+            </div>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">But</span>
+            <span class="lane-kernel" id="kernelBut">The IQR is tight, but...</span>
+            <textarea class="twr-textarea" id="textareaBut" placeholder="Type contrast..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaBut', 'outliers exist')">outliers exist</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaBut', 'wide range')">wide range</span>
+            </div>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">So</span>
+            <span class="lane-kernel" id="kernelSo">Data point 20 is an outlier, so...</span>
+            <textarea class="twr-textarea" id="textareaSo" placeholder="Type result..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaSo', 'it shifts median')">it shifts median</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaSo', 'whisker ends')">whisker ends</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pad-section">
+          <span class="report-pad-title" id="padTitle">📜 Compiled Detective Report Pad</span>
+          <textarea class="report-pad-area" id="finalReportPad" readonly placeholder="Your structured report will compose here as you type in the lanes above..."></textarea>
+          <div class="report-actions">
+            <button class="cyber-btn sec" onclick="triggerReportSubmission()" id="btnSubmitReport">
+              🚀 Submit Case File
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Diagnostics overlay console -->
+  <div class="diag-overlay" id="diagConsole" aria-live="polite">
+    <div class="diag-head">
+      <span>SYSTEM DIAGNOSTICS CONTROL</span>
+      <button class="diag-close" onclick="toggleDiagnostics()">[CLOSE]</button>
+    </div>
+    <div class="diag-stream" id="diagStream">
+      <p class="diag-line" style="color: #66ff66;">&gt; Cybernetic statistical core initialized.</p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>Mr. Neft's Classroom Static Studio</span>
+    <span>&copy; SY 2025-26 · Pure Client-Side Static HTML5</span>
+  </footer>
+
+  <script src="/assets/app.js" defer></script>
+
+  <script>
+    // ── Educational Publishing Layer Architecture ──
+
+    // 1. CONFIG Preset Database
+    const CONFIG = {
+      lang: "en",
+      glossaryLang: "en",
+      activeCaseIdx: 0,
+      scaleMin: 0,
+      scaleMax: 20,
+      scaleStep: 30, // px per unit
+      scaleStartX: 100, // px coordinates
+      audioMaxGain: 0.08,
+      quests: [
+        {
+          titleEn: "Case 1: Suspect Footprints",
+          titleEs: "Caso 1: Huellas de Sospechosos",
+          descEn: "Locate the footprint shoe size distribution. Arrange numbers such that the Median is exactly 12 and the IQR is exactly 4.",
+          descEs: "Localiza la distribución de tamaños de calzado. Organiza los números de modo que la Mediana sea exactamente 12 y el IQR sea exactamente 4.",
+          objectiveMinItems: 5,
+          objectives: [
+            { id: "median_12", textEn: "Median equals exactly 12", textEs: "La Mediana es exactamente 12" },
+            { id: "iqr_4", textEn: "IQR equals exactly 4", textEs: "El IQR es exactamente 4" },
+            { id: "min_items", textEn: "Add at least 5 evidence clues to axis", textEs: "Agrega al menos 5 pistas de evidencia al eje" }
+          ],
+          clueOptions: [
+            { id: "c1", nameEn: "Shoe Size A", nameEs: "Calzado A", initial: 10, icon: "👟" },
+            { id: "c2", nameEn: "Shoe Size B", nameEs: "Calzado B", initial: 12, icon: "👟" },
+            { id: "c3", nameEn: "Shoe Size C", nameEs: "Calzado C", initial: 14, icon: "👟" },
+            { id: "c4", nameEn: "Shoe Size D", nameEs: "Calzado D", initial: 8, icon: "👟" },
+            { id: "c5", nameEn: "Shoe Size E", nameEs: "Calzado E", initial: 16, icon: "👟" },
+            { id: "c6", nameEn: "Shoe Size F", nameEs: "Calzado F", initial: 12, icon: "👟" }
+          ]
+        },
+        {
+          titleEn: "Case 2: The Cryptographic Vault",
+          titleEs: "Caso 2: La Bóveda Criptográfica",
+          descEn: "Arrange mathematical coordinates to unlock a high-security lockbox. Make Q1 = 8, Median = 11, and Q3 = 16.",
+          descEs: "Organiza las coordenadas matemáticas para desbloquear la caja fuerte. Haz que Q1 = 8, Mediana = 11, y Q3 = 16.",
+          objectiveMinItems: 6,
+          objectives: [
+            { id: "q1_8", textEn: "Q1 equals exactly 8", textEs: "Q1 es exactamente 8" },
+            { id: "median_11", textEn: "Median equals exactly 11", textEs: "La Mediana es exactamente 11" },
+            { id: "q3_16", textEn: "Q3 equals exactly 16", textEs: "Q3 es exactamente 16" },
+            { id: "min_items", textEn: "Add at least 6 evidence clues to axis", textEs: "Agrega al menos 6 pistas de evidencia al eje" }
+          ],
+          clueOptions: [
+            { id: "v1", nameEn: "Keyframe A", nameEs: "Clave A", initial: 6, icon: "🔑" },
+            { id: "v2", nameEn: "Keyframe B", nameEs: "Clave B", initial: 8, icon: "🔑" },
+            { id: "v3", nameEn: "Keyframe C", nameEs: "Clave C", initial: 11, icon: "🔑" },
+            { id: "v4", nameEn: "Keyframe D", nameEs: "Clave D", initial: 14, icon: "🔑" },
+            { id: "v5", nameEn: "Keyframe E", nameEs: "Clave E", initial: 16, icon: "🔑" },
+            { id: "v6", nameEn: "Keyframe F", nameEs: "Clave F", initial: 18, icon: "🔑" },
+            { id: "v7", nameEn: "Keyframe G", nameEs: "Clave G", initial: 2, icon: "🔑" }
+          ]
+        },
+        {
+          titleEn: "Case 3: Rogue Outlier Override",
+          titleEs: "Caso 3: Anulación de Valores Atípicos",
+          descEn: "Construct a data distribution representing hacking speeds where the IQR is tight (< 3) but the Range is extremely high (> 12).",
+          descEs: "Construye una distribución que represente velocidades de hackeo con un IQR estrecho (< 3) pero un Rango extremadamente alto (> 12).",
+          objectiveMinItems: 7,
+          objectives: [
+            { id: "iqr_under_3", textEn: "IQR is less than 3", textEs: "El IQR es menor que 3" },
+            { id: "range_over_12", textEn: "Range is greater than 12", textEs: "El Rango es mayor que 12" },
+            { id: "has_outlier", textEn: "Contains at least 1 statistical outlier", textEs: "Contiene al menos 1 valor atípico" },
+            { id: "min_items", textEn: "Add at least 7 clues to axis", textEs: "Agrega al menos 7 pistas al eje" }
+          ],
+          clueOptions: [
+            { id: "h1", nameEn: "Freq Node A", nameEs: "Frecuencia A", initial: 10, icon: "📡" },
+            { id: "h2", nameEn: "Freq Node B", nameEs: "Frecuencia B", initial: 10, icon: "📡" },
+            { id: "h3", nameEn: "Freq Node C", nameEs: "Frecuencia C", initial: 11, icon: "📡" },
+            { id: "h4", nameEn: "Freq Node D", nameEs: "Frecuencia D", initial: 11, icon: "📡" },
+            { id: "h5", nameEn: "Freq Node E", nameEs: "Frecuencia E", initial: 12, icon: "📡" },
+            { id: "h6", nameEn: "Freq Node F", nameEs: "Frecuencia F", initial: 12, icon: "📡" },
+            { id: "h7", nameEn: "Freq Node G", nameEs: "Frecuencia G", initial: 2, icon: "📡" },
+            { id: "h8", nameEn: "Freq Node H", nameEs: "Frecuencia H", initial: 20, icon: "📡" }
+          ]
+        }
+      ],
+      dictionary: {
+        median: {
+          en: { word: "Median", syllables: "me·di·an", trans: "Mediana", def: "The middle value in a sorted list of numbers. Splits data into 50% lower and 50% higher." },
+          es: { word: "Mediana", syllables: "me·dia·na", trans: "Median", def: "El valor central en una lista ordenada de números. Divide los datos en un 50% inferior y un 50% superior." },
+          ar: { word: "الوسيط", syllables: "al-wa-seet", trans: "Median", def: "القيمة الوسطى في قائمة الأعداد المرتبة تصاعدياً." },
+          vi: { word: "Trung vị", syllables: "trung vị", trans: "Median", def: "Giá trị đứng ở giữa của một dãy số đã được sắp xếp." }
+        },
+        quartile: {
+          en: { word: "Quartiles", syllables: "quar·tile", trans: "Cuartiles", def: "Values that divide a dataset into four equal quarters (Q1, Q2/Median, Q3)." },
+          es: { word: "Cuartiles", syllables: "cuar·til", trans: "Quartiles", def: "Valores que dividen un conjunto de datos en cuatro partes iguales (Q1, Q2/Mediana, Q3)." },
+          ar: { word: "الربيعيات", syllables: "al-ru-bay-ee-yat", trans: "Quartiles", def: "القيم التي تقسم مجموعة البيانات إلى أربعة أجزاء متساوية." },
+          vi: { word: "Tứ phân vị", syllables: "tứ phân vị", trans: "Quartiles", def: "Các giá trị phân chia một tập dữ liệu thành bốn phần bằng nhau." }
+        },
+        iqr: {
+          en: { word: "IQR", syllables: "in·ter·quar·tile range", trans: "Rango intercuartil", def: "The Interquartile Range. Measures the distance between Q3 and Q1 (the middle 50% spread)." },
+          es: { word: "Rango Intercuartil", syllables: "ran-go in-ter-cuar-til", trans: "IQR", def: "El rango intercuartílico. Mide la distancia entre Q3 y Q1 (la dispersión del 50% central)." },
+          ar: { word: "المدى الربيعي", syllables: "al-ma-da al-ru-bay-ee", trans: "IQR", def: "مدى التشتت للنصف الأوسط من البيانات، وهو الفرق بين الربيع الثالث والربيع الأول." },
+          vi: { word: "Khoảng tứ phân vị", syllables: "khoảng tứ phân vị", trans: "IQR", def: "Khoảng cách giữa tứ phân vị thứ ba (Q3) và tứ phân vị thứ nhất (Q1)." }
+        },
+        outlier: {
+          en: { word: "Outlier", syllables: "out·li·er", trans: "Valor atípico", def: "A data value that is significantly far from the rest of the distribution (more than 1.5 * IQR from Q1 or Q3)." },
+          es: { word: "Valor Atípico", syllables: "va-lor a-ti-pi-co", trans: "Outlier", def: "Un valor de datos que está significativamente alejado del resto de la distribución." },
+          ar: { word: "القيمة المتطرفة", syllables: "al-qee-ma al-mu-ta-ta-ri-fa", trans: "Outlier", def: "قيمة تبتعد بشكل ملحوظ عن بقية القيم في مجموعة البيانات." },
+          vi: { word: "Giá trị ngoại lai", syllables: "ngoại lai", trans: "Outlier", def: "Một giá trị khác biệt đáng kể so với phần còn lại của tập dữ liệu." }
+        }
+      }
+    };
+
+    // 2. STATE Layer (Single Source of Truth)
+    let STATE = {
+      lang: "en",
+      activeCaseIdx: 0,
+      activeClues: [], // Elements dragged/activated: { id, initialVal, currentVal, icon, nameEn, nameEs }
+      objectiveStatus: {}, // Map of objectiveId: boolean
+      reportBecause: "",
+      reportBut: "",
+      reportSo: "",
+      points: 1200,
+      streak: 3
+    };
+
+    // Speech Synthesis helper
+    const synth = window.speechSynthesis;
+
+    // Web Audio Sound Synth Service
+    let audioCtx = null;
+    let masterGain = null;
+
+    function initAudio() {
+      if (audioCtx) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(CONFIG.audioMaxGain, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+        logDiag("Audio Engine scheduled successfully.");
+      } catch (err) {
+        logDiag("Audio initialization error: " + err.message);
+      }
+    }
+
+    function playTone(freq, duration, type = "sine") {
+      initAudio();
+      if (!audioCtx || audioCtx.state === "suspended") return;
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      
+      gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      
+      osc.connect(gainNode);
+      gainNode.connect(masterGain);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playSuccessSiren() {
+      initAudio();
+      if (!audioCtx || audioCtx.state === "suspended") return;
+      
+      const now = audioCtx.currentTime;
+      // Synthesize elegant cyber success cascade
+      const notes = [440, 554, 659, 880];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+        
+        gainNode.gain.setValueAtTime(0.08, now + idx * 0.12);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.5);
+        
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        
+        osc.start(now + idx * 0.12);
+        osc.stop(now + idx * 0.12 + 0.5);
+      });
+    }
+
+    // 3. SERVICE Layer (Statistical Compilations)
+    const BOX_PLOT_SERVICE = {
+      // Moore & McCabe (M&M) / Tukey excluded median method
+      compileFiveNumberSummary(values) {
+        if (!values || values.length === 0) {
+          return { min: 0, q1: 0, median: 0, q3: 0, max: 0, iqr: 0, outliers: [] };
+        }
+        
+        const sorted = [...values].sort((a, b) => a - b);
+        const len = sorted.length;
+        
+        const min = sorted[0];
+        const max = sorted[len - 1];
+        
+        // Median (Q2)
+        let median = 0;
+        let lowerHalf = [];
+        let upperHalf = [];
+        
+        if (len % 2 !== 0) {
+          const midIdx = Math.floor(len / 2);
+          median = sorted[midIdx];
+          lowerHalf = sorted.slice(0, midIdx);
+          upperHalf = sorted.slice(midIdx + 1);
+        } else {
+          const midIdx2 = len / 2;
+          median = (sorted[midIdx2 - 1] + sorted[midIdx2]) / 2;
+          lowerHalf = sorted.slice(0, midIdx2);
+          upperHalf = sorted.slice(midIdx2);
+        }
+        
+        // Q1 is median of lowerHalf
+        const q1 = this.calculateMedianOfSortedArray(lowerHalf);
+        // Q3 is median of upperHalf
+        const q3 = this.calculateMedianOfSortedArray(upperHalf);
+        
+        const iqr = q3 - q1;
+        const lowerOutlierBound = q1 - 1.5 * iqr;
+        const upperOutlierBound = q3 + 1.5 * iqr;
+        
+        const outliers = values.filter(v => v < lowerOutlierBound || v > upperOutlierBound);
+        
+        return { min, q1, median, q3, max, iqr, outliers };
+      },
+
+      calculateMedianOfSortedArray(arr) {
+        if (arr.length === 0) return 0;
+        const len = arr.length;
+        if (len % 2 !== 0) {
+          return arr[Math.floor(len / 2)];
+        } else {
+          return (arr[len / 2 - 1] + arr[len / 2]) / 2;
+        }
+      }
+    };
+
+    // Helper for validation schema
+    function validateConfig() {
+      if (!CONFIG.quests || CONFIG.quests.length === 0) {
+        throw new Error("Validation Error: System quests presets must be populated.");
+      }
+      CONFIG.quests.forEach((q, idx) => {
+        if (!q.clueOptions || q.clueOptions.length === 0) {
+          throw new Error(`Validation Error: Quest ${idx} is missing clue presets.`);
+        }
+      });
+      logDiag("System Config validation status: PASSED.");
+    }
+
+    // 4. CONTROLLER & UI VIEW Layer
+
+    // Initialize layout
+    document.addEventListener("DOMContentLoaded", () => {
+      validateConfig();
+      // Setup default active quest
+      setQuest(0);
+      setGlossaryLanguage("en");
+      
+      // Hook text areas
+      document.getElementById("textareaBecause").addEventListener("input", (e) => {
+        STATE.reportBecause = e.target.value;
+        composeFinalReport();
+      });
+      document.getElementById("textareaBut").addEventListener("input", (e) => {
+        STATE.reportBut = e.target.value;
+        composeFinalReport();
+      });
+      document.getElementById("textareaSo").addEventListener("input", (e) => {
+        STATE.reportSo = e.target.value;
+        composeFinalReport();
+      });
+      
+      // Auto-draw SVG coordinate ticks
+      drawGridTicks();
+      
+      // Global touch support for SVG dragging
+      setupDragEvents();
+    });
+
+    function logDiag(message) {
+      const stream = document.getElementById("diagStream");
+      if (stream) {
+        const line = document.createElement("p");
+        line.className = "diag-line";
+        line.textContent = `> ${message}`;
+        stream.appendChild(line);
+        stream.scrollTop = stream.scrollHeight;
+      }
+      console.log(message);
+    }
+
+    function toggleDiagnostics() {
+      const overlay = document.getElementById("diagConsole");
+      if (overlay.style.display === "flex") {
+        overlay.style.display = "none";
+      } else {
+        overlay.style.display = "flex";
+      }
+      playTone(600, 0.08);
+    }
+
+    function toggleLanguage() {
+      STATE.lang = STATE.lang === "en" ? "es" : "en";
+      playTone(500, 0.08);
+      
+      // Update UI labels
+      const langInd = document.getElementById("langIndicator");
+      const btnLang = document.getElementById("btnLangToggle");
+      const heroTitle = document.getElementById("heroTitle");
+      const heroCopy = document.getElementById("heroCopy");
+      const sidebarTitle = document.getElementById("sidebarTitle");
+      const sidebarSubtitle = document.getElementById("sidebarSubtitle");
+      const canvasHeading = document.getElementById("canvasHeading");
+      const btnReset = document.getElementById("btnResetData");
+      const hudTitle = document.getElementById("hudTitle");
+      const dockTitle = document.getElementById("dockTitle");
+      const glossaryHeading = document.getElementById("glossaryHeading");
+      const reporterHeading = document.getElementById("reporterHeading");
+      const reporterSub = document.getElementById("reporterSub");
+      const padTitle = document.getElementById("padTitle");
+      const btnSubmit = document.getElementById("btnSubmitReport");
+
+      if (STATE.lang === "es") {
+        langInd.textContent = "Modo Español";
+        btnLang.textContent = "🌍 Traducir a Inglés";
+        heroTitle.textContent = "Detector de Diagramas de Caja";
+        heroCopy.textContent = "Actúa como un analista de ciberseguridad. Arrastra las pistas a lo largo del eje luminoso, examina los cambios en tiempo real y resuelve las anulaciones del sistema.";
+        sidebarTitle.textContent = "🕵️‍♂️ Misiones Activas";
+        sidebarSubtitle.textContent = "Resuelve anulaciones";
+        canvasHeading.textContent = "🔮 Analizador de Evidencia Luminoso";
+        btnReset.textContent = "🔄 Restablecer Eje";
+        hudTitle.textContent = "📌 Objetivos de la Misión";
+        dockTitle.textContent = "🎒 Compartimento de Pistas (Eje táctil)";
+        glossaryHeading.textContent = "📖 Diccionario Matemático Interactivo";
+        reporterHeading.textContent = "✍️ Reporte de Investigación de TWR";
+        reporterSub.textContent = "Amplía tus ideas utilizando conectores de transición para componer el reporte oficial de tu caso.";
+        padTitle.textContent = "📜 Historial de Expedientes Compilados";
+        btnSubmit.textContent = "🚀 Enviar Expediente de Caso";
+      } else {
+        langInd.textContent = "English Mode";
+        btnLang.textContent = "🌍 Translate to Spanish";
+        heroTitle.textContent = "Neon Box Plot Detective";
+        heroCopy.textContent = "Play as a cybersecurity analyst investigating digital footprints. Drag clues along the glowing axis, examine how coordinates shift data spreads in real-time, and solve the system overrides.";
+        sidebarTitle.textContent = "🕵️‍♂️ Active Quests";
+        sidebarSubtitle.textContent = "Solve system overrides";
+        canvasHeading.textContent = "🔮 Glowing Evidence Analyzer";
+        btnReset.textContent = "🔄 Reset Axis";
+        hudTitle.textContent = "📌 Case Goals Checklist";
+        dockTitle.textContent = "🎒 Evidence Clues Locker (Add clues to axis)";
+        glossaryHeading.textContent = "📖 Interactive Math Dictionary";
+        reporterHeading.textContent = "✍️ The Writing Revolution (TWR) Detective Report";
+        reporterSub.textContent = "Expand your kernels using transition connectors to synthesize your analytical case report.";
+        padTitle.textContent = "📜 Compiled Detective Report Pad";
+        btnSubmit.textContent = "🚀 Submit Case File";
+      }
+
+      // Re-populate elements
+      populateQuestCatalog();
+      populateActiveCluesLocker();
+      populateObjectiveHUD();
+      composeFinalReport();
+    }
+
+    function setQuest(idx) {
+      STATE.activeCaseIdx = idx;
+      STATE.activeClues = [];
+      STATE.questCompleted = false;
+      STATE.checklistQuest = false;
+      STATE.checklistDraft = false;
+      STATE.checklistRecord = false;
+      STATE.checklistRubric = false;
+      
+      // Clear TWR areas
+      document.getElementById("textareaBecause").value = "";
+      document.getElementById("textareaBut").value = "";
+      document.getElementById("textareaSo").value = "";
+      STATE.reportBecause = "";
+      STATE.reportBut = "";
+      STATE.reportSo = "";
+      
+      playTone(400, 0.15);
+      
+      logDiag(`Loading Quest: ${CONFIG.quests[idx].titleEn}`);
+      
+      populateQuestCatalog();
+      populateActiveCluesLocker();
+      populateObjectiveHUD();
+      
+      recomputePlot();
+      composeFinalReport();
+    }
+
+    function populateQuestCatalog() {
+      const container = document.getElementById("questCatalog");
+      container.innerHTML = "";
+      
+      CONFIG.quests.forEach((q, idx) => {
+        const isActive = STATE.activeCaseIdx === idx;
+        const card = document.createElement("button");
+        card.className = `quest-card ${isActive ? 'active' : ''}`;
+        card.setAttribute("role", "radio");
+        card.setAttribute("aria-checked", isActive ? "true" : "false");
+        
+        const title = STATE.lang === "en" ? q.titleEn : q.titleEs;
+        const desc = STATE.lang === "en" ? q.descEn : q.descEs;
+        
+        card.onclick = () => setQuest(idx);
+        
+        card.innerHTML = `
+          <span class="quest-title">${title}</span>
+          <span class="quest-status" style="font-size:0.75rem; margin-top:4px;">${desc}</span>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function populateActiveCluesLocker() {
+      const container = document.getElementById("dockCards");
+      container.innerHTML = "";
+      
+      const q = CONFIG.quests[STATE.activeCaseIdx];
+      q.clueOptions.forEach(opt => {
+        const isAdded = STATE.activeClues.some(c => c.id === opt.id);
+        const card = document.createElement("button");
+        card.className = `dock-card ${isAdded ? 'analyzing' : ''}`;
+        
+        const name = STATE.lang === "en" ? opt.nameEn : opt.nameEs;
+        
+        card.onclick = () => toggleClueOnAxis(opt);
+        
+        card.innerHTML = `
+          <span class="card-icon">${opt.icon}</span>
+          <div class="card-details">
+            <span class="card-name">${name}</span>
+            <span class="card-val">${STATE.lang === "en" ? 'Clue Val' : 'Valor'}: ${isAdded ? STATE.activeClues.find(c => c.id === opt.id).currentVal : opt.initial}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleClueOnAxis(optPreset) {
+      const existingIdx = STATE.activeClues.findIndex(c => c.id === optPreset.id);
+      if (existingIdx !== -1) {
+        // Remove from axis
+        STATE.activeClues.splice(existingIdx, 1);
+        playTone(300, 0.08, "triangle");
+      } else {
+        // Add to axis
+        STATE.activeClues.push({
+          id: optPreset.id,
+          currentVal: optPreset.initial,
+          icon: optPreset.icon,
+          nameEn: optPreset.nameEn,
+          nameEs: optPreset.nameEs
+        });
+        playTone(520, 0.1, "sine");
+      }
+      
+      populateActiveCluesLocker();
+      recomputePlot();
+    }
+
+    function resetActiveDataset() {
+      STATE.activeClues = [];
+      playTone(200, 0.2);
+      populateActiveCluesLocker();
+      recomputePlot();
+      logDiag("Evidence axis reset successfully.");
+    }
+
+    function drawGridTicks() {
+      const container = document.getElementById("gridTicks");
+      container.innerHTML = "";
+      
+      for (let v = 0; v <= 20; v++) {
+        const x = CONFIG.scaleStartX + v * CONFIG.scaleStep;
+        
+        // Grid vertical lines
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x);
+        line.setAttribute("y1", 20);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", 265);
+        line.setAttribute("stroke", "rgba(255, 255, 255, 0.025)");
+        line.setAttribute("stroke-width", "1");
+        container.appendChild(line);
+        
+        // Ticks
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", x);
+        tick.setAttribute("y1", 260);
+        tick.setAttribute("x2", x);
+        tick.setAttribute("y2", 270);
+        tick.setAttribute("stroke", "#1e293b");
+        tick.setAttribute("stroke-width", "2");
+        container.appendChild(tick);
+        
+        // Numbers
+        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txt.setAttribute("x", x);
+        txt.setAttribute("y", 285);
+        txt.setAttribute("fill", "#475569");
+        txt.setAttribute("font-size", "10");
+        txt.setAttribute("font-family", "Share Tech Mono");
+        txt.setAttribute("text-anchor", "middle");
+        txt.textContent = v;
+        container.appendChild(txt);
+      }
+    }
+
+    // Dynamic rendering of box plot
+    function recomputePlot() {
+      const values = STATE.activeClues.map(c => c.currentVal);
+      const summary = BOX_PLOT_SERVICE.compileFiveNumberSummary(values);
+      
+      const plotGroup = document.getElementById("boxPlotGroup");
+      const nodesGroup = document.getElementById("nodesGroup");
+      
+      plotGroup.innerHTML = "";
+      nodesGroup.innerHTML = "";
+      
+      if (values.length === 0) {
+        evaluateQuestObjectives(summary);
+        return;
+      }
+      
+      // Draw Whiskers
+      // Left whisker: Min to Q1
+      const minX = CONFIG.scaleStartX + summary.min * CONFIG.scaleStep;
+      const q1X = CONFIG.scaleStartX + summary.q1 * CONFIG.scaleStep;
+      const q3X = CONFIG.scaleStartX + summary.q3 * CONFIG.scaleStep;
+      const maxX = CONFIG.scaleStartX + summary.max * CONFIG.scaleStep;
+      const medianX = CONFIG.scaleStartX + summary.median * CONFIG.scaleStep;
+      const plotY = 120; // Main vertical center of box plot
+      
+      if (values.length >= 2) {
+        // Left Whisker Line
+        const lWhisker = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        lWhisker.setAttribute("x1", minX);
+        lWhisker.setAttribute("y1", plotY);
+        lWhisker.setAttribute("x2", q1X);
+        lWhisker.setAttribute("y2", plotY);
+        lWhisker.setAttribute("class", "glowing-whisker");
+        lWhisker.setAttribute("stroke-width", "3");
+        plotGroup.appendChild(lWhisker);
+        
+        // Left Whisker Cap
+        const lCap = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        lCap.setAttribute("x1", minX);
+        lCap.setAttribute("y1", plotY - 20);
+        lCap.setAttribute("x2", minX);
+        lCap.setAttribute("y2", plotY + 20);
+        lCap.setAttribute("class", "glowing-whisker");
+        lCap.setAttribute("stroke-width", "3");
+        plotGroup.appendChild(lCap);
+
+        // Right Whisker Line
+        const rWhisker = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        rWhisker.setAttribute("x1", q3X);
+        rWhisker.setAttribute("y1", plotY);
+        rWhisker.setAttribute("x2", maxX);
+        rWhisker.setAttribute("y2", plotY);
+        rWhisker.setAttribute("class", "glowing-whisker");
+        rWhisker.setAttribute("stroke-width", "3");
+        plotGroup.appendChild(rWhisker);
+        
+        // Right Whisker Cap
+        const rCap = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        rCap.setAttribute("x1", maxX);
+        rCap.setAttribute("y1", plotY - 20);
+        rCap.setAttribute("x2", maxX);
+        rCap.setAttribute("y2", plotY + 20);
+        rCap.setAttribute("class", "glowing-whisker");
+        rCap.setAttribute("stroke-width", "3");
+        plotGroup.appendChild(rCap);
+      }
+      
+      // Draw Box body (Q1 to Q3)
+      if (values.length >= 3) {
+        const boxWidth = Math.max(2, q3X - q1X);
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", q1X);
+        rect.setAttribute("y", plotY - 40);
+        rect.setAttribute("width", boxWidth);
+        rect.setAttribute("height", 80);
+        rect.setAttribute("fill", "rgba(59, 130, 246, 0.12)");
+        rect.setAttribute("class", "glowing-box");
+        rect.setAttribute("stroke-width", "3");
+        rect.setAttribute("rx", "4");
+        plotGroup.appendChild(rect);
+        
+        // Draw Median line
+        const medLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        medLine.setAttribute("x1", medianX);
+        medLine.setAttribute("y1", plotY - 40);
+        medLine.setAttribute("x2", medianX);
+        medLine.setAttribute("y2", plotY + 40);
+        medLine.setAttribute("class", "glowing-median");
+        medLine.setAttribute("stroke-width", "4");
+        plotGroup.appendChild(medLine);
+      }
+
+      // Draw Outlier circles
+      summary.outliers.forEach(outVal => {
+        const outX = CONFIG.scaleStartX + outVal * CONFIG.scaleStep;
+        const outCirc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        outCirc.setAttribute("cx", outX);
+        outCirc.setAttribute("cy", plotY);
+        outCirc.setAttribute("r", "8");
+        outCirc.setAttribute("class", "outlier-node");
+        plotGroup.appendChild(outCirc);
+        
+        // Label it
+        const oText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        oText.setAttribute("x", outX);
+        oText.setAttribute("y", plotY - 14);
+        oText.setAttribute("fill", "#ff4757");
+        oText.setAttribute("font-size", "10");
+        oText.setAttribute("font-family", "Share Tech Mono");
+        oText.setAttribute("text-anchor", "middle");
+        oText.textContent = "OUTLIER";
+        plotGroup.appendChild(oText);
+      });
+
+      // Draw Five-Number Numerical text values above whiskers/box
+      if (values.length >= 2) {
+        drawStatsLabels(summary, plotY, minX, q1X, medianX, q3X, maxX);
+      }
+      
+      // Draw draggable clue points on the Y=260 axis line
+      STATE.activeClues.forEach(clue => {
+        const nodeX = CONFIG.scaleStartX + clue.currentVal * CONFIG.scaleStep;
+        
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "clue-node");
+        g.setAttribute("data-id", clue.id);
+        
+        // Neon pulse path or circle
+        const ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        ring.setAttribute("cx", nodeX);
+        ring.setAttribute("cy", 260);
+        ring.setAttribute("r", "12");
+        ring.setAttribute("fill", "rgba(59, 130, 246, 0.2)");
+        ring.setAttribute("stroke", varColorForClue(clue.id));
+        ring.setAttribute("stroke-width", "2");
+        g.appendChild(ring);
+        
+        const center = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        center.setAttribute("cx", nodeX);
+        center.setAttribute("cy", 260);
+        center.setAttribute("r", "5");
+        center.setAttribute("fill", varColorForClue(clue.id));
+        g.appendChild(center);
+        
+        // Draggable label text
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("x", nodeX);
+        t.setAttribute("y", 240);
+        t.setAttribute("fill", "#fff");
+        t.setAttribute("font-size", "13");
+        t.setAttribute("font-family", "Share Tech Mono");
+        t.setAttribute("text-anchor", "middle");
+        t.textContent = `${clue.icon} ${clue.currentVal}`;
+        g.appendChild(t);
+        
+        nodesGroup.appendChild(g);
+      });
+      
+      evaluateQuestObjectives(summary);
+    }
+
+    function varColorForClue(id) {
+      // Map icons to distinct neon hues
+      if (id.startsWith("c")) return "#3b82f6"; // Electric Blue
+      if (id.startsWith("v")) return "#f59e0b"; // Gold Key
+      return "#ff4757"; // Coral Pink
+    }
+
+    function drawStatsLabels(summary, plotY, minX, q1X, medianX, q3X, maxX) {
+      const plotGroup = document.getElementById("boxPlotGroup");
+      const labels = [
+        { x: minX, y: plotY + 38, text: `Min: ${summary.min}`, color: "#94a3b8" },
+        { x: q1X, y: plotY - 54, text: `Q1: ${summary.q1}`, color: "#3b82f6" },
+        { x: medianX, y: plotY - 54, text: `Med: ${summary.median}`, color: "#ff4757" },
+        { x: q3X, y: plotY - 54, text: `Q3: ${summary.q3}`, color: "#3b82f6" },
+        { x: maxX, y: plotY + 38, text: `Max: ${summary.max}`, color: "#94a3b8" }
+      ];
+      
+      labels.forEach(lbl => {
+        const textNode = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        textNode.setAttribute("x", lbl.x);
+        textNode.setAttribute("y", lbl.y);
+        textNode.setAttribute("fill", lbl.color);
+        textNode.setAttribute("font-size", "11");
+        textNode.setAttribute("font-family", "Share Tech Mono");
+        textNode.setAttribute("text-anchor", "middle");
+        textNode.textContent = lbl.text;
+        plotGroup.appendChild(textNode);
+      });
+    }
+
+    // Touch & Mouse Drag Snell Coordinator
+    function setupDragEvents() {
+      const svg = document.getElementById("canvasSvg");
+      let activeNodeId = null;
+      
+      svg.addEventListener("mousedown", dragStart);
+      svg.addEventListener("mousemove", dragMove);
+      svg.addEventListener("mouseup", dragEnd);
+      svg.addEventListener("mouseleave", dragEnd);
+
+      svg.addEventListener("touchstart", dragStart, { passive: false });
+      svg.addEventListener("touchmove", dragMove, { passive: false });
+      svg.addEventListener("touchend", dragEnd);
+      svg.addEventListener("touchcancel", dragEnd);
+
+      function dragStart(e) {
+        const target = e.target.closest(".clue-node");
+        if (!target) return;
+        e.preventDefault();
+        
+        activeNodeId = target.getAttribute("data-id");
+        logDiag(`System dragging node Clue: ${activeNodeId}`);
+      }
+
+      function dragMove(e) {
+        if (!activeNodeId) return;
+        e.preventDefault();
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const rect = svg.getBoundingClientRect();
+        const svgX = (clientX - rect.left) * (800 / rect.width);
+        
+        // Map svgX back to scale value between 0 and 20
+        let val = Math.round((svgX - CONFIG.scaleStartX) / CONFIG.scaleStep);
+        val = Math.max(CONFIG.scaleMin, Math.min(CONFIG.scaleMax, val));
+        
+        const clue = STATE.activeClues.find(c => c.id === activeNodeId);
+        if (clue && clue.currentVal !== val) {
+          clue.currentVal = val;
+          // Cyber scan frequency sweep proportional to value
+          playTone(300 + val * 25, 0.05, "sine");
+          
+          recomputePlot();
+          populateActiveCluesLocker();
+        }
+      }
+
+      function dragEnd() {
+        if (activeNodeId) {
+          logDiag(`Stopped dragging Clue: ${activeNodeId}`);
+          activeNodeId = null;
+        }
+      }
+    }
+
+    // 5. EVALUATION Engine
+    function evaluateQuestObjectives(summary) {
+      const q = CONFIG.quests[STATE.activeCaseIdx];
+      const itemsCount = STATE.activeClues.length;
+      
+      let allDone = true;
+      const status = {};
+      
+      q.objectives.forEach(obj => {
+        let isMet = false;
+        
+        if (obj.id === "min_items") {
+          isMet = itemsCount >= q.objectiveMinItems;
+        } else if (obj.id === "median_12") {
+          isMet = itemsCount >= 3 && summary.median === 12;
+        } else if (obj.id === "median_11") {
+          isMet = itemsCount >= 3 && summary.median === 11;
+        } else if (obj.id === "iqr_4") {
+          isMet = itemsCount >= 3 && summary.iqr === 4;
+        } else if (obj.id === "q1_8") {
+          isMet = itemsCount >= 3 && summary.q1 === 8;
+        } else if (obj.id === "q3_16") {
+          isMet = itemsCount >= 3 && summary.q3 === 16;
+        } else if (obj.id === "iqr_under_3") {
+          isMet = itemsCount >= 3 && summary.iqr > 0 && summary.iqr < 3;
+        } else if (obj.id === "range_over_12") {
+          isMet = itemsCount >= 3 && (summary.max - summary.min) > 12;
+        } else if (obj.id === "has_outlier") {
+          isMet = itemsCount >= 3 && summary.outliers.length >= 1;
+        }
+        
+        status[obj.id] = isMet;
+        if (!isMet) allDone = false;
+      });
+      
+      STATE.objectiveStatus = status;
+      populateObjectiveHUD();
+      
+      if (allDone && !STATE.questCompleted) {
+        STATE.questCompleted = true;
+        playSuccessSiren();
+        logDiag(`QUEST SUCCESS: ${q.titleEn} solved!`);
+        triggerQuestCelebration();
+      }
+    }
+
+    function populateObjectiveHUD() {
+      const container = document.getElementById("hudChecklist");
+      container.innerHTML = "";
+      
+      const q = CONFIG.quests[STATE.activeCaseIdx];
+      q.objectives.forEach(obj => {
+        const isMet = STATE.objectiveStatus[obj.id] === true;
+        const item = document.createElement("div");
+        item.className = `hud-item ${isMet ? 'done' : ''}`;
+        
+        const txt = STATE.lang === "en" ? obj.textEn : obj.textEs;
+        
+        item.innerHTML = `
+          <span class="item-icon">${isMet ? '✅' : '🔴'}</span>
+          <span>${txt}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function triggerQuestCelebration() {
+      // Direct high-fidelity CSS particle animation inside SVG
+      const svg = document.getElementById("canvasSvg");
+      
+      for (let i = 0; i < 20; i++) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        const x = 200 + Math.random() * 400;
+        const y = 80 + Math.random() * 100;
+        
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", 2 + Math.random() * 6);
+        circle.setAttribute("fill", i % 2 === 0 ? "#10b981" : "#3b82f6");
+        circle.setAttribute("opacity", "1");
+        
+        // CSS animation inside SVG
+        const animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+        animate.setAttribute("attributeName", "cy");
+        animate.setAttribute("from", y);
+        animate.setAttribute("to", y - 60 - Math.random() * 40);
+        animate.setAttribute("dur", "1s");
+        animate.setAttribute("fill", "freeze");
+        circle.appendChild(animate);
+        
+        const animFade = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+        animFade.setAttribute("attributeName", "opacity");
+        animFade.setAttribute("from", "1");
+        animFade.setAttribute("to", "0");
+        animFade.setAttribute("dur", "1s");
+        animFade.setAttribute("fill", "freeze");
+        circle.appendChild(animFade);
+
+        svg.appendChild(circle);
+      }
+      
+      setTimeout(() => {
+        populateQuestCatalog();
+      }, 100);
+    }
+
+    // 6. ESOL Interactive Dictionary Views
+    function setGlossaryLanguage(lang) {
+      CONFIG.glossaryLang = lang;
+      
+      // Update tabs
+      document.getElementById("tabEn").className = `lang-tab ${lang === 'en' ? 'active' : ''}`;
+      document.getElementById("tabEs").className = `lang-tab ${lang === 'es' ? 'active' : ''}`;
+      document.getElementById("tabAr").className = `lang-tab ${lang === 'ar' ? 'active' : ''}`;
+      document.getElementById("tabVi").className = `lang-tab ${lang === 'vi' ? 'active' : ''}`;
+      
+      const grid = document.getElementById("glossaryGrid");
+      grid.innerHTML = "";
+      
+      Object.keys(CONFIG.dictionary).forEach(key => {
+        const item = CONFIG.dictionary[key][lang] || CONFIG.dictionary[key]["en"];
+        const chip = document.createElement("div");
+        chip.className = "vocab-chip";
+        chip.onclick = () => readAloudWord(item.word);
+        
+        chip.innerHTML = `
+          <span>${item.word}</span>
+          <span style="font-size:0.7rem; color:var(--text-muted);">🔊</span>
+          <div class="tooltip-bubble">
+            <strong>${item.word}</strong> <span style="color:var(--primary); font-size:0.7rem;">(${item.syllables})</span><br>
+            <span style="color:var(--warning); font-size:0.72rem;">Trans: ${item.trans}</span><br>
+            <span style="color:var(--text-muted); font-size:0.72rem; line-height:1.35; display:block; margin-top:4px;">${item.def}</span>
+          </div>
+        `;
+        grid.appendChild(chip);
+      });
+    }
+
+    function readAloudWord(word) {
+      if (!synth) return;
+      if (synth.speaking) synth.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.rate = 0.75; // Slower rate for clear pronunciation support
+      utterance.lang = CONFIG.glossaryLang === "es" ? "es-ES" : "en-US";
+      synth.speak(utterance);
+    }
+
+    // 7. TWR REPORT Composition Engine
+    function injectConjunction(targetId, phrase) {
+      const tx = document.getElementById(targetId);
+      tx.value = phrase + " ";
+      tx.focus();
+      
+      if (targetId === "textareaBecause") STATE.reportBecause = phrase;
+      if (targetId === "textareaBut") STATE.reportBut = phrase;
+      if (targetId === "textareaSo") STATE.reportSo = phrase;
+      
+      composeFinalReport();
+      playTone(450, 0.08);
+    }
+
+    function composeFinalReport() {
+      const because = document.getElementById("textareaBecause").value.trim();
+      const but = document.getElementById("textareaBut").value.trim();
+      const so = document.getElementById("textareaSo").value.trim();
+      
+      const pad = document.getElementById("finalReportPad");
+      
+      if (!because && !but && !so) {
+        pad.value = STATE.lang === "en" 
+          ? "Analytical report details will compile automatically as you complete sentences..."
+          : "Los detalles del reporte de investigación se compilarán automáticamente a medida que completes las ideas...";
+        return;
+      }
+      
+      const sentence = `The evidence shoe size dataset median is exactly 12 BECAUSE ${because || '_______'}, BUT the IQR is 4 ${but || '_______'}, SO the digital footprint shows ${so || '_______'}.`;
+      pad.value = sentence;
+    }
+
+    function triggerReportSubmission() {
+      const pad = document.getElementById("finalReportPad");
+      const val = pad.value;
+      
+      if (val.includes("_______") || val.length < 30) {
+        playTone(220, 0.15, "square");
+        alert(STATE.lang === "en" ? "Error: Please complete all report details before submitting." : "Error: Por favor, completa todos los detalles del reporte antes de enviarlo.");
+        return;
+      }
+      
+      playSuccessSiren();
+      alert(STATE.lang === "en" ? "Report submitted successfully! Spark XP unlocked!" : "¡Reporte enviado con éxito! ¡Experiencia Spark desbloqueada!");
+      logDiag("Case File submitted successfully.");
+    }
+
+    // 8. Automated Verification selfTest()
+    function triggerSelfTest() {
+      logDiag("Initializing Automated Self-Test Suit...");
+      const results = [];
+      
+      try {
+        // Assert 1: Config presets integrity
+        if (CONFIG.quests.length === 3) {
+          results.push("PASS: Config Quests presetted successfully.");
+        } else {
+          throw new Error("FAIL: Presets count does not match 3.");
+        }
+        
+        // Assert 2: Box Plot Mathematics Engine Exclusion Check
+        const mockData = [6, 7, 8, 10, 12, 14, 14, 16, 20];
+        const res = BOX_PLOT_SERVICE.compileFiveNumberSummary(mockData);
+        // Excluded median Q1/Q3 check:
+        // lower half: [6, 7, 8, 10], median of lower: 7.5
+        // upper half: [14, 14, 16, 20], median of upper: 15
+        if (res.median === 12 && res.q1 === 7.5 && res.q3 === 15 && res.min === 6 && res.max === 20) {
+          results.push("PASS: Excluded Median compilation accuracy check.");
+        } else {
+          throw new Error(`FAIL: Calculations error. Q1=${res.q1}, Q3=${res.q3}`);
+        }
+        
+        // Assert 3: Outlier thresholds boundary mapping
+        const mockDataOutliers = [2, 10, 11, 11, 12, 12, 13, 20];
+        // sorted: [2, 10, 11, 11, 12, 12, 13, 20]
+        // lower half: [2, 10, 11, 11] -> Q1 = 10.5
+        // upper half: [12, 12, 13, 20] -> Q3 = 12.5
+        // IQR = 2
+        // bounds: 10.5 - 3 = 7.5; 12.5 + 3 = 15.5
+        // Outliers: 2, 20
+        const resOut = BOX_PLOT_SERVICE.compileFiveNumberSummary(mockDataOutliers);
+        if (resOut.outliers.includes(2) && resOut.outliers.includes(20) && resOut.outliers.length === 2) {
+          results.push("PASS: Outlier threshold boundary logic.");
+        } else {
+          throw new Error("FAIL: Outliers calculation error.");
+        }
+
+        // Assert 4: Translation maps exist
+        if (CONFIG.dictionary.median.es.word === "Mediana") {
+          results.push("PASS: Translation mappings exist.");
+        } else {
+          throw new Error("FAIL: Translation map missing.");
+        }
+
+        // Assert 5: Decibel cap validation
+        if (CONFIG.audioMaxGain <= 0.12) {
+          results.push("PASS: Safe Audio Gain ceiling logic check.");
+        } else {
+          throw new Error("FAIL: Audio safety decibel limit violated.");
+        }
+
+        // Build green success banner
+        logDiag("=== SELF-TEST RESULTS ===");
+        results.forEach(msg => logDiag(msg));
+        logDiag("System Verification: 100% COMPLETE & PASS.");
+        playSuccessSiren();
+        alert("Diagnostics Verification: 5/5 ASSERTS PASSED! System fully secure.");
+      } catch (err) {
+        logDiag(`CRITICAL FAILURE in selfTest(): ${err.message}`);
+        playTone(220, 0.4, "sawtooth");
+        alert(`Diagnostics Failed: ${err.message}`);
+      }
+    }
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

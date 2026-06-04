@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      name="description"
+      content="A friendly, low-pressure way to practice reading Hebrew prayers — Hebrew script, transliteration, read-along audio, and line-by-line practice."
+    />
+    <title>Hebrew Prayer Practice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="hp-shell">
+      <nav class="hp-breadcrumb" aria-label="Breadcrumb">
+        <a href="/practice/hebrew-reading/">Hebrew Reading Practice</a>
+        <span>/</span>
+        <span>Prayer Reading Practice</span>
+      </nav>
+
+      <header class="hp-header">
+        <p class="hp-eyebrow">Personal Practice</p>
+        <h1>
+          Hebrew Prayer Practice
+          <span class="hp-wave" aria-hidden="true">🕯️</span>
+        </h1>
+        <p>
+          Pick a prayer and practice reading it your way — Hebrew, sounds, or
+          both. Tap a line to hear it, take it one line at a time, and go as
+          slow as you like. No pressure. You've got this.
+        </p>
+      </header>
+
+      <!-- ============ PICKER ============ -->
+      <section class="hp-picker" id="picker" aria-labelledby="picker-title">
+        <div class="hp-section-title">
+          <h2 id="picker-title">Choose a prayer</h2>
+          <span class="hp-hint">Tap a card to start practicing</span>
+        </div>
+        <div class="hp-card-grid" id="cardGrid"></div>
+        <p class="hp-encourage" id="encourage"></p>
+      </section>
+
+      <!-- ============ PRACTICE ============ -->
+      <section
+        class="hp-practice"
+        id="practice"
+        aria-labelledby="practiceTitle"
+        tabindex="-1"
+      >
+        <div class="hp-toolbar" role="toolbar" aria-label="Practice controls">
+          <button class="hp-btn hp-btn-ghost" id="backBtn" type="button">
+            ← All prayers
+          </button>
+
+          <div
+            class="hp-seg"
+            role="group"
+            aria-label="Reading mode"
+            id="modeSeg"
+          >
+            <button type="button" data-mode="tr" aria-pressed="false">
+              Sounds
+            </button>
+            <button type="button" data-mode="he" aria-pressed="false">
+              Hebrew
+            </button>
+            <button type="button" data-mode="both" aria-pressed="true">
+              Both
+            </button>
+          </div>
+
+          <button class="hp-btn hp-btn-primary" id="playAllBtn" type="button">
+            ▶ Read whole prayer
+          </button>
+          <button class="hp-btn" id="stepBtn" type="button">
+            🎯 One line at a time
+          </button>
+
+          <span class="hp-toolbar-spacer"></span>
+
+          <label class="hp-control">
+            Speed
+            <input
+              type="range"
+              id="rate"
+              min="0.5"
+              max="1.1"
+              step="0.05"
+              value="0.85"
+              aria-label="Reading speed"
+            />
+          </label>
+          <label class="hp-control">
+            Size
+            <input
+              type="range"
+              id="fontSize"
+              min="0.8"
+              max="1.6"
+              step="0.1"
+              value="1"
+              aria-label="Font size"
+            />
+          </label>
+        </div>
+
+        <h2 class="hp-practice-title" id="practiceTitle"></h2>
+        <p class="hp-practice-sub" id="practiceSub"></p>
+        <p class="hp-note" id="practiceNote" hidden></p>
+        <p class="hp-voice-warn" id="voiceWarn">
+          No Hebrew voice was found on this device, so the audio reads the
+          transliteration (the sounds) instead. That still helps you hear it!
+        </p>
+
+        <!-- all lines -->
+        <div class="hp-lines-wrap" id="linesWrap">
+          <div class="hp-lines" id="lines" data-mode="both"></div>
+        </div>
+
+        <!-- one-line-at-a-time -->
+        <div class="hp-step" id="step">
+          <p class="hp-progress-label" id="stepProgressLabel"></p>
+          <div class="hp-progress">
+            <div class="hp-progress-bar" id="stepProgressBar"></div>
+          </div>
+          <div id="stepBody"></div>
+        </div>
+
+        <div class="hp-section-title" style="margin-top: 24px">
+          <h2 style="font-size: 1.05rem">How's this prayer feeling?</h2>
+        </div>
+        <div class="hp-confidence-set" id="confidenceSet">
+          <button class="hp-btn" type="button" data-status="new">
+            🌱 Still new
+          </button>
+          <button class="hp-btn" type="button" data-status="practicing">
+            💪 Practicing
+          </button>
+          <button class="hp-btn" type="button" data-status="confident">
+            ⭐ Feeling confident
+          </button>
+        </div>
+      </section>
+
+      <footer class="hp-footer">
+        <p>
+          Hebrew Prayer Practice · made for Noam · Always double-check the
+          Hebrew with a parent or teacher.
+        </p>
+      </footer>
+    </div>
+
+    <!-- enlarged-word popover -->
+    <div
+      class="hp-word-pop"
+      id="wordPop"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Enlarged word"
+    >
+      <div class="hp-word-pop-inner">
+        <div class="hp-pop-he" id="popHe" dir="rtl"></div>
+        <p class="hp-pop-hint">Tap anywhere to close</p>
+      </div>
+    </div>
+
+    <script src="./prayers.js"></script>
+    <script src="./app.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

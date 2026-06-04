@@ -1,0 +1,2218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 6 — Solar Array Engineer | Expressions &amp; Exponents (6.EE)
+    </title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <style>
+      /* ============================================================
+         UNIT 6 — SOLAR ARRAY ENGINEER
+         Expressions & Exponents (powers, evaluate/write expressions,
+         properties of operations, the distributive property) · 6.EE
+         Scoped styles layered on top of neft-theme.css (--nt-* vars)
+         ============================================================ */
+      :root {
+        --u6-sky: #1b2a4a;
+        --u6-sky2: #24407a;
+        --u6-sun: #ffc94d;
+        --u6-sun-deep: #f59f00;
+        --u6-panel: #2a4d7a;
+        --u6-panel-lit: #4f9be0;
+        --u6-cell: #14233f;
+        --u6-roof: #efe6d2;
+        --u6-roof-dark: #b89b6a;
+        --u6-good: #2f9e44;
+        --u6-energy: #ffd43b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg, #f7f8fa);
+        color: var(--nt-text, #16202c);
+        line-height: 1.5;
+        font-size: 17px;
+      }
+      .nt-shell {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 22px 16px 64px;
+      }
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      summary:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus, #1257b8);
+        outline-offset: 2px;
+      }
+
+      /* ---------- hero ---------- */
+      .u6-hero {
+        background: linear-gradient(
+          135deg,
+          #122044 0%,
+          #1d3568 50%,
+          #2a5fa8 100%
+        );
+        color: #fff;
+        border-radius: 22px;
+        padding: 30px 34px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+        border: 1px solid rgba(108, 140, 255, 0.35);
+      }
+      .u6-hero::after {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -20px;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(
+          circle,
+          var(--u6-sun) 0%,
+          rgba(255, 201, 77, 0.35) 45%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .u6-hero__eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.74rem;
+        font-weight: 700;
+        opacity: 0.9;
+      }
+      .u6-hero h1 {
+        font-size: clamp(1.7rem, 3vw, 2.5rem);
+        margin: 8px 0 6px;
+        position: relative;
+        color: #fff;
+      }
+      .u6-hero p {
+        margin: 0;
+        max-width: 64ch;
+        position: relative;
+        line-height: 1.5;
+        color: #dde6ff;
+      }
+      .u6-hero__pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+        position: relative;
+      }
+      .u6-hero__pill {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+
+      /* ---------- design cycle ribbon ---------- */
+      .u6-cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+        position: relative;
+      }
+      .u6-cycle div {
+        flex: 1 1 150px;
+        border: 1px dashed rgba(255, 255, 255, 0.28);
+        border-radius: 12px;
+        padding: 9px 11px;
+        font-size: 0.8rem;
+        color: #dbe4ff;
+        background: rgba(108, 140, 255, 0.1);
+      }
+      .u6-cycle b {
+        display: block;
+        font-size: 0.66rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--u6-sun);
+        margin-bottom: 2px;
+      }
+
+      /* ---------- progress ---------- */
+      .u6-progress {
+        margin-top: 16px;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+      }
+      .u6-bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .u6-bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--u6-sun), var(--u6-panel-lit));
+        transition: width 0.3s ease;
+      }
+
+      /* ---------- sections ---------- */
+      .u6-section {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #e2e8f0);
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        padding: 24px 26px;
+        margin-bottom: 20px;
+      }
+      .u6-section__eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--nt-accent, #24407a);
+      }
+      .u6-section h2 {
+        margin: 6px 0 10px;
+        font-size: 1.35rem;
+        color: var(--nt-text, #1f2a37);
+      }
+      .u6-section p {
+        line-height: 1.55;
+        color: var(--nt-text, #2a333f);
+      }
+      .u6-step h3 {
+        color: var(--nt-text, #1f2a37);
+      }
+
+      /* ---------- callouts ---------- */
+      .u6-callout {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #25303d;
+      }
+      .u6-callout strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .u6-callout ul {
+        margin: 6px 0 0;
+        padding-left: 20px;
+      }
+      .u6-callout li {
+        margin: 3px 0;
+      }
+      .u6-callout--vocab {
+        background: #fff7e6;
+        border: 1px solid #ffe2a8;
+      }
+      .u6-callout--bilingual {
+        background: #eaf3ff;
+        border: 1px solid #c4ddff;
+      }
+      .u6-callout--level1 {
+        background: #e4f5e9;
+        border: 1px solid #b6e3c3;
+      }
+      .u6-callout--level2 {
+        background: #efe7fb;
+        border: 1px solid #d6c2f2;
+      }
+      .u6-level {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+      }
+      .u6-level--1 {
+        background: #2f9e44;
+        color: #fff;
+      }
+      .u6-level--2 {
+        background: #7048e8;
+        color: #fff;
+      }
+
+      /* ---------- numbered steps ---------- */
+      .u6-step {
+        position: relative;
+        padding: 0 0 4px 52px;
+      }
+      .u6-step__num {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--u6-sky2),
+          var(--u6-panel-lit)
+        );
+        color: #fff;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(36, 64, 122, 0.3);
+      }
+
+      /* ---------- interactive array studio ---------- */
+      .u6-studio {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        gap: 22px;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .u6-studio {
+          grid-template-columns: 1fr;
+        }
+      }
+      .u6-stage {
+        background: linear-gradient(
+          180deg,
+          #cfe6fb 0%,
+          #eaf4fc 58%,
+          #efe6d2 58%,
+          #e6dcc4 100%
+        );
+        border-radius: 16px;
+        border: 1px solid #cdd9e6;
+        padding: 12px;
+        overflow: hidden;
+      }
+      .u6-stage svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .u6-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .u6-slider-row label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--nt-text, #1f2a37);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .u6-slider-row input[type="range"] {
+        width: 100%;
+        accent-color: var(--u6-sun-deep);
+        margin-top: 6px;
+      }
+      .u6-bigval {
+        font-variant-numeric: tabular-nums;
+        font-weight: 800;
+        color: var(--u6-sun-deep);
+        font-size: 1.15rem;
+      }
+      .u6-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .u6-stat {
+        background: var(--nt-bg, #f4f7fc);
+        border: 1px solid var(--nt-border, #dde6f1);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .u6-stat__label {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--nt-muted, #5d6f8a);
+      }
+      .u6-stat__value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--nt-text, #1f2a37);
+        font-variant-numeric: tabular-nums;
+      }
+      .u6-formula {
+        background: var(--u6-cell);
+        color: #eaf2ff;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+      .u6-formula b {
+        color: var(--u6-energy);
+      }
+      .u6-formula .hi {
+        color: #74c0fc;
+      }
+
+      /* ---------- input fields & self-check ---------- */
+      .u6-field {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .u6-field label {
+        font-size: 0.95rem;
+        color: var(--nt-text, #1f2a37);
+      }
+      .u6-input {
+        width: 96px;
+        padding: 8px 10px;
+        border: 2px solid var(--nt-border, #c4d0e0);
+        border-radius: 10px;
+        font-size: 1rem;
+        font-variant-numeric: tabular-nums;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #16202c);
+      }
+      .u6-input:focus {
+        outline: none;
+        border-color: var(--u6-panel-lit);
+        box-shadow: 0 0 0 3px rgba(79, 155, 224, 0.2);
+      }
+      .u6-input.is-right {
+        border-color: var(--u6-good);
+        background: #f0fbf3;
+        color: #0c3a1c;
+      }
+      .u6-input.is-wrong {
+        border-color: #e03131;
+        background: #fff2f2;
+        color: #6b1212;
+      }
+      .u6-btn {
+        border: 2px solid var(--u6-sky2);
+        border-radius: 10px;
+        padding: 9px 18px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        background: var(--u6-sky2);
+        color: #fff;
+        transition: filter 0.15s ease;
+      }
+      .u6-btn:hover {
+        filter: brightness(1.1);
+      }
+      .u6-btn--ghost {
+        background: transparent;
+        color: var(--u6-sky2);
+        border: 2px solid var(--u6-sky2);
+      }
+      .u6-feedback {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-left: 4px;
+      }
+      .u6-feedback.ok {
+        color: var(--u6-good);
+      }
+      .u6-feedback.no {
+        color: #d23f54;
+      }
+
+      details.u6-check {
+        border: 1px solid var(--nt-border, #e2e8f0);
+        border-radius: 12px;
+        padding: 0 14px;
+        margin: 12px 0;
+        background: var(--nt-bg, #fbfcfe);
+      }
+      details.u6-check summary {
+        cursor: pointer;
+        font-weight: 700;
+        padding: 12px 0;
+        color: var(--nt-accent, #24407a);
+        list-style: none;
+      }
+      details.u6-check summary::-webkit-details-marker {
+        display: none;
+      }
+      details.u6-check summary::before {
+        content: "▸ ";
+        font-weight: 700;
+      }
+      details.u6-check[open] summary::before {
+        content: "▾ ";
+      }
+      details.u6-check .u6-check__a {
+        padding: 10px 0 14px;
+        color: var(--nt-text, #2a333f);
+        line-height: 1.55;
+        border-top: 1px dashed var(--nt-border, #dce4ee);
+      }
+
+      .u6-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.95rem;
+      }
+      .u6-table th,
+      .u6-table td {
+        border: 1px solid var(--nt-border, #dce4ee);
+        padding: 9px 11px;
+        text-align: center;
+        color: var(--nt-text, #1f2a37);
+      }
+      .u6-table th {
+        background: var(--nt-bg, #eef3fa);
+        font-weight: 700;
+      }
+      .u6-table td:first-child {
+        text-align: left;
+        font-weight: 600;
+      }
+
+      .u6-distrib {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin: 14px 0;
+      }
+      .u6-distrib svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .u6-deliverable {
+        background: linear-gradient(135deg, #fff8ea, #fdeecb);
+        border: 2px dashed var(--u6-sun-deep);
+      }
+      .u6-deliverable h2,
+      .u6-deliverable p,
+      .u6-deliverable label {
+        color: #2a333f;
+      }
+      .u6-rubric {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0;
+      }
+      .u6-rubric li {
+        padding: 7px 0 7px 30px;
+        position: relative;
+        line-height: 1.45;
+        color: #2a333f;
+      }
+      .u6-rubric li::before {
+        content: "\2610";
+        position: absolute;
+        left: 0;
+        font-size: 1.1rem;
+        color: var(--u6-sun-deep);
+      }
+      .u6-foot {
+        text-align: center;
+        color: var(--nt-muted, #8a97a8);
+        font-size: 0.82rem;
+        padding: 18px 0 8px;
+      }
+      .u6-eq {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        background: var(--nt-bg, #eef3fa);
+        border-radius: 6px;
+        padding: 1px 6px;
+        font-weight: 700;
+        color: var(--nt-accent, #24407a);
+      }
+      .u6-power {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-weight: 700;
+        color: var(--u6-sun-deep);
+      }
+
+      /* ── Learning target (shared gold-standard style) ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Rubric (shared gold-standard style) ── */
+      .rubric-wrap {
+        margin-top: 6px;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 480px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      /* ── Español support line ── */
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .u6-btn,
+        #u6-submit {
+          display: none !important;
+        }
+        .u6-section {
+          break-inside: avoid;
+        }
+        .learning-target {
+          break-inside: avoid;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+
+  <body class="nt-theme-aware">
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      "
+    ></div>
+
+    <main class="nt-shell">
+      <!-- ══ LEARNING TARGETS ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>
+            I can write and evaluate powers with whole-number exponents (like
+            s²).
+          </li>
+          <li>
+            I can write an algebraic expression from a real engineering rule and
+            evaluate it for a given value.
+          </li>
+          <li>
+            I can use the distributive property to write equivalent expressions.
+          </li>
+          <li>
+            I can use properties of operations (commutative and associative) to
+            regroup a sum the smart way.
+          </li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.EE.A.1–3</span>
+          <span>Time: ~35 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The job on the roof."
+              Confront the #1 misconception head-on with Step 1: an exponent is
+              repeated <em>multiplication</em>, so s² means s × s, NOT s × 2.
+            </li>
+            <li>
+              <strong>Design work (25 min):</strong> Steps 1 → 5. Step 2 lets
+              students drag the panel size and watch the math update; Steps 3–4
+              build and evaluate expressions and use the distributive property;
+              Step 5 regroups a sum using properties of operations.
+            </li>
+            <li>
+              <strong>Debrief (5 min):</strong> Connect 6(s + 4) = 6s + 24 (Step
+              4) to "wiring two crews two ways," and the smart-regrouping in
+              Step 5 to mental-math efficiency.
+            </li>
+          </ul>
+          <h3>Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Step 1 — Powers:</strong> 4² = <strong>16</strong>; 6² =
+              <strong>36</strong>; 2³ = <strong>8</strong>.
+            </li>
+            <li>
+              <strong>Step 3 — Evaluate at s = 5:</strong> s² =
+              <strong>25</strong>; s² + 4 = 25 + 4 = <strong>29</strong>; 3s² =
+              3 × 25 = <strong>75</strong>; 0.4 × 29 =
+              <strong>11.6</strong> (cost factor).
+            </li>
+            <li>
+              <strong>Step 4 — Distribute:</strong> 6(s + 4) =
+              <strong>6s + 24</strong> (24 + 6s is also accepted). At s = 3:
+              4(s² + 9) = 4(9 + 9) = <strong>72</strong>, and 4s² + 36 = 36 + 36
+              = <strong>72</strong> — the two forms match, showing equivalence.
+            </li>
+            <li>
+              <strong>Step 5 — Regroup the smart way:</strong> 17 + 25 + 3 = (17
+              + 3) + 25 = 20 + 25 = <strong>45</strong> (commutative +
+              associative properties).
+            </li>
+          </ul>
+          <h3>Common Misconceptions</h3>
+          <ul>
+            <li>
+              Reading s² as s × 2 (= 10 at s = 5) instead of s × s (= 25). The
+              student self-check reminder reinforces "exponent first."
+            </li>
+            <li>
+              Writing 3s² as (3s)² — square first, then multiply by 3, so 3 × 25
+              = 75, not 15² = 225.
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>
+            CCSS <strong>6.EE.A.1–3</strong> — Write and evaluate numerical
+            expressions involving whole-number exponents; write, read, and
+            evaluate algebraic expressions; apply properties of operations to
+            generate equivalent expressions.
+          </p>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
+      <header class="u6-hero">
+        <div class="u6-hero__eyebrow">Neft Teacher · Math Architect</div>
+        <h1>Solar Array Engineer</h1>
+        <p>
+          Your school just hired you as a solar engineer. Your job: design the
+          rooftop solar array that powers the building. You will size square
+          panel blocks with
+          <strong>powers and exponents</strong>,
+          <strong>write and evaluate expressions</strong> for energy and cost,
+          and use the <strong>distributive property</strong> to plan the wiring
+          crews — exactly the way real renewable-energy engineers do.
+        </p>
+        <div class="u6-hero__pills">
+          <span class="u6-hero__pill"
+            >Unit 6 · Expressions &amp; Exponents</span
+          >
+          <span class="u6-hero__pill">6.EE.1 · 6.EE.2 · 6.EE.3</span>
+          <span class="u6-hero__pill">STEM Design Challenge</span>
+        </div>
+        <div class="u6-cycle" aria-label="Engineering design cycle">
+          <div><b>1 · Read</b>Read powers off the blueprint.</div>
+          <div><b>2 · Size</b>Choose the array size s in the studio.</div>
+          <div><b>3 · Write</b>Turn rules into expressions &amp; evaluate.</div>
+          <div><b>4 · Wire</b>Plan crews with the distributive property.</div>
+          <div><b>5 · Submit</b>Hand in a buildable spec sheet.</div>
+        </div>
+        <div class="u6-progress" role="status" aria-live="polite">
+          Engineering checks passed: <span id="u6-pcount">0</span> / 5
+          <div
+            class="u6-bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="5"
+            aria-label="Checks passed"
+            id="u6-progbar"
+          >
+            <span id="u6-pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ MISSION BRIEF ══ -->
+      <section class="u6-section">
+        <div class="u6-section__eyebrow">Mission Brief</div>
+        <h2>The job on the roof</h2>
+        <p>
+          Solar panels are square. Engineers mount them in
+          <strong>square blocks</strong> so the wiring stays even — a block that
+          is <em>s</em> panels across is also <em>s</em> panels tall, so it
+          holds <span class="u6-eq">s × s = s<sup>2</sup></span> panels. That
+          little raised <strong>2</strong> is an exponent: it tells you how many
+          times to multiply the base by itself. One square block of side 5 is
+          not 5 + 2; it is
+          <span class="u6-power">5<sup>2</sup> = 25</span> panels.
+        </p>
+
+        <div class="u6-callout u6-callout--vocab">
+          <strong>Build vocabulary · Vocabulario</strong>
+          <ul>
+            <li>
+              <b>Power / Potencia:</b> a base raised to an exponent, like
+              <span class="u6-power">3<sup>4</sup></span
+              >.
+            </li>
+            <li>
+              <b>Base / Base:</b> the number being multiplied (the big number).
+            </li>
+            <li>
+              <b>Exponent / Exponente:</b> how many times to multiply the base
+              by itself (the small raised number).
+            </li>
+            <li>
+              <b>Expression / Expresión:</b> numbers and letters joined by
+              operations, like <span class="u6-eq">s<sup>2</sup> + 6</span>.
+            </li>
+            <li>
+              <b>Evaluate / Evaluar:</b> replace the letter with a number and
+              find the value.
+            </li>
+            <li>
+              <b>Distributive property / Propiedad distributiva:</b>
+              <span class="u6-eq">a(b + c) = ab + ac</span>.
+            </li>
+          </ul>
+        </div>
+
+        <div class="u6-callout u6-callout--bilingual">
+          <strong>En español</strong>
+          Los paneles solares son cuadrados. Un bloque de lado <em>s</em> tiene
+          <span class="u6-eq">s × s = s<sup>2</sup></span> paneles. El exponente
+          <strong>2</strong> indica cuántas veces se multiplica la base por sí
+          misma. ¡No es <span class="u6-eq">s + 2</span>, es
+          <span class="u6-eq">s<sup>2</sup></span
+          >!
+        </div>
+      </section>
+
+      <!-- ============ STEP 1: POWERS WARM-UP ============ -->
+      <section class="u6-section">
+        <div class="u6-section__eyebrow">Step 1 · Read the Power</div>
+        <h2 class="u6-step">
+          <span class="u6-step__num" aria-hidden="true">1</span>Exponents are
+          not multiplication signs
+        </h2>
+        <p>
+          Before you wire anything, prove you can read a power. The diagram
+          shows a square block of side 4. Count the panels — then write it as a
+          power.
+        </p>
+
+        <div class="u6-distrib">
+          <svg
+            viewBox="0 0 220 220"
+            role="img"
+            aria-label="A 4 by 4 square block of solar panels, 16 panels total"
+          >
+            <rect
+              x="14"
+              y="10"
+              width="160"
+              height="160"
+              rx="6"
+              fill="#1b2a4a"
+            />
+            <g stroke="#0e1a30" stroke-width="2">
+              <rect x="22" y="18" width="36" height="36" fill="#4f9be0" />
+              <rect x="62" y="18" width="36" height="36" fill="#2a4d7a" />
+              <rect x="102" y="18" width="36" height="36" fill="#4f9be0" />
+              <rect x="142" y="18" width="24" height="36" fill="#2a4d7a" />
+              <rect x="22" y="58" width="36" height="36" fill="#2a4d7a" />
+              <rect x="62" y="58" width="36" height="36" fill="#4f9be0" />
+              <rect x="102" y="58" width="36" height="36" fill="#2a4d7a" />
+              <rect x="142" y="58" width="24" height="36" fill="#4f9be0" />
+              <rect x="22" y="98" width="36" height="36" fill="#4f9be0" />
+              <rect x="62" y="98" width="36" height="36" fill="#2a4d7a" />
+              <rect x="102" y="98" width="36" height="36" fill="#4f9be0" />
+              <rect x="142" y="98" width="24" height="36" fill="#2a4d7a" />
+              <rect x="22" y="138" width="36" height="24" fill="#2a4d7a" />
+              <rect x="62" y="138" width="36" height="24" fill="#4f9be0" />
+              <rect x="102" y="138" width="36" height="24" fill="#2a4d7a" />
+              <rect x="142" y="138" width="24" height="24" fill="#4f9be0" />
+            </g>
+            <text
+              x="94"
+              y="195"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#1f2a37"
+            >
+              side = 4 panels
+            </text>
+            <text
+              x="200"
+              y="92"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#1f2a37"
+              transform="rotate(90 200 92)"
+            >
+              side = 4 panels
+            </text>
+          </svg>
+
+          <div>
+            <div class="u6-field">
+              <label for="u6-q1"
+                >This block holds <span class="u6-power">4<sup>2</sup></span> =
+              </label>
+              <input
+                class="u6-input"
+                id="u6-q1"
+                type="number"
+                inputmode="numeric"
+                placeholder="?"
+                aria-label="4 squared equals"
+              />
+              <label> panels.</label>
+              <span class="u6-feedback" id="u6-q1-fb" role="status"></span>
+            </div>
+            <div class="u6-field">
+              <label for="u6-q2"
+                >A taller block, side 6, holds
+                <span class="u6-power">6<sup>2</sup></span> =
+              </label>
+              <input
+                class="u6-input"
+                id="u6-q2"
+                type="number"
+                inputmode="numeric"
+                placeholder="?"
+                aria-label="6 squared equals"
+              />
+              <label> panels.</label>
+              <span class="u6-feedback" id="u6-q2-fb" role="status"></span>
+            </div>
+            <div class="u6-field">
+              <label for="u6-q3"
+                >The inverter doubles capacity in tiers:
+                <span class="u6-power">2<sup>3</sup></span> =
+              </label>
+              <input
+                class="u6-input"
+                id="u6-q3"
+                type="number"
+                inputmode="numeric"
+                placeholder="?"
+                aria-label="2 cubed equals"
+              />
+              <label> units.</label>
+              <span class="u6-feedback" id="u6-q3-fb" role="status"></span>
+            </div>
+            <button class="u6-btn" id="u6-check1">Check my powers</button>
+          </div>
+        </div>
+
+        <div class="u6-callout u6-callout--level1">
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            A power is repeated multiplication, not "times the little number."
+            <span class="u6-eq">4<sup>2</sup></span> means
+            <span class="u6-eq">4 × 4</span>, so 16.
+            <span class="u6-eq">2<sup>3</sup></span> means
+            <span class="u6-eq">2 × 2 × 2</span>, so 8.
+          </p>
+          <span class="es"
+            >Español: una potencia es multiplicación repetida.
+            <span class="u6-eq">2<sup>3</sup> = 2 × 2 × 2 = 8</span>.</span
+          >
+        </div>
+        <div class="u6-callout u6-callout--level2">
+          <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
+          Why do engineers like square blocks? Compare two layouts that each use
+          36 panels: a
+          <span class="u6-eq">6<sup>2</sup></span> square versus a 4-by-9
+          rectangle. Which one needs less edge wiring (smaller perimeter)?
+          Justify with the math, not a guess.
+        </div>
+      </section>
+
+      <!-- ============ STEP 2: INTERACTIVE ARRAY STUDIO ============ -->
+      <section class="u6-section">
+        <div class="u6-section__eyebrow">
+          Step 2 · Array Studio (interactive)
+        </div>
+        <h2 class="u6-step">
+          <span class="u6-step__num" aria-hidden="true">2</span>Size the array
+          &amp; watch the math
+        </h2>
+        <p>
+          Drag the slider to choose the side length <em>s</em> of your square
+          solar block. The blueprint redraws live, and every expression below
+          recomputes. The school also wants a <strong>trim row</strong> of 4
+          extra panels along one edge, so your total-panel expression is
+          <span class="u6-eq">s<sup>2</sup> + 4</span>.
+        </p>
+
+        <div class="u6-studio">
+          <div class="u6-stage">
+            <svg
+              id="u6-array"
+              viewBox="0 0 360 340"
+              role="img"
+              aria-label="Live solar array blueprint that redraws with the slider"
+            >
+              <circle cx="320" cy="40" r="20" fill="#ffc94d" />
+              <g stroke="#ffc94d" stroke-width="3" stroke-linecap="round">
+                <line x1="320" y1="12" x2="320" y2="4" />
+                <line x1="320" y1="68" x2="320" y2="76" />
+                <line x1="292" y1="40" x2="284" y2="40" />
+                <line x1="348" y1="40" x2="356" y2="40" />
+              </g>
+              <rect
+                x="20"
+                y="44"
+                width="300"
+                height="270"
+                rx="8"
+                fill="#efe6d2"
+                stroke="#b89b6a"
+                stroke-width="2"
+              />
+              <g id="u6-array-grid"></g>
+              <text
+                id="u6-array-side-b"
+                x="170"
+                y="304"
+                text-anchor="middle"
+                font-size="13"
+                font-weight="700"
+                fill="#1f2a37"
+              >
+                s = 4
+              </text>
+              <text
+                id="u6-array-side-l"
+                x="12"
+                y="180"
+                text-anchor="middle"
+                font-size="13"
+                font-weight="700"
+                fill="#1f2a37"
+                transform="rotate(-90 12 180)"
+              >
+                s = 4
+              </text>
+            </svg>
+          </div>
+
+          <div class="u6-controls">
+            <div class="u6-slider-row">
+              <label for="u6-s"
+                >Side length <em>s</em> (panels)
+                <span class="u6-bigval" id="u6-s-val">4</span></label
+              >
+              <input
+                type="range"
+                id="u6-s"
+                min="2"
+                max="10"
+                step="1"
+                value="4"
+                aria-label="Side length s in panels"
+              />
+            </div>
+
+            <div class="u6-formula" aria-live="polite">
+              Square block: <span class="hi">s</span><sup>2</sup> =
+              <b id="u6-f-sq">16</b> panels<br />
+              Total panels: <span class="hi">s</span><sup>2</sup> + 4 =
+              <b id="u6-f-total">20</b><br />
+              Energy: 0.4 × (total) = <b id="u6-f-energy">8.0</b> kW<br />
+              Install cost: 250 × (total) = $<b id="u6-f-cost">5,000</b>
+            </div>
+
+            <div class="u6-stats">
+              <div class="u6-stat">
+                <div class="u6-stat__label">Square panels (s²)</div>
+                <div class="u6-stat__value" id="u6-stat-sq">16</div>
+              </div>
+              <div class="u6-stat">
+                <div class="u6-stat__label">Total (s² + 4)</div>
+                <div class="u6-stat__value" id="u6-stat-total">20</div>
+              </div>
+              <div class="u6-stat">
+                <div class="u6-stat__label">Output (kW)</div>
+                <div class="u6-stat__value" id="u6-stat-energy">8.0</div>
+              </div>
+              <div class="u6-stat">
+                <div class="u6-stat__label">Cost ($)</div>
+                <div class="u6-stat__value" id="u6-stat-cost">5,000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="u6-callout u6-callout--vocab">
+          <strong>Notice · Observa</strong>
+          The energy expression
+          <span class="u6-eq">0.4(s<sup>2</sup> + 4)</span> and the cost
+          expression <span class="u6-eq">250(s<sup>2</sup> + 4)</span> both
+          <em>multiply a number by a sum</em>. That is the distributive property
+          waiting to happen — you will use it in Step 4.
+        </div>
+      </section>
+
+      <!-- ============ STEP 3: WRITE & EVALUATE EXPRESSIONS ============ -->
+      <section class="u6-section">
+        <div class="u6-section__eyebrow">Step 3 · Write &amp; Evaluate</div>
+        <h2 class="u6-step">
+          <span class="u6-step__num" aria-hidden="true">3</span>Turn the
+          engineering rules into expressions
+        </h2>
+        <p>
+          Real specs are written in plain words; your job is to translate each
+          rule into an algebraic expression, then evaluate it for a chosen side
+          length. Fill in the table for
+          <strong>s = 5</strong>.
+        </p>
+
+        <table class="u6-table">
+          <thead>
+            <tr>
+              <th scope="col">Engineering rule (words)</th>
+              <th scope="col">Expression</th>
+              <th scope="col">Evaluate at s = 5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Panels in a square block of side s</td>
+              <td>
+                <span class="u6-eq">s<sup>2</sup></span>
+              </td>
+              <td>
+                <input
+                  class="u6-input"
+                  id="u6-e1"
+                  type="number"
+                  inputmode="numeric"
+                  placeholder="?"
+                  aria-label="s squared at s equals 5"
+                />
+                <span class="u6-feedback" id="u6-e1-fb" role="status"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Square block plus 4 trim panels</td>
+              <td>
+                <span class="u6-eq">s<sup>2</sup> + 4</span>
+              </td>
+              <td>
+                <input
+                  class="u6-input"
+                  id="u6-e2"
+                  type="number"
+                  inputmode="numeric"
+                  placeholder="?"
+                  aria-label="s squared plus 4 at s equals 5"
+                />
+                <span class="u6-feedback" id="u6-e2-fb" role="status"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Three identical square blocks side by side</td>
+              <td>
+                <span class="u6-eq">3s<sup>2</sup></span>
+              </td>
+              <td>
+                <input
+                  class="u6-input"
+                  id="u6-e3"
+                  type="number"
+                  inputmode="numeric"
+                  placeholder="?"
+                  aria-label="3 s squared at s equals 5"
+                />
+                <span class="u6-feedback" id="u6-e3-fb" role="status"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Output in kW: four-tenths of the total (s² + 4)</td>
+              <td>
+                <span class="u6-eq">0.4(s<sup>2</sup> + 4)</span>
+              </td>
+              <td>
+                <input
+                  class="u6-input"
+                  id="u6-e4"
+                  type="number"
+                  inputmode="decimal"
+                  step="0.1"
+                  placeholder="?"
+                  aria-label="0.4 times the quantity s squared plus 4 at s equals 5"
+                />
+                <span class="u6-feedback" id="u6-e4-fb" role="status"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="u6-btn" id="u6-check3">Check the table</button>
+        <button class="u6-btn u6-btn--ghost" id="u6-reset3">Clear</button>
+
+        <details class="u6-check">
+          <summary>Order of operations reminder (open if you're stuck)</summary>
+          <div class="u6-check__a">
+            Always handle the <strong>exponent first</strong>. For
+            <span class="u6-eq">s<sup>2</sup> + 4</span> at s = 5: do
+            <span class="u6-eq">5<sup>2</sup> = 25</span> first,
+            <em>then</em> add 4 to get 29. For
+            <span class="u6-eq">3s<sup>2</sup></span
+            >: square first (25), then multiply by 3 to get 75 — it is
+            <strong>not</strong> <span class="u6-eq">(3 × 5)<sup>2</sup></span
+            >.
+          </div>
+        </details>
+
+        <div class="u6-callout u6-callout--level1">
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            Work one step at a time. At s = 5: first
+            <span class="u6-eq">5 × 5 = 25</span>. Then add or multiply. Write
+            each tiny step so you don't skip the exponent.
+          </p>
+          <span class="es"
+            >Español: Primero el exponente:
+            <span class="u6-eq">5 × 5 = 25</span>, luego suma o
+            multiplica.</span
+          >
+        </div>
+        <div class="u6-callout u6-callout--level2">
+          <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
+          The roof can hold at most 120 panels. Write an inequality using
+          <span class="u6-eq">s<sup>2</sup> + 4</span> and find the largest
+          whole-number side length that still fits. Show your reasoning.
+        </div>
+      </section>
+
+      <!-- ============ STEP 4: DISTRIBUTIVE PROPERTY — WIRING CREWS ============ -->
+      <section class="u6-section">
+        <div class="u6-section__eyebrow">Step 4 · Distributive Property</div>
+        <h2 class="u6-step">
+          <span class="u6-step__num" aria-hidden="true">4</span>Plan the wiring
+          crews two ways
+        </h2>
+        <p>
+          You have <strong>4 wiring crews</strong>. Each crew wires one square
+          block of <span class="u6-eq">s<sup>2</sup></span> panels
+          <em>plus</em> the same 9 connector panels on the roof edge. So each
+          crew handles <span class="u6-eq">(s<sup>2</sup> + 9)</span> panels,
+          and all four crews together handle
+          <span class="u6-eq">4(s<sup>2</sup> + 9)</span>.
+        </p>
+        <p>
+          The distributive property says you can wire it crew-by-crew,
+          <em>or</em> total the blocks and total the connectors — same answer:
+          <span class="u6-eq">4(s<sup>2</sup> + 9) = 4s<sup>2</sup> + 36</span>.
+        </p>
+
+        <div class="u6-distrib">
+          <svg
+            viewBox="0 0 470 175"
+            role="img"
+            aria-label="Area model showing 4 times the quantity s squared plus 9 equals 4 s squared plus 36"
+          >
+            <text x="14" y="98" font-size="16" font-weight="700" fill="#1f2a37">
+              4
+            </text>
+            <text x="26" y="98" font-size="16" fill="#1f2a37">×</text>
+            <rect
+              x="46"
+              y="34"
+              width="150"
+              height="120"
+              fill="none"
+              stroke="#1f2a37"
+              stroke-width="2"
+            />
+            <rect
+              x="46"
+              y="34"
+              width="100"
+              height="120"
+              fill="#cfe4fb"
+              stroke="#1f2a37"
+              stroke-width="1.5"
+            />
+            <rect
+              x="146"
+              y="34"
+              width="50"
+              height="120"
+              fill="#ffe7b0"
+              stroke="#1f2a37"
+              stroke-width="1.5"
+            />
+            <text
+              x="96"
+              y="100"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="700"
+              fill="#1b2a4a"
+            >
+              s²
+            </text>
+            <text
+              x="171"
+              y="100"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="700"
+              fill="#8a5a00"
+            >
+              9
+            </text>
+            <text
+              x="121"
+              y="26"
+              text-anchor="middle"
+              font-size="12"
+              fill="#4a5667"
+            >
+              one crew: (s² + 9)
+            </text>
+            <text
+              x="216"
+              y="100"
+              font-size="22"
+              font-weight="700"
+              fill="#1f2a37"
+            >
+              =
+            </text>
+            <rect
+              x="244"
+              y="34"
+              width="100"
+              height="120"
+              fill="#cfe4fb"
+              stroke="#1f2a37"
+              stroke-width="1.5"
+            />
+            <text
+              x="294"
+              y="100"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="700"
+              fill="#1b2a4a"
+            >
+              4 × s²
+            </text>
+            <text
+              x="294"
+              y="24"
+              text-anchor="middle"
+              font-size="12"
+              fill="#4a5667"
+            >
+              4s²
+            </text>
+            <text
+              x="352"
+              y="100"
+              font-size="22"
+              font-weight="700"
+              fill="#1f2a37"
+            >
+              +
+            </text>
+            <rect
+              x="372"
+              y="34"
+              width="82"
+              height="120"
+              fill="#ffe7b0"
+              stroke="#1f2a37"
+              stroke-width="1.5"
+            />
+            <text
+              x="413"
+              y="100"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="700"
+              fill="#8a5a00"
+            >
+              4 × 9
+            </text>
+            <text
+              x="413"
+              y="24"
+              text-anchor="middle"
+              font-size="12"
+              fill="#4a5667"
+            >
+              36
+            </text>
+          </svg>
+        </div>
+
+        <div class="u6-field">
+          <label for="u6-d1"
+            >Expand using the distributive property.
+            <span class="u6-eq">6(s + 4)</span> =
+          </label>
+          <input
+            class="u6-input"
+            id="u6-d1"
+            type="text"
+            placeholder="6s + 24"
+            style="width: 130px"
+            aria-label="Expand 6 times the quantity s plus 4"
+          />
+          <span class="u6-feedback" id="u6-d1-fb" role="status"></span>
+        </div>
+        <div class="u6-field">
+          <label for="u6-d2"
+            >Now evaluate <span class="u6-eq">4(s<sup>2</sup> + 9)</span> at s =
+            3:
+          </label>
+          <input
+            class="u6-input"
+            id="u6-d2"
+            type="number"
+            inputmode="numeric"
+            placeholder="?"
+            aria-label="4 times the quantity s squared plus 9 at s equals 3"
+          />
+          <span class="u6-feedback" id="u6-d2-fb" role="status"></span>
+        </div>
+        <div class="u6-field">
+          <label for="u6-d3"
+            >And <span class="u6-eq">4s<sup>2</sup> + 36</span> at s = 3 (should
+            match!):
+          </label>
+          <input
+            class="u6-input"
+            id="u6-d3"
+            type="number"
+            inputmode="numeric"
+            placeholder="?"
+            aria-label="4 s squared plus 36 at s equals 3"
+          />
+          <span class="u6-feedback" id="u6-d3-fb" role="status"></span>
+        </div>
+        <button class="u6-btn" id="u6-check4">Check the wiring plan</button>
+
+        <details class="u6-check">
+          <summary>How to expand 6(s + 4)</summary>
+          <div class="u6-check__a">
+            Multiply the outside number by <em>each</em> term inside:
+            <span class="u6-eq">6 × s = 6s</span> and
+            <span class="u6-eq">6 × 4 = 24</span>. Put them together:
+            <span class="u6-eq">6s + 24</span>. You did not multiply the s and 4
+            together — you distributed the 6 to both.
+          </div>
+        </details>
+
+        <div class="u6-callout u6-callout--level1">
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            Draw two arrows from the 6 to each term inside the parentheses.
+            Multiply along each arrow.
+            <span class="u6-eq">6(s + 4) → 6s + 24</span>.
+          </p>
+          <span class="es"
+            >Español: Reparte el 6 a cada término:
+            <span class="u6-eq">6 × s</span> y
+            <span class="u6-eq">6 × 4</span>.</span
+          >
+        </div>
+        <div class="u6-callout u6-callout--level2">
+          <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
+          Go backwards (factor): the budget line reads
+          <span class="u6-eq">12s² + 30</span>. Pull out the greatest common
+          factor and write it as <span class="u6-eq">6(2s² + 5)</span>. Prove
+          the two forms are equal by evaluating both at s = 2.
+        </div>
+      </section>
+
+      <!-- ============ STEP 5: PROPERTIES OF OPERATIONS ============ -->
+      <section class="u6-section">
+        <div class="u6-section__eyebrow">Step 5 · Properties of Operations</div>
+        <h2 class="u6-step">
+          <span class="u6-step__num" aria-hidden="true">5</span>Regroup the
+          count the smart way
+        </h2>
+        <p>
+          On install day the crews report panel counts out of order. Use the
+          <strong>commutative</strong> and
+          <strong>associative</strong> properties to regroup the numbers so they
+          are easy to add in your head — the total never changes.
+        </p>
+        <table class="u6-table">
+          <thead>
+            <tr>
+              <th scope="col">Property</th>
+              <th scope="col">What it lets you do</th>
+              <th scope="col">Solar example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Commutative</td>
+              <td>Change the <em>order</em></td>
+              <td><span class="u6-eq">17 + 25 + 3 = 17 + 3 + 25</span></td>
+            </tr>
+            <tr>
+              <td>Associative</td>
+              <td>Change the <em>grouping</em></td>
+              <td><span class="u6-eq">(17 + 3) + 25 = 20 + 25</span></td>
+            </tr>
+            <tr>
+              <td>Identity</td>
+              <td>Adding 0 / multiplying by 1 keeps it the same</td>
+              <td>
+                <span class="u6-eq">s<sup>2</sup> + 0 = s<sup>2</sup></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="u6-field">
+          <label for="u6-p1"
+            >Add the day's report the smart way:
+            <span class="u6-eq">17 + 25 + 3</span> =
+          </label>
+          <input
+            class="u6-input"
+            id="u6-p1"
+            type="number"
+            inputmode="numeric"
+            placeholder="?"
+            aria-label="17 plus 25 plus 3"
+          />
+          <span class="u6-feedback" id="u6-p1-fb" role="status"></span>
+        </div>
+        <button class="u6-btn" id="u6-check5">Check</button>
+        <div class="u6-callout u6-callout--level1">
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            Look for pairs that make a 10 or a 20. Here, 17 + 3 = 20, then 20 +
+            25 = 45.
+          </p>
+          <span class="es"
+            >Español: Busca pares que sumen 10 o 20 primero. 17 + 3 = 20, luego
+            + 25 = 45.</span
+          >
+        </div>
+        <div class="u6-callout u6-callout--level2">
+          <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
+          Which property lets you rewrite
+          <span class="u6-eq">3 · (s · 4)</span> as
+          <span class="u6-eq">12s</span>? Name it and explain each move you
+          make.
+        </div>
+      </section>
+
+      <!-- ============ DELIVERABLE ============ -->
+      <section class="u6-section u6-deliverable">
+        <div class="u6-section__eyebrow">Your Deliverable</div>
+        <h2>Generate your Solar Array Spec Sheet</h2>
+        <p>
+          Lock in a final side length <em>s</em>, then generate your spec sheet.
+          A finished spec means a real, buildable plan an installer could read.
+        </p>
+        <div class="u6-field">
+          <label for="u6-final-s"><strong>Final side length s =</strong></label>
+          <input
+            class="u6-input"
+            id="u6-final-s"
+            type="number"
+            inputmode="numeric"
+            min="2"
+            max="10"
+            placeholder="2-10"
+          />
+          <button class="u6-btn" id="u6-build-spec">Generate spec</button>
+        </div>
+
+        <table class="u6-table" id="u6-spec-table" style="display: none">
+          <tbody>
+            <tr>
+              <td>Square block size</td>
+              <td id="u6-spec-block"></td>
+            </tr>
+            <tr>
+              <td>Total panels (s² + 4)</td>
+              <td id="u6-spec-total"></td>
+            </tr>
+            <tr>
+              <td>Distributed wiring (4s² + 36)</td>
+              <td id="u6-spec-wire"></td>
+            </tr>
+            <tr>
+              <td>Predicted output (kW)</td>
+              <td id="u6-spec-energy"></td>
+            </tr>
+            <tr>
+              <td>Install cost</td>
+              <td id="u6-spec-cost"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="font-weight: 600; margin-top: 16px">
+          Student self-check — tick each one before you turn it in:
+        </p>
+        <ul class="u6-rubric">
+          <li>
+            I wrote at least one <strong>power</strong> (s², 2³, …) and
+            evaluated it correctly (exponent first).
+          </li>
+          <li>
+            I <strong>wrote an expression</strong> from words and
+            <strong>evaluated</strong> it for my chosen side length.
+          </li>
+          <li>
+            I used the <strong>distributive property</strong> to show
+            <span class="u6-eq">4(s² + 9) = 4s² + 36</span> and proved both
+            forms give the same value.
+          </li>
+          <li>
+            I used a <strong>property of operations</strong> (commutative /
+            associative) to regroup a sum.
+          </li>
+          <li>My spec sheet numbers are consistent with the live blueprint.</li>
+        </ul>
+
+        <div class="u6-callout u6-callout--bilingual">
+          <strong>Entrega · Deliverable</strong>
+          Tu hoja de especificaciones debe incluir: una potencia evaluada, una
+          expresión escrita y evaluada, la propiedad distributiva aplicada, y
+          una propiedad de operaciones usada para reagrupar. ¡Que sea un plan
+          que un instalador real pueda seguir!
+        </div>
+      </section>
+
+      <!-- ══ ENGINEER'S SIGN-OFF ══ -->
+      <section class="u6-section" aria-label="Engineer sign-off">
+        <h2>Engineer's Sign-off</h2>
+        <p style="color: var(--nt-muted); margin-top: 0">
+          When your powers are evaluated, your expressions are correct, and you
+          have applied the distributive property, submit your design report.
+          Enter your name in the field below, then press
+          <strong>Check &amp; Submit</strong> to save your score as a PDF or
+          DOC.
+        </p>
+        <button
+          class="u6-btn"
+          id="u6-submit"
+          style="font-size: 1.05rem; padding: 12px 22px; margin: 6px 0 18px"
+        >
+          Check &amp; Submit
+        </button>
+        <div id="ntkit" style="margin-top: 18px"></div>
+      </section>
+
+      <!-- ══ PERFORMANCE RUBRIC ══ -->
+      <section class="u6-section" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Solar Array Engineer (6.EE.A.1–3)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>11 / 11</td>
+                <td>
+                  Evaluates all powers correctly (exponent = repeated
+                  multiplication), writes and evaluates all four expressions
+                  accurately at s = 5, applies the distributive property in both
+                  directions, and uses properties of operations to regroup. Spec
+                  sheet is complete and internally consistent.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>9–10 / 11</td>
+                <td>
+                  Evaluates most powers and expressions correctly with at most
+                  two slips. Applies the distributive property and reaches a
+                  correct regroup. Minor arithmetic error only.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>6–8 / 11</td>
+                <td>
+                  Can evaluate simple powers but confuses exponent with
+                  multiplication by the exponent (e.g., 4² = 8) in some cases.
+                  Partial success on expressions and/or distributive property.
+                  Needs more practice with order of operations.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–5 / 11</td>
+                <td>
+                  Consistently misreads powers or cannot write an expression
+                  from words. Little or no correct use of the distributive
+                  property. Needs reteaching on exponents and algebraic
+                  expressions.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="u6-foot">
+        Neft Teacher · Math Architect · Unit 6 — Expressions &amp; Exponents
+        (6.EE)
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+
+        function fmt(n) {
+          return n.toLocaleString("en-US");
+        }
+        function numVal(input) {
+          var v = parseFloat(input.value);
+          return isNaN(v) ? null : v;
+        }
+        function mark(input, fb, correct, rightMsg, wrongMsg) {
+          input.classList.remove("is-right", "is-wrong");
+          if (input.value === "" || input.value === null) {
+            fb.textContent = "";
+            fb.className = "u6-feedback";
+            return correct === true ? "blank" : "blank";
+          }
+          if (correct) {
+            input.classList.add("is-right");
+            fb.textContent = rightMsg || "✓";
+            fb.className = "u6-feedback ok";
+          } else {
+            input.classList.add("is-wrong");
+            fb.textContent = wrongMsg || "Try again";
+            fb.className = "u6-feedback no";
+          }
+          return correct ? "right" : "wrong";
+        }
+
+        /* ---------- progress tracking ---------- */
+        var passed = {
+          s1: false,
+          s3: false,
+          s4: false,
+          s5: false,
+          spec: false,
+        };
+        function updateProgress() {
+          var n = 0;
+          Object.keys(passed).forEach(function (k) {
+            if (passed[k]) n++;
+          });
+          $("u6-pcount").textContent = n;
+          $("u6-pbar").style.width = (n / 5) * 100 + "%";
+          $("u6-progbar").setAttribute("aria-valuenow", n);
+        }
+
+        /* ---------- Step 1: powers ---------- */
+        $("u6-check1").addEventListener("click", function () {
+          var a = mark(
+            $("u6-q1"),
+            $("u6-q1-fb"),
+            numVal($("u6-q1")) === 16,
+            "✓ 4×4 = 16",
+            "4×4, not 4+2",
+          );
+          var b = mark(
+            $("u6-q2"),
+            $("u6-q2-fb"),
+            numVal($("u6-q2")) === 36,
+            "✓ 6×6 = 36",
+            "6×6 = 36",
+          );
+          var c = mark(
+            $("u6-q3"),
+            $("u6-q3-fb"),
+            numVal($("u6-q3")) === 8,
+            "✓ 2×2×2 = 8",
+            "2×2×2 = 8",
+          );
+          passed.s1 = a === "right" && b === "right" && c === "right";
+          updateProgress();
+        });
+
+        /* ---------- Step 2: interactive array studio ---------- */
+        var sSlider = $("u6-s");
+        var ENERGY_PER_PANEL = 0.4; // kW
+        var COST_PER_PANEL = 250; // $
+        var TRIM = 4;
+        var SVGNS = "http://www.w3.org/2000/svg";
+
+        function drawArray(s) {
+          var grid = $("u6-array-grid");
+          while (grid.firstChild) grid.removeChild(grid.firstChild);
+          var area = 256;
+          var x0 = 40,
+            y0 = 64;
+          var cell = area / s;
+          var gap = Math.max(1, Math.min(3, cell * 0.08));
+          for (var r = 0; r < s; r++) {
+            for (var c = 0; c < s; c++) {
+              var rect = document.createElementNS(SVGNS, "rect");
+              rect.setAttribute("x", (x0 + c * cell + gap / 2).toFixed(1));
+              rect.setAttribute("y", (y0 + r * cell + gap / 2).toFixed(1));
+              rect.setAttribute("width", (cell - gap).toFixed(1));
+              rect.setAttribute("height", (cell - gap).toFixed(1));
+              rect.setAttribute(
+                "fill",
+                (r + c) % 2 === 0 ? "#4f9be0" : "#2a4d7a",
+              );
+              rect.setAttribute("stroke", "#0e1a30");
+              rect.setAttribute("stroke-width", "1");
+              rect.setAttribute("rx", "1.5");
+              grid.appendChild(rect);
+            }
+          }
+          // trim panels (the +4) as a gold strip along the top edge
+          var trim = document.createElementNS(SVGNS, "rect");
+          trim.setAttribute("x", x0);
+          trim.setAttribute("y", y0 - 13);
+          trim.setAttribute("width", area);
+          trim.setAttribute("height", 9);
+          trim.setAttribute("fill", "#ffd43b");
+          trim.setAttribute("stroke", "#c98a00");
+          trim.setAttribute("stroke-width", "1");
+          trim.setAttribute("rx", "2");
+          grid.appendChild(trim);
+          var tlabel = document.createElementNS(SVGNS, "text");
+          tlabel.setAttribute("x", x0 + area / 2);
+          tlabel.setAttribute("y", y0 - 17);
+          tlabel.setAttribute("text-anchor", "middle");
+          tlabel.setAttribute("font-size", "10");
+          tlabel.setAttribute("fill", "#8a5a00");
+          tlabel.setAttribute("font-weight", "700");
+          tlabel.textContent = "+ 4 trim panels";
+          grid.appendChild(tlabel);
+        }
+
+        function updateStudio() {
+          var s = parseInt(sSlider.value, 10);
+          var sq = s * s;
+          var total = sq + TRIM;
+          var energy = ENERGY_PER_PANEL * total;
+          var cost = COST_PER_PANEL * total;
+
+          $("u6-s-val").textContent = s;
+          $("u6-array-side-b").textContent = "s = " + s;
+          $("u6-array-side-l").textContent = "s = " + s;
+
+          $("u6-f-sq").textContent = sq;
+          $("u6-f-total").textContent = total;
+          $("u6-f-energy").textContent = energy.toFixed(1);
+          $("u6-f-cost").textContent = fmt(cost);
+
+          $("u6-stat-sq").textContent = sq;
+          $("u6-stat-total").textContent = total;
+          $("u6-stat-energy").textContent = energy.toFixed(1);
+          $("u6-stat-cost").textContent = fmt(cost);
+
+          drawArray(s);
+        }
+        sSlider.addEventListener("input", updateStudio);
+        updateStudio();
+
+        /* ---------- Step 3: write & evaluate (s = 5) ---------- */
+        $("u6-check3").addEventListener("click", function () {
+          var a = mark(
+            $("u6-e1"),
+            $("u6-e1-fb"),
+            numVal($("u6-e1")) === 25,
+            "✓ 5² = 25",
+            "5² = 25",
+          );
+          var b = mark(
+            $("u6-e2"),
+            $("u6-e2-fb"),
+            numVal($("u6-e2")) === 29,
+            "✓ 25 + 4 = 29",
+            "Square first, then +4",
+          );
+          var c = mark(
+            $("u6-e3"),
+            $("u6-e3-fb"),
+            numVal($("u6-e3")) === 75,
+            "✓ 3×25 = 75",
+            "Square first, then ×3",
+          );
+          var d = mark(
+            $("u6-e4"),
+            $("u6-e4-fb"),
+            Math.abs((numVal($("u6-e4")) || -1) - 11.6) < 0.001,
+            "✓ 0.4×29 = 11.6",
+            "0.4 × 29 = 11.6",
+          );
+          passed.s3 =
+            a === "right" && b === "right" && c === "right" && d === "right";
+          updateProgress();
+        });
+        $("u6-reset3").addEventListener("click", function () {
+          ["u6-e1", "u6-e2", "u6-e3", "u6-e4"].forEach(function (id) {
+            var el = $(id);
+            el.value = "";
+            el.classList.remove("is-right", "is-wrong");
+            $(id + "-fb").textContent = "";
+            $(id + "-fb").className = "u6-feedback";
+          });
+          passed.s3 = false;
+          updateProgress();
+        });
+
+        /* ---------- Step 4: distributive ---------- */
+        function d1Normalized() {
+          return $("u6-d1").value.replace(/\s+/g, "").toLowerCase();
+        }
+        $("u6-check4").addEventListener("click", function () {
+          var d1 = d1Normalized();
+          var d1ok = d1 === "6s+24" || d1 === "24+6s";
+          var a = mark(
+            $("u6-d1"),
+            $("u6-d1-fb"),
+            d1ok,
+            "✓ 6s + 24",
+            "Distribute 6 to s and to 4",
+          );
+          // 4(3^2 + 9) = 4(9+9) = 4*18 = 72 ; 4*9 + 36 = 72
+          var b = mark(
+            $("u6-d2"),
+            $("u6-d2-fb"),
+            numVal($("u6-d2")) === 72,
+            "✓ 4(9+9) = 72",
+            "4(3²+9) = 4×18 = 72",
+          );
+          var c = mark(
+            $("u6-d3"),
+            $("u6-d3-fb"),
+            numVal($("u6-d3")) === 72,
+            "✓ 36+36 = 72 — matches!",
+            "4×9 + 36 = 72",
+          );
+          passed.s4 = a === "right" && b === "right" && c === "right";
+          updateProgress();
+        });
+
+        /* ---------- Step 5: properties ---------- */
+        $("u6-check5").addEventListener("click", function () {
+          var a = mark(
+            $("u6-p1"),
+            $("u6-p1-fb"),
+            numVal($("u6-p1")) === 45,
+            "✓ (17+3)+25 = 45",
+            "17+3 = 20, then +25 = 45",
+          );
+          passed.s5 = a === "right";
+          updateProgress();
+        });
+
+        /* ---------- Deliverable: spec sheet ---------- */
+        $("u6-build-spec").addEventListener("click", function () {
+          var s = parseInt($("u6-final-s").value, 10);
+          if (isNaN(s) || s < 2 || s > 10) {
+            $("u6-final-s").classList.add("is-wrong");
+            passed.spec = false;
+            updateProgress();
+            return;
+          }
+          $("u6-final-s").classList.remove("is-wrong");
+          var sq = s * s;
+          var total = sq + TRIM;
+          var wire = 4 * sq + 36;
+          var energy = ENERGY_PER_PANEL * total;
+          var cost = COST_PER_PANEL * total;
+          $("u6-spec-block").textContent =
+            s + " × " + s + " = " + sq + " panels (s² = " + s + "²)";
+          $("u6-spec-total").textContent = sq + " + 4 = " + total + " panels";
+          $("u6-spec-wire").textContent =
+            "4(" +
+            sq +
+            " + 9) = 4·" +
+            sq +
+            " + 36 = " +
+            wire +
+            " wired connections";
+          $("u6-spec-energy").textContent =
+            "0.4 × " + total + " = " + energy.toFixed(1) + " kW";
+          $("u6-spec-cost").textContent = "250 × " + total + " = $" + fmt(cost);
+          $("u6-spec-table").style.display = "table";
+          // sync the studio slider so the blueprint matches the spec
+          sSlider.value = s;
+          updateStudio();
+          passed.spec = true;
+          updateProgress();
+        });
+
+        /* ---------- NTKit grading + save ---------- */
+        if (window.NTKit && typeof NTKit.mount === "function") {
+          NTKit.mount("#ntkit");
+        }
+        function numAns(input) {
+          var v = parseFloat(input.value);
+          return isNaN(v) ? "(blank)" : v;
+        }
+        var submitBtn = $("u6-submit");
+        if (submitBtn) {
+          submitBtn.addEventListener("click", function () {
+            // run the per-step checks so inline feedback + progress also update
+            $("u6-check1").click();
+            $("u6-check3").click();
+            $("u6-check4").click();
+            $("u6-check5").click();
+
+            var d1 = d1Normalized();
+            var d1display =
+              d1 === "6s+24" || d1 === "24+6s"
+                ? "6s + 24"
+                : $("u6-d1").value || "(blank)";
+
+            var items = [
+              {
+                prompt: "Evaluate the power 4² (square block, side 4).",
+                studentAnswer: numAns($("u6-q1")),
+                correctAnswer: 16,
+                points: 1,
+                skill: "Powers & exponents (6.EE.1)",
+              },
+              {
+                prompt: "Evaluate the power 6².",
+                studentAnswer: numAns($("u6-q2")),
+                correctAnswer: 36,
+                points: 1,
+                skill: "Powers & exponents (6.EE.1)",
+              },
+              {
+                prompt: "Evaluate the power 2³ (inverter tiers).",
+                studentAnswer: numAns($("u6-q3")),
+                correctAnswer: 8,
+                points: 1,
+                skill: "Powers & exponents (6.EE.1)",
+              },
+              {
+                prompt: "Evaluate s² at s = 5.",
+                studentAnswer: numAns($("u6-e1")),
+                correctAnswer: 25,
+                points: 1,
+                skill: "Evaluate expressions (6.EE.2c)",
+              },
+              {
+                prompt: "Evaluate s² + 4 at s = 5.",
+                studentAnswer: numAns($("u6-e2")),
+                correctAnswer: 29,
+                points: 1,
+                skill: "Evaluate expressions (6.EE.2c)",
+              },
+              {
+                prompt: "Evaluate 3s² at s = 5.",
+                studentAnswer: numAns($("u6-e3")),
+                correctAnswer: 75,
+                points: 1,
+                skill: "Evaluate expressions (6.EE.2c)",
+              },
+              {
+                prompt: "Evaluate 0.4(s² + 4) at s = 5.",
+                studentAnswer: numAns($("u6-e4")),
+                correctAnswer: 11.6,
+                points: 1,
+                skill: "Evaluate expressions (6.EE.2c)",
+              },
+              {
+                prompt: "Expand 6(s + 4) using the distributive property.",
+                studentAnswer: d1display,
+                correctAnswer: "6s + 24",
+                points: 1,
+                skill: "Distributive property (6.EE.3)",
+              },
+              {
+                prompt: "Evaluate 4(s² + 9) at s = 3.",
+                studentAnswer: numAns($("u6-d2")),
+                correctAnswer: 72,
+                points: 1,
+                skill: "Distributive property (6.EE.3)",
+              },
+              {
+                prompt:
+                  "Evaluate 4s² + 36 at s = 3 (must match the form above).",
+                studentAnswer: numAns($("u6-d3")),
+                correctAnswer: 72,
+                points: 1,
+                skill: "Distributive property (6.EE.3)",
+              },
+              {
+                prompt: "Regroup 17 + 25 + 3 using properties of operations.",
+                studentAnswer: numAns($("u6-p1")),
+                correctAnswer: 45,
+                points: 1,
+                skill: "Properties of operations (6.EE.3)",
+              },
+            ];
+
+            if (window.NTKit && typeof NTKit.grade === "function") {
+              NTKit.grade({
+                activityId: "architect-unit-6",
+                activityTitle: "Solar Array Engineer — Expressions & Exponents",
+                standard: "CCSS 6.EE.1, 6.EE.2, 6.EE.3",
+                items: items,
+              });
+            }
+            var fb = $("a11y-feedback");
+            if (fb)
+              fb.textContent =
+                "Work submitted and scored. Scroll down to see your results.";
+            var kit = $("ntkit");
+            if (kit && kit.scrollIntoView)
+              kit.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }
+
+        updateProgress();
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

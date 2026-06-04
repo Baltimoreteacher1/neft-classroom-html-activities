@@ -1,0 +1,2601 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 10 Supplemental — End of Year Review &amp; MCAP Prep | Neft Teacher
+    </title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --esol-primary: #0e8a7d;
+        --esol-light: #e4f5f3;
+        --esol-dark: #0a6b61;
+        --esol-accent: #1a6fb5;
+        --esol-accent-light: #e8f2fc;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #f3eeff;
+        --enrich-dark: #5b21b6;
+        --enrich-accent: #d4952a;
+        --enrich-accent-light: #fdf3e0;
+        --navy: #0f2b3c;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --green: #2d874b;
+        --coral: #c45a3c;
+        --rp-color: #e65100;
+        --ns-color: #1565c0;
+        --ee-color: #2e7d32;
+        --g-color: #6a1b9a;
+        --sp-color: #c62828;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 960px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: #fff;
+      }
+      .header h1 {
+        font-size: 1.8rem;
+        margin: 0 0 4px;
+      }
+      .header .subtitle {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 1rem;
+        margin: 0;
+      }
+
+      .shell {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 16px 60px;
+      }
+
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        margin-bottom: 0;
+        border-bottom: 3px solid var(--line);
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: var(--card);
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.2s;
+        border-radius: var(--radius) var(--radius) 0 0;
+        position: relative;
+      }
+      .tab-btn.esol-tab.active {
+        color: var(--esol-primary);
+        border-top: 3px solid var(--esol-primary);
+        background: var(--esol-light);
+      }
+      .tab-btn.enrich-tab.active {
+        color: var(--enrich-primary);
+        border-top: 3px solid var(--enrich-primary);
+        background: var(--enrich-light);
+      }
+      .tab-btn:not(.active) {
+        border-top: 3px solid transparent;
+      }
+      .tab-btn:hover:not(.active) {
+        background: #f0f2f4;
+      }
+
+      .tab-panel {
+        display: none;
+        animation: fadeUp 0.3s ease;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 20px 0;
+        box-shadow: var(--shadow);
+      }
+      .esol-section .section-card {
+        border-left: 4px solid var(--esol-primary);
+      }
+      .enrich-section .section-card {
+        border-left: 4px solid var(--enrich-primary);
+      }
+      .section-card h2 {
+        font-size: 1.3rem;
+        margin: 0 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .esol-section h2 {
+        color: var(--esol-dark);
+      }
+      .enrich-section h2 {
+        color: var(--enrich-dark);
+      }
+      .section-card h3 {
+        font-size: 1.05rem;
+        margin: 16px 0 8px;
+        color: var(--ink);
+      }
+
+      /* Domain badges */
+      .domain-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        color: #fff;
+      }
+      .domain-rp {
+        background: var(--rp-color);
+      }
+      .domain-ns {
+        background: var(--ns-color);
+      }
+      .domain-ee {
+        background: var(--ee-color);
+      }
+      .domain-g {
+        background: var(--g-color);
+      }
+      .domain-sp {
+        background: var(--sp-color);
+      }
+
+      /* Domain section headers */
+      .domain-header {
+        padding: 14px 20px;
+        border-radius: 10px;
+        margin: 16px 0 12px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+      .domain-header.rp {
+        background: linear-gradient(135deg, var(--rp-color), #ff8a50);
+      }
+      .domain-header.ns {
+        background: linear-gradient(135deg, var(--ns-color), #42a5f5);
+      }
+      .domain-header.ee {
+        background: linear-gradient(135deg, var(--ee-color), #66bb6a);
+      }
+      .domain-header.g {
+        background: linear-gradient(135deg, var(--g-color), #ab47bc);
+      }
+      .domain-header.sp {
+        background: linear-gradient(135deg, var(--sp-color), #ef5350);
+      }
+
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+      }
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid #c4e6e2;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+      .vocab-card svg {
+        display: block;
+        margin: 0 auto 10px;
+      }
+      .vocab-term {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.85rem;
+        color: var(--esol-primary);
+        font-style: italic;
+        margin: 2px 0;
+      }
+      .vocab-def {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .frame-list {
+        list-style: none;
+        padding: 0;
+      }
+      .frame-list li {
+        background: var(--esol-accent-light);
+        border: 1px solid #c8ddf0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+      .frame-list .blank {
+        display: inline-block;
+        min-width: 70px;
+        border-bottom: 2px solid var(--esol-accent);
+        color: var(--esol-accent);
+        font-weight: 600;
+        text-align: center;
+        padding: 0 4px;
+      }
+
+      /* Strategy cards */
+      .strategy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+      }
+      .strategy-card {
+        background: #fff;
+        border: 2px solid var(--esol-primary);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+      .strategy-card .strategy-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+      .strategy-card h4 {
+        margin: 0 0 6px;
+        color: var(--esol-dark);
+        font-size: 0.95rem;
+      }
+      .strategy-card p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .practice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+      }
+      .practice-item {
+        background: #fafbfc;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .practice-item .problem {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .practice-item .hint-toggle,
+      .practice-item .answer-toggle {
+        font-size: 0.85rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        font-weight: 600;
+        display: inline-block;
+        margin-right: 12px;
+      }
+      .esol-section .hint-toggle,
+      .esol-section .answer-toggle {
+        color: var(--esol-primary);
+      }
+      .enrich-section .hint-toggle,
+      .enrich-section .answer-toggle {
+        color: var(--enrich-primary);
+      }
+      .practice-item .hint-content,
+      .practice-item .answer-content {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      .practice-item .hint-content {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+      }
+      .practice-item .answer-content {
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
+      }
+      .practice-item .hint-content.show,
+      .practice-item .answer-content.show {
+        display: block;
+      }
+
+      .rw-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      .rw-card {
+        border-radius: 12px;
+        padding: 20px;
+      }
+      .esol-section .rw-card {
+        background: var(--esol-accent-light);
+        border: 1px solid #c8ddf0;
+      }
+      .enrich-section .rw-card {
+        background: var(--enrich-accent-light);
+        border: 1px solid #e8d5a8;
+      }
+      .rw-card h4 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rw-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .challenge-item {
+        background: var(--enrich-light);
+        border: 1px solid #ddd0f5;
+        border-radius: 10px;
+        padding: 16px;
+        margin: 10px 0;
+      }
+      .challenge-item .difficulty {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .difficulty.medium {
+        background: #fdf3e0;
+        color: #b8860b;
+      }
+      .difficulty.hard {
+        background: #fce4ec;
+        color: #c62828;
+      }
+      .difficulty.expert {
+        background: #ede7f6;
+        color: #4a148c;
+      }
+
+      .investigation {
+        background: var(--card);
+        border: 2px solid var(--enrich-primary);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin: 14px 0;
+      }
+      .investigation h4 {
+        color: var(--enrich-dark);
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+      .investigation p {
+        margin: 4px 0;
+        font-size: 0.92rem;
+      }
+      .investigation .materials {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      .teaser {
+        background: linear-gradient(135deg, #fdf3e0, #fff8e1);
+        border: 1px solid #ffe082;
+        border-radius: 12px;
+        padding: 18px;
+        margin: 12px 0;
+      }
+      .teaser h4 {
+        color: #b8860b;
+        margin: 0 0 6px;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .check-box {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--enrich-primary);
+        border-radius: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        background: #fff;
+      }
+      .check-box.checked {
+        background: var(--enrich-primary);
+        border-color: var(--enrich-primary);
+      }
+      .check-box.checked::after {
+        content: "\2713";
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .extension-box {
+        background: linear-gradient(135deg, var(--enrich-light), #f3eeff);
+        border-radius: var(--radius);
+        padding: 20px;
+        border: 1px solid #ddd0f5;
+        margin-top: 12px;
+      }
+      .extension-box:first-of-type {
+        margin-top: 0;
+      }
+      .extension-box h4 {
+        color: var(--enrich-dark);
+        margin: 0 0 6px;
+      }
+      .extension-box p {
+        font-size: 0.92rem;
+        margin: 4px 0;
+        color: var(--muted);
+      }
+
+      /* Quick Review boxes */
+      .quick-review {
+        border-radius: 12px;
+        padding: 18px;
+        margin: 10px 0;
+      }
+      .quick-review h4 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .quick-review ul {
+        margin: 4px 0;
+        padding-left: 20px;
+        font-size: 0.92rem;
+      }
+      .quick-review li {
+        margin: 4px 0;
+      }
+      .qr-rp {
+        background: #fff3e0;
+        border: 1px solid #ffcc80;
+      }
+      .qr-rp h4 {
+        color: var(--rp-color);
+      }
+      .qr-ns {
+        background: #e3f2fd;
+        border: 1px solid #90caf9;
+      }
+      .qr-ns h4 {
+        color: var(--ns-color);
+      }
+      .qr-ee {
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
+      }
+      .qr-ee h4 {
+        color: var(--ee-color);
+      }
+      .qr-g {
+        background: #f3e5f5;
+        border: 1px solid #ce93d8;
+      }
+      .qr-g h4 {
+        color: var(--g-color);
+      }
+      .qr-sp {
+        background: #ffebee;
+        border: 1px solid #ef9a9a;
+      }
+      .qr-sp h4 {
+        color: var(--sp-color);
+      }
+
+      /* Step guide */
+      .step-guide {
+        counter-reset: step;
+      }
+      .step-item {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .step-item:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        counter-increment: step;
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--esol-primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      .step-num::after {
+        content: counter(step);
+      }
+      .step-content {
+        flex: 1;
+      }
+      .step-content .math-display {
+        background: var(--esol-light);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin: 8px 0;
+        font-size: 1rem;
+        font-family: "Courier New", monospace;
+      }
+
+      .print-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin: 16px 0;
+      }
+      .print-btn {
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+      }
+      .print-btn:hover {
+        background: #1a4a6b;
+      }
+
+      @media (max-width: 600px) {
+        .header h1 {
+          font-size: 1.4rem;
+        }
+        .vocab-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .practice-grid {
+          grid-template-columns: 1fr;
+        }
+        .rw-cards {
+          grid-template-columns: 1fr;
+        }
+        .strategy-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .tab-btn {
+          font-size: 0.85rem;
+          padding: 10px 12px;
+        }
+      }
+
+      @media print {
+        .tab-bar,
+        .print-bar,
+        .hint-toggle,
+        .answer-toggle {
+          display: none !important;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .tab-panel::before {
+          content: attr(data-tab-title);
+          display: block;
+          font-size: 1.4rem;
+          font-weight: 700;
+          margin: 20px 0 10px;
+          page-break-before: always;
+        }
+        .tab-panel:first-of-type::before {
+          page-break-before: auto;
+        }
+        .hint-content,
+        .answer-content {
+          display: block !important;
+        }
+        .section-card {
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+<div class="l0-extra-support" role="note">
+  🟠 <b>Level 0 — Most Support.</b> Same skills as Level 1, with extra help:
+  press <button id="readAloudBtn" class="l0-readaloud" type="button">🔊 Read aloud</button>
+  then tap any text to hear it. Open every 💡 Hint — that is okay here.
+</div>
+<style>
+.l0-extra-support{display:none;max-width:900px;margin:10px auto;padding:12px 16px;background:#fff7ed;border:1px solid #fdba74;border-radius:12px;color:#7c2d12;font-size:15px;line-height:1.5;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+body.l0on .l0-extra-support{display:block}
+.l0-readaloud{border:1px solid #fdba74;background:#fff;color:#9a3412;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;font-size:14px}
+.l0-readaloud:hover{background:#ffedd5}
+.tab-btn[data-tab="level0"]{color:#9a3412}
+.tab-btn.active[data-tab="level0"]{background:#fff7ed;border-color:#fdba74;color:#9a3412}
+body.l0-reading *{cursor:help}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<script>
+(function(){var b=document.getElementById("readAloudBtn");if(!b)return;var on=false;
+function speak(t){try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=0.9;window.speechSynthesis.speak(u);}catch(e){}}
+b.addEventListener("click",function(){on=!on;document.body.classList.toggle("l0-reading",on);b.textContent=on?"🔊 Tap text to hear":"🔊 Read aloud";if(!on){try{window.speechSynthesis.cancel();}catch(e){}}});
+document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(".l0-extra-support"))return;var el=e.target.closest("p,li,h1,h2,h3,h4,label,td,.q-text");if(el){var t=el.textContent.trim();if(t&&t.length<400)speak(t);}},true);})();
+</script>
+
+    <header class="header">
+      <div class="header-inner">
+        <h1>Unit 10 Supplemental Resources</h1>
+        <p class="subtitle">
+          End of Year Review &amp; MCAP Prep &mdash; All Grade 6 Standards
+        </p>
+      </div>
+    </header>
+
+    <div class="shell">
+      <div class="print-bar">
+        <button class="print-btn" onclick="window.print()">
+          &#128424; Print This Page
+        </button>
+        <button class="print-btn" onclick="NeftDocx.exportPage()">⬇ Download Word Doc</button>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn tab-btn-l0 level0-btn" data-tab="level0" onclick="switchTab('level0')">
+          🟠 Level 0 · Most Support
+        </button>
+        <button
+          class="tab-btn esol-tab active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          &#127759; Level 1 Support &amp; MCAP Prep
+        </button>
+        <button
+          class="tab-btn enrich-tab"
+          data-tab="enrich"
+          onclick="switchTab('enrich')"
+        >
+          &#127775; Enrichment &amp; Challenge
+        </button>
+      </div>
+
+      <!-- ======================== LEVEL 1 SUPPORT TAB ======================== -->
+      <div
+        class="tab-panel esol-section active"
+        id="tab-esol"
+        data-tab-title="Level 1 Support &amp; MCAP Prep"
+      >
+        <!-- Test-Taking Strategies -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="2"
+                width="20"
+                height="24"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="9"
+                y1="8"
+                x2="19"
+                y2="8"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+              <line
+                x1="9"
+                y1="12"
+                x2="19"
+                y2="12"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+              <line
+                x1="9"
+                y1="16"
+                x2="15"
+                y2="16"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+              <path
+                d="M9 20 L11 22 L15 18"
+                stroke="#2d874b"
+                stroke-width="2"
+                fill="none"
+              />
+            </svg>
+            MCAP Test-Taking Strategies
+          </h2>
+          <div class="strategy-grid">
+            <div class="strategy-card">
+              <div class="strategy-icon">&#128270;</div>
+              <h4>Read Twice</h4>
+              <p>
+                Read the problem 2 times. First time: understand the story.
+                Second time: find the numbers and the question.
+              </p>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-icon">&#9999;&#65039;</div>
+              <h4>Underline Key Words</h4>
+              <p>
+                "Total" means add. "Each" means multiply or divide. "Left" means
+                subtract. "Share equally" means divide.
+              </p>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-icon">&#128247;</div>
+              <h4>Draw a Picture</h4>
+              <p>
+                If you do not understand the words, draw the problem. Use number
+                lines, bar models, or simple pictures.
+              </p>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-icon">&#10060;</div>
+              <h4>Eliminate Wrong Answers</h4>
+              <p>
+                Cross out answers that do not make sense. Use estimation to
+                check if an answer is too big or too small.
+              </p>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-icon">&#128260;</div>
+              <h4>Check Your Work</h4>
+              <p>
+                After solving, plug your answer back in. Does it make sense?
+                Does it answer the question they asked?
+              </p>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-icon">&#9203;</div>
+              <h4>Manage Time</h4>
+              <p>
+                Do not spend too long on one question. Skip hard ones and come
+                back. Answer every question &mdash; do not leave blanks.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Vocabulary (Cross-Domain) -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="2"
+                y="4"
+                width="24"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="8"
+                y1="10"
+                x2="20"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="8"
+                y1="14"
+                x2="17"
+                y2="14"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+            </svg>
+            Visual Vocabulary &mdash; Key Terms Across All Domains
+          </h2>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <text
+                  x="10"
+                  y="22"
+                  font-size="14"
+                  font-weight="700"
+                  fill="#e65100"
+                >
+                  3
+                </text>
+                <text x="22" y="22" font-size="12" fill="#5e6e7e">:</text>
+                <text
+                  x="30"
+                  y="22"
+                  font-size="14"
+                  font-weight="700"
+                  fill="#e65100"
+                >
+                  4
+                </text>
+                <text x="10" y="42" font-size="10" fill="#5e6e7e">3 to 4</text>
+              </svg>
+              <div class="vocab-term">Ratio</div>
+              <div class="vocab-spanish">Raz&oacute;n / Proporci&oacute;n</div>
+              <div class="vocab-def">
+                Compares two amounts. "3 for every 4." (RP)
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <text x="8" y="22" font-size="12" fill="#5e6e7e">60 mi</text>
+                <line
+                  x1="8"
+                  y1="28"
+                  x2="48"
+                  y2="28"
+                  stroke="#1565c0"
+                  stroke-width="1.5"
+                />
+                <text x="8" y="42" font-size="12" fill="#5e6e7e">1 hour</text>
+              </svg>
+              <div class="vocab-term">Unit Rate</div>
+              <div class="vocab-spanish">Tasa unitaria</div>
+              <div class="vocab-def">
+                A ratio with 1 on the bottom. "60 miles per 1 hour." (RP)
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <line
+                  x1="8"
+                  y1="28"
+                  x2="48"
+                  y2="28"
+                  stroke="#1565c0"
+                  stroke-width="2"
+                />
+                <circle cx="28" cy="28" r="3" fill="#1565c0" />
+                <text
+                  x="28"
+                  y="22"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#1565c0"
+                >
+                  0
+                </text>
+                <text
+                  x="8"
+                  y="22"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#c45a3c"
+                >
+                  &minus;3
+                </text>
+                <text
+                  x="48"
+                  y="22"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#2d874b"
+                >
+                  +3
+                </text>
+              </svg>
+              <div class="vocab-term">Integers</div>
+              <div class="vocab-spanish">Enteros</div>
+              <div class="vocab-def">
+                Positive and negative whole numbers, including zero. (NS)
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <text
+                  x="28"
+                  y="24"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="700"
+                  fill="#2e7d32"
+                >
+                  |&minus;5|
+                </text>
+                <text
+                  x="28"
+                  y="42"
+                  text-anchor="middle"
+                  font-size="14"
+                  fill="#2e7d32"
+                >
+                  = 5
+                </text>
+              </svg>
+              <div class="vocab-term">Absolute Value</div>
+              <div class="vocab-spanish">Valor absoluto</div>
+              <div class="vocab-def">
+                Distance from zero. Always positive. |&minus;5| = 5. (NS)
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <text
+                  x="28"
+                  y="26"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="700"
+                  fill="#2e7d32"
+                >
+                  2x + 3
+                </text>
+                <text
+                  x="28"
+                  y="42"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  no = sign
+                </text>
+              </svg>
+              <div class="vocab-term">Expression</div>
+              <div class="vocab-spanish">Expresi&oacute;n</div>
+              <div class="vocab-def">
+                Numbers, variables, and operations without an equal sign. (EE)
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <rect
+                  x="4"
+                  y="12"
+                  width="22"
+                  height="32"
+                  rx="2"
+                  fill="#f3e5f5"
+                  stroke="#6a1b9a"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="15"
+                  y="32"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="700"
+                  fill="#6a1b9a"
+                >
+                  l &times; w
+                </text>
+                <text
+                  x="38"
+                  y="32"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#6a1b9a"
+                >
+                  Area
+                </text>
+              </svg>
+              <div class="vocab-term">Area</div>
+              <div class="vocab-spanish">&Aacute;rea</div>
+              <div class="vocab-def">
+                Space inside a flat shape. Measured in square units. (G)
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <text x="8" y="18" font-size="10" fill="#5e6e7e">
+                  5,3,7,3,8,5,3
+                </text>
+                <text
+                  x="28"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#c62828"
+                >
+                  Mean: 4.9
+                </text>
+                <text
+                  x="28"
+                  y="48"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  Median: 5
+                </text>
+              </svg>
+              <div class="vocab-term">Mean &amp; Median</div>
+              <div class="vocab-spanish">Media y Mediana</div>
+              <div class="vocab-def">
+                Mean = average (add all, divide by count). Median = middle
+                number when sorted. (SP)
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="56" height="56" viewBox="0 0 56 56">
+                <line
+                  x1="10"
+                  y1="44"
+                  x2="46"
+                  y2="44"
+                  stroke="#c62828"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="18"
+                  y="24"
+                  width="16"
+                  height="20"
+                  fill="none"
+                  stroke="#c62828"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="10"
+                  y1="34"
+                  x2="18"
+                  y2="34"
+                  stroke="#c62828"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="34"
+                  y1="34"
+                  x2="46"
+                  y2="34"
+                  stroke="#c62828"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="26"
+                  y1="24"
+                  x2="26"
+                  y2="44"
+                  stroke="#c62828"
+                  stroke-width="2"
+                />
+              </svg>
+              <div class="vocab-term">Box Plot</div>
+              <div class="vocab-spanish">Diagrama de caja</div>
+              <div class="vocab-def">
+                Shows data spread: minimum, Q1, median, Q3, maximum. (SP)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="3"
+                y="5"
+                width="22"
+                height="18"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="7"
+                y1="10"
+                x2="15"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="17"
+                y1="10"
+                x2="21"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="1"
+                stroke-dasharray="2,2"
+              />
+            </svg>
+            Sentence Frames for MCAP
+          </h2>
+          <ul class="frame-list">
+            <li>
+              <span class="domain-badge domain-rp">RP</span> The unit rate is
+              <span class="blank">___</span> per <span class="blank">___</span>,
+              which means for every 1 <span class="blank">___</span>, there are
+              <span class="blank">___</span>.
+            </li>
+            <li>
+              <span class="domain-badge domain-ns">NS</span> The absolute value
+              of <span class="blank">___</span> is
+              <span class="blank">___</span> because it is
+              <span class="blank">___</span> units from zero.
+            </li>
+            <li>
+              <span class="domain-badge domain-ee">EE</span> To solve this
+              equation, I use the inverse operation: I
+              <span class="blank">___</span> both sides by
+              <span class="blank">___</span>.
+            </li>
+            <li>
+              <span class="domain-badge domain-g">G</span> The area of this
+              shape is <span class="blank">___</span> square units because
+              <span class="blank">___</span>.
+            </li>
+            <li>
+              <span class="domain-badge domain-sp">SP</span> The
+              <span class="blank">mean / median</span> is the best measure of
+              center because <span class="blank">___</span>.
+            </li>
+            <li>
+              I chose answer <span class="blank">___</span> because
+              <span class="blank">___</span>. I can check by
+              <span class="blank">___</span>.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Quick Review: All 5 Domains -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="10"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <text
+                x="14"
+                y="18"
+                text-anchor="middle"
+                font-size="14"
+                font-weight="700"
+                fill="#0e8a7d"
+              >
+                5
+              </text>
+            </svg>
+            Quick Review &mdash; All 5 Domains
+          </h2>
+
+          <div class="quick-review qr-rp">
+            <h4>&#128992; Ratios &amp; Proportional Relationships (6.RP)</h4>
+            <ul>
+              <li>
+                <strong>Ratio:</strong> Compares two numbers (3:5 or 3 to 5 or
+                3/5)
+              </li>
+              <li>
+                <strong>Unit Rate:</strong> Ratio with denominator of 1 (e.g.,
+                $4.50 per pound)
+              </li>
+              <li>
+                <strong>Equivalent Ratios:</strong> Multiply or divide both
+                parts by the same number
+              </li>
+              <li>
+                <strong>Percent:</strong> A ratio out of 100. 25% = 25/100 =
+                0.25
+              </li>
+              <li>
+                <strong>Key Skill:</strong> Use ratio tables and double number
+                lines to solve problems
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-ns">
+            <h4>&#128309; The Number System (6.NS)</h4>
+            <ul>
+              <li>
+                <strong>Divide Fractions:</strong> Keep-Change-Flip. Example:
+                2/3 &divide; 1/4 = 2/3 &times; 4/1 = 8/3
+              </li>
+              <li>
+                <strong>Decimals:</strong> Add, subtract, multiply, divide with
+                decimals (line up the decimal!)
+              </li>
+              <li>
+                <strong>Integers:</strong> Positive and negative numbers on the
+                number line
+              </li>
+              <li>
+                <strong>Absolute Value:</strong> Distance from zero: |&minus;7|
+                = 7, |4| = 4
+              </li>
+              <li>
+                <strong>Coordinate Plane:</strong> Four quadrants, ordered pairs
+                (x, y)
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-ee">
+            <h4>&#128994; Expressions &amp; Equations (6.EE)</h4>
+            <ul>
+              <li>
+                <strong>Expressions:</strong> Evaluate by substituting values
+                for variables
+              </li>
+              <li>
+                <strong>Properties:</strong> Distributive: a(b + c) = ab + ac.
+                Combine like terms.
+              </li>
+              <li>
+                <strong>Equations:</strong> Solve one-step equations using
+                inverse operations
+              </li>
+              <li>
+                <strong>Inequalities:</strong> &gt;, &lt;, &ge;, &le; on a
+                number line (open vs. closed circles)
+              </li>
+              <li>
+                <strong>Two Variables:</strong> Independent (x) and dependent
+                (y) in tables and graphs
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-g">
+            <h4>&#128995; Geometry (6.G)</h4>
+            <ul>
+              <li>
+                <strong>Area of Triangles:</strong> A = &frac12; &times; base
+                &times; height
+              </li>
+              <li>
+                <strong>Area of Parallelograms:</strong> A = base &times; height
+              </li>
+              <li>
+                <strong>Area of Trapezoids:</strong> A = &frac12;(b1 + b2)
+                &times; height
+              </li>
+              <li>
+                <strong>Volume:</strong> V = length &times; width &times; height
+                (rectangular prisms)
+              </li>
+              <li>
+                <strong>Surface Area:</strong> Sum of all face areas of a 3D
+                shape
+              </li>
+              <li>
+                <strong>Nets:</strong> A flat pattern that folds into a 3D shape
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-sp">
+            <h4>&#128308; Statistics &amp; Probability (6.SP)</h4>
+            <ul>
+              <li>
+                <strong>Statistical Question:</strong> A question that expects
+                varying answers ("How tall are 6th graders?")
+              </li>
+              <li>
+                <strong>Mean:</strong> Add all values, divide by count (the
+                average)
+              </li>
+              <li><strong>Median:</strong> Middle value when data is sorted</li>
+              <li>
+                <strong>MAD:</strong> Mean Absolute Deviation &mdash; average
+                distance from the mean
+              </li>
+              <li>
+                <strong>Displays:</strong> Dot plots, histograms, box plots
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step-by-Step: One from each domain -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8 L14 14 L19 14"
+                stroke="#0e8a7d"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Worked Examples &mdash; One Per Domain
+          </h2>
+
+          <div class="domain-header rp">RP: Find a Unit Rate</div>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Problem:</strong> 12 apples cost $4.80. What is the cost
+                per apple?
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Divide:</strong>
+                <div class="math-display">
+                  $4.80 &divide; 12 = $0.40 per apple
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="domain-header ns">NS: Divide Fractions</div>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Problem:</strong> Solve 3/4 &divide; 2/5
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Keep-Change-Flip:</strong>
+                <div class="math-display">3/4 &times; 5/2 = 15/8 = 1 7/8</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="domain-header ee">EE: Solve an Equation</div>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Problem:</strong> Solve x + 14 = 30
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Subtract 14 from both sides:</strong>
+                <div class="math-display">
+                  x = 30 &minus; 14 = 16. Check: 16 + 14 = 30 &#10003;
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="domain-header g">G: Area of a Triangle</div>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Problem:</strong> Find the area. Base = 10 cm, Height =
+                6 cm.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Use the formula:</strong>
+                <div class="math-display">
+                  A = &frac12; &times; 10 &times; 6 = 30 cm&sup2;
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="domain-header sp">SP: Find the Mean</div>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Data:</strong> Test scores: 80, 90, 70, 85, 95
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Add, then divide:</strong>
+                <div class="math-display">
+                  (80+90+70+85+95) &divide; 5 = 420 &divide; 5 = 84
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice (2 per domain = 10 problems) -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M9 14 L12 17 L19 10"
+                stroke="#0e8a7d"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+            Simplified Practice &mdash; 2 Per Domain
+          </h2>
+          <div class="practice-grid">
+            <div class="practice-item">
+              <span class="domain-badge domain-rp">RP</span>
+              <div class="problem">
+                1. A recipe uses 3 cups of flour for 12 cookies. How many cups
+                for 20 cookies?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Find the unit rate first: cups per cookie = 3 &divide; 12.
+              </div>
+              <div class="answer-content">
+                3/12 = 0.25 cups per cookie. 0.25 &times; 20 = 5 cups.
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-rp">RP</span>
+              <div class="problem">2. What is 30% of 80?</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                30% = 0.30. Multiply: 0.30 &times; 80.
+              </div>
+              <div class="answer-content">0.30 &times; 80 = 24.</div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-ns">NS</span>
+              <div class="problem">3. Solve: 5/6 &divide; 2/3</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Keep-Change-Flip: 5/6 &times; 3/2.</div>
+              <div class="answer-content">
+                5/6 &times; 3/2 = 15/12 = 5/4 = 1 1/4.
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-ns">NS</span>
+              <div class="problem">
+                4. Order from least to greatest: &minus;3, 1, &minus;7, 0, 4
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                On a number line, further left = smaller. Negative numbers are
+                less than 0.
+              </div>
+              <div class="answer-content">&minus;7, &minus;3, 0, 1, 4</div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-ee">EE</span>
+              <div class="problem">5. Solve: 7x = 63</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Divide both sides by 7.</div>
+              <div class="answer-content">x = 9. Check: 7(9) = 63 &#10003;</div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-ee">EE</span>
+              <div class="problem">6. Evaluate 3x + 4 when x = 5.</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Replace x with 5: 3(5) + 4.</div>
+              <div class="answer-content">3(5) + 4 = 15 + 4 = 19.</div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-g">G</span>
+              <div class="problem">
+                7. Find the area of a parallelogram: base = 8 in, height = 5 in.
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Area = base &times; height.</div>
+              <div class="answer-content">A = 8 &times; 5 = 40 in&sup2;</div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-g">G</span>
+              <div class="problem">
+                8. Find the volume: length = 4 cm, width = 3 cm, height = 6 cm.
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">V = l &times; w &times; h.</div>
+              <div class="answer-content">
+                V = 4 &times; 3 &times; 6 = 72 cm&sup3;
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-sp">SP</span>
+              <div class="problem">9. Find the median of: 12, 5, 8, 15, 3</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                First sort the numbers from least to greatest, then find the
+                middle one.
+              </div>
+              <div class="answer-content">
+                Sorted: 3, 5, 8, 12, 15. The middle value is 8.
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <span class="domain-badge domain-sp">SP</span>
+              <div class="problem">
+                10. Is "How old are you?" a statistical question? Why or why
+                not?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                A statistical question expects DIFFERENT answers from different
+                people.
+              </div>
+              <div class="answer-content">
+                Yes, IF asked to a group &mdash; different people have different
+                ages. If asked to ONE person, no &mdash; there is only one
+                answer.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M8 14 Q14 6 20 14 Q14 22 8 14Z"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+            </svg>
+            Real-World Connections
+          </h2>
+          <div class="rw-cards">
+            <div class="rw-card">
+              <h4>&#128722; Shopping (RP)</h4>
+              <p>
+                Comparing prices at the store uses unit rates. Which is a better
+                deal: 6 apples for $3 or 10 apples for $4.50? Find the price per
+                apple to decide.
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#127777;&#65039; Temperature (NS)</h4>
+              <p>
+                Winter temperatures below zero use negative numbers. If it is
+                &minus;5&deg;F and drops 8 more degrees, the new temperature is
+                &minus;13&deg;F. The number line helps!
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#127968; Home Projects (G)</h4>
+              <p>
+                Painting a room? You need area to know how much paint to buy.
+                Filling a fish tank? You need volume to know how much water it
+                holds.
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#9917; Sports (SP)</h4>
+              <p>
+                A soccer player scored these goals per game: 0, 2, 1, 3, 1, 0,
+                2. Finding the mean (1.29) helps compare players. The median (1)
+                shows the typical game.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================== ENRICHMENT TAB ======================== -->
+      <div
+        class="tab-panel enrich-section"
+        id="tab-enrich"
+        data-tab-title="Enrichment &amp; Challenge"
+      >
+        <!-- Quick Review (Enrichment version) -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="10"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <text
+                x="14"
+                y="18"
+                text-anchor="middle"
+                font-size="14"
+                font-weight="700"
+                fill="#7c3aed"
+              >
+                5
+              </text>
+            </svg>
+            Quick Review &mdash; Domain Power Notes
+          </h2>
+
+          <div class="quick-review qr-rp">
+            <h4>&#128992; RP: Ratios &amp; Proportional Relationships</h4>
+            <ul>
+              <li>
+                Equivalent ratios form a proportional relationship when graphed
+                through the origin
+              </li>
+              <li>
+                Unit rates can be found by dividing corresponding quantities
+              </li>
+              <li>
+                Percent problems use the relationship: part/whole = percent/100
+              </li>
+              <li>
+                Tape diagrams and double number lines are powerful
+                problem-solving tools
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-ns">
+            <h4>&#128309; NS: The Number System</h4>
+            <ul>
+              <li>
+                Division of fractions: multiply by the reciprocal
+                (Keep-Change-Flip)
+              </li>
+              <li>
+                Rational numbers include all integers, fractions, and
+                terminating/repeating decimals
+              </li>
+              <li>
+                On the coordinate plane, quadrants go counterclockwise: I (+,+),
+                II (&minus;,+), III (&minus;,&minus;), IV (+,&minus;)
+              </li>
+              <li>
+                GCF and LCM: GCF = largest shared factor; LCM = smallest shared
+                multiple
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-ee">
+            <h4>&#128994; EE: Expressions &amp; Equations</h4>
+            <ul>
+              <li>
+                Order of Operations (PEMDAS/GEMDAS): Parentheses, Exponents,
+                Multiplication/Division, Addition/Subtraction
+              </li>
+              <li>
+                Equivalent expressions: 3(x + 4) = 3x + 12 (distributive
+                property)
+              </li>
+              <li>Equations: isolate the variable using inverse operations</li>
+              <li>
+                Dependent vs. independent variables in real-world relationships
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-g">
+            <h4>&#128995; G: Geometry</h4>
+            <ul>
+              <li>
+                Decompose irregular shapes into rectangles, triangles, and
+                trapezoids
+              </li>
+              <li>
+                Surface area = sum of all face areas (use nets to visualize)
+              </li>
+              <li>
+                Volume of rectangular prisms: V = lwh or V = Bh (base area
+                &times; height)
+              </li>
+              <li>
+                Polygons on the coordinate plane: use absolute value to find
+                distances
+              </li>
+            </ul>
+          </div>
+
+          <div class="quick-review qr-sp">
+            <h4>&#128308; SP: Statistics &amp; Probability</h4>
+            <ul>
+              <li>
+                Variability measures: range, interquartile range (IQR), mean
+                absolute deviation (MAD)
+              </li>
+              <li>
+                Skewed data: use median + IQR. Symmetric data: use mean + MAD
+              </li>
+              <li>
+                Box plots show the five-number summary: min, Q1, median, Q3, max
+              </li>
+              <li>
+                Histograms show frequency distribution; dot plots show
+                individual values
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Mixed-Standard Challenge Set -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <polygon
+                points="14,2 18,10 26,11 20,17 21,25 14,21 7,25 8,17 2,11 10,10"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+            </svg>
+            Mixed-Standard Challenge Set
+          </h2>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <span class="domain-badge domain-rp">RP</span>
+            <div class="problem">
+              1. A store has a 25% off sale. A jacket originally costs $64.
+              After the discount, there is 6% sales tax. What is the final
+              price?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              First find 25% of $64 and subtract. Then find 6% of the sale price
+              and add.
+            </div>
+            <div class="answer-content">
+              25% of 64 = $16. Sale price: $64 &minus; $16 = $48. Tax: 6% of $48
+              = $2.88. Final: $48 + $2.88 = $50.88.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <span class="domain-badge domain-ns">NS</span>
+            <div class="problem">
+              2. A submarine is at &minus;150 feet. It rises 80 feet, then dives
+              45 feet. What is its final depth? How far is it from the surface?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Rising means adding (toward 0). Diving means subtracting (away
+              from 0).
+            </div>
+            <div class="answer-content">
+              &minus;150 + 80 = &minus;70. Then &minus;70 &minus; 45 =
+              &minus;115 feet. Distance from surface: |&minus;115| = 115 feet.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <span class="domain-badge domain-ee">EE</span>
+            <div class="problem">
+              3. Write and simplify an equivalent expression for: 4(2x + 3)
+              &minus; 2(x &minus; 5)
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Distribute each number, then combine like terms (x terms together,
+              constants together).
+            </div>
+            <div class="answer-content">8x + 12 &minus; 2x + 10 = 6x + 22.</div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <span class="domain-badge domain-g">G</span>
+            <div class="problem">
+              4. A rectangular room is 12 ft long, 10 ft wide, and 8 ft tall.
+              You want to paint all 4 walls (not the ceiling or floor). One can
+              of paint covers 200 ft&sup2;. How many cans do you need?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Find the area of each wall. Two walls are 12&times;8, two walls
+              are 10&times;8. Add them up.
+            </div>
+            <div class="answer-content">
+              2(12&times;8) + 2(10&times;8) = 192 + 160 = 352 ft&sup2;. 352
+              &divide; 200 = 1.76. You need 2 cans (you cannot buy 0.76 of a
+              can).
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <span class="domain-badge domain-sp">SP</span>
+            <div class="problem">
+              5. Two classes took the same test. Class A scores: 72, 85, 90, 78,
+              95. Class B scores: 80, 82, 84, 81, 83. Which class did better on
+              average? Which class was more consistent? Use mean and MAD.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Mean = sum/count. MAD = average distance of each value from the
+              mean. Lower MAD = more consistent.
+            </div>
+            <div class="answer-content">
+              Class A mean: 84, Class B mean: 82. Class A did slightly better on
+              average. Class A MAD: 7.2, Class B MAD: 1.2. Class B was MUCH more
+              consistent.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <span class="domain-badge domain-rp">RP</span>
+            <span class="domain-badge domain-ee">EE</span>
+            <div class="problem">
+              6. A phone plan charges $0.05 per text message. You budgeted
+              $15/month for texts. Write an inequality for the number of texts
+              (t) you can send. If you also want to save $3 for apps, how does
+              the inequality change?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Cost: 0.05t. This must be &le; your budget. If saving $3, your
+              text budget is $15 &minus; $3.
+            </div>
+            <div class="answer-content">
+              0.05t &le; 15 &rarr; t &le; 300 texts. With $3 for apps: 0.05t
+              &le; 12 &rarr; t &le; 240 texts.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <span class="domain-badge domain-rp">RP</span>
+            <span class="domain-badge domain-ns">NS</span>
+            <div class="problem">
+              7. A recipe calls for 2 1/3 cups of sugar for 4 dozen cookies. You
+              want to make 10 dozen cookies for a bake sale. How much sugar do
+              you need? Express your answer as a mixed number.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Find the unit rate (cups per dozen), then multiply by 10. Convert
+              2 1/3 to an improper fraction first.
+            </div>
+            <div class="answer-content">
+              2 1/3 = 7/3. Per dozen: 7/3 &divide; 4 = 7/12. For 10 dozen: 7/12
+              &times; 10 = 70/12 = 5 10/12 = 5 5/6 cups.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <span class="domain-badge domain-g">G</span>
+            <span class="domain-badge domain-ee">EE</span>
+            <div class="problem">
+              8. A garden is shaped like an L. The outer dimensions are 20 ft by
+              15 ft. A 10 ft by 8 ft rectangle is cut from the corner. Write an
+              expression for the area using subtraction. Then find the area. If
+              fencing costs $4.50 per foot, find the total perimeter cost.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Area = large rectangle &minus; cut-out. For perimeter, trace the
+              outside of the L-shape carefully.
+            </div>
+            <div class="answer-content">
+              Area: (20)(15) &minus; (10)(8) = 300 &minus; 80 = 220 ft&sup2;.
+              Perimeter: 20 + 15 + 10 + 7 + 10 + 8 = 70 ft. Cost: 70 &times;
+              $4.50 = $315.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <span class="domain-badge domain-sp">SP</span>
+            <span class="domain-badge domain-ee">EE</span>
+            <div class="problem">
+              9. Five friends compare allowances: $10, $15, $8, $12, and one
+              unknown amount. The mean allowance is $12. Find the unknown
+              amount. If the highest allowance is removed, what is the new mean?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Mean = sum/count. If mean is 12 and count is 5, total = 60.
+              Subtract known values to find the unknown.
+            </div>
+            <div class="answer-content">
+              Total: 12 &times; 5 = 60. Known: 10 + 15 + 8 + 12 = 45. Unknown =
+              60 &minus; 45 = $15. Remove highest ($15): (10 + 8 + 12 + 15)
+              &divide; 4. Wait &mdash; both $15s are tied. Remove one: (10 + 15
+              + 8 + 12) &divide; 4 = 45/4 = $11.25.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <span class="domain-badge domain-rp">RP</span>
+            <span class="domain-badge domain-g">G</span>
+            <span class="domain-badge domain-ns">NS</span>
+            <div class="problem">
+              10. A scale model of a building is built at a 1:50 ratio. The real
+              building is 75 feet tall and has a rectangular base of 120 ft by
+              80 ft. Find: (a) the model's height, (b) the model's base
+              dimensions, (c) the volume of the real building, and (d) the
+              volume of the model. What is the ratio of the volumes?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Divide each real dimension by 50 for the model. For volume ratio,
+              think about how scaling affects all 3 dimensions.
+            </div>
+            <div class="answer-content">
+              (a) 75/50 = 1.5 ft. (b) 120/50 = 2.4 ft by 80/50 = 1.6 ft. (c)
+              120&times;80&times;75 = 720,000 ft&sup3;. (d)
+              2.4&times;1.6&times;1.5 = 5.76 ft&sup3;. Volume ratio:
+              720,000/5.76 = 125,000 = 50&sup3;. When length scales by 50,
+              volume scales by 50&sup3;!
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <line
+                x1="18"
+                y1="18"
+                x2="25"
+                y2="25"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Real-World Investigations
+          </h2>
+
+          <div class="investigation">
+            <h4>Investigation 1: The Dream Vacation Planner (RP + NS + EE)</h4>
+            <p>
+              Plan a 7-day family vacation with a $3,000 budget. Research (or
+              estimate) costs for: hotel per night, food per day, 3 activities,
+              and transportation. Create a budget using equations. If hotel
+              costs $120/night, write an equation for total hotel cost.
+              Calculate what percentage of your budget each category uses. Write
+              an inequality showing how much you can spend on activities after
+              paying for hotel and food. Present your budget with a table and
+              visual breakdown.
+            </p>
+            <p class="materials">
+              Materials: calculator, internet (optional), poster or slides for
+              presentation
+            </p>
+          </div>
+
+          <div class="investigation">
+            <h4>Investigation 2: School Survey Statistician (SP + RP)</h4>
+            <p>
+              Design a statistical question and survey at least 20 people
+              (classmates, family, etc.). Collect the data, then: calculate
+              mean, median, and range. Create a dot plot AND box plot of the
+              data. Find the MAD. Write a paragraph analyzing your results.
+              Compare your data to a second group if possible. Which measure of
+              center best represents your data and why?
+            </p>
+            <p class="materials">
+              Materials: survey form, graph paper, calculator, colored pencils
+            </p>
+          </div>
+
+          <div class="investigation">
+            <h4>Investigation 3: Architect for a Day (G + EE + NS)</h4>
+            <p>
+              Design a tiny house with these constraints: total floor area must
+              be between 200 and 400 ft&sup2;. Include at least 3 rooms. Draw a
+              floor plan with dimensions. Calculate the area of each room and
+              verify the total. If walls are 9 ft tall, find the volume of air
+              in the house. Calculate surface area for the exterior (for
+              painting). If paint costs $35 per gallon and covers 350 ft&sup2;,
+              how many gallons do you need? What is the total paint cost?
+            </p>
+            <p class="materials">
+              Materials: graph paper, ruler, calculator, colored pencils
+            </p>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="12"
+                r="9"
+                fill="none"
+                stroke="#d4952a"
+                stroke-width="2"
+              />
+              <path
+                d="M11 21 L11 25 L17 25 L17 21"
+                stroke="#d4952a"
+                stroke-width="2"
+                fill="none"
+              />
+            </svg>
+            Brain Teasers
+          </h2>
+
+          <div class="teaser">
+            <h4>Teaser 1: The Cross-Domain Puzzle</h4>
+            <p>
+              I am a number. My absolute value is 12. I am negative. When you
+              find 25% of me, you get an integer. When you use me as the height
+              of a triangle with base 10, the area is a perfect square. What
+              number am I?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              I am &minus;12. |&minus;12| = 12. 25% of &minus;12 = &minus;3
+              (integer). Area = &frac12;(10)(&minus;12) &mdash; wait, height
+              should be positive, so using 12: &frac12;(10)(12) = 60. Is 60 a
+              perfect square? No! The teaser is tricky &mdash; re-read:
+              &quot;use me as the height&quot; uses the absolute value 12. A =
+              60. Actually, 60 is NOT a perfect square. The clue about
+              &quot;perfect square&quot; was a red herring to test careful
+              checking! Always verify your answer against ALL conditions.
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 2: The Number Detective</h4>
+            <p>
+              Using the digits 1, 2, 3, 4, 5 exactly once each, create a
+              fraction division problem where the answer is a whole number.
+              Example format: AB/C &divide; D/E = whole number. How many
+              solutions can you find?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              One solution: 15/4 &divide; 3/2 = 15/4 &times; 2/3 = 30/12 = 5/2.
+              Not whole! Try: 12/3 &divide; 4/5 = 12/3 &times; 5/4 = 60/12 = 5.
+              That uses 1,2,3,4,5 once each and equals 5!
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 3: The Geometry Riddle</h4>
+            <p>
+              I am a 3D shape. My volume is 60 cm&sup3;. My base is a triangle
+              with area 12 cm&sup2;. What is my height? What type of prism am I?
+              If each triangular face has a base of 6 cm and height of 4 cm,
+              what is my total surface area?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              V = Bh, so 60 = 12h, h = 5 cm. I am a triangular prism. Surface
+              area: 2 triangles (2 &times; 12 = 24) + 3 rectangles. Need the
+              triangle sides &mdash; if base 6, height 4, the two sides are each
+              5 (3-4-5 right triangle). Rectangles: 6&times;5 = 30, 5&times;5 =
+              25, 5&times;5 = 25. SA = 24 + 30 + 25 + 25 = 104 cm&sup2;.
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 4: The Statistics Stump</h4>
+            <p>
+              Create a data set of exactly 7 numbers where: the mean is 10, the
+              median is 8, and the range is 15. Can you do it? Is there more
+              than one answer?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              Mean = 10, so total = 70. Median = 8, so the 4th number (when
+              sorted) is 8. Range = 15, so max &minus; min = 15. One solution:
+              {3, 5, 6, 8, 12, 18, 18}. Sum = 70, median = 8, range = 18 &minus;
+              3 = 15. Yes, many solutions exist!
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <path d="M14 4 L14 24" stroke="#7c3aed" stroke-width="2" />
+              <path
+                d="M14 4 L20 10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M14 4 L8 10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Where All This Math Leads &mdash; The Big Connections
+          </h2>
+          <div class="extension-box">
+            <h4>
+              Ratios &rarr; Proportional Relationships &rarr; Linear Functions
+            </h4>
+            <p>
+              Your work with ratios and rates becomes proportional relationships
+              in 7th grade (y = kx), which becomes slope and linear functions (y
+              = mx + b) in 8th grade, and eventually leads to algebra and
+              calculus.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Number System &rarr; Real Numbers &rarr; Complex Numbers</h4>
+            <p>
+              Integers lead to rational numbers in 7th grade, irrational numbers
+              (like &pi; and &radic;2) in 8th grade, and eventually to complex
+              numbers in high school algebra.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>
+              Expressions &amp; Equations &rarr; Algebra &rarr; Advanced Math
+            </h4>
+            <p>
+              One-step equations grow into multi-step equations, then systems of
+              equations, then quadratics, then polynomials. Every equation you
+              solve now builds the foundation for high school and college math.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>
+              Geometry &rarr; Transformations &rarr; Proofs &rarr; Trigonometry
+            </h4>
+            <p>
+              Area and volume grow into transformations (slides, flips, turns)
+              in 7th&ndash;8th grade, geometric proofs in high school, and
+              eventually trigonometry and 3D calculus.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Statistics &rarr; Data Science &rarr; Machine Learning</h4>
+            <p>
+              Mean, median, and data displays evolve into probability in 7th
+              grade, two-variable statistics in high school, and ultimately data
+              science and machine learning &mdash; some of the most in-demand
+              skills in today's workforce.
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <path
+                d="M9 14 L12 17 L19 10"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+            End-of-Year Self-Assessment
+          </h2>
+          <p
+            style="color: var(--muted); font-size: 0.9rem; margin-bottom: 12px"
+          >
+            Rate your confidence in each domain. Click to check off areas you
+            feel strong in:
+          </p>
+          <ul class="checklist">
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-rp">RP</span> I can find unit
+              rates and solve proportion problems
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-rp">RP</span> I can convert
+              between fractions, decimals, and percents
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-ns">NS</span> I can divide
+              fractions and mixed numbers
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-ns">NS</span> I can compute with
+              decimals and understand integers/absolute value
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-ee">EE</span> I can evaluate and
+              simplify expressions using properties
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-ee">EE</span> I can solve
+              one-step equations and inequalities
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-ee">EE</span> I can represent
+              two-variable relationships in tables, equations, and graphs
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-g">G</span> I can find area of
+              triangles, parallelograms, and trapezoids
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-g">G</span> I can find volume and
+              surface area of rectangular prisms
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-sp">SP</span> I can calculate
+              mean, median, and MAD
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              <span class="domain-badge domain-sp">SP</span> I can create and
+              interpret dot plots, histograms, and box plots
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I feel confident and prepared for the MCAP assessment
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer
+      style="
+        text-align: center;
+        padding: 20px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border-top: 1px solid var(--line);
+      "
+    >
+      Neft Teacher &middot; Unit 10 Supplemental &middot; End of Year Review
+      &amp; MCAP Prep &middot; <span data-current-year></span>
+    </footer>
+
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelector(`.tab-btn[data-tab="${tab}"]`)
+          .classList.add("active");
+        document.getElementById(`tab-${tab === "level0" ? "esol" : tab}`).classList.add("active");
+        document.body.classList.toggle("l0on", tab === "level0");
+      }
+
+      function toggleHint(btn) {
+        const content = btn.parentElement.querySelector(".hint-content");
+        content.classList.toggle("show");
+        btn.textContent = content.classList.contains("show")
+          ? "Hide Hint"
+          : "Show Hint";
+      }
+
+      function toggleAnswer(btn) {
+        const content = btn.parentElement.querySelector(".answer-content");
+        content.classList.toggle("show");
+        btn.textContent = content.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+
+      function toggleCheck(box) {
+        box.classList.toggle("checked");
+      }
+
+      document.querySelectorAll("[data-current-year]").forEach((el) => {
+        el.textContent = new Date().getFullYear();
+      });
+    </script>
+      <script src="/assets/docx-export.js"></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

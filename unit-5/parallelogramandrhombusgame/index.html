@@ -1,3329 +1,1996 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Area Masters: Command Premier</title>
-  <style>
-    :root{
-      --bg:#07111f;
-      --bg2:#0d1830;
-      --panel:#101b35;
-      --panel2:#162648;
-      --panel3:#1d315f;
-      --line:rgba(158,197,255,.15);
-      --line-strong:rgba(158,197,255,.28);
-      --text:#eef5ff;
-      --muted:#a4b8dc;
-      --muted2:#7e96c2;
-      --gold:#ffcf72;
-      --gold2:#ff9d37;
-      --teal:#4ff0da;
-      --teal2:#20c7ad;
-      --coral:#ff7c68;
-      --violet:#a88bff;
-      --lime:#b9ff78;
-      --ok:#48df8a;
-      --danger:#ff6273;
-      --shadow:0 24px 70px rgba(3,8,19,.42);
-      --soft-shadow:0 16px 34px rgba(3,8,19,.28);
-      --radius-xl:28px;
-      --radius-lg:22px;
-      --radius-md:16px;
-      --radius-sm:12px;
-      --display:"Avenir Next Condensed","Franklin Gothic Medium","Arial Narrow","Segoe UI",sans-serif;
-      --ui:"Avenir Next","Segoe UI Variable","Segoe UI",sans-serif;
-      --mono:"SFMono-Regular","Cascadia Mono","Consolas",monospace;
-      --transition:180ms ease;
-    }
-
-    *{box-sizing:border-box}
-
-    html,body{
-      margin:0;
-      min-height:100%;
-      color:var(--text);
-      font-family:var(--ui);
-      background:
-        radial-gradient(circle at 14% 10%, rgba(79,240,218,.14), transparent 22%),
-        radial-gradient(circle at 86% 12%, rgba(255,157,55,.16), transparent 20%),
-        radial-gradient(circle at 50% 100%, rgba(168,139,255,.10), transparent 28%),
-        linear-gradient(180deg, #07111f 0%, #091526 46%, #07111f 100%);
-      overflow-x:hidden;
-    }
-
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      opacity:.35;
-      background-image:
-        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
-      background-size:48px 48px;
-      mask-image:linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.55), transparent);
-    }
-
-    button,input{
-      font:inherit;
-    }
-
-    button{
-      border:0;
-      cursor:pointer;
-    }
-
-    .app{
-      width:min(1380px, calc(100% - 24px));
-      margin:0 auto;
-      padding:18px 0 40px;
-      position:relative;
-      z-index:1;
-    }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:18px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .brand-mark{
-      width:54px;
-      height:54px;
-      border-radius:18px;
-      display:grid;
-      place-items:center;
-      background:
-        linear-gradient(145deg, rgba(79,240,218,.25), rgba(255,207,114,.18)),
-        rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow:var(--soft-shadow);
-      position:relative;
-      overflow:hidden;
-    }
-
-    .brand-mark::after{
-      content:"";
-      position:absolute;
-      inset:8px;
-      border-radius:13px;
-      border:1px solid rgba(255,255,255,.12);
-    }
-
-    .brand-mark span{
-      font-family:var(--display);
-      font-size:22px;
-      font-weight:900;
-      color:var(--gold);
-      letter-spacing:.05em;
-    }
-
-    .eyebrow{
-      font-size:11px;
-      letter-spacing:.24em;
-      text-transform:uppercase;
-      color:var(--teal);
-      font-weight:800;
-      margin-bottom:4px;
-    }
-
-    .title-line{
-      margin:0;
-      font-family:var(--display);
-      font-size:clamp(24px,4vw,42px);
-      line-height:.94;
-      letter-spacing:.02em;
-      text-transform:uppercase;
-    }
-
-    .title-line strong{
-      color:var(--gold);
-    }
-
-    .profile{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:12px 16px;
-      border-radius:999px;
-      background:rgba(11,22,45,.8);
-      border:1px solid var(--line);
-      box-shadow:var(--soft-shadow);
-    }
-
-    .profile-rank{
-      width:42px;
-      height:42px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      background:linear-gradient(135deg, rgba(255,207,114,.25), rgba(255,124,104,.24));
-      color:var(--gold);
-      font-family:var(--display);
-      font-size:18px;
-      font-weight:900;
-    }
-
-    .profile-copy{
-      display:grid;
-      gap:2px;
-    }
-
-    .profile-copy strong{
-      font-size:14px;
-      letter-spacing:.04em;
-    }
-
-    .profile-copy span{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .screen{
-      display:none;
-      animation:fadeUp .28s ease;
-    }
-
-    .screen.active{
-      display:block;
-    }
-
-    @keyframes fadeUp{
-      from{opacity:0; transform:translateY(10px)}
-      to{opacity:1; transform:translateY(0)}
-    }
-
-    .panel{
-      background:
-        linear-gradient(180deg, rgba(17,28,53,.96), rgba(10,20,40,.98)),
-        rgba(255,255,255,.02);
-      border:1px solid var(--line);
-      border-radius:var(--radius-xl);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
-
-    .panel::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 34%);
-    }
-
-    .panel-body{
-      padding:22px;
-      position:relative;
-      z-index:1;
-    }
-
-    .hero{
-      display:grid;
-      grid-template-columns:minmax(0,1.2fr) minmax(320px,.9fr);
-      gap:24px;
-      padding:28px;
-      margin-bottom:20px;
-    }
-
-    .hero-kicker{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(79,240,218,.18);
-      background:rgba(79,240,218,.08);
-      color:var(--teal);
-      font-size:11px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      font-weight:800;
-      margin-bottom:16px;
-    }
-
-    .hero h1{
-      margin:0 0 14px;
-      font-family:var(--display);
-      font-size:clamp(44px,7vw,88px);
-      line-height:.92;
-      letter-spacing:.02em;
-      text-transform:uppercase;
-    }
-
-    .hero h1 span{
-      display:block;
-      color:var(--gold);
-    }
-
-    .hero p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.72;
-      font-size:15px;
-      max-width:60ch;
-    }
-
-    .hero-actions{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:22px;
-    }
-
-    .button{
-      padding:14px 18px;
-      border-radius:16px;
-      font-weight:800;
-      transition:transform var(--transition), filter var(--transition), border-color var(--transition), background var(--transition);
-      letter-spacing:.04em;
-    }
-
-    .button:hover{
-      transform:translateY(-2px);
-      filter:brightness(1.04);
-    }
-
-    .button.primary{
-      background:linear-gradient(135deg, var(--gold), var(--gold2));
-      color:#081120;
-      box-shadow:0 16px 36px rgba(255,157,55,.28);
-    }
-
-    .button.secondary{
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.09);
-    }
-
-    .hero-stats{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:12px;
-      margin-top:22px;
-    }
-
-    .hero-stat{
-      padding:14px 15px;
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .hero-stat small{
-      display:block;
-      font-size:10px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    .hero-stat strong{
-      display:block;
-      font-family:var(--display);
-      font-size:24px;
-      line-height:1;
-    }
-
-    .hero-side{
-      display:grid;
-      gap:14px;
-    }
-
-    .formula-card{
-      padding:14px 15px;
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-
-    .formula-card strong{
-      display:block;
-      font-size:11px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-      margin-bottom:4px;
-    }
-
-    .formula-card code{
-      font-family:var(--mono);
-      font-size:16px;
-      font-weight:700;
-      color:var(--text);
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.03);
-      font-size:11px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      font-weight:800;
-      color:var(--muted);
-      white-space:nowrap;
-    }
-
-    .chip.teal{color:var(--teal); border-color:rgba(79,240,218,.22)}
-    .chip.gold{color:var(--gold); border-color:rgba(255,207,114,.22)}
-    .chip.coral{color:var(--coral); border-color:rgba(255,124,104,.24)}
-    .chip.lime{color:var(--lime); border-color:rgba(185,255,120,.24)}
-    .chip.violet{color:var(--violet); border-color:rgba(168,139,255,.24)}
-
-    .mode-grid{
-      display:grid;
-      grid-template-columns:repeat(5,minmax(0,1fr));
-      gap:16px;
-    }
-
-    .mode-card{
-      padding:18px;
-      border-radius:24px;
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(21,36,67,.98), rgba(10,20,40,.98));
-      box-shadow:var(--soft-shadow);
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height:250px;
-      transition:transform var(--transition), border-color var(--transition), box-shadow var(--transition);
-    }
-
-    .mode-card:hover{
-      transform:translateY(-4px);
-      border-color:var(--line-strong);
-      box-shadow:0 20px 44px rgba(3,8,19,.38);
-    }
-
-    .mode-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .mode-icon{
-      width:54px;
-      height:54px;
-      border-radius:18px;
-      display:grid;
-      place-items:center;
-      font-family:var(--display);
-      font-size:24px;
-      font-weight:900;
-      color:#081120;
-      background:linear-gradient(135deg, var(--gold), var(--gold2));
-    }
-
-    .mode-card[data-accent="teal"] .mode-icon{
-      background:linear-gradient(135deg, var(--teal), var(--teal2));
-      color:#08221f;
-    }
-
-    .mode-card[data-accent="violet"] .mode-icon{
-      background:linear-gradient(135deg, var(--violet), #7c6eff);
-      color:#141228;
-    }
-
-    .mode-card[data-accent="lime"] .mode-icon{
-      background:linear-gradient(135deg, var(--lime), #7ce34e);
-      color:#11200a;
-    }
-
-    .mode-card[data-accent="coral"] .mode-icon{
-      background:linear-gradient(135deg, #ffba79, var(--coral));
-      color:#25130e;
-    }
-
-    .mode-card[data-accent="boss"] .mode-icon{
-      background:linear-gradient(135deg, #ffd071, #ff6e62);
-      color:#27130e;
-    }
-
-    .mode-title{
-      margin:0;
-      font-family:var(--display);
-      font-size:26px;
-      line-height:1;
-      text-transform:uppercase;
-      letter-spacing:.02em;
-    }
-
-    .mode-copy{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-      flex:1;
-    }
-
-    .mode-features{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .token{
-      font-size:11px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:var(--text);
-      padding:7px 10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .mode-footer{
-      display:grid;
-      gap:10px;
-    }
-
-    .mode-challenge{
-      color:var(--muted2);
-      font-size:12px;
-      line-height:1.5;
-      min-height:38px;
-    }
-
-    .play-layout{
-      display:grid;
-      grid-template-columns:minmax(0,1.45fr) minmax(300px,.9fr);
-      gap:18px;
-    }
-
-    .play-column,.side-column{
-      display:grid;
-      gap:16px;
-    }
-
-    .hud{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      padding:14px 16px;
-      border-radius:20px;
-      background:rgba(10,19,40,.88);
-      border:1px solid var(--line);
-      box-shadow:var(--soft-shadow);
-    }
-
-    .ghost{
-      padding:10px 14px;
-      border-radius:14px;
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.09);
-      font-weight:800;
-      letter-spacing:.04em;
-    }
-
-    .hud-spacer{
-      flex:1;
-    }
-
-    .hud-stat{
-      min-width:84px;
-      padding:9px 12px;
-      border-radius:15px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-      display:grid;
-      gap:3px;
-    }
-
-    .hud-stat small{
-      font-size:10px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-    }
-
-    .hud-stat strong{
-      font-family:var(--display);
-      font-size:20px;
-      line-height:1;
-    }
-
-    .hud-stat.score strong{color:var(--gold)}
-    .hud-stat.streak strong{color:var(--teal)}
-    .hud-stat.hints strong{color:var(--lime)}
-    .hud-stat.life strong{color:var(--coral)}
-
-    .progress-shell{
-      display:grid;
-      gap:8px;
-    }
-
-    .progress-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      color:var(--muted);
-      font-size:12px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-    }
-
-    .progress-track{
-      height:12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.08);
-      overflow:hidden;
-    }
-
-    .progress-track span{
-      display:block;
-      height:100%;
-      width:0;
-      border-radius:inherit;
-      background:linear-gradient(90deg, var(--teal), var(--gold), var(--gold2));
-      transition:width .24s ease;
-    }
-
-    .boss-banner{
-      display:none;
-      padding:16px 18px;
-      border-radius:22px;
-      background:
-        radial-gradient(circle at 18% 20%, rgba(255,124,104,.16), transparent 24%),
-        linear-gradient(135deg, rgba(39,18,28,.92), rgba(17,17,40,.96));
-      border:1px solid rgba(255,124,104,.28);
-      box-shadow:var(--soft-shadow);
-    }
-
-    .boss-banner.active{
-      display:grid;
-      gap:12px;
-    }
-
-    .boss-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .boss-head h2{
-      margin:0;
-      font-family:var(--display);
-      font-size:28px;
-      text-transform:uppercase;
-      letter-spacing:.02em;
-      color:#ffe6b6;
-    }
-
-    .boss-copy{
-      color:#f0c7bf;
-      line-height:1.65;
-      font-size:14px;
-      margin:0;
-    }
-
-    .boss-meter{
-      display:grid;
-      gap:8px;
-    }
-
-    .boss-meter small{
-      font-size:11px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:#ffb2a4;
-    }
-
-    .boss-track{
-      height:12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.06);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .boss-track span{
-      display:block;
-      height:100%;
-      width:100%;
-      background:linear-gradient(90deg, #ffba7b, #ff6e62);
-      transition:width .24s ease;
-    }
-
-    .question-panel .panel-body{
-      display:grid;
-      gap:16px;
-    }
-
-    .question-meta{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .question-title{
-      margin:0;
-      font-size:clamp(20px,2.8vw,30px);
-      line-height:1.34;
-      font-weight:760;
-      letter-spacing:.01em;
-    }
-
-    .question-title strong{
-      color:var(--gold);
-    }
-
-    .question-sub{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-    }
-
-    .visual-wrap{
-      min-height:260px;
-      padding:14px;
-      border-radius:20px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-      display:grid;
-      place-items:center;
-    }
-
-    .visual-wrap svg{
-      width:min(100%,480px);
-      height:auto;
-      display:block;
-    }
-
-    .choice-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
-    .choice{
-      width:100%;
-      min-height:86px;
-      padding:16px;
-      border-radius:18px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      color:var(--text);
-      text-align:left;
-      display:flex;
-      align-items:flex-start;
-      gap:12px;
-      transition:transform var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition);
-    }
-
-    .choice:hover:not([disabled]){
-      transform:translateY(-2px);
-      border-color:rgba(79,240,218,.34);
-      background:rgba(79,240,218,.06);
-      box-shadow:0 14px 30px rgba(3,8,19,.26);
-    }
-
-    .choice[disabled]{
-      cursor:default;
-    }
-
-    .choice.disabled-wrong{
-      opacity:.55;
-    }
-
-    .choice-letter{
-      width:34px;
-      height:34px;
-      border-radius:12px;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.08);
-      color:var(--gold);
-      font-family:var(--display);
-      font-size:16px;
-      font-weight:900;
-      flex:0 0 auto;
-    }
-
-    .choice-text{
-      font-size:15px;
-      line-height:1.55;
-      font-weight:650;
-    }
-
-    .choice.correct{
-      background:rgba(72,223,138,.12);
-      border-color:rgba(72,223,138,.44);
-    }
-
-    .choice.correct .choice-letter{
-      background:rgba(72,223,138,.16);
-      color:var(--ok);
-    }
-
-    .choice.incorrect{
-      background:rgba(255,98,115,.1);
-      border-color:rgba(255,98,115,.44);
-    }
-
-    .choice.incorrect .choice-letter{
-      background:rgba(255,98,115,.15);
-      color:var(--danger);
-    }
-
-    .choice.reveal{
-      box-shadow:0 0 0 1px rgba(72,223,138,.14) inset;
-    }
-
-    .action-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .action-stack{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .hint-box,.feedback-box{
-      display:none;
-      padding:14px 15px;
-      border-radius:18px;
-      line-height:1.65;
-      font-size:14px;
-    }
-
-    .hint-box.show{
-      display:block;
-      background:rgba(185,255,120,.08);
-      border:1px solid rgba(185,255,120,.22);
-      color:#e9ffd3;
-    }
-
-    .feedback-box.show{
-      display:grid;
-      gap:10px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .feedback-box.recovery{
-      background:rgba(255,124,104,.08);
-      border-color:rgba(255,124,104,.22);
-    }
-
-    .feedback-box.correct{
-      background:rgba(72,223,138,.08);
-      border-color:rgba(72,223,138,.22);
-    }
-
-    .feedback-box.incorrect{
-      background:rgba(255,98,115,.08);
-      border-color:rgba(255,98,115,.22);
-    }
-
-    .feedback-title{
-      margin:0;
-      font-family:var(--display);
-      font-size:24px;
-      text-transform:uppercase;
-      letter-spacing:.02em;
-    }
-
-    .feedback-copy{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.65;
-    }
-
-    .feedback-copy strong{
-      color:var(--text);
-    }
-
-    .feedback-formula{
-      display:inline-block;
-      padding:10px 12px;
-      border-radius:14px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      color:var(--teal);
-      font-family:var(--mono);
-      font-size:14px;
-    }
-
-    .side-card{
-      display:grid;
-      gap:12px;
-    }
-
-    .side-title{
-      margin:0;
-      font-family:var(--display);
-      font-size:24px;
-      text-transform:uppercase;
-      letter-spacing:.02em;
-    }
-
-    .side-copy{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .intel-grid{
-      display:grid;
-      gap:12px;
-    }
-
-    .intel-stat{
-      padding:14px;
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .intel-stat small{
-      display:block;
-      font-size:10px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    .intel-stat strong{
-      display:block;
-      font-family:var(--display);
-      font-size:26px;
-      line-height:1;
-    }
-
-    .log-list{
-      display:grid;
-      gap:10px;
-    }
-
-    .log-item{
-      padding:13px 14px;
-      border-radius:16px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.56;
-    }
-
-    .log-item strong{
-      color:var(--text);
-    }
-
-    .results-shell{
-      display:grid;
-      gap:18px;
-    }
-
-    .results-hero{
-      display:grid;
-      gap:18px;
-      padding:26px;
-    }
-
-    .results-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      flex-wrap:wrap;
-    }
-
-    .results-rank{
-      display:flex;
-      align-items:center;
-      gap:16px;
-    }
-
-    .medallion{
-      width:86px;
-      height:86px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      background:linear-gradient(135deg, rgba(255,207,114,.28), rgba(255,124,104,.26));
-      border:1px solid rgba(255,255,255,.12);
-      color:var(--gold);
-      font-family:var(--display);
-      font-size:30px;
-      font-weight:900;
-      box-shadow:var(--soft-shadow);
-    }
-
-    .results-top h2{
-      margin:0 0 6px;
-      font-family:var(--display);
-      font-size:clamp(30px,5vw,56px);
-      line-height:.94;
-      letter-spacing:.02em;
-      text-transform:uppercase;
-    }
-
-    .results-top p{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.65;
-      max-width:62ch;
-    }
-
-    .results-actions{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .metric-grid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:12px;
-    }
-
-    .metric{
-      padding:16px;
-      border-radius:18px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .metric small{
-      display:block;
-      font-size:10px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    .metric strong{
-      display:block;
-      font-family:var(--display);
-      font-size:28px;
-      line-height:1;
-      color:var(--gold);
-    }
-
-    .results-grid{
-      display:grid;
-      grid-template-columns:1.05fr 1fr 1fr;
-      gap:16px;
-    }
-
-    .debrief-card,.mastery-item,.achievement-item{
-      padding:14px 15px;
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .debrief-card{
-      color:var(--muted);
-      line-height:1.66;
-      font-size:14px;
-    }
-
-    .debrief-card strong{
-      color:var(--text);
-      display:block;
-      margin-bottom:8px;
-    }
-
-    .mastery-list,.achievement-list{
-      display:grid;
-      gap:12px;
-    }
-
-    .mastery-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      font-size:13px;
-    }
-
-    .mastery-head strong{
-      font-size:14px;
-      letter-spacing:.02em;
-    }
-
-    .meter{
-      width:100%;
-      height:10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.06);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.06);
-      margin:8px 0 6px;
-    }
-
-    .meter span{
-      display:block;
-      height:100%;
-      width:0;
-      border-radius:inherit;
-      background:linear-gradient(90deg, var(--teal), var(--gold));
-    }
-
-    .achievement-item.locked{
-      opacity:.68;
-    }
-
-    .achievement-item strong{
-      display:block;
-      margin-bottom:4px;
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.04em;
-    }
-
-    .achievement-item span{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-    }
-
-    .boot{
-      min-height:70vh;
-      display:grid;
-      place-items:center;
-    }
-
-    .boot-card{
-      width:min(720px,100%);
-      padding:28px;
-      border-radius:30px;
-      background:rgba(10,20,40,.9);
-      border:1px solid rgba(255,255,255,.1);
-      box-shadow:var(--shadow);
-      display:grid;
-      gap:16px;
-      text-align:center;
-    }
-
-    .spinner{
-      width:64px;
-      height:64px;
-      margin:0 auto;
-      border-radius:50%;
-      border:3px solid rgba(79,240,218,.14);
-      border-top-color:var(--teal);
-      animation:spin .8s linear infinite;
-    }
-
-    @keyframes spin{
-      to{transform:rotate(360deg)}
-    }
-
-    .toast-stack{
-      position:fixed;
-      top:18px;
-      right:18px;
-      display:grid;
-      gap:10px;
-      z-index:50;
-      pointer-events:none;
-    }
-
-    .toast{
-      min-width:260px;
-      max-width:340px;
-      padding:14px 15px;
-      border-radius:18px;
-      background:rgba(10,20,40,.96);
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow:var(--soft-shadow);
-      animation:toastIn .24s ease;
-    }
-
-    .toast strong{
-      display:block;
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.04em;
-      margin-bottom:4px;
-    }
-
-    .toast span{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-    }
-
-    @keyframes toastIn{
-      from{opacity:0; transform:translateY(-10px) scale(.98)}
-      to{opacity:1; transform:translateY(0) scale(1)}
-    }
-
-    .sr-only{
-      position:absolute;
-      width:1px;
-      height:1px;
-      padding:0;
-      margin:-1px;
-      overflow:hidden;
-      clip:rect(0,0,0,0);
-      white-space:nowrap;
-      border:0;
-    }
-
-    @media (max-width:1220px){
-      .hero,.play-layout,.results-grid{
-        grid-template-columns:1fr;
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Architecture Builder — Area of Parallelograms & Rhombuses</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
       }
-
-      .mode-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    }
-
-    @media (max-width:860px){
-      .topbar{
-        flex-direction:column;
-        align-items:flex-start;
+      body {
+        background: #0a1628;
+        overflow: hidden;
       }
-
-      .hero-stats,.metric-grid,.choice-grid,.mode-grid{
-        grid-template-columns:1fr;
+      #game-container {
+        width: 100vw;
+        height: 100vh;
       }
-
-      .results-top{
-        align-items:flex-start;
-      }
-    }
-
-    @media (prefers-reduced-motion:reduce){
-      *,
-      *::before,
-      *::after{
-        animation:none !important;
-        transition:none !important;
-        scroll-behavior:auto !important;
-      }
-    }
-  </style>
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
-<body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true"><span>AM</span></div>
-        <div>
-          <div class="eyebrow">Premier Geometry Game Build</div>
-          <p class="title-line">Area Masters <strong>Command</strong></p>
-        </div>
-      </div>
-      <div class="profile" aria-live="polite">
-        <div class="profile-rank" id="profileMark">A</div>
-        <div class="profile-copy">
-          <strong id="profileTitle">Area Cadet</strong>
-          <span id="profileMeta">0 lifetime XP</span>
-        </div>
-      </div>
-    </header>
-
-    <section class="screen active" id="bootScreen">
-      <div class="boot">
-        <div class="boot-card">
-          <div class="spinner" aria-hidden="true"></div>
-          <div>
-            <div class="eyebrow">System Bring-Up</div>
-            <p class="title-line" style="font-size:40px; margin:0 0 8px;">Loading <strong>Command Deck</strong></p>
-            <p id="bootStatus" style="margin:0; color:var(--muted); line-height:1.7;">Validating mastery memory, challenge systems, and boss encounter logic.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="screen" id="homeScreen">
-      <article class="panel hero">
-        <div>
-          <div class="hero-kicker">Flagship classroom-ready area game</div>
-          <h1>Area Masters <span>Command Premier</span></h1>
-          <p>
-            A sharper, more engaging geometry experience built around momentum, second-chance learning, challenge runs,
-            and a final boss encounter. Students can recover from a miss, chase streaks, clear daily missions, and
-            take on Mr. Neft in a full boss battle.
-          </p>
-          <div class="hero-actions">
-            <button class="button primary" data-launch-mode="academy">Start Academy Run</button>
-            <button class="button secondary" data-launch-mode="boss">Challenge Mr. Neft</button>
-          </div>
-          <div class="hero-stats" id="heroStats"></div>
-        </div>
-
-        <div class="hero-side">
-          <article class="panel" style="border-radius:24px;">
-            <div class="panel-body">
-              <p class="eyebrow" style="margin:0 0 12px;">Core Formula Deck</p>
-              <div id="heroFormulaBank"></div>
-            </div>
-          </article>
-          <article class="panel" style="border-radius:24px;">
-            <div class="panel-body">
-              <p class="eyebrow" style="margin:0 0 10px;">Today’s Challenge</p>
-              <p style="margin:0; color:var(--text); font-size:18px; font-weight:700;">Daily Ops Seed: <span id="dailySeed" style="color:var(--gold);"></span></p>
-              <p style="margin:8px 0 0; color:var(--muted); line-height:1.65; font-size:14px;">
-                Beat the seeded run with no hints, then step into the boss arena and try to finish Mr. Neft before he drains your hearts.
-              </p>
-            </div>
-          </article>
-        </div>
-      </article>
-
-      <section class="mode-grid" id="modeGrid"></section>
-    </section>
-
-    <section class="screen" id="playScreen">
-      <div class="play-layout">
-        <div class="play-column">
-          <div class="hud">
-            <button class="ghost" id="homeButton">Home</button>
-            <span class="chip" id="modeChip">Academy</span>
-            <span class="chip gold" id="questionChip">Question 1</span>
-            <span class="chip violet" id="challengeChip">Challenge</span>
-            <div class="hud-spacer"></div>
-            <div class="hud-stat score">
-              <small>Score</small>
-              <strong id="hudScore">0</strong>
-            </div>
-            <div class="hud-stat streak">
-              <small>Streak</small>
-              <strong id="hudStreak">0</strong>
-            </div>
-            <div class="hud-stat hints">
-              <small>Hints</small>
-              <strong id="hudHints">0</strong>
-            </div>
-            <div class="hud-stat life">
-              <small id="lifeLabel">Lives</small>
-              <strong id="hudLives">3</strong>
-            </div>
-          </div>
-
-          <div class="progress-shell">
-            <div class="progress-head">
-              <span id="progressLabel">Mission Progress</span>
-              <span id="timerLabel">0.0s</span>
-            </div>
-            <div class="progress-track"><span id="progressFill"></span></div>
-          </div>
-
-          <div class="boss-banner" id="bossBanner">
-            <div class="boss-head">
-              <h2 id="bossTitle">Mr. Neft</h2>
-              <span class="chip coral" id="bossPhaseChip">Boss Phase</span>
-            </div>
-            <p class="boss-copy" id="bossCopy">Solve accurately to break the boss shield. Miss twice on a question and you lose a heart.</p>
-            <div class="boss-meter">
-              <small id="bossMeterLabel">Boss Health</small>
-              <div class="boss-track"><span id="bossFill"></span></div>
-            </div>
-          </div>
-
-          <article class="panel question-panel">
-            <div class="panel-body">
-              <div class="question-meta">
-                <span class="chip teal" id="questionConcept">Parallelogram</span>
-                <span class="chip gold" id="questionSkill">Core Skill</span>
-                <span class="chip coral" id="questionDok">DOK 1</span>
-              </div>
-              <h2 class="question-title" id="questionStem"></h2>
-              <div class="question-sub">
-                <span id="questionObjective">Objective</span>
-                <span id="questionIntel">Intel</span>
-              </div>
-              <div class="visual-wrap" id="visualWrap"></div>
-              <div class="choice-grid" id="choiceGrid"></div>
-              <div class="action-row">
-                <div class="action-stack">
-                  <button class="button secondary" id="hintButton">Use Hint</button>
-                  <button class="button secondary" id="nextButton" style="display:none;">Next Objective</button>
-                  <button class="button secondary" id="stopButton" style="display:none;">End Run</button>
-                </div>
-                <span class="chip" id="attemptChip">Attempt 1 of 2</span>
-              </div>
-              <div class="hint-box" id="hintBox"></div>
-              <div class="feedback-box" id="feedbackBox">
-                <h3 class="feedback-title" id="feedbackTitle">Feedback</h3>
-                <p class="feedback-copy" id="feedbackCopy"></p>
-                <div class="feedback-formula" id="feedbackFormula"></div>
-              </div>
-            </div>
-          </article>
-        </div>
-
-        <aside class="side-column">
-          <article class="panel">
-            <div class="panel-body side-card">
-              <h3 class="side-title">Formula Intel</h3>
-              <p class="side-copy" id="formulaNote">Read the prompt, inspect the diagram, and choose the fastest valid formula path.</p>
-              <div id="playFormulaBank"></div>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="panel-body side-card">
-              <h3 class="side-title">Run Telemetry</h3>
-              <div class="intel-grid">
-                <div class="intel-stat">
-                  <small>Accuracy</small>
-                  <strong id="telemetryAccuracy">0%</strong>
-                </div>
-                <div class="intel-stat">
-                  <small>Best Streak</small>
-                  <strong id="telemetryStreak">0</strong>
-                </div>
-                <div class="intel-stat">
-                  <small>Recoveries</small>
-                  <strong id="telemetryRecoveries">0</strong>
-                </div>
-                <div class="intel-stat">
-                  <small>Session Seed</small>
-                  <strong id="telemetrySeed">0000</strong>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="panel-body side-card">
-              <h3 class="side-title">Mission Log</h3>
-              <p class="side-copy">Streak spikes, recoveries, boss damage, and challenge progress update here during the run.</p>
-              <div class="log-list" id="logList"></div>
-            </div>
-          </article>
-        </aside>
-      </div>
-    </section>
-
-    <section class="screen" id="resultsScreen">
-      <div class="results-shell">
-        <article class="panel results-hero">
-          <div class="results-top">
-            <div class="results-rank">
-              <div class="medallion" id="resultsBadge">A</div>
-              <div>
-                <div class="eyebrow" id="resultsEyebrow">Mission Debrief</div>
-                <h2 id="resultsTitle">Mission Complete</h2>
-                <p id="resultsSummary">Summary</p>
-              </div>
-            </div>
-            <div class="results-actions">
-              <button class="button primary" id="replayButton">Run Again</button>
-              <button class="button secondary" id="resultsHomeButton">Return Home</button>
-            </div>
-          </div>
-          <div class="metric-grid">
-            <div class="metric">
-              <small>Final Score</small>
-              <strong id="resultsScore">0</strong>
-            </div>
-            <div class="metric">
-              <small>Accuracy</small>
-              <strong id="resultsAccuracy">0%</strong>
-            </div>
-            <div class="metric">
-              <small>Best Streak</small>
-              <strong id="resultsStreak">0</strong>
-            </div>
-            <div class="metric">
-              <small>Recoveries</small>
-              <strong id="resultsRecoveries">0</strong>
-            </div>
-          </div>
-        </article>
-
-        <section class="results-grid">
-          <article class="panel">
-            <div class="panel-body side-card">
-              <h3 class="side-title">Debrief</h3>
-              <div class="debrief-card" id="resultsBreakdown"></div>
-              <div class="debrief-card" id="resultsRecommendation"></div>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="panel-body side-card">
-              <h3 class="side-title">Mastery Update</h3>
-              <div class="mastery-list" id="resultsMastery"></div>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="panel-body side-card">
-              <h3 class="side-title">Achievements</h3>
-              <div class="achievement-list" id="resultsAchievements"></div>
-            </div>
-          </article>
-        </section>
-      </div>
-    </section>
-  </div>
-
-  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
-  <div class="sr-only" id="liveRegion" aria-live="polite"></div>
-
-  <script>
-    const CONFIG = Object.freeze({
-      storageKey: 'area_masters_command_premier_v2',
-      bootDelayMs: 420,
-      timerIntervalMs: 100,
-      maxAttemptsPerQuestion: 2,
-      infinityLives: 3,
-      bossLives: 4,
-      pointsByDok: Object.freeze({1: 90, 2: 130, 3: 175}),
-      streakBonus: 12,
-      hintPenaltyFactor: 0.74,
-      recoveryPenaltyFactor: 0.62
-    });
-
-    const FORMULAS = Object.freeze([
-      { id: 'parallelogram', title: 'Parallelogram', expression: 'A = b × h', note: 'Use base and perpendicular height.' },
-      { id: 'rhombus-diagonal', title: 'Rhombus (diagonals)', expression: 'A = 1/2 × d1 × d2', note: 'Use when both diagonals are given.' },
-      { id: 'rhombus-base-height', title: 'Rhombus (base-height)', expression: 'A = b × h', note: 'A rhombus is also a parallelogram.' }
-    ]);
-
-    const SKILLS = Object.freeze([
-      { id: 'parallelogram-area', label: 'Parallelogram Area', short: 'Multiply base by perpendicular height.' },
-      { id: 'rhombus-diagonal', label: 'Rhombus via Diagonals', short: 'Halve the product of the diagonals.' },
-      { id: 'rhombus-base-height', label: 'Rhombus via Base and Height', short: 'Use base-height when those measures are given.' },
-      { id: 'inverse-area', label: 'Missing Dimension', short: 'Reverse the area formula to solve for the missing measure.' },
-      { id: 'formula-choice', label: 'Formula Selection', short: 'Match the best formula to the information provided.' },
-      { id: 'comparison', label: 'Compare and Explain', short: 'Compute two areas and choose the stronger conclusion.' },
-      { id: 'boss-tactics', label: 'Boss Tactics', short: 'Survive challenge phases and defeat Mr. Neft.' }
-    ]);
-
-    const ACHIEVEMENTS = Object.freeze([
-      { id: 'first_clear', title: 'Mission Ready', copy: 'Complete any run.' },
-      { id: 'perfect_clear', title: 'Flawless Geometry', copy: 'Finish a finite run with 100% accuracy.' },
-      { id: 'recovery_artist', title: 'Recovery Artist', copy: 'Save three questions on a second attempt in one run.' },
-      { id: 'daily_clean', title: 'Daily Discipline', copy: 'Clear Daily Ops without using a hint.' },
-      { id: 'infinity_12', title: 'Reactor Rider', copy: 'Answer 12 questions in Infinite Reactor.' },
-      { id: 'boss_clear', title: 'Mr. Neft Defeated', copy: 'Beat the Mr. Neft boss battle.' }
-    ]);
-
-    const MODE_LIBRARY = Object.freeze({
-      academy: {
-        id: 'academy',
-        title: 'Academy Run',
-        label: 'Academy',
-        accent: 'teal',
-        icon: 'A',
-        hints: 3,
-        finite: true,
-        challenge: 'Finish with at least 80% accuracy.',
-        description: 'Guided fundamentals with visuals, formula cues, and forgiving progression.',
-        features: ['Guided', 'Visual', 'Foundations'],
-        blueprint: ['para-area', 'rhombus-area', 'formula-choice', 'para-context', 'rhombus-base-height', 'inverse-height', 'compare', 'rhombus-context']
-      },
-      command: {
-        id: 'command',
-        title: 'Command Ops',
-        label: 'Command',
-        accent: 'violet',
-        icon: 'C',
-        hints: 2,
-        finite: true,
-        challenge: 'Finish with 6 or more first-try clears.',
-        description: 'Sharper missions with missing dimensions, comparison logic, and multi-step scoring.',
-        features: ['Multi-step', 'DOK 2-3', 'Strategy'],
-        blueprint: ['inverse-height', 'inverse-base', 'missing-diagonal', 'formula-choice', 'compare', 'scenario-cost', 'rhombus-base-height', 'scenario-total', 'reasoning', 'boss-prep']
-      },
-      daily: {
-        id: 'daily',
-        title: 'Daily Ops',
-        label: 'Daily',
-        accent: 'lime',
-        icon: 'D',
-        hints: 2,
-        finite: true,
-        challenge: 'Beat the daily seed without hints.',
-        description: 'A seeded challenge that resets each day and rewards consistency.',
-        features: ['Seeded', 'Replayable', 'Return habit'],
-        blueprint: ['formula-choice', 'para-context', 'rhombus-area', 'inverse-base', 'compare', 'scenario-cost', 'reasoning']
-      },
-      infinity: {
-        id: 'infinity',
-        title: 'Infinite Reactor',
-        label: 'Infinite',
-        accent: 'coral',
-        icon: '∞',
-        hints: 2,
-        finite: false,
-        challenge: 'Reach 12 answered questions before the reactor burns out.',
-        description: 'Endless escalation with three lives, streak pressure, and high-score chasing.',
-        features: ['Endless', 'Adaptive', 'High score'],
-        blueprint: []
-      },
-      boss: {
-        id: 'boss',
-        title: 'Mr. Neft Boss Battle',
-        label: 'Boss',
-        accent: 'boss',
-        icon: 'B',
-        hints: 1,
-        finite: true,
-        challenge: 'Defeat Mr. Neft with at least one heart remaining.',
-        description: 'A direct boss encounter with shield phases, hearts, and a final finishing strike.',
-        features: ['Boss fight', 'Hearts', 'High drama'],
-        blueprint: ['boss-prep', 'boss-prep', 'boss-phase', 'boss-phase', 'boss-final']
-      }
-    });
-
-    function validateConfig(){
-      if (!CONFIG.storageKey) throw new Error('Missing storage key.');
-      Object.values(MODE_LIBRARY).forEach((mode) => {
-        if (mode.finite && !mode.blueprint.length) throw new Error('Finite mode missing blueprint: ' + mode.id);
-      });
-      if (FORMULAS.length < 3) throw new Error('Formula bank incomplete.');
-      if (SKILLS.length < 4) throw new Error('Skill library incomplete.');
-    }
-
-    function createStorage(){
-      const memory = {};
-      return {
-        get(key, fallback){
-          try{
-            const raw = window.localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : fallback;
-          }catch(error){
-            return Object.prototype.hasOwnProperty.call(memory, key) ? memory[key] : fallback;
-          }
-        },
-        set(key, value){
-          try{
-            window.localStorage.setItem(key, JSON.stringify(value));
-          }catch(error){
-            memory[key] = value;
-          }
+  <body>
+    <div id="game-container"></div>
+    <script>
+      (() => {
+        /* ═══════════════════════════════════════════
+         SOUND ENGINE — Web Audio oscillator beeps
+         ═══════════════════════════════════════════ */
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let actx = null;
+        function ensureAudio() {
+          if (!actx) actx = new AudioCtx();
+          if (actx.state === "suspended") actx.resume();
         }
-      };
-    }
+        function beep(freq, dur, type = "sine", vol = 0.18) {
+          if (!actx) return;
+          const o = actx.createOscillator(),
+            g = actx.createGain();
+          o.connect(g);
+          g.connect(actx.destination);
+          o.frequency.value = freq;
+          o.type = type;
+          g.gain.setValueAtTime(vol, actx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+          o.start();
+          o.stop(actx.currentTime + dur);
+        }
+        function sfxCorrect() {
+          beep(523, 0.08);
+          setTimeout(() => beep(659, 0.08), 80);
+          setTimeout(() => beep(784, 0.12), 160);
+        }
+        function sfxWrong() {
+          beep(220, 0.15, "sawtooth", 0.14);
+          setTimeout(() => beep(180, 0.2, "sawtooth", 0.12), 120);
+        }
+        function sfxClick() {
+          beep(880, 0.04, "sine", 0.1);
+        }
+        function sfxLevelUp() {
+          beep(523, 0.06);
+          setTimeout(() => beep(659, 0.06), 70);
+          setTimeout(() => beep(784, 0.06), 140);
+          setTimeout(() => beep(1047, 0.15), 210);
+        }
+        function sfxBossHit() {
+          beep(330, 0.1, "square", 0.15);
+          setTimeout(() => beep(440, 0.08, "square", 0.12), 100);
+        }
+        function sfxBossDeath() {
+          beep(523, 0.1);
+          setTimeout(() => beep(659, 0.08), 80);
+          setTimeout(() => beep(784, 0.08), 160);
+          setTimeout(() => beep(1047, 0.15), 240);
+          setTimeout(() => beep(1319, 0.2), 340);
+        }
+        function sfxHint() {
+          beep(660, 0.06, "triangle", 0.1);
+          setTimeout(() => beep(550, 0.08, "triangle", 0.08), 70);
+        }
+        function sfxPlace() {
+          beep(392, 0.05, "sine", 0.12);
+          setTimeout(() => beep(523, 0.06, "sine", 0.1), 60);
+        }
+        function sfxGameOver() {
+          beep(330, 0.15, "sawtooth", 0.12);
+          setTimeout(() => beep(262, 0.2, "sawtooth", 0.1), 150);
+          setTimeout(() => beep(196, 0.3, "sawtooth", 0.08), 300);
+        }
 
-    const storage = createStorage();
+        /* ═══════════════════════════════════════════
+         MATH CONTENT — Procedural question generators
+         ═══════════════════════════════════════════ */
+        const UNITS = ["cm", "m", "ft", "in"];
+        const PARA_CTX = [
+          "training platform",
+          "display banner",
+          "garden bed",
+          "landing pad",
+          "stage panel",
+          "solar panel",
+          "roof tile",
+          "wall section",
+        ];
+        const RHOM_CTX = [
+          "logo badge",
+          "window pane",
+          "diamond tile",
+          "kite panel",
+          "signal marker",
+          "gem cut",
+          "floor tile",
+          "mirror frame",
+        ];
 
-    function defaultProfile(){
-      const mastery = {};
-      SKILLS.forEach((skill) => {
-        mastery[skill.id] = { seen: 0, correct: 0 };
-      });
-      return {
-        xp: 0,
-        totalScore: 0,
-        totalRuns: 0,
-        bestStreak: 0,
-        bossClears: 0,
-        highScores: { academy: 0, command: 0, daily: 0, infinity: 0, boss: 0 },
-        dailyBest: {},
-        achievements: {},
-        mastery
-      };
-    }
+        function ri(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function pick(arr) {
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+        function shuffle(arr) {
+          const a = arr.slice();
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        }
+        function fmtA(v, u) {
+          return v + " " + u + "²";
+        }
+        function fmtM(v, u) {
+          return v + " " + u;
+        }
 
-    function loadProfile(){
-      const saved = storage.get(CONFIG.storageKey, null);
-      const profile = defaultProfile();
-      if (!saved) return profile;
-      const merged = {
-        ...profile,
-        ...saved,
-        highScores: { ...profile.highScores, ...(saved.highScores || {}) },
-        dailyBest: { ...profile.dailyBest, ...(saved.dailyBest || {}) },
-        achievements: { ...profile.achievements, ...(saved.achievements || {}) },
-        mastery: { ...profile.mastery }
-      };
-      Object.keys(profile.mastery).forEach((key) => {
-        merged.mastery[key] = { ...profile.mastery[key], ...(saved.mastery?.[key] || {}) };
-      });
-      return merged;
-    }
+        function mkChoices(correct, distractors, formatter) {
+          const vals = [correct];
+          distractors.forEach((d) => {
+            if (!vals.includes(d) && d > 0) vals.push(d);
+          });
+          let extra = 1;
+          while (vals.length < 4) {
+            const c = correct + extra;
+            if (!vals.includes(c)) vals.push(c);
+            extra++;
+          }
+          return shuffle(
+            vals.slice(0, 4).map((v) => ({
+              text: formatter(v),
+              value: v,
+              correct: v === correct,
+            })),
+          );
+        }
 
-    function saveProfile(profile){
-      storage.set(CONFIG.storageKey, profile);
-    }
+        // ─── Type 1: Parallelogram area (A = b × h) ───
+        function genParaArea() {
+          const b = ri(4, 18),
+            h = ri(3, 14),
+            a = b * h,
+            u = pick(UNITS);
+          const ctx = pick(PARA_CTX);
+          return {
+            type: "para-area",
+            shape: "para",
+            stem: `A ${ctx} is shaped like a parallelogram.\nBase = ${fmtM(b, u)}, Height = ${fmtM(h, u)}.\nWhat is the area?`,
+            hint: `A = b × h = ${b} × ${h}`,
+            formula: "A = b × h",
+            explain: `${b} × ${h} = ${a} ${u}²`,
+            dims: { b, h, u },
+            choices: mkChoices(
+              a,
+              [b + h, 2 * (b + h), Math.round(a / 2), a + b],
+              (v) => fmtA(v, u),
+            ),
+          };
+        }
 
-    function rankForXp(xp){
-      if (xp >= 4500) return { mark: 'S', label: 'Spatial Strategist' };
-      if (xp >= 2600) return { mark: 'M', label: 'Master Builder' };
-      if (xp >= 1400) return { mark: 'C', label: 'Command Specialist' };
-      if (xp >= 500) return { mark: 'V', label: 'Vector Pilot' };
-      return { mark: 'A', label: 'Area Cadet' };
-    }
+        // ─── Type 2: Rhombus area via diagonals (A = 1/2 × d1 × d2) ───
+        function genRhomDiag() {
+          const d1 = ri(4, 16) * 2,
+            d2 = ri(3, 12) * 2,
+            a = (d1 * d2) / 2,
+            u = pick(UNITS);
+          const ctx = pick(RHOM_CTX);
+          return {
+            type: "rhom-diag",
+            shape: "rhom",
+            stem: `A ${ctx} is a rhombus.\nDiagonals: d1 = ${fmtM(d1, u)}, d2 = ${fmtM(d2, u)}.\nFind the area.`,
+            hint: `A = 1/2 × ${d1} × ${d2}`,
+            formula: "A = ½ × d1 × d2",
+            explain: `½ × ${d1} × ${d2} = ${a} ${u}²`,
+            dims: { d1, d2, u },
+            choices: mkChoices(
+              a,
+              [d1 * d2, d1 + d2, Math.round(a / 2), a + d2],
+              (v) => fmtA(v, u),
+            ),
+          };
+        }
 
-    function todaysKey(){
-      const now = new Date();
-      return [
-        now.getFullYear(),
-        String(now.getMonth() + 1).padStart(2, '0'),
-        String(now.getDate()).padStart(2, '0')
-      ].join('-');
-    }
+        // ─── Type 3: Rhombus area via base-height ───
+        function genRhomBH() {
+          const b = ri(5, 16),
+            h = ri(4, 12),
+            a = b * h,
+            u = pick(UNITS);
+          return {
+            type: "rhom-bh",
+            shape: "rhom",
+            stem: `A rhombus has base ${fmtM(b, u)} and\nperpendicular height ${fmtM(h, u)}.\nWhat is its area?`,
+            hint: `A rhombus is a parallelogram!\nA = b × h = ${b} × ${h}`,
+            formula: "A = b × h",
+            explain: `${b} × ${h} = ${a} ${u}²`,
+            dims: { b, h, u },
+            choices: mkChoices(
+              a,
+              [b + h, 2 * (b + h), Math.round(a / 2), a + h],
+              (v) => fmtA(v, u),
+            ),
+          };
+        }
 
-    function masteryPercent(profile, skillId){
-      const entry = profile.mastery[skillId] || { seen: 0, correct: 0 };
-      if (!entry.seen) return 0;
-      return Math.round((entry.correct / entry.seen) * 100);
-    }
+        // ─── Type 4: Missing height (h = A / b) ───
+        function genMissH() {
+          const b = ri(6, 18),
+            h = ri(3, 12),
+            a = b * h,
+            u = pick(UNITS);
+          return {
+            type: "miss-h",
+            shape: "para",
+            stem: `A parallelogram has area ${fmtA(a, u)}\nand base ${fmtM(b, u)}.\nWhat is the height?`,
+            hint: `h = A ÷ b = ${a} ÷ ${b}`,
+            formula: "h = A ÷ b",
+            explain: `${a} ÷ ${b} = ${h} ${u}`,
+            dims: { b, h, a, u },
+            choices: mkChoices(
+              h,
+              [Math.max(1, Math.round(h / 2)), a - b, b, a],
+              (v) => fmtM(v, u),
+            ),
+          };
+        }
 
-    function hashString(value){
-      let hash = 2166136261;
-      for (let i = 0; i < value.length; i += 1){
-        hash ^= value.charCodeAt(i);
-        hash = Math.imul(hash, 16777619);
-      }
-      return hash >>> 0;
-    }
+        // ─── Type 5: Missing base (b = A / h) ───
+        function genMissB() {
+          const b = ri(6, 18),
+            h = ri(3, 12),
+            a = b * h,
+            u = pick(UNITS);
+          return {
+            type: "miss-b",
+            shape: "para",
+            stem: `A parallelogram has area ${fmtA(a, u)}\nand height ${fmtM(h, u)}.\nWhat is the base?`,
+            hint: `b = A ÷ h = ${a} ÷ ${h}`,
+            formula: "b = A ÷ h",
+            explain: `${a} ÷ ${h} = ${b} ${u}`,
+            dims: { b, h, a, u },
+            choices: mkChoices(
+              b,
+              [Math.max(1, Math.round(b / 2)), a - h, h, a],
+              (v) => fmtM(v, u),
+            ),
+          };
+        }
 
-    function mulberry32(seed){
-      let t = seed >>> 0;
-      return function(){
-        t += 0x6D2B79F5;
-        let x = t;
-        x = Math.imul(x ^ x >>> 15, x | 1);
-        x ^= x + Math.imul(x ^ x >>> 7, x | 61);
-        return ((x ^ x >>> 14) >>> 0) / 4294967296;
-      };
-    }
+        // ─── Type 6: Missing diagonal ───
+        function genMissDiag() {
+          const d1 = ri(4, 16) * 2,
+            d2 = ri(3, 12) * 2,
+            a = (d1 * d2) / 2,
+            u = pick(UNITS);
+          const askD1 = Math.random() > 0.5;
+          const known = askD1 ? d2 : d1,
+            missing = askD1 ? d1 : d2;
+          const kLabel = askD1 ? "d2" : "d1",
+            mLabel = askD1 ? "d1" : "d2";
+          return {
+            type: "miss-diag",
+            shape: "rhom",
+            stem: `A rhombus has area ${fmtA(a, u)}\nand ${kLabel} = ${fmtM(known, u)}.\nFind ${mLabel}.`,
+            hint: `${mLabel} = (2 × A) ÷ ${kLabel}\n= (2 × ${a}) ÷ ${known}`,
+            formula: mLabel + " = (2 × A) ÷ " + kLabel,
+            explain: `(2 × ${a}) ÷ ${known} = ${missing} ${u}`,
+            dims: { d1, d2, a, u, known, missing },
+            choices: mkChoices(
+              missing,
+              [Math.max(1, Math.round(missing / 2)), known, missing * 2, a],
+              (v) => fmtM(v, u),
+            ),
+          };
+        }
 
-    function randInt(rng, min, max){
-      return Math.floor(rng() * (max - min + 1)) + min;
-    }
+        // ─── Type 7: Formula choice ───
+        function genFormulaChoice() {
+          const variant = pick(["para", "rhom-diag", "rhom-bh"]);
+          if (variant === "para") {
+            const b = ri(6, 14),
+              h = ri(4, 10);
+            return {
+              type: "formula",
+              shape: "para",
+              stem: `A parallelogram has base ${b}\nand height ${h}.\nWhich formula should you use?`,
+              hint: "Base and height are given.\nUse the direct formula.",
+              formula: "A = b × h",
+              explain: "Base and height given = A = b × h",
+              dims: { b, h },
+              choices: shuffle([
+                { text: "A = b × h", value: 1, correct: true },
+                { text: "A = ½ × d1 × d2", value: 2, correct: false },
+                { text: "A = 2(b + h)", value: 3, correct: false },
+                { text: "A = b + h", value: 4, correct: false },
+              ]),
+            };
+          }
+          if (variant === "rhom-bh") {
+            const b = ri(6, 16),
+              h = ri(4, 11);
+            return {
+              type: "formula",
+              shape: "rhom",
+              stem: `A rhombus has base ${b}\nand perpendicular height ${h}.\nWhich formula is best?`,
+              hint: "A rhombus is a parallelogram.\nBase + height = A = b × h.",
+              formula: "A = b × h",
+              explain: "Rhombus with b and h = A = b × h",
+              dims: { b, h },
+              choices: shuffle([
+                { text: "A = b × h", value: 1, correct: true },
+                { text: "A = ½ × d1 × d2", value: 2, correct: false },
+                { text: "A = d1 + d2", value: 3, correct: false },
+                { text: "A = 2(b + h)", value: 4, correct: false },
+              ]),
+            };
+          }
+          const d1 = ri(4, 16) * 2,
+            d2 = ri(3, 12) * 2;
+          return {
+            type: "formula",
+            shape: "rhom",
+            stem: `A rhombus has diagonals ${d1} and ${d2}.\nWhich formula is the best match?`,
+            hint: "Both diagonals are given.\nHalve the product.",
+            formula: "A = ½ × d1 × d2",
+            explain: "Diagonals given = A = ½ × d1 × d2",
+            dims: { d1, d2 },
+            choices: shuffle([
+              { text: "A = ½ × d1 × d2", value: 1, correct: true },
+              { text: "A = b × h", value: 2, correct: false },
+              { text: "A = 2(b + h)", value: 3, correct: false },
+              { text: "A = d1 + d2", value: 4, correct: false },
+            ]),
+          };
+        }
 
-    function sample(rng, list){
-      return list[Math.floor(rng() * list.length)];
-    }
+        // ─── Type 8: Compare two shapes ───
+        function genCompare() {
+          const scenario = pick(["equal", "para-wins", "rhom-wins"]);
+          const u = pick(UNITS);
+          let pb, ph, d1, d2, answer;
+          if (scenario === "equal") {
+            pb = ri(6, 14);
+            ph = ri(4, 10);
+            d1 = pb * 2;
+            d2 = ph;
+            answer = "They are equal";
+          } else if (scenario === "para-wins") {
+            pb = ri(10, 16);
+            ph = ri(6, 10);
+            d1 = ri(4, 8) * 2;
+            d2 = ri(3, 6) * 2;
+            answer = "Parallelogram is larger";
+          } else {
+            pb = ri(5, 10);
+            ph = ri(4, 8);
+            d1 = ri(10, 16) * 2;
+            d2 = ri(6, 10) * 2;
+            answer = "Rhombus is larger";
+          }
+          const pa = pb * ph,
+            ra = (d1 * d2) / 2;
+          return {
+            type: "compare",
+            shape: "both",
+            stem: `Parallelogram: b=${pb}, h=${ph} (${u})\nRhombus: d1=${d1}, d2=${d2} (${u})\nWhich has the greater area?`,
+            hint: `Para = ${pb}×${ph} = ${pa}\nRhom = ½×${d1}×${d2} = ${ra}`,
+            formula: "Compute both, then compare",
+            explain: `Para = ${pa}, Rhom = ${ra}`,
+            dims: { pb, ph, d1, d2, u },
+            choices: shuffle([
+              {
+                text: "Parallelogram is larger",
+                value: 1,
+                correct: answer === "Parallelogram is larger",
+              },
+              {
+                text: "Rhombus is larger",
+                value: 2,
+                correct: answer === "Rhombus is larger",
+              },
+              {
+                text: "They are equal",
+                value: 3,
+                correct: answer === "They are equal",
+              },
+              { text: "Not enough info", value: 4, correct: false },
+            ]),
+          };
+        }
 
-    function shuffle(rng, list){
-      const copy = list.slice();
-      for (let i = copy.length - 1; i > 0; i -= 1){
-        const j = Math.floor(rng() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
+        // ─── Type 9: Scenario cost ───
+        function genCost() {
+          const rate = pick([2, 3, 4, 5]),
+            u = pick(["m", "ft"]);
+          const isPara = Math.random() > 0.5;
+          if (isPara) {
+            const b = ri(7, 15),
+              h = ri(4, 10),
+              a = b * h,
+              cost = a * rate;
+            return {
+              type: "cost",
+              shape: "para",
+              stem: `A parallelogram mural:\nb=${fmtM(b, u)}, h=${fmtM(h, u)}.\nPaint costs $${rate} per ${u}².\nTotal cost?`,
+              hint: `Area = ${b}×${h} = ${a}\nCost = ${a} × $${rate}`,
+              formula: "Cost = Area × Rate",
+              explain: `${a} × $${rate} = $${cost}`,
+              dims: { b, h, rate, u },
+              choices: mkChoices(
+                cost,
+                [
+                  a,
+                  a * Math.max(1, rate - 1),
+                  cost + rate,
+                  Math.round(cost / 2),
+                ],
+                (v) => "$" + v,
+              ),
+            };
+          }
+          const d1 = ri(4, 10) * 2,
+            d2 = ri(3, 8) * 2,
+            a = (d1 * d2) / 2,
+            cost = a * rate;
+          return {
+            type: "cost",
+            shape: "rhom",
+            stem: `A rhombus sign:\nd1=${fmtM(d1, u)}, d2=${fmtM(d2, u)}.\nCosts $${rate} per ${u}².\nTotal cost?`,
+            hint: `Area = ½×${d1}×${d2} = ${a}\nCost = ${a} × $${rate}`,
+            formula: "Cost = Area × Rate",
+            explain: `${a} × $${rate} = $${cost}`,
+            dims: { d1, d2, rate, u },
+            choices: mkChoices(
+              cost,
+              [a, d1 * d2 * rate, cost + rate, Math.round(cost / 2)],
+              (v) => "$" + v,
+            ),
+          };
+        }
 
-    function clamp(value, min, max){
-      return Math.min(max, Math.max(min, value));
-    }
+        // ─── Type 10: Boss questions (Mr. Neft) ───
+        function genBoss(phase) {
+          if (phase === "prep") {
+            const b = ri(8, 16),
+              h = ri(5, 11),
+              a = b * h,
+              u = pick(["m", "ft"]);
+            return {
+              type: "boss",
+              shape: "para",
+              bossPhase: "prep",
+              stem: `Mr. Neft throws a shield panel!\nParallelogram: b=${fmtM(b, u)}, h=${fmtM(h, u)}.\nBreak the shield!`,
+              hint: `A = b × h = ${b} × ${h}`,
+              formula: "A = b × h",
+              explain: `${b} × ${h} = ${a} ${u}²`,
+              dims: { b, h, u },
+              choices: mkChoices(
+                a,
+                [b + h, 2 * (b + h), Math.round(a / 2), a + h],
+                (v) => fmtA(v, u),
+              ),
+            };
+          }
+          if (phase === "diag") {
+            const d1 = ri(6, 14) * 2,
+              d2 = ri(5, 12) * 2,
+              a = (d1 * d2) / 2,
+              u = pick(["m", "ft"]);
+            return {
+              type: "boss",
+              shape: "rhom",
+              bossPhase: "diag",
+              stem: `Mr. Neft launches a rhombus barrier!\nd1=${fmtM(d1, u)}, d2=${fmtM(d2, u)}.\nCrack it!`,
+              hint: `A = ½ × ${d1} × ${d2}`,
+              formula: "A = ½ × d1 × d2",
+              explain: `½ × ${d1} × ${d2} = ${a} ${u}²`,
+              dims: { d1, d2, u },
+              choices: mkChoices(
+                a,
+                [d1 * d2, d1 + d2, Math.round(a / 2), a + d1],
+                (v) => fmtA(v, u),
+              ),
+            };
+          }
+          // final: combined
+          const pb = ri(10, 16),
+            ph = ri(6, 10),
+            d1 = ri(10, 16) * 2,
+            d2 = ri(6, 10) * 2,
+            u = pick(["m", "ft"]);
+          const pa = pb * ph,
+            ra = (d1 * d2) / 2,
+            total = pa + ra;
+          return {
+            type: "boss",
+            shape: "both",
+            bossPhase: "final",
+            stem: `FINAL STRIKE!\nPara: b=${pb}, h=${ph} (${u})\nRhom: d1=${d1}, d2=${d2} (${u})\nTotal area to defeat Mr. Neft?`,
+            hint: `Para = ${pb}×${ph} = ${pa}\nRhom = ½×${d1}×${d2} = ${ra}\nTotal = ${pa}+${ra}`,
+            formula: "Add both areas",
+            explain: `${pa} + ${ra} = ${total} ${u}²`,
+            dims: { pb, ph, d1, d2, u },
+            choices: mkChoices(total, [pa, ra, pa + d1, total + ph], (v) =>
+              fmtA(v, u),
+            ),
+          };
+        }
 
-    function average(list){
-      if (!list.length) return 0;
-      return list.reduce((sum, item) => sum + item, 0) / list.length;
-    }
-
-    function slugify(value){
-      return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    }
-
-    function formatMeasure(value, unit){
-      return value + ' ' + unit;
-    }
-
-    function formatArea(value, unit){
-      return value + ' ' + unit + '²';
-    }
-
-    function formatSeconds(value){
-      return value.toFixed(1) + 's';
-    }
-
-    function buildChoiceSet(rng, correct, distractors, formatter, rationaleMap, correctRationale, fallback){
-      const values = [];
-      [correct, ...distractors].forEach((item) => {
-        if (!values.includes(item)) values.push(item);
-      });
-      let cursor = 1;
-      while (values.length < 4){
-        const candidate = typeof correct === 'number' ? correct + cursor : String(correct) + ' ' + cursor;
-        if (!values.includes(candidate)) values.push(candidate);
-        cursor += 1;
-      }
-      return shuffle(rng, values.slice(0, 4).map((value) => ({
-        id: slugify(value),
-        text: formatter(value),
-        correct: value === correct,
-        rationale: value === correct ? correctRationale : (rationaleMap[value] || fallback)
-      })));
-    }
-
-    function textChoices(rng, correct, distractors, correctRationale, rationaleMap, fallback){
-      return buildChoiceSet(rng, correct, distractors, (value) => value, rationaleMap, correctRationale, fallback);
-    }
-
-    function makeQuestion(question){
-      if (!question.choices || question.choices.length !== 4){
-        throw new Error('Question must have exactly four choices: ' + question.id);
-      }
-      if (question.choices.filter((choice) => choice.correct).length !== 1){
-        throw new Error('Question must have exactly one correct choice: ' + question.id);
-      }
-      return { maxAttempts: CONFIG.maxAttemptsPerQuestion, ...question };
-    }
-
-    function parallelogramSvg(params){
-      return `
-        <svg viewBox="0 0 480 280" role="img" aria-label="Parallelogram diagram">
-          <rect x="16" y="16" width="448" height="248" rx="24" fill="#f9fbff" stroke="#d9e5fb"/>
-          <path d="M135 78 L360 78 L300 205 L75 205 Z" fill="#dffdf5" stroke="#1fc7ad" stroke-width="4"/>
-          <line x1="135" y1="78" x2="135" y2="205" stroke="#ff9d37" stroke-width="3" stroke-dasharray="8 8"/>
-          <line x1="75" y1="205" x2="300" y2="205" stroke="#1f4a7d" stroke-width="4"/>
-          <rect x="135" y="190" width="15" height="15" fill="#fff" stroke="#ff9d37" stroke-width="3"/>
-          <text x="190" y="232" fill="${params.baseUnknown ? '#d33f57' : '#093451'}" font-size="22" font-family="Arial, sans-serif" font-weight="700">${params.baseUnknown ? 'b = ?' : params.base}</text>
-          <text x="88" y="148" fill="${params.heightUnknown ? '#d33f57' : '#ff9d37'}" font-size="22" font-family="Arial, sans-serif" font-weight="700">${params.heightUnknown ? 'h = ?' : params.height}</text>
-          <text x="240" y="50" fill="#1f4a7d" font-size="18" font-family="Arial, sans-serif" font-weight="700" text-anchor="middle">Use the perpendicular height.</text>
-        </svg>
-      `;
-    }
-
-    function rhombusSvg(params){
-      return `
-        <svg viewBox="0 0 480 280" role="img" aria-label="Rhombus diagram">
-          <rect x="16" y="16" width="448" height="248" rx="24" fill="#f9fbff" stroke="#d9e5fb"/>
-          <path d="M240 52 L360 140 L240 228 L120 140 Z" fill="#fff0de" stroke="#ff9d37" stroke-width="4"/>
-          <line x1="120" y1="140" x2="360" y2="140" stroke="#20c7ad" stroke-width="3" stroke-dasharray="8 8"/>
-          <line x1="240" y1="52" x2="240" y2="228" stroke="#1f4a7d" stroke-width="3" stroke-dasharray="8 8"/>
-          <text x="240" y="256" fill="#20c7ad" font-size="22" font-family="Arial, sans-serif" font-weight="700" text-anchor="middle">${params.d1 || 'd1'}</text>
-          <text x="388" y="146" fill="${params.d2Unknown ? '#d33f57' : '#1f4a7d'}" font-size="22" font-family="Arial, sans-serif" font-weight="700">${params.d2Unknown ? 'd2 = ?' : params.d2}</text>
-          ${params.base ? `<text x="124" y="48" fill="#093451" font-size="20" font-family="Arial, sans-serif" font-weight="700">${params.base}</text>` : ''}
-          ${params.height ? `<text x="84" y="140" fill="#20c7ad" font-size="20" font-family="Arial, sans-serif" font-weight="700">${params.height}</text>` : ''}
-          <text x="240" y="34" fill="#1f4a7d" font-size="18" font-family="Arial, sans-serif" font-weight="700" text-anchor="middle">A rhombus can use diagonals or base-height.</text>
-        </svg>
-      `;
-    }
-
-    const PARA_CONTEXTS = Object.freeze(['training platform', 'display banner', 'garden bed', 'landing pad', 'stage panel']);
-    const RHOMBUS_CONTEXTS = Object.freeze(['logo badge', 'window pane', 'diamond tile', 'kite panel', 'signal marker']);
-    const UNITS = Object.freeze(['cm', 'm', 'ft', 'in']);
-
-    function genParallelogramArea(rng, contextual){
-      const base = randInt(rng, 4, 18);
-      const height = randInt(rng, 3, 12);
-      const area = base * height;
-      const unit = sample(rng, UNITS);
-      const context = sample(rng, PARA_CONTEXTS);
-      const stem = contextual
-        ? `A <strong>${context}</strong> is shaped like a parallelogram with base <strong>${formatMeasure(base, unit)}</strong> and height <strong>${formatMeasure(height, unit)}</strong>. What area does it cover?`
-        : `Find the area of a parallelogram with base <strong>${formatMeasure(base, unit)}</strong> and height <strong>${formatMeasure(height, unit)}</strong>.`;
-      return makeQuestion({
-        id: 'para-' + base + '-' + height + '-' + unit + (contextual ? '-c' : ''),
-        concept: 'Parallelogram',
-        skillId: 'parallelogram-area',
-        formulaId: 'parallelogram',
-        dok: 1,
-        objective: 'Multiply base by perpendicular height.',
-        intel: 'Ignore the slanted edge and use the perpendicular height.',
-        stem,
-        hint: `Use A = b × h, so multiply ${base} by ${height}.`,
-        explanation: `Parallelogram area uses base times perpendicular height, so ${base} × ${height} = ${area}.`,
-        formula: `A = b × h = ${base} × ${height} = ${formatArea(area, unit)}`,
-        shapeHtml: parallelogramSvg({ base: 'b = ' + formatMeasure(base, unit), height: 'h = ' + formatMeasure(height, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          area,
-          [base + height, 2 * (base + height), Math.round(area / 2), area + base],
-          (value) => formatArea(value, unit),
+        /* ─── ZONE DEFINITIONS ─── */
+        const ZONES = [
           {
-            [base + height]: 'Adding the dimensions does not find area.',
-            [2 * (base + height)]: 'That is a perimeter-style calculation.',
-            [Math.round(area / 2)]: 'There is no 1/2 factor for a parallelogram.',
-            [area + base]: 'That adds an extra amount after finding the area.'
+            name: "Foundation Floor",
+            emoji: "🏗️",
+            color: 0x4ecdc4,
+            generators: [genParaArea, genRhomDiag, genRhomBH, genFormulaChoice],
+            count: 4,
           },
-          'Correct. Base times height is the right move.',
-          'Use base times perpendicular height.'
-        )
-      });
-    }
-
-    function genRhombusArea(rng, contextual){
-      const d1 = randInt(rng, 4, 16) * 2;
-      const d2 = randInt(rng, 3, 12) * 2;
-      const area = (d1 * d2) / 2;
-      const unit = sample(rng, UNITS);
-      const context = sample(rng, RHOMBUS_CONTEXTS);
-      const stem = contextual
-        ? `A <strong>${context}</strong> is a rhombus with diagonals <strong>${formatMeasure(d1, unit)}</strong> and <strong>${formatMeasure(d2, unit)}</strong>. What is its area?`
-        : `A rhombus has diagonals <strong>${formatMeasure(d1, unit)}</strong> and <strong>${formatMeasure(d2, unit)}</strong>. Find the area.`;
-      return makeQuestion({
-        id: 'rdiag-' + d1 + '-' + d2 + '-' + unit + (contextual ? '-c' : ''),
-        concept: 'Rhombus',
-        skillId: 'rhombus-diagonal',
-        formulaId: 'rhombus-diagonal',
-        dok: 1,
-        objective: 'Use the diagonals formula for a rhombus.',
-        intel: 'Multiply both diagonals, then take half.',
-        stem,
-        hint: `Area = 1/2 × ${d1} × ${d2}.`,
-        explanation: `The diagonal formula is A = 1/2 × d1 × d2, so 1/2 × ${d1} × ${d2} = ${area}.`,
-        formula: `A = 1/2 × ${d1} × ${d2} = ${formatArea(area, unit)}`,
-        shapeHtml: rhombusSvg({ d1: 'd1 = ' + formatMeasure(d1, unit), d2: 'd2 = ' + formatMeasure(d2, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          area,
-          [d1 * d2, d1 + d2, Math.round(area / 2), area + d2],
-          (value) => formatArea(value, unit),
           {
-            [d1 * d2]: 'You forgot the 1/2 in the rhombus diagonal formula.',
-            [d1 + d2]: 'Adding diagonals gives a length, not an area.',
-            [Math.round(area / 2)]: 'That halves the result twice.',
-            [area + d2]: 'That adds an extra diagonal after computing area.'
+            name: "Measurement Wing",
+            emoji: "📏",
+            color: 0xf7dc6f,
+            generators: [genMissH, genMissB, genMissDiag, genFormulaChoice],
+            count: 4,
           },
-          'Correct. The product of the diagonals must be halved.',
-          'Use the diagonal formula.'
-        )
-      });
-    }
-
-    function genRhombusBaseHeight(rng){
-      const base = randInt(rng, 5, 16);
-      const height = randInt(rng, 4, 12);
-      const area = base * height;
-      const unit = sample(rng, UNITS);
-      return makeQuestion({
-        id: 'rbh-' + base + '-' + height + '-' + unit,
-        concept: 'Rhombus',
-        skillId: 'rhombus-base-height',
-        formulaId: 'rhombus-base-height',
-        dok: 2,
-        objective: 'Use base-height on a rhombus.',
-        intel: 'A rhombus is a parallelogram, so base-height still works.',
-        stem: `A rhombus has base <strong>${formatMeasure(base, unit)}</strong> and perpendicular height <strong>${formatMeasure(height, unit)}</strong>. What is its area?`,
-        hint: `Use A = b × h because the rhombus gives base and perpendicular height.`,
-        explanation: `When a rhombus gives base and perpendicular height, use A = b × h. Here ${base} × ${height} = ${area}.`,
-        formula: `A = b × h = ${base} × ${height} = ${formatArea(area, unit)}`,
-        shapeHtml: rhombusSvg({ d1: 'Diagonal view', d2: 'Diagonal view', base: 'b = ' + formatMeasure(base, unit), height: 'h = ' + formatMeasure(height, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          area,
-          [base + height, 2 * (base + height), Math.round(area / 2), area + height],
-          (value) => formatArea(value, unit),
           {
-            [base + height]: 'That is not an area calculation.',
-            [2 * (base + height)]: 'That is a perimeter-style expression.',
-            [Math.round(area / 2)]: 'Do not halve when using base-height here.',
-            [area + height]: 'That adds extra length after the correct multiplication.'
+            name: "Design Studio",
+            emoji: "🎨",
+            color: 0xaf7ac5,
+            generators: [genCompare, genCost, genParaArea, genRhomDiag],
+            count: 4,
           },
-          'Correct. Base times height is valid for a rhombus.',
-          'Use the base-height formula.'
-        )
-      });
-    }
-
-    function genInverseHeight(rng){
-      const base = randInt(rng, 6, 18);
-      const height = randInt(rng, 3, 12);
-      const area = base * height;
-      const unit = sample(rng, UNITS);
-      return makeQuestion({
-        id: 'ih-' + base + '-' + height + '-' + unit,
-        concept: 'Parallelogram',
-        skillId: 'inverse-area',
-        formulaId: 'parallelogram',
-        dok: 2,
-        objective: 'Solve for the missing height.',
-        intel: 'Reverse the formula: h = A ÷ b.',
-        stem: `A parallelogram has area <strong>${formatArea(area, unit)}</strong> and base <strong>${formatMeasure(base, unit)}</strong>. What is the height?`,
-        hint: `Divide the area by the base: ${area} ÷ ${base}.`,
-        explanation: `Because A = b × h, solve for h with h = A ÷ b. So ${area} ÷ ${base} = ${height}.`,
-        formula: `h = A ÷ b = ${area} ÷ ${base} = ${formatMeasure(height, unit)}`,
-        shapeHtml: parallelogramSvg({ base: 'b = ' + formatMeasure(base, unit), heightUnknown: true }),
-        choices: buildChoiceSet(
-          rng,
-          height,
-          [Math.max(1, Math.round(height / 2)), area - base, base, area],
-          (value) => formatMeasure(value, unit),
           {
-            [Math.max(1, Math.round(height / 2))]: 'That halves the answer instead of solving by division.',
-            [area - base]: 'Subtracting does not undo multiplication here.',
-            [base]: 'That repeats the given base instead of finding the height.',
-            [area]: 'That is the area, not the missing measure.'
+            name: "Engineering Lab",
+            emoji: "🔧",
+            color: 0xe74c3c,
+            generators: [genCost, genCompare, genMissH, genMissDiag],
+            count: 4,
           },
-          'Correct. Divide area by base.',
-          'Undo multiplication with division.'
-        )
-      });
-    }
-
-    function genInverseBase(rng){
-      const base = randInt(rng, 6, 18);
-      const height = randInt(rng, 3, 12);
-      const area = base * height;
-      const unit = sample(rng, UNITS);
-      return makeQuestion({
-        id: 'ib-' + base + '-' + height + '-' + unit,
-        concept: 'Parallelogram',
-        skillId: 'inverse-area',
-        formulaId: 'parallelogram',
-        dok: 2,
-        objective: 'Solve for the missing base.',
-        intel: 'Reverse the formula: b = A ÷ h.',
-        stem: `A parallelogram has area <strong>${formatArea(area, unit)}</strong> and height <strong>${formatMeasure(height, unit)}</strong>. What is the base?`,
-        hint: `Divide the area by the height: ${area} ÷ ${height}.`,
-        explanation: `Because A = b × h, solve for b with b = A ÷ h. So ${area} ÷ ${height} = ${base}.`,
-        formula: `b = A ÷ h = ${area} ÷ ${height} = ${formatMeasure(base, unit)}`,
-        shapeHtml: parallelogramSvg({ baseUnknown: true, height: 'h = ' + formatMeasure(height, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          base,
-          [Math.max(1, Math.round(base / 2)), area - height, height, area],
-          (value) => formatMeasure(value, unit),
           {
-            [Math.max(1, Math.round(base / 2))]: 'That halves the answer instead of dividing properly.',
-            [area - height]: 'Subtraction does not isolate the base here.',
-            [height]: 'That repeats the known height.',
-            [area]: 'That is the area, not the missing base.'
+            name: "Mr. Neft Arena",
+            emoji: "👾",
+            color: 0xff6b6b,
+            generators: null,
+            count: 4,
           },
-          'Correct. Divide area by height.',
-          'Undo multiplication with division.'
-        )
-      });
-    }
+        ];
 
-    function genMissingDiagonal(rng){
-      const d1 = randInt(rng, 4, 16) * 2;
-      const d2 = randInt(rng, 3, 12) * 2;
-      const area = (d1 * d2) / 2;
-      const askFirst = rng() > 0.5;
-      const known = askFirst ? d2 : d1;
-      const missing = askFirst ? d1 : d2;
-      const knownLabel = askFirst ? 'd2' : 'd1';
-      const missingLabel = askFirst ? 'd1' : 'd2';
-      const unit = sample(rng, UNITS);
-      return makeQuestion({
-        id: 'md-' + d1 + '-' + d2 + '-' + missingLabel + '-' + unit,
-        concept: 'Rhombus',
-        skillId: 'inverse-area',
-        formulaId: 'rhombus-diagonal',
-        dok: 2,
-        objective: 'Solve for the missing diagonal.',
-        intel: 'Multiply the area by 2 first, then divide by the known diagonal.',
-        stem: `A rhombus has area <strong>${formatArea(area, unit)}</strong> and ${knownLabel} <strong>${formatMeasure(known, unit)}</strong>. What is ${missingLabel}?`,
-        hint: `Use ${missingLabel} = (2 × area) ÷ ${knownLabel}.`,
-        explanation: `Rearrange A = 1/2 × d1 × d2 by doubling the area and dividing by the known diagonal. That gives ${missing}.`,
-        formula: `${missingLabel} = (2 × ${area}) ÷ ${known} = ${formatMeasure(missing, unit)}`,
-        shapeHtml: rhombusSvg({ d1: askFirst ? 'd1 = ?' : 'd1 = ' + formatMeasure(d1, unit), d2: askFirst ? 'd2 = ' + formatMeasure(d2, unit) : 'd2 = ?', d2Unknown: !askFirst }),
-        choices: buildChoiceSet(
-          rng,
-          missing,
-          [Math.max(1, Math.round(missing / 2)), known, missing * 2, area],
-          (value) => formatMeasure(value, unit),
-          {
-            [Math.max(1, Math.round(missing / 2))]: 'You forgot to double the area before dividing.',
-            [known]: 'That repeats the known diagonal.',
-            [missing * 2]: 'That doubles the answer one time too many.',
-            [area]: 'Area and diagonal lengths are different quantities.'
-          },
-          'Correct. Double the area first, then divide by the known diagonal.',
-          'Use the inverse diagonal formula carefully.'
-        )
-      });
-    }
+        /* ═══════════════════════════════════════════
+         SHARED CONSTANTS
+         ═══════════════════════════════════════════ */
+        const W = 960,
+          H = 600;
+        const CLR = {
+          bg: 0x0a1628,
+          panel: 0x101b35,
+          panelLt: 0x162648,
+          gold: 0xffcf72,
+          teal: 0x4ecdc4,
+          coral: 0xff6b6b,
+          violet: 0xa88bff,
+          lime: 0xb9ff78,
+          white: 0xeef5ff,
+          muted: 0xa4b8dc,
+          ok: 0x48df8a,
+          danger: 0xff6273,
+          darkBlue: 0x091526,
+        };
 
-    function genFormulaChoice(rng){
-      const variant = sample(rng, ['para', 'rhombus-diag', 'rhombus-bh']);
-      if (variant === 'para'){
-        const base = randInt(rng, 6, 14);
-        const height = randInt(rng, 4, 10);
-        return makeQuestion({
-          id: 'fc-para-' + base + '-' + height,
-          concept: 'Parallelogram',
-          skillId: 'formula-choice',
-          formulaId: 'parallelogram',
-          dok: 2,
-          objective: 'Choose the formula that matches the information given.',
-          intel: 'The prompt gives a base and a perpendicular height.',
-          stem: `A parallelogram has base <strong>${base}</strong> and height <strong>${height}</strong>. Which formula should you use first?`,
-          hint: 'Use the formula that directly uses base and perpendicular height.',
-          explanation: 'The problem gives base and perpendicular height, so the fastest direct formula is A = b × h.',
-          formula: 'A = b × h',
-          shapeHtml: parallelogramSvg({ base: 'b = ' + base, height: 'h = ' + height }),
-          choices: textChoices(
-            rng,
-            'A = b × h',
-            ['A = 1/2 × d1 × d2', 'A = 2(b + h)', 'A = b + h'],
-            'Correct. That formula matches the information exactly.',
-            {
-              'A = 1/2 × d1 × d2': 'That formula is for rhombus diagonals.',
-              'A = 2(b + h)': 'That is not an area formula.',
-              'A = b + h': 'Adding lengths does not produce area.'
-            },
-            'Pick the formula that uses the given measurements directly.'
-          )
-        });
-      }
-      if (variant === 'rhombus-bh'){
-        const base = randInt(rng, 6, 16);
-        const height = randInt(rng, 4, 11);
-        return makeQuestion({
-          id: 'fc-rbh-' + base + '-' + height,
-          concept: 'Rhombus',
-          skillId: 'formula-choice',
-          formulaId: 'rhombus-base-height',
-          dok: 2,
-          objective: 'Choose the best formula for a rhombus with base and height.',
-          intel: 'A rhombus can use the parallelogram formula.',
-          stem: `A rhombus gives base <strong>${base}</strong> and perpendicular height <strong>${height}</strong>. Which formula is the best match?`,
-          hint: 'Think about what family of quadrilaterals a rhombus belongs to.',
-          explanation: 'A rhombus is a parallelogram, so when base and height are given, A = b × h is the best direct formula.',
-          formula: 'A = b × h',
-          shapeHtml: rhombusSvg({ d1: 'Diagonal view', d2: 'Diagonal view', base: 'b = ' + base, height: 'h = ' + height }),
-          choices: textChoices(
-            rng,
-            'A = b × h',
-            ['A = 1/2 × d1 × d2', 'A = d1 + d2', 'A = 2(b + h)'],
-            'Correct. Use the formula that matches the information actually provided.',
-            {
-              'A = 1/2 × d1 × d2': 'That only works when the diagonals are known.',
-              'A = d1 + d2': 'That is not an area formula.',
-              'A = 2(b + h)': 'That is a perimeter-style expression.'
-            },
-            'Pick the formula that directly uses base and height.'
-          )
-        });
-      }
-      const d1 = randInt(rng, 4, 16) * 2;
-      const d2 = randInt(rng, 3, 12) * 2;
-      return makeQuestion({
-        id: 'fc-rdiag-' + d1 + '-' + d2,
-        concept: 'Rhombus',
-        skillId: 'formula-choice',
-        formulaId: 'rhombus-diagonal',
-        dok: 2,
-        objective: 'Choose the diagonal formula.',
-        intel: 'Both diagonals are given directly.',
-        stem: `A rhombus gives diagonals <strong>${d1}</strong> and <strong>${d2}</strong>. Which formula is the best match?`,
-        hint: 'Choose the formula that multiplies the diagonals and halves the product.',
-        explanation: 'Because the prompt gives both diagonals, the best direct formula is A = 1/2 × d1 × d2.',
-        formula: 'A = 1/2 × d1 × d2',
-        shapeHtml: rhombusSvg({ d1: 'd1 = ' + d1, d2: 'd2 = ' + d2 }),
-        choices: textChoices(
-          rng,
-          'A = 1/2 × d1 × d2',
-          ['A = b × h', 'A = 2(b + h)', 'A = d1 + d2'],
-          'Correct. The formula uses both given diagonals directly.',
-          {
-            'A = b × h': 'That would require base and perpendicular height instead.',
-            'A = 2(b + h)': 'That is not an area formula.',
-            'A = d1 + d2': 'Adding diagonals does not produce area.'
-          },
-          'Choose the formula that matches the data.'
-        )
-      });
-    }
+        /* ═══════════════════════════════════════════
+         TITLE SCENE
+         ═══════════════════════════════════════════ */
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("TitleScene");
+          }
 
-    function genCompare(rng){
-      const scenario = sample(rng, ['equal', 'para', 'rhombus']);
-      const unit = sample(rng, UNITS);
-      let paraBase;
-      let paraHeight;
-      let d1;
-      let d2;
-      let answer;
-      if (scenario === 'equal'){
-        paraBase = randInt(rng, 6, 14);
-        paraHeight = randInt(rng, 4, 10);
-        d1 = paraBase * 2;
-        d2 = paraHeight;
-        answer = 'They are equal.';
-      } else if (scenario === 'para'){
-        paraBase = randInt(rng, 10, 16);
-        paraHeight = randInt(rng, 6, 10);
-        d1 = randInt(rng, 4, 8) * 2;
-        d2 = randInt(rng, 3, 6) * 2;
-        answer = 'The parallelogram has the greater area.';
-      } else {
-        paraBase = randInt(rng, 5, 10);
-        paraHeight = randInt(rng, 4, 8);
-        d1 = randInt(rng, 10, 16) * 2;
-        d2 = randInt(rng, 6, 10) * 2;
-        answer = 'The rhombus has the greater area.';
-      }
-      const paraArea = paraBase * paraHeight;
-      const rhombusArea = (d1 * d2) / 2;
-      return makeQuestion({
-        id: 'cmp-' + scenario + '-' + paraBase + '-' + paraHeight + '-' + d1 + '-' + d2,
-        concept: 'Mixed',
-        skillId: 'comparison',
-        formulaId: 'mixed',
-        dok: 3,
-        objective: 'Compute both areas and compare them.',
-        intel: 'You have enough information for both shapes.',
-        stem: `A parallelogram has base <strong>${formatMeasure(paraBase, unit)}</strong> and height <strong>${formatMeasure(paraHeight, unit)}</strong>. A rhombus has diagonals <strong>${formatMeasure(d1, unit)}</strong> and <strong>${formatMeasure(d2, unit)}</strong>. Which statement is true?`,
-        hint: `Parallelogram area = ${paraBase} × ${paraHeight}. Rhombus area = 1/2 × ${d1} × ${d2}.`,
-        explanation: `Parallelogram area = ${paraArea}. Rhombus area = ${rhombusArea}. Compare those values directly.`,
-        formula: `Parallelogram = ${paraArea} ${unit}² | Rhombus = ${rhombusArea} ${unit}²`,
-        shapeHtml: '',
-        choices: textChoices(
-          rng,
-          answer,
-          [
-            'The parallelogram has the greater area.',
-            'The rhombus has the greater area.',
-            'They are equal.',
-            'There is not enough information.'
-          ].filter((item) => item !== answer),
-          'Correct. Compute both first, then compare.',
-          {
-            'The parallelogram has the greater area.': 'Compute both areas first to confirm that conclusion.',
-            'The rhombus has the greater area.': 'Compute both areas first to confirm that conclusion.',
-            'They are equal.': 'They are equal only when both computed areas match exactly.',
-            'There is not enough information.': 'There is enough information to compute both areas.'
-          },
-          'Solve both shape areas before comparing.'
-        )
-      });
-    }
+          create() {
+            this.cameras.main.setBackgroundColor(CLR.bg);
+            // Starfield background
+            for (let i = 0; i < 80; i++) {
+              const x = Phaser.Math.Between(0, W),
+                y = Phaser.Math.Between(0, H);
+              const s = this.add.circle(
+                x,
+                y,
+                Phaser.Math.Between(1, 2),
+                0xffffff,
+                Phaser.Math.FloatBetween(0.1, 0.4),
+              );
+              this.tweens.add({
+                targets: s,
+                alpha: { from: s.alpha, to: 0.05 },
+                duration: Phaser.Math.Between(1500, 3500),
+                yoyo: true,
+                repeat: -1,
+              });
+            }
 
-    function genScenarioTotal(rng){
-      const type = sample(rng, ['para', 'rhombus']);
-      const unit = sample(rng, UNITS);
-      const count = randInt(rng, 3, 6);
-      if (type === 'para'){
-        const base = randInt(rng, 6, 12);
-        const height = randInt(rng, 4, 10);
-        const single = base * height;
-        const total = single * count;
-        return makeQuestion({
-          id: 'st-para-' + base + '-' + height + '-' + count,
-          concept: 'Parallelogram',
-          skillId: 'comparison',
-          formulaId: 'parallelogram',
-          dok: 3,
-          objective: 'Find one area, then scale up the total.',
-          intel: 'Solve the panel area once, then multiply by the number of panels.',
-          stem: `A shipment includes <strong>${count}</strong> parallelogram panels. Each panel has base <strong>${formatMeasure(base, unit)}</strong> and height <strong>${formatMeasure(height, unit)}</strong>. What total area do the panels cover?`,
-          hint: `One panel is ${base} × ${height}. Multiply that result by ${count}.`,
-          explanation: `One panel covers ${single} ${unit}². With ${count} identical panels, the total area is ${single} × ${count} = ${total} ${unit}².`,
-          formula: `${count} × (${base} × ${height}) = ${formatArea(total, unit)}`,
-          shapeHtml: parallelogramSvg({ base: 'b = ' + formatMeasure(base, unit), height: 'h = ' + formatMeasure(height, unit) }),
-          choices: buildChoiceSet(
-            rng,
-            total,
-            [single, total + single, Math.round(total / 2), count * (base + height)],
-            (value) => formatArea(value, unit),
-            {
-              [single]: 'That is one panel only.',
-              [total + single]: 'That adds an extra panel after already scaling.',
-              [Math.round(total / 2)]: 'That undercounts the final total.',
-              [count * (base + height)]: 'That scales a perimeter-style expression.'
-            },
-            'Correct. Solve one panel first, then scale up.',
-            'Find one area, then multiply by the number of shapes.'
-          )
-        });
-      }
-      const d1 = randInt(rng, 4, 10) * 2;
-      const d2 = randInt(rng, 3, 9) * 2;
-      const single = (d1 * d2) / 2;
-      const total = single * count;
-      return makeQuestion({
-        id: 'st-rdiag-' + d1 + '-' + d2 + '-' + count,
-        concept: 'Rhombus',
-        skillId: 'comparison',
-        formulaId: 'rhombus-diagonal',
-        dok: 3,
-        objective: 'Find one tile area, then scale up the total.',
-        intel: 'Use the diagonal formula for one tile before multiplying by the count.',
-        stem: `A designer uses <strong>${count}</strong> rhombus tiles. Each tile has diagonals <strong>${formatMeasure(d1, unit)}</strong> and <strong>${formatMeasure(d2, unit)}</strong>. What total area do all tiles cover?`,
-        hint: `One tile is 1/2 × ${d1} × ${d2}. Then multiply by ${count}.`,
-        explanation: `One tile covers ${single} ${unit}². Multiply by ${count} tiles to get ${total} ${unit}².`,
-        formula: `${count} × (1/2 × ${d1} × ${d2}) = ${formatArea(total, unit)}`,
-        shapeHtml: rhombusSvg({ d1: 'd1 = ' + formatMeasure(d1, unit), d2: 'd2 = ' + formatMeasure(d2, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          total,
-          [single, total + single, Math.round(total / 2), count * d1 * d2],
-          (value) => formatArea(value, unit),
-          {
-            [single]: 'That is one tile only.',
-            [total + single]: 'That adds one extra tile after already scaling up.',
-            [Math.round(total / 2)]: 'That halves the final total incorrectly.',
-            [count * d1 * d2]: 'That forgets the 1/2 factor for each rhombus.'
-          },
-          'Correct. Solve one tile, then scale it.',
-          'Find one tile area first, then multiply.'
-        )
-      });
-    }
+            // Grid floor lines
+            const gfx = this.add.graphics();
+            gfx.lineStyle(1, 0x1a2d50, 0.3);
+            for (let y = 200; y < H; y += 40) gfx.lineBetween(0, y, W, y);
+            for (let x = 0; x < W; x += 60) gfx.lineBetween(x, 200, x, H);
 
-    function genScenarioCost(rng){
-      const type = sample(rng, ['para', 'rhombus']);
-      const rate = sample(rng, [2, 3, 4, 5]);
-      const unit = sample(rng, ['m', 'ft']);
-      if (type === 'para'){
-        const base = randInt(rng, 7, 15);
-        const height = randInt(rng, 4, 10);
-        const area = base * height;
-        const cost = area * rate;
-        return makeQuestion({
-          id: 'cost-para-' + base + '-' + height + '-' + rate,
-          concept: 'Parallelogram',
-          skillId: 'comparison',
-          formulaId: 'parallelogram',
-          dok: 3,
-          objective: 'Calculate area, then apply the price rate.',
-          intel: 'This is a two-step mission: geometry first, cost second.',
-          stem: `A parallelogram mural has base <strong>${formatMeasure(base, unit)}</strong> and height <strong>${formatMeasure(height, unit)}</strong>. If finishing costs <strong>$${rate} per ${unit}²</strong>, what is the total cost?`,
-          hint: `First find the area (${base} × ${height}), then multiply by $${rate}.`,
-          explanation: `The mural covers ${area} ${unit}². At $${rate} per ${unit}², the total cost is $${cost}.`,
-          formula: `(${base} × ${height}) × ${rate} = $${cost}`,
-          shapeHtml: parallelogramSvg({ base: 'b = ' + formatMeasure(base, unit), height: 'h = ' + formatMeasure(height, unit) }),
-          choices: buildChoiceSet(
-            rng,
-            cost,
-            [area, area * Math.max(1, rate - 1), cost + rate, Math.round(cost / 2)],
-            (value) => '$' + value,
-            {
-              [area]: 'That is the area, not the cost.',
-              [area * Math.max(1, rate - 1)]: 'That uses the wrong price rate.',
-              [cost + rate]: 'That adds the rate instead of multiplying by it.',
-              [Math.round(cost / 2)]: 'That halves the final cost incorrectly.'
-            },
-            'Correct. Compute the area, then multiply by the rate.',
-            'Use geometry first, then pricing.'
-          )
-        });
-      }
-      const d1 = randInt(rng, 4, 10) * 2;
-      const d2 = randInt(rng, 3, 8) * 2;
-      const area = (d1 * d2) / 2;
-      const cost = area * rate;
-      return makeQuestion({
-        id: 'cost-rdiag-' + d1 + '-' + d2 + '-' + rate,
-        concept: 'Rhombus',
-        skillId: 'comparison',
-        formulaId: 'rhombus-diagonal',
-        dok: 3,
-        objective: 'Calculate rhombus area, then apply the price rate.',
-        intel: 'Halve the product of the diagonals before pricing the sign.',
-        stem: `A rhombus sign has diagonals <strong>${formatMeasure(d1, unit)}</strong> and <strong>${formatMeasure(d2, unit)}</strong>. If production costs <strong>$${rate} per ${unit}²</strong>, what is the total cost?`,
-        hint: `Area = 1/2 × ${d1} × ${d2}, then multiply by $${rate}.`,
-        explanation: `The sign covers ${area} ${unit}². At $${rate} per ${unit}², total cost is $${cost}.`,
-        formula: `(1/2 × ${d1} × ${d2}) × ${rate} = $${cost}`,
-        shapeHtml: rhombusSvg({ d1: 'd1 = ' + formatMeasure(d1, unit), d2: 'd2 = ' + formatMeasure(d2, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          cost,
-          [area, d1 * d2 * rate, cost + rate, Math.round(cost / 2)],
-          (value) => '$' + value,
-          {
-            [area]: 'That is the area, not the final cost.',
-            [d1 * d2 * rate]: 'That skips the 1/2 factor in the area formula.',
-            [cost + rate]: 'That adds the rate instead of multiplying by it.',
-            [Math.round(cost / 2)]: 'That halves the total cost incorrectly.'
-          },
-          'Correct. Solve the area first, then price it.',
-          'Use the diagonal area, then multiply by the rate.'
-        )
-      });
-    }
+            // Animated building silhouettes
+            this.drawBuildings(gfx);
 
-    function genReasoning(rng){
-      const variant = sample(rng, ['half', 'rhombus-family']);
-      if (variant === 'half'){
-        return makeQuestion({
-          id: 'reason-half',
-          concept: 'Rhombus',
-          skillId: 'comparison',
-          formulaId: 'rhombus-diagonal',
-          dok: 3,
-          objective: 'Explain the meaning of the 1/2 in the rhombus formula.',
-          intel: 'This is a concept mission, not just a computation mission.',
-          stem: 'Why does the rhombus diagonal formula include <strong>1/2</strong>?',
-          hint: 'Imagine the rhombus inside a rectangle made from its diagonals.',
-          explanation: 'A rhombus with diagonals d1 and d2 fits into a rectangle with those side lengths, and the rhombus covers exactly half that rectangle.',
-          formula: 'Rectangle area = d1 × d2, so rhombus area = 1/2 × d1 × d2',
-          shapeHtml: '',
-          choices: textChoices(
-            rng,
-            'Because the rhombus is half of a rectangle formed by its diagonals.',
-            [
-              'Because diagonals should always be added before multiplying.',
-              'Because every slanted shape automatically uses 1/2.',
-              'Because diagonals measure perimeter instead of area.'
-            ],
-            'Correct. The 1/2 has a real geometric meaning.',
-            {
-              'Because diagonals should always be added before multiplying.': 'The formula multiplies the diagonals; it does not add them.',
-              'Because every slanted shape automatically uses 1/2.': 'The 1/2 comes from this specific geometry, not from slant alone.',
-              'Because diagonals measure perimeter instead of area.': 'The diagonals help determine area in this case.'
-            },
-            'Focus on the geometry behind the formula.'
-          )
-        });
-      }
-      return makeQuestion({
-        id: 'reason-family',
-        concept: 'Rhombus',
-        skillId: 'comparison',
-        formulaId: 'rhombus-base-height',
-        dok: 3,
-        objective: 'Explain why base-height works for a rhombus.',
-        intel: 'This question checks shape classification and reasoning.',
-        stem: 'Why can a rhombus use the formula <strong>A = b × h</strong> when base and perpendicular height are known?',
-        hint: 'Think about what larger family of shapes includes rhombuses.',
-        explanation: 'A rhombus is a special parallelogram, so the same base-times-perpendicular-height area rule applies.',
-        formula: 'Rhombus + perpendicular height -> A = b × h',
-        shapeHtml: '',
-        choices: textChoices(
-          rng,
-          'Because a rhombus is a type of parallelogram.',
-          [
-            'Because every quadrilateral uses the same area formula.',
-            'Because diagonals and base-height formulas always match by coincidence.',
-            'Because rhombuses do not need perpendicular measurements.'
-          ],
-          'Correct. Shape family matters here.',
-          {
-            'Because every quadrilateral uses the same area formula.': 'Different quadrilaterals use different formulas.',
-            'Because diagonals and base-height formulas always match by coincidence.': 'The relationship comes from geometry, not coincidence.',
-            'Because rhombuses do not need perpendicular measurements.': 'Perpendicular height still matters for A = b × h.'
-          },
-          'Think about what kind of shape a rhombus is.'
-        )
-      });
-    }
+            // Title
+            this.add
+              .text(W / 2, 100, "ARCHITECTURE BUILDER", {
+                fontSize: "48px",
+                fontFamily: "Arial Black, sans-serif",
+                color: "#ffcf72",
+                stroke: "#0a1628",
+                strokeThickness: 6,
+              })
+              .setOrigin(0.5);
 
-    function genBossPrep(rng){
-      const base = randInt(rng, 8, 16);
-      const height = randInt(rng, 5, 11);
-      const area = base * height;
-      const unit = sample(rng, ['m', 'ft']);
-      return makeQuestion({
-        id: 'boss-prep-' + base + '-' + height + '-' + unit,
-        concept: 'Boss Prep',
-        skillId: 'boss-tactics',
-        formulaId: 'parallelogram',
-        dok: 2,
-        isBoss: true,
-        bossLine: 'Mr. Neft opens with a warm-up trap. Stay calm and hit the clean formula.',
-        objective: 'Break the first shield with a precise area calculation.',
-        intel: 'Boss shields crack only when the formula is exact.',
-        stem: `Mr. Neft throws a quick shield panel at you: a parallelogram with base <strong>${formatMeasure(base, unit)}</strong> and height <strong>${formatMeasure(height, unit)}</strong>. What is the shield area?`,
-        hint: `Do not overthink it. Use A = b × h.`,
-        explanation: `The shield is a parallelogram, so area = ${base} × ${height} = ${area}.`,
-        formula: `A = b × h = ${base} × ${height} = ${formatArea(area, unit)}`,
-        shapeHtml: parallelogramSvg({ base: 'b = ' + formatMeasure(base, unit), height: 'h = ' + formatMeasure(height, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          area,
-          [base + height, 2 * (base + height), Math.round(area / 2), area + height],
-          (value) => formatArea(value, unit),
-          {
-            [base + height]: 'Mr. Neft loves when players add instead of multiply.',
-            [2 * (base + height)]: 'That is a perimeter trap, not area.',
-            [Math.round(area / 2)]: 'There is no 1/2 factor here.',
-            [area + height]: 'That adds extra distance after the correct area.'
-          },
-          'Direct hit. The shield takes damage.',
-          'Use the clean parallelogram formula.'
-        )
-      });
-    }
+            this.add
+              .text(W / 2, 155, "Area of Parallelograms & Rhombuses", {
+                fontSize: "18px",
+                fontFamily: "Arial, sans-serif",
+                color: "#a4b8dc",
+              })
+              .setOrigin(0.5);
 
-    function genBossPhase(rng){
-      const d1 = randInt(rng, 6, 14) * 2;
-      const d2 = randInt(rng, 5, 12) * 2;
-      const area = (d1 * d2) / 2;
-      const unit = sample(rng, ['m', 'ft']);
-      return makeQuestion({
-        id: 'boss-phase-' + d1 + '-' + d2 + '-' + unit,
-        concept: 'Boss Phase',
-        skillId: 'boss-tactics',
-        formulaId: 'rhombus-diagonal',
-        dok: 3,
-        isBoss: true,
-        bossLine: 'Mr. Neft shifts to a diagonal trap. Read the data and break the pattern.',
-        objective: 'Break the boss shield with the diagonal formula.',
-        intel: 'Boss phases punish formula confusion.',
-        stem: `Mr. Neft launches a rhombus barrier with diagonals <strong>${formatMeasure(d1, unit)}</strong> and <strong>${formatMeasure(d2, unit)}</strong>. What is the barrier area?`,
-        hint: `Use A = 1/2 × d1 × d2.`,
-        explanation: `The barrier is a rhombus, so area = 1/2 × ${d1} × ${d2} = ${area}.`,
-        formula: `A = 1/2 × ${d1} × ${d2} = ${formatArea(area, unit)}`,
-        shapeHtml: rhombusSvg({ d1: 'd1 = ' + formatMeasure(d1, unit), d2: 'd2 = ' + formatMeasure(d2, unit) }),
-        choices: buildChoiceSet(
-          rng,
-          area,
-          [d1 * d2, d1 + d2, Math.round(area / 2), area + d1],
-          (value) => formatArea(value, unit),
-          {
-            [d1 * d2]: 'That skips the 1/2 the boss is hoping you miss.',
-            [d1 + d2]: 'Adding diagonals does not produce area.',
-            [Math.round(area / 2)]: 'That halves the result twice.',
-            [area + d1]: 'That adds an extra diagonal after solving.'
-          },
-          'Critical strike. Another boss shield breaks.',
-          'Use the diagonal formula carefully.'
-        )
-      });
-    }
+            // Architect selection
+            this.add
+              .text(W / 2, 210, "Choose Your Architect", {
+                fontSize: "22px",
+                fontFamily: "Arial, sans-serif",
+                color: "#4ecdc4",
+              })
+              .setOrigin(0.5);
 
-    function genBossFinal(rng){
-      const paraBase = randInt(rng, 10, 16);
-      const paraHeight = randInt(rng, 6, 10);
-      const d1 = randInt(rng, 10, 16) * 2;
-      const d2 = randInt(rng, 6, 10) * 2;
-      const unit = sample(rng, ['m', 'ft']);
-      const paraArea = paraBase * paraHeight;
-      const rhombusArea = (d1 * d2) / 2;
-      const total = paraArea + rhombusArea;
-      return makeQuestion({
-        id: 'boss-final-' + paraBase + '-' + paraHeight + '-' + d1 + '-' + d2 + '-' + unit,
-        concept: 'Final Boss',
-        skillId: 'boss-tactics',
-        formulaId: 'mixed',
-        dok: 3,
-        isBoss: true,
-        bossLine: 'Final phase. Mr. Neft combines both shape families in one last arena strike.',
-        objective: 'Compute both areas and finish the boss.',
-        intel: 'The final hit requires two formulas and one combined total.',
-        stem: `Final strike: Mr. Neft fuses a parallelogram panel with base <strong>${formatMeasure(paraBase, unit)}</strong> and height <strong>${formatMeasure(paraHeight, unit)}</strong> to a rhombus panel with diagonals <strong>${formatMeasure(d1, unit)}</strong> and <strong>${formatMeasure(d2, unit)}</strong>. What is the total arena area?`,
-        hint: `Find the parallelogram area and rhombus area separately, then add them.`,
-        explanation: `Parallelogram area = ${paraBase} × ${paraHeight} = ${paraArea}. Rhombus area = 1/2 × ${d1} × ${d2} = ${rhombusArea}. Total = ${total}.`,
-        formula: `${paraArea} + ${rhombusArea} = ${formatArea(total, unit)}`,
-        shapeHtml: '',
-        choices: buildChoiceSet(
-          rng,
-          total,
-          [paraArea, rhombusArea, paraArea + d1, total + paraHeight],
-          (value) => formatArea(value, unit),
-          {
-            [paraArea]: 'That uses only the parallelogram and ignores the rhombus.',
-            [rhombusArea]: 'That uses only the rhombus and ignores the parallelogram.',
-            [paraArea + d1]: 'That adds a diagonal length instead of the rhombus area.',
-            [total + paraHeight]: 'That adds an extra height after already solving the total.'
-          },
-          'Final hit confirmed. Mr. Neft is down.',
-          'Compute both shape areas, then add them.'
-        )
-      });
-    }
+            const architects = [
+              { name: "Aria", emoji: "👷‍♀️", perk: "+1 Life", color: 0x4ecdc4 },
+              {
+                name: "Marcus",
+                emoji: "👷",
+                perk: "Extra Hints",
+                color: 0xf7dc6f,
+              },
+              { name: "Zara", emoji: "👩‍🔬", perk: "+5s Timer", color: 0xaf7ac5 },
+              {
+                name: "Rex",
+                emoji: "🦸",
+                perk: "Combo Boost",
+                color: 0xff6b6b,
+              },
+            ];
 
-    const GENERATORS = Object.freeze({
-      'para-area': (rng) => genParallelogramArea(rng, false),
-      'para-context': (rng) => genParallelogramArea(rng, true),
-      'rhombus-area': (rng) => genRhombusArea(rng, false),
-      'rhombus-context': (rng) => genRhombusArea(rng, true),
-      'rhombus-base-height': (rng) => genRhombusBaseHeight(rng),
-      'inverse-height': (rng) => genInverseHeight(rng),
-      'inverse-base': (rng) => genInverseBase(rng),
-      'missing-diagonal': (rng) => genMissingDiagonal(rng),
-      'formula-choice': (rng) => genFormulaChoice(rng),
-      'compare': (rng) => genCompare(rng),
-      'scenario-total': (rng) => genScenarioTotal(rng),
-      'scenario-cost': (rng) => genScenarioCost(rng),
-      'reasoning': (rng) => genReasoning(rng),
-      'boss-prep': (rng) => genBossPrep(rng),
-      'boss-phase': (rng) => genBossPhase(rng),
-      'boss-final': (rng) => genBossFinal(rng)
-    });
+            const startX = W / 2 - ((architects.length - 1) * 110) / 2;
+            architects.forEach((arch, i) => {
+              const bx = startX + i * 110,
+                by = 320;
+              const card = this.add
+                .rectangle(bx, by, 100, 140, CLR.panel, 0.9)
+                .setStrokeStyle(2, arch.color, 0.6)
+                .setInteractive({ useHandCursor: true });
+              this.add
+                .text(bx, by - 35, arch.emoji, { fontSize: "36px" })
+                .setOrigin(0.5);
+              this.add
+                .text(bx, by + 15, arch.name, {
+                  fontSize: "14px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#eef5ff",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(bx, by + 38, arch.perk, {
+                  fontSize: "11px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#a4b8dc",
+                })
+                .setOrigin(0.5);
 
-    function selfTest(){
-      const profile = defaultProfile();
-      Object.values(MODE_LIBRARY).forEach((mode) => {
-        if (mode.finite){
-          const session = createSession(mode.id, profile);
-          if (session.questions.length !== mode.blueprint.length){
-            throw new Error('Question count mismatch for ' + mode.id);
+              card.on("pointerover", () => {
+                card.setStrokeStyle(3, arch.color, 1);
+              });
+              card.on("pointerout", () => {
+                card.setStrokeStyle(2, arch.color, 0.6);
+              });
+              card.on("pointerdown", () => {
+                ensureAudio();
+                sfxClick();
+                this.scene.start("GameScene", { architect: arch });
+              });
+            });
+
+            // Keyboard shortcuts
+            this.add
+              .text(
+                W / 2,
+                440,
+                "Press 1-4 to select  |  5 zones  |  20 questions  |  Mr. Neft boss fight!",
+                {
+                  fontSize: "12px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#7e96c2",
+                },
+              )
+              .setOrigin(0.5);
+
+            this.add
+              .text(
+                W / 2,
+                470,
+                "Language-Friendly  •  Simple English  •  Visual Cues",
+                {
+                  fontSize: "11px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#7e96c2",
+                },
+              )
+              .setOrigin(0.5);
+
+            // Formulas reference
+            this.add
+              .text(
+                W / 2,
+                520,
+                "Parallelogram: A = b × h     Rhombus: A = ½ × d1 × d2  or  A = b × h",
+                {
+                  fontSize: "13px",
+                  fontFamily: "Courier New, monospace",
+                  color: "#4ecdc4",
+                },
+              )
+              .setOrigin(0.5);
+
+            this.input.keyboard.on("keydown", (e) => {
+              const idx = parseInt(e.key) - 1;
+              if (idx >= 0 && idx < architects.length) {
+                ensureAudio();
+                sfxClick();
+                this.scene.start("GameScene", { architect: architects[idx] });
+              }
+            });
+          }
+
+          drawBuildings(gfx) {
+            const buildings = [
+              { x: 60, w: 70, h: 180 },
+              { x: 160, w: 50, h: 140 },
+              { x: 240, w: 80, h: 200 },
+              { x: 350, w: 60, h: 160 },
+              { x: 450, w: 90, h: 220 },
+              { x: 570, w: 55, h: 150 },
+              { x: 660, w: 75, h: 190 },
+              { x: 770, w: 65, h: 170 },
+              { x: 870, w: 50, h: 130 },
+            ];
+            buildings.forEach((b) => {
+              gfx.fillStyle(0x0d1830, 0.7);
+              gfx.fillRect(b.x, H - b.h, b.w, b.h);
+              gfx.lineStyle(1, 0x1a2d50, 0.5);
+              gfx.strokeRect(b.x, H - b.h, b.w, b.h);
+              // Windows
+              for (let wy = H - b.h + 15; wy < H - 20; wy += 25) {
+                for (let wx = b.x + 8; wx < b.x + b.w - 8; wx += 16) {
+                  const lit = Math.random() > 0.4;
+                  gfx.fillStyle(lit ? 0xffcf72 : 0x091526, lit ? 0.4 : 0.3);
+                  gfx.fillRect(wx, wy, 8, 10);
+                }
+              }
+            });
           }
         }
-      });
-      const infinity = createSession('infinity', profile);
-      nextInfinityQuestion(infinity);
-    }
 
-    function createSession(modeId, profile){
-      const mode = MODE_LIBRARY[modeId];
-      const dailyKey = todaysKey();
-      const seedBase = modeId === 'daily' ? 'daily:' + dailyKey : modeId + ':' + Date.now() + ':' + (profile.totalRuns + 1);
-      const seed = hashString(seedBase);
-      const rng = mulberry32(seed);
-      const questions = mode.finite ? mode.blueprint.map((key) => GENERATORS[key](rng)) : [];
-      return {
-        modeId,
-        mode,
-        seed,
-        seedLabel: seed.toString(16).toUpperCase().slice(0, 8),
-        dailyKey: modeId === 'daily' ? dailyKey : null,
-        questions,
-        questionIndex: 0,
-        currentQuestion: null,
-        answered: false,
-        questionStartAt: 0,
-        attemptNumber: 1,
-        attemptsUsed: 0,
-        incorrectChoices: new Set(),
-        hintUsedOnCurrent: false,
-        score: 0,
-        correctQuestions: 0,
-        wrongQuestions: 0,
-        recoveries: 0,
-        firstTryClears: 0,
-        streak: 0,
-        bestStreak: 0,
-        hintsRemaining: mode.hints,
-        livesRemaining: modeId === 'infinity' ? CONFIG.infinityLives : (modeId === 'boss' ? CONFIG.bossLives : null),
-        bossHealth: modeId === 'boss' ? mode.blueprint.length : null,
-        responseTimes: [],
-        skillDelta: {},
-        unlockedThisRun: [],
-        log: ['Command deck online.'],
-        infiniteAnswered: 0,
-        highScoreBeaten: false,
-        challengeComplete: false,
-        finished: false
-      };
-    }
+        /* ═══════════════════════════════════════════
+         GAME SCENE
+         ═══════════════════════════════════════════ */
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("GameScene");
+          }
 
-    function nextInfinityQuestion(session){
-      const answered = session.correctQuestions + session.wrongQuestions;
-      const pool = answered >= 10
-        ? ['scenario-cost', 'compare', 'reasoning', 'missing-diagonal', 'scenario-total', 'boss-phase']
-        : answered >= 4
-          ? ['inverse-base', 'inverse-height', 'rhombus-base-height', 'compare', 'missing-diagonal', 'scenario-total']
-          : ['para-area', 'rhombus-area', 'para-context', 'rhombus-context', 'formula-choice', 'inverse-height'];
-      const rng = mulberry32(hashString(session.seedLabel + '-inf-' + answered + '-' + session.score));
-      return GENERATORS[sample(rng, pool)](rng);
-    }
+          init(data) {
+            this.architect = data.architect;
+            this.zone = 0;
+            this.qIndex = 0;
+            this.score = 0;
+            this.combo = 0;
+            this.maxCombo = 0;
+            this.correct = 0;
+            this.total = 0;
+            this.lives = this.architect.perk === "+1 Life" ? 6 : 5;
+            this.maxLives = this.lives;
+            this.hints = this.architect.perk === "Extra Hints" ? 4 : 2;
+            this.maxHints = this.hints;
+            this.timerBase = this.architect.perk === "+5s Timer" ? 35 : 30;
+            this.comboMult = this.architect.perk === "Combo Boost" ? 1.5 : 1.0;
+            this.bossHP = 4;
+            this.bossMaxHP = 4;
+            this.questions = this.generateAllQuestions();
+            this.answered = false;
+            this.shownHint = false;
+            this.building = []; // track placed blocks
+          }
 
-    const state = {
-      profile: loadProfile(),
-      session: null,
-      timerId: null,
-      refs: {}
-    };
+          generateAllQuestions() {
+            const qs = [];
+            for (let z = 0; z < 4; z++) {
+              const zone = ZONES[z];
+              for (let i = 0; i < zone.count; i++) {
+                const gen = zone.generators[i % zone.generators.length];
+                qs.push({ ...gen(), zone: z });
+              }
+            }
+            // Boss zone (zone 4)
+            qs.push({ ...genBoss("prep"), zone: 4 });
+            qs.push({ ...genBoss("prep"), zone: 4 });
+            qs.push({ ...genBoss("diag"), zone: 4 });
+            qs.push({ ...genBoss("final"), zone: 4 });
+            return qs;
+          }
 
-    function byId(id){
-      return document.getElementById(id);
-    }
+          create() {
+            this.cameras.main.setBackgroundColor(CLR.bg);
 
-    function initRefs(){
-      [
-        'bootScreen','bootStatus','homeScreen','playScreen','resultsScreen','profileMark','profileTitle','profileMeta','heroStats',
-        'heroFormulaBank','dailySeed','modeGrid','modeChip','questionChip','challengeChip','hudScore','hudStreak','hudHints',
-        'hudLives','lifeLabel','progressLabel','timerLabel','progressFill','bossBanner','bossTitle','bossPhaseChip','bossCopy',
-        'bossMeterLabel','bossFill','questionConcept','questionSkill','questionDok','questionStem','questionObjective',
-        'questionIntel','visualWrap','choiceGrid','hintButton','nextButton','stopButton','attemptChip','hintBox','feedbackBox',
-        'feedbackTitle','feedbackCopy','feedbackFormula','formulaNote','playFormulaBank','telemetryAccuracy','telemetryStreak',
-        'telemetryRecoveries','telemetrySeed','logList','resultsBadge','resultsEyebrow','resultsTitle','resultsSummary',
-        'resultsScore','resultsAccuracy','resultsStreak','resultsRecoveries','resultsBreakdown','resultsRecommendation',
-        'resultsMastery','resultsAchievements','replayButton','resultsHomeButton','toastStack','liveRegion','homeButton'
-      ].forEach((id) => { state.refs[id] = byId(id); });
-    }
+            // Background grid
+            const gfx = this.add.graphics();
+            gfx.lineStyle(1, 0x1a2d50, 0.15);
+            for (let y = 0; y < H; y += 30) gfx.lineBetween(0, y, W, y);
+            for (let x = 0; x < W; x += 30) gfx.lineBetween(x, 0, x, H);
 
-    function showScreen(id){
-      ['bootScreen','homeScreen','playScreen','resultsScreen'].forEach((screenId) => {
-        byId(screenId).classList.toggle('active', screenId === id);
-      });
-    }
+            // Building area (right side)
+            this.buildingGfx = this.add.graphics();
+            this.drawBuildingArea();
 
-    function announce(message){
-      state.refs.liveRegion.textContent = message;
-    }
+            // HUD
+            this.createHUD();
 
-    function pushToast(title, copy){
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerHTML = '<strong>' + title + '</strong><span>' + copy + '</span>';
-      state.refs.toastStack.appendChild(toast);
-      window.setTimeout(() => toast.remove(), 2600);
-    }
+            // Question area
+            this.showQuestion();
 
-    function addLog(message){
-      if (!state.session) return;
-      state.session.log.unshift(message);
-      state.session.log = state.session.log.slice(0, 6);
-      renderLog();
-    }
+            // Keyboard controls
+            this.input.keyboard.on("keydown", (e) => {
+              if (this.answered) return;
+              const map = { 1: 0, 2: 1, 3: 2, 4: 3, a: 0, b: 1, c: 2, d: 3 };
+              if (map[e.key.toLowerCase()] !== undefined)
+                this.selectAnswer(map[e.key.toLowerCase()]);
+              if (e.key.toLowerCase() === "h") this.useHint();
+            });
+          }
 
-    function renderLog(){
-      const log = state.session?.log || ['Awaiting mission launch.'];
-      state.refs.logList.innerHTML = log.map((item) => `<div class="log-item"><strong>Log:</strong> ${item}</div>`).join('');
-    }
+          createHUD() {
+            // Top bar
+            this.add
+              .rectangle(W / 2, 25, W - 20, 44, CLR.panel, 0.85)
+              .setStrokeStyle(1, 0x1a2d50);
 
-    function updateProfileHeader(){
-      const rank = rankForXp(state.profile.xp);
-      state.refs.profileMark.textContent = rank.mark;
-      state.refs.profileTitle.textContent = rank.label;
-      state.refs.profileMeta.textContent = state.profile.xp + ' lifetime XP';
-    }
+            const q = this.questions[this.qIndex];
+            const zn = ZONES[q.zone];
 
-    function renderHeroStats(){
-      const todayBest = state.profile.dailyBest[todaysKey()] || 0;
-      const stats = [
-        { label: 'Lifetime Score', value: state.profile.totalScore },
-        { label: 'Runs Cleared', value: state.profile.totalRuns },
-        { label: 'Best Infinite', value: state.profile.highScores.infinity || 0 },
-        { label: 'Boss Clears', value: state.profile.bossClears || 0 }
-      ];
-      state.refs.heroStats.innerHTML = stats.map((item) => `
-        <div class="hero-stat">
-          <small>${item.label}</small>
-          <strong>${item.value}</strong>
-        </div>
-      `).join('');
-      state.refs.dailySeed.textContent = hashString('daily:' + todaysKey()).toString(16).toUpperCase().slice(0, 6) + ' | Best ' + todayBest;
-    }
+            this.zoneText = this.add.text(15, 14, `${zn.emoji} ${zn.name}`, {
+              fontSize: "15px",
+              fontFamily: "Arial, sans-serif",
+              color: "#4ecdc4",
+              fontStyle: "bold",
+            });
 
-    function renderFormulaBank(target, activeFormulaId){
-      target.innerHTML = FORMULAS.map((formula) => `
-        <div class="formula-card" style="${formula.id === activeFormulaId ? 'border-color:rgba(79,240,218,.32); box-shadow:0 0 0 1px rgba(79,240,218,.12) inset;' : ''}">
-          <div>
-            <strong>${formula.title}</strong>
-            <code style="${formula.id === activeFormulaId ? 'color:var(--teal);' : ''}">${formula.expression}</code>
-          </div>
-          <span class="chip ${formula.id === activeFormulaId ? 'teal' : ''}">${formula.note}</span>
-        </div>
-      `).join('');
-    }
+            this.scoreText = this.add
+              .text(W / 2, 14, `Score: ${this.score}`, {
+                fontSize: "15px",
+                fontFamily: "Arial, sans-serif",
+                color: "#ffcf72",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5, 0);
 
-    function renderHome(){
-      updateProfileHeader();
-      renderHeroStats();
-      renderFormulaBank(state.refs.heroFormulaBank, null);
-      state.refs.modeGrid.innerHTML = Object.values(MODE_LIBRARY).map((mode) => {
-        const score = mode.id === 'daily'
-          ? (state.profile.dailyBest[todaysKey()] || 0)
-          : (state.profile.highScores[mode.id] || 0);
-        return `
-          <article class="mode-card" data-accent="${mode.accent}">
-            <div class="mode-head">
-              <div class="mode-icon">${mode.icon}</div>
-              <span class="chip ${mode.accent === 'boss' ? 'coral' : mode.accent}">${mode.label}</span>
-            </div>
-            <div>
-              <h2 class="mode-title">${mode.title}</h2>
-              <p class="mode-copy">${mode.description}</p>
-            </div>
-            <div class="mode-features">
-              ${mode.features.map((feature) => `<span class="token">${feature}</span>`).join('')}
-            </div>
-            <div class="mode-footer">
-              <div class="mode-challenge"><strong style="color:var(--text);">Challenge:</strong> ${mode.challenge}</div>
-              <button class="button ${mode.id === 'boss' ? 'secondary' : 'primary'}" data-launch-mode="${mode.id}">
-                Launch ${mode.label} | Best ${score}
-              </button>
-            </div>
-          </article>
-        `;
-      }).join('');
-    }
+            this.comboText = this.add
+              .text(W / 2, 32, "", {
+                fontSize: "11px",
+                fontFamily: "Arial, sans-serif",
+                color: "#b9ff78",
+              })
+              .setOrigin(0.5, 0);
+            this.updateComboText();
 
-    function updateTelemetry(){
-      const session = state.session;
-      const answered = session.correctQuestions + session.wrongQuestions;
-      const accuracy = answered ? Math.round((session.correctQuestions / answered) * 100) : 0;
-      state.refs.telemetryAccuracy.textContent = accuracy + '%';
-      state.refs.telemetryStreak.textContent = session.bestStreak;
-      state.refs.telemetryRecoveries.textContent = session.recoveries;
-      state.refs.telemetrySeed.textContent = session.seedLabel;
-    }
+            // Lives
+            this.livesText = this.add
+              .text(W - 15, 14, "", {
+                fontSize: "14px",
+                fontFamily: "Arial, sans-serif",
+                color: "#ff6b6b",
+              })
+              .setOrigin(1, 0);
+            this.updateLivesText();
 
-    function updateBossBanner(){
-      const session = state.session;
-      if (!session || session.modeId !== 'boss'){
-        state.refs.bossBanner.classList.remove('active');
-        return;
-      }
-      state.refs.bossBanner.classList.add('active');
-      state.refs.bossTitle.textContent = 'Mr. Neft';
-      state.refs.bossPhaseChip.textContent = 'Phase ' + (session.questionIndex + 1) + ' / ' + session.questions.length;
-      state.refs.bossCopy.textContent = session.currentQuestion?.bossLine || 'Solve accurately to break the boss shield.';
-      state.refs.bossMeterLabel.textContent = 'Boss Health: ' + session.bossHealth + ' shield' + (session.bossHealth === 1 ? '' : 's');
-      const ratio = session.questions.length ? clamp((session.bossHealth / session.questions.length) * 100, 0, 100) : 0;
-      state.refs.bossFill.style.width = ratio + '%';
-    }
+            // Progress bar
+            this.progressBg = this.add
+              .rectangle(W / 2, 52, W - 20, 6, 0x091526)
+              .setStrokeStyle(1, 0x1a2d50);
+            this.progressBar = this.add
+              .rectangle(15, 52, 0, 6, CLR.teal)
+              .setOrigin(0, 0.5);
+            this.updateProgress();
 
-    function updateHud(){
-      const session = state.session;
-      state.refs.modeChip.textContent = session.mode.title;
-      state.refs.modeChip.className = 'chip ' + (session.mode.accent === 'boss' ? 'coral' : session.mode.accent);
-      state.refs.questionChip.textContent = session.modeId === 'infinity'
-        ? 'Question ' + (session.infiniteAnswered + 1)
-        : 'Question ' + (session.questionIndex + 1) + ' / ' + session.questions.length;
-      state.refs.challengeChip.textContent = session.challengeComplete ? 'Challenge Cleared' : session.mode.challenge;
-      state.refs.challengeChip.className = 'chip ' + (session.challengeComplete ? 'lime' : 'violet');
-      state.refs.hudScore.textContent = session.score;
-      state.refs.hudStreak.textContent = session.streak;
-      state.refs.hudHints.textContent = session.hintsRemaining;
-      if (session.modeId === 'boss'){
-        state.refs.lifeLabel.textContent = 'Hearts';
-        state.refs.hudLives.textContent = session.livesRemaining;
-      } else if (session.modeId === 'infinity'){
-        state.refs.lifeLabel.textContent = 'Lives';
-        state.refs.hudLives.textContent = session.livesRemaining;
-      } else {
-        const answered = session.correctQuestions + session.wrongQuestions;
-        const accuracy = answered ? Math.round((session.correctQuestions / answered) * 100) : 100;
-        state.refs.lifeLabel.textContent = 'Accuracy';
-        state.refs.hudLives.textContent = accuracy + '%';
-      }
-      const progress = session.modeId === 'infinity'
-        ? clamp(((session.correctQuestions + session.wrongQuestions) / 20) * 100, 0, 100)
-        : clamp(((session.questionIndex + (session.answered ? 1 : 0)) / session.questions.length) * 100, 0, 100);
-      state.refs.progressFill.style.width = progress + '%';
-      state.refs.progressLabel.textContent = session.modeId === 'infinity' ? 'Reactor Depth' : 'Mission Progress';
-      updateTelemetry();
-      updateBossBanner();
-    }
+            // Timer bar
+            this.timerBg = this.add.rectangle(W / 2, 62, W - 20, 4, 0x091526);
+            this.timerBar = this.add
+              .rectangle(15, 62, W - 30, 4, CLR.gold)
+              .setOrigin(0, 0.5);
+            this.timeLeft = this.getTimerDuration();
+            this.timerMax = this.timeLeft;
+            this.timerEvent = this.time.addEvent({
+              delay: 100,
+              loop: true,
+              callback: () => {
+                if (this.answered) return;
+                this.timeLeft -= 100;
+                const pct = Math.max(0, this.timeLeft / this.timerMax);
+                this.timerBar.width = (W - 30) * pct;
+                if (pct < 0.3) this.timerBar.setFillStyle(CLR.danger);
+                else if (pct < 0.6) this.timerBar.setFillStyle(0xf7dc6f);
+                else this.timerBar.setFillStyle(CLR.gold);
+                if (this.timeLeft <= 0) this.handleTimeout();
+              },
+            });
 
-    function clearTimer(){
-      if (state.timerId){
-        window.clearInterval(state.timerId);
-        state.timerId = null;
-      }
-    }
+            // Question counter
+            this.qCountText = this.add
+              .text(
+                W - 15,
+                32,
+                `Q ${this.qIndex + 1}/${this.questions.length}`,
+                {
+                  fontSize: "11px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#7e96c2",
+                },
+              )
+              .setOrigin(1, 0);
 
-    function setTimer(){
-      clearTimer();
-      state.timerId = window.setInterval(() => {
-        if (!state.session || state.session.answered || !state.session.questionStartAt) return;
-        const elapsed = (performance.now() - state.session.questionStartAt) / 1000;
-        state.refs.timerLabel.textContent = formatSeconds(elapsed);
-      }, CONFIG.timerIntervalMs);
-    }
+            // Hint button
+            this.hintBtn = this.add
+              .text(15, 35, `[H] Hints: ${this.hints}`, {
+                fontSize: "11px",
+                fontFamily: "Arial, sans-serif",
+                color: "#a88bff",
+              })
+              .setInteractive({ useHandCursor: true });
+            this.hintBtn.on("pointerdown", () => this.useHint());
 
-    function getCurrentQuestion(){
-      const session = state.session;
-      if (session.modeId === 'infinity'){
-        if (!session.currentQuestion || session.answered){
-          session.currentQuestion = nextInfinityQuestion(session);
+            // Architect info
+            this.add
+              .text(
+                W - 15,
+                76,
+                `${this.architect.emoji} ${this.architect.name}`,
+                {
+                  fontSize: "12px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#a4b8dc",
+                },
+              )
+              .setOrigin(1, 0);
+          }
+
+          getTimerDuration() {
+            const base = this.timerBase * 1000;
+            // Decrease timer slightly as zones progress
+            const reduction = this.zone * 1500;
+            return Math.max(15000, base - reduction);
+          }
+
+          updateProgress() {
+            const pct = this.qIndex / this.questions.length;
+            this.progressBar.width = (W - 30) * pct;
+          }
+
+          updateLivesText() {
+            this.livesText.setText(
+              "❤️".repeat(this.lives) + "🖤".repeat(this.maxLives - this.lives),
+            );
+          }
+
+          updateComboText() {
+            if (this.combo > 1) {
+              const mult = Math.min(
+                5,
+                1 + Math.floor(this.combo / 2) * this.comboMult,
+              );
+              this.comboText.setText(
+                `🔥 Streak: ${this.combo} (${mult.toFixed(1)}x)`,
+              );
+            } else if (this.combo === 1) {
+              this.comboText.setText("⭐ Streak: 1");
+            } else {
+              this.comboText.setText("");
+            }
+          }
+
+          showQuestion() {
+            // Clear previous question elements
+            if (this.questionGroup) this.questionGroup.destroy(true);
+            this.questionGroup = this.add.group();
+            this.answered = false;
+            this.shownHint = false;
+
+            const q = this.questions[this.qIndex];
+            const zn = ZONES[q.zone];
+            const isBoss = q.type === "boss";
+
+            // Update zone text
+            if (this.zoneText) this.zoneText.setText(`${zn.emoji} ${zn.name}`);
+            if (this.qCountText)
+              this.qCountText.setText(
+                `Q ${this.qIndex + 1}/${this.questions.length}`,
+              );
+
+            // Boss banner
+            if (isBoss && q.bossPhase === "prep" && this.zone !== 4) {
+              this.zone = 4;
+              this.showZoneBanner(zn.name, zn.emoji, zn.color);
+            }
+
+            // Boss HP bar
+            if (isBoss) {
+              this.showBossHP();
+            }
+
+            // Shape diagram area (left-center)
+            const shapeX = 120,
+              shapeY = 200;
+            this.drawShapeDiagram(q, shapeX, shapeY);
+
+            // Question stem
+            const stemX = 30,
+              stemY = 100;
+            const stemBg = this.add
+              .rectangle(270, stemY + 60, 500, 130, CLR.panel, 0.9)
+              .setStrokeStyle(1, isBoss ? CLR.coral : 0x1a2d50);
+            this.questionGroup.add(stemBg);
+
+            if (isBoss) {
+              const bossIcon = this.add.text(stemX + 10, stemY + 5, "👾", {
+                fontSize: "20px",
+              });
+              this.questionGroup.add(bossIcon);
+              this.tweens.add({
+                targets: bossIcon,
+                scaleX: 1.2,
+                scaleY: 1.2,
+                duration: 500,
+                yoyo: true,
+                repeat: -1,
+              });
+            }
+
+            const stemText = this.add.text(
+              stemX + (isBoss ? 40 : 10),
+              stemY + 5,
+              q.stem,
+              {
+                fontSize: "15px",
+                fontFamily: "Arial, sans-serif",
+                color: "#eef5ff",
+                wordWrap: { width: 460 },
+                lineSpacing: 6,
+              },
+            );
+            this.questionGroup.add(stemText);
+
+            // Formula reference
+            const formulaText = this.add.text(
+              stemX + 10,
+              stemY + 110,
+              `Formula: ${q.formula}`,
+              {
+                fontSize: "12px",
+                fontFamily: "Courier New, monospace",
+                color: "#4ecdc4",
+              },
+            );
+            this.questionGroup.add(formulaText);
+
+            // Answer choices (below question area)
+            const choiceStartY = 290;
+            this.choiceBtns = [];
+
+            q.choices.forEach((c, i) => {
+              const label = String.fromCharCode(65 + i);
+              const cy = choiceStartY + i * 48;
+              const bg = this.add
+                .rectangle(270, cy, 500, 40, CLR.panelLt, 0.85)
+                .setStrokeStyle(1, 0x1a2d50)
+                .setInteractive({ useHandCursor: true });
+              this.questionGroup.add(bg);
+
+              const keyText = this.add
+                .text(40, cy, `[${i + 1}] ${label}.`, {
+                  fontSize: "13px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#a88bff",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0, 0.5);
+              this.questionGroup.add(keyText);
+
+              const choiceText = this.add
+                .text(100, cy, c.text, {
+                  fontSize: "15px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#eef5ff",
+                })
+                .setOrigin(0, 0.5);
+              this.questionGroup.add(choiceText);
+
+              bg.on("pointerover", () => {
+                if (!this.answered) bg.setStrokeStyle(2, CLR.teal);
+              });
+              bg.on("pointerout", () => {
+                if (!this.answered) bg.setStrokeStyle(1, 0x1a2d50);
+              });
+              bg.on("pointerdown", () => {
+                if (!this.answered) this.selectAnswer(i);
+              });
+
+              this.choiceBtns.push({ bg, keyText, choiceText, data: c });
+            });
+
+            // Hint display area
+            this.hintText = this.add.text(30, 505, "", {
+              fontSize: "12px",
+              fontFamily: "Arial, sans-serif",
+              color: "#a88bff",
+              wordWrap: { width: 480 },
+            });
+            this.questionGroup.add(this.hintText);
+
+            // Feedback area
+            this.feedbackText = this.add.text(30, 535, "", {
+              fontSize: "13px",
+              fontFamily: "Arial, sans-serif",
+              color: "#48df8a",
+              wordWrap: { width: 480 },
+            });
+            this.questionGroup.add(this.feedbackText);
+
+            // Reset timer
+            this.timeLeft = this.getTimerDuration();
+            this.timerMax = this.timeLeft;
+            this.timerBar.setFillStyle(CLR.gold);
+            this.timerBar.width = W - 30;
+          }
+
+          drawShapeDiagram(q, cx, cy) {
+            const gfx = this.add.graphics();
+            this.questionGroup.add(gfx);
+
+            if (
+              q.shape === "para" ||
+              (q.shape === "both" && q.type !== "compare")
+            ) {
+              // Parallelogram
+              gfx.fillStyle(0x1fc7ad, 0.15);
+              gfx.lineStyle(3, 0x1fc7ad, 0.8);
+              const pts = [
+                { x: cx - 60, y: cy + 40 },
+                { x: cx + 60, y: cy + 40 },
+                { x: cx + 90, y: cy - 40 },
+                { x: cx - 30, y: cy - 40 },
+              ];
+              gfx.fillPoints(pts, true);
+              gfx.strokePoints(pts, true);
+              // Height dashed line
+              gfx.lineStyle(2, CLR.gold, 0.7);
+              for (let dy = cy - 40; dy < cy + 40; dy += 8) {
+                gfx.lineBetween(
+                  cx - 30,
+                  dy,
+                  cx - 30,
+                  Math.min(dy + 4, cy + 40),
+                );
+              }
+              // Right angle marker
+              gfx.lineStyle(1, CLR.gold, 0.6);
+              gfx.strokeRect(cx - 30, cy + 28, 10, 12);
+            }
+
+            if (q.shape === "rhom" || q.shape === "both") {
+              const rx = q.shape === "both" ? cx + 200 : cx;
+              // Rhombus
+              gfx.fillStyle(0xff9d37, 0.15);
+              gfx.lineStyle(3, 0xff9d37, 0.8);
+              const pts = [
+                { x: rx, y: cy - 45 },
+                { x: rx + 50, y: cy },
+                { x: rx, y: cy + 45 },
+                { x: rx - 50, y: cy },
+              ];
+              gfx.fillPoints(pts, true);
+              gfx.strokePoints(pts, true);
+              // Diagonal lines (dashed)
+              gfx.lineStyle(2, 0x4ecdc4, 0.5);
+              for (let dx = rx - 50; dx < rx + 50; dx += 8) {
+                gfx.lineBetween(dx, cy, Math.min(dx + 4, rx + 50), cy);
+              }
+              gfx.lineStyle(2, 0x1a4a7d, 0.5);
+              for (let dy = cy - 45; dy < cy + 45; dy += 8) {
+                gfx.lineBetween(rx, dy, rx, Math.min(dy + 4, cy + 45));
+              }
+            }
+          }
+
+          drawBuildingArea() {
+            this.buildingGfx.clear();
+            // Building platform on right side
+            const bx = 620,
+              by = 100,
+              bw = 320,
+              bh = 490;
+            this.buildingGfx.fillStyle(CLR.darkBlue, 0.5);
+            this.buildingGfx.fillRect(bx, by, bw, bh);
+            this.buildingGfx.lineStyle(1, 0x1a2d50, 0.4);
+            this.buildingGfx.strokeRect(bx, by, bw, bh);
+
+            // Grid inside building area
+            this.buildingGfx.lineStyle(1, 0x1a2d50, 0.15);
+            for (let y = by; y <= by + bh; y += 30)
+              this.buildingGfx.lineBetween(bx, y, bx + bw, y);
+            for (let x = bx; x <= bx + bw; x += 30)
+              this.buildingGfx.lineBetween(x, by, x, by + bh);
+
+            // Title
+            if (!this.buildingTitle) {
+              this.buildingTitle = this.add
+                .text(bx + bw / 2, by - 10, "🏗️ YOUR BUILDING", {
+                  fontSize: "13px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#ffcf72",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0.5, 1);
+            }
+
+            // Draw placed blocks
+            const blockH = 28;
+            const baseY = by + bh - 10;
+            this.building.forEach((block, i) => {
+              const y = baseY - i * (blockH + 3);
+              const bWidth = Phaser.Math.Clamp(
+                block.score * 0.8 + 60,
+                60,
+                bw - 20,
+              );
+              const x = bx + bw / 2 - bWidth / 2;
+
+              if (block.correct) {
+                const color = block.isBoss
+                  ? CLR.coral
+                  : block.zone < 2
+                    ? CLR.teal
+                    : block.zone < 4
+                      ? CLR.violet
+                      : CLR.gold;
+                this.buildingGfx.fillStyle(color, 0.7);
+                this.buildingGfx.fillRoundedRect(x, y, bWidth, blockH, 4);
+                this.buildingGfx.lineStyle(1, 0xffffff, 0.3);
+                this.buildingGfx.strokeRoundedRect(x, y, bWidth, blockH, 4);
+
+                // Windows on block
+                for (let wx = x + 8; wx < x + bWidth - 12; wx += 18) {
+                  this.buildingGfx.fillStyle(0xffcf72, 0.3);
+                  this.buildingGfx.fillRect(wx, y + 6, 8, 10);
+                }
+              } else {
+                // Cracked/broken block for wrong answers
+                this.buildingGfx.fillStyle(0x333333, 0.4);
+                this.buildingGfx.fillRoundedRect(x, y, bWidth, blockH, 4);
+                this.buildingGfx.lineStyle(1, CLR.danger, 0.3);
+                this.buildingGfx.strokeRoundedRect(x, y, bWidth, blockH, 4);
+              }
+            });
+          }
+
+          showBossHP() {
+            if (this.bossHPGroup) this.bossHPGroup.destroy(true);
+            this.bossHPGroup = this.add.group();
+
+            const bx = 620,
+              by = 75;
+            const label = this.add
+              .text(
+                bx + 160,
+                by,
+                `👾 Mr. Neft  HP: ${this.bossHP}/${this.bossMaxHP}`,
+                {
+                  fontSize: "13px",
+                  fontFamily: "Arial, sans-serif",
+                  color: "#ff6b6b",
+                  fontStyle: "bold",
+                },
+              )
+              .setOrigin(0.5, 0.5);
+            this.bossHPGroup.add(label);
+
+            // HP bar
+            const barW = 200,
+              barH = 8;
+            const bg = this.add.rectangle(
+              bx + 160,
+              by + 14,
+              barW,
+              barH,
+              0x333333,
+            );
+            this.bossHPGroup.add(bg);
+            const pct = this.bossHP / this.bossMaxHP;
+            const fill = this.add
+              .rectangle(
+                bx + 160 - (barW / 2) * (1 - pct),
+                by + 14,
+                barW * pct,
+                barH,
+                CLR.danger,
+              )
+              .setOrigin(0, 0.5);
+            fill.x = bx + 160 - barW / 2;
+            this.bossHPGroup.add(fill);
+          }
+
+          showZoneBanner(name, emoji, color) {
+            const banner = this.add
+              .rectangle(W / 2, H / 2, 500, 80, 0x000000, 0.85)
+              .setStrokeStyle(3, color)
+              .setDepth(100);
+            const text = this.add
+              .text(W / 2, H / 2, `${emoji} ${name} ${emoji}`, {
+                fontSize: "28px",
+                fontFamily: "Arial Black, sans-serif",
+                color: "#" + color.toString(16).padStart(6, "0"),
+                stroke: "#000000",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            this.tweens.add({
+              targets: [banner, text],
+              alpha: 0,
+              delay: 1500,
+              duration: 500,
+              onComplete: () => {
+                banner.destroy();
+                text.destroy();
+              },
+            });
+          }
+
+          selectAnswer(idx) {
+            if (this.answered || idx >= this.choiceBtns.length) return;
+            this.answered = true;
+
+            const chosen = this.choiceBtns[idx];
+            const q = this.questions[this.qIndex];
+            const isCorrect = chosen.data.correct;
+            const isBoss = q.type === "boss";
+
+            // Highlight correct/wrong
+            this.choiceBtns.forEach((btn) => {
+              if (btn.data.correct) {
+                btn.bg.setFillStyle(CLR.ok, 0.3);
+                btn.bg.setStrokeStyle(2, CLR.ok);
+              }
+            });
+
+            if (isCorrect) {
+              sfxCorrect();
+              this.combo++;
+              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+              this.correct++;
+
+              const mult = Math.min(
+                5,
+                1 + Math.floor(this.combo / 2) * this.comboMult,
+              );
+              const timeBonus = Math.floor(this.timeLeft / 1000);
+              let pts = Math.round((100 + timeBonus * 5) * mult);
+              if (this.shownHint) pts = Math.round(pts * 0.7);
+              this.score += pts;
+
+              this.feedbackText.setColor("#48df8a");
+              this.feedbackText.setText(
+                `✅ Correct! +${pts} pts  |  ${q.explain}`,
+              );
+
+              // Boss damage
+              if (isBoss) {
+                this.bossHP--;
+                sfxBossHit();
+                if (this.bossHP <= 0) sfxBossDeath();
+                this.showBossHP();
+                this.cameras.main.shake(200, 0.01);
+              }
+
+              // Place building block
+              this.building.push({
+                correct: true,
+                score: pts,
+                zone: q.zone,
+                isBoss,
+              });
+              sfxPlace();
+              this.drawBuildingArea();
+
+              // Floating score text
+              const floatTxt = this.add
+                .text(W / 2, 500, `+${pts}`, {
+                  fontSize: "22px",
+                  fontFamily: "Arial Black, sans-serif",
+                  color: "#b9ff78",
+                })
+                .setOrigin(0.5);
+              this.tweens.add({
+                targets: floatTxt,
+                y: 460,
+                alpha: 0,
+                duration: 800,
+                onComplete: () => floatTxt.destroy(),
+              });
+
+              // Particle burst
+              this.emitParticles(270, 300, CLR.ok);
+            } else {
+              sfxWrong();
+              chosen.bg.setFillStyle(CLR.danger, 0.3);
+              chosen.bg.setStrokeStyle(2, CLR.danger);
+              this.combo = 0;
+              this.lives--;
+
+              this.feedbackText.setColor("#ff6273");
+              this.feedbackText.setText(`❌ Incorrect.  ${q.explain}`);
+
+              // Cracked block
+              this.building.push({
+                correct: false,
+                score: 0,
+                zone: q.zone,
+                isBoss,
+              });
+              this.drawBuildingArea();
+
+              this.cameras.main.shake(300, 0.015);
+              this.updateLivesText();
+
+              if (this.lives <= 0) {
+                sfxGameOver();
+                this.time.delayedCall(1500, () => {
+                  this.scene.start("ResultScene", {
+                    score: this.score,
+                    correct: this.correct,
+                    total: this.qIndex + 1,
+                    maxCombo: this.maxCombo,
+                    architect: this.architect,
+                    bossDefeated: false,
+                    building: this.building,
+                    gameOver: true,
+                  });
+                });
+                return;
+              }
+            }
+
+            this.total = this.qIndex + 1;
+            this.scoreText.setText(`Score: ${this.score}`);
+            this.updateComboText();
+            this.updateProgress();
+
+            // Next question after delay
+            this.time.delayedCall(isCorrect ? 1200 : 2000, () => {
+              this.qIndex++;
+              if (this.qIndex >= this.questions.length) {
+                this.scene.start("ResultScene", {
+                  score: this.score,
+                  correct: this.correct,
+                  total: this.questions.length,
+                  maxCombo: this.maxCombo,
+                  architect: this.architect,
+                  bossDefeated: this.bossHP <= 0,
+                  building: this.building,
+                  gameOver: false,
+                });
+              } else {
+                // Check zone transition
+                const newZone = this.questions[this.qIndex].zone;
+                if (newZone !== this.zone) {
+                  this.zone = newZone;
+                  const zn = ZONES[newZone];
+                  if (newZone < 4) {
+                    sfxLevelUp();
+                    this.showZoneBanner(zn.name, zn.emoji, zn.color);
+                  } else {
+                    this.showZoneBanner(zn.name, zn.emoji, zn.color);
+                  }
+                }
+                this.showQuestion();
+              }
+            });
+          }
+
+          handleTimeout() {
+            if (this.answered) return;
+            this.answered = true;
+            sfxWrong();
+            this.combo = 0;
+            this.lives--;
+
+            const q = this.questions[this.qIndex];
+            this.feedbackText.setColor("#ff6273");
+            this.feedbackText.setText(`⏰ Time's up!  ${q.explain}`);
+
+            // Show correct answer
+            this.choiceBtns.forEach((btn) => {
+              if (btn.data.correct) {
+                btn.bg.setFillStyle(CLR.ok, 0.3);
+                btn.bg.setStrokeStyle(2, CLR.ok);
+              }
+            });
+
+            this.building.push({
+              correct: false,
+              score: 0,
+              zone: q.zone,
+              isBoss: q.type === "boss",
+            });
+            this.drawBuildingArea();
+            this.updateLivesText();
+            this.updateComboText();
+            this.cameras.main.shake(300, 0.015);
+
+            if (this.lives <= 0) {
+              sfxGameOver();
+              this.time.delayedCall(1500, () => {
+                this.scene.start("ResultScene", {
+                  score: this.score,
+                  correct: this.correct,
+                  total: this.qIndex + 1,
+                  maxCombo: this.maxCombo,
+                  architect: this.architect,
+                  bossDefeated: false,
+                  building: this.building,
+                  gameOver: true,
+                });
+              });
+              return;
+            }
+
+            this.time.delayedCall(2000, () => {
+              this.qIndex++;
+              if (this.qIndex >= this.questions.length) {
+                this.scene.start("ResultScene", {
+                  score: this.score,
+                  correct: this.correct,
+                  total: this.questions.length,
+                  maxCombo: this.maxCombo,
+                  architect: this.architect,
+                  bossDefeated: this.bossHP <= 0,
+                  building: this.building,
+                  gameOver: false,
+                });
+              } else {
+                const newZone = this.questions[this.qIndex].zone;
+                if (newZone !== this.zone) {
+                  this.zone = newZone;
+                  const zn = ZONES[newZone];
+                  sfxLevelUp();
+                  this.showZoneBanner(zn.name, zn.emoji, zn.color);
+                }
+                this.showQuestion();
+              }
+            });
+          }
+
+          useHint() {
+            if (this.answered || this.hints <= 0 || this.shownHint) return;
+            sfxHint();
+            this.hints--;
+            this.shownHint = true;
+            const q = this.questions[this.qIndex];
+            this.hintText.setText(`💡 HINT: ${q.hint}`);
+            this.hintBtn.setText(`[H] Hints: ${this.hints}`);
+          }
+
+          emitParticles(x, y, color) {
+            for (let i = 0; i < 12; i++) {
+              const p = this.add.circle(
+                x,
+                y,
+                Phaser.Math.Between(2, 5),
+                color,
+                0.8,
+              );
+              this.tweens.add({
+                targets: p,
+                x: x + Phaser.Math.Between(-80, 80),
+                y: y + Phaser.Math.Between(-60, -120),
+                alpha: 0,
+                scale: 0,
+                duration: Phaser.Math.Between(400, 800),
+                ease: "Cubic.easeOut",
+                onComplete: () => p.destroy(),
+              });
+            }
+          }
         }
-        return session.currentQuestion;
-      }
-      return session.questions[session.questionIndex];
-    }
 
-    function renderQuestion(){
-      const session = state.session;
-      const question = getCurrentQuestion();
-      session.answered = false;
-      session.questionStartAt = performance.now();
-      session.attemptNumber = 1;
-      session.attemptsUsed = 0;
-      session.incorrectChoices = new Set();
-      session.hintUsedOnCurrent = false;
+        /* ═══════════════════════════════════════════
+         RESULT SCENE
+         ═══════════════════════════════════════════ */
+        class ResultScene extends Phaser.Scene {
+          constructor() {
+            super("ResultScene");
+          }
 
-      state.refs.questionConcept.textContent = question.concept;
-      state.refs.questionSkill.textContent = SKILLS.find((skill) => skill.id === question.skillId)?.label || 'Core Skill';
-      state.refs.questionDok.textContent = 'DOK ' + question.dok;
-      state.refs.questionStem.innerHTML = question.stem;
-      state.refs.questionObjective.textContent = question.objective;
-      state.refs.questionIntel.textContent = question.intel;
-      state.refs.visualWrap.innerHTML = question.shapeHtml || '<div style="color:var(--muted); text-align:center; line-height:1.7;">Concept mission. Read carefully, compare the formulas, and choose the strongest answer.</div>';
-      state.refs.attemptChip.textContent = 'Attempt 1 of ' + question.maxAttempts;
-      state.refs.hintBox.classList.remove('show');
-      state.refs.hintBox.textContent = '';
-      state.refs.feedbackBox.className = 'feedback-box';
-      state.refs.feedbackTitle.textContent = 'Feedback';
-      state.refs.feedbackCopy.textContent = '';
-      state.refs.feedbackFormula.textContent = '';
-      state.refs.nextButton.style.display = 'none';
-      state.refs.stopButton.style.display = session.modeId === 'infinity' ? 'inline-flex' : 'none';
-      state.refs.hintButton.disabled = session.hintsRemaining <= 0;
-      state.refs.hintButton.textContent = session.hintsRemaining > 0 ? 'Use Hint' : 'No Hints Left';
-      state.refs.formulaNote.textContent = 'Read the prompt, inspect the diagram, and choose the fastest valid formula path.';
-      renderFormulaBank(state.refs.playFormulaBank, null);
+          init(data) {
+            this.data = data;
+          }
 
-      const letters = ['A','B','C','D'];
-      state.refs.choiceGrid.innerHTML = question.choices.map((choice, index) => `
-        <button class="choice" data-choice-id="${choice.id}">
-          <span class="choice-letter">${letters[index]}</span>
-          <span class="choice-text">${choice.text}</span>
-        </button>
-      `).join('');
-      Array.from(state.refs.choiceGrid.querySelectorAll('.choice')).forEach((button) => {
-        button.addEventListener('click', () => submitAnswer(button.dataset.choiceId));
-      });
-      renderLog();
-      updateHud();
-      setTimer();
-      announce('New question loaded.');
-    }
+          create() {
+            this.cameras.main.setBackgroundColor(CLR.bg);
+            const d = this.data;
 
-    function updateSkillProgress(skillId, correct, xp){
-      const entry = state.profile.mastery[skillId];
-      entry.seen += 1;
-      if (correct) entry.correct += 1;
-      state.profile.xp += xp;
-      state.session.skillDelta[skillId] = (state.session.skillDelta[skillId] || 0) + xp;
-    }
+            // Stars background
+            for (let i = 0; i < 60; i++) {
+              const x = Phaser.Math.Between(0, W),
+                y = Phaser.Math.Between(0, H);
+              this.add.circle(
+                x,
+                y,
+                Phaser.Math.Between(1, 2),
+                0xffffff,
+                Phaser.Math.FloatBetween(0.1, 0.3),
+              );
+            }
 
-    function computePoints(question, usedHint, recovered, streak){
-      let total = CONFIG.pointsByDok[question.dok] + Math.max(0, streak - 1) * CONFIG.streakBonus;
-      if (usedHint) total = Math.round(total * CONFIG.hintPenaltyFactor);
-      if (recovered) total = Math.round(total * CONFIG.recoveryPenaltyFactor);
-      return total;
-    }
+            // Title
+            const titleText = d.gameOver
+              ? "BUILDING COLLAPSED"
+              : d.bossDefeated
+                ? "MR. NEFT DEFEATED!"
+                : "BUILDING COMPLETE!";
+            const titleColor = d.gameOver
+              ? "#ff6273"
+              : d.bossDefeated
+                ? "#ffcf72"
+                : "#48df8a";
+            this.add
+              .text(W / 2, 40, titleText, {
+                fontSize: "38px",
+                fontFamily: "Arial Black, sans-serif",
+                color: titleColor,
+                stroke: "#0a1628",
+                strokeThickness: 5,
+              })
+              .setOrigin(0.5);
 
-    function showFeedback(type, title, copy, formula){
-      state.refs.feedbackBox.className = 'feedback-box show ' + type;
-      state.refs.feedbackTitle.textContent = title;
-      state.refs.feedbackCopy.innerHTML = copy;
-      state.refs.feedbackFormula.textContent = formula || '';
-    }
+            if (d.bossDefeated) {
+              sfxBossDeath();
+              // Victory particles
+              for (let i = 0; i < 30; i++) {
+                this.time.delayedCall(i * 50, () => {
+                  this.emitConfetti(
+                    Phaser.Math.Between(100, W - 100),
+                    Phaser.Math.Between(50, 200),
+                  );
+                });
+              }
+            }
 
-    function lockChoice(choiceId, className){
-      Array.from(state.refs.choiceGrid.querySelectorAll('.choice')).forEach((button) => {
-        if (button.dataset.choiceId === choiceId){
-          button.classList.add(className);
+            // Stats panel
+            const pX = 100,
+              pY = 90;
+            this.add
+              .rectangle(240, pY + 120, 300, 240, CLR.panel, 0.9)
+              .setStrokeStyle(1, 0x1a2d50);
+
+            this.add.text(
+              pX,
+              pY + 15,
+              `${d.architect.emoji} ${d.architect.name}`,
+              {
+                fontSize: "16px",
+                fontFamily: "Arial, sans-serif",
+                color: "#4ecdc4",
+                fontStyle: "bold",
+              },
+            );
+
+            const stats = [
+              `Score: ${d.score}`,
+              `Correct: ${d.correct} / ${d.total}`,
+              `Accuracy: ${d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0}%`,
+              `Best Streak: ${d.maxCombo}`,
+              `Boss: ${d.bossDefeated ? "DEFEATED 🏆" : d.gameOver ? "SURVIVED" : "STANDING"}`,
+              `Blocks Placed: ${d.building.filter((b) => b.correct).length}`,
+            ];
+
+            stats.forEach((s, i) => {
+              this.add.text(pX, pY + 48 + i * 30, s, {
+                fontSize: "15px",
+                fontFamily: "Arial, sans-serif",
+                color: "#eef5ff",
+              });
+            });
+
+            // Grade
+            const pct = d.total > 0 ? d.correct / d.total : 0;
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: d.correct,
+                  maxScore: d.total,
+                  problemsCorrect: d.correct,
+                  problemsAttempted: d.total,
+                });
+            } catch (e) {}
+            let grade, gradeColor;
+            if (pct >= 0.95) {
+              grade = "S - Master Architect";
+              gradeColor = "#ffcf72";
+            } else if (pct >= 0.85) {
+              grade = "A - Expert Builder";
+              gradeColor = "#48df8a";
+            } else if (pct >= 0.7) {
+              grade = "B - Skilled Designer";
+              gradeColor = "#4ecdc4";
+            } else if (pct >= 0.5) {
+              grade = "C - Apprentice";
+              gradeColor = "#f7dc6f";
+            } else {
+              grade = "D - Keep Practicing!";
+              gradeColor = "#ff6273";
+            }
+
+            this.add.text(pX, pY + 240, `Grade: ${grade}`, {
+              fontSize: "18px",
+              fontFamily: "Arial, sans-serif",
+              color: gradeColor,
+              fontStyle: "bold",
+            });
+
+            // Building visualization (right side)
+            this.drawFinalBuilding(d.building);
+
+            // Play again button
+            const replayBg = this.add
+              .rectangle(W / 2, H - 60, 220, 50, CLR.panel, 0.9)
+              .setStrokeStyle(2, CLR.teal)
+              .setInteractive({ useHandCursor: true });
+            const replayText = this.add
+              .text(W / 2, H - 60, "🔄 Play Again (Enter)", {
+                fontSize: "16px",
+                fontFamily: "Arial, sans-serif",
+                color: "#4ecdc4",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+
+            replayBg.on("pointerover", () =>
+              replayBg.setStrokeStyle(3, CLR.gold),
+            );
+            replayBg.on("pointerout", () =>
+              replayBg.setStrokeStyle(2, CLR.teal),
+            );
+            replayBg.on("pointerdown", () => {
+              sfxClick();
+              this.scene.start("TitleScene");
+            });
+
+            this.input.keyboard.on("keydown", (e) => {
+              if (e.key === "Enter") {
+                sfxClick();
+                this.scene.start("TitleScene");
+              }
+            });
+
+            // Formula reference
+            this.add
+              .text(
+                W / 2,
+                H - 20,
+                "Parallelogram: A = b × h     Rhombus: A = ½ × d1 × d2  or  A = b × h",
+                {
+                  fontSize: "11px",
+                  fontFamily: "Courier New, monospace",
+                  color: "#7e96c2",
+                },
+              )
+              .setOrigin(0.5);
+          }
+
+          drawFinalBuilding(blocks) {
+            const gfx = this.add.graphics();
+            const bx = 520,
+              by = 80,
+              bw = 400,
+              bh = 480;
+
+            // Platform
+            gfx.fillStyle(CLR.darkBlue, 0.5);
+            gfx.fillRect(bx, by, bw, bh);
+            gfx.lineStyle(1, 0x1a2d50, 0.3);
+            gfx.strokeRect(bx, by, bw, bh);
+
+            // Ground
+            gfx.fillStyle(0x2d4a3e, 0.6);
+            gfx.fillRect(bx, by + bh - 15, bw, 15);
+
+            this.add
+              .text(bx + bw / 2, by - 5, "🏗️ FINAL BUILDING", {
+                fontSize: "14px",
+                fontFamily: "Arial, sans-serif",
+                color: "#ffcf72",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5, 1);
+
+            const blockH = 22;
+            const baseY = by + bh - 20;
+
+            blocks.forEach((block, i) => {
+              const y = baseY - i * (blockH + 2);
+              if (y < by + 10) return; // don't overflow
+              const blockW = Phaser.Math.Clamp(
+                block.score * 0.6 + 80,
+                80,
+                bw - 30,
+              );
+              const x = bx + bw / 2 - blockW / 2;
+
+              if (block.correct) {
+                const colors = [
+                  CLR.teal,
+                  CLR.teal,
+                  0xf7dc6f,
+                  0xf7dc6f,
+                  CLR.violet,
+                  CLR.violet,
+                  0xe74c3c,
+                  0xe74c3c,
+                ];
+                const zoneColors = [
+                  CLR.teal,
+                  0xf7dc6f,
+                  CLR.violet,
+                  0xe74c3c,
+                  CLR.coral,
+                ];
+                const color = block.isBoss
+                  ? CLR.gold
+                  : zoneColors[block.zone] || CLR.teal;
+                gfx.fillStyle(color, 0.65);
+                gfx.fillRoundedRect(x, y, blockW, blockH, 3);
+                gfx.lineStyle(1, 0xffffff, 0.2);
+                gfx.strokeRoundedRect(x, y, blockW, blockH, 3);
+
+                // Windows
+                for (let wx = x + 6; wx < x + blockW - 10; wx += 14) {
+                  gfx.fillStyle(0xffcf72, 0.25);
+                  gfx.fillRect(wx, y + 4, 6, 8);
+                }
+
+                // Antenna on top block
+                if (i === blocks.length - 1 && block.correct) {
+                  gfx.lineStyle(2, 0xffffff, 0.5);
+                  gfx.lineBetween(bx + bw / 2, y, bx + bw / 2, y - 20);
+                  gfx.fillStyle(CLR.coral, 0.8);
+                  gfx.fillCircle(bx + bw / 2, y - 22, 4);
+                }
+              } else {
+                gfx.fillStyle(0x444444, 0.3);
+                gfx.fillRoundedRect(x, y, blockW, blockH, 3);
+                gfx.lineStyle(1, CLR.danger, 0.2);
+                gfx.strokeRoundedRect(x, y, blockW, blockH, 3);
+                // Crack lines
+                gfx.lineStyle(1, CLR.danger, 0.3);
+                gfx.lineBetween(
+                  x + blockW * 0.3,
+                  y,
+                  x + blockW * 0.5,
+                  y + blockH,
+                );
+                gfx.lineBetween(
+                  x + blockW * 0.7,
+                  y,
+                  x + blockW * 0.6,
+                  y + blockH,
+                );
+              }
+            });
+          }
+
+          emitConfetti(x, y) {
+            const colors = [
+              CLR.gold,
+              CLR.teal,
+              CLR.coral,
+              CLR.lime,
+              CLR.violet,
+            ];
+            for (let i = 0; i < 4; i++) {
+              const p = this.add.circle(
+                x,
+                y,
+                Phaser.Math.Between(2, 5),
+                Phaser.Utils.Array.GetRandom(colors),
+                0.8,
+              );
+              this.tweens.add({
+                targets: p,
+                x: x + Phaser.Math.Between(-100, 100),
+                y: y + Phaser.Math.Between(100, 300),
+                alpha: 0,
+                duration: Phaser.Math.Between(800, 1500),
+                ease: "Cubic.easeOut",
+                onComplete: () => p.destroy(),
+              });
+            }
+          }
         }
-      });
-    }
 
-    function disableWrongChoice(choiceId){
-      Array.from(state.refs.choiceGrid.querySelectorAll('.choice')).forEach((button) => {
-        if (button.dataset.choiceId === choiceId){
-          button.disabled = true;
-          button.classList.add('incorrect', 'disabled-wrong');
-        }
-      });
-    }
-
-    function revealCorrectAnswer(correctId){
-      Array.from(state.refs.choiceGrid.querySelectorAll('.choice')).forEach((button) => {
-        button.disabled = true;
-        if (button.dataset.choiceId === correctId){
-          button.classList.add('reveal');
-        }
-      });
-    }
-
-    function checkChallengeState(){
-      const session = state.session;
-      if (!session) return;
-      const answered = session.correctQuestions + session.wrongQuestions;
-      if (session.modeId === 'academy'){
-        session.challengeComplete = answered > 0 && (session.correctQuestions / answered) >= 0.8;
-      } else if (session.modeId === 'command'){
-        session.challengeComplete = session.firstTryClears >= 6;
-      } else if (session.modeId === 'daily'){
-        session.challengeComplete = session.hintsRemaining === session.mode.hints;
-      } else if (session.modeId === 'infinity'){
-        session.challengeComplete = session.infiniteAnswered >= 12;
-      } else if (session.modeId === 'boss'){
-        session.challengeComplete = session.bossHealth === 0 && session.livesRemaining >= 1;
-      }
-    }
-
-    function finalizeQuestion(correct, choice){
-      const session = state.session;
-      const question = getCurrentQuestion();
-      session.answered = true;
-      clearTimer();
-      const elapsed = performance.now() - session.questionStartAt;
-      session.responseTimes.push(elapsed);
-      const recovered = session.attemptsUsed > 0 && correct;
-      let xp = 12;
-
-      if (correct){
-        session.correctQuestions += 1;
-        session.streak += 1;
-        session.bestStreak = Math.max(session.bestStreak, session.streak);
-        if (!recovered) session.firstTryClears += 1;
-        if (recovered) session.recoveries += 1;
-        const points = computePoints(question, session.hintUsedOnCurrent, recovered, session.streak);
-        session.score += points;
-        xp += Math.round(points * 0.2);
-        lockChoice(choice.id, 'correct');
-        revealCorrectAnswer(choice.id);
-        if (session.modeId === 'boss'){
-          session.bossHealth = Math.max(0, session.bossHealth - 1);
-          addLog(recovered ? 'Recovery hit landed. Boss shield weakened.' : 'Direct hit landed on Mr. Neft.');
-        } else {
-          addLog(recovered ? 'Recovered the question on the second try.' : 'First-try clear secured.');
-        }
-        showFeedback(
-          'correct',
-          recovered ? 'Recovered' : 'Correct',
-          `<strong>${recovered ? 'Nice save.' : 'Good read.'}</strong> ${question.explanation}`,
-          question.formula
-        );
-        if (session.streak === 3 || session.streak === 5){
-          pushToast('Combo Online', session.streak + '-answer streak active.');
-        }
-      } else {
-        session.wrongQuestions += 1;
-        session.streak = 0;
-        xp += 6;
-        lockChoice(choice.id, 'incorrect');
-        revealCorrectAnswer(question.choices.find((item) => item.correct).id);
-        if (session.modeId === 'infinity' || session.modeId === 'boss'){
-          session.livesRemaining -= 1;
-        }
-        if (session.modeId === 'boss'){
-          addLog('Mr. Neft landed a hit. Hearts remaining: ' + session.livesRemaining + '.');
-        } else if (session.modeId === 'infinity'){
-          addLog('Reactor destabilized. Lives remaining: ' + session.livesRemaining + '.');
-        } else {
-          addLog('Question reviewed after both attempts were used.');
-        }
-        showFeedback(
-          'incorrect',
-          'Review',
-          `<strong>${choice.rationale}</strong> ${question.explanation}`,
-          question.formula
-        );
-      }
-
-      updateSkillProgress(question.skillId, correct, xp);
-      if (session.modeId === 'infinity'){
-        session.infiniteAnswered += 1;
-      }
-      checkChallengeState();
-      updateHud();
-      renderFormulaBank(state.refs.playFormulaBank, question.formulaId === 'mixed' ? null : question.formulaId);
-      state.refs.formulaNote.textContent = question.formulaId === 'mixed'
-        ? 'This mission mixes formulas. Solve each shape with the right tool.'
-        : 'Best-fit formula identified for this question.';
-      state.refs.nextButton.style.display = 'inline-flex';
-      state.refs.nextButton.textContent = (session.modeId === 'infinity' && session.livesRemaining <= 0) || (session.modeId === 'boss' && session.livesRemaining <= 0)
-        ? 'Debrief Run'
-        : 'Next Objective';
-      announce(correct ? 'Correct answer.' : 'Incorrect answer. Review shown.');
-    }
-
-    function submitAnswer(choiceId){
-      const session = state.session;
-      if (!session || session.answered) return;
-      const question = getCurrentQuestion();
-      const choice = question.choices.find((item) => item.id === choiceId);
-      if (!choice || session.incorrectChoices.has(choiceId)) return;
-
-      if (choice.correct){
-        finalizeQuestion(true, choice);
-        return;
-      }
-
-      session.attemptsUsed += 1;
-      session.attemptNumber = session.attemptsUsed + 1;
-      session.incorrectChoices.add(choiceId);
-      disableWrongChoice(choiceId);
-
-      if (session.attemptsUsed < question.maxAttempts){
-        state.refs.attemptChip.textContent = 'Attempt ' + session.attemptNumber + ' of ' + question.maxAttempts;
-        addLog(question.isBoss ? 'Boss pressure rising. One more shot on this phase.' : 'First miss logged. One retry available.');
-        showFeedback(
-          'recovery',
-          'Try Again',
-          `<strong>${choice.rationale}</strong> You still have one more opportunity on this question.`,
-          session.hintUsedOnCurrent ? question.formula : ''
-        );
-        announce('Incorrect. One retry remains.');
-        return;
-      }
-
-      finalizeQuestion(false, choice);
-    }
-
-    function useHint(){
-      const session = state.session;
-      if (!session || session.answered || session.hintsRemaining <= 0) return;
-      const question = getCurrentQuestion();
-      session.hintsRemaining -= 1;
-      session.hintUsedOnCurrent = true;
-      state.refs.hintBox.textContent = question.hint;
-      state.refs.hintBox.classList.add('show');
-      renderFormulaBank(state.refs.playFormulaBank, question.formulaId === 'mixed' ? null : question.formulaId);
-      state.refs.formulaNote.textContent = 'Hint mode active. The best formula path is now highlighted.';
-      updateHud();
-      addLog('Hint deployed for this objective.');
-      announce('Hint revealed.');
-    }
-
-    function nextQuestion(){
-      const session = state.session;
-      if (!session) return;
-      if (session.modeId === 'infinity'){
-        if (session.livesRemaining <= 0){
-          finishSession();
-          return;
-        }
-        session.currentQuestion = null;
-        renderQuestion();
-        return;
-      }
-
-      if (session.modeId === 'boss' && session.bossHealth === 0){
-        finishSession();
-        return;
-      }
-
-      session.questionIndex += 1;
-      if (session.questionIndex >= session.questions.length || session.livesRemaining === 0){
-        finishSession();
-      } else {
-        renderQuestion();
-      }
-    }
-
-    function unlockAchievements(session){
-      const unlocked = [];
-      const answered = session.correctQuestions + session.wrongQuestions;
-      const accuracy = answered ? session.correctQuestions / answered : 0;
-      const checks = {
-        first_clear: true,
-        perfect_clear: session.modeId !== 'infinity' && accuracy === 1,
-        recovery_artist: session.recoveries >= 3,
-        daily_clean: session.modeId === 'daily' && session.hintsRemaining === session.mode.hints,
-        infinity_12: session.modeId === 'infinity' && session.infiniteAnswered >= 12,
-        boss_clear: session.modeId === 'boss' && session.bossHealth === 0 && session.livesRemaining >= 1
-      };
-      ACHIEVEMENTS.forEach((achievement) => {
-        if (checks[achievement.id] && !state.profile.achievements[achievement.id]){
-          state.profile.achievements[achievement.id] = new Date().toISOString();
-          session.unlockedThisRun.push(achievement.id);
-          unlocked.push(achievement);
-        }
-      });
-      return unlocked;
-    }
-
-    function performanceGrade(session){
-      const answered = session.correctQuestions + session.wrongQuestions;
-      const accuracy = answered ? session.correctQuestions / answered : 0;
-      if (session.modeId === 'boss'){
-        if (session.bossHealth === 0 && session.livesRemaining >= 2) return { badge: 'S', title: 'Boss Defeated' };
-        if (session.bossHealth === 0) return { badge: 'A', title: 'Boss Cleared' };
-        return { badge: 'C', title: 'Boss Still Standing' };
-      }
-      if (session.modeId === 'infinity'){
-        if (session.infiniteAnswered >= 16 && accuracy >= 0.75) return { badge: 'S', title: 'Reactor Dominated' };
-        if (session.infiniteAnswered >= 10) return { badge: 'A', title: 'Strong Reactor Run' };
-        return { badge: 'B', title: 'Solid Reactor Push' };
-      }
-      if (accuracy === 1) return { badge: 'S', title: 'Flawless Command' };
-      if (accuracy >= 0.85) return { badge: 'A', title: 'Mission Cleared' };
-      if (accuracy >= 0.65) return { badge: 'B', title: 'Progress Logged' };
-      return { badge: 'C', title: 'Training Recommended' };
-    }
-
-    function recommendation(session){
-      if (session.modeId === 'academy' && session.challengeComplete){
-        return 'You have outgrown the basics. Move into Command Ops or the boss arena next.';
-      }
-      if (session.modeId === 'command' && !session.challengeComplete){
-        return 'Replay Command Ops and chase more first-try clears before your next boss attempt.';
-      }
-      if (session.modeId === 'daily'){
-        return session.challengeComplete
-          ? 'Great daily discipline. Try the boss arena while the formulas are fresh.'
-          : 'Replay the daily seed and try to clear it without hints.';
-      }
-      if (session.modeId === 'infinity'){
-        return 'To go deeper, protect your first three streaks and save hints for inverse-area questions.';
-      }
-      if (session.modeId === 'boss'){
-        return session.bossHealth === 0
-          ? 'Mr. Neft is down. Replay for a cleaner victory or take Infinite Reactor for score chasing.'
-          : 'Study the boss formulas, then return for another fight. You were close.';
-      }
-      return 'Replay this mode to raise accuracy and deepen mastery.';
-    }
-
-    function finishSession(){
-      const session = state.session;
-      clearTimer();
-      session.finished = true;
-      state.profile.totalRuns += 1;
-      state.profile.totalScore += session.score;
-      state.profile.bestStreak = Math.max(state.profile.bestStreak, session.bestStreak);
-      if (session.modeId === 'boss' && session.bossHealth === 0){
-        state.profile.bossClears += 1;
-      }
-      if (session.score > (state.profile.highScores[session.modeId] || 0)){
-        state.profile.highScores[session.modeId] = session.score;
-        session.highScoreBeaten = true;
-      }
-      if (session.modeId === 'daily'){
-        const current = state.profile.dailyBest[session.dailyKey] || 0;
-        if (session.score > current){
-          state.profile.dailyBest[session.dailyKey] = session.score;
-          session.highScoreBeaten = true;
-        }
-      }
-      const newlyUnlocked = unlockAchievements(session);
-      if (newlyUnlocked.length){
-        newlyUnlocked.forEach((item) => pushToast('Achievement Unlocked', item.title));
-      }
-      saveProfile(state.profile);
-      renderHome();
-      renderResults(newlyUnlocked);
-      showScreen('resultsScreen');
-      announce('Mission debrief ready.');
-    }
-
-    function renderMastery(container, withDelta){
-      container.innerHTML = SKILLS.map((skill) => {
-        const percent = masteryPercent(state.profile, skill.id);
-        const delta = withDelta && state.session?.skillDelta?.[skill.id] ? state.session.skillDelta[skill.id] : 0;
-        return `
-          <div class="mastery-item">
-            <div class="mastery-head">
-              <strong>${skill.label}</strong>
-              <span>${percent}%${delta ? ' | +' + delta + ' xp' : ''}</span>
-            </div>
-            <div class="meter"><span style="width:${percent}%"></span></div>
-            <span style="font-size:12px; color:var(--muted); line-height:1.5;">${skill.short}</span>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderResults(newlyUnlocked){
-      const session = state.session;
-      const answered = session.correctQuestions + session.wrongQuestions;
-      const accuracy = answered ? Math.round((session.correctQuestions / answered) * 100) : 0;
-      const grade = performanceGrade(session);
-      state.refs.resultsBadge.textContent = grade.badge;
-      state.refs.resultsEyebrow.textContent = session.mode.title + ' Debrief';
-      state.refs.resultsTitle.textContent = grade.title;
-      state.refs.resultsSummary.textContent = session.highScoreBeaten
-        ? 'New high score registered. The command profile has been updated.'
-        : 'Run data saved. Mastery memory and challenge progress are updated.';
-      state.refs.resultsScore.textContent = session.score;
-      state.refs.resultsAccuracy.textContent = accuracy + '%';
-      state.refs.resultsStreak.textContent = session.bestStreak;
-      state.refs.resultsRecoveries.textContent = session.recoveries;
-      state.refs.resultsBreakdown.innerHTML = `
-        <strong>Run Summary</strong>
-        Correct clears: ${session.correctQuestions}<br />
-        Fully missed: ${session.wrongQuestions}<br />
-        Second-chance saves: ${session.recoveries}<br />
-        First-try clears: ${session.firstTryClears}<br />
-        ${session.modeId === 'infinity' ? 'Questions answered: ' + session.infiniteAnswered : 'Objectives completed: ' + session.questions.length}<br />
-        ${session.modeId === 'boss' ? 'Boss health remaining: ' + session.bossHealth : ''}
-      `;
-      state.refs.resultsRecommendation.innerHTML = `
-        <strong>Next Best Move</strong>
-        ${recommendation(session)}<br /><br />
-        <strong>Challenge Status:</strong> ${session.challengeComplete ? 'Challenge completed.' : 'Challenge not completed yet.'}
-      `;
-      renderMastery(state.refs.resultsMastery, true);
-      state.refs.resultsAchievements.innerHTML = newlyUnlocked.length
-        ? newlyUnlocked.map((achievement) => `
-            <div class="achievement-item">
-              <strong>${achievement.title}</strong>
-              <span>${achievement.copy}</span>
-            </div>
-          `).join('')
-        : ACHIEVEMENTS.map((achievement) => `
-            <div class="achievement-item ${state.profile.achievements[achievement.id] ? '' : 'locked'}">
-              <strong>${achievement.title}${state.profile.achievements[achievement.id] ? ' | unlocked' : ' | locked'}</strong>
-              <span>${achievement.copy}</span>
-            </div>
-          `).join('');
-    }
-
-    function startSession(modeId){
-      state.session = createSession(modeId, state.profile);
-      showScreen('playScreen');
-      renderQuestion();
-      pushToast('Mission Launched', MODE_LIBRARY[modeId].title + ' is now live.');
-    }
-
-    function endCurrentRun(){
-      if (!state.session) return;
-      finishSession();
-    }
-
-    function bindEvents(){
-      document.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-launch-mode]');
-        if (button){
-          startSession(button.getAttribute('data-launch-mode'));
-        }
-      });
-      state.refs.homeButton.addEventListener('click', () => {
-        clearTimer();
-        showScreen('homeScreen');
-      });
-      state.refs.resultsHomeButton.addEventListener('click', () => {
-        showScreen('homeScreen');
-      });
-      state.refs.replayButton.addEventListener('click', () => {
-        if (state.session) startSession(state.session.modeId);
-      });
-      state.refs.hintButton.addEventListener('click', useHint);
-      state.refs.nextButton.addEventListener('click', nextQuestion);
-      state.refs.stopButton.addEventListener('click', endCurrentRun);
-      window.addEventListener('keydown', (event) => {
-        if (!state.session || !byId('playScreen').classList.contains('active')) return;
-        const key = event.key.toLowerCase();
-        if (['1','2','3','4'].includes(key) && !state.session.answered){
-          const buttons = Array.from(state.refs.choiceGrid.querySelectorAll('.choice'));
-          const index = Number(key) - 1;
-          if (buttons[index] && !buttons[index].disabled) buttons[index].click();
-        }
-        if (key === 'h' && !state.session.answered){
-          useHint();
-        }
-        if (key === 'enter' && state.session.answered){
-          nextQuestion();
-        }
-      });
-    }
-
-    function boot(){
-      try{
-        validateConfig();
-        selfTest();
-        initRefs();
-        updateProfileHeader();
-        renderHome();
-        bindEvents();
-        showScreen('bootScreen');
-        window.setTimeout(() => {
-          showScreen('homeScreen');
-          pushToast('System Online', 'Command Premier is ready. Choose a mission.');
-        }, CONFIG.bootDelayMs);
-      }catch(error){
-        byId('bootStatus').textContent = 'Boot failed: ' + error.message;
-        console.error(error);
-      }
-    }
-
-    window.addEventListener('load', boot);
-  </script>
+        /* ═══════════════════════════════════════════
+         BOOT
+         ═══════════════════════════════════════════ */
+        const config = {
+          type: Phaser.AUTO,
+          parent: "game-container",
+          width: W,
+          height: H,
+          backgroundColor: "#0a1628",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          scene: [TitleScene, GameScene, ResultScene],
+        };
+        new Phaser.Game(config);
+      })();
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

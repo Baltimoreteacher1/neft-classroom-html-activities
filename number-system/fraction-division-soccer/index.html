@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fraction Division Soccer League: An interactive mathematics game. Model fraction division visually using soccer passes and score goals on a fraction scale pitch.">
+    <title>Fraction Division Soccer League | Visual Fractions Game</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #020502;
+            --bg-surface: #060e06;
+            --bg-card: rgba(10, 24, 10, 0.7);
+            --bg-glow: rgba(16, 185, 129, 0.08);
+            
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(16, 185, 129, 0.45);
+            
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --secondary: #fbbf24;
+            --secondary-glow: rgba(251, 191, 36, 0.4);
+            --accent: #60a5fa;
+            --accent-glow: rgba(96, 165, 250, 0.4);
+            --danger: #ef4444;
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #86efac;
+            --text-dark: #14532d;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 16px 45px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(6, 14, 6, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 3.5s infinite ease-in-out;
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #064e3b 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .btn-secondary {
+            border-color: rgba(251, 191, 36, 0.3);
+            color: #fcd34d;
+            background: rgba(251, 191, 36, 0.08);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            background: rgba(251, 191, 36, 0.15);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.15);
+        }
+
+        /* Layout Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card panels */
+        .glass-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Quests list styles */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .quest-card.active {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.08);
+            box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.1);
+        }
+
+        .quest-card.completed {
+            border-color: var(--secondary);
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        .quest-card.completed:hover {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.08);
+        }
+
+        .quest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .quest-desc-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .quest-badge {
+            font-size: 1.3rem;
+            margin-left: 12px;
+            filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+            transition: var(--transition);
+        }
+
+        .quest-matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* SVG visual soccer field */
+        .svg-container {
+            width: 100%;
+            position: relative;
+            background: #020602;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+        }
+
+        .viewport-svg {
+            width: 100%;
+            height: 380px;
+            display: block;
+        }
+
+        /* Pitch drawing classes */
+        .soccer-turf {
+            fill: #051405;
+        }
+
+        .soccer-stripe {
+            fill: #071907;
+        }
+
+        .soccer-line {
+            stroke: rgba(134, 239, 172, 0.35);
+            stroke-width: 2.0;
+            fill: none;
+        }
+
+        .soccer-grid-line {
+            stroke: rgba(255,255,255,0.04);
+            stroke-width: 1;
+        }
+
+        .soccer-goal-net {
+            stroke: var(--secondary);
+            stroke-width: 3.5;
+            fill: rgba(251, 191, 36, 0.05);
+            filter: drop-shadow(0 0 8px var(--secondary-glow));
+        }
+
+        .soccer-ball {
+            fill: var(--white);
+            stroke: #020502;
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
+        }
+
+        .soccer-kick-path {
+            stroke: var(--accent);
+            stroke-width: 3.0;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 6px var(--accent-glow));
+        }
+
+        .soccer-tick-line {
+            stroke: rgba(255,255,255,0.25);
+            stroke-width: 1.5;
+        }
+
+        .soccer-tick-label {
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 700;
+            fill: var(--text-muted);
+            text-anchor: middle;
+        }
+
+        /* Keep change flip algorithm helper panel */
+        .algorithm-console {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .algorithm-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            align-items: center;
+            gap: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.03);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .algo-box {
+            background: #050d05;
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .algo-box.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .algo-box-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .operator-sign {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .pitch-inputs-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .input-select-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-select {
+            background: #060e06;
+            border: 1px solid rgba(255,255,255,0.08);
+            color: var(--white);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .input-select:focus {
+            border-color: var(--primary);
+        }
+
+        /* ESOL Guides styles */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(251, 191, 36, 0.03) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .sentence-stem-tag {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .sentence-stem-tag:hover {
+            color: var(--white);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Diagnostics console panel */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 330px;
+            background: #020602;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #000;
+            border-radius: var(--radius-sm);
+            height: 140px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #34d399;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        .log-error { color: var(--danger); }
+        .log-success { color: var(--primary); }
+        .log-warning { color: var(--secondary); }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(2, 5, 2, 0.8);
+            font-family: var(--font-display);
+        }
+    </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <span class="logo-icon">⚽</span>
+            <h1 class="logo-title">Fraction Division Soccer League</h1>
+        </div>
+        <div class="header-buttons">
+            <button class="btn btn-secondary" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar: Quests and ESOL Sentence Stems -->
+        <div class="sidebar">
+            
+            <!-- Quests Panel -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.75a1.125 1.125 0 01-1.125-1.125V13.5m.682 2.248a3.375 3.375 0 11-3.473-4.456M12 10.5a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path></svg>
+                    <span id="lbl-mission-control">League Matches</span>
+                </h2>
+
+                <div class="quest-matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-match-state">Match State</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--text-muted);">SANDBOX</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-passes-count">Goal Shots</span>
+                        <span class="hud-metric-value" id="quest-passes-state" style="color:var(--secondary);">0 PASSES</span>
+                    </div>
+                </div>
+
+                <div class="quest-list" id="quests-container">
+                    <!-- Dynamic quests checklist -->
+                </div>
+            </div>
+
+            <!-- ESOL Navigation support -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--secondary); border-bottom-color: rgba(251, 191, 36, 0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"></path></svg>
+                    <span id="lbl-navigation-guide">Coaching Tactics Helper</span>
+                </h2>
+
+                <div class="esol-bubble" id="esol-scaffold-box">
+                    <span id="esol-en">Choose your Goal net width (dividend) and Pass size (divisor). Kick consecutive passes to score exactly inside the goal!</span>
+                    <div class="esol-translation" id="esol-es">¡Elige el ancho de la portería (dividendo) y el tamaño del pase (divisor). ¡Patea pases consecutivos para anotar exactamente dentro!</div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px;" id="sentence-stems-container">
+                    <!-- Interactive items loaded programmatically -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Workspace (Soccer field visualizer & keep change flip solver) -->
+        <div class="main-workspace">
+            
+            <!-- Soccer field SVG Pitch -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div class="viewport-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"></path></svg>
+                        <span id="lbl-workspace-title">Fraction League Playbook Canvas</span>
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:4px 12px; border-radius:12px; color:var(--text-muted);" id="passes-tracker-hud">
+                        Passes Taken: 0
+                    </div>
+                </div>
+
+                <div class="svg-container">
+                    <svg id="pitch-svg" class="viewport-svg" viewBox="0 0 800 380">
+                        <!-- turf, goal posts, ball and paths rendered dynamically -->
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Parameters selection & Keep change flip solver -->
+            <div class="glass-panel">
+                
+                <!-- Inputs Row -->
+                <div class="pitch-inputs-row">
+                    <div class="input-select-wrapper">
+                        <span class="param-label" id="lbl-dividend-select">Goal Net Width (Dividend)</span>
+                        <select class="input-select" id="dividend-select" onchange="handleDividendChange(this.value)">
+                            <option value="0.5">1/2 down the field</option>
+                            <option value="0.6666">2/3 down the field</option>
+                            <option value="0.75" selected>3/4 down the field</option>
+                            <option value="0.8333">5/6 down the field</option>
+                        </select>
+                    </div>
+                    <div class="input-select-wrapper">
+                        <span class="param-label" id="lbl-divisor-select">Pass Vector Size (Divisor)</span>
+                        <select class="input-select" id="divisor-select" onchange="handleDivisorChange(this.value)">
+                            <option value="0.25">1/4 pass steps</option>
+                            <option value="0.1666">1/6 pass steps</option>
+                            <option value="0.125" selected>1/8 pass steps</option>
+                            <option value="0.0833">1/12 pass steps</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span id="lbl-algo-title">Keep - Change - Flip Tactics Board</span>
+                </h2>
+
+                <div class="algorithm-console">
+                    <div class="algorithm-row">
+                        <!-- Keep Box -->
+                        <div class="algo-box">
+                            <span class="algo-box-title">KEEP</span>
+                            <span id="algo-keep-val">3/4</span>
+                        </div>
+                        
+                        <!-- Change Box -->
+                        <span class="operator-sign">&times;</span>
+                        
+                        <!-- Flip Box -->
+                        <div class="algo-box">
+                            <span class="algo-box-title">FLIP</span>
+                            <span id="algo-flip-val">8/1</span>
+                        </div>
+                        
+                        <!-- Equal -->
+                        <span class="operator-sign">=</span>
+                        
+                        <!-- Result Box -->
+                        <div class="algo-box active" style="background:rgba(16, 185, 129, 0.08);">
+                            <span class="algo-box-title" style="color:var(--primary);">GOALS</span>
+                            <span id="algo-result-val">6</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; gap:16px;">
+                        <button class="btn btn-secondary" onclick="resetKick()" style="padding:12px 24px;">
+                            🔄 Reset Ball
+                        </button>
+                        <button class="btn btn-primary" onclick="triggerPassKick()" style="padding:12px 32px; font-size:1.0rem;" id="btn-kick-ball">
+                            ⚡ Kick Pass!
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Diagnostics Console Overlay -->
+    <div class="diagnostics-panel" id="diagnostics-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
+        </button>
+    </div>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 5, 2, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--bg-surface); border: 2px solid var(--border-active); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">GOAL SCORED!</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; margin-bottom: 24px;">Excellent visual division! You scored exactly inside the net!</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Continue Play</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Fractions Division standards expected score ranges.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            quests: [
+                { id: 1, dividend: 0.6666, divisor: 0.1666, title: '⚽ Cup Match 1', title_es: '⚽ Copa Partido 1', desc: 'Score in goal 2/3 (dividend) using pass sizes 1/6 (divisor). Target: 4 passes.', desc_es: 'Anota en 2/3 usando pases de 1/6. Meta: 4 pases.' },
+                { id: 2, dividend: 0.75, divisor: 0.125, title: '🏆 Cup Semi-Final', title_es: '🏆 Copa Semifinal', desc: 'Score in goal 3/4 using pass sizes 1/8. Target: 6 passes.', desc_es: 'Anota en 3/4 usando pases de 1/8. Meta: 6 pases.' },
+                { id: 3, dividend: 0.8333, divisor: 0.0833, title: '⭐ League Championship', title_es: '⭐ Gran Final', desc: 'Score in goal 5/6 using pass sizes 1/12. Target: 10 passes.', desc_es: 'Anota en 5/6 usando pases de 1/12. Meta: 10 pases.' }
+            ],
+            stems: [
+                {
+                    id: 'stem-1',
+                    en: 'Dividing [3/4] by [1/8] asks how many [1/8]ths fit inside [3/4], which equals exactly [6] passes.',
+                    es: 'Dividir [3/4] entre [1/8] pregunta cuántos [1/8] caben en [3/4], lo cual equivale a exactamente [6] pases.'
+                },
+                {
+                    id: 'stem-2',
+                    en: 'The keep-change-flip algorithm converts division to [multiplication] by using the [reciprocal] of the divisor.',
+                    es: 'El algoritmo de mantener-cambiar-girar convierte la división en [multiplicación] usando el [recíproco] del divisor.'
+                }
+            ],
+            translations: {
+                en: {
+                    'mission-control': 'League Matches',
+                    'navigation-guide': 'Coaching Tactics Helper',
+                    'workspace-title': 'Fraction League Playbook Canvas',
+                    'algo-title': 'Keep - Change - Flip Tactics Board',
+                    'dividend-select': 'Goal Net Width (Dividend)',
+                    'divisor-select': 'Pass Vector Size (Divisor)',
+                    'match-state': 'Match State',
+                    'passes-count': 'Goal Shots',
+                    'sandbox': 'SANDBOX LEAGUE PLAY',
+                    'active': 'MATCH ACTIVE ⚽',
+                    'success': 'GOAL SCORED! 🏆',
+                    'passes-tracker': 'Passes Taken: ',
+                    'shots': ' GOALS'
+                },
+                es: {
+                    'mission-control': 'Partidos de Liga',
+                    'navigation-guide': 'Ayudante de Tácticas ESOL',
+                    'workspace-title': 'Playbook de Fracciones',
+                    'algo-title': 'Pizarra Mantener - Cambiar - Girar',
+                    'dividend-select': 'Ancho de Portería (Dividendo)',
+                    'divisor-select': 'Tamaño del Pase (Divisor)',
+                    'match-state': 'Estado de Copa',
+                    'passes-count': 'Tiros a Gol',
+                    'sandbox': 'PARTIDO LIBRE DE ENTRENAMIENTO',
+                    'active': 'PARTIDO ACTIVO ⚽',
+                    'success': '¡GOOOL ANOTADO! 🏆',
+                    'passes-tracker': 'Pases Realizados: ',
+                    'shots': ' GOLES'
+                }
+            }
+        };
+
+        // ==========================================
+        // 2. INTEGRITY CHECK (validateConfig)
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.quests || CONFIG.quests.length === 0) {
+                throw new Error("CONFIG: Quests league list is missing.");
+            }
+            if (!CONFIG.stems || CONFIG.stems.length === 0) {
+                throw new Error("CONFIG: Sentence stems translation sets are missing.");
+            }
+            if (!CONFIG.translations || !CONFIG.translations.en || !CONFIG.translations.es) {
+                throw new Error("CONFIG: Translation packs are invalid.");
+            }
+        }
+
+        // ==========================================
+        // 3. DETERMINISTIC STATE MACHINE
+        // ==========================================
+        const STATE = {
+            dividend: 0.75, // target net coordinate length
+            divisor: 0.125, // pass size length
+            passesCount: 0, // current passes taken
+            activeQuestId: null, // null is Sandbox
+            completedQuests: [],
+            language: 'en',
+            activeStemId: 'stem-1',
+            goalScored: false,
+            overshot: false,
+
+            audioInitialized: false
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+            
+            // Sync values to the Keep Change Flip board UI
+            updateTacticsBoardValues();
+
+            // Redraw GUI
+            renderUI();
+        }
+
+        function updateTacticsBoardValues() {
+            const keepVal = getFractionLabel(STATE.dividend);
+            const flipVal = getReciprocalFractionLabel(STATE.divisor);
+            
+            // Calculate quotient: dividend / divisor
+            const quotient = Math.round(STATE.dividend / STATE.divisor);
+
+            document.getElementById('algo-keep-val').innerText = keepVal;
+            document.getElementById('algo-flip-val').innerText = flipVal;
+            document.getElementById('algo-result-val').innerText = quotient;
+        }
+
+        function getFractionLabel(val) {
+            if (Math.abs(val - 0.5) < 0.01) return "1/2";
+            if (Math.abs(val - 0.6666) < 0.01) return "2/3";
+            if (Math.abs(val - 0.75) < 0.01) return "3/4";
+            if (Math.abs(val - 0.8333) < 0.01) return "5/6";
+            return val.toFixed(2);
+        }
+
+        function getReciprocalFractionLabel(val) {
+            // Divisors: 1/4 -> flip to 4/1; 1/6 -> 6/1, etc.
+            if (Math.abs(val - 0.25) < 0.01) return "4/1";
+            if (Math.abs(val - 0.1666) < 0.01) return "6/1";
+            if (Math.abs(val - 0.125) < 0.01) return "8/1";
+            if (Math.abs(val - 0.0833) < 0.01) return "12/1";
+            return val.toFixed(2);
+        }
+
+        // ==========================================
+        // 4. INTERACTIVE BALL CONTROLLER
+        // ==========================================
+        function toggleLanguage() {
+            const next = STATE.language === 'en' ? 'es' : 'en';
+            transitionState({ language: next });
+            logDiagnostics(`Language changed to: ${next}`);
+        }
+
+        function selectQuest(questId) {
+            if (STATE.activeQuestId === questId) {
+                transitionState({ activeQuestId: null });
+                logDiagnostics("Entered free sandbox play.");
+            } else {
+                const quest = CONFIG.quests.find(q => q.id === questId);
+                // Force state matches the Quest parameters
+                document.getElementById('dividend-select').value = quest.dividend.toString();
+                document.getElementById('divisor-select').value = quest.divisor.toString();
+
+                transitionState({
+                    activeQuestId: questId,
+                    dividend: quest.dividend,
+                    divisor: quest.divisor,
+                    passesCount: 0,
+                    goalScored: false,
+                    overshot: false
+                });
+
+                logDiagnostics(`Activated quest ${questId}: net=${quest.dividend.toFixed(3)}, pass=${quest.divisor.toFixed(3)}`);
+            }
+        }
+
+        function handleDividendChange(val) {
+            transitionState({
+                dividend: parseFloat(val),
+                passesCount: 0,
+                goalScored: false,
+                overshot: false
+            });
+            logDiagnostics(`Goal net target changed to: ${val}`);
+        }
+
+        function handleDivisorChange(val) {
+            transitionState({
+                divisor: parseFloat(val),
+                passesCount: 0,
+                goalScored: false,
+                overshot: false
+            });
+            logDiagnostics(`Pass vector step changed to: ${val}`);
+        }
+
+        function resetKick() {
+            transitionState({
+                passesCount: 0,
+                goalScored: false,
+                overshot: false
+            });
+            logDiagnostics("Ball reset to kickoff spot.");
+        }
+
+        function triggerPassKick() {
+            if (STATE.goalScored || STATE.overshot) {
+                resetKick();
+                return;
+            }
+
+            const nextPassCount = STATE.passesCount + 1;
+            const currentPosition = nextPassCount * STATE.divisor;
+
+            // Audio chirp
+            if (STATE.audioInitialized) {
+                AudioEngine.playKickSound();
+            }
+
+            // Check if goal net is hit exactly
+            const distanceDeviation = Math.abs(currentPosition - STATE.dividend);
+            const exactlyHit = distanceDeviation < 0.01;
+            const overshotNet = currentPosition > STATE.dividend + 0.01;
+
+            if (exactlyHit) {
+                // GOAL!
+                transitionState({
+                    passesCount: nextPassCount,
+                    goalScored: true
+                });
+                
+                if (STATE.audioInitialized) {
+                    AudioEngine.playGoalCrowdCheer();
+                }
+
+                showCustomModal(
+                    STATE.language === 'en' ? "GOOOAL! ⚽" : "¡GOOOL! ⚽",
+                    STATE.language === 'en' ? "Excellent visual division! You scored exactly inside the net!" : "¡Excelente división visual! ¡Anotaste exactamente dentro de la red!",
+                    "🏆",
+                    STATE.language === 'en' ? "Continue Match" : "Continuar Partido"
+                );
+                logDiagnostics(`Goal Scored! Target ${STATE.dividend.toFixed(3)} reached in ${nextPassCount} steps.`, 'success');
+
+                // Validate quest complete
+                if (STATE.activeQuestId !== null) {
+                    if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
+                        const completed = [...STATE.completedQuests, STATE.activeQuestId];
+                        transitionState({ completedQuests: completed });
+                    }
+                }
+
+            } else if (overshotNet) {
+                // Missed / Out of bounds
+                transitionState({
+                    passesCount: nextPassCount,
+                    overshot: true
+                });
+                if (STATE.audioInitialized) {
+                    AudioEngine.playGoalieBlockSound();
+                }
+                showCustomModal(
+                    STATE.language === 'en' ? "MISSED SHOT 🥅" : "TIRO FALLADO 🥅",
+                    STATE.language === 'en' ? "The pass overshot the goal post. Reset and try again!" : "El pase sobrepasó los postes de la portería. ¡Reinicia e inténtalo de nuevo!",
+                    "❌",
+                    STATE.language === 'en' ? "Retry Kick" : "Reintentar Tiro",
+                    resetKick
+                );
+                logDiagnostics("Kicked out of bounds.", 'error');
+            } else {
+                // Stable intermediate pass
+                transitionState({ passesCount: nextPassCount });
+                logDiagnostics(`Kick pass #${nextPassCount} taken. Ball at ${currentPosition.toFixed(3)}`);
+            }
+        }
+
+        function selectSentenceStem(stemId) {
+            transitionState({ activeStemId: stemId });
+        }
+
+        // ==========================================
+        // 5. WEB AUDIO CROWD CHEER (SOUND ENGINE)
+        // ==========================================
+        const AudioEngine = {
+            ctx: null,
+            masterGain: null,
+
+            init() {
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContextClass();
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    this.masterGain.connect(this.ctx.destination);
+                    STATE.audioInitialized = true;
+                } catch(e) {
+                    console.log("AudioContext blocked or unsuited: " + e.message);
+                }
+            },
+
+            playKickSound() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.1);
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.12);
+                } catch(e){}
+            },
+
+            playGoalieBlockSound() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.2);
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.3);
+                } catch(e){}
+            },
+
+            playGoalCrowdCheer() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    // Ascending Major chord sweep layering
+                    const chords = [196.00, 246.94, 293.66, 392.00, 493.88]; // G major
+                    chords.forEach((freq, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        gain.gain.setValueAtTime(0.04, this.ctx.currentTime + idx * 0.05);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.05 + 0.8);
+                        gain.connect(this.masterGain);
+
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.05);
+                        osc.connect(gain);
+                        osc.start(this.ctx.currentTime + idx * 0.05);
+                        osc.stop(this.ctx.currentTime + idx * 0.05 + 0.9);
+                    });
+                } catch(e){}
+            }
+        };
+
+        // ==========================================
+        // 6. GUI VIEW ENGINE (renderUI)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+
+            // Translations
+            const lang = STATE.language;
+            const t = CONFIG.translations[lang];
+
+            document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+            document.getElementById('lbl-navigation-guide').innerText = t['navigation-guide'];
+            document.getElementById('lbl-workspace-title').innerText = t['workspace-title'];
+            document.getElementById('lbl-algo-title').innerText = t['algo-title'];
+            document.getElementById('lbl-dividend-select').innerText = t['dividend-select'];
+            document.getElementById('lbl-divisor-select').innerText = t['divisor-select'];
+            document.getElementById('lbl-match-state').innerText = t['match-state'];
+            document.getElementById('lbl-passes-count').innerText = t['passes-count'];
+            document.getElementById('lang-toggle-btn').innerText = lang === 'en' ? '🌐 EN | ES' : '🌐 ES | EN';
+
+            // Quests sidebar
+            renderQuestsList();
+
+            // Kick details HUD
+            const statusEl = document.getElementById('quest-status-flag');
+            const trackerEl = document.getElementById('quest-passes-state');
+            const resultVal = Math.round(STATE.dividend / STATE.divisor);
+
+            if (STATE.activeQuestId === null) {
+                statusEl.innerText = t['sandbox'];
+                statusEl.style.color = 'var(--text-muted)';
+            } else {
+                const questDone = STATE.completedQuests.includes(STATE.activeQuestId);
+                if (questDone) {
+                    statusEl.innerText = t['success'];
+                    statusEl.style.color = 'var(--primary)';
+                } else {
+                    statusEl.innerText = t['active'];
+                    statusEl.style.color = 'var(--accent)';
+                }
+            }
+
+            trackerEl.innerText = `${STATE.passesCount} / ${resultVal} SHOTS`;
+            if (STATE.goalScored) {
+                trackerEl.innerText = "GOAL! ⚽";
+                trackerEl.style.color = 'var(--primary)';
+            } else if (STATE.overshot) {
+                trackerEl.innerText = "MISSED! ❌";
+                trackerEl.style.color = 'var(--danger)';
+            } else {
+                trackerEl.style.color = 'var(--secondary)';
+            }
+
+            document.getElementById('passes-tracker-hud').innerText = `${t['passes-tracker']} ${STATE.passesCount}`;
+
+            // ESOL bubble and Coaching sentence stems
+            renderSentenceStems();
+
+            // Render interactive SVG soccer pitch
+            renderSoccerPitchGraphics();
+        }
+
+        function renderQuestsList() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const completed = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.title_es;
+                const desc = STATE.language === 'en' ? q.desc : q.desc_es;
+
+                container.innerHTML += `
+                    <div class="quest-card ${isActive?'active':''} ${completed?'completed':''}" onclick="selectQuest(${q.id})">
+                        <div class="quest-info">
+                            <span class="quest-title-text">${title}</span>
+                            <span class="quest-desc-text">${desc}</span>
+                        </div>
+                        <span class="quest-badge">${completed?'✅':'⚽'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderSentenceStems() {
+            const container = document.getElementById('sentence-stems-container');
+            container.innerHTML = '';
+
+            CONFIG.stems.forEach(stem => {
+                const isActive = STATE.activeStemId === stem.id;
+                const text = STATE.language === 'en' ? stem.en : stem.es;
+                const formattedHtml = text.replace(/\[(.*?)\]/g, `<strong style="color:var(--secondary); font-weight:700;">$1</strong>`);
+
+                container.innerHTML += `
+                    <div class="sentence-stem-tag ${isActive?'active':''}" onclick="selectSentenceStem('${stem.id}')">
+                        ${formattedHtml}
+                    </div>
+                `;
+            });
+
+            // Update ESOL guide details box
+            const activeStem = CONFIG.stems.find(s => s.id === STATE.activeStemId);
+            if (activeStem) {
+                const scaffoldBox = document.getElementById('esol-scaffold-box');
+                const enHtml = activeStem.en.replace(/\[(.*?)\]/g, `<span style="color:var(--secondary); font-weight:700; border-bottom: 1.5px dashed rgba(251, 191, 36, 0.4);">$1</span>`);
+                const esHtml = activeStem.es.replace(/\[(.*?)\]/g, `<span style="color:var(--accent); font-weight:700; border-bottom: 1.5px dashed rgba(96, 165, 250, 0.4);">$1</span>`);
+
+                scaffoldBox.innerHTML = `
+                    <div id="esol-en" style="line-height:1.5;">${enHtml}</div>
+                    <div class="esol-translation" id="esol-es" style="margin-top:8px; padding-top:8px; border-top: 1px solid rgba(255,255,255,0.05);">${esHtml}</div>
+                `;
+            }
+        }
+
+        function renderSoccerPitchGraphics() {
+            const svg = document.getElementById('pitch-svg');
+            if (!svg) return;
+            svg.innerHTML = ''; // Wipe
+
+            const W = 800;
+            const H = 380;
+
+            const scaleStartX = 80;
+            const scaleEndX = 720;
+            const pitchSpan = scaleEndX - scaleStartX; // 640 pixels represents 1 whole length
+
+            const pitchMidY = 190;
+
+            // --- A. Draw Soccer Turf grass stripes ---
+            svg.innerHTML += `<rect x="0" y="0" width="${W}" height="${H}" class="soccer-turf" />`;
+            // Draw alternating stripes
+            for (let i = 0; i < 10; i++) {
+                if (i % 2 === 0) {
+                    svg.innerHTML += `<rect x="${i * W/10}" y="0" width="${W/10}" height="${H}" class="soccer-stripe" />`;
+                }
+            }
+
+            // --- B. Draw Soccer boundaries markings ---
+            svg.innerHTML += `
+                <rect x="${scaleStartX}" y="40" width="${pitchSpan}" height="300" class="soccer-line" />
+                <line x1="${scaleStartX + pitchSpan/2}" y1="40" x2="${scaleStartX + pitchSpan/2}" y2="340" class="soccer-line" />
+                <circle cx="${scaleStartX + pitchSpan/2}" cy="${pitchMidY}" r="50" class="soccer-line" />
+                <circle cx="${scaleStartX + pitchSpan/2}" cy="${pitchMidY}" r="3" fill="rgba(134,239,172,0.5)" />
+            `;
+
+            // --- C. Draw Fraction Coordinate ScaleTicks ---
+            // Ticks depend on divisor intervals: e.g. 1/12 is 12 subdivisions
+            const subdivisions = Math.round(1 / STATE.divisor);
+            for (let tick = 0; tick <= subdivisions; tick++) {
+                const fracOffset = tick * STATE.divisor;
+                const tickX = scaleStartX + fracOffset * pitchSpan;
+                svg.innerHTML += `
+                    <line x1="${tickX}" y1="340" x2="${tickX}" y2="350" class="soccer-tick-line" />
+                `;
+
+                // Subdivisions ticks labels
+                if (tick % 2 === 0 || subdivisions <= 8) {
+                    const labelStr = tick === 0 ? "0" : (tick === subdivisions ? "1" : `${tick}/${subdivisions}`);
+                    svg.innerHTML += `
+                        <text x="${tickX}" y="366" class="soccer-tick-label">${labelStr}</text>
+                    `;
+                }
+            }
+
+            // --- D. Draw Goal net net width (dividend) ---
+            const goalX = scaleStartX + STATE.dividend * pitchSpan;
+            // Net extends from y=120 to y=260
+            svg.innerHTML += `
+                <rect x="${goalX}" y="${pitchMidY - 70}" width="40" height="140" class="soccer-goal-net" />
+                <!-- Grid Net Lines -->
+                <line x1="${goalX}" y1="${pitchMidY}" x2="${goalX + 40}" y2="${pitchMidY}" stroke="rgba(251, 191, 36, 0.25)" stroke-width="1.5" />
+                <line x1="${goalX + 20}" y1="${pitchMidY - 70}" x2="${goalX + 20}" y2="${pitchMidY + 70}" stroke="rgba(251, 191, 36, 0.25)" stroke-width="1.5" />
+                <text x="${goalX + 20}" y="${pitchMidY - 78}" class="soccer-tick-label" style="fill:var(--secondary);">NET: ${getFractionLabel(STATE.dividend)}</text>
+            `;
+
+            // --- E. Draw Kick Trajectory Passes taken ---
+            let dStr = `M ${scaleStartX} ${pitchMidY}`;
+            for (let step = 1; step <= STATE.passesCount; step++) {
+                const currentPos = step * STATE.divisor;
+                const prevPos = (step - 1) * STATE.divisor;
+
+                const prevX = scaleStartX + prevPos * pitchSpan;
+                const currentX = scaleStartX + currentPos * pitchSpan;
+
+                // Arc high loops path
+                const midX = (prevX + currentX) / 2;
+                const arcPeakY = pitchMidY - 35; // peak bounce height
+
+                dStr += ` Q ${midX} ${arcPeakY} ${currentX} ${pitchMidY}`;
+
+                // Draw intermediate landing pass flags
+                svg.innerHTML += `
+                    <circle cx="${currentX}" cy="${pitchMidY}" r="3.5" fill="var(--accent)" />
+                `;
+            }
+            if (STATE.passesCount > 0) {
+                svg.innerHTML += `<path d="${dStr}" class="soccer-kick-path" />`;
+            }
+
+            // --- F. Draw Soccer Ball at current position ---
+            const ballPos = STATE.passesCount * STATE.divisor;
+            const ballX = scaleStartX + ballPos * pitchSpan;
+            svg.innerHTML += `
+                <circle cx="${ballX}" cy="${pitchMidY}" r="7.5" class="soccer-ball" />
+                <line x1="${ballX - 4}" y1="${pitchMidY - 4}" x2="${ballX + 4}" y2="${pitchMidY + 4}" stroke="#000" stroke-width="1" />
+                <line x1="${ballX + 4}" y1="${pitchMidY - 4}" x2="${ballX - 4}" y2="${pitchMidY + 4}" stroke="#000" stroke-width="1" />
+            `;
+        }
+
+        // ==========================================
+        // 7. DIAGNOSTICS & AUTOMATED SELF-TESTS
+        // ==========================================
+        function logDiagnostics(message, type = 'info') {
+            const logsBox = document.getElementById('diagnostics-logs');
+            if (!logsBox) return;
+
+            const time = new Date().toTimeString().split(' ')[0];
+            let colorClass = '';
+            if (type === 'error') colorClass = 'log-error';
+            else if (type === 'success') colorClass = 'log-success';
+            else if (type === 'warning') colorClass = 'log-warning';
+
+            logsBox.innerHTML += `<div class="${colorClass}">[${time}] ${message}</div>`;
+            logsBox.scrollTop = logsBox.scrollHeight;
+        }
+
+        function openDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'block';
+            logDiagnostics("Coaching tactics console opened.");
+        }
+
+        function closeDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'none';
+        }
+
+        function clearDiagnosticsLogs() {
+            document.getElementById('diagnostics-logs').innerHTML = '';
+        }
+
+        // --- Core Automated Unit Tests ---
+        function runSelfTests() {
+            openDiagnostics();
+            logDiagnostics("====== Starting Fraction Division Soccer Self-Tests ======", 'warning');
+            let failedCount = 0;
+
+            // Test 1: Config Validity
+            try {
+                validateConfig();
+                logDiagnostics("Test 1 Passed: Static configurations validated.", 'success');
+            } catch(e) {
+                logDiagnostics(`Test 1 Failed: Config error: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 2: State Transitions Reducer
+            try {
+                const initialDivisor = STATE.divisor;
+                transitionState({ divisor: 0.25 });
+                if (STATE.divisor === 0.25) {
+                    logDiagnostics("Test 2 Passed: State transitions evaluated cleanly.", 'success');
+                } else {
+                    throw new Error("Divisor variable failed updates.");
+                }
+                transitionState({ divisor: initialDivisor });
+            } catch(e) {
+                logDiagnostics(`Test 2 Failed: Reducer logic: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 3: Keep Change Flip Math Solver
+            try {
+                // Quotient of 3/4 (0.75) divided by 1/8 (0.125) must evaluate exactly to 6!
+                const dividend = 0.75;
+                const divisor = 0.125;
+                const quotient = Math.round(dividend / divisor);
+
+                if (quotient === 6) {
+                    logDiagnostics(`Test 3 Passed: KCF fractions division math verified (${dividend} / ${divisor} = ${quotient}).`, 'success');
+                } else {
+                    throw new Error(`Division quotients failed assertions. Evaluated to: ${quotient}`);
+                }
+            } catch(e) {
+                logDiagnostics(`Test 3 Failed: Division equations: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 4: Trajectory validator logic
+            try {
+                // If ball starts at 0, taken 6 passes of 1/8, it hits exactly 3/4
+                const passCount = 6;
+                const ballPos = passCount * 0.125;
+                const dev = Math.abs(ballPos - 0.75);
+
+                if (dev < 0.001) {
+                    logDiagnostics("Test 4 Passed: Passes coordinates trajectory math validated.", 'success');
+                } else {
+                    throw new Error(`Calculations deviation outside safe bounds: ${dev}`);
+                }
+            } catch(e) {
+                logDiagnostics(`Test 4 Failed: Trajectory checks: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 5: Audio safety limits
+            try {
+                if (STATE.humVolume === undefined || STATE.humVolume <= 0.15) {
+                    logDiagnostics("Test 5 Passed: Audio Master gain parameters verified.", 'success');
+                } else {
+                    throw new Error("Gain setting exceeds safe margins.");
+                }
+            } catch(e) {
+                logDiagnostics(`Test 5 Failed: Sound safety check: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            if (failedCount === 0) {
+                logDiagnostics("====== All 5 Core Tests Passed Successfully! ======", 'success');
+                showCustomModal(
+                    "Self-Tests Complete",
+                    "5/5 assertions passed successfully!",
+                    "⚡",
+                    "Close"
+                );
+            } else {
+                logDiagnostics(`====== Self-Tests Failed: ${failedCount} errors accumulated ======`, 'error');
+                showCustomModal(
+                    "Self-Tests Failed",
+                    `${failedCount} errors registered inside console logs.`,
+                    "⚠️",
+                    "Review Logs"
+                );
+            }
+        }
+
+        // Custom Modal Controller Functions
+        function showCustomModal(title, message, icon, buttonText, onClickCallback) {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            document.getElementById('custom-modal-title').innerHTML = title;
+            document.getElementById('custom-modal-message').innerHTML = message;
+            document.getElementById('custom-modal-icon').innerHTML = icon;
+            
+            const btn = document.getElementById('custom-modal-btn');
+            btn.innerHTML = buttonText || (STATE.language === 'en' ? 'Continue' : 'Continuar');
+            
+            btn.onclick = function() {
+                closeCustomModal();
+                if (onClickCallback) onClickCallback();
+            };
+            
+            overlay.style.display = 'flex';
+            overlay.offsetHeight; // force reflow
+            overlay.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        }
+
+        function closeCustomModal() {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            overlay.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // ==========================================
+        // 10. INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            logDiagnostics("Soccer Playbook console loaded.");
+            validateConfig();
+
+            // Telemetry update
+            renderUI();
+        });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

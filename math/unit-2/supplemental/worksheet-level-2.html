@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 2 Worksheet — Level 2 — Statistics &amp; Data | Neft Teacher
+    </title>
+    <style>
+      :root {
+        --accent: #7c3aed;
+        --accent-light: #f5f3ff;
+        --accent-border: #c4b5fd;
+        --accent-dark: #5b21b6;
+        --ink: #21313f;
+        --muted: #5f6f80;
+        --line: #d7e2ed;
+        --paper: #f7f4ec;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Georgia, "Times New Roman", serif;
+        color: var(--ink);
+        background: var(--paper);
+        margin: 0;
+        padding: 24px;
+        line-height: 1.5;
+      }
+      .sheet {
+        max-width: 8.5in;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6in;
+      }
+      .toolbar {
+        max-width: 8.5in;
+        margin: 0 auto 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .level-tag {
+        display: inline-block;
+        background: var(--accent-light);
+        border: 1px solid var(--accent-border);
+        color: var(--accent-dark);
+        font-family: system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      .print-btn {
+        font-family: system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin: 0 0 2px;
+      }
+      .eyebrow {
+        font-family: system-ui, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent-dark);
+        margin: 0 0 6px;
+      }
+      .standard {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-style: italic;
+        margin: 0 0 14px;
+      }
+      .namebar {
+        display: flex;
+        gap: 24px;
+        border-top: 2px solid var(--ink);
+        border-bottom: 2px solid var(--ink);
+        padding: 8px 0;
+        margin-bottom: 18px;
+        font-family: system-ui, sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .namebar span {
+        flex: 1;
+      }
+      .namebar .line {
+        display: inline-block;
+        border-bottom: 1px solid var(--ink);
+        min-width: 60%;
+      }
+      h2 {
+        font-size: 1.1rem;
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: 4px;
+        margin: 22px 0 12px;
+      }
+      .directions {
+        background: var(--accent-light);
+        border-left: 4px solid var(--accent);
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+      }
+      ol.problems {
+        padding-left: 0;
+        list-style: none;
+        counter-reset: p;
+        margin: 0;
+      }
+      ol.problems > li {
+        counter-increment: p;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 14px 12px 44px;
+        margin-bottom: 12px;
+        position: relative;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      ol.problems > li::before {
+        content: counter(p);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 50%;
+        font-family: system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-align: center;
+        line-height: 24px;
+      }
+      .badge {
+        font-family: system-ui, sans-serif;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-left: 6px;
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+      .reason {
+        font-size: 0.85rem;
+        color: var(--accent-dark);
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .work-space {
+        border: 1px dotted #b9c7d4;
+        border-radius: 6px;
+        min-height: 0.8in;
+        margin-top: 8px;
+      }
+      .stretch {
+        border: 2px solid var(--accent);
+        border-radius: 8px;
+        background: var(--accent-light);
+        padding: 14px 16px;
+        margin-top: 16px;
+      }
+      .stretch h3 {
+        margin: 0 0 6px;
+        font-family: system-ui, sans-serif;
+        color: var(--accent-dark);
+      }
+      .answer-key {
+        margin-top: 28px;
+        border-top: 3px double var(--ink);
+        padding-top: 14px;
+        page-break-before: always;
+        break-before: page;
+      }
+      .answer-key h2 {
+        border-color: var(--ink);
+      }
+      .answer-key ol {
+        font-size: 0.9rem;
+        line-height: 1.7;
+      }
+      @page {
+        size: letter;
+        margin: 0.75in;
+      }
+      @media print {
+        body {
+          background: #fff;
+          padding: 0;
+          color: #000;
+        }
+        .sheet {
+          border: none;
+          border-radius: 0;
+          padding: 0;
+          max-width: 100%;
+        }
+        .toolbar {
+          display: none;
+        }
+        .directions,
+        .stretch {
+          background: #fff !important;
+        }
+        .level-tag,
+        .eyebrow,
+        .badge,
+        h2 {
+          color: #000;
+        }
+        h2 {
+          border-bottom-color: #000;
+        }
+        ol.problems > li::before {
+          background: #000;
+        }
+        .badge {
+          background: #fff;
+          border: 1px solid #000;
+        }
+        .stretch {
+          border-color: #000;
+        }
+        ol.problems > li {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="toolbar">
+      <span class="level-tag">Level 2 · Enrichment</span>
+      <button class="print-btn" onclick="window.print()">
+        Print Worksheet
+      </button>
+    </div>
+    <div class="sheet">
+      <p class="eyebrow">Reveal Math · Unit 2 · Supplemental</p>
+      <h1>Statistics &amp; Data</h1>
+      <p class="standard">
+        Grade 6 · Standards 6.SP.A.1–3, 6.SP.B.5 — analyzing distributions,
+        outliers &amp; data displays
+      </p>
+      <div class="namebar">
+        <span>Name: <span class="line"></span></span>
+        <span>Date: <span class="line"></span></span>
+      </div>
+
+      <h2>Challenge Problems</h2>
+      <div class="directions">
+        Directions: Solve and show your strategy. For each "Explain" prompt,
+        write a complete sentence that justifies your reasoning with the data.
+      </div>
+      <ol class="problems">
+        <li>
+          A data set is 4, 6, 6, 8, 11. Add one value so that the mean becomes
+          exactly 7. What value did you add?
+          <span class="badge">Reasoning</span>
+          <div class="reason">
+            Explain: how did you use the target total to find the missing value?
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          The mean of 5 quiz scores is 88. Four of them are 90, 85, 92, 80. Find
+          the fifth score. <span class="badge">Multi-step</span>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Which changes more when a very large outlier is added to a data set —
+          the mean or the median? <span class="badge">Reasoning</span>
+          <div class="reason">
+            Explain why, using what each measure depends on.
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          A data set has mean 10, median 10, and mode 10, with 5 values. Write
+          one possible data set. Then write a different one.
+          <span class="badge">Open-ended</span>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Daily temperatures (°F): 72, 75, 68, 90, 71, 73. Find the mean and
+          median. Which better represents a "typical" day, and why?
+          <span class="badge">Reasoning</span>
+          <div class="reason">
+            Explain your choice using the idea of an outlier.
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          A histogram groups times into 0–9, 10–19, 20–29 min with frequencies
+          4, 10, 6. How many data points are there? Can you find the exact mean?
+          <span class="badge">Multi-step</span>
+          <div class="reason">
+            Explain why a histogram limits how precisely you can compute the
+            mean.
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Two classes have the same mean test score, but Class A has range 12
+          and Class B has range 40. What does this tell you about the two
+          classes? <span class="badge">Reasoning</span>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Invent a 7-value data set where the mean and median are equal but no
+          value equals the mean. <span class="badge">Open-ended</span>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          The mean of 6 numbers is 15. If you remove a 9, what is the mean of
+          the remaining 5 numbers? <span class="badge">Multi-step</span>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          A teacher reports the "average" homework time is 30 minutes, but most
+          students did 15 minutes. Which measure of center was probably used,
+          and how could a few large values cause this?
+          <span class="badge">Reasoning</span>
+          <div class="work-space"></div>
+        </li>
+      </ol>
+
+      <div class="stretch">
+        <h3>Stretch Investigation</h3>
+        <p>
+          Real-world application: Survey at least 15 classmates with the
+          statistical question "How many hours do you spend on homework each
+          week?" Record the data, then compute the mean, median, mode, and
+          range. Build a dot plot. Finally, write three conclusions and state
+          which measure of center best summarizes your class, justifying your
+          choice.
+        </p>
+        <div class="work-space" style="min-height: 1.6in"></div>
+      </div>
+
+      <div class="answer-key">
+        <h2>Answer Key</h2>
+        <ol>
+          <li>
+            Current total 4+6+6+8+11 = 35; for mean 7 over 6 values need total
+            42; add 42 − 35 = 7.
+          </li>
+          <li>
+            Total needed 88 × 5 = 440; known 90+85+92+80 = 347; fifth = 440 −
+            347 = 93.
+          </li>
+          <li>
+            The mean — it uses every value, so a large outlier pulls it up; the
+            median only depends on position.
+          </li>
+          <li>
+            Answers vary, e.g., {10,10,10,10,10} or {8,9,10,11,12} (median/mode
+            10 needs repeats — e.g., {6,10,10,10,14}).
+          </li>
+          <li>
+            Mean = 449 ÷ 6 ≈ 74.8; median = (72+73)÷2 = 72.5; median is better
+            because 90 is an outlier.
+          </li>
+          <li>
+            4 + 10 + 6 = 20 data points; exact mean cannot be found — only the
+            interval each value falls in is known.
+          </li>
+          <li>
+            Same average but Class B's scores are far more spread out (more
+            variation/inconsistency).
+          </li>
+          <li>
+            Answers vary, e.g., {1,2,3,4,5,9,11}: mean = 5, median = 4 — adjust
+            so they match without a 5, e.g., {1,2,3,7,7,8,8}: mean = median =
+            5.14… accept any valid set.
+          </li>
+          <li>Total 6 × 15 = 90; remove 9 → 81; new mean 81 ÷ 5 = 16.2.</li>
+          <li>
+            The mean was likely used; a few students with very long times raise
+            the mean above the typical (median) value.
+          </li>
+          <li>
+            Stretch: answers vary; full credit requires correct
+            mean/median/mode/range, a dot plot, and a justified choice of
+            center.
+          </li>
+        </ol>
+      </div>
+    </div>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

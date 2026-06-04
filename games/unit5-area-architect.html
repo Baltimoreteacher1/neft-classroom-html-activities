@@ -1,0 +1,2047 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Area Architect — City Builder | Unit 5</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0a1a2e;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <script>
+      // ── AREA ARCHITECT — City Builder / Tetris Hybrid ──
+      // Phaser 3 — Grade 6 Math — Area of 2D Shapes
+      // Enhanced: particles, streak system, star rating, high scores, power-ups, juice
+
+      const LS_KEY = "area_architect_highscore";
+
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        noise(d, v = 0.08) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              bufSize = c.sampleRate * d;
+            const buf = c.createBuffer(1, bufSize, c.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const src = c.createBufferSource();
+            src.buffer = buf;
+            const g = c.createGain();
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            src.connect(g);
+            g.connect(c.destination);
+            src.start();
+            src.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        place() {
+          this.play("sine", 440, 0.1, 0.25);
+          this.play("sine", 554, 0.12, 0.2);
+        },
+        correct() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        wrong() {
+          this.play("sawtooth", 200, 0.25, 0.2);
+          this.play("sawtooth", 150, 0.3, 0.15);
+          this.noise(0.15, 0.1);
+        },
+        glassBreak() {
+          this.noise(0.2, 0.15);
+          this.play("square", 800, 0.05, 0.1);
+          this.play("square", 1200, 0.04, 0.08);
+          this.play("square", 600, 0.06, 0.08);
+        },
+        crack() {
+          this.noise(0.15, 0.15);
+          this.play("square", 100, 0.1, 0.1);
+        },
+        rowClear() {
+          this.play("sine", 523, 0.08);
+          this.play("sine", 659, 0.08);
+          this.play("sine", 784, 0.1);
+          this.play("sine", 1047, 0.15);
+        },
+        drop() {
+          this.play("triangle", 200, 0.08, 0.15);
+        },
+        combo() {
+          this.play("sine", 784, 0.08);
+          this.play("sine", 988, 0.1);
+          this.play("sine", 1175, 0.12);
+        },
+        streak3() {
+          [523, 659, 784].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 60),
+          );
+        },
+        streak5() {
+          [523, 659, 784, 988, 1175].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.25), i * 50),
+          );
+        },
+        streak7() {
+          [523, 659, 784, 988, 1175, 1318, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.3), i * 45),
+          );
+        },
+        powerUp() {
+          [440, 554, 659, 880].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.12, 0.2), i * 70),
+          );
+        },
+        levelUp() {
+          [523, 659, 784, 880, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.25), i * 80),
+          );
+        },
+        phaseTransition() {
+          [392, 440, 523, 659, 784, 880].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.2, 0.2), i * 60),
+          );
+        },
+        win() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.25, 0.3), i * 120),
+          );
+        },
+        win3star() {
+          [523, 659, 784, 880, 1047, 1175, 1318, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.3, 0.3), i * 100),
+          );
+        },
+        lose() {
+          [400, 350, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.15), i * 180),
+          );
+        },
+        tick() {
+          this.play("square", 600, 0.03, 0.08);
+        },
+        highScore() {
+          [523, 784, 1047, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.2, 0.3), i * 120),
+          );
+        },
+      };
+
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+      }
+      function shuffle(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
+        }
+        return r;
+      }
+
+      // ── Shape & Question Generator ──
+      function generateShapeQuestion(difficulty) {
+        const types =
+          difficulty === "easy"
+            ? ["rectangle", "parallelogram"]
+            : difficulty === "medium"
+              ? ["rectangle", "parallelogram", "triangle"]
+              : [
+                  "rectangle",
+                  "parallelogram",
+                  "triangle",
+                  "trapezoid",
+                  "composite",
+                ];
+        const type = types[randInt(0, types.length - 1)];
+
+        let prompt, answer, dims, formula, choices, shapeData;
+        const maxDim =
+          difficulty === "easy" ? 15 : difficulty === "medium" ? 20 : 30;
+        const minDim = difficulty === "easy" ? 3 : 4;
+
+        if (type === "rectangle") {
+          const b = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          const area = b * h;
+          prompt = `Rectangle: base=${b}, height=${h}`;
+          formula = `A = b × h = ${b} × ${h}`;
+          answer = area;
+          dims = { b, h };
+          shapeData = { type, b, h, color: 0x4488ff };
+          choices = [area, b + h, 2 * (b + h), b * h + randInt(1, 10)];
+        } else if (type === "parallelogram") {
+          const b = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          const area = b * h;
+          prompt = `Parallelogram: base=${b}, height=${h}`;
+          formula = `A = b × h = ${b} × ${h}`;
+          answer = area;
+          dims = { b, h };
+          shapeData = { type, b, h, color: 0xff8844 };
+          choices = [area, b + h, (b * h) / 2, b * h + randInt(-5, 5)];
+        } else if (type === "triangle") {
+          const b = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          const area = (b * h) / 2;
+          prompt = `Triangle: base=${b}, height=${h}`;
+          formula = `A = ½ × b × h = ½ × ${b} × ${h}`;
+          answer = area;
+          dims = { b, h };
+          shapeData = { type, b, h, color: 0x44cc88 };
+          choices = [area, b * h, b + h, (b * h) / 2 + randInt(1, 8)];
+        } else if (type === "trapezoid") {
+          const b1 = randInt(minDim, maxDim),
+            b2 = randInt(minDim, maxDim),
+            h = randInt(minDim, maxDim);
+          const area = ((b1 + b2) * h) / 2;
+          prompt = `Trapezoid: bases=${b1} & ${b2}, height=${h}`;
+          formula = `A = ½(b₁+b₂)×h = ½(${b1}+${b2})×${h}`;
+          answer = area;
+          dims = { b1, b2, h };
+          shapeData = { type, b1, b2, h, color: 0xcc44cc };
+          choices = [area, b1 * h, b2 * h, (b1 + b2) * h];
+        } else {
+          // Composite: rectangle + triangle
+          const rw = randInt(minDim, 12),
+            rh = randInt(minDim, 10),
+            th = randInt(minDim, 8);
+          const rectArea = rw * rh;
+          const triArea = (rw * th) / 2;
+          const area = rectArea + triArea;
+          prompt = `L-shape: rect ${rw}×${rh} + triangle base=${rw}, h=${th}`;
+          formula = `A = ${rw}×${rh} + ½×${rw}×${th}`;
+          answer = area;
+          dims = { rw, rh, tw: rw, th };
+          shapeData = {
+            type: "composite",
+            rw,
+            rh,
+            tw: rw,
+            th,
+            color: 0xddaa00,
+          };
+          choices = [
+            area,
+            rectArea,
+            triArea,
+            rectArea + triArea + randInt(1, 10),
+          ];
+        }
+
+        // Ensure unique and valid choices
+        choices = [...new Set(choices.map((c) => Math.round(c * 10) / 10))];
+        while (choices.length < 4) choices.push(answer + randInt(-15, 15));
+        choices = choices.filter((c) => c > 0 && c !== answer).slice(0, 3);
+        choices.push(answer);
+        choices = shuffle(choices);
+
+        return { prompt, answer, formula, choices, shapeData, type, dims };
+      }
+
+      const W = 800,
+        H = 600;
+      const GRID_COLS = 10,
+        GRID_ROWS = 15,
+        CELL = 30;
+      const GRID_X = 30,
+        GRID_Y = 70;
+      const GRID_W = GRID_COLS * CELL,
+        GRID_H = GRID_ROWS * CELL;
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0a1a2e",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, DiffScene, GameScene, ResultScene],
+      };
+
+      // ── BOOT ──
+      function BootScene() {
+        return new Phaser.Scene("Boot");
+      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+
+        // Building blocks
+        g.fillStyle(0x4488ff);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.generateTexture("block_blue", CELL - 2, CELL - 2);
+        g.clear();
+
+        g.fillStyle(0xff8844);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.generateTexture("block_orange", CELL - 2, CELL - 2);
+        g.clear();
+
+        g.fillStyle(0x44cc88);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.generateTexture("block_green", CELL - 2, CELL - 2);
+        g.clear();
+
+        g.fillStyle(0xcc44cc);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.generateTexture("block_purple", CELL - 2, CELL - 2);
+        g.clear();
+
+        g.fillStyle(0xddaa00);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.generateTexture("block_gold", CELL - 2, CELL - 2);
+        g.clear();
+
+        g.fillStyle(0x666666);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.generateTexture("block_gray", CELL - 2, CELL - 2);
+        g.clear();
+
+        g.fillStyle(0x334455);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.generateTexture("block_dark", CELL - 2, CELL - 2);
+        g.clear();
+
+        // Cracked block
+        g.fillStyle(0x993333);
+        g.fillRect(0, 0, CELL - 2, CELL - 2);
+        g.lineStyle(2, 0xff4444);
+        g.lineBetween(0, 0, CELL - 2, CELL - 2);
+        g.lineBetween(CELL - 2, 0, 0, CELL - 2);
+        g.generateTexture("block_cracked", CELL - 2, CELL - 2);
+        g.clear();
+
+        // Particle
+        g.fillStyle(0xffffff);
+        g.fillCircle(3, 3, 3);
+        g.generateTexture("particle", 6, 6);
+        g.clear();
+
+        // Star
+        g.fillStyle(0xffdd00);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("star", 8, 8);
+        g.clear();
+
+        // Confetti piece (small rectangle)
+        g.fillStyle(0xffffff);
+        g.fillRect(0, 0, 6, 3);
+        g.generateTexture("confetti", 6, 3);
+        g.clear();
+
+        // Glow circle
+        g.fillStyle(0xffffff);
+        g.fillCircle(8, 8, 8);
+        g.generateTexture("glow", 16, 16);
+        g.clear();
+
+        // Building top
+        g.fillStyle(0x88aacc);
+        g.beginPath();
+        g.moveTo(15, 0);
+        g.lineTo(30, 20);
+        g.lineTo(0, 20);
+        g.closePath();
+        g.fill();
+        g.generateTexture("roof", 30, 20);
+        g.clear();
+
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE ──
+      function TitleScene() {
+        return new Phaser.Scene("Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
+
+        // Ambient floating particles (dust motes)
+        this.ambientParticles = this.add.particles(0, 0, "particle", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 5, max: 20 },
+          angle: { min: 260, max: 280 },
+          scale: { start: 0.3, end: 0 },
+          alpha: { start: 0.4, end: 0 },
+          lifespan: { min: 3000, max: 6000 },
+          frequency: 200,
+          tint: [0x4488ff, 0x44cc88, 0x6688aa],
+          blendMode: "ADD",
+        });
+
+        // City skyline
+        const colors = [0x2244aa, 0x3366cc, 0x4488ff, 0x224488, 0x1a3366];
+        const buildings = [];
+        for (let i = 0; i < 12; i++) {
+          const bw = randInt(30, 70),
+            bh = randInt(60, 200);
+          const bx = i * 70 + randInt(-10, 10);
+          const c = colors[randInt(0, colors.length - 1)];
+          const bld = this.add.rectangle(bx, H - bh / 2, bw, bh, c, 0.6);
+          buildings.push(bld);
+          // Animate buildings rising on scene start
+          bld.setScale(1, 0);
+          bld.y = H;
+          this.tweens.add({
+            targets: bld,
+            scaleY: 1,
+            y: H - bh / 2,
+            duration: 600 + i * 100,
+            ease: "Back.easeOut",
+            delay: i * 80,
+          });
+          // Windows
+          for (let wy = H - bh + 10; wy < H - 10; wy += 20) {
+            for (let wx = bx - bw / 2 + 8; wx < bx + bw / 2 - 8; wx += 14) {
+              const win = this.add.rectangle(
+                wx,
+                wy,
+                6,
+                8,
+                Math.random() > 0.3 ? 0xffdd88 : 0x222244,
+                0.7,
+              );
+              // Random window flicker
+              if (Math.random() > 0.7) {
+                this.tweens.add({
+                  targets: win,
+                  alpha: { from: 0.7, to: 0.2 },
+                  duration: randInt(1000, 3000),
+                  yoyo: true,
+                  repeat: -1,
+                  delay: randInt(0, 2000),
+                });
+              }
+            }
+          }
+        }
+        // Ground
+        this.add.rectangle(cx, H - 10, W, 20, 0x1a3a2e);
+
+        // Falling shapes preview with glow
+        const shapes = [
+          { type: "rect", x: 160, y: 280, w: 60, h: 40, color: 0x4488ff },
+          { type: "tri", x: 350, y: 270, w: 50, h: 45, color: 0x44cc88 },
+          { type: "para", x: 540, y: 280, w: 65, h: 35, color: 0xff8844 },
+          { type: "trap", x: 680, y: 275, w: 55, h: 40, color: 0xcc44cc },
+        ];
+        shapes.forEach((s, idx) => {
+          const g = this.add.graphics();
+          g.fillStyle(s.color, 0.5);
+          if (s.type === "rect")
+            g.fillRect(s.x - s.w / 2, s.y - s.h / 2, s.w, s.h);
+          else if (s.type === "tri") {
+            g.beginPath();
+            g.moveTo(s.x, s.y - s.h / 2);
+            g.lineTo(s.x + s.w / 2, s.y + s.h / 2);
+            g.lineTo(s.x - s.w / 2, s.y + s.h / 2);
+            g.closePath();
+            g.fill();
+          } else if (s.type === "para") {
+            g.beginPath();
+            g.moveTo(s.x - s.w / 2 + 10, s.y - s.h / 2);
+            g.lineTo(s.x + s.w / 2 + 10, s.y - s.h / 2);
+            g.lineTo(s.x + s.w / 2 - 10, s.y + s.h / 2);
+            g.lineTo(s.x - s.w / 2 - 10, s.y + s.h / 2);
+            g.closePath();
+            g.fill();
+          } else {
+            g.beginPath();
+            g.moveTo(s.x - 20, s.y - s.h / 2);
+            g.lineTo(s.x + 20, s.y - s.h / 2);
+            g.lineTo(s.x + s.w / 2, s.y + s.h / 2);
+            g.lineTo(s.x - s.w / 2, s.y + s.h / 2);
+            g.closePath();
+            g.fill();
+          }
+          // Float animation
+          this.tweens.add({
+            targets: g,
+            y: 15,
+            duration: randInt(2000, 4000),
+            yoyo: true,
+            repeat: -1,
+          });
+          // Pulse glow
+          this.tweens.add({
+            targets: g,
+            alpha: { from: 0.8, to: 1 },
+            duration: randInt(800, 1500),
+            yoyo: true,
+            repeat: -1,
+          });
+        });
+
+        // Title with animated entrance
+        const titleArea = this.add
+          .text(cx, 55, "AREA", {
+            fontSize: "72px",
+            fontFamily: "Impact,sans-serif",
+            color: "#4488ff",
+            stroke: "#0a1a2e",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleArea,
+          alpha: 1,
+          scale: 1,
+          duration: 800,
+          ease: "Back.easeOut",
+          delay: 200,
+        });
+
+        const titleArch = this.add
+          .text(cx, 125, "ARCHITECT", {
+            fontSize: "72px",
+            fontFamily: "Impact,sans-serif",
+            color: "#44cc88",
+            stroke: "#0a1a2e",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleArch,
+          alpha: 1,
+          scale: 1,
+          duration: 800,
+          ease: "Back.easeOut",
+          delay: 500,
+        });
+
+        // Subtle title pulse
+        this.tweens.add({
+          targets: [titleArea, titleArch],
+          scaleX: { from: 1, to: 1.02 },
+          scaleY: { from: 1, to: 1.02 },
+          duration: 2000,
+          yoyo: true,
+          repeat: -1,
+          delay: 1500,
+        });
+
+        const subtitle = this.add
+          .text(cx, 175, "CITY BUILDER", {
+            fontSize: "20px",
+            color: "#88aacc",
+            letterSpacing: 6,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+        this.tweens.add({
+          targets: subtitle,
+          alpha: 1,
+          y: { from: 190, to: 175 },
+          duration: 600,
+          delay: 900,
+        });
+
+        this.add
+          .text(
+            cx,
+            210,
+            "Rectangles • Triangles • Parallelograms • Trapezoids",
+            { fontSize: "14px", color: "#6688aa" },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 235, "Calculate areas to build your city!", {
+            fontSize: "13px",
+            color: "#557788",
+          })
+          .setOrigin(0.5);
+
+        // High score display
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs) {
+          this.add
+            .text(cx, 310, `HIGH SCORE: ${hs}`, {
+              fontSize: "14px",
+              color: "#ffdd00",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+        }
+
+        const btn = this.add
+          .rectangle(cx, 340, 260, 56, 0x44cc88)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 340, "BUILD YOUR CITY", {
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#0a2a1e",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: { from: 1, to: 1.05 },
+          scaleY: { from: 1, to: 1.05 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        // Button hover glow
+        btn.on("pointerover", () => {
+          btn.setFillStyle(0x55ddaa);
+          SFX.init();
+          SFX.tick();
+        });
+        btn.on("pointerout", () => btn.setFillStyle(0x44cc88));
+
+        btn.on("pointerdown", () => {
+          SFX.init();
+          SFX.place();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
+        });
+        this.input.keyboard.on("keydown-SPACE", () => {
+          SFX.init();
+          SFX.place();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
+        });
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── DIFFICULTY ──
+      function DiffScene() {
+        return new Phaser.Scene("DiffSelect");
+      }
+      DiffScene.prototype = Object.create(Phaser.Scene.prototype);
+      DiffScene.prototype.constructor = DiffScene;
+      DiffScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
+        this.add
+          .text(cx, 60, "SELECT YOUR CITY", {
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#44cc88",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 100, "Harder cities have more shape types", {
+            fontSize: "14px",
+            color: "#6688aa",
+          })
+          .setOrigin(0.5);
+
+        const diffs = [
+          {
+            key: "easy",
+            label: "SMALL TOWN",
+            sub: "Rectangles & parallelograms",
+            emoji: "🏨️",
+            color: 0x44cc88,
+            y: 200,
+          },
+          {
+            key: "medium",
+            label: "BIG CITY",
+            sub: "Add triangles, faster drops",
+            emoji: "🏙️",
+            color: 0xf59e0b,
+            y: 320,
+          },
+          {
+            key: "hard",
+            label: "MEGA METROPOLIS",
+            sub: "Trapezoids & composites, fast!",
+            emoji: "🌆",
+            color: 0xff4466,
+            y: 440,
+          },
+        ];
+        diffs.forEach((d, idx) => {
+          const btn = this.add
+            .rectangle(cx, d.y, 380, 95, d.color, 0.85)
+            .setInteractive({ useHandCursor: true })
+            .setScale(0)
+            .setAlpha(0);
+          // Animated entrance
+          this.tweens.add({
+            targets: btn,
+            scale: 1,
+            alpha: 1,
+            duration: 500,
+            ease: "Back.easeOut",
+            delay: idx * 150 + 200,
+          });
+          const lbl = this.add
+            .text(cx - 150, d.y - 10, d.emoji, { fontSize: "40px" })
+            .setOrigin(0, 0.5)
+            .setAlpha(0);
+          const ttl = this.add
+            .text(cx + 10, d.y - 14, d.label, {
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          const sub = this.add
+            .text(cx + 10, d.y + 16, d.sub, {
+              fontSize: "13px",
+              color: "#ffffffcc",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: [lbl, ttl, sub],
+            alpha: 1,
+            duration: 400,
+            delay: idx * 150 + 400,
+          });
+          btn.on("pointerover", () => {
+            btn.setFillStyle(d.color, 1);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 150,
+            });
+            SFX.tick();
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(d.color, 0.85);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 150,
+            });
+          });
+          btn.on("pointerdown", () => {
+            SFX.place();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () =>
+              this.scene.start("Game", { difficulty: d.key }),
+            );
+          });
+        });
+        this.cameras.main.fadeIn(400);
+      };
+
+      // ── GAME SCENE ──
+      function GameScene() {
+        return new Phaser.Scene("Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function (data) {
+        this.difficulty = data.difficulty || "easy";
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.lives = 3;
+        this.level = 1;
+        this.totalCorrect = 0;
+        this.totalWrong = 0;
+        this.shapesPlaced = 0;
+        this.rowsCleared = 0;
+        this.questionsAsked = 0;
+        this.maxQuestions = 18;
+        this.dropSpeed =
+          this.difficulty === "easy"
+            ? 0.4
+            : this.difficulty === "medium"
+              ? 0.6
+              : 0.85;
+        this.answered = false;
+        this.dropping = false;
+        this.currentShape = null;
+        this.shapeY = 0;
+        this.shapeCol = 3;
+        this.grid = [];
+        this.gridSprites = [];
+        this.showingQuestion = false;
+        this.scoreMultiplier = 1;
+        this.questionStartTime = 0;
+        // Power-ups
+        this.powerUps = { fiftyFifty: 1, doublePoints: 1, extraTime: 0 };
+        this.doublePointsActive = false;
+        this.removedChoices = [];
+      };
+
+      GameScene.prototype.create = function () {
+        // Initialize grid
+        for (let r = 0; r < GRID_ROWS; r++) {
+          this.grid[r] = [];
+          this.gridSprites[r] = [];
+          for (let c = 0; c < GRID_COLS; c++) {
+            this.grid[r][c] = 0;
+            this.gridSprites[r][c] = null;
+          }
+        }
+
+        // Background
+        this.add.rectangle(W / 2, H / 2, W, H, 0x0a1a2e);
+
+        // Sky gradient
+        for (let i = 0; i < 10; i++) {
+          this.add.rectangle(W / 2, i * 6, W, 6, 0x0a1a2e, 1 - i * 0.03);
+        }
+
+        // Ambient background particles (floating dust/stars)
+        this.ambientParticles = this.add
+          .particles(0, 0, "particle", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 3, max: 12 },
+            angle: { min: 260, max: 280 },
+            scale: { start: 0.2, end: 0 },
+            alpha: { start: 0.3, end: 0 },
+            lifespan: { min: 4000, max: 8000 },
+            frequency: 400,
+            tint: [0x4488ff, 0x44cc88, 0x2255aa],
+            blendMode: "ADD",
+          })
+          .setDepth(0);
+
+        // Grid background
+        this.add.rectangle(
+          GRID_X + GRID_W / 2,
+          GRID_Y + GRID_H / 2,
+          GRID_W + 4,
+          GRID_H + 4,
+          0x112233,
+        );
+        // Grid lines
+        const gg = this.add.graphics();
+        gg.lineStyle(1, 0x1a3355, 0.3);
+        for (let c = 0; c <= GRID_COLS; c++)
+          gg.lineBetween(
+            GRID_X + c * CELL,
+            GRID_Y,
+            GRID_X + c * CELL,
+            GRID_Y + GRID_H,
+          );
+        for (let r = 0; r <= GRID_ROWS; r++)
+          gg.lineBetween(
+            GRID_X,
+            GRID_Y + r * CELL,
+            GRID_X + GRID_W,
+            GRID_Y + r * CELL,
+          );
+
+        // Right panel background
+        const panelX = GRID_X + GRID_W + 30;
+        this.panelX = panelX;
+        this.add.rectangle(panelX + 195, H / 2, 390, H, 0x0f2035, 0.8);
+
+        // HUD
+        this.scoreText = this.add.text(panelX, 15, "Score: 0", {
+          fontSize: "20px",
+          color: "#44cc88",
+          fontStyle: "bold",
+        });
+        this.levelText = this.add.text(panelX, 42, "Level 1", {
+          fontSize: "16px",
+          color: "#88aacc",
+        });
+        this.livesText = this.add.text(panelX, 65, "", {
+          fontSize: "18px",
+          color: "#ff4444",
+        });
+
+        // Streak counter with visual styling
+        this.streakContainer = this.add.container(panelX + 130, 92).setDepth(5);
+        this.streakBg = this.add
+          .rectangle(0, 0, 0, 0, 0xffdd00, 0)
+          .setOrigin(0.5);
+        this.streakContainer.add(this.streakBg);
+        this.comboText = this.add
+          .text(0, 0, "", {
+            fontSize: "15px",
+            color: "#ffdd00",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.streakContainer.add(this.comboText);
+
+        this.rowsClearedText = this.add.text(panelX, 110, "Rows: 0", {
+          fontSize: "14px",
+          color: "#6688aa",
+        });
+
+        // Progress bar
+        this.add.text(panelX, 130, "Progress:", {
+          fontSize: "13px",
+          color: "#557788",
+        });
+        this.progressBarBg = this.add
+          .rectangle(panelX + 80, 138, 140, 10, 0x1a3355)
+          .setOrigin(0, 0.5);
+        this.progressBarFill = this.add
+          .rectangle(panelX + 80, 138, 0, 10, 0x4488ff)
+          .setOrigin(0, 0.5);
+        this.progressText = this.add
+          .text(panelX + 230, 138, "", {
+            fontSize: "12px",
+            color: "#557788",
+          })
+          .setOrigin(0, 0.5);
+
+        // Speed indicator
+        this.speedText = this.add
+          .text(panelX, 155, "", {
+            fontSize: "12px",
+            color: "#44cc88",
+          })
+          .setAlpha(0);
+
+        // Shape preview area
+        this.add.rectangle(panelX + 130, 195, 260, 4, 0x2a4466);
+        this.add.text(panelX, 170, "NEXT SHAPE:", {
+          fontSize: "14px",
+          color: "#6688aa",
+          fontStyle: "bold",
+        });
+
+        // Shape display
+        this.shapeGraphics = this.add.graphics();
+        this.shapePreviewGraphics = this.add.graphics();
+
+        // Question panel area
+        this.add.rectangle(panelX + 130, 310, 260, 4, 0x2a4466);
+        this.add.text(panelX, 290, "CALCULATE AREA:", {
+          fontSize: "14px",
+          color: "#6688aa",
+          fontStyle: "bold",
+        });
+        this.promptText = this.add
+          .text(panelX + 130, 335, "", {
+            fontSize: "16px",
+            color: "#ffffff",
+            fontStyle: "bold",
+            wordWrap: { width: 250 },
+            align: "center",
+          })
+          .setOrigin(0.5);
+        this.formulaText = this.add
+          .text(panelX + 130, 365, "", { fontSize: "13px", color: "#88aacc" })
+          .setOrigin(0.5);
+
+        // Answer buttons
+        this.answerBtns = [];
+        this.answerTexts = [];
+        this.answerLetters = [];
+        for (let i = 0; i < 4; i++) {
+          const col = i % 2,
+            row = Math.floor(i / 2);
+          const bx = panelX + 10 + col * 135;
+          const by = 390 + row * 55;
+          const btn = this.add
+            .rectangle(bx + 55, by + 18, 120, 42, 0x1a3355)
+            .setInteractive({ useHandCursor: true })
+            .setStrokeStyle(2, 0x2a5577);
+          const ltr = this.add
+            .text(bx + 10, by + 18, String.fromCharCode(65 + i), {
+              fontSize: "12px",
+              color: "#4488aa",
+            })
+            .setOrigin(0.5);
+          const txt = this.add
+            .text(bx + 65, by + 18, "", {
+              fontSize: "18px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => {
+            if (!this.answered) {
+              btn.setFillStyle(0x2a4466);
+              this.tweens.add({
+                targets: btn,
+                scaleX: 1.05,
+                scaleY: 1.05,
+                duration: 100,
+              });
+              SFX.tick();
+            }
+          });
+          btn.on("pointerout", () => {
+            if (!this.answered) {
+              btn.setFillStyle(0x1a3355);
+              this.tweens.add({
+                targets: btn,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 100,
+              });
+            }
+          });
+          btn.on("pointerdown", () => this.selectAnswer(i));
+          this.answerBtns.push(btn);
+          this.answerTexts.push(txt);
+          this.answerLetters.push(ltr);
+        }
+
+        // Power-up buttons
+        this.powerUpBtns = [];
+        const puY = 510;
+        const puDefs = [
+          { key: "fiftyFifty", label: "50/50", color: 0x4488ff },
+          { key: "doublePoints", label: "2x PTS", color: 0xffdd00 },
+        ];
+        puDefs.forEach((pu, i) => {
+          const bx = panelX + 30 + i * 140;
+          const bg = this.add
+            .rectangle(bx + 50, puY, 110, 30, pu.color, 0.3)
+            .setInteractive({ useHandCursor: true })
+            .setStrokeStyle(1, pu.color);
+          const t = this.add
+            .text(bx + 50, puY, "", {
+              fontSize: "12px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          bg.on("pointerover", () => bg.setFillStyle(pu.color, 0.5));
+          bg.on("pointerout", () => bg.setFillStyle(pu.color, 0.3));
+          bg.on("pointerdown", () => this.activatePowerUp(pu.key));
+          this.powerUpBtns.push({ bg, text: t, key: pu.key, label: pu.label });
+        });
+
+        // Keyboard shortcuts
+        this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
+        this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
+        this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
+        this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+        this.input.keyboard.on("keydown-Q", () =>
+          this.activatePowerUp("fiftyFifty"),
+        );
+        this.input.keyboard.on("keydown-W", () =>
+          this.activatePowerUp("doublePoints"),
+        );
+
+        // Feedback
+        this.feedbackText = this.add
+          .text(panelX + 130, 548, "", {
+            fontSize: "18px",
+            color: "#fff",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Particles — confetti burst for correct answers
+        this.confettiEmitter = this.add
+          .particles(0, 0, "confetti", {
+            speed: { min: 80, max: 300 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1.5, end: 0.2 },
+            rotate: { min: 0, max: 360 },
+            lifespan: 1200,
+            emitting: false,
+            quantity: 30,
+            tint: [0x44cc88, 0x4488ff, 0xffdd00, 0xff8844, 0xcc44cc],
+            gravityY: 200,
+          })
+          .setDepth(25);
+
+        this.sparkles = this.add
+          .particles(0, 0, "star", {
+            speed: { min: 40, max: 180 },
+            scale: { start: 1.5, end: 0 },
+            lifespan: 600,
+            emitting: false,
+            quantity: 10,
+            tint: [0x44cc88, 0x4488ff, 0xffdd00],
+          })
+          .setDepth(20);
+        this.breakParticles = this.add
+          .particles(0, 0, "particle", {
+            speed: { min: 50, max: 200 },
+            scale: { start: 1, end: 0 },
+            lifespan: 400,
+            emitting: false,
+            quantity: 8,
+            tint: [0xff4444, 0xff8844, 0xaa3333],
+          })
+          .setDepth(20);
+
+        // Red flash overlay for wrong answers
+        this.redFlash = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xff0000, 0)
+          .setDepth(30);
+
+        // Drop timer
+        this.dropTimer = 0;
+
+        // Phase transition overlay
+        this.transitionOverlay = this.add
+          .rectangle(W / 2, H / 2, W, H, 0x0a1a2e, 0)
+          .setDepth(50);
+        this.transitionText = this.add
+          .text(W / 2, H / 2, "", {
+            fontSize: "40px",
+            fontStyle: "bold",
+            color: "#ffdd00",
+            stroke: "#000",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5)
+          .setDepth(51)
+          .setAlpha(0);
+
+        // Generate first shape question
+        this.nextQuestion();
+
+        this.updateHUD();
+        this.cameras.main.fadeIn(500);
+      };
+
+      GameScene.prototype.activatePowerUp = function (key) {
+        if (!this.showingQuestion || this.answered) return;
+        if (this.powerUps[key] <= 0) return;
+
+        if (key === "fiftyFifty") {
+          this.powerUps.fiftyFifty--;
+          SFX.powerUp();
+          // Remove 2 wrong answers
+          const q = this.currentQ;
+          const wrongIndices = [];
+          q.choices.forEach((c, i) => {
+            if (c !== q.answer) wrongIndices.push(i);
+          });
+          const toRemove = shuffle(wrongIndices).slice(0, 2);
+          toRemove.forEach((i) => {
+            this.answerBtns[i]
+              .setFillStyle(0x111122, 0.3)
+              .setStrokeStyle(1, 0x333344);
+            this.answerTexts[i].setText("--");
+            this.answerBtns[i].removeInteractive();
+            this.removedChoices.push(i);
+          });
+          this.showFloatingText(this.panelX + 130, 480, "50/50!", "#4488ff");
+        } else if (key === "doublePoints") {
+          this.powerUps.doublePoints--;
+          this.doublePointsActive = true;
+          SFX.powerUp();
+          this.showFloatingText(
+            this.panelX + 130,
+            480,
+            "DOUBLE POINTS!",
+            "#ffdd00",
+          );
+        }
+        this.updateHUD();
+      };
+
+      GameScene.prototype.showFloatingText = function (
+        x,
+        y,
+        text,
+        color,
+        size,
+      ) {
+        const ft = this.add
+          .text(x, y, text, {
+            fontSize: size || "20px",
+            fontStyle: "bold",
+            color: color || "#ffdd00",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5)
+          .setDepth(40);
+        this.tweens.add({
+          targets: ft,
+          y: y - 50,
+          alpha: { from: 1, to: 0 },
+          scale: { from: 1, to: 1.5 },
+          duration: 1000,
+          onComplete: () => ft.destroy(),
+        });
+      };
+
+      GameScene.prototype.showPhaseTransition = function (text) {
+        SFX.phaseTransition();
+        this.transitionOverlay.setAlpha(0);
+        this.transitionText.setText(text).setAlpha(0).setScale(0.5);
+        this.tweens.add({
+          targets: this.transitionOverlay,
+          alpha: 0.7,
+          duration: 300,
+          yoyo: true,
+          hold: 800,
+        });
+        this.tweens.add({
+          targets: this.transitionText,
+          alpha: 1,
+          scale: 1.3,
+          duration: 400,
+          yoyo: true,
+          hold: 600,
+          ease: "Back.easeOut",
+          onComplete: () => this.transitionText.setAlpha(0),
+        });
+      };
+
+      GameScene.prototype.nextQuestion = function () {
+        if (this.questionsAsked >= this.maxQuestions || this.lives <= 0) {
+          this.endGame();
+          return;
+        }
+
+        this.currentQ = generateShapeQuestion(this.difficulty);
+        this.questionsAsked++;
+        this.answered = false;
+        this.showingQuestion = true;
+        this.questionStartTime = Date.now();
+        this.doublePointsActive = false;
+        this.removedChoices = [];
+
+        // Update question display
+        this.promptText.setText(this.currentQ.prompt);
+        this.formulaText.setText("");
+
+        this.currentQ.choices.forEach((c, i) => {
+          this.answerTexts[i].setText(String(c) + " sq");
+          this.answerBtns[i]
+            .setFillStyle(0x1a3355)
+            .setStrokeStyle(2, 0x2a5577)
+            .setScale(1)
+            .setInteractive({ useHandCursor: true });
+        });
+        this.feedbackText.setAlpha(0);
+        this.speedText.setAlpha(0);
+
+        // Draw shape preview
+        this.drawShapePreview();
+
+        // Set up the column where shape will go
+        this.shapeCol = randInt(1, GRID_COLS - 3);
+        this.shapeY = 0;
+        this.dropping = false;
+      };
+
+      GameScene.prototype.drawShapePreview = function () {
+        this.shapePreviewGraphics.clear();
+        const sd = this.currentQ.shapeData;
+        const px = GRID_X + GRID_W + 160,
+          py = 235;
+        const scale = 2.5;
+
+        this.shapePreviewGraphics.fillStyle(sd.color, 0.8);
+        this.shapePreviewGraphics.lineStyle(2, 0xffffff, 0.8);
+
+        if (sd.type === "rectangle") {
+          const w = Math.min(sd.b * scale, 100),
+            h = Math.min(sd.h * scale, 60);
+          this.shapePreviewGraphics.fillRect(px - w / 2, py - h / 2, w, h);
+          this.shapePreviewGraphics.strokeRect(px - w / 2, py - h / 2, w, h);
+          this.add
+            .text(px, py + h / 2 + 10, `b=${sd.b}`, {
+              fontSize: "11px",
+              color: "#aaccff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(px + w / 2 + 10, py, `h=${sd.h}`, {
+              fontSize: "11px",
+              color: "#aaccff",
+            })
+            .setOrigin(0, 0.5);
+        } else if (sd.type === "parallelogram") {
+          const w = Math.min(sd.b * scale, 100),
+            h = Math.min(sd.h * scale, 60),
+            off = 15;
+          this.shapePreviewGraphics.beginPath();
+          this.shapePreviewGraphics.moveTo(px - w / 2 + off, py - h / 2);
+          this.shapePreviewGraphics.lineTo(px + w / 2 + off, py - h / 2);
+          this.shapePreviewGraphics.lineTo(px + w / 2 - off, py + h / 2);
+          this.shapePreviewGraphics.lineTo(px - w / 2 - off, py + h / 2);
+          this.shapePreviewGraphics.closePath();
+          this.shapePreviewGraphics.fill();
+          this.shapePreviewGraphics.stroke();
+        } else if (sd.type === "triangle") {
+          const w = Math.min(sd.b * scale, 100),
+            h = Math.min(sd.h * scale, 70);
+          this.shapePreviewGraphics.beginPath();
+          this.shapePreviewGraphics.moveTo(px, py - h / 2);
+          this.shapePreviewGraphics.lineTo(px + w / 2, py + h / 2);
+          this.shapePreviewGraphics.lineTo(px - w / 2, py + h / 2);
+          this.shapePreviewGraphics.closePath();
+          this.shapePreviewGraphics.fill();
+          this.shapePreviewGraphics.stroke();
+        } else if (sd.type === "trapezoid") {
+          const w1 = Math.min(sd.b1 * scale, 70),
+            w2 = Math.min(sd.b2 * scale, 100),
+            h = Math.min(sd.h * scale, 60);
+          this.shapePreviewGraphics.beginPath();
+          this.shapePreviewGraphics.moveTo(px - w1 / 2, py - h / 2);
+          this.shapePreviewGraphics.lineTo(px + w1 / 2, py - h / 2);
+          this.shapePreviewGraphics.lineTo(px + w2 / 2, py + h / 2);
+          this.shapePreviewGraphics.lineTo(px - w2 / 2, py + h / 2);
+          this.shapePreviewGraphics.closePath();
+          this.shapePreviewGraphics.fill();
+          this.shapePreviewGraphics.stroke();
+        } else {
+          // Composite
+          const rw = Math.min(sd.rw * scale, 80),
+            rh = Math.min(sd.rh * scale, 40),
+            th = Math.min(sd.th * scale, 30);
+          this.shapePreviewGraphics.fillRect(
+            px - rw / 2,
+            py - rh / 2 + th / 2,
+            rw,
+            rh,
+          );
+          this.shapePreviewGraphics.strokeRect(
+            px - rw / 2,
+            py - rh / 2 + th / 2,
+            rw,
+            rh,
+          );
+          this.shapePreviewGraphics.beginPath();
+          this.shapePreviewGraphics.moveTo(px, py - rh / 2 - th / 2);
+          this.shapePreviewGraphics.lineTo(px + rw / 2, py - rh / 2 + th / 2);
+          this.shapePreviewGraphics.lineTo(px - rw / 2, py - rh / 2 + th / 2);
+          this.shapePreviewGraphics.closePath();
+          this.shapePreviewGraphics.fill();
+          this.shapePreviewGraphics.stroke();
+        }
+      };
+
+      GameScene.prototype.selectAnswer = function (idx) {
+        if (this.answered || !this.showingQuestion) return;
+        if (this.removedChoices.includes(idx)) return;
+        this.answered = true;
+        this.showingQuestion = false;
+
+        const q = this.currentQ;
+        const chosen = q.choices[idx];
+        const isCorrect = chosen === q.answer;
+        const answerTime = (Date.now() - this.questionStartTime) / 1000;
+
+        this.formulaText.setText(q.formula);
+
+        if (isCorrect) {
+          SFX.correct();
+          this.combo++;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+          this.totalCorrect++;
+
+          let pts = 100 + this.combo * 20;
+          if (this.level > 1) pts += this.level * 10;
+
+          // Time bonus
+          let timeBonus = 0;
+          if (answerTime < 3) {
+            timeBonus = 50;
+            this.speedText
+              .setText("SPEED BONUS +50")
+              .setColor("#44cc88")
+              .setAlpha(1);
+          } else if (answerTime < 5) {
+            timeBonus = 25;
+            this.speedText.setText("QUICK +25").setColor("#88aacc").setAlpha(1);
+          }
+          pts += timeBonus;
+
+          // Double points power-up
+          if (this.doublePointsActive) {
+            pts *= 2;
+            this.showFloatingText(
+              this.panelX + 130,
+              460,
+              "DOUBLED!",
+              "#ffdd00",
+              "16px",
+            );
+          }
+
+          this.score += pts;
+
+          this.answerBtns[idx]
+            .setFillStyle(0x225533)
+            .setStrokeStyle(2, 0x44cc88);
+
+          // Click feedback on correct button
+          this.tweens.add({
+            targets: this.answerBtns[idx],
+            scaleX: { from: 1.15, to: 1 },
+            scaleY: { from: 1.15, to: 1 },
+            duration: 200,
+          });
+
+          this.feedbackText
+            .setText(`✓ Correct! +${pts}`)
+            .setColor("#44cc88")
+            .setAlpha(1);
+
+          // Floating score text on grid
+          this.showFloatingText(
+            GRID_X + GRID_W / 2,
+            GRID_Y + GRID_H / 2,
+            `+${pts}`,
+            "#44cc88",
+            "28px",
+          );
+
+          // Streak milestones
+          if (this.combo === 3) {
+            SFX.streak3();
+            this.showFloatingText(
+              W / 2,
+              H / 2 - 30,
+              "STREAK x3!",
+              "#ffdd00",
+              "30px",
+            );
+          } else if (this.combo === 5) {
+            SFX.streak5();
+            this.showFloatingText(
+              W / 2,
+              H / 2 - 30,
+              "STREAK x5! AMAZING!",
+              "#ff8844",
+              "32px",
+            );
+          } else if (this.combo === 7) {
+            SFX.streak7();
+            this.showFloatingText(
+              W / 2,
+              H / 2 - 30,
+              "STREAK x7! UNSTOPPABLE!",
+              "#ff4488",
+              "34px",
+            );
+          } else if (this.combo >= 3) {
+            SFX.combo();
+          }
+
+          if (this.combo >= 2) {
+            this.comboText.setText(`STREAK x${this.combo}!`);
+            // Streak counter pulse
+            this.tweens.add({
+              targets: this.streakContainer,
+              scaleX: { from: 1.3, to: 1 },
+              scaleY: { from: 1.3, to: 1 },
+              duration: 300,
+              ease: "Back.easeOut",
+            });
+            this.streakBg.setSize(120, 24).setFillStyle(0xffdd00, 0.15);
+          }
+
+          // Confetti burst — intensity scales with streak
+          const confettiCount = Math.min(10 + this.combo * 5, 40);
+          this.confettiEmitter.setQuantity(confettiCount);
+          this.confettiEmitter.emitParticleAt(
+            GRID_X + GRID_W / 2,
+            GRID_Y + GRID_H / 2,
+          );
+
+          // Screen shake scales with streak
+          const shakeIntensity = Math.min(0.005 + this.combo * 0.003, 0.025);
+          this.cameras.main.shake(150, shakeIntensity);
+
+          // Place shape on grid — correctly!
+          this.placeShapeOnGrid(q.shapeData.color, true);
+        } else {
+          SFX.wrong();
+          SFX.glassBreak();
+          this.combo = 0;
+          this.comboText.setText("");
+          this.streakBg.setFillStyle(0x000000, 0);
+          this.totalWrong++;
+          this.lives--;
+
+          this.answerBtns[idx]
+            .setFillStyle(0x553322)
+            .setStrokeStyle(2, 0xff4444);
+          const ci = q.choices.indexOf(q.answer);
+          if (ci >= 0)
+            this.answerBtns[ci]
+              .setFillStyle(0x225533)
+              .setStrokeStyle(2, 0x44cc88);
+
+          this.feedbackText
+            .setText(`✗ Answer: ${q.answer} sq`)
+            .setColor("#ff4444")
+            .setAlpha(1);
+
+          // Dramatic wrong answer effects
+          this.cameras.main.shake(350, 0.025);
+
+          // Red screen flash
+          this.redFlash.setAlpha(0.4);
+          this.tweens.add({
+            targets: this.redFlash,
+            alpha: 0,
+            duration: 500,
+          });
+
+          // Floating wrong text
+          this.showFloatingText(
+            GRID_X + GRID_W / 2,
+            GRID_Y + GRID_H / 2,
+            "WRONG!",
+            "#ff4444",
+            "32px",
+          );
+
+          // Place cracked shape
+          this.placeShapeOnGrid(0x993333, false);
+
+          if (this.lives <= 0) {
+            SFX.lose();
+            this.time.delayedCall(1500, () => this.endGame());
+            return;
+          }
+        }
+
+        this.updateHUD();
+
+        // Check for row clears after placing
+        this.time.delayedCall(800, () => {
+          this.checkRowClears();
+          // Level up every 5 shapes with phase transition
+          if (this.shapesPlaced > 0 && this.shapesPlaced % 5 === 0) {
+            this.level++;
+            this.dropSpeed = Math.min(1.5, this.dropSpeed + 0.1);
+            SFX.levelUp();
+            this.showPhaseTransition(`LEVEL ${this.level}!`);
+          }
+        });
+
+        this.time.delayedCall(1800, () => {
+          this.nextQuestion();
+        });
+      };
+
+      GameScene.prototype.placeShapeOnGrid = function (color, correct) {
+        this.shapesPlaced++;
+        const shapeW = randInt(2, Math.min(4, GRID_COLS - this.shapeCol));
+        const tex = correct ? this.getBlockTexture(color) : "block_cracked";
+
+        for (let c = this.shapeCol; c < this.shapeCol + shapeW; c++) {
+          let targetRow = GRID_ROWS - 1;
+          for (let r = GRID_ROWS - 1; r >= 0; r--) {
+            if (this.grid[r][c] !== 0) {
+              targetRow = r - 1;
+            } else {
+              targetRow = r;
+              break;
+            }
+          }
+          if (targetRow < 0) {
+            this.lives = 0;
+            this.endGame();
+            return;
+          }
+
+          this.grid[targetRow][c] = 1;
+          const px = GRID_X + c * CELL + 1;
+          const py = GRID_Y + targetRow * CELL + 1;
+          const block = this.add
+            .image(px + CELL / 2 - 1, GRID_Y - 30, tex)
+            .setOrigin(0.5);
+          this.gridSprites[targetRow][c] = block;
+
+          SFX.drop();
+          this.tweens.add({
+            targets: block,
+            y: py + CELL / 2 - 1,
+            duration: 300 + targetRow * 30,
+            ease: "Bounce.easeOut",
+            delay: c * 50,
+          });
+
+          if (correct) {
+            this.sparkles.emitParticleAt(px + CELL / 2, py + CELL / 2);
+          } else {
+            this.breakParticles.emitParticleAt(px + CELL / 2, py + CELL / 2);
+          }
+        }
+
+        this.shapeCol = randInt(0, GRID_COLS - 3);
+      };
+
+      GameScene.prototype.getBlockTexture = function (color) {
+        if (color === 0x4488ff) return "block_blue";
+        if (color === 0xff8844) return "block_orange";
+        if (color === 0x44cc88) return "block_green";
+        if (color === 0xcc44cc) return "block_purple";
+        if (color === 0xddaa00) return "block_gold";
+        return "block_gray";
+      };
+
+      GameScene.prototype.checkRowClears = function () {
+        let cleared = 0;
+        for (let r = GRID_ROWS - 1; r >= 0; r--) {
+          let full = true;
+          for (let c = 0; c < GRID_COLS; c++) {
+            if (this.grid[r][c] === 0) {
+              full = false;
+              break;
+            }
+          }
+          if (full) {
+            cleared++;
+            this.rowsCleared++;
+            for (let c = 0; c < GRID_COLS; c++) {
+              const sprite = this.gridSprites[r][c];
+              if (sprite) {
+                this.sparkles.emitParticleAt(sprite.x, sprite.y);
+                this.tweens.add({
+                  targets: sprite,
+                  scaleX: 0,
+                  scaleY: 0,
+                  alpha: 0,
+                  duration: 300,
+                  delay: c * 30,
+                  onComplete: () => sprite.destroy(),
+                });
+              }
+              this.grid[r][c] = 0;
+              this.gridSprites[r][c] = null;
+            }
+            this.time.delayedCall(400, () => {
+              for (let rr = r; rr > 0; rr--) {
+                for (let cc = 0; cc < GRID_COLS; cc++) {
+                  this.grid[rr][cc] = this.grid[rr - 1][cc];
+                  this.gridSprites[rr][cc] = this.gridSprites[rr - 1][cc];
+                  if (this.gridSprites[rr][cc]) {
+                    this.tweens.add({
+                      targets: this.gridSprites[rr][cc],
+                      y: GRID_Y + rr * CELL + CELL / 2 - 1,
+                      duration: 200,
+                    });
+                  }
+                }
+              }
+              for (let cc = 0; cc < GRID_COLS; cc++) {
+                this.grid[0][cc] = 0;
+                this.gridSprites[0][cc] = null;
+              }
+            });
+          }
+        }
+
+        if (cleared > 0) {
+          SFX.rowClear();
+          const bonus = cleared * 200 * (cleared > 1 ? 2 : 1);
+          this.score += bonus;
+          this.cameras.main.shake(150, 0.01);
+
+          this.showFloatingText(
+            GRID_X + GRID_W / 2,
+            GRID_Y + GRID_H / 2,
+            cleared > 1 ? `${cleared} ROWS! +${bonus}` : `ROW CLEAR! +${bonus}`,
+            "#ffdd00",
+            "24px",
+          );
+
+          this.updateHUD();
+        }
+      };
+
+      GameScene.prototype.endGame = function () {
+        if (this.lives > 0) SFX.win();
+        this.time.delayedCall(500, () => {
+          this.scene.start("Results", {
+            score: this.score,
+            maxCombo: this.maxCombo,
+            lives: this.lives,
+            totalCorrect: this.totalCorrect,
+            totalWrong: this.totalWrong,
+            difficulty: this.difficulty,
+            level: this.level,
+            rowsCleared: this.rowsCleared,
+            shapesPlaced: this.shapesPlaced,
+          });
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText(`Score: ${this.score}`);
+        this.levelText.setText(`Level ${this.level}`);
+        this.livesText.setText(
+          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
+        );
+        this.rowsClearedText.setText(`Rows: ${this.rowsCleared}`);
+        const prog = this.questionsAsked / this.maxQuestions;
+        this.progressBarFill.width = prog * 140;
+        this.progressText.setText(
+          `${this.questionsAsked}/${this.maxQuestions}`,
+        );
+        // Power-up button text
+        this.powerUpBtns.forEach((pu) => {
+          const count = this.powerUps[pu.key];
+          pu.text.setText(`${pu.label} (${count})`);
+          pu.bg.setAlpha(count > 0 ? 1 : 0.3);
+        });
+      };
+
+      GameScene.prototype.update = function () {};
+
+      // ── RESULTS ──
+      function ResultScene() {
+        return new Phaser.Scene("Results");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.d = data;
+      };
+      ResultScene.prototype.create = function () {
+        const cx = W / 2,
+          d = this.d;
+        this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
+
+        const won = d.lives > 0;
+        const pct =
+          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: d.totalCorrect,
+              maxScore: d.totalCorrect + d.totalWrong,
+              stars: stars,
+              problemsCorrect: d.totalCorrect,
+              problemsAttempted: d.totalCorrect + d.totalWrong,
+              percent: Math.round(pct),
+            });
+        } catch (e) {}
+
+        // High score check
+        const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        const isNewHigh = d.score > prevHigh;
+        if (isNewHigh && d.score > 0) {
+          localStorage.setItem(LS_KEY, String(d.score));
+        }
+
+        // Play appropriate sound
+        if (stars === 3) {
+          SFX.win3star();
+        } else if (won) {
+          SFX.win();
+        } else {
+          SFX.lose();
+        }
+
+        // City skyline celebration
+        const colors = [0x4488ff, 0x44cc88, 0xff8844, 0xcc44cc, 0xddaa00];
+        for (let i = 0; i < 10; i++) {
+          const bw = randInt(25, 55),
+            bh = randInt(40, 150);
+          const bx = i * 80 + 20;
+          this.add.rectangle(
+            bx,
+            H - bh / 2 - 5,
+            bw,
+            bh,
+            colors[i % colors.length],
+            won ? 0.6 : 0.2,
+          );
+          if (won) {
+            for (let wy = H - bh + 8; wy < H - 8; wy += 16) {
+              for (let wx = bx - bw / 2 + 6; wx < bx + bw / 2 - 6; wx += 12) {
+                this.add.rectangle(wx, wy, 5, 7, 0xffdd88, 0.7);
+              }
+            }
+          }
+        }
+        this.add.rectangle(cx, H - 4, W, 8, 0x1a3a2e);
+
+        // Celebration particles
+        if (won) {
+          const burstCount = stars === 3 ? 8 : stars === 2 ? 5 : 3;
+          for (let i = 0; i < burstCount; i++) {
+            this.time.delayedCall(i * 300, () => {
+              const p = this.add.particles(0, 0, "confetti", {
+                speed: { min: 60, max: 250 },
+                angle: { min: 0, max: 360 },
+                scale: { start: 1.5, end: 0 },
+                rotate: { min: 0, max: 360 },
+                lifespan: 1500,
+                quantity: 20,
+                tint: [0x44cc88, 0x4488ff, 0xffdd00, 0xff8844, 0xcc44cc],
+                gravityY: 150,
+              });
+              p.emitParticleAt(randInt(100, W - 100), randInt(30, 150));
+              this.time.delayedCall(1600, () => p.destroy());
+            });
+          }
+        }
+
+        this.add
+          .text(cx, 30, won ? "CITY COMPLETE!" : "CONSTRUCTION HALTED", {
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: won ? "#44cc88" : "#ff4444",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 60, won ? "Your city is built!" : "Out of lives!", {
+            fontSize: "15px",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5);
+
+        // Star rating with animated fill
+        const starY = 90;
+        for (let i = 0; i < 3; i++) {
+          const sx = cx - 60 + i * 60;
+          // Empty star background
+          const emptyStar = this.add
+            .text(sx, starY, "☆", {
+              fontSize: "42px",
+              color: "#334455",
+            })
+            .setOrigin(0.5);
+
+          if (i < stars) {
+            const fullStar = this.add
+              .text(sx, starY, "★", {
+                fontSize: "42px",
+                color: "#ffdd00",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0)
+              .setScale(0);
+            this.tweens.add({
+              targets: fullStar,
+              alpha: 1,
+              scale: 1,
+              duration: 400,
+              delay: 800 + i * 300,
+              ease: "Back.easeOut",
+              onStart: () => SFX.tick(),
+            });
+          }
+        }
+
+        // NEW HIGH SCORE banner
+        if (isNewHigh && d.score > 0) {
+          SFX.highScore();
+          const hsText = this.add
+            .text(cx, 125, "NEW HIGH SCORE!", {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffdd00",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: hsText,
+            scaleX: { from: 0.8, to: 1.1 },
+            scaleY: { from: 0.8, to: 1.1 },
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        const statsStartY = isNewHigh ? 150 : 130;
+        const stats = [
+          { label: "Final Score", val: String(d.score), color: "#44cc88" },
+          {
+            label: "Shapes Placed",
+            val: String(d.shapesPlaced),
+            color: "#4488ff",
+          },
+          { label: "Correct", val: String(d.totalCorrect), color: "#44cc88" },
+          { label: "Wrong", val: String(d.totalWrong), color: "#ff4444" },
+          {
+            label: "Rows Cleared",
+            val: String(d.rowsCleared),
+            color: "#ffdd00",
+          },
+          { label: "Max Combo", val: `x${d.maxCombo}`, color: "#ffaa00" },
+          { label: "Level Reached", val: String(d.level), color: "#88aacc" },
+          {
+            label: "Difficulty",
+            val: d.difficulty.toUpperCase(),
+            color: "#cc88ff",
+          },
+        ];
+        stats.forEach((s, i) => {
+          const y = statsStartY + i * 38;
+          this.add.rectangle(cx, y, 400, 30, 0x112233, 0.8);
+          this.add
+            .text(cx - 170, y, s.label, { fontSize: "14px", color: "#6688aa" })
+            .setOrigin(0, 0.5);
+          const v = this.add
+            .text(cx + 170, y, s.val, {
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: s.color,
+            })
+            .setOrigin(1, 0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: v,
+            alpha: 1,
+            x: { from: cx + 210, to: cx + 170 },
+            duration: 350,
+            delay: i * 100,
+          });
+        });
+
+        const grade =
+          pct >= 90
+            ? "A+"
+            : pct >= 80
+              ? "A"
+              : pct >= 70
+                ? "B"
+                : pct >= 60
+                  ? "C"
+                  : "D";
+        this.add
+          .text(cx, 460, grade, {
+            fontSize: "48px",
+            fontStyle: "bold",
+            color: pct >= 80 ? "#44cc88" : pct >= 60 ? "#f59e0b" : "#ff4444",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 492, `${Math.round(pct)}% Accuracy`, {
+            fontSize: "15px",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5);
+
+        // Personal best display
+        const bestScore = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        if (bestScore > 0 && !isNewHigh) {
+          this.add
+            .text(cx, 515, `Personal Best: ${bestScore}`, {
+              fontSize: "13px",
+              color: "#6688aa",
+            })
+            .setOrigin(0.5);
+        }
+
+        const retry = this.add
+          .rectangle(cx - 100, 550, 170, 42, 0x44cc88)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx - 100, 550, "BUILD AGAIN", {
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#0a2a1e",
+          })
+          .setOrigin(0.5);
+        retry.on("pointerover", () => retry.setFillStyle(0x55ddaa));
+        retry.on("pointerout", () => retry.setFillStyle(0x44cc88));
+        retry.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () =>
+            this.scene.start("Game", { difficulty: d.difficulty }),
+          );
+        });
+
+        const menu = this.add
+          .rectangle(cx + 100, 550, 170, 42, 0x1a3355)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 100, 550, "MAIN MENU", {
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5);
+        menu.on("pointerover", () => menu.setFillStyle(0x2a4466));
+        menu.on("pointerout", () => menu.setFillStyle(0x1a3355));
+        menu.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () => this.scene.start("Title"));
+        });
+
+        this.cameras.main.fadeIn(600);
+      };
+
+      new Phaser.Game(config);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

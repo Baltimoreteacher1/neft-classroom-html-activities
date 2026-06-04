@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fraction Bars — Math Manipulatives | Neft Teacher</title>
+    <meta name="description" content="Interactive fraction bars: pick a denominator, shade parts, compare two fractions." />
+    <style>
+      /* ── Design Tokens (mirrors shared.css palette) ── */
+      :root {
+        --navy: #12355b;
+        --teal: #0f766e;
+        --teal-dark: #115e59;
+        --teal-light: #e4f5f3;
+        --gold: #b7791f;
+        --gold-light: #fef7e0;
+        --coral: #c2410c;
+        --coral-light: #fdeee9;
+        --green: #0f7c4a;
+        --green-light: #e6f7ef;
+        --bg: #f6f7f2;
+        --surface: #ffffff;
+        --ink: #17202a;
+        --muted: #5b6773;
+        --line: #d8dfdc;
+        --radius: 10px;
+        --shadow: 0 4px 18px rgba(23,32,42,.1);
+        --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink); line-height: 1.55; }
+      .wrap { max-width: 860px; margin: 0 auto; padding: 0 18px 60px; }
+
+      /* Hero */
+      .hero {
+        background: linear-gradient(135deg, #12355b 0%, #0f766e 100%);
+        color: #fff; padding: 36px 24px 30px; text-align: center;
+      }
+      .hero h1 { font-size: clamp(24px,5vw,38px); margin: 6px 0 8px; }
+      .hero p { max-width: 560px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 15px; }
+      .hero .icon { font-size: 48px; line-height: 1; }
+
+      /* Breadcrumb */
+      .breadcrumb { font-size: 13px; padding: 12px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--teal); text-decoration: none; font-weight: 700; }
+
+      /* Section card */
+      .card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 22px 24px; margin: 20px 0; box-shadow: var(--shadow);
+      }
+      .card h2 { margin: 0 0 14px; font-size: 18px; }
+
+      /* Controls row */
+      .ctrl-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
+      label { font-weight: 700; font-size: 14px; }
+      select, input[type="number"] {
+        padding: 8px 10px; border: 2px solid var(--line); border-radius: 8px;
+        font-family: inherit; font-size: 15px; background: #fff; width: 90px;
+      }
+      select:focus, input[type="number"]:focus { outline: none; border-color: var(--teal); }
+
+      /* Bar */
+      .bar-wrap { margin: 10px 0 6px; }
+      .bar-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+      .bar-svg-wrap { width: 100%; overflow: hidden; border-radius: 6px; }
+      .bar-cell {
+        cursor: pointer; transition: fill .12s;
+      }
+      .bar-cell.shaded { fill: var(--teal); }
+      .bar-cell.unshaded { fill: #d1e7e4; }
+      .bar-cell:hover { opacity: .8; }
+
+      /* Readout */
+      .readout-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+      .badge {
+        background: var(--teal-light); border: 1px solid #bfe6e0; border-radius: 8px;
+        padding: 8px 14px; font-size: 15px; font-weight: 700; min-width: 110px; text-align: center;
+      }
+      .badge .lbl { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: block; margin-bottom: 2px; }
+      .badge .val { font-size: 22px; color: var(--teal-dark); }
+
+      /* Comparison */
+      .comparison {
+        margin-top: 18px; padding: 14px 18px; border-radius: 10px;
+        background: var(--gold-light); border: 1px solid #e6c96e;
+        font-size: 16px; font-weight: 700; min-height: 52px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      .comparison .symbol { font-size: 32px; color: var(--gold); }
+      .comparison.gt { background: #fce8e2; border-color: #f4a88a; }
+      .comparison.gt .symbol { color: var(--coral); }
+      .comparison.lt { background: var(--teal-light); border-color: #9fd5cf; }
+      .comparison.lt .symbol { color: var(--teal-dark); }
+      .comparison.eq { background: var(--green-light); border-color: #7fd4aa; }
+      .comparison.eq .symbol { color: var(--green); }
+
+      .btn {
+        background: var(--teal); color: #fff; border: none; border-radius: 8px;
+        padding: 9px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.ghost {
+        background: transparent; color: var(--teal-dark); border: 2px solid var(--teal);
+      }
+      .btn.ghost:hover { background: var(--teal-light); }
+      .btn.danger { background: var(--coral); }
+
+      .site-footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+      @media (max-width: 600px) {
+        .ctrl-row { flex-direction: column; align-items: flex-start; }
+        select, input[type="number"] { width: 100%; }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="hero">
+      <div class="icon">&#x1F9EE;</div>
+      <h1>Fraction Bars</h1>
+      <p>Pick a denominator, shade parts by clicking, and see the fraction, decimal, and percent. Add a second bar to compare.</p>
+    </header>
+
+    <div class="wrap">
+
+      <!-- BAR 1 -->
+      <div class="card">
+        <h2>Bar 1</h2>
+        <div class="ctrl-row">
+          <label for="denom1">Denominator (2–12)</label>
+          <select id="denom1">
+            <option>2</option><option>3</option><option>4</option>
+            <option selected>5</option><option>6</option><option>7</option>
+            <option>8</option><option>9</option><option>10</option>
+            <option>11</option><option>12</option>
+          </select>
+          <button class="btn ghost" onclick="clearBar(1)">Clear</button>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-label">Click a section to shade it:</div>
+          <div class="bar-svg-wrap" id="bar1-wrap"></div>
+        </div>
+        <div class="readout-row" id="readout1"></div>
+      </div>
+
+      <!-- BAR 2 -->
+      <div class="card">
+        <h2>Bar 2 <span style="font-size:13px;font-weight:400;color:var(--muted)">(comparison bar)</span></h2>
+        <div class="ctrl-row">
+          <label for="denom2">Denominator (2–12)</label>
+          <select id="denom2">
+            <option>2</option><option>3</option><option selected>4</option>
+            <option>5</option><option>6</option><option>7</option>
+            <option>8</option><option>9</option><option>10</option>
+            <option>11</option><option>12</option>
+          </select>
+          <button class="btn ghost" onclick="clearBar(2)">Clear</button>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-label">Click a section to shade it:</div>
+          <div class="bar-svg-wrap" id="bar2-wrap"></div>
+        </div>
+        <div class="readout-row" id="readout2"></div>
+      </div>
+
+      <!-- COMPARISON -->
+      <div class="card">
+        <h2>Comparison</h2>
+        <div id="comparison-box" class="comparison">
+          <span style="color:var(--muted);font-weight:400;font-size:15px;">Shade at least one part on each bar to compare.</span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">Neft Teacher · Manipulatives</footer>
+
+    <script>
+      // State
+      const state = {
+        1: { denom: 5, shaded: new Set() },
+        2: { denom: 4, shaded: new Set() }
+      };
+
+      function buildBar(n) {
+        const s = state[n];
+        const wrap = document.getElementById('bar' + n + '-wrap');
+        const W = 600, H = 64;
+        const cellW = W / s.denom;
+        const gap = 2;
+        let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fraction bar with denominator ${s.denom}">`;
+        for (let i = 0; i < s.denom; i++) {
+          const x = i * cellW + gap / 2;
+          const w = cellW - gap;
+          const cls = s.shaded.has(i) ? 'shaded' : 'unshaded';
+          svg += `<rect class="bar-cell ${cls}" x="${x.toFixed(2)}" y="${gap/2}" width="${w.toFixed(2)}" height="${H - gap}" rx="4"
+                    onclick="toggleCell(${n}, ${i})" tabindex="0" role="button"
+                    aria-label="Part ${i+1} of ${s.denom}" aria-pressed="${s.shaded.has(i)}"/>`;
+          // divider label
+          const cx = (i + 0.5) * cellW;
+          svg += `<text x="${cx.toFixed(2)}" y="${H/2 + 5}" text-anchor="middle" fill="${s.shaded.has(i) ? '#fff' : '#1a665f'}" font-size="14" font-family="inherit" font-weight="800" pointer-events="none">${i+1}/${s.denom}</text>`;
+        }
+        svg += '</svg>';
+        wrap.innerHTML = svg;
+        updateReadout(n);
+        updateComparison();
+      }
+
+      function toggleCell(n, i) {
+        const s = state[n];
+        if (s.shaded.has(i)) s.shaded.delete(i);
+        else s.shaded.add(i);
+        buildBar(n);
+      }
+
+      function clearBar(n) {
+        state[n].shaded.clear();
+        buildBar(n);
+      }
+
+      function gcd(a, b) { while (b) { [a, b] = [b, a % b]; } return a; }
+
+      function updateReadout(n) {
+        const s = state[n];
+        const num = s.shaded.size;
+        const den = s.denom;
+        const box = document.getElementById('readout' + n);
+        if (num === 0) { box.innerHTML = '<span style="color:var(--muted);font-size:14px;">No parts shaded yet.</span>'; return; }
+        const decimal = num / den;
+        const percent = (decimal * 100).toFixed(2).replace(/\.?0+$/, '') + '%';
+        const g = gcd(num, den);
+        const simpNum = num / g, simpDen = den / g;
+        const fracStr = simpDen === 1 ? `${simpNum}` : `${simpNum}/${simpDen}`;
+        const origStr = (simpNum === num && simpDen === den) ? '' : `<span class="lbl">Original</span><span class="val">${num}/${den}</span>`;
+        box.innerHTML = `
+          ${origStr ? `<div class="badge">${origStr}</div>` : ''}
+          <div class="badge"><span class="lbl">Simplified</span><span class="val">${fracStr}</span></div>
+          <div class="badge"><span class="lbl">Decimal</span><span class="val">${decimal.toFixed(4).replace(/0+$/, '').replace(/\.$/, '')}</span></div>
+          <div class="badge"><span class="lbl">Percent</span><span class="val">${percent}</span></div>`;
+      }
+
+      function updateComparison() {
+        const s1 = state[1], s2 = state[2];
+        const box = document.getElementById('comparison-box');
+        if (s1.shaded.size === 0 || s2.shaded.size === 0) {
+          box.className = 'comparison';
+          box.innerHTML = '<span style="color:var(--muted);font-weight:400;font-size:15px;">Shade at least one part on each bar to compare.</span>';
+          return;
+        }
+        const v1 = s1.shaded.size / s1.denom;
+        const v2 = s2.shaded.size / s2.denom;
+        const f1 = `${s1.shaded.size}/${s1.denom}`;
+        const f2 = `${s2.shaded.size}/${s2.denom}`;
+        let sym, cls, msg;
+        if (Math.abs(v1 - v2) < 1e-9) {
+          sym = '='; cls = 'eq';
+          msg = `${f1} equals ${f2} — they are equivalent fractions!`;
+        } else if (v1 > v2) {
+          sym = '>'; cls = 'gt';
+          msg = `${f1} is greater than ${f2} (${v1.toFixed(4)} > ${v2.toFixed(4)})`;
+        } else {
+          sym = '<'; cls = 'lt';
+          msg = `${f1} is less than ${f2} (${v1.toFixed(4)} < ${v2.toFixed(4)})`;
+        }
+        box.className = 'comparison ' + cls;
+        box.innerHTML = `<span class="symbol">${sym}</span><span>${msg}</span>`;
+      }
+
+      function init() {
+        // Wire up denominator selectors
+        document.getElementById('denom1').addEventListener('change', e => {
+          state[1].denom = +e.target.value;
+          state[1].shaded.clear();
+          buildBar(1);
+        });
+        document.getElementById('denom2').addEventListener('change', e => {
+          state[2].denom = +e.target.value;
+          state[2].shaded.clear();
+          buildBar(2);
+        });
+        buildBar(1);
+        buildBar(2);
+      }
+      init();
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

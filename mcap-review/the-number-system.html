@@ -1,0 +1,1549 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCAP Review — The Number System</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --navy: #17324d;
+        --teal: #0d9488;
+        --bg: #f8fafc;
+        --white: #ffffff;
+        --ink: #24323f;
+        --muted: #7a8a9e;
+        --line: #dde3ea;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --warn: #d97706;
+        --warn-bg: #fef3c7;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(23, 50, 77, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Screens ── */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* ── Login ── */
+      .login-wrap {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 60px 24px;
+      }
+      .hero-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .hero-flag {
+        display: inline-block;
+        background: var(--warn-bg);
+        color: var(--warn);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin-bottom: 26px;
+      }
+      .login-form {
+        display: grid;
+        grid-template-columns: 1fr 120px;
+        gap: 12px;
+        max-width: 400px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .login-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+        width: 100%;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+      .start-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+      }
+      .resume-banner.show {
+        display: flex;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      /* ── App Header ── */
+      .app-header {
+        background: var(--navy);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        flex-wrap: wrap;
+      }
+      .app-header .title-text {
+        font-size: 0.95rem;
+        font-weight: 800;
+      }
+      .app-header .progress-text {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .app-header .score-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-left: auto;
+      }
+      .progress-track {
+        flex: 1;
+        min-width: 100px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--teal);
+        border-radius: 4px;
+        transition: width 0.3s;
+      }
+
+      /* ── Quiz Content ── */
+      .quiz-wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+      .section-header {
+        background: var(--navy);
+        color: white;
+        padding: 16px 24px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        margin-top: 24px;
+      }
+      .section-header h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 2px;
+      }
+      .section-header p {
+        font-size: 0.82rem;
+        opacity: 0.7;
+      }
+      .question-card {
+        background: var(--white);
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .question-card.first {
+        border-radius: 0;
+        border-top: none;
+      }
+      .question-card.last {
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      .question-card.only {
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      .q-number {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--teal);
+        margin-bottom: 8px;
+      }
+      .q-text {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .mc-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--ink);
+        transition: all 0.15s;
+      }
+      .mc-btn:hover:not(.locked) {
+        border-color: var(--teal);
+        background: rgba(13, 148, 136, 0.04);
+      }
+      .mc-btn.selected {
+        border-color: var(--teal);
+        background: rgba(13, 148, 136, 0.08);
+      }
+      .mc-btn.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .mc-btn.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+        color: var(--error);
+      }
+      .mc-btn.locked {
+        cursor: default;
+      }
+      .mc-btn.reveal-correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+
+      .fill-input {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 1rem;
+        width: 180px;
+        transition: border-color 0.2s;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .fill-input.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .fill-input.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .fill-input:disabled {
+        opacity: 0.8;
+      }
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .fill-prefix {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .check-btn {
+        padding: 8px 20px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        transition: opacity 0.2s;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .check-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        display: none;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        margin-top: 12px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+
+      .section-nav {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+      }
+      .nav-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: opacity 0.2s;
+      }
+      .nav-btn.primary {
+        background: var(--teal);
+        color: white;
+      }
+      .nav-btn.secondary {
+        background: var(--navy);
+        color: white;
+      }
+      .nav-btn:hover {
+        opacity: 0.9;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      /* ── Results ── */
+      .results-wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+      .results-hero {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 36px;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .score-ring {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        margin: 0 auto 14px;
+      }
+      .score-ring svg {
+        transform: rotate(-90deg);
+        width: 160px;
+        height: 160px;
+      }
+      .score-ring .ring-bg {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 14;
+      }
+      .score-ring .ring-fg {
+        fill: none;
+        stroke-width: 14;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.8s ease;
+      }
+      .score-ring .ring-center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .score-ring .ring-pct {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--navy);
+        line-height: 1;
+      }
+      .score-ring .ring-frac {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .results-emoji {
+        font-size: 2.4rem;
+        margin-bottom: 6px;
+      }
+      .results-label {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .results-name {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      .section-result {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px 24px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .section-icon {
+        font-size: 1.5rem;
+      }
+      .section-info {
+        flex: 1;
+      }
+      .section-info h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .section-info p {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .section-score-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 0.9rem;
+      }
+      .badge-green {
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .badge-yellow {
+        background: var(--warn-bg);
+        color: var(--warn);
+      }
+      .badge-red {
+        background: var(--error-bg);
+        color: var(--error);
+      }
+
+      .study-tips {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-top: 24px;
+      }
+      .study-tips h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .tip-item {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.9rem;
+      }
+      .tip-item:last-child {
+        border-bottom: none;
+      }
+      .tip-topic {
+        font-weight: 700;
+        color: var(--error);
+      }
+
+      .results-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+      .copy-toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--navy);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        display: none;
+        z-index: 200;
+      }
+      .copy-toast.show {
+        display: block;
+        animation: fadeToast 2s forwards;
+      }
+      @keyframes fadeToast {
+        0%,
+        70% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* ── Footer ── */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .footer strong {
+        color: var(--navy);
+      }
+
+      /* ── Responsive ── */
+      .mc-btn:focus-visible,
+      .check-btn:focus-visible,
+      .nav-btn:focus-visible,
+      .start-btn:focus-visible,
+      .field:focus-visible {
+        outline: 3px solid var(--navy);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        .score-ring .ring-fg {
+          transition: none !important;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .login-form {
+          grid-template-columns: 1fr;
+        }
+        .hero-card {
+          padding: 32px 20px;
+        }
+        .quiz-wrap {
+          padding: 16px 12px 60px;
+        }
+        .question-card {
+          padding: 18px;
+        }
+        .app-header {
+          padding: 8px 16px;
+          gap: 10px;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- ═══════════ LOGIN SCREEN ═══════════ -->
+    <div id="login-screen" class="screen active">
+      <div class="login-wrap">
+        <div class="hero-card">
+          <div class="hero-emoji" aria-hidden="true">🔢</div>
+          <h1 class="hero-title">MCAP Review — The Number System</h1>
+          <p class="hero-sub">
+            6.NS.A &middot; 6.NS.B &middot; 6.NS.C &mdash; 20 Questions in 4
+            Sections
+          </p>
+          <div class="hero-flag">Maryland MCAP · Grade 6 · 6.NS</div>
+
+          <div id="resume-banner" class="resume-banner">
+            <div style="flex: 1">
+              <strong>Welcome back!</strong> You have saved progress.
+            </div>
+            <button onclick="resumeSession()">Resume</button>
+            <button class="clear-btn" onclick="clearSaved()">Start Over</button>
+          </div>
+
+          <div class="login-form">
+            <label for="inp-name">Your Name</label>
+            <label for="inp-period">Period</label>
+            <a class="packet-cta" href="/mcap-review/packets/the-number-system/" style="display:inline-block;margin:6px 0 20px;padding:10px 16px;background:#1FA6A2;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:.92rem">📘 Study guide &amp; printable Word packets for this domain →</a>
+        <input
+              id="inp-name"
+              class="field"
+              type="text"
+              placeholder="First Last"
+              autocomplete="off"
+            />
+            <select id="inp-period" class="field">
+              <option value="">--</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+            </select>
+          </div>
+          <button class="start-btn" onclick="startReview()">
+            Begin Review
+          </button>
+        </div>
+      </div>
+      <div class="footer">
+        <strong>Neft Teacher</strong> &middot; Maryland MCAP &middot; Grade 6
+        &middot; 6.NS
+      </div>
+    </div>
+
+    <!-- ═══════════ QUIZ SCREEN ═══════════ -->
+    <div id="quiz-screen" class="screen">
+      <div class="app-header">
+        <span class="title-text"
+          ><span aria-hidden="true">🔢</span> The Number System</span
+        >
+        <span class="progress-text" id="progress-label">0 / 20</span>
+        <div
+          class="progress-track"
+          id="progress-track"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Questions answered"
+        >
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <span class="score-text" id="score-label">Score: 0</span>
+      </div>
+      <div class="quiz-wrap" id="quiz-content"></div>
+      <div class="footer">
+        <strong>Neft Teacher</strong> &middot; Maryland MCAP &middot; Grade 6
+        &middot; 6.NS
+      </div>
+    </div>
+
+    <!-- ═══════════ RESULTS SCREEN ═══════════ -->
+    <div id="results-screen" class="screen">
+      <div class="results-wrap" id="results-content"></div>
+      <div class="footer">
+        <strong>Neft Teacher</strong> &middot; Maryland MCAP &middot; Grade 6
+        &middot; 6.NS
+      </div>
+    </div>
+
+    <div class="copy-toast" id="copy-toast">Results copied to clipboard!</div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      /* ══════════════════════════════════════════
+       DATA — 20 problems, 4 sections (6.NS.A-C)
+       ══════════════════════════════════════════ */
+      const TOTAL_Q = 20;
+      const SECTIONS = [
+        {
+          id: "vocab",
+          title: "Section 1: Vocabulary",
+          desc: "Match each term to its meaning",
+          icon: "📖",
+          questions: [
+            {
+              id: 1,
+              type: "mc",
+              text: "The distance of a number from 0 on the number line, always zero or positive.",
+              options: ["Opposite", "Absolute value", "Integer", "Reciprocal"],
+              answer: 1,
+              explain:
+                "Absolute value is a number's distance from 0, so |−7| = 7 and |7| = 7. Distance is never negative.",
+            },
+            {
+              id: 2,
+              type: "mc",
+              text: "Numbers that are the same distance from 0 but on opposite sides of it, like 5 and −5.",
+              options: ["Factors", "Multiples", "Opposites", "Quotients"],
+              answer: 2,
+              explain:
+                "Opposites have the same absolute value but different signs. The opposite of 5 is −5, and the opposite of −5 is 5.",
+            },
+            {
+              id: 3,
+              type: "mc",
+              text: "Any number that can be written as a fraction a/b where a and b are integers and b is not 0.",
+              options: [
+                "Whole number",
+                "Prime number",
+                "Rational number",
+                "Composite number",
+              ],
+              answer: 2,
+              explain:
+                "Rational numbers can be written as a fraction of two integers. This includes integers, fractions, and terminating or repeating decimals.",
+            },
+            {
+              id: 4,
+              type: "mc",
+              text: "The two numbers that tell the location of a point on the coordinate plane, written (x, y).",
+              options: ["Ordered pair", "Origin", "Quadrant", "Number line"],
+              answer: 0,
+              explain:
+                "An ordered pair (x, y) gives the location of a point: x tells how far right/left, y tells how far up/down.",
+            },
+            {
+              id: 5,
+              type: "mc",
+              text: "The greatest factor that two or more numbers share.",
+              options: [
+                "Least common multiple",
+                "Greatest common factor",
+                "Reciprocal",
+                "Prime factor",
+              ],
+              answer: 1,
+              explain:
+                "The greatest common factor (GCF) is the largest factor two numbers share. The GCF of 12 and 18 is 6.",
+            },
+          ],
+        },
+        {
+          id: "quick",
+          title: "Section 2: Quick Check",
+          desc: "Choose the correct answer",
+          icon: "⚡",
+          questions: [
+            {
+              id: 6,
+              type: "mc",
+              text: "Which point describes how to plot (−3, 4)?",
+              options: [
+                "Left 3, up 4",
+                "Right 3, down 4",
+                "Left 4, up 3",
+                "Right 4, up 3",
+              ],
+              answer: 0,
+              explain:
+                "Start at the origin. The x-value −3 means move left 3; the y-value 4 means move up 4. That lands in Quadrant II.",
+            },
+            {
+              id: 7,
+              type: "mc",
+              text: "What is the value of |−12|?",
+              options: ["−12", "0", "12", "24"],
+              answer: 2,
+              explain:
+                "Absolute value is distance from 0. The point −12 is 12 units from 0, so |−12| = 12.",
+            },
+            {
+              id: 8,
+              type: "mc",
+              text: "What is the GCF of 30 and 42?",
+              options: ["3", "6", "12", "15"],
+              answer: 1,
+              explain:
+                "30 = 2 × 3 × 5 and 42 = 2 × 3 × 7. The shared primes are 2 and 3, so the GCF = 2 × 3 = 6.",
+            },
+            {
+              id: 9,
+              type: "mc",
+              text: "Which statement is true?",
+              options: ["−8 > −3", "−3 > −8", "−8 = −3", "−3 < −8"],
+              answer: 1,
+              explain:
+                "On a number line, −3 is to the right of −8, so −3 is greater. Therefore −3 > −8.",
+            },
+            {
+              id: 10,
+              type: "mc",
+              text: "In which quadrant does the point (5, −2) lie?",
+              options: [
+                "Quadrant I",
+                "Quadrant II",
+                "Quadrant III",
+                "Quadrant IV",
+              ],
+              answer: 3,
+              explain:
+                "A positive x and a negative y (right and down) place the point in Quadrant IV.",
+            },
+          ],
+        },
+        {
+          id: "practice",
+          title: "Section 3: Practice",
+          desc: "Type your answer in the box",
+          icon: "✏️",
+          questions: [
+            {
+              id: 11,
+              type: "fill",
+              text: "Divide: 3/4 ÷ 1/8 = ? (write as a whole number)",
+              answer: "6",
+              accept: ["6"],
+              explain:
+                "Dividing by a fraction means multiply by its reciprocal: 3/4 × 8/1 = 24/4 = 6.",
+            },
+            {
+              id: 12,
+              type: "fill",
+              text: "Divide: 2/3 ÷ 4/9 = ? (write as a fraction in simplest form, like 3/2)",
+              answer: "3/2",
+              accept: ["3/2", "1 1/2", "1.5"],
+              explain:
+                "2/3 × 9/4 = 18/12 = 3/2. Multiply by the reciprocal, then simplify.",
+            },
+            {
+              id: 13,
+              type: "fill",
+              text: "Multiply: 6.25 × 0.8 = ?",
+              answer: "5",
+              accept: ["5", "5.0", "5.00"],
+              explain:
+                "625 × 8 = 5,000. There are 3 decimal places total, so the answer is 5.000 = 5.",
+            },
+            {
+              id: 14,
+              type: "fill",
+              text: "Divide: 14.4 ÷ 0.6 = ?",
+              answer: "24",
+              accept: ["24", "24.0"],
+              explain:
+                "Move the decimal one place in both numbers: 144 ÷ 6 = 24.",
+            },
+            {
+              id: 15,
+              type: "fill",
+              text: "What is the LCM of 8 and 12?",
+              answer: "24",
+              accept: ["24"],
+              explain:
+                "Multiples of 8: 8, 16, 24... Multiples of 12: 12, 24... The least common multiple is 24.",
+            },
+          ],
+        },
+        {
+          id: "challenge",
+          title: "Section 4: Challenge",
+          desc: "Solve each word problem",
+          icon: "🏆",
+          questions: [
+            {
+              id: 16,
+              type: "mc",
+              text: "A ribbon is 3/4 meter long. Lena cuts it into pieces that are each 1/8 meter long. How many pieces does she get?",
+              options: ["3", "6", "8", "12"],
+              answer: 1,
+              explain: "This is 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 pieces.",
+            },
+            {
+              id: 17,
+              type: "mc",
+              text: "A diver is at −18 meters (relative to sea level) and a gull is at +6 meters. How far apart are they vertically?",
+              options: ["12 m", "18 m", "24 m", "108 m"],
+              answer: 2,
+              explain:
+                "Distance is |−18| + |6| = 18 + 6 = 24 meters apart, since they are on opposite sides of 0.",
+            },
+            {
+              id: 18,
+              type: "mc",
+              text: "A store sells almonds for $7.50 per kilogram. Marcus buys 2.4 kilograms. How much does he pay?",
+              options: ["$15.00", "$16.50", "$18.00", "$18.50"],
+              answer: 2,
+              explain:
+                "$7.50 × 2.4: 750 × 24 = 18,000. Place 3 decimal places → $18.000 = $18.00.",
+            },
+            {
+              id: 19,
+              type: "mc",
+              text: "The temperature at dawn was −4°F. By noon it rose to 11°F. Which point on a number line shows the dawn temperature relative to noon?",
+              options: [
+                "−4 is 15 units left of 11",
+                "−4 is 7 units left of 11",
+                "−4 is 15 units right of 11",
+                "−4 equals 11",
+              ],
+              answer: 0,
+              explain:
+                "From −4 to 11 is a distance of |11 − (−4)| = 15 units, and −4 is the lesser value, so it sits 15 units to the left of 11.",
+            },
+            {
+              id: 20,
+              type: "mc",
+              text: "A florist has 24 roses and 36 tulips. She makes identical bouquets using all the flowers with none left over. What is the greatest number of bouquets, and how many roses are in each?",
+              options: [
+                "6 bouquets, 4 roses each",
+                "12 bouquets, 2 roses each",
+                "8 bouquets, 3 roses each",
+                "4 bouquets, 6 roses each",
+              ],
+              answer: 1,
+              explain:
+                "Find the GCF of 24 and 36, which is 12. So 12 bouquets, each with 24 ÷ 12 = 2 roses (and 3 tulips).",
+            },
+          ],
+        },
+      ];
+
+      /* ── State ── */
+      const STORAGE_KEY = "mcapNumberSystem_v1";
+      let lastSectionScores = [];
+      let state = {
+        name: "",
+        period: "",
+        currentSection: 0,
+        answers: {},
+        score: 0,
+        completed: false,
+      };
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+      function loadState() {
+        try {
+          const s = localStorage.getItem(STORAGE_KEY);
+          if (s) return JSON.parse(s);
+        } catch (e) {}
+        return null;
+      }
+
+      /* ── Init ── */
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = loadState();
+        if (saved && saved.name) {
+          document.getElementById("resume-banner").classList.add("show");
+        }
+      });
+
+      function resumeSession() {
+        const saved = loadState();
+        if (saved) {
+          state = saved;
+          showScreen("quiz-screen");
+          renderSection();
+        }
+      }
+      function clearSaved() {
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById("resume-banner").classList.remove("show");
+      }
+
+      function startReview() {
+        const name = document.getElementById("inp-name").value.trim();
+        const period = document.getElementById("inp-period").value;
+        if (!name) {
+          alert("Please enter your name.");
+          return;
+        }
+        if (!period) {
+          alert("Please select your period.");
+          return;
+        }
+        state = {
+          name,
+          period,
+          currentSection: 0,
+          answers: {},
+          score: 0,
+          completed: false,
+        };
+        saveState();
+        showScreen("quiz-screen");
+        renderSection();
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      /* ── Helpers ── */
+      function escHtml(s) {
+        const d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+      function totalAnswered() {
+        return Object.keys(state.answers).length;
+      }
+      function recalcScore() {
+        let s = 0;
+        for (const [qid, ans] of Object.entries(state.answers)) {
+          if (ans.correct) s++;
+        }
+        state.score = s;
+      }
+
+      /* ── Progress bar ── */
+      function updateProgress() {
+        const answered = totalAnswered();
+        document.getElementById("progress-label").textContent =
+          answered + " / " + TOTAL_Q;
+        const progPct = Math.round((answered / TOTAL_Q) * 100);
+        document.getElementById("progress-fill").style.width = progPct + "%";
+        const progTrack = document.getElementById("progress-track");
+        if (progTrack) {
+          progTrack.setAttribute("aria-valuenow", progPct);
+          progTrack.setAttribute(
+            "aria-label",
+            answered + " of " + TOTAL_Q + " questions answered",
+          );
+        }
+        document.getElementById("score-label").textContent =
+          "Score: " + state.score;
+      }
+
+      /* ── Render a section ── */
+      function renderSection() {
+        const sec = SECTIONS[state.currentSection];
+        const wrap = document.getElementById("quiz-content");
+        let html = `<div class="section-header"><h2>${sec.icon} ${escHtml(sec.title)}</h2><p>${escHtml(sec.desc)}</p></div>`;
+
+        sec.questions.forEach((q, qi) => {
+          const cardClass =
+            qi === 0 ? "first" : qi === sec.questions.length - 1 ? "last" : "";
+          const saved = state.answers[q.id];
+          html += `<div class="question-card ${cardClass}" id="qcard-${q.id}">`;
+          html += `<div class="q-number">Question ${q.id} of ${TOTAL_Q}</div>`;
+          html += `<div class="q-text">${escHtml(q.text)}</div>`;
+
+          if (q.type === "mc") {
+            html += `<div class="mc-options" id="opts-${q.id}">`;
+            q.options.forEach((opt, oi) => {
+              let cls = "mc-btn";
+              if (saved) {
+                cls += " locked";
+                if (oi === saved.selected)
+                  cls += saved.correct ? " correct" : " wrong";
+                if (!saved.correct && oi === q.answer) cls += " reveal-correct";
+              }
+              html += `<button class="${cls}" data-qid="${q.id}" data-idx="${oi}" ${saved ? "disabled" : ""}>${escHtml(opt)}</button>`;
+            });
+            html += `</div>`;
+          } else {
+            const val = saved ? saved.value : "";
+            const inputCls = saved ? (saved.correct ? "correct" : "wrong") : "";
+            html += `<div class="fill-row">`;
+            html += `<input class="fill-input ${inputCls}" id="fill-${q.id}" type="text" value="${escHtml(val)}" placeholder="Type answer" ${saved ? "disabled" : ""} />`;
+            html += `<button class="check-btn" id="chk-${q.id}" onclick="checkFill(${q.id})" ${saved ? "disabled" : ""}>Check</button>`;
+            html += `</div>`;
+          }
+
+          html += `<div class="feedback ${saved ? (saved.correct ? "show ok" : "show no") : ""}" id="fb-${q.id}" role="status" aria-live="polite">${saved ? feedbackHtml(q, saved.correct) : ""}</div>`;
+          html += `</div>`;
+        });
+
+        // Nav buttons
+        html += `<div class="section-nav">`;
+        html += `<button class="nav-btn secondary" onclick="prevSection()" ${state.currentSection === 0 ? "disabled" : ""}>&larr; Previous Section</button>`;
+        if (state.currentSection < SECTIONS.length - 1) {
+          html += `<button class="nav-btn primary" onclick="nextSection()">Next Section &rarr;</button>`;
+        } else {
+          html += `<button class="nav-btn primary" onclick="finishReview()">Finish Review <span aria-hidden="true">🏁</span></button>`;
+        }
+        html += `</div>`;
+
+        wrap.innerHTML = html;
+        updateProgress();
+
+        // Attach MC listeners
+        wrap.querySelectorAll(".mc-btn:not(.locked)").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const qid = parseInt(btn.dataset.qid);
+            const idx = parseInt(btn.dataset.idx);
+            answerMC(qid, idx);
+          });
+        });
+      }
+
+      function feedbackHtml(q, correct) {
+        if (correct)
+          return `<strong><span aria-hidden="true">✅</span> Correct!</strong> ${escHtml(q.explain)}`;
+        return `<strong><span aria-hidden="true">❌</span> Incorrect.</strong> ${escHtml(q.explain)}`;
+      }
+
+      /* ── Answer handlers ── */
+      function answerMC(qid, idx) {
+        if (state.answers[qid]) return;
+        const q = findQuestion(qid);
+        const correct = idx === q.answer;
+        state.answers[qid] = { selected: idx, correct, value: q.options[idx] };
+        if (correct) state.score++;
+        saveState();
+
+        // Update UI
+        const opts = document.getElementById("opts-" + qid);
+        opts.querySelectorAll(".mc-btn").forEach((btn, oi) => {
+          btn.classList.add("locked");
+          btn.disabled = true;
+          if (oi === idx) btn.classList.add(correct ? "correct" : "wrong");
+          if (!correct && oi === q.answer) btn.classList.add("reveal-correct");
+        });
+        const fb = document.getElementById("fb-" + qid);
+        fb.className = "feedback show " + (correct ? "ok" : "no");
+        fb.innerHTML = feedbackHtml(q, correct);
+        updateProgress();
+      }
+
+      function normalizeFill(s) {
+        return s.trim().toLowerCase().replace(/\s+/g, " ");
+      }
+
+      function checkFill(qid) {
+        const q = findQuestion(qid);
+        const inp = document.getElementById("fill-" + qid);
+        const val = inp.value.trim();
+        if (!val) {
+          alert("Please type an answer.");
+          return;
+        }
+        const accepted = q.accept.map(normalizeFill);
+        const correct = accepted.includes(normalizeFill(val));
+        state.answers[qid] = { value: val, correct };
+        if (correct) state.score++;
+        saveState();
+
+        inp.disabled = true;
+        inp.classList.add(correct ? "correct" : "wrong");
+        document.getElementById("chk-" + qid).disabled = true;
+        const fb = document.getElementById("fb-" + qid);
+        fb.className = "feedback show " + (correct ? "ok" : "no");
+        fb.innerHTML = feedbackHtml(q, correct);
+        updateProgress();
+      }
+
+      function findQuestion(qid) {
+        for (const sec of SECTIONS) {
+          for (const q of sec.questions) {
+            if (q.id === qid) return q;
+          }
+        }
+        return null;
+      }
+
+      /* ── Section navigation ── */
+      function nextSection() {
+        if (state.currentSection < SECTIONS.length - 1) {
+          state.currentSection++;
+          saveState();
+          renderSection();
+          window.scrollTo(0, 0);
+        }
+      }
+      function prevSection() {
+        if (state.currentSection > 0) {
+          state.currentSection--;
+          saveState();
+          renderSection();
+          window.scrollTo(0, 0);
+        }
+      }
+
+      function finishReview() {
+        const unanswered = TOTAL_Q - totalAnswered();
+        if (unanswered > 0) {
+          if (
+            !confirm(
+              `You have ${unanswered} unanswered question(s). Finish anyway?`,
+            )
+          )
+            return;
+        }
+        recalcScore();
+        state.completed = true;
+        saveState();
+        showScreen("results-screen");
+        renderResults();
+      }
+
+      /* ══════════════════════════════════════
+       RESULTS
+       ══════════════════════════════════════ */
+      function renderResults() {
+        const wrap = document.getElementById("results-content");
+        const pct = Math.round((state.score / TOTAL_Q) * 100);
+        const emoji = pct >= 80 ? "🌟" : pct >= 60 ? "👍" : "📚";
+        const ringColor =
+          pct >= 80
+            ? "var(--success)"
+            : pct >= 60
+              ? "var(--warn)"
+              : "var(--error)";
+        // Ring geometry: r = 66, circumference ≈ 414.69
+        const r = 66;
+        const circ = 2 * Math.PI * r;
+        const offset = circ * (1 - pct / 100);
+
+        let html = `<div class="results-hero">
+        <div class="score-ring">
+          <svg viewBox="0 0 160 160" aria-hidden="true">
+            <circle class="ring-bg" cx="80" cy="80" r="${r}"></circle>
+            <circle class="ring-fg" cx="80" cy="80" r="${r}"
+              stroke="${ringColor}"
+              stroke-dasharray="${circ.toFixed(2)}"
+              stroke-dashoffset="${offset.toFixed(2)}"></circle>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-pct">${pct}%</div>
+            <div class="ring-frac">${state.score} / ${TOTAL_Q}</div>
+          </div>
+        </div>
+        <div class="results-emoji" aria-hidden="true">${emoji}</div>
+        <div class="results-label">${state.score} out of ${TOTAL_Q} correct</div>
+        <div class="results-name">${escHtml(state.name)} &middot; Period ${escHtml(state.period)} &middot; Maryland MCAP · 6.NS</div>
+      </div>`;
+
+        // Section breakdown
+        const sectionScores = [];
+        lastSectionScores = sectionScores;
+        SECTIONS.forEach((sec) => {
+          let correct = 0,
+            total = sec.questions.length;
+          sec.questions.forEach((q) => {
+            if (state.answers[q.id] && state.answers[q.id].correct) correct++;
+          });
+          const spct = Math.round((correct / total) * 100);
+          sectionScores.push({
+            id: sec.id,
+            title: sec.title,
+            icon: sec.icon,
+            correct,
+            total,
+            pct: spct,
+          });
+          const badgeClass =
+            spct >= 80
+              ? "badge-green"
+              : spct >= 60
+                ? "badge-yellow"
+                : "badge-red";
+          html += `<div class="section-result">
+          <div class="section-icon">${sec.icon}</div>
+          <div class="section-info"><h3>${escHtml(sec.title)}</h3><p>${correct} / ${total} correct</p></div>
+          <span class="section-score-badge ${badgeClass}">${spct}%</span>
+        </div>`;
+        });
+
+        // Study tips
+        html += `<div class="study-tips"><h3>📝 Study Tips for Missed Topics</h3>`;
+        const missed = [];
+        SECTIONS.forEach((sec) => {
+          sec.questions.forEach((q) => {
+            if (!state.answers[q.id] || !state.answers[q.id].correct) {
+              missed.push(q);
+            }
+          });
+        });
+        if (missed.length === 0) {
+          html += `<div class="tip-item">Amazing work! You got every question correct. You are ready for the MCAP!</div>`;
+        } else {
+          const tipMap = {
+            1: {
+              topic: "Absolute Value",
+              tip: "Absolute value is distance from 0, so it is always 0 or positive: |−7| = 7.",
+            },
+            2: {
+              topic: "Opposites",
+              tip: "Opposites have the same absolute value but different signs, like 5 and −5.",
+            },
+            3: {
+              topic: "Rational Numbers",
+              tip: "A rational number can be written as a fraction of two integers (denominator not 0).",
+            },
+            4: {
+              topic: "Coordinate Plane",
+              tip: "An ordered pair (x, y) gives location: x is right/left, y is up/down.",
+            },
+            5: {
+              topic: "GCF Vocabulary",
+              tip: "The greatest common factor is the largest factor two numbers share.",
+            },
+            6: {
+              topic: "Plotting Points",
+              tip: "From the origin, the x-value moves right/left and the y-value moves up/down.",
+            },
+            7: {
+              topic: "Absolute Value",
+              tip: "Drop the sign and report the distance from 0: |−12| = 12.",
+            },
+            8: {
+              topic: "Finding GCF",
+              tip: "Use prime factorization and multiply the primes both numbers share.",
+            },
+            9: {
+              topic: "Comparing Integers",
+              tip: "On a number line, the number farther right is greater: −3 > −8.",
+            },
+            10: {
+              topic: "Quadrants",
+              tip: "Signs of (x, y) set the quadrant: (+,−) is Quadrant IV.",
+            },
+            11: {
+              topic: "Dividing Fractions",
+              tip: "Multiply by the reciprocal: a/b ÷ c/d = a/b × d/c.",
+            },
+            12: {
+              topic: "Dividing Fractions",
+              tip: "Flip the second fraction and multiply, then simplify the result.",
+            },
+            13: {
+              topic: "Decimal Multiplication",
+              tip: "Multiply as whole numbers, then count total decimal places in both factors.",
+            },
+            14: {
+              topic: "Dividing Decimals",
+              tip: "Make the divisor a whole number by moving decimals the same amount in both numbers.",
+            },
+            15: {
+              topic: "Finding LCM",
+              tip: "List multiples of each number until you find the first one they share.",
+            },
+            16: {
+              topic: "Fraction Division in Context",
+              tip: "How many small pieces fit in the whole? Divide total length by piece length.",
+            },
+            17: {
+              topic: "Distance with Integers",
+              tip: "When points are on opposite sides of 0, add the absolute values.",
+            },
+            18: {
+              topic: "Decimal Multiplication in Context",
+              tip: "Multiply price × quantity carefully, counting decimal places.",
+            },
+            19: {
+              topic: "Number Line Reasoning",
+              tip: "Distance between values is the absolute difference; the lesser value sits to the left.",
+            },
+            20: {
+              topic: "GCF Word Problems",
+              tip: "Splitting into equal groups with none left over means finding the GCF.",
+            },
+          };
+          const seen = new Set();
+          missed.forEach((q) => {
+            const t = tipMap[q.id];
+            if (t && !seen.has(t.topic + t.tip)) {
+              seen.add(t.topic + t.tip);
+              html += `<div class="tip-item"><span class="tip-topic">${escHtml(t.topic)}:</span> ${escHtml(t.tip)}</div>`;
+            }
+          });
+        }
+        html += `</div>`;
+
+        // Actions
+        html += `<div class="results-actions">
+        <button class="nav-btn primary" onclick="copyResults()">📋 Copy Results</button>
+        <button class="nav-btn primary" onclick="downloadResultsCSV()">📄 Download Results (CSV for teacher)</button>
+        <button class="nav-btn secondary" onclick="retakeReview()">🔄 Retake Review</button>
+      </div>`;
+
+        wrap.innerHTML = html;
+      }
+
+      /* ── Export ── */
+      function copyResults() {
+        recalcScore();
+        const pct = Math.round((state.score / TOTAL_Q) * 100);
+        let text = `MCAP Review — The Number System (Grade 6 · 6.NS)\n`;
+        text += `Student: ${state.name} | Period: ${state.period}\n`;
+        text += `Overall: ${state.score}/${TOTAL_Q} (${pct}%)\n\n`;
+        SECTIONS.forEach((sec) => {
+          let c = 0;
+          sec.questions.forEach((q) => {
+            if (state.answers[q.id] && state.answers[q.id].correct) c++;
+          });
+          text += `${sec.title}: ${c}/${sec.questions.length}\n`;
+        });
+        text += `\nMissed Questions:\n`;
+        let hasMissed = false;
+        SECTIONS.forEach((sec) => {
+          sec.questions.forEach((q) => {
+            if (!state.answers[q.id] || !state.answers[q.id].correct) {
+              hasMissed = true;
+              const given = state.answers[q.id]
+                ? state.answers[q.id].value
+                : "(no answer)";
+              const correctAns =
+                q.type === "mc" ? q.options[q.answer] : q.answer;
+              text += `  Q${q.id}: ${q.text}\n    Given: ${given} | Correct: ${correctAns}\n`;
+            }
+          });
+        });
+        if (!hasMissed) text += `  None — perfect score!\n`;
+
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const toast = document.getElementById("copy-toast");
+            toast.classList.remove("show");
+            void toast.offsetWidth;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 2200);
+          })
+          .catch(() => {
+            prompt("Copy the text below:", text);
+          });
+      }
+
+      /* ── Teacher CSV export (neft-data-studio schema) ── */
+      function downloadResultsCSV() {
+        recalcScore();
+        if (typeof NTResults === "undefined" || !NTResults.finish) {
+          alert("Results tool not loaded. Please refresh and try again.");
+          return;
+        }
+        // Reuse the exact per-section tallies the summary already computed.
+        const sections = lastSectionScores.map((s) => ({
+          name: s.title,
+          correct: s.correct,
+          total: s.total,
+        }));
+        NTResults.finish({
+          student: state.name,
+          assessment: "MCAP Review — The Number System",
+          standard: "6.NS",
+          level: "",
+          sections: sections,
+          correct: state.score,
+          total: TOTAL_Q,
+        });
+      }
+
+      function retakeReview() {
+        localStorage.removeItem(STORAGE_KEY);
+        state = {
+          name: "",
+          period: "",
+          currentSection: 0,
+          answers: {},
+          score: 0,
+          completed: false,
+        };
+        document.getElementById("resume-banner").classList.remove("show");
+        document.getElementById("inp-name").value = "";
+        document.getElementById("inp-period").value = "";
+        showScreen("login-screen");
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

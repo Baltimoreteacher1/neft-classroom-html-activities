@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fraction & Decimal Grid Architect</title>
+  <meta name="description" content="Design beautiful pixel art blueprints while calculating equivalent fractions, decimals, and percentages in real-time." />
+  
+  <!-- CSS Imports -->
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <link rel="stylesheet" href="/assets/design-tokens.css" />
+  
+  <style>
+    /* Premium Local Styles Override */
+    :root {
+      --accent: var(--navy);
+      --accent-dark: #12355b;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --shadow-premium: 0 12px 30px rgba(18, 53, 91, 0.08);
+      
+      /* Palette Paint Colors matching design tokens */
+      --paint-navy: #12355b;
+      --paint-teal: #1fa6a2;
+      --paint-amber: #f2c15b;
+      --paint-coral: #d9795d;
+      --paint-cream: #f6f3eb;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .main-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--sp-6);
+      margin-top: var(--sp-4);
+    }
+
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Workspace Panel */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+    }
+
+    .board-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-premium);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--paint-navy), var(--paint-teal), var(--paint-amber), var(--paint-coral));
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: var(--sp-3);
+    }
+
+    .board-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    /* Paint Sandbox Layout */
+    .sandbox-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--sp-5);
+      margin-bottom: var(--sp-4);
+    }
+
+    @media (max-width: 768px) {
+      .sandbox-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 10x10 Grid Canvas */
+    .grid-canvas {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      gap: 2px;
+      background: #c3d2e0;
+      border: 3px solid var(--paint-navy);
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+
+    .grid-tile {
+      background: var(--paint-cream);
+      cursor: crosshair;
+      transition: background-color 0.15s;
+    }
+
+    .grid-tile:hover {
+      filter: brightness(0.95);
+    }
+
+    /* Paint Palette */
+    .palette-box {
+      display: flex;
+      justify-content: center;
+      gap: var(--sp-3);
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3);
+      margin-bottom: var(--sp-5);
+    }
+
+    .palette-swatch {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .palette-swatch.active {
+      transform: scale(1.15);
+      border-color: var(--navy);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .palette-swatch::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    /* SVG Pie segment container */
+    .circle-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f7f9fa;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-4);
+      height: 100%;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .circle-svg {
+      width: 150px;
+      height: 150px;
+      margin-bottom: var(--sp-3);
+    }
+
+    /* Ledgers & Tables */
+    .ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      margin-top: var(--sp-3);
+    }
+
+    .ledger-table th, .ledger-table td {
+      border: 1px solid var(--line);
+      padding: var(--sp-2) var(--sp-3);
+      text-align: center;
+    }
+
+    .ledger-table th {
+      background: var(--cream);
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .badge-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-weight: bold;
+    }
+
+    .badge-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    /* Challenges */
+    .challenges-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-premium);
+      align-self: start;
+    }
+
+    .challenge-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      margin-top: var(--sp-4);
+    }
+
+    .challenge-item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3);
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .challenge-item.solved {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .challenge-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      cursor: pointer;
+    }
+
+    .chk-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: white;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .challenge-item.solved .chk-icon {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .challenge-title {
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: var(--navy);
+    }
+
+    .challenge-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: var(--sp-1);
+      line-height: 1.35;
+    }
+
+    /* Audio achievement Toast */
+    .toast {
+      position: fixed;
+      bottom: var(--sp-6);
+      right: var(--sp-6);
+      background: var(--navy);
+      color: white;
+      padding: var(--sp-3) var(--sp-5);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 8px var(--sp-4);
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      transition: all 0.15s;
+      border: none;
+      font-family: var(--font-display);
+    }
+
+    .btn-secondary {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: var(--navy);
+    }
+    .btn-secondary:hover { background: var(--line); }
+
+    .btn-accent {
+      background: var(--coral);
+      color: white;
+    }
+    .btn-accent:hover { background: #b84f33; }
+
+    /* Print media stylesheet */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .page-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .hero, .site-footer, .palette-box, .chk-icon, .btn {
+        display: none !important;
+      }
+      .main-container {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+      }
+      .board-card, .challenges-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+      }
+      .board-card::before {
+        display: none;
+      }
+      .sandbox-layout {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        page-break-inside: avoid;
+      }
+      .grid-canvas {
+        border: 4px solid black !important;
+        background: #f0f0f0 !important;
+      }
+      .circle-card {
+        border: 2px solid black !important;
+        background: transparent !important;
+      }
+      .ledger-table {
+        border: 2px solid black !important;
+        margin-top: 30px;
+      }
+      .ledger-table th, .ledger-table td {
+        border: 1px solid black !important;
+      }
+      .challenges-card {
+        margin-top: 30px;
+        page-break-before: always;
+      }
+      .challenge-item {
+        border: 1px solid black !important;
+        margin-bottom: 10px;
+      }
+      .challenge-item.solved {
+        background: #f0f0f0 !important;
+      }
+      .print-report-header {
+        display: block !important;
+        margin-bottom: 20px;
+        border-bottom: 3px double black;
+        padding-bottom: 10px;
+      }
+      .student-meta-inputs {
+        display: flex !important;
+        gap: 40px;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+    }
+
+    .print-report-header { display: none; }
+    .student-meta-inputs { display: none; }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div class="page-shell">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="/">Neft Hub</a> &middot; <a href="/math/">Grade 6 Math</a> &middot; <span>Grid Architect</span>
+    </div>
+
+    <!-- Printable Report Header -->
+    <div class="print-report-header">
+      <h1 style="font-size: 2rem; margin: 0; font-family: Outfit, sans-serif;">ARCHITECT DESIGN & MATH AUDIT</h1>
+      <p style="margin: 5px 0 0 0; color: #555;">Topic: 6.RP.A.3c — Percentage models, Equivalent Fractions, & Decimals</p>
+      <div class="student-meta-inputs">
+        <div>STUDENT NAME: ___________________________</div>
+        <div>DATE: __________________</div>
+      </div>
+    </div>
+
+    <!-- Page Title / Hero -->
+    <div class="hero">
+      <span class="eyebrow">🏗️ Unit 4 Percents & Decimals</span>
+      <h1>Fraction & Decimal Grid Architect</h1>
+      <p class="hero-copy">
+        Select a color and paint your design on the 100-tile architectural grid. Watch your designs dynamically model simplified fractions, decimal coordinates, percentages, and segment pie models in real-time!
+      </p>
+    </div>
+
+    <main class="main-container">
+      
+      <!-- LEFT COLUMN: Main Workspace -->
+      <div class="workspace">
+        
+        <div class="board-card">
+          <div class="board-header">
+            <div class="board-title">
+              <span>📐</span> Drawing Canvas & Audit Sheet
+            </div>
+            
+            <div class="controls-row">
+              <button class="btn btn-secondary" onclick="clearCanvas()" title="Reset paint tiles">🗑️ Clear Grid</button>
+              <button class="btn btn-accent" onclick="window.print()" title="Print specs audit sheet">🖨️ Print Blueprints</button>
+            </div>
+          </div>
+
+          <!-- Color palette selection -->
+          <div class="palette-box">
+            <button class="palette-swatch active" style="background: var(--paint-navy);" id="swatch-navy" onclick="selectColor('navy')" title="Navy palette color"></button>
+            <button class="palette-swatch" style="background: var(--paint-teal);" id="swatch-teal" onclick="selectColor('teal')" title="Teal palette color"></button>
+            <button class="palette-swatch" style="background: var(--paint-amber);" id="swatch-amber" onclick="selectColor('amber')" title="Amber palette color"></button>
+            <button class="palette-swatch" style="background: var(--paint-coral);" id="swatch-coral" onclick="selectColor('coral')" title="Coral palette color"></button>
+            <button class="palette-swatch" style="background: var(--paint-cream);" id="swatch-cream" onclick="selectColor('cream')" title="Cream eraser/background"></button>
+          </div>
+
+          <div class="sandbox-layout">
+            
+            <!-- Left Sandbox: Interactive 10x10 Grid -->
+            <div>
+              <h4 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin: 0 0 10px 0; text-align: center;">
+                🎨 Click / Drag across Grid Tiles:
+              </h4>
+              <div class="grid-canvas" id="canvas-element" onmousedown="isDrawing = true" onmouseup="isDrawing = false" onmouseleave="isDrawing = false">
+                <!-- 100 tiles drawn programmatically -->
+              </div>
+            </div>
+
+            <!-- Right Sandbox: Dynamic SVG Fraction Circle -->
+            <div class="circle-card">
+              <h4 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin: 0 0 8px 0; font-size: 0.88rem; text-align: center;">
+                🔘 Segment Pie Representation:
+              </h4>
+              <svg class="circle-svg" id="circle-svg" viewBox="0 0 100 100">
+                <!-- Pie segments path segments generated dynamically -->
+              </svg>
+              <div style="font-size: 0.72rem; color: var(--muted); font-weight: bold; text-align: center; text-transform: uppercase;">
+                Interactive Pie Segments
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Mathematical Specifications Table Ledger -->
+          <h3 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin-bottom: 6px; font-size: 0.95rem;">
+            📊 Mathematical Specifications Audit Table:
+          </h3>
+          <table class="ledger-table" id="audit-table">
+            <thead>
+              <tr>
+                <th>Palette Material</th>
+                <th>Tile Count</th>
+                <th>Unsimplified</th>
+                <th>Simplified Fraction</th>
+                <th>Decimal</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Blueprint Challenges -->
+      <div class="challenges-card">
+        <h2 style="font-family: var(--font-display); font-weight: 900; color: var(--navy); margin-bottom: var(--sp-2);">🎯 Design Blueprints</h2>
+        <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: var(--sp-4);">
+          Complete these blueprints by matching grid color tiles exactly to the structural math constraints.
+        </p>
+
+        <div class="challenge-list">
+          <!-- Challenge 1 -->
+          <div class="challenge-item" id="chk-item-1">
+            <div class="challenge-checkbox">
+              <div class="chk-icon" id="chk-icon-1">✓</div>
+              <div>
+                <div class="challenge-title">Blueprint 1: The Cozy Cottage</div>
+                <div class="challenge-desc">
+                  Draw a cottage matching these exact paint specs:
+                  - **Exactly 40% Navy** (roofing tiles)
+                  - **Exactly 1/10 Amber** (wooden doors)
+                  - **Exactly 0.25 Coral** (brick base walls)
+                  - Rest is Cream.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 2 -->
+          <div class="challenge-item" id="chk-item-2">
+            <div class="challenge-checkbox">
+              <div class="chk-icon" id="chk-icon-2">✓</div>
+              <div>
+                <div class="challenge-title">Blueprint 2: The Cyber Robot</div>
+                <div class="challenge-desc">
+                  Draw a robot matching these mathematical boundaries:
+                  - **Teal greater than 35%** (> 35 tiles)
+                  - **Exactly 1/5 Amber** (exactly 20 tiles)
+                  - **Coral must equal Navy** in count.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 3 -->
+          <div class="challenge-item" id="chk-item-3">
+            <div class="challenge-checkbox">
+              <div class="chk-icon" id="chk-icon-3">✓</div>
+              <div>
+                <div class="challenge-title">Blueprint 3: Custom Pattern</div>
+                <div class="challenge-desc">
+                  Create a custom abstract artwork.
+                  - Painted tiles must cover **at least 80%** of the entire grid.
+                  - At least **four different colors** must be represented, each having at least **10 tiles**.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div>Neft Teacher &middot; Grade 6 Mathematics</div>
+      <div>Standard Reference: CCSS.MATH.CONTENT.6.RP.A.3.C</div>
+    </footer>
+  </div>
+
+  <!-- Audio and Achievement Toast -->
+  <div id="toast" class="toast">
+    <span style="font-size: 1.5rem;">🏗️</span>
+    <div>
+      <div style="font-weight: 800;" id="toast-title">Blueprint Approved!</div>
+      <div style="font-size: 0.78rem; opacity: 0.9;" id="toast-desc">Drawing specs verified successfully.</div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script>
+    // Audio Synth Engine (Retro Web Audio API)
+    const Synth = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) this.ctx = new AudioContextClass();
+        }
+      },
+      play(type) {
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gainNode = this.ctx.createGain();
+        const t = this.ctx.currentTime;
+
+        const presets = {
+          click: { type: 'sine', f: [350, 180], d: 0.08, v: 0.04 },
+          correct: { type: 'sine', f: [659.25, 987.77], d: 0.25, v: 0.08 }, // E5 to B5 sliding
+          complete: { type: 'triangle', f: [400, 800], d: 0.3, v: 0.07 }
+        };
+
+        const config = presets[type] || presets.click;
+        osc.type = config.type;
+        osc.frequency.setValueAtTime(config.f[0], t);
+        osc.frequency.exponentialRampToValueAtTime(config.f[1], t + config.d);
+
+        gainNode.gain.setValueAtTime(0.001, t);
+        gainNode.gain.linearRampToValueAtTime(config.v, t + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, t + config.d);
+
+        osc.connect(gainNode).connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + config.d + 0.01);
+      }
+    };
+
+    // State Variables
+    let selectedColor = 'navy';
+    let isDrawing = false;
+    let gridColors = Array(100).fill('cream'); // Matches tile indexes 0 to 99
+    let solvedMissions = { 1: false, 2: false, 3: false };
+
+    // Palette HEX/RGB styling mapper
+    const paletteMap = {
+      navy: { hex: '#12355b', lbl: 'Navy Slate' },
+      teal: { hex: '#1fa6a2', lbl: 'Teal Glaze' },
+      amber: { hex: '#f2c15b', lbl: 'Amber Ochre' },
+      coral: { hex: '#d9795d', lbl: 'Coral Terra' },
+      cream: { hex: '#f6f3eb', lbl: 'Cream Grout (Blank)' }
+    };
+
+    // HTML elements
+    const canvas = document.getElementById('canvas-element');
+    const tableBody = document.getElementById('audit-table-body');
+    const circleSvg = document.getElementById('circle-svg');
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      buildGrid();
+      updateGridMath();
+    });
+
+    // Build 100 clickable tiles
+    function buildGrid() {
+      canvas.innerHTML = '';
+      for (let i = 0; i < 100; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'grid-tile';
+        tile.id = `tile-${i}`;
+        
+        // Single click paint
+        tile.addEventListener('mousedown', () => {
+          paintTile(i);
+        });
+
+        // Click and drag paint
+        tile.addEventListener('mouseover', () => {
+          if (isDrawing) {
+            paintTile(i);
+          }
+        });
+
+        canvas.appendChild(tile);
+      }
+    }
+
+    // Palette Color Swatch selection
+    function selectColor(colorId) {
+      Synth.play('click');
+      selectedColor = colorId;
+      
+      // Update Swatches
+      document.querySelectorAll('.palette-swatch').forEach(sw => sw.classList.remove('active'));
+      document.getElementById(`swatch-${colorId}`).classList.add('active');
+    }
+
+    // Paint action
+    function paintTile(index) {
+      if (gridColors[index] !== selectedColor) {
+        gridColors[index] = selectedColor;
+        const tile = document.getElementById(`tile-${index}`);
+        tile.style.backgroundColor = `var(--paint-${selectedColor})`;
+        
+        // Soft touch click sound
+        Synth.play('click');
+        updateGridMath();
+      }
+    }
+
+    // Clear Grid canvas
+    function clearCanvas() {
+      Synth.play('click');
+      gridColors = Array(100).fill('cream');
+      document.querySelectorAll('.grid-tile').forEach(tile => {
+        tile.style.backgroundColor = 'var(--paint-cream)';
+      });
+      updateGridMath();
+    }
+
+    // Simplify Fractions helper GCD
+    function gcd(x, y) {
+      while (y) {
+        var t = y;
+        y = x % y;
+        x = t;
+      }
+      return x;
+    }
+
+    // Calculate Grid Math & Update UI
+    function updateGridMath() {
+      // 1. Count colors
+      const counts = { navy: 0, teal: 0, amber: 0, coral: 0, cream: 0 };
+      gridColors.forEach(c => counts[c]++);
+
+      // 2. Render specifications rows
+      let html = '';
+      const order = ['navy', 'teal', 'amber', 'coral', 'cream'];
+
+      order.forEach(cId => {
+        const count = counts[cId];
+        const unsimp = `${count}/100`;
+
+        // Simplified Fraction
+        let simp = '-';
+        if (count > 0 && count < 100) {
+          const div = gcd(count, 100);
+          simp = `<sup>${count / div}</sup>&frasl;<sub>${100 / div}</sub>`;
+        } else if (count === 100) {
+          simp = '1 / 1 (Full)';
+        } else if (count === 0) {
+          simp = '0';
+        }
+
+        const decimal = (count / 100).toFixed(2);
+        const percent = `${count}%`;
+
+        html += `
+          <tr>
+            <td>
+              <div class="badge-label">
+                <div class="badge-dot" style="background: var(--paint-${cId});"></div>
+                <span>${paletteMap[cId].lbl}</span>
+              </div>
+            </td>
+            <td><strong>${count}</strong></td>
+            <td style="color: var(--muted);">${unsimp}</td>
+            <td style="color: var(--navy); font-weight: 800;">${simp}</td>
+            <td><strong>${decimal}</strong></td>
+            <td style="color: var(--coral); font-weight: 800;">${percent}</td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = html;
+
+      // 3. Render polar trig SVG segments circle
+      renderSegmentCircle(counts);
+
+      // 4. Validate blueprints
+      checkBlueprints(counts);
+    }
+
+    // RENDER polar trigonometry pie segments
+    function renderSegmentCircle(counts) {
+      const order = ['navy', 'teal', 'amber', 'coral', 'cream'];
+      let html = '';
+
+      // Trigonometric polar coordinates calculator
+      function getCoordinatesForPercent(percent) {
+        const x = Math.cos(2 * Math.PI * percent);
+        const y = Math.sin(2 * Math.PI * percent);
+        return [x, y];
+      }
+
+      let cumulativePercent = 0;
+
+      order.forEach(cId => {
+        const count = counts[cId];
+        if (count === 0) return;
+
+        const percent = count / 100;
+        const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
+        cumulativePercent += percent;
+        const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
+
+        // SVG polar arcs require large-arc-flag based on angle > 180 degrees (percent > 0.5)
+        const largeArcFlag = percent > 0.5 ? 1 : 0;
+
+        // Map standard circle coords (R=45, center 50,50)
+        const pathData = [
+          `M 50 50`,
+          `L ${50 + startX * 45} ${50 + startY * 45}`,
+          `A 45 45 0 ${largeArcFlag} 1 ${50 + endX * 45} ${50 + endY * 45}`,
+          `Z`
+        ].join(' ');
+
+        // Renders slice
+        html += `
+          <path d="${pathData}" fill="var(--paint-${cId})" stroke="#fff" stroke-width="1" />
+        `;
+      });
+
+      // Overlay center hole to create a beautiful architectural donut chart
+      html += `
+        <circle cx="50" cy="50" r="22" fill="#f7f9fa" />
+        <circle cx="50" cy="50" r="22" fill="#fff" opacity="0.3" />
+      `;
+
+      circleSvg.innerHTML = html;
+    }
+
+    // Validate architectural specs challenges
+    function checkBlueprints(counts) {
+      const activePixels = 100 - counts.cream;
+
+      // BLUEPRINT 1: The Cozy Cottage
+      // Specs: exactly 40% Navy (= 40 tiles), exactly 1/10 Amber (= 10 tiles), exactly 0.25 Coral (= 25 tiles)
+      let m1 = false;
+      if (counts.navy === 40 && counts.amber === 10 && counts.coral === 25 && counts.cream === 25) {
+        m1 = true;
+      }
+
+      // BLUEPRINT 2: Cyber Robot
+      // Specs: Teal > 35, exactly 1/5 Amber (= 20 tiles), Coral = Navy
+      let m2 = false;
+      if (counts.teal > 35 && counts.amber === 20 && counts.coral === counts.navy && counts.coral > 0) {
+        m2 = true;
+      }
+
+      // BLUEPRINT 3: Symmetrical abstract
+      // Specs: Total active painted tiles >= 80%, Navy, Teal, Amber, Coral each must have >= 10 tiles
+      let m3 = false;
+      if (activePixels >= 80 && counts.navy >= 10 && counts.teal >= 10 && counts.amber >= 10 && counts.coral >= 10) {
+        m3 = true;
+      }
+
+      updateMissionUI(1, m1);
+      updateMissionUI(2, m2);
+      updateMissionUI(3, m3);
+    }
+
+    function updateMissionUI(id, isSolved) {
+      const item = document.getElementById(`chk-item-${id}`);
+      
+      if (isSolved && !solvedMissions[id]) {
+        solvedMissions[id] = true;
+        item.classList.add('solved');
+        
+        // Show toast
+        const titles = {
+          1: "Cozy Cottage Blueprint Approved!",
+          2: "Cyber Robot Specs Certified!",
+          3: "Custom Art Specifications Approved!"
+        };
+        showToast(titles[id], "Specifications checked and locked.");
+        Synth.play('correct');
+      } else if (!isSolved && solvedMissions[id]) {
+        solvedMissions[id] = false;
+        item.classList.remove('solved');
+      }
+    }
+
+    function showToast(title, desc) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-desc').innerText = desc;
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

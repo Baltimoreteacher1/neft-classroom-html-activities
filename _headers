@@ -1,33 +1,24 @@
 # Cloudflare Pages custom headers for Neft Teacher static activity hub
 # Keep this file in the repository root because the build output directory is the repository root.
 
+# Default for everything: security headers + ALWAYS-REVALIDATE caching.
+# max-age=0, must-revalidate means the browser checks with the server (ETag) on
+# every load and gets a cheap 304 when unchanged — so updated pages, tool scripts
+# (app.js/css), data files, games, and WIDA studios appear immediately, with no
+# hard refresh needed.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-
-/*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-/
-  Cache-Control: public, max-age=0, must-revalidate
-
+# Vite build output is content-hashed (filename changes whenever content changes),
+# so these are safe to cache for a long time / immutable.
 /assets/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=31536000, immutable
 
-/teacher-tools/*.css
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-
-/teacher-tools/*.js
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-
-/teacher-tools/neftos-command-center/*.css
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-
-/teacher-tools/neftos-command-center/*.js
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-
+# Command Center PWA: service worker and manifest must always revalidate.
 /teacher-tools/neftos-command-center/service-worker.js
   Cache-Control: public, max-age=0, must-revalidate
   Service-Worker-Allowed: /teacher-tools/neftos-command-center/

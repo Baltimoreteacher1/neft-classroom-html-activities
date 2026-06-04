@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Math Progress | Neft Teacher</title>
+    <meta name="description" content="A student-facing dashboard of completed Grade 6 math activities, scores, badges, and choice-board progress — saved on this device." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .pf-bar { display:flex; flex-wrap:wrap; gap:10px; margin:10px 0; }
+      .pf-btn { background:#0f2b3c; color:#fff; border:none; border-radius:10px; padding:9px 16px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit; }
+      .pf-btn.alt { background:#c45a3c; }
+      .pf-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:16px 0; }
+      @media (max-width:640px){ .pf-cards{ grid-template-columns:repeat(2,1fr); } }
+      .pf-card { background:#fff; border:1px solid var(--line,#e2e7ec); border-radius:14px; padding:16px; text-align:center; box-shadow:0 2px 10px rgba(15,43,60,.06); }
+      .pf-card .num { font-size:34px; font-weight:900; color:#1a6fb5; }
+      .pf-card .lbl { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#5e6e7e; }
+      .pf-section { background:#fff; border:1px solid var(--line,#e2e7ec); border-radius:14px; padding:18px 20px; margin:16px 0; box-shadow:0 2px 10px rgba(15,43,60,.05); }
+      .pf-section h2 { margin:0 0 10px; font-size:19px; }
+      .badges { display:flex; flex-wrap:wrap; gap:10px; }
+      .badge { background:#fdf3e0; border:1px solid #e8c98a; color:#7a4f12; border-radius:50px; padding:7px 14px; font-weight:800; font-size:14px; }
+      .badge.lock { background:#f1f3f5; border-color:#e2e7ec; color:#9aa6b2; }
+      .barrow { display:flex; align-items:center; gap:10px; margin:8px 0; }
+      .barrow .nm { width:120px; font-weight:700; font-size:14px; }
+      .track { flex:1; height:14px; background:#eef3f8; border-radius:50px; overflow:hidden; }
+      .track > div { height:100%; background:linear-gradient(90deg,#1a6fb5,#2d874b); }
+      .barrow .pct { width:48px; text-align:right; font-weight:800; font-size:14px; color:#2d874b; }
+      table.hist { width:100%; border-collapse:collapse; font-size:14px; }
+      table.hist th, table.hist td { border-bottom:1px solid var(--line,#e2e7ec); padding:8px 10px; text-align:left; }
+      table.hist th { color:#5e6e7e; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+      .score-pill { font-weight:800; border-radius:50px; padding:2px 10px; font-size:13px; }
+      .cbgrid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+      @media (max-width:560px){ .cbgrid{ grid-template-columns:repeat(2,1fr); } }
+      .cbcell { border:1px solid var(--line,#e2e7ec); border-radius:10px; padding:8px; text-align:center; font-size:13px; font-weight:700; }
+      .cbcell.bingo { background:#e6f4eb; border-color:#2d874b; }
+      .empty { text-align:center; color:#5e6e7e; padding:30px 10px; }
+      .empty a { color:#1a6fb5; font-weight:700; }
+      @media print { .pf-btn { display:none; } .pf-section,.pf-card { box-shadow:none; break-inside:avoid; } }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span><span>My Progress</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">My Work · Grade 6 Math</p>
+        <h1>My Math Progress</h1>
+        <p class="hero-copy">
+          Everything you've completed on this device — your activities, scores,
+          badges, and choice-board progress, all in one place. Print it to show
+          your teacher or family. (Your data stays private on this device.)
+        </p>
+      </section>
+
+      <div class="pf-bar">
+        <button class="pf-btn" type="button" onclick="window.print()">🖨️ Print my progress</button>
+        <button class="pf-btn alt" type="button" id="clearBtn">🗑️ Clear my data</button>
+      </div>
+
+      <div id="content"></div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · My Progress</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+
+    <script>
+      function read(key, fb){ try { return JSON.parse(localStorage.getItem(key)) || fb; } catch(e){ return fb; } }
+      function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+      function strand(std){ var m=String(std||"").match(/6\.[A-Z]{1,2}/); return m?m[0]:"Other"; }
+      var STRAND_NAMES={"6.NS":"Number System","6.RP":"Ratios & Rates","6.EE":"Expressions & Equations","6.G":"Geometry","6.SP":"Statistics","Other":"Other"};
+
+      function scoreColor(p){ if(p>=90) return ["#e6f4eb","#2d874b"]; if(p>=75) return ["#e8f2fc","#1a6fb5"]; if(p>=50) return ["#fdf3e0","#a06a16"]; return ["#fdeee9","#c45a3c"]; }
+
+      function render(){
+        var results = read("nt_results_v1", []);
+        if(!Array.isArray(results)) results=[];
+        // choice-board progress
+        var boards=[];
+        for(var u=1; u<=10; u++){
+          var arr = read("choiceboard-u"+u, []);
+          var done = Array.isArray(arr) ? arr.filter(Boolean).length : 0;
+          var LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+          var bingo = Array.isArray(arr) && LINES.some(function(l){ return l.every(function(i){ return arr[i]; }); });
+          boards.push({u:u, done:done, bingo:bingo});
+        }
+        var totalBingos = boards.filter(function(b){return b.bingo;}).length;
+        var anyBoard = boards.some(function(b){ return b.done>0; });
+
+        var c = document.getElementById("content");
+        if(results.length===0 && !anyBoard){
+          c.innerHTML = '<div class="pf-section"><div class="empty">'+
+            '<p style="font-size:18px;font-weight:700;">No work saved yet!</p>'+
+            '<p>Complete an activity and save it, then come back. Try a '+
+            '<a href="/webquests/">WebQuest</a>, a <a href="/hyperdocs/">HyperDoc</a>, '+
+            'an <a href="/activities/architect/">Architect activity</a>, or a '+
+            '<a href="/math/choice-boards/">Choice Board</a>.</p></div></div>';
+          return;
+        }
+
+        // summary
+        var n = results.length;
+        var avg = n ? Math.round(results.reduce(function(a,r){return a+(+r.scorePercent||0);},0)/n) : 0;
+        var strandsSet = {}; results.forEach(function(r){ strandsSet[strand(r.standard)]=true; });
+        var nStrands = Object.keys(strandsSet).length;
+
+        var html = '<div class="pf-cards">'+
+          card(n,"Activities done")+card(avg+"%","Average score")+card(nStrands,"Strands practiced")+card(totalBingos,"Choice-board bingos")+
+        '</div>';
+
+        // badges
+        var badges=[];
+        function bdg(cond,label){ badges.push('<span class="badge'+(cond?"":" lock")+'">'+(cond?"":"🔒 ")+label+'</span>'); }
+        bdg(n>=1,"🌱 Getting Started");
+        bdg(n>=5,"⭐ 5 Activities");
+        bdg(n>=10,"🏅 10 Activities");
+        bdg(n>=20,"🏆 20 Activities");
+        bdg(avg>=80 && n>=3,"🎯 80%+ Average");
+        bdg(nStrands>=5,"🌈 All 5 Strands");
+        bdg(totalBingos>=1,"🎉 First Bingo");
+        bdg(totalBingos>=5,"🔥 5 Bingos");
+        html += '<div class="pf-section"><h2>🏅 Badges</h2><div class="badges">'+badges.join("")+'</div></div>';
+
+        // by-strand mastery
+        if(n){
+          var byS={};
+          results.forEach(function(r){ var s=strand(r.standard); (byS[s]=byS[s]||[]).push(+r.scorePercent||0); });
+          var rows="";
+          Object.keys(byS).sort().forEach(function(s){
+            var avgS=Math.round(byS[s].reduce(function(a,b){return a+b;},0)/byS[s].length);
+            rows+='<div class="barrow"><span class="nm">'+esc(STRAND_NAMES[s]||s)+'</span>'+
+              '<span class="track"><div style="width:'+avgS+'%"></div></span><span class="pct">'+avgS+'%</span></div>';
+          });
+          html += '<div class="pf-section"><h2>📊 Average Score by Strand</h2>'+rows+'</div>';
+        }
+
+        // activity history
+        if(n){
+          var sorted = results.slice().sort(function(a,b){ return (b.completedAt||"").localeCompare(a.completedAt||""); });
+          var trs="";
+          sorted.forEach(function(r){
+            var col=scoreColor(+r.scorePercent||0);
+            var d = r.completedAt ? new Date(r.completedAt).toLocaleDateString() : "";
+            trs+='<tr><td>'+esc(r.activityTitle)+'</td><td>'+esc(r.standard||"—")+'</td>'+
+              '<td><span class="score-pill" style="background:'+col[0]+';color:'+col[1]+'">'+(Math.round(+r.scorePercent||0))+'%</span></td>'+
+              '<td>'+esc(d)+'</td></tr>';
+          });
+          html += '<div class="pf-section"><h2>📋 Activity History</h2><table class="hist">'+
+            '<tr><th>Activity</th><th>Standard</th><th>Score</th><th>Date</th></tr>'+trs+'</table></div>';
+        }
+
+        // choice boards
+        if(anyBoard){
+          var cb="";
+          boards.forEach(function(b){
+            cb+='<div class="cbcell'+(b.bingo?" bingo":"")+'">U'+b.u+'<br>'+b.done+'/9'+(b.bingo?" 🎉":"")+'</div>';
+          });
+          html += '<div class="pf-section"><h2>🎯 Choice Board Progress</h2><div class="cbgrid">'+cb+'</div></div>';
+        }
+
+        c.innerHTML = html;
+      }
+      function card(num,lbl){ return '<div class="pf-card"><div class="num">'+num+'</div><div class="lbl">'+lbl+'</div></div>'; }
+
+      document.getElementById("clearBtn").addEventListener("click", function(){
+        if(confirm("Clear all your saved progress on this device? This cannot be undone.")){
+          try { localStorage.removeItem("nt_results_v1"); for(var u=1;u<=10;u++) localStorage.removeItem("choiceboard-u"+u); } catch(e){}
+          render();
+        }
+      });
+      render();
+    </script>
+    <script src="/assets/app.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,3041 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bar Graph + World Comparison Lab · Neft Teacher</title>
+    <style>
+      :root {
+        --navy: #17324d;
+        --blue: #2f80ed;
+        --blue2: #1b5fbf;
+        --sky: #eaf4ff;
+        --mint: #eafbf1;
+        --cream: #fff7e6;
+        --pink: #fff0f4;
+        --purple: #f2ecff;
+        --gray: #f5f7fa;
+        --line: #d7dee8;
+        --ink: #17202a;
+        --muted: #5d6d7e;
+        --green: #27ae60;
+        --orange: #f2994a;
+        --gold: #f2c94c;
+        --red: #eb5757;
+        --white: #ffffff;
+        --shadow: 0 16px 36px rgba(23, 50, 77, 0.12);
+        --radius: 22px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Calibri, Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(47, 128, 237, 0.16),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(39, 174, 96, 0.12),
+            transparent 32%
+          ),
+          linear-gradient(180deg, #f8fbff 0%, #ffffff 48%, #f7fafd 100%);
+        min-height: 100vh;
+      }
+
+      .app {
+        max-width: 1220px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+
+      header.hero {
+        background: linear-gradient(135deg, var(--navy), #244d75);
+        color: white;
+        border-radius: 28px;
+        padding: 28px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      header.hero::after {
+        content: "";
+        position: absolute;
+        right: -90px;
+        top: -90px;
+        width: 280px;
+        height: 280px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 7px 13px;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 3.45rem);
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        max-width: 840px;
+        line-height: 1.35;
+        margin: 14px 0 0;
+        color: #eaf4ff;
+        position: relative;
+        z-index: 2;
+      }
+
+      .student-row {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr auto;
+        gap: 12px;
+        margin-top: 18px;
+        align-items: end;
+        position: relative;
+        z-index: 2;
+      }
+
+      label {
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: var(--navy);
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      header.hero label {
+        color: white;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 2px solid var(--line);
+        border-radius: 16px;
+        padding: 12px 13px;
+        font: inherit;
+        color: var(--ink);
+        background: white;
+        outline: none;
+        transition: 0.15s ease;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.12);
+      }
+
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+        line-height: 1.35;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 11px 16px;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+        background: var(--blue);
+        color: white;
+        transition: 0.15s ease;
+        box-shadow: 0 8px 18px rgba(47, 128, 237, 0.18);
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        background: var(--blue2);
+      }
+      button.secondary {
+        background: white;
+        color: var(--navy);
+        box-shadow: none;
+        border: 2px solid var(--line);
+      }
+      button.success {
+        background: var(--green);
+      }
+      button.warning {
+        background: var(--orange);
+      }
+      button.danger {
+        background: var(--red);
+      }
+      button.small {
+        padding: 7px 11px;
+        font-size: 0.88rem;
+      }
+      button.tiny {
+        padding: 6px 9px;
+        font-size: 0.82rem;
+      }
+
+      .top-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.18);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 22px 0;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        padding: 12px;
+        background: rgba(248, 251, 255, 0.92);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(215, 222, 232, 0.8);
+        border-radius: 22px;
+      }
+
+      .tab-btn {
+        background: white;
+        color: var(--navy);
+        border: 2px solid var(--line);
+        box-shadow: none;
+        flex: 1;
+        min-width: 142px;
+      }
+
+      .tab-btn.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+      }
+
+      .panel {
+        display: none;
+        animation: fadeIn 0.2s ease;
+      }
+      .panel.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px;
+        box-shadow: var(--shadow);
+        margin-bottom: 18px;
+      }
+
+      .soft-blue {
+        background: var(--sky);
+      }
+      .soft-mint {
+        background: var(--mint);
+      }
+      .soft-cream {
+        background: var(--cream);
+      }
+      .soft-purple {
+        background: var(--purple);
+      }
+      .soft-pink {
+        background: var(--pink);
+      }
+
+      h2 {
+        margin: 0 0 8px;
+        color: var(--navy);
+        font-size: 2rem;
+        letter-spacing: -0.03em;
+      }
+      h3 {
+        margin: 0 0 10px;
+        color: var(--navy);
+        font-size: 1.35rem;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 1.1rem;
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .step-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .step {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+        min-height: 118px;
+      }
+      .step strong {
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--blue);
+        color: white;
+        margin-bottom: 8px;
+      }
+      .step p {
+        margin: 0.25rem 0 0;
+        line-height: 1.35;
+        color: var(--muted);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        margin-top: 14px;
+      }
+
+      .data-table th {
+        text-align: left;
+        color: var(--navy);
+        font-size: 0.9rem;
+        padding: 0 8px;
+      }
+
+      .data-table td {
+        background: var(--gray);
+        padding: 8px;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+
+      .data-table td:first-child {
+        border-left: 1px solid var(--line);
+        border-radius: 14px 0 0 14px;
+      }
+      .data-table td:last-child {
+        border-right: 1px solid var(--line);
+        border-radius: 0 14px 14px 0;
+        text-align: center;
+        width: 70px;
+      }
+      .data-table input {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+      }
+
+      .category-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+        padding: 14px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+
+      .category-chip {
+        background: var(--sky);
+        border: 2px solid var(--line);
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 9px 12px;
+        font-weight: 900;
+        cursor: grab;
+        user-select: none;
+        box-shadow: 0 4px 10px rgba(23, 50, 77, 0.06);
+      }
+
+      .category-chip:active {
+        cursor: grabbing;
+        transform: scale(0.98);
+      }
+
+      .category-chip:hover {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.1);
+      }
+
+      .drop-ready {
+        border-color: var(--blue) !important;
+        background: #f8fbff !important;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 12px;
+      }
+      .chip {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 8px 11px;
+        font-weight: 800;
+        color: var(--navy);
+        cursor: pointer;
+        user-select: none;
+      }
+      .chip:hover {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.08);
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .stat {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        text-align: center;
+      }
+      .stat .label {
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .stat .value {
+        color: var(--navy);
+        font-size: 1.7rem;
+        font-weight: 900;
+        margin-top: 4px;
+      }
+
+      .world-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .world-card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        min-height: 160px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .world-card .value {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--blue);
+        line-height: 1;
+      }
+      .world-card .unit {
+        font-weight: 800;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .world-card p {
+        margin: 8px 0;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+
+      .note {
+        border-left: 7px solid var(--blue);
+        background: white;
+        padding: 14px 16px;
+        border-radius: 16px;
+        line-height: 1.45;
+        color: var(--ink);
+        margin-top: 12px;
+      }
+
+      .chart-wrap {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px;
+        overflow-x: auto;
+      }
+
+      #chartSvg {
+        width: 100%;
+        min-width: 800px;
+        height: 460px;
+        display: block;
+        background: linear-gradient(180deg, #fff, #f8fbff);
+        border-radius: 16px;
+        border: 1px solid var(--line);
+      }
+
+      .legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        align-items: center;
+      }
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
+      .builder-controls {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .series-checks {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        padding-top: 26px;
+      }
+
+      .check-pill {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 9px 12px;
+        font-weight: 800;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        color: var(--navy);
+      }
+
+      .check-pill input {
+        width: auto;
+        box-shadow: none;
+      }
+
+      .build-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .build-card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+      }
+
+      .build-card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+      .build-row {
+        display: grid;
+        grid-template-columns: 75px 1fr auto auto;
+        gap: 7px;
+        align-items: center;
+        margin: 8px 0;
+      }
+      .build-row span {
+        font-weight: 900;
+        color: var(--navy);
+        font-size: 0.92rem;
+      }
+      .build-row input {
+        padding: 8px;
+        border-radius: 12px;
+      }
+
+      .stack-area {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .stack-col {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 12px;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .stacks {
+        height: 190px;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        border-bottom: 3px solid var(--ink);
+        padding: 0 6px 4px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .stack {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 3px;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      .block {
+        width: 28px;
+        height: 12px;
+        border-radius: 4px;
+        opacity: 0.95;
+        border: 1px solid rgba(255, 255, 255, 0.75);
+      }
+
+      .stack-label {
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-align: center;
+        color: var(--navy);
+        margin-top: 8px;
+        line-height: 1.1;
+        min-height: 30px;
+      }
+
+      .question {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+
+      .question h3 {
+        font-size: 1.05rem;
+        margin: 0 0 8px;
+      }
+      .starters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 8px 0 10px;
+      }
+      .starter {
+        font-size: 0.95rem;
+        background: var(--sky);
+        color: var(--navy);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 10px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .report {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 22px;
+      }
+      .report h3 {
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--line);
+      }
+      .report-line {
+        margin: 12px 0;
+        line-height: 1.45;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 22px;
+        left: 50%;
+        transform: translateX(-50%) translateY(30px);
+        background: var(--navy);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 999px;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.2s ease;
+        box-shadow: var(--shadow);
+        z-index: 50;
+        font-weight: 800;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .calc-card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+        margin-bottom: 18px;
+      }
+
+      .calc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .sorted-strip {
+        background: var(--gray);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 12px;
+        font-weight: 900;
+        color: var(--navy);
+        min-height: 46px;
+        line-height: 1.45;
+      }
+
+      .calc-steps {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .calc-step {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+        background: #fff;
+      }
+
+      .calc-step h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+        font-size: 1rem;
+      }
+
+      .calc-step p {
+        margin: 0 0 10px;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+
+      .calc-input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .formula {
+        display: inline-block;
+        background: var(--cream);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 900;
+        color: var(--navy);
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 920px) {
+        .student-row,
+        .grid-2,
+        .grid-3,
+        .grid-4,
+        .step-grid,
+        .stat-grid,
+        .world-grid,
+        .builder-controls,
+        .build-grid,
+        .calc-steps,
+        .calc-input-grid {
+          grid-template-columns: 1fr;
+        }
+        .tabs {
+          position: static;
+        }
+        header.hero {
+          padding: 22px;
+        }
+      }
+
+      @media print {
+        body {
+          background: white;
+        }
+        .tabs,
+        .top-actions,
+        button,
+        .toast,
+        .chip-row {
+          display: none !important;
+        }
+        .panel {
+          display: block !important;
+          page-break-after: always;
+        }
+        .card {
+          box-shadow: none;
+        }
+        header.hero {
+          box-shadow: none;
+        }
+        textarea {
+          min-height: 70px;
+        }
+        .stack-area {
+          break-inside: avoid;
+        }
+
+        body.final-sheet-only header.hero,
+        body.final-sheet-only .tabs,
+        body.final-sheet-only .panel {
+          display: none !important;
+        }
+
+        body.final-sheet-only #finish {
+          display: block !important;
+          page-break-after: auto;
+        }
+
+        body.final-sheet-only #finish .card:first-child {
+          display: none !important;
+        }
+
+        body.final-sheet-only #finalReport {
+          display: block !important;
+          box-shadow: none;
+          border: 0;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="app">
+      <header class="hero">
+        <div class="eyebrow">
+          Neft Teacher &middot; Post-Activity Statistics Lab
+        </div>
+        <h1>Interactive Bar Graph + World Comparison</h1>
+        <p>
+          Enter your data, add partner data, compare to world sample data, build
+          the y-values with stack blocks, and explain what your graph shows.
+        </p>
+
+        <div class="student-row">
+          <div>
+            <label for="studentName">Student name</label>
+            <input id="studentName" placeholder="Type your name" />
+          </div>
+          <div>
+            <label for="section">Class / section</label>
+            <input id="section" placeholder="Example: 601" />
+          </div>
+          <div><span class="status" id="saveStatus">Autosave on</span></div>
+        </div>
+
+        <div class="top-actions">
+          <button onclick="saveNow()" class="success">Save Progress</button>
+          <button onclick="saveFinalSheetPdf()" class="secondary">
+            Save Final Sheet as PDF
+          </button>
+          <button onclick="downloadFinalSheetDocx()" class="secondary">
+            Download Final Sheet DOCX
+          </button>
+          <button onclick="downloadReportHtml()" class="secondary">
+            Download Completed HTML
+          </button>
+          <button onclick="downloadCsv()" class="secondary">
+            Download Data CSV
+          </button>
+          <button onclick="resetAll()" class="warning">Reset</button>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Activity tabs">
+        <button class="tab-btn active" data-tab="start">1. Start</button>
+        <button class="tab-btn" data-tab="data">2. My + Partner Data</button>
+        <button class="tab-btn" data-tab="calculate">3. Calculate Stats</button>
+        <button class="tab-btn" data-tab="world">4. World Data</button>
+        <button class="tab-btn" data-tab="builder">5. Graph Builder</button>
+        <button class="tab-btn" data-tab="questions">6. Questions</button>
+        <button class="tab-btn" data-tab="finish">7. Final Report</button>
+      </nav>
+
+      <main>
+        <section id="start" class="panel active">
+          <div class="card soft-blue">
+            <h2>What you will create</h2>
+            <p class="lead">
+              You will make a bar graph with categories on the x-axis and values
+              on the y-axis. You will compare your data to a partner and a world
+              sample, then explain the pattern in complete sentences.
+            </p>
+            <div class="step-grid">
+              <div class="step">
+                <strong>1</strong>
+                <h3>Choose labels</h3>
+                <p>Click or drag categories into the x-axis boxes.</p>
+              </div>
+              <div class="step">
+                <strong>2</strong>
+                <h3>Enter values</h3>
+                <p>Add your numbers and partner numbers.</p>
+              </div>
+              <div class="step">
+                <strong>3</strong>
+                <h3>Add world data</h3>
+                <p>Use the sample data for comparison.</p>
+              </div>
+              <div class="step">
+                <strong>4</strong>
+                <h3>Build y-values</h3>
+                <p>Use blocks or buttons to build bars.</p>
+              </div>
+              <div class="step">
+                <strong>5</strong>
+                <h3>Explain</h3>
+                <p>Write what the graph shows.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card soft-mint">
+              <h3>Student goal</h3>
+              <p class="lead">
+                <strong>I can</strong> create a bar graph and use evidence to
+                compare my data with partner and world sample data.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Important note</h3>
+              <p class="lead">
+                The world data is a classroom practice sample, not official
+                research data. It is included so students can practice comparing
+                three data sets.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="data" class="panel">
+          <div class="card soft-cream">
+            <h2>My + Partner Data</h2>
+            <p class="lead">
+              Use the Category Bank to fill the x-axis labels. Then enter your
+              values and your partner’s values.
+            </p>
+            <div class="chip-row">
+              <span class="chip" onclick="loadSampleCategories()"
+                >Use sample categories</span
+              >
+              <span class="chip" onclick="addDataRow()">Add row</span>
+              <span class="chip" onclick="clearCategories()"
+                >Clear category labels</span
+              >
+              <span class="chip" onclick="clearValues('my')"
+                >Clear my values</span
+              >
+              <span class="chip" onclick="clearValues('partner')"
+                >Clear partner values</span
+              >
+            </div>
+
+            <div class="note">
+              <strong>Category Bank:</strong> Click a category to place it in
+              the next empty x-axis box. Or drag a category into any category
+              box.
+            </div>
+            <div id="categoryBank" class="category-bank"></div>
+          </div>
+
+          <div class="card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>X-Axis Category Label</th>
+                  <th>My y-value</th>
+                  <th>Partner y-value</th>
+                  <th>World y-value</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows"></tbody>
+            </table>
+          </div>
+
+          <div class="card soft-blue">
+            <h3>Next step: calculate the statistics yourself</h3>
+            <p class="lead">
+              The next tab will sort each data set for you. Then you will
+              calculate the mean, median, mode, and range using simple guided
+              steps.
+            </p>
+            <div class="note">
+              <strong>No answer reveal:</strong> This activity sorts the
+              numbers, but students still do the calculations.
+            </div>
+          </div>
+        </section>
+
+        <section id="calculate" class="panel">
+          <div class="card soft-blue">
+            <h2>Calculate Mean, Median, Mode, and Range</h2>
+            <p class="lead">
+              The computer sorts the numbers for you. You still do the math. Use
+              the sorted list, follow the steps, and type your final answers.
+            </p>
+            <div class="note">
+              <strong>Simple reminder:</strong> Mean = add and divide. Median =
+              middle. Mode = repeats most. Range = greatest minus smallest.
+            </div>
+          </div>
+
+          <div class="calc-card">
+            <div class="calc-header">
+              <h2>My Data Calculations</h2>
+              <button class="secondary small" onclick="copySortedText('my')">
+                Copy sorted data
+              </button>
+            </div>
+            <label>Sorted my data</label>
+            <div class="sorted-strip" id="mySorted">Enter values first.</div>
+            <div class="calc-steps">
+              <div class="calc-step">
+                <h4>1. Mean</h4>
+                <span class="formula">Mean = sum ÷ count</span>
+                <p>Add all values. Count how many values. Then divide.</p>
+                <div class="calc-input-grid">
+                  <input id="mySum" placeholder="Sum" />
+                  <input id="myCount" placeholder="Count" />
+                  <input id="myMeanCalc" placeholder="Mean" />
+                </div>
+              </div>
+              <div class="calc-step">
+                <h4>2. Median</h4>
+                <p>
+                  Use the sorted list. Find the middle value. If there are two
+                  middle values, add them and divide by 2.
+                </p>
+                <input id="myMedianCalc" placeholder="Median" />
+              </div>
+              <div class="calc-step">
+                <h4>3. Mode</h4>
+                <p>
+                  Look for the value that repeats the most. If no value repeats,
+                  write “no mode.”
+                </p>
+                <input id="myModeCalc" placeholder="Mode" />
+              </div>
+              <div class="calc-step">
+                <h4>4. Range</h4>
+                <span class="formula">Range = greatest − smallest</span>
+                <p>
+                  Use the sorted list to find the smallest and greatest values.
+                </p>
+                <div class="calc-input-grid">
+                  <input id="myLow" placeholder="Smallest" />
+                  <input id="myHigh" placeholder="Greatest" />
+                  <input id="myRangeCalc" placeholder="Range" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-card">
+            <div class="calc-header">
+              <h2>Partner Data Calculations</h2>
+              <button
+                class="secondary small"
+                onclick="copySortedText('partner')"
+              >
+                Copy sorted data
+              </button>
+            </div>
+            <label>Sorted partner data</label>
+            <div class="sorted-strip" id="partnerSorted">
+              Enter values first.
+            </div>
+            <div class="calc-steps">
+              <div class="calc-step">
+                <h4>1. Mean</h4>
+                <span class="formula">Mean = sum ÷ count</span>
+                <p>Add all values. Count how many values. Then divide.</p>
+                <div class="calc-input-grid">
+                  <input id="partnerSum" placeholder="Sum" />
+                  <input id="partnerCount" placeholder="Count" />
+                  <input id="partnerMeanCalc" placeholder="Mean" />
+                </div>
+              </div>
+              <div class="calc-step">
+                <h4>2. Median</h4>
+                <p>
+                  Use the sorted list. Find the middle value. If there are two
+                  middle values, add them and divide by 2.
+                </p>
+                <input id="partnerMedianCalc" placeholder="Median" />
+              </div>
+              <div class="calc-step">
+                <h4>3. Mode</h4>
+                <p>
+                  Look for the value that repeats the most. If no value repeats,
+                  write “no mode.”
+                </p>
+                <input id="partnerModeCalc" placeholder="Mode" />
+              </div>
+              <div class="calc-step">
+                <h4>4. Range</h4>
+                <span class="formula">Range = greatest − smallest</span>
+                <p>
+                  Use the sorted list to find the smallest and greatest values.
+                </p>
+                <div class="calc-input-grid">
+                  <input id="partnerLow" placeholder="Smallest" />
+                  <input id="partnerHigh" placeholder="Greatest" />
+                  <input id="partnerRangeCalc" placeholder="Range" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-card">
+            <div class="calc-header">
+              <h2>World Sample Calculations</h2>
+              <button class="secondary small" onclick="copySortedText('world')">
+                Copy sorted data
+              </button>
+            </div>
+            <label>Sorted world sample data</label>
+            <div class="sorted-strip" id="worldSorted">
+              Enter or auto-fill world values first.
+            </div>
+            <div class="calc-steps">
+              <div class="calc-step">
+                <h4>1. Mean</h4>
+                <span class="formula">Mean = sum ÷ count</span>
+                <p>Add all values. Count how many values. Then divide.</p>
+                <div class="calc-input-grid">
+                  <input id="worldSum" placeholder="Sum" />
+                  <input id="worldCount" placeholder="Count" />
+                  <input id="worldMeanCalc" placeholder="Mean" />
+                </div>
+              </div>
+              <div class="calc-step">
+                <h4>2. Median</h4>
+                <p>
+                  Use the sorted list. Find the middle value. If there are two
+                  middle values, add them and divide by 2.
+                </p>
+                <input id="worldMedianCalc" placeholder="Median" />
+              </div>
+              <div class="calc-step">
+                <h4>3. Mode</h4>
+                <p>
+                  Look for the value that repeats the most. If no value repeats,
+                  write “no mode.”
+                </p>
+                <input id="worldModeCalc" placeholder="Mode" />
+              </div>
+              <div class="calc-step">
+                <h4>4. Range</h4>
+                <span class="formula">Range = greatest − smallest</span>
+                <p>
+                  Use the sorted list to find the smallest and greatest values.
+                </p>
+                <div class="calc-input-grid">
+                  <input id="worldLow" placeholder="Smallest" />
+                  <input id="worldHigh" placeholder="Greatest" />
+                  <input id="worldRangeCalc" placeholder="Range" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="world" class="panel">
+          <div class="card soft-mint">
+            <h2>World Sample Data</h2>
+            <p class="lead">
+              Choose world sample values to compare with your categories. These
+              are classroom practice numbers.
+            </p>
+            <div class="chip-row">
+              <span class="chip" onclick="applyWorldToMatchingCategories()"
+                >Auto-fill matching world values</span
+              >
+              <span class="chip" onclick="addWorldSampleRows()"
+                >Add all world sample categories</span
+              >
+              <span class="chip" onclick="clearValues('world')"
+                >Clear world values</span
+              >
+            </div>
+            <div class="note">
+              <strong>Tip:</strong> For the clearest graph, use categories that
+              match the world sample labels, such as Sleep hours, Screen
+              minutes, Creative minutes, Homework minutes, Outside minutes, and
+              Cups of water.
+            </div>
+          </div>
+
+          <div class="world-grid" id="worldCards"></div>
+
+          <div class="card soft-cream">
+            <h3>World comparison planning</h3>
+            <div class="grid-3">
+              <div>
+                <label for="worldCategoryFocus">Category I will focus on</label>
+                <input
+                  id="worldCategoryFocus"
+                  placeholder="Example: Screen minutes"
+                />
+              </div>
+              <div>
+                <label for="worldMyValue">My value</label>
+                <input id="worldMyValue" placeholder="Example: 95" />
+              </div>
+              <div>
+                <label for="worldSampleValue">World sample value</label>
+                <input id="worldSampleValue" placeholder="Example: 110" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="builder" class="panel">
+          <div class="card soft-blue">
+            <h2>Interactive Graph Builder</h2>
+            <p class="lead">
+              Your x-axis labels are the categories. Build the y-values by
+              typing values or using the + / − buttons. The stack blocks show
+              how the bars are built.
+            </p>
+
+            <div class="builder-controls">
+              <div>
+                <label for="graphTitle">Graph title</label>
+                <input
+                  id="graphTitle"
+                  placeholder="Example: Me vs Partner vs World Data"
+                />
+              </div>
+              <div>
+                <label for="stackUnit">Each stack block equals</label>
+                <select id="stackUnit">
+                  <option value="1">1 unit</option>
+                  <option value="5">5 units</option>
+                  <option value="10" selected>10 units</option>
+                  <option value="15">15 units</option>
+                  <option value="30">30 units</option>
+                </select>
+              </div>
+              <div>
+                <label for="sortMode">Sort categories</label>
+                <select id="sortMode">
+                  <option value="none">Keep my order</option>
+                  <option value="highest">Highest my value first</option>
+                  <option value="difference">Biggest difference first</option>
+                  <option value="worldDiff">
+                    Biggest world difference first
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="series-checks">
+              <label class="check-pill"
+                ><input type="checkbox" id="showMy" checked /> My data</label
+              >
+              <label class="check-pill"
+                ><input type="checkbox" id="showPartner" checked /> Partner
+                data</label
+              >
+              <label class="check-pill"
+                ><input type="checkbox" id="showWorld" checked /> World
+                data</label
+              >
+            </div>
+          </div>
+
+          <div class="chart-wrap">
+            <svg
+              id="chartSvg"
+              viewBox="0 0 1000 460"
+              role="img"
+              aria-label="Interactive student bar graph"
+            ></svg>
+            <div class="legend">
+              <span
+                ><i class="swatch" style="background: #2f80ed"></i> My
+                data</span
+              >
+              <span
+                ><i class="swatch" style="background: #27ae60"></i> Partner
+                data</span
+              >
+              <span
+                ><i class="swatch" style="background: #f2994a"></i> World
+                sample</span
+              >
+            </div>
+          </div>
+
+          <div class="card soft-cream">
+            <h3>Build the y-values with blocks</h3>
+            <p class="lead">
+              Use the buttons to add or subtract one stack block at a time. This
+              is a hands-on way to build the bar heights.
+            </p>
+            <div id="interactiveControls" class="build-grid"></div>
+          </div>
+
+          <div class="card soft-mint">
+            <h3>Stack-block view</h3>
+            <p class="lead" id="autoGraphInsight">
+              Enter data to see an automatic graph observation.
+            </p>
+            <div id="stackArea" class="stack-area"></div>
+          </div>
+        </section>
+
+        <section id="questions" class="panel">
+          <div class="card soft-pink">
+            <h2>Answer Questions About Your Graph</h2>
+            <p class="lead">
+              Use complete sentences. Click a sentence starter if you need help.
+            </p>
+          </div>
+
+          <div class="question">
+            <h3>1. What is the main story your graph tells?</h3>
+            <div class="starters">
+              <span
+                class="starter"
+                onclick="addStarter('q1', 'My graph shows that ')"
+                >My graph shows that...</span
+              >
+              <span
+                class="starter"
+                onclick="addStarter('q1', 'The main pattern I notice is ')"
+                >The main pattern...</span
+              >
+            </div>
+            <textarea id="q1" placeholder="Write your answer here."></textarea>
+          </div>
+
+          <div class="question">
+            <h3>
+              2. Which category has your highest value? What does that mean?
+            </h3>
+            <div class="starters">
+              <span
+                class="starter"
+                onclick="addStarter('q2', 'My highest category is ')"
+                >My highest category...</span
+              >
+              <span
+                class="starter"
+                onclick="addStarter('q2', 'This means that ')"
+                >This means that...</span
+              >
+            </div>
+            <textarea
+              id="q2"
+              placeholder="Use one value from your graph as evidence."
+            ></textarea>
+          </div>
+
+          <div class="question">
+            <h3>3. How is your data different from your partner’s data?</h3>
+            <div class="starters">
+              <span
+                class="starter"
+                onclick="
+                  addStarter(
+                    'q3',
+                    'My data is different from my partner’s data because ',
+                  )
+                "
+                >My data is different...</span
+              >
+              <span
+                class="starter"
+                onclick="
+                  addStarter('q3', 'The biggest difference with my partner is ')
+                "
+                >The biggest difference...</span
+              >
+            </div>
+            <textarea
+              id="q3"
+              placeholder="Compare one category or statistic."
+            ></textarea>
+          </div>
+
+          <div class="question">
+            <h3>4. How does your data compare to the world sample?</h3>
+            <div class="starters">
+              <span
+                class="starter"
+                onclick="
+                  addStarter('q4', 'Compared to the world sample, my data is ')
+                "
+                >Compared to the world sample...</span
+              >
+              <span
+                class="starter"
+                onclick="
+                  addStarter(
+                    'q4',
+                    'The biggest difference from the world sample is ',
+                  )
+                "
+                >The biggest difference...</span
+              >
+            </div>
+            <textarea
+              id="q4"
+              placeholder="Use a category and value as evidence."
+            ></textarea>
+          </div>
+
+          <div class="question">
+            <h3>
+              5. Which comparison was more interesting: partner or world? Why?
+            </h3>
+            <div class="starters">
+              <span
+                class="starter"
+                onclick="
+                  addStarter('q5', 'The more interesting comparison was ')
+                "
+                >The more interesting comparison...</span
+              >
+              <span
+                class="starter"
+                onclick="addStarter('q5', 'This was interesting because ')"
+                >This was interesting because...</span
+              >
+            </div>
+            <textarea id="q5" placeholder="Explain your choice."></textarea>
+          </div>
+
+          <div class="question">
+            <h3>6. Final conclusion: What did you learn from your data?</h3>
+            <div class="starters">
+              <span
+                class="starter"
+                onclick="addStarter('q6', 'I learned that ')"
+                >I learned that...</span
+              >
+              <span
+                class="starter"
+                onclick="addStarter('q6', 'My data matters because ')"
+                >My data matters because...</span
+              >
+            </div>
+            <textarea
+              id="q6"
+              placeholder="End with a strong conclusion."
+            ></textarea>
+          </div>
+        </section>
+
+        <section id="finish" class="panel">
+          <div class="card soft-mint">
+            <h2>Final Report</h2>
+            <p class="lead">
+              Review your work. Then print/save as PDF or download your
+              completed report.
+            </p>
+            <div class="top-actions" style="margin-top: 14px">
+              <button onclick="updateAll()" class="success">
+                Refresh Report
+              </button>
+              <button onclick="saveFinalSheetPdf()" class="secondary">
+                Save Final Sheet as PDF
+              </button>
+              <button onclick="downloadFinalSheetDocx()" class="secondary">
+                Download Final Sheet DOCX
+              </button>
+              <button onclick="downloadReportHtml()" class="secondary">
+                Download Completed HTML
+              </button>
+              <button onclick="downloadCsv()" class="secondary">
+                Download Data CSV
+              </button>
+            </div>
+          </div>
+
+          <div id="finalReport" class="report"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast">Saved</div>
+
+    <script>
+      const STORAGE_KEY = "statistics-world-comparison-graph-lab-v2";
+
+      const WORLD_SAMPLES = [
+        {
+          category: "Sleep hours",
+          value: 8,
+          unit: "hours",
+          note: "Average school-night sleep in this practice sample.",
+        },
+        {
+          category: "Screen minutes",
+          value: 110,
+          unit: "minutes",
+          note: "Daily screen minutes in this practice sample.",
+        },
+        {
+          category: "Creative minutes",
+          value: 45,
+          unit: "minutes",
+          note: "Time spent drawing, music, building, writing, or creating.",
+        },
+        {
+          category: "Homework minutes",
+          value: 60,
+          unit: "minutes",
+          note: "Homework or study time in this practice sample.",
+        },
+        {
+          category: "Outside minutes",
+          value: 75,
+          unit: "minutes",
+          note: "Time outside, sports, walking, or playing.",
+        },
+        {
+          category: "Cups of water",
+          value: 6,
+          unit: "cups",
+          note: "Water in a typical day.",
+        },
+        {
+          category: "Books per month",
+          value: 2,
+          unit: "books",
+          note: "Books or longer texts read in a month.",
+        },
+        {
+          category: "Languages spoken",
+          value: 2,
+          unit: "languages",
+          note: "Languages spoken or learned.",
+        },
+      ];
+
+      const CALC_INPUT_IDS = [
+        "mySum",
+        "myCount",
+        "myMeanCalc",
+        "myMedianCalc",
+        "myModeCalc",
+        "myLow",
+        "myHigh",
+        "myRangeCalc",
+        "partnerSum",
+        "partnerCount",
+        "partnerMeanCalc",
+        "partnerMedianCalc",
+        "partnerModeCalc",
+        "partnerLow",
+        "partnerHigh",
+        "partnerRangeCalc",
+        "worldSum",
+        "worldCount",
+        "worldMeanCalc",
+        "worldMedianCalc",
+        "worldModeCalc",
+        "worldLow",
+        "worldHigh",
+        "worldRangeCalc",
+      ];
+
+      const CATEGORY_BANK = [
+        "Sleep hours",
+        "Screen minutes",
+        "Creative minutes",
+        "Homework minutes",
+        "Outside minutes",
+        "Cups of water",
+        "Books per month",
+        "Languages spoken",
+        "Music minutes",
+        "Sports minutes",
+        "Game minutes",
+        "Reading minutes",
+        "Chores minutes",
+        "Steps estimate",
+        "Snacks per day",
+        "Pets",
+        "People at home",
+        "Wake-up hour",
+        "Bedtime hour",
+        "Free choice",
+      ];
+
+      let activeCategoryIndex = null;
+
+      const defaultRows = [
+        { category: "", my: "", partner: "", world: "" },
+        { category: "", my: "", partner: "", world: "" },
+        { category: "", my: "", partner: "", world: "" },
+        { category: "", my: "", partner: "", world: "" },
+        { category: "", my: "", partner: "", world: "" },
+        { category: "", my: "", partner: "", world: "" },
+      ];
+
+      const sampleRows = [
+        { category: "Sleep hours", my: "", partner: "", world: 8 },
+        { category: "Screen minutes", my: "", partner: "", world: 110 },
+        { category: "Creative minutes", my: "", partner: "", world: 45 },
+        { category: "Homework minutes", my: "", partner: "", world: 60 },
+        { category: "Outside minutes", my: "", partner: "", world: 75 },
+        { category: "Cups of water", my: "", partner: "", world: 6 },
+      ];
+
+      let rows = clone(defaultRows);
+      const $ = (id) => document.getElementById(id);
+
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".panel")
+            .forEach((p) => p.classList.remove("active"));
+          btn.classList.add("active");
+          $(btn.dataset.tab).classList.add("active");
+          updateAll();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
+      const watchedIds = [
+        "studentName",
+        "section",
+        "graphTitle",
+        "stackUnit",
+        "sortMode",
+        "showMy",
+        "showPartner",
+        "showWorld",
+        "worldCategoryFocus",
+        "worldMyValue",
+        "worldSampleValue",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        ...CALC_INPUT_IDS,
+      ];
+      watchedIds.forEach((id) => {
+        document.addEventListener("input", (e) => {
+          if (e.target && e.target.id === id) {
+            updateAll();
+            autoSave();
+          }
+        });
+        document.addEventListener("change", (e) => {
+          if (e.target && e.target.id === id) {
+            updateAll();
+            autoSave();
+          }
+        });
+      });
+
+      function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      function renderCategoryBank() {
+        const bank = $("categoryBank");
+        if (!bank) return;
+        bank.innerHTML = "";
+        CATEGORY_BANK.forEach((cat) => {
+          const chip = document.createElement("span");
+          chip.className = "category-chip";
+          chip.textContent = cat;
+          chip.setAttribute("draggable", "true");
+          chip.addEventListener("click", () => placeCategory(cat));
+          chip.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", cat);
+            e.dataTransfer.effectAllowed = "copy";
+          });
+          bank.appendChild(chip);
+        });
+      }
+
+      function placeCategory(category) {
+        let targetIndex = Number.isInteger(activeCategoryIndex)
+          ? activeCategoryIndex
+          : -1;
+
+        if (
+          targetIndex < 0 ||
+          !rows[targetIndex] ||
+          rows[targetIndex].category
+        ) {
+          targetIndex = rows.findIndex((r) => !String(r.category || "").trim());
+        }
+
+        if (targetIndex < 0) {
+          rows.push({ category: "", my: "", partner: "", world: "" });
+          targetIndex = rows.length - 1;
+        }
+
+        rows[targetIndex].category = category;
+        const match = WORLD_SAMPLES.find(
+          (s) => normalize(s.category) === normalize(category),
+        );
+        if (match && !rows[targetIndex].world)
+          rows[targetIndex].world = match.value;
+
+        activeCategoryIndex =
+          targetIndex + 1 < rows.length ? targetIndex + 1 : null;
+        renderDataRows();
+        updateAll();
+        autoSave();
+        toast("Category added: " + category);
+      }
+
+      function dropCategory(event, index) {
+        event.preventDefault();
+        const category = event.dataTransfer.getData("text/plain");
+        if (!category) return;
+        rows[index].category = category;
+        const match = WORLD_SAMPLES.find(
+          (s) => normalize(s.category) === normalize(category),
+        );
+        if (match && !rows[index].world) rows[index].world = match.value;
+        activeCategoryIndex = index;
+        renderDataRows();
+        updateAll();
+        autoSave();
+        toast("Category placed");
+      }
+
+      function clearCategories() {
+        rows.forEach((r) => (r.category = ""));
+        activeCategoryIndex = null;
+        renderDataRows();
+        updateAll();
+        autoSave();
+        toast("Category labels cleared");
+      }
+
+      function renderDataRows() {
+        const body = $("dataRows");
+        body.innerHTML = "";
+        rows.forEach((row, i) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td><input value="${escapeAttr(row.category)}" 
+            onfocus="activeCategoryIndex=${i}; this.classList.add('drop-ready');" 
+            onblur="this.classList.remove('drop-ready');" 
+            oninput="rows[${i}].category=this.value; updateAll(); autoSave();" 
+            ondragover="event.preventDefault(); this.classList.add('drop-ready');" 
+            ondragleave="this.classList.remove('drop-ready');" 
+            ondrop="dropCategory(event, ${i}); this.classList.remove('drop-ready');" 
+            placeholder="Click/drag a category here"></td>
+          <td><input type="number" step="any" value="${escapeAttr(row.my)}" oninput="rows[${i}].my=this.value; updateAll(); autoSave();" placeholder="0"></td>
+          <td><input type="number" step="any" value="${escapeAttr(row.partner)}" oninput="rows[${i}].partner=this.value; updateAll(); autoSave();" placeholder="0"></td>
+          <td><input type="number" step="any" value="${escapeAttr(row.world)}" oninput="rows[${i}].world=this.value; updateAll(); autoSave();" placeholder="0"></td>
+          <td><button class="small secondary" onclick="removeRow(${i})">X</button></td>
+        `;
+          body.appendChild(tr);
+        });
+      }
+
+      function renderWorldCards() {
+        const wrap = $("worldCards");
+        wrap.innerHTML = "";
+        WORLD_SAMPLES.forEach((sample) => {
+          const card = document.createElement("div");
+          card.className = "world-card";
+          card.innerHTML = `
+          <div>
+            <h3>${escapeHtml(sample.category)}</h3>
+            <div class="value">${format(sample.value)}</div>
+            <div class="unit">${escapeHtml(sample.unit)}</div>
+            <p>${escapeHtml(sample.note)}</p>
+          </div>
+          <button class="small secondary" onclick="addOrUpdateWorldCategory('${escapeAttr(sample.category)}', ${Number(sample.value)})">Use this in graph</button>
+        `;
+          wrap.appendChild(card);
+        });
+      }
+
+      function renderInteractiveControls() {
+        const wrap = $("interactiveControls");
+        wrap.innerHTML = "";
+        const data = getChartRows();
+        if (!data.length) {
+          wrap.innerHTML = `<div class="card" style="grid-column:1/-1;box-shadow:none;"><p class="lead">Enter categories first. Then you can build the y-values with buttons.</p></div>`;
+          return;
+        }
+
+        data.forEach((d) => {
+          const realIndex = d.index;
+          const card = document.createElement("div");
+          card.className = "build-card";
+          card.innerHTML = `
+          <h3>${escapeHtml(d.category)}</h3>
+          ${valueBuildRow(realIndex, "my", "Me")}
+          ${valueBuildRow(realIndex, "partner", "Partner")}
+          ${valueBuildRow(realIndex, "world", "World")}
+        `;
+          wrap.appendChild(card);
+        });
+      }
+
+      function valueBuildRow(index, key, label) {
+        const val =
+          rows[index] && rows[index][key] !== undefined ? rows[index][key] : "";
+        return `
+        <div class="build-row">
+          <span>${label}</span>
+          <input type="number" step="any" value="${escapeAttr(val)}" oninput="rows[${index}].${key}=this.value; updateAll(); autoSave();" />
+          <button class="tiny secondary" onclick="changeValueByUnit(${index}, '${key}', -1)">−</button>
+          <button class="tiny" onclick="changeValueByUnit(${index}, '${key}', 1)">+</button>
+        </div>
+      `;
+      }
+
+      function changeValueByUnit(index, key, direction) {
+        const unit = Number($("stackUnit").value || 10);
+        const current = Number(rows[index][key]) || 0;
+        rows[index][key] = Math.max(0, current + direction * unit);
+        renderDataRows();
+        updateAll();
+        autoSave();
+      }
+
+      function addDataRow() {
+        rows.push({ category: "", my: "", partner: "", world: "" });
+        renderDataRows();
+        updateAll();
+        autoSave();
+      }
+
+      function removeRow(i) {
+        rows.splice(i, 1);
+        if (rows.length === 0)
+          rows.push({ category: "", my: "", partner: "", world: "" });
+        renderDataRows();
+        updateAll();
+        autoSave();
+      }
+
+      function loadSampleCategories() {
+        rows = clone(sampleRows);
+        renderDataRows();
+        updateAll();
+        autoSave();
+        toast("Sample categories added");
+      }
+
+      function clearValues(key) {
+        rows.forEach((r) => (r[key] = ""));
+        renderDataRows();
+        updateAll();
+        autoSave();
+        toast("Values cleared");
+      }
+
+      function addWorldSampleRows() {
+        WORLD_SAMPLES.forEach((sample) =>
+          addOrUpdateWorldCategory(sample.category, sample.value, false),
+        );
+        renderDataRows();
+        updateAll();
+        autoSave();
+        toast("World sample categories added");
+      }
+
+      function addOrUpdateWorldCategory(category, value, rerender = true) {
+        const match = rows.find(
+          (r) => normalize(r.category) === normalize(category),
+        );
+        if (match) {
+          match.world = value;
+        } else {
+          rows.push({ category, my: "", partner: "", world: value });
+        }
+        if (rerender) {
+          renderDataRows();
+          updateAll();
+          autoSave();
+          toast("World value added");
+        }
+      }
+
+      function applyWorldToMatchingCategories() {
+        rows.forEach((row) => {
+          const match = WORLD_SAMPLES.find(
+            (s) => normalize(s.category) === normalize(row.category),
+          );
+          if (match) row.world = match.value;
+        });
+        renderDataRows();
+        updateAll();
+        autoSave();
+        toast("Matching world values filled");
+      }
+
+      function getValues(key) {
+        return rows
+          .map((r) => Number(r[key]))
+          .filter((v) => Number.isFinite(v));
+      }
+
+      function statSummary(values) {
+        if (!values.length)
+          return { mean: "—", median: "—", mode: "—", range: "—" };
+        const sorted = [...values].sort((a, b) => a - b);
+        const sum = values.reduce((a, b) => a + b, 0);
+        const mean = sum / values.length;
+        const mid = Math.floor(sorted.length / 2);
+        const median =
+          sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        const range = sorted[sorted.length - 1] - sorted[0];
+        const counts = new Map();
+        values.forEach((v) => counts.set(v, (counts.get(v) || 0) + 1));
+        const maxCount = Math.max(...counts.values());
+        let mode = "No mode";
+        if (maxCount > 1) {
+          mode = [...counts.entries()]
+            .filter(([v, c]) => c === maxCount)
+            .map(([v]) => format(v))
+            .join(", ");
+        }
+        return {
+          mean: format(mean),
+          median: format(median),
+          mode,
+          range: format(range),
+        };
+      }
+
+      function updateStats() {
+        updateSortedDisplays();
+      }
+
+      function updateSortedDisplays() {
+        setSortedDisplay("my", "mySorted");
+        setSortedDisplay("partner", "partnerSorted");
+        setSortedDisplay("world", "worldSorted");
+      }
+
+      function setSortedDisplay(key, elementId) {
+        const el = $(elementId);
+        if (!el) return;
+        const values = getValues(key).sort((a, b) => a - b);
+        el.textContent = values.length
+          ? values.map(format).join(", ")
+          : "Enter values first.";
+      }
+
+      function manualStats(prefix) {
+        return {
+          sum: $(prefix + "Sum") ? $(prefix + "Sum").value || "—" : "—",
+          count: $(prefix + "Count") ? $(prefix + "Count").value || "—" : "—",
+          mean: $(prefix + "MeanCalc")
+            ? $(prefix + "MeanCalc").value || "—"
+            : "—",
+          median: $(prefix + "MedianCalc")
+            ? $(prefix + "MedianCalc").value || "—"
+            : "—",
+          mode: $(prefix + "ModeCalc")
+            ? $(prefix + "ModeCalc").value || "—"
+            : "—",
+          low: $(prefix + "Low") ? $(prefix + "Low").value || "—" : "—",
+          high: $(prefix + "High") ? $(prefix + "High").value || "—" : "—",
+          range: $(prefix + "RangeCalc")
+            ? $(prefix + "RangeCalc").value || "—"
+            : "—",
+        };
+      }
+
+      function copySortedText(key) {
+        const values = getValues(key)
+          .sort((a, b) => a - b)
+          .map(format)
+          .join(", ");
+        if (!values) {
+          toast("Enter values first");
+          return;
+        }
+        navigator.clipboard
+          .writeText(values)
+          .then(() => toast("Sorted data copied"))
+          .catch(() => toast("Copy not available"));
+      }
+
+      function getChartRows() {
+        let chartRows = rows
+          .map((r, index) => ({
+            index,
+            category: r.category || `Category ${index + 1}`,
+            my: Number(r.my),
+            partner: Number(r.partner),
+            world: Number(r.world),
+          }))
+          .filter(
+            (r) =>
+              Number.isFinite(r.my) ||
+              Number.isFinite(r.partner) ||
+              Number.isFinite(r.world) ||
+              r.category.trim(),
+          );
+
+        const sortMode = $("sortMode").value;
+        if (sortMode === "highest") {
+          chartRows.sort(
+            (a, b) =>
+              (Number.isFinite(b.my) ? b.my : -Infinity) -
+              (Number.isFinite(a.my) ? a.my : -Infinity),
+          );
+        }
+        if (sortMode === "difference") {
+          chartRows.sort(
+            (a, b) =>
+              Math.abs((b.my || 0) - (b.partner || 0)) -
+              Math.abs((a.my || 0) - (a.partner || 0)),
+          );
+        }
+        if (sortMode === "worldDiff") {
+          chartRows.sort(
+            (a, b) =>
+              Math.abs((b.my || 0) - (b.world || 0)) -
+              Math.abs((a.my || 0) - (a.world || 0)),
+          );
+        }
+        return chartRows.slice(0, 10);
+      }
+
+      function drawChart() {
+        const svg = $("chartSvg");
+        svg.innerHTML = "";
+        const data = getChartRows().filter(
+          (d) =>
+            Number.isFinite(d.my) ||
+            Number.isFinite(d.partner) ||
+            Number.isFinite(d.world),
+        );
+        const title =
+          $("graphTitle").value || "Me vs Partner vs World Bar Graph";
+        const show = {
+          my: $("showMy").checked,
+          partner: $("showPartner").checked,
+          world: $("showWorld").checked,
+        };
+
+        const W = 1000,
+          H = 460;
+        const margin = { top: 70, right: 35, bottom: 112, left: 75 };
+        const chartW = W - margin.left - margin.right;
+        const chartH = H - margin.top - margin.bottom;
+
+        addSvgText(svg, title, W / 2, 36, 24, "#17324D", "middle", "900");
+
+        if (!data.length) {
+          addSvgText(
+            svg,
+            "Enter values to create your bar graph.",
+            W / 2,
+            H / 2,
+            22,
+            "#5D6D7E",
+            "middle",
+            "800",
+          );
+          $("autoGraphInsight").textContent =
+            "Enter data to see an automatic graph observation.";
+          return;
+        }
+
+        const values = [];
+        data.forEach((d) => {
+          if (show.my && Number.isFinite(d.my)) values.push(d.my);
+          if (show.partner && Number.isFinite(d.partner))
+            values.push(d.partner);
+          if (show.world && Number.isFinite(d.world)) values.push(d.world);
+        });
+
+        const yMax = niceMax(Math.max(1, ...values));
+        for (let i = 0; i <= 5; i++) {
+          const val = (yMax * i) / 5;
+          const y = margin.top + chartH - (val / yMax) * chartH;
+          addSvgLine(
+            svg,
+            margin.left,
+            y,
+            W - margin.right,
+            y,
+            i === 0 ? "#17202A" : "#D7DEE8",
+            i === 0 ? 2 : 1,
+          );
+          addSvgText(
+            svg,
+            format(val),
+            margin.left - 10,
+            y + 4,
+            13,
+            "#5D6D7E",
+            "end",
+            "700",
+          );
+        }
+
+        const groupW = chartW / data.length;
+        const series = [];
+        if (show.my) series.push({ key: "my", color: "#2F80ED" });
+        if (show.partner) series.push({ key: "partner", color: "#27AE60" });
+        if (show.world) series.push({ key: "world", color: "#F2994A" });
+
+        const barGap = 7;
+        const barW = Math.min(
+          44,
+          (groupW - 24) / Math.max(1, series.length) - barGap,
+        );
+
+        data.forEach((d, i) => {
+          const center = margin.left + groupW * i + groupW / 2;
+          let x =
+            center - (barW * series.length + barGap * (series.length - 1)) / 2;
+
+          series.forEach((s) => {
+            drawBar(svg, x, d[s.key], yMax, chartH, margin.top, s.color, barW);
+            if (Number.isFinite(d[s.key])) {
+              const y = margin.top + chartH - (d[s.key] / yMax) * chartH;
+              addSvgText(
+                svg,
+                format(d[s.key]),
+                x + barW / 2,
+                y - 8,
+                11,
+                "#17324D",
+                "middle",
+                "800",
+              );
+            }
+            x += barW + barGap;
+          });
+
+          addSvgText(
+            svg,
+            truncate(d.category, 16),
+            center,
+            H - 76,
+            13,
+            "#17202A",
+            "middle",
+            "800",
+            -25,
+          );
+        });
+
+        addSvgText(
+          svg,
+          "X-Axis Categories",
+          W / 2,
+          H - 18,
+          14,
+          "#5D6D7E",
+          "middle",
+          "800",
+        );
+        addSvgText(
+          svg,
+          "Y-Value",
+          24,
+          H / 2,
+          14,
+          "#5D6D7E",
+          "middle",
+          "800",
+          -90,
+        );
+        $("autoGraphInsight").textContent = makeAutoInsight(data, show);
+      }
+
+      function drawBar(svg, x, value, yMax, chartH, top, color, barW) {
+        if (!Number.isFinite(value)) return;
+        const h = Math.max(2, (value / yMax) * chartH);
+        const y = top + chartH - h;
+        const rect = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "rect",
+        );
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", barW);
+        rect.setAttribute("height", h);
+        rect.setAttribute("rx", 8);
+        rect.setAttribute("fill", color);
+        svg.appendChild(rect);
+      }
+
+      function renderStacks() {
+        const wrap = $("stackArea");
+        wrap.innerHTML = "";
+        const data = getChartRows();
+        const unit = Number($("stackUnit").value || 10);
+        const show = {
+          my: $("showMy").checked,
+          partner: $("showPartner").checked,
+          world: $("showWorld").checked,
+        };
+        if (!data.length) {
+          wrap.innerHTML = `<div class="card" style="box-shadow:none;grid-column:1/-1;"><p class="lead">Enter categories and values to see stack blocks.</p></div>`;
+          return;
+        }
+
+        data.forEach((d) => {
+          const col = document.createElement("div");
+          col.className = "stack-col";
+          let stacks = "";
+          if (show.my) stacks += stackHtml(d.my, unit, "#2F80ED", "Me");
+          if (show.partner)
+            stacks += stackHtml(d.partner, unit, "#27AE60", "Partner");
+          if (show.world)
+            stacks += stackHtml(d.world, unit, "#F2994A", "World");
+          col.innerHTML = `
+          <div class="stacks">${stacks}</div>
+          <div class="stack-label">${escapeHtml(d.category)}</div>
+        `;
+          wrap.appendChild(col);
+        });
+      }
+
+      function stackHtml(value, unit, color, label) {
+        const valid = Number.isFinite(value);
+        const count = valid
+          ? Math.max(0, Math.min(18, Math.round(value / unit)))
+          : 0;
+        const blocks = Array.from(
+          { length: count },
+          () => `<div class="block" style="background:${color}"></div>`,
+        ).join("");
+        return `<div class="stack" title="${label}: ${valid ? format(value) : "blank"}">${blocks}<div style="font-size:.72rem;font-weight:900;color:#17324D;margin-bottom:2px;">${label[0]}</div></div>`;
+      }
+
+      function makeAutoInsight(data, show) {
+        const bothPartner = data.filter(
+          (d) => Number.isFinite(d.my) && Number.isFinite(d.partner),
+        );
+        const bothWorld = data.filter(
+          (d) => Number.isFinite(d.my) && Number.isFinite(d.world),
+        );
+        if (bothWorld.length) {
+          const diff = bothWorld
+            .map((d) => ({ ...d, diff: Math.abs(d.my - d.world) }))
+            .sort((a, b) => b.diff - a.diff)[0];
+          return `Automatic observation: Your biggest difference from the world sample is "${diff.category}" with a difference of ${format(diff.diff)}.`;
+        }
+        if (bothPartner.length) {
+          const diff = bothPartner
+            .map((d) => ({ ...d, diff: Math.abs(d.my - d.partner) }))
+            .sort((a, b) => b.diff - a.diff)[0];
+          return `Automatic observation: Your biggest difference from your partner is "${diff.category}" with a difference of ${format(diff.diff)}.`;
+        }
+        const myRows = data.filter((d) => Number.isFinite(d.my));
+        if (myRows.length) {
+          const top = myRows.reduce((a, b) => (b.my > a.my ? b : a));
+          return `Automatic observation: Your highest category is "${top.category}" with a value of ${format(top.my)}.`;
+        }
+        return "Enter more data to see an automatic observation.";
+      }
+
+      function updateWorldPlanning() {
+        const focus = $("worldCategoryFocus").value.trim();
+        if (!focus) return;
+        const row = rows.find(
+          (r) => normalize(r.category) === normalize(focus),
+        );
+        if (row) {
+          if (!$("worldMyValue").value && Number.isFinite(Number(row.my)))
+            $("worldMyValue").value = row.my;
+          if (
+            !$("worldSampleValue").value &&
+            Number.isFinite(Number(row.world))
+          )
+            $("worldSampleValue").value = row.world;
+        }
+      }
+
+      function updateReport() {
+        const myStats = manualStats("my");
+        const partnerStats = manualStats("partner");
+        const worldStats = manualStats("world");
+        const name = $("studentName").value || "Student";
+        const section = $("section").value || "";
+        const title =
+          $("graphTitle").value || "Me vs Partner vs World Bar Graph";
+        const sortedMy =
+          getValues("my")
+            .sort((a, b) => a - b)
+            .map(format)
+            .join(", ") || "Not entered yet.";
+        const sortedPartner =
+          getValues("partner")
+            .sort((a, b) => a - b)
+            .map(format)
+            .join(", ") || "Not entered yet.";
+        const sortedWorld =
+          getValues("world")
+            .sort((a, b) => a - b)
+            .map(format)
+            .join(", ") || "Not entered yet.";
+
+        $("finalReport").innerHTML = `
+        <h3>${escapeHtml(title)}</h3>
+        <div class="report-line"><strong>Name:</strong> ${escapeHtml(name)} ${section ? " | <strong>Section:</strong> " + escapeHtml(section) : ""}</div>
+        <div class="report-line"><strong>Sorted my data:</strong> ${escapeHtml(sortedMy)}</div>
+        <div class="report-line"><strong>Sorted partner data:</strong> ${escapeHtml(sortedPartner)}</div>
+        <div class="report-line"><strong>Sorted world sample data:</strong> ${escapeHtml(sortedWorld)}</div>
+        <div class="report-line"><strong>My calculated statistics:</strong> Sum ${escapeHtml(myStats.sum)}, Count ${escapeHtml(myStats.count)}, Mean ${escapeHtml(myStats.mean)}, Median ${escapeHtml(myStats.median)}, Mode ${escapeHtml(myStats.mode)}, Range ${escapeHtml(myStats.range)}</div>
+        <div class="report-line"><strong>Partner calculated statistics:</strong> Sum ${escapeHtml(partnerStats.sum)}, Count ${escapeHtml(partnerStats.count)}, Mean ${escapeHtml(partnerStats.mean)}, Median ${escapeHtml(partnerStats.median)}, Mode ${escapeHtml(partnerStats.mode)}, Range ${escapeHtml(partnerStats.range)}</div>
+        <div class="report-line"><strong>World sample calculated statistics:</strong> Sum ${escapeHtml(worldStats.sum)}, Count ${escapeHtml(worldStats.count)}, Mean ${escapeHtml(worldStats.mean)}, Median ${escapeHtml(worldStats.median)}, Mode ${escapeHtml(worldStats.mode)}, Range ${escapeHtml(worldStats.range)}</div>
+        <div class="report-line"><strong>Main story:</strong> ${escapeHtml($("q1").value || "Not answered yet.")}</div>
+        <div class="report-line"><strong>Highest category meaning:</strong> ${escapeHtml($("q2").value || "Not answered yet.")}</div>
+        <div class="report-line"><strong>Partner comparison:</strong> ${escapeHtml($("q3").value || "Not answered yet.")}</div>
+        <div class="report-line"><strong>World comparison:</strong> ${escapeHtml($("q4").value || "Not answered yet.")}</div>
+        <div class="report-line"><strong>Most interesting comparison:</strong> ${escapeHtml($("q5").value || "Not answered yet.")}</div>
+        <div class="report-line"><strong>Final conclusion:</strong> ${escapeHtml($("q6").value || "Not answered yet.")}</div>
+      `;
+      }
+
+      function updateAll() {
+        updateStats();
+        drawChart();
+        renderInteractiveControls();
+        renderStacks();
+        updateWorldPlanning();
+        updateReport();
+      }
+
+      function addStarter(id, text) {
+        const area = $(id);
+        const spacer = area.value && !area.value.endsWith(" ") ? " " : "";
+        area.value += spacer + text;
+        area.focus();
+        updateAll();
+        autoSave();
+      }
+
+      function serialize() {
+        return {
+          rows,
+          studentName: $("studentName").value,
+          section: $("section").value,
+          graphTitle: $("graphTitle").value,
+          stackUnit: $("stackUnit").value,
+          sortMode: $("sortMode").value,
+          showMy: $("showMy").checked,
+          showPartner: $("showPartner").checked,
+          showWorld: $("showWorld").checked,
+          worldCategoryFocus: $("worldCategoryFocus").value,
+          worldMyValue: $("worldMyValue").value,
+          worldSampleValue: $("worldSampleValue").value,
+          q1: $("q1").value,
+          q2: $("q2").value,
+          q3: $("q3").value,
+          q4: $("q4").value,
+          q5: $("q5").value,
+          q6: $("q6").value,
+          calcInputs: Object.fromEntries(
+            CALC_INPUT_IDS.map((id) => [id, $(id) ? $(id).value : ""]),
+          ),
+        };
+      }
+
+      function hydrate(data) {
+        if (!data) return;
+        rows =
+          Array.isArray(data.rows) && data.rows.length
+            ? data.rows
+            : clone(defaultRows);
+        [
+          "studentName",
+          "section",
+          "graphTitle",
+          "stackUnit",
+          "sortMode",
+          "worldCategoryFocus",
+          "worldMyValue",
+          "worldSampleValue",
+          "q1",
+          "q2",
+          "q3",
+          "q4",
+          "q5",
+          "q6",
+        ].forEach((id) => {
+          if (data[id] !== undefined) $(id).value = data[id];
+        });
+        if (data.calcInputs) {
+          CALC_INPUT_IDS.forEach((id) => {
+            if ($(id) && data.calcInputs[id] !== undefined)
+              $(id).value = data.calcInputs[id];
+          });
+        }
+        ["showMy", "showPartner", "showWorld"].forEach((id) => {
+          if (data[id] !== undefined) $(id).checked = !!data[id];
+        });
+      }
+
+      function autoSave() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()));
+        $("saveStatus").textContent = "Saved";
+        clearTimeout(window.__saveTimer);
+        window.__saveTimer = setTimeout(
+          () => ($("saveStatus").textContent = "Autosave on"),
+          1300,
+        );
+      }
+
+      function saveNow() {
+        autoSave();
+        toast("Progress saved on this device");
+      }
+
+      function resetAll() {
+        if (!confirm("Reset all student work on this page?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        rows = clone(defaultRows);
+        [
+          "studentName",
+          "section",
+          "graphTitle",
+          "worldCategoryFocus",
+          "worldMyValue",
+          "worldSampleValue",
+          "q1",
+          "q2",
+          "q3",
+          "q4",
+          "q5",
+          "q6",
+          ...CALC_INPUT_IDS,
+        ].forEach((id) => {
+          if ($(id)) $(id).value = "";
+        });
+        $("stackUnit").value = "10";
+        $("sortMode").value = "none";
+        $("showMy").checked = true;
+        $("showPartner").checked = true;
+        $("showWorld").checked = true;
+        renderDataRows();
+        updateAll();
+        toast("Reset complete");
+      }
+
+      function saveFinalSheetPdf() {
+        updateAll();
+        document.body.classList.add("final-sheet-only");
+        setTimeout(() => {
+          window.print();
+          setTimeout(
+            () => document.body.classList.remove("final-sheet-only"),
+            800,
+          );
+        }, 150);
+      }
+
+      function downloadFinalSheetDocx() {
+        updateAll();
+        const data = serialize();
+        const myStats = manualStats("my");
+        const partnerStats = manualStats("partner");
+        const worldStats = manualStats("world");
+
+        const title =
+          data.graphTitle ||
+          "Interactive Bar Graph + World Comparison Final Sheet";
+        const student = data.studentName || "Student";
+        const section = data.section || "";
+
+        const docXml = buildDocxDocumentXml({
+          title,
+          student,
+          section,
+          myStats,
+          partnerStats,
+          worldStats,
+          sortedMy: getValues("my")
+            .sort((a, b) => a - b)
+            .map(format)
+            .join(", "),
+          sortedPartner: getValues("partner")
+            .sort((a, b) => a - b)
+            .map(format)
+            .join(", "),
+          sortedWorld: getValues("world")
+            .sort((a, b) => a - b)
+            .map(format)
+            .join(", "),
+          rows: data.rows,
+          answers: [
+            ["1. Main story", data.q1],
+            ["2. Highest category meaning", data.q2],
+            ["3. Partner comparison", data.q3],
+            ["4. World comparison", data.q4],
+            ["5. Most interesting comparison", data.q5],
+            ["6. Final conclusion", data.q6],
+          ],
+        });
+
+        const files = {
+          "[Content_Types].xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+</Types>`,
+          "_rels/.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`,
+          "word/_rels/document.xml.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`,
+          "word/styles.xml": buildDocxStylesXml(),
+          "word/document.xml": docXml,
+        };
+
+        const blob = makeZip(files);
+        downloadBlob(
+          blob,
+          safeName("final-sheet") + ".docx",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        );
+      }
+
+      function buildDocxDocumentXml(payload) {
+        const rowsXml = payload.rows
+          .filter((r) => r.category || r.my || r.partner || r.world)
+          .map((r) => tableRowXml([r.category, r.my, r.partner, r.world]))
+          .join("");
+
+        const answersXml = payload.answers
+          .map(
+            ([label, answer]) => `
+        ${pXml(label, "Heading2")}
+        ${pXml(answer || "Not answered yet.")}
+      `,
+          )
+          .join("");
+
+        return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    ${pXml(payload.title, "Title")}
+    ${pXml("Name: " + payload.student + (payload.section ? "    Section: " + payload.section : ""))}
+    ${pXml("Final Sheet: Bar Graph + Data Comparison", "Heading1")}
+
+    ${pXml("Sorted Data", "Heading1")}
+    ${pXml("My data: " + (payload.sortedMy || "Not entered yet."))}
+    ${pXml("Partner data: " + (payload.sortedPartner || "Not entered yet."))}
+    ${pXml("World sample data: " + (payload.sortedWorld || "Not entered yet."))}
+
+    ${pXml("Student-Calculated Statistics Summary", "Heading1")}
+    ${tableXml([
+      ["Data Set", "Sum", "Count", "Mean", "Median", "Mode", "Range"],
+      [
+        "My Data",
+        payload.myStats.sum,
+        payload.myStats.count,
+        payload.myStats.mean,
+        payload.myStats.median,
+        payload.myStats.mode,
+        payload.myStats.range,
+      ],
+      [
+        "Partner Data",
+        payload.partnerStats.sum,
+        payload.partnerStats.count,
+        payload.partnerStats.mean,
+        payload.partnerStats.median,
+        payload.partnerStats.mode,
+        payload.partnerStats.range,
+      ],
+      [
+        "World Sample",
+        payload.worldStats.sum,
+        payload.worldStats.count,
+        payload.worldStats.mean,
+        payload.worldStats.median,
+        payload.worldStats.mode,
+        payload.worldStats.range,
+      ],
+    ])}
+
+    ${pXml("Data Table", "Heading1")}
+    ${tableXmlRaw(`
+      ${tableRowXml(["Category", "My Value", "Partner Value", "World Sample Value"])}
+      ${rowsXml || tableRowXml(["No data entered", "", "", ""])}
+    `)}
+
+    ${pXml("Written Responses", "Heading1")}
+    ${answersXml}
+
+    ${pXml("Note: The PDF option preserves the visual graph. This DOCX final sheet includes the report, statistics, responses, and data table for upload.", "Note")}
+
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="720" w:footer="720" w:gutter="0"/>
+    </w:sectPr>
+  </w:body>
+</w:document>`;
+      }
+
+      function buildDocxStylesXml() {
+        return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:style w:type="paragraph" w:default="1" w:styleId="Normal">
+    <w:name w:val="Normal"/>
+    <w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="22"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Title">
+    <w:name w:val="Title"/>
+    <w:basedOn w:val="Normal"/>
+    <w:rPr><w:b/><w:color w:val="17324D"/><w:sz w:val="36"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading1">
+    <w:name w:val="heading 1"/>
+    <w:basedOn w:val="Normal"/>
+    <w:rPr><w:b/><w:color w:val="17324D"/><w:sz w:val="28"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading2">
+    <w:name w:val="heading 2"/>
+    <w:basedOn w:val="Normal"/>
+    <w:rPr><w:b/><w:color w:val="2F80ED"/><w:sz w:val="24"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Note">
+    <w:name w:val="Note"/>
+    <w:basedOn w:val="Normal"/>
+    <w:rPr><w:i/><w:color w:val="5D6D7E"/><w:sz w:val="20"/></w:rPr>
+  </w:style>
+</w:styles>`;
+      }
+
+      function pXml(text, style) {
+        const styleXml = style
+          ? `<w:pPr><w:pStyle w:val="${style}"/></w:pPr>`
+          : "";
+        return `<w:p>${styleXml}<w:r><w:t xml:space="preserve">${docxEscape(text || "")}</w:t></w:r></w:p>`;
+      }
+
+      function tableXml(rows) {
+        return tableXmlRaw(rows.map((row) => tableRowXml(row)).join(""));
+      }
+
+      function tableXmlRaw(rowsXml) {
+        return `<w:tbl>
+        <w:tblPr>
+          <w:tblW w:w="0" w:type="auto"/>
+          <w:tblBorders>
+            <w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/>
+            <w:left w:val="single" w:sz="8" w:space="0" w:color="000000"/>
+            <w:bottom w:val="single" w:sz="8" w:space="0" w:color="000000"/>
+            <w:right w:val="single" w:sz="8" w:space="0" w:color="000000"/>
+            <w:insideH w:val="single" w:sz="8" w:space="0" w:color="000000"/>
+            <w:insideV w:val="single" w:sz="8" w:space="0" w:color="000000"/>
+          </w:tblBorders>
+        </w:tblPr>
+        ${rowsXml}
+      </w:tbl>`;
+      }
+
+      function tableRowXml(cells) {
+        return `<w:tr>${cells.map((cell) => `<w:tc><w:tcPr><w:tcW w:w="2400" w:type="dxa"/></w:tcPr>${pXml(String(cell ?? ""))}</w:tc>`).join("")}</w:tr>`;
+      }
+
+      function docxEscape(str) {
+        return String(str ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      function makeZip(files) {
+        const encoder = new TextEncoder();
+        let fileRecords = [];
+        let offset = 0;
+        const localParts = [];
+        const centralParts = [];
+
+        Object.entries(files).forEach(([name, content]) => {
+          const nameBytes = encoder.encode(name);
+          const dataBytes = encoder.encode(content);
+          const crc = crc32(dataBytes);
+          const localHeader = new Uint8Array(30 + nameBytes.length);
+          const view = new DataView(localHeader.buffer);
+          view.setUint32(0, 0x04034b50, true);
+          view.setUint16(4, 20, true);
+          view.setUint16(6, 0, true);
+          view.setUint16(8, 0, true);
+          view.setUint16(10, 0, true);
+          view.setUint16(12, 0, true);
+          view.setUint32(14, crc, true);
+          view.setUint32(18, dataBytes.length, true);
+          view.setUint32(22, dataBytes.length, true);
+          view.setUint16(26, nameBytes.length, true);
+          view.setUint16(28, 0, true);
+          localHeader.set(nameBytes, 30);
+
+          localParts.push(localHeader, dataBytes);
+          fileRecords.push({ nameBytes, dataBytes, crc, offset });
+          offset += localHeader.length + dataBytes.length;
+        });
+
+        let centralSize = 0;
+        fileRecords.forEach((rec) => {
+          const central = new Uint8Array(46 + rec.nameBytes.length);
+          const view = new DataView(central.buffer);
+          view.setUint32(0, 0x02014b50, true);
+          view.setUint16(4, 20, true);
+          view.setUint16(6, 20, true);
+          view.setUint16(8, 0, true);
+          view.setUint16(10, 0, true);
+          view.setUint16(12, 0, true);
+          view.setUint16(14, 0, true);
+          view.setUint32(16, rec.crc, true);
+          view.setUint32(20, rec.dataBytes.length, true);
+          view.setUint32(24, rec.dataBytes.length, true);
+          view.setUint16(28, rec.nameBytes.length, true);
+          view.setUint16(30, 0, true);
+          view.setUint16(32, 0, true);
+          view.setUint16(34, 0, true);
+          view.setUint16(36, 0, true);
+          view.setUint32(38, 0, true);
+          view.setUint32(42, rec.offset, true);
+          central.set(rec.nameBytes, 46);
+          centralParts.push(central);
+          centralSize += central.length;
+        });
+
+        const end = new Uint8Array(22);
+        const endView = new DataView(end.buffer);
+        endView.setUint32(0, 0x06054b50, true);
+        endView.setUint16(4, 0, true);
+        endView.setUint16(6, 0, true);
+        endView.setUint16(8, fileRecords.length, true);
+        endView.setUint16(10, fileRecords.length, true);
+        endView.setUint32(12, centralSize, true);
+        endView.setUint32(16, offset, true);
+        endView.setUint16(20, 0, true);
+
+        return new Blob([...localParts, ...centralParts, end], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+      }
+
+      function crc32(bytes) {
+        let table = window.__crcTable;
+        if (!table) {
+          table = window.__crcTable = new Uint32Array(256);
+          for (let i = 0; i < 256; i++) {
+            let c = i;
+            for (let j = 0; j < 8; j++)
+              c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+            table[i] = c >>> 0;
+          }
+        }
+        let crc = 0 ^ -1;
+        for (let i = 0; i < bytes.length; i++) {
+          crc = (crc >>> 8) ^ table[(crc ^ bytes[i]) & 0xff];
+        }
+        return (crc ^ -1) >>> 0;
+      }
+
+      function downloadCsv() {
+        const lines = [
+          ["Category", "My Value", "Partner Value", "World Sample Value"],
+        ];
+        rows.forEach((r) => lines.push([r.category, r.my, r.partner, r.world]));
+        const csv = lines
+          .map((row) =>
+            row
+              .map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`)
+              .join(","),
+          )
+          .join("\n");
+        downloadBlob(csv, safeName("data") + ".csv", "text/csv");
+      }
+
+      function downloadReportHtml() {
+        updateAll();
+        const chart = $("chartSvg").outerHTML;
+        const report = $("finalReport").innerHTML;
+        const data = serialize();
+        const reportHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>${escapeHtml(data.studentName || "Student")} Data Report</title>
+<style>
+body{font-family:Calibri,Arial,sans-serif;max-width:980px;margin:30px auto;color:#17202A;line-height:1.4;padding:0 20px;}
+h1,h2,h3{color:#17324D;}
+.card{border:1px solid #D7DEE8;border-radius:18px;padding:18px;margin:16px 0;}
+table{width:100%;border-collapse:collapse;margin-top:12px;}
+th,td{border:1px solid #D7DEE8;padding:8px;text-align:left;}
+th{background:#EAF4FF;}
+svg{width:100%;height:auto;border:1px solid #D7DEE8;border-radius:16px;}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<h1>Interactive Bar Graph + World Comparison Report</h1>
+<div class="card">${report}</div>
+<h2>My Bar Graph</h2>
+${chart}
+<h2>Data Table</h2>
+<table>
+<thead><tr><th>Category</th><th>My Value</th><th>Partner Value</th><th>World Sample Value</th></tr></thead>
+<tbody>
+${data.rows.map((r) => `<tr><td>${escapeHtml(r.category)}</td><td>${escapeHtml(r.my)}</td><td>${escapeHtml(r.partner)}</td><td>${escapeHtml(r.world)}</td></tr>`).join("")}
+</tbody>
+</table>
+<p><em>World values are classroom practice sample values, not official research data.</em></p>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>`;
+        downloadBlob(
+          reportHtml,
+          safeName("completed-world-comparison-report") + ".html",
+          "text/html",
+        );
+      }
+
+      function downloadBlob(content, filename, type) {
+        const blob =
+          content instanceof Blob ? content : new Blob([content], { type });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(a.href);
+        toast("Download created");
+      }
+
+      function saveNameBase() {
+        const name = ($("studentName").value || "student")
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+        return name || "student";
+      }
+
+      function safeName(suffix) {
+        return `${saveNameBase()}-${suffix}`;
+      }
+
+      function addSvgText(
+        svg,
+        text,
+        x,
+        y,
+        size,
+        color,
+        anchor = "start",
+        weight = "700",
+        rotate = 0,
+      ) {
+        const t = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "text",
+        );
+        t.textContent = text;
+        t.setAttribute("x", x);
+        t.setAttribute("y", y);
+        t.setAttribute("font-size", size);
+        t.setAttribute("font-family", "Calibri, Arial, sans-serif");
+        t.setAttribute("fill", color);
+        t.setAttribute("font-weight", weight);
+        t.setAttribute("text-anchor", anchor);
+        if (rotate) t.setAttribute("transform", `rotate(${rotate} ${x} ${y})`);
+        svg.appendChild(t);
+      }
+
+      function addSvgLine(svg, x1, y1, x2, y2, color, width) {
+        const line = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line",
+        );
+        line.setAttribute("x1", x1);
+        line.setAttribute("y1", y1);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        line.setAttribute("stroke", color);
+        line.setAttribute("stroke-width", width);
+        svg.appendChild(line);
+      }
+
+      function niceMax(value) {
+        if (value <= 0) return 1;
+        const pow = Math.pow(10, Math.floor(Math.log10(value)));
+        const normalized = value / pow;
+        let nice;
+        if (normalized <= 1) nice = 1;
+        else if (normalized <= 2) nice = 2;
+        else if (normalized <= 5) nice = 5;
+        else nice = 10;
+        return nice * pow;
+      }
+
+      function format(n) {
+        if (!Number.isFinite(Number(n))) return "—";
+        return Math.round(Number(n) * 100) / 100;
+      }
+
+      function normalize(str) {
+        return String(str || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "")
+          .trim();
+      }
+
+      function truncate(text, max) {
+        text = String(text || "");
+        return text.length > max ? text.slice(0, max - 1) + "…" : text;
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function escapeAttr(str) {
+        return escapeHtml(str);
+      }
+
+      function toast(message) {
+        const t = $("toast");
+        t.textContent = message;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 1800);
+      }
+
+      function init() {
+        renderWorldCards();
+        renderCategoryBank();
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            hydrate(JSON.parse(saved));
+          } catch (e) {}
+        }
+        renderDataRows();
+        updateAll();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

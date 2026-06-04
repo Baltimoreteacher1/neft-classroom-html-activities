@@ -1,0 +1,1832 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bilingual Vocab Deck — Grade 6 Math | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Grade 6 bilingual math vocabulary flashcards in English and Spanish, supporting multilingual learners."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Design tokens (matched to repo palette) ─────────────────── */
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --purple: #6d28d9;
+        --purple-light: #ede9fe;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 18px;
+        --shadow: 0 6px 24px rgba(15, 43, 60, 0.11);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+
+      /* ── Base ─────────────────────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        min-height: 100vh;
+      }
+
+      /* ── Hero ─────────────────────────────────────────────────────── */
+      .phero {
+        background: linear-gradient(
+          135deg,
+          #0f2b3c 0%,
+          #1a6fb5 60%,
+          #0e8a7d 100%
+        );
+        color: #fff;
+        padding: 36px 24px 30px;
+        text-align: center;
+      }
+      .phero .deco {
+        font-size: 52px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(22px, 5vw, 38px);
+        margin: 10px 0 6px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        margin: 0 auto;
+        max-width: 600px;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+      }
+      .hero-tags {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .htag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .htag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      /* ── Wrap / breadcrumb ────────────────────────────────────────── */
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        padding: 14px 0 0;
+        color: var(--muted);
+      }
+      .breadcrumb a {
+        color: var(--blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      /* ── Controls bar ─────────────────────────────────────────────── */
+      .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        margin: 18px 0 0;
+        box-shadow: var(--shadow);
+      }
+      .controls-bar .spacer {
+        flex: 1 1 auto;
+      }
+
+      /* ── Filter dropdown ──────────────────────────────────────────── */
+      .filter-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .unit-filter {
+        padding: 8px 12px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        background: #fff;
+        cursor: pointer;
+        color: var(--ink);
+      }
+      .unit-filter:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+
+      /* ── Pill buttons ─────────────────────────────────────────────── */
+      .pill {
+        border: none;
+        border-radius: 50px;
+        padding: 8px 18px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          filter 0.15s,
+          transform 0.1s;
+      }
+      .pill:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+      }
+      .pill:active {
+        transform: translateY(0);
+      }
+      .pill-blue {
+        background: var(--blue);
+        color: #fff;
+      }
+      .pill-teal {
+        background: var(--teal);
+        color: #fff;
+      }
+      .pill-gold {
+        background: var(--gold);
+        color: #2a1c00;
+      }
+      .pill-nav {
+        background: var(--navy);
+        color: #fff;
+        font-size: 18px;
+        padding: 7px 16px;
+      }
+      .pill-nav:disabled {
+        opacity: 0.35;
+        cursor: default;
+        transform: none;
+      }
+      .pill-lang {
+        background: var(--purple);
+        color: #fff;
+        min-width: 70px;
+      }
+      .pill-audio {
+        background: var(--teal);
+        color: #fff;
+        font-size: 16px;
+        padding: 8px 14px;
+      }
+      .pill-shuffle {
+        background: var(--coral);
+        color: #fff;
+      }
+
+      /* ── Card counter ─────────────────────────────────────────────── */
+      .card-counter {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--muted);
+        background: var(--blue-light);
+        border-radius: 50px;
+        padding: 6px 14px;
+        white-space: nowrap;
+      }
+
+      /* ── Flip card ────────────────────────────────────────────────── */
+      .card-stage {
+        perspective: 1200px;
+        margin: 24px auto 0;
+        max-width: 640px;
+        min-height: 380px;
+        cursor: pointer;
+      }
+      .card-inner {
+        position: relative;
+        width: 100%;
+        min-height: 380px;
+        transform-style: preserve-3d;
+        transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .card-inner.flipped {
+        transform: rotateY(180deg);
+      }
+
+      .card-face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .card-back {
+        transform: rotateY(180deg);
+      }
+
+      /* Front face */
+      .card-front {
+        background: linear-gradient(160deg, #fff 0%, var(--blue-light) 100%);
+        border: 2px solid var(--blue);
+        align-items: center;
+        justify-content: center;
+        padding: 32px 28px;
+        gap: 16px;
+        text-align: center;
+      }
+      .card-unit-badge {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #fff;
+        background: var(--blue);
+        border-radius: 50px;
+        padding: 3px 12px;
+        margin-bottom: 4px;
+      }
+      .card-emoji {
+        font-size: 64px;
+        line-height: 1;
+      }
+      .card-term {
+        font-size: clamp(26px, 5vw, 40px);
+        font-weight: 900;
+        color: var(--navy);
+        line-height: 1.1;
+      }
+      .card-term-sub {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .flip-hint {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--blue);
+        opacity: 0.7;
+        margin-top: auto;
+        padding-top: 12px;
+      }
+
+      /* Back face */
+      .card-back {
+        background: linear-gradient(160deg, #fff 0%, var(--teal-light) 100%);
+        border: 2px solid var(--teal);
+        padding: 28px 28px 24px;
+        gap: 0;
+      }
+      .card-back-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .back-term {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--teal);
+      }
+      .def-label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .card-def {
+        font-size: clamp(15px, 2.8vw, 18px);
+        font-weight: 600;
+        color: var(--ink);
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+      .ex-label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .card-example {
+        background: var(--gold-light);
+        border-left: 4px solid var(--gold);
+        border-radius: 0 10px 10px 0;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #5a3a00;
+        line-height: 1.5;
+      }
+
+      /* ── Progress summary ─────────────────────────────────────────── */
+      .progress-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-top: 18px;
+        padding: 14px 18px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .prog-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .prog-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+      }
+      .dot-know {
+        background: var(--green);
+      }
+      .dot-review {
+        background: var(--coral);
+      }
+      .dot-unseen {
+        background: var(--line);
+      }
+      .prog-bar-wrap {
+        flex: 1 1 180px;
+      }
+      .prog-bar-track {
+        height: 8px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .prog-bar-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        border-radius: 50px;
+        transition: width 0.4s;
+      }
+
+      /* ── Know-it buttons ──────────────────────────────────────────── */
+      .verdict-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .verdict-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 26px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          filter 0.15s,
+          transform 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .verdict-btn:hover {
+        filter: brightness(1.08);
+        transform: translateY(-2px);
+      }
+      .verdict-btn:active {
+        transform: translateY(0);
+      }
+      .btn-know {
+        background: var(--green);
+        color: #fff;
+      }
+      .btn-review {
+        background: var(--coral);
+        color: #fff;
+      }
+      .btn-reset-prog {
+        background: var(--line);
+        color: var(--muted);
+        padding: 10px 18px;
+        font-size: 13px;
+      }
+
+      /* ── Unit color accent map ────────────────────────────────────── */
+      [data-unit="1"] .card-unit-badge,
+      [data-unit="1"] .card-front {
+        --ub: var(--blue);
+      }
+      [data-unit="2"] .card-unit-badge {
+        background: var(--teal);
+      }
+      [data-unit="2"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, var(--teal-light) 100%);
+        border-color: var(--teal);
+      }
+      [data-unit="3"] .card-unit-badge {
+        background: var(--purple);
+      }
+      [data-unit="3"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, var(--purple-light) 100%);
+        border-color: var(--purple);
+      }
+      [data-unit="4"] .card-unit-badge {
+        background: var(--gold);
+        color: #2a1c00;
+      }
+      [data-unit="4"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, var(--gold-light) 100%);
+        border-color: var(--gold);
+      }
+      [data-unit="5"] .card-unit-badge {
+        background: var(--coral);
+      }
+      [data-unit="5"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, var(--coral-light) 100%);
+        border-color: var(--coral);
+      }
+      [data-unit="6"] .card-unit-badge {
+        background: var(--green);
+      }
+      [data-unit="6"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, var(--green-light) 100%);
+        border-color: var(--green);
+      }
+      [data-unit="7"] .card-unit-badge {
+        background: #7c3aed;
+      }
+      [data-unit="7"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, #f5f3ff 100%);
+        border-color: #7c3aed;
+      }
+      [data-unit="8"] .card-unit-badge {
+        background: #0369a1;
+      }
+      [data-unit="8"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, #e0f2fe 100%);
+        border-color: #0369a1;
+      }
+      [data-unit="9"] .card-unit-badge {
+        background: #be185d;
+      }
+      [data-unit="9"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, #fce7f3 100%);
+        border-color: #be185d;
+      }
+      [data-unit="10"] .card-unit-badge {
+        background: #b45309;
+      }
+      [data-unit="10"] .card-front {
+        background: linear-gradient(160deg, #fff 0%, #fef3c7 100%);
+        border-color: #b45309;
+      }
+
+      /* ── Pile viewer ──────────────────────────────────────────────── */
+      .piles-section {
+        margin-top: 24px;
+      }
+      .piles-section summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--blue);
+        padding: 10px 0;
+      }
+      .piles-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 10px;
+      }
+      @media (max-width: 560px) {
+        .piles-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pile-box {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        box-shadow: var(--shadow);
+      }
+      .pile-box h4 {
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+      .pile-box h4.green {
+        color: var(--green);
+      }
+      .pile-box h4.coral {
+        color: var(--coral);
+      }
+      .pile-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .pile-chip {
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 3px 10px;
+        border: none;
+        cursor: pointer;
+      }
+      .chip-know {
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .chip-review {
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+
+      /* ── No-cards message ─────────────────────────────────────────── */
+      .no-cards {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      /* ── Footer ───────────────────────────────────────────────────── */
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+      }
+
+      /* ── Responsive nav row ───────────────────────────────────────── */
+      .nav-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+
+      /* ── Audio busy pulse ─────────────────────────────────────────── */
+      @keyframes pulse-ring {
+        0% {
+          box-shadow: 0 0 0 0 rgba(14, 138, 125, 0.5);
+        }
+        70% {
+          box-shadow: 0 0 0 8px rgba(14, 138, 125, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(14, 138, 125, 0);
+        }
+      }
+      .pill-audio.speaking {
+        animation: pulse-ring 1s infinite;
+      }
+
+      /* ── Transition between cards ─────────────────────────────────── */
+      .card-stage {
+        transition: opacity 0.18s;
+      }
+      .card-stage.fade {
+        opacity: 0;
+      }
+
+      @media (max-width: 600px) {
+        .card-face {
+          min-height: 340px;
+        }
+        .card-inner {
+          min-height: 340px;
+        }
+        .card-stage {
+          min-height: 340px;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- ── HERO ───────────────────────────────────────────────────────── -->
+    <header class="phero">
+      <div class="deco">🗂️</div>
+      <h1>Bilingual Vocabulary Deck</h1>
+      <p>Grade 6 Math · English &amp; Spanish · Flip cards to study!</p>
+      <div class="hero-tags">
+        <span class="htag gold">Grade 6 · Units 1–10</span>
+        <span class="htag">Level 1 Support</span>
+        <span class="htag">EN / ES</span>
+        <span class="htag">🔊 Audio</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <!-- breadcrumb -->
+
+      <!-- ── CONTROLS BAR ──────────────────────────────────────────────── -->
+      <div class="controls-bar">
+        <span class="filter-label">Filter:</span>
+        <select class="unit-filter" id="unitFilter" onchange="applyFilter()">
+          <option value="0">All Units</option>
+          <option value="1">Unit 1 · Number Sense</option>
+          <option value="2">Unit 2 · Fractions &amp; Division</option>
+          <option value="3">Unit 3 · Ratios &amp; Rates</option>
+          <option value="4">Unit 4 · Percents</option>
+          <option value="5">Unit 5 · Geometry / Area</option>
+          <option value="6">Unit 6 · Expressions</option>
+          <option value="7">Unit 7 · Integers &amp; Coordinate Plane</option>
+          <option value="8">Unit 8 · Equations &amp; Inequalities</option>
+          <option value="9">Unit 9 · Relationships &amp; Graphing</option>
+          <option value="10">Unit 10 · Volume &amp; Surface Area</option>
+        </select>
+        <div class="spacer"></div>
+        <button class="pill pill-lang" id="langBtn" onclick="toggleLang()">
+          🌐 ES
+        </button>
+        <button
+          class="pill pill-audio"
+          id="audioBtn"
+          onclick="speakCard()"
+          title="Read aloud"
+        >
+          🔊
+        </button>
+        <button class="pill pill-shuffle" onclick="shuffleDeck()">
+          🔀 Shuffle
+        </button>
+      </div>
+
+      <!-- ── CARD STAGE ────────────────────────────────────────────────── -->
+      <div id="noCards" class="no-cards" style="display: none">
+        No cards match this filter.
+      </div>
+
+      <div class="card-stage" id="cardStage" onclick="flipCard()">
+        <div class="card-inner" id="cardInner">
+          <!-- FRONT -->
+          <div class="card-face card-front" id="cardFront">
+            <div class="card-unit-badge" id="unitBadge">Unit 1</div>
+            <div class="card-emoji" id="cardEmoji">🔢</div>
+            <div class="card-term" id="cardTerm">Loading…</div>
+            <div class="card-term-sub" id="cardTermSub"></div>
+            <div class="flip-hint">Tap to flip ↩</div>
+          </div>
+
+          <!-- BACK -->
+          <div class="card-face card-back" id="cardBack">
+            <div class="card-back-header">
+              <span
+                class="card-unit-badge"
+                id="backBadge"
+                style="position: static; margin: 0"
+                >Unit 1</span
+              >
+              <span class="back-term" id="backTerm"></span>
+            </div>
+            <div class="def-label" id="defLabel">Definition</div>
+            <div class="card-def" id="cardDef">—</div>
+            <div class="ex-label" id="exLabel">Example</div>
+            <div class="card-example" id="cardExample">—</div>
+          </div>
+        </div>
+        <!-- /card-inner -->
+      </div>
+      <!-- /card-stage -->
+
+      <!-- ── NAVIGATION ROW ────────────────────────────────────────────── -->
+      <div class="nav-row">
+        <button
+          class="pill pill-nav"
+          id="prevBtn"
+          onclick="goCard(-1)"
+          title="Previous"
+        >
+          &#8592;
+        </button>
+        <span class="card-counter" id="cardCounter">Card 1 of 60</span>
+        <button
+          class="pill pill-nav"
+          id="nextBtn"
+          onclick="goCard(1)"
+          title="Next"
+        >
+          &#8594;
+        </button>
+      </div>
+
+      <!-- ── VERDICT BUTTONS ───────────────────────────────────────────── -->
+      <div class="verdict-row">
+        <button class="verdict-btn btn-know" onclick="markCard('know')">
+          ✅ I Know It
+        </button>
+        <button class="verdict-btn btn-review" onclick="markCard('review')">
+          🔁 Need Review
+        </button>
+        <button class="verdict-btn btn-reset-prog" onclick="resetProgress()">
+          Reset Progress
+        </button>
+      </div>
+
+      <!-- ── PROGRESS STRIP ────────────────────────────────────────────── -->
+      <div class="progress-strip">
+        <div class="prog-item">
+          <div class="prog-dot dot-know"></div>
+          <span id="knowCount">0 know</span>
+        </div>
+        <div class="prog-item">
+          <div class="prog-dot dot-review"></div>
+          <span id="reviewCount">0 review</span>
+        </div>
+        <div class="prog-item">
+          <div class="prog-dot dot-unseen"></div>
+          <span id="unseenCount">60 unseen</span>
+        </div>
+        <div class="prog-bar-wrap">
+          <div class="prog-bar-track">
+            <div class="prog-bar-fill" id="progFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PILES VIEWER ──────────────────────────────────────────────── -->
+      <details class="piles-section">
+        <summary>View my piles ▾</summary>
+        <div class="piles-grid">
+          <div class="pile-box">
+            <h4 class="green">
+              ✅ I Know It (<span id="knowPileCount">0</span>)
+            </h4>
+            <div class="pile-chips" id="knowPile"></div>
+          </div>
+          <div class="pile-box">
+            <h4 class="coral">
+              🔁 Need Review (<span id="reviewPileCount">0</span>)
+            </h4>
+            <div class="pile-chips" id="reviewPile"></div>
+          </div>
+        </div>
+      </details>
+
+      <p class="footer">Neft Teacher · Bilingual Vocab Deck · Grade 6 Math</p>
+    </div>
+    <!-- /wrap -->
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <script>
+      "use strict";
+
+      /* ── VOCABULARY DATA ─────────────────────────────────────────────── */
+      /* 60 cards, Units 1–10, each: { unit, term_en, term_es, def_en, def_es, ex_en, ex_es, emoji } */
+      const CARDS = [
+        // ─── UNIT 1: Number Sense ──────────────────────────────────────
+        {
+          unit: 1,
+          emoji: "🔢",
+          term_en: "Factor",
+          term_es: "Factor",
+          def_en: "A whole number that divides evenly into another number.",
+          def_es: "Un número entero que divide exactamente a otro número.",
+          ex_en: "Factors of 12: 1, 2, 3, 4, 6, 12",
+          ex_es: "Factores de 12: 1, 2, 3, 4, 6, 12",
+        },
+
+        {
+          unit: 1,
+          emoji: "✖️",
+          term_en: "Multiple",
+          term_es: "Múltiplo",
+          def_en: "The result of multiplying a number by any whole number.",
+          def_es:
+            "El resultado de multiplicar un número por cualquier número entero.",
+          ex_en: "Multiples of 4: 4, 8, 12, 16, 20…",
+          ex_es: "Múltiplos de 4: 4, 8, 12, 16, 20…",
+        },
+
+        {
+          unit: 1,
+          emoji: "🏆",
+          term_en: "GCF",
+          term_es: "MCD",
+          def_en:
+            "Greatest Common Factor — the largest factor shared by two or more numbers.",
+          def_es:
+            "Máximo Común Divisor — el factor más grande que comparten dos o más números.",
+          ex_en: "GCF(12, 18) = 6",
+          ex_es: "MCD(12, 18) = 6",
+        },
+
+        {
+          unit: 1,
+          emoji: "🔗",
+          term_en: "LCM",
+          term_es: "MCM",
+          def_en:
+            "Least Common Multiple — the smallest multiple shared by two or more numbers.",
+          def_es:
+            "Mínimo Común Múltiplo — el múltiplo más pequeño que comparten dos o más números.",
+          ex_en: "LCM(4, 6) = 12",
+          ex_es: "MCM(4, 6) = 12",
+        },
+
+        {
+          unit: 1,
+          emoji: "🔟",
+          term_en: "Decimal",
+          term_es: "Decimal",
+          def_en:
+            "A number that uses a decimal point to show values less than one.",
+          def_es:
+            "Un número que usa un punto decimal para mostrar valores menores que uno.",
+          ex_en: "3.75 means 3 and 75 hundredths",
+          ex_es: "3.75 significa 3 y 75 centésimas",
+        },
+
+        {
+          unit: 1,
+          emoji: "➗",
+          term_en: "Quotient",
+          term_es: "Cociente",
+          def_en: "The answer to a division problem.",
+          def_es: "La respuesta a un problema de división.",
+          ex_en: "36 ÷ 4 = 9, so the quotient is 9",
+          ex_es: "36 ÷ 4 = 9, entonces el cociente es 9",
+        },
+
+        // ─── UNIT 2: Fractions & Division ─────────────────────────────
+        {
+          unit: 2,
+          emoji: "📦",
+          term_en: "Dividend",
+          term_es: "Dividendo",
+          def_en: "The number being divided in a division problem.",
+          def_es: "El número que se divide en un problema de división.",
+          ex_en: "In 20 ÷ 4 = 5, the dividend is 20",
+          ex_es: "En 20 ÷ 4 = 5, el dividendo es 20",
+        },
+
+        {
+          unit: 2,
+          emoji: "🔪",
+          term_en: "Divisor",
+          term_es: "Divisor",
+          def_en: "The number you divide by.",
+          def_es: "El número por el que divides.",
+          ex_en: "In 20 ÷ 4 = 5, the divisor is 4",
+          ex_es: "En 20 ÷ 4 = 5, el divisor es 4",
+        },
+
+        {
+          unit: 2,
+          emoji: "🔄",
+          term_en: "Reciprocal",
+          term_es: "Recíproco",
+          def_en:
+            "The number you get when you flip a fraction upside down. Multiplying a number by its reciprocal gives 1.",
+          def_es:
+            "El número que obtienes al voltear una fracción. Multiplicar un número por su recíproco da 1.",
+          ex_en: "Reciprocal of ³⁄₄ is ⁴⁄₃",
+          ex_es: "El recíproco de ³⁄₄ es ⁴⁄₃",
+        },
+
+        {
+          unit: 2,
+          emoji: "🍕",
+          term_en: "Mixed Number",
+          term_es: "Número Mixto",
+          def_en: "A number that has a whole number part and a fraction part.",
+          def_es:
+            "Un número que tiene una parte entera y una parte fraccionaria.",
+          ex_en: "2¹⁄₂ is a mixed number (2 wholes and one half)",
+          ex_es: "2¹⁄₂ es un número mixto (2 enteros y media)",
+        },
+
+        {
+          unit: 2,
+          emoji: "📐",
+          term_en: "Improper Fraction",
+          term_es: "Fracción Impropia",
+          def_en:
+            "A fraction where the numerator is greater than or equal to the denominator.",
+          def_es:
+            "Una fracción donde el numerador es mayor o igual al denominador.",
+          ex_en: "⁷⁄₄ is an improper fraction; equals 1¾",
+          ex_es: "⁷⁄₄ es una fracción impropia; equivale a 1¾",
+        },
+
+        {
+          unit: 2,
+          emoji: "🔢",
+          term_en: "Numerator",
+          term_es: "Numerador",
+          def_en:
+            "The top number of a fraction. It tells how many parts you have.",
+          def_es:
+            "El número de arriba en una fracción. Indica cuántas partes tienes.",
+          ex_en: "In ³⁄₄, the numerator is 3",
+          ex_es: "En ³⁄₄, el numerador es 3",
+        },
+
+        // ─── UNIT 3: Ratios & Rates ────────────────────────────────────
+        {
+          unit: 3,
+          emoji: "⚖️",
+          term_en: "Ratio",
+          term_es: "Razón",
+          def_en:
+            "A comparison of two quantities using division. Can be written as a:b, a to b, or a/b.",
+          def_es:
+            "Una comparación de dos cantidades usando división. Se escribe como a:b, a a b, o a/b.",
+          ex_en: "3 red apples to 2 green apples → 3:2",
+          ex_es: "3 manzanas rojas y 2 verdes → 3:2",
+        },
+
+        {
+          unit: 3,
+          emoji: "🏎️",
+          term_en: "Rate",
+          term_es: "Tasa",
+          def_en: "A ratio that compares two quantities with different units.",
+          def_es:
+            "Una razón que compara dos cantidades con unidades diferentes.",
+          ex_en: "120 miles in 2 hours → 120 mi / 2 hr",
+          ex_es: "120 millas en 2 horas → 120 mi / 2 hr",
+        },
+
+        {
+          unit: 3,
+          emoji: "1️⃣",
+          term_en: "Unit Rate",
+          term_es: "Tasa Unitaria",
+          def_en: "A rate where the second quantity (denominator) is 1.",
+          def_es: "Una tasa donde la segunda cantidad (denominador) es 1.",
+          ex_en: "60 miles per hour = 60 mi / 1 hr",
+          ex_es: "60 millas por hora = 60 mi / 1 hr",
+        },
+
+        {
+          unit: 3,
+          emoji: "↔️",
+          term_en: "Equivalent Ratios",
+          term_es: "Razones Equivalentes",
+          def_en:
+            "Ratios that express the same relationship — found by multiplying or dividing both terms by the same number.",
+          def_es:
+            "Razones que expresan la misma relación — se obtienen multiplicando o dividiendo ambos términos por el mismo número.",
+          ex_en: "2:3 = 4:6 = 6:9 — all equivalent",
+          ex_es: "2:3 = 4:6 = 6:9 — todas equivalentes",
+        },
+
+        {
+          unit: 3,
+          emoji: "⚖️",
+          term_en: "Proportion",
+          term_es: "Proporción",
+          def_en: "An equation stating that two ratios are equal.",
+          def_es: "Una ecuación que establece que dos razones son iguales.",
+          ex_en: "3/4 = 6/8 is a proportion",
+          ex_es: "3/4 = 6/8 es una proporción",
+        },
+
+        // ─── UNIT 4: Percents ──────────────────────────────────────────
+        {
+          unit: 4,
+          emoji: "💯",
+          term_en: "Percent",
+          term_es: "Por Ciento",
+          def_en: "A ratio that compares a number to 100. The symbol is %.",
+          def_es: "Una razón que compara un número con 100. El símbolo es %.",
+          ex_en: "75% means 75 out of 100",
+          ex_es: "75% significa 75 de cada 100",
+        },
+
+        {
+          unit: 4,
+          emoji: "📈",
+          term_en: "Markup",
+          term_es: "Recargo",
+          def_en:
+            "An amount added to the cost of an item to create its selling price.",
+          def_es:
+            "Una cantidad que se agrega al costo de un artículo para crear su precio de venta.",
+          ex_en: "Cost $40, markup 25% → sell for $50",
+          ex_es: "Costo $40, recargo 25% → precio de venta $50",
+        },
+
+        {
+          unit: 4,
+          emoji: "🏷️",
+          term_en: "Discount",
+          term_es: "Descuento",
+          def_en: "An amount subtracted from the original price of an item.",
+          def_es:
+            "Una cantidad que se resta del precio original de un artículo.",
+          ex_en: "$80 shirt, 20% discount → you save $16",
+          ex_es: "Camisa $80, descuento 20% → ahorras $16",
+        },
+
+        {
+          unit: 4,
+          emoji: "🏛️",
+          term_en: "Sales Tax",
+          term_es: "Impuesto sobre la Venta",
+          def_en:
+            "A percent of the sale price added to the cost and paid to the government.",
+          def_es:
+            "Un porcentaje del precio de venta que se agrega al costo y se paga al gobierno.",
+          ex_en: "$50 item + 6% tax = $50 + $3 = $53",
+          ex_es: "Artículo $50 + impuesto 6% = $50 + $3 = $53",
+        },
+
+        {
+          unit: 4,
+          emoji: "💰",
+          term_en: "Simple Interest",
+          term_es: "Interés Simple",
+          def_en:
+            "Interest calculated only on the principal using I = P × r × t.",
+          def_es:
+            "Interés calculado solo sobre el capital usando I = P × r × t.",
+          ex_en: "$500 at 4% for 2 years: I = 500×0.04×2 = $40",
+          ex_es: "$500 al 4% por 2 años: I = 500×0.04×2 = $40",
+        },
+
+        {
+          unit: 4,
+          emoji: "🔄",
+          term_en: "Percent Change",
+          term_es: "Cambio Porcentual",
+          def_en:
+            "The ratio of the change in a quantity to the original amount, written as a percent.",
+          def_es:
+            "La razón del cambio en una cantidad respecto al valor original, expresado como porcentaje.",
+          ex_en: "From 50 to 60: change = 10/50 = 20% increase",
+          ex_es: "De 50 a 60: cambio = 10/50 = 20% de aumento",
+        },
+
+        // ─── UNIT 5: Geometry / Area ───────────────────────────────────
+        {
+          unit: 5,
+          emoji: "📏",
+          term_en: "Area",
+          term_es: "Área",
+          def_en:
+            "The amount of space inside a flat (2-D) shape, measured in square units.",
+          def_es:
+            "La cantidad de espacio dentro de una figura plana (2D), medida en unidades cuadradas.",
+          ex_en: "Rectangle: A = length × width",
+          ex_es: "Rectángulo: A = largo × ancho",
+        },
+
+        {
+          unit: 5,
+          emoji: "📐",
+          term_en: "Base",
+          term_es: "Base",
+          def_en: "The bottom side of a shape used to calculate area.",
+          def_es:
+            "El lado inferior de una figura que se usa para calcular el área.",
+          ex_en: "In a triangle A = ½ × base × height, b is the base",
+          ex_es: "En un triángulo A = ½ × base × altura, b es la base",
+        },
+
+        {
+          unit: 5,
+          emoji: "↕️",
+          term_en: "Height",
+          term_es: "Altura",
+          def_en:
+            "The perpendicular distance from the base to the opposite side or vertex.",
+          def_es:
+            "La distancia perpendicular desde la base hasta el lado opuesto o vértice.",
+          ex_en: "For any parallelogram, use the height — NOT the slant side",
+          ex_es: "Para todo paralelogramo, usa la altura — NO el lado oblicuo",
+        },
+
+        {
+          unit: 5,
+          emoji: "▱",
+          term_en: "Parallelogram",
+          term_es: "Paralelogramo",
+          def_en:
+            "A quadrilateral with two pairs of parallel sides. Area = base × height.",
+          def_es:
+            "Un cuadrilátero con dos pares de lados paralelos. Área = base × altura.",
+          ex_en: "A = 8 × 5 = 40 sq units",
+          ex_es: "A = 8 × 5 = 40 unidades cuadradas",
+        },
+
+        {
+          unit: 5,
+          emoji: "🪤",
+          term_en: "Trapezoid",
+          term_es: "Trapecio",
+          def_en:
+            "A quadrilateral with exactly one pair of parallel sides (called bases). Area = ½(b₁ + b₂)h.",
+          def_es:
+            "Un cuadrilátero con exactamente un par de lados paralelos (llamados bases). Área = ½(b₁ + b₂)h.",
+          ex_en: "bases 6 & 10, height 4: A = ½(6+10)×4 = 32",
+          ex_es: "bases 6 y 10, altura 4: A = ½(6+10)×4 = 32",
+        },
+
+        {
+          unit: 5,
+          emoji: "🔺",
+          term_en: "Triangle",
+          term_es: "Triángulo",
+          def_en: "A polygon with three sides. Area = ½ × base × height.",
+          def_es: "Un polígono con tres lados. Área = ½ × base × altura.",
+          ex_en: "base 10, height 6: A = ½ × 10 × 6 = 30 sq units",
+          ex_es: "base 10, altura 6: A = ½ × 10 × 6 = 30 unidades cuadradas",
+        },
+
+        {
+          unit: 5,
+          emoji: "🧩",
+          term_en: "Composite Figure",
+          term_es: "Figura Compuesta",
+          def_en:
+            "A shape made up of two or more basic shapes. Find total area by adding the areas of each part.",
+          def_es:
+            "Una figura formada por dos o más figuras básicas. Calcula el área total sumando las áreas de cada parte.",
+          ex_en: "An L-shape = rectangle + rectangle",
+          ex_es: "Una figura en L = rectángulo + rectángulo",
+        },
+
+        {
+          unit: 5,
+          emoji: "📐",
+          term_en: "Perimeter",
+          term_es: "Perímetro",
+          def_en: "The total distance around the outside of a shape.",
+          def_es: "La distancia total alrededor del exterior de una figura.",
+          ex_en: "Rectangle with sides 5 and 8: P = 2(5+8) = 26 units",
+          ex_es: "Rectángulo con lados 5 y 8: P = 2(5+8) = 26 unidades",
+        },
+
+        // ─── UNIT 6: Expressions ──────────────────────────────────────
+        {
+          unit: 6,
+          emoji: "🔤",
+          term_en: "Expression",
+          term_es: "Expresión",
+          def_en:
+            "A math phrase with numbers, variables, and/or operations — no equal sign.",
+          def_es:
+            "Una frase matemática con números, variables y/u operaciones — sin signo de igual.",
+          ex_en: "3x + 5 is an expression",
+          ex_es: "3x + 5 es una expresión",
+        },
+
+        {
+          unit: 6,
+          emoji: "🔠",
+          term_en: "Variable",
+          term_es: "Variable",
+          def_en:
+            "A letter or symbol that represents an unknown or changing value.",
+          def_es:
+            "Una letra o símbolo que representa un valor desconocido o cambiante.",
+          ex_en: "In 2n + 7, the variable is n",
+          ex_es: "En 2n + 7, la variable es n",
+        },
+
+        {
+          unit: 6,
+          emoji: "🔢",
+          term_en: "Coefficient",
+          term_es: "Coeficiente",
+          def_en: "The number multiplied by a variable in a term.",
+          def_es: "El número que multiplica a la variable en un término.",
+          ex_en: "In 5x, the coefficient is 5",
+          ex_es: "En 5x, el coeficiente es 5",
+        },
+
+        {
+          unit: 6,
+          emoji: "⬆️",
+          term_en: "Exponent",
+          term_es: "Exponente",
+          def_en:
+            "A small raised number that tells how many times to multiply the base by itself.",
+          def_es:
+            "Un número pequeño elevado que indica cuántas veces se multiplica la base por sí misma.",
+          ex_en: "2³ = 2 × 2 × 2 = 8",
+          ex_es: "2³ = 2 × 2 × 2 = 8",
+        },
+
+        {
+          unit: 6,
+          emoji: "🧮",
+          term_en: "Term",
+          term_es: "Término",
+          def_en:
+            "A single number, variable, or product of numbers and variables in an expression.",
+          def_es:
+            "Un número, variable o producto de números y variables en una expresión.",
+          ex_en: "In 4x + 3y − 2, the terms are 4x, 3y, and −2",
+          ex_es: "En 4x + 3y − 2, los términos son 4x, 3y y −2",
+        },
+
+        {
+          unit: 6,
+          emoji: "📦",
+          term_en: "Distributive Property",
+          term_es: "Propiedad Distributiva",
+          def_en:
+            "Multiplying a number by a sum is the same as multiplying it by each addend and adding the results: a(b+c) = ab + ac.",
+          def_es:
+            "Multiplicar un número por una suma es igual que multiplicarlo por cada sumando y sumar los resultados: a(b+c) = ab + ac.",
+          ex_en: "3(x + 4) = 3x + 12",
+          ex_es: "3(x + 4) = 3x + 12",
+        },
+
+        {
+          unit: 6,
+          emoji: "🔗",
+          term_en: "Like Terms",
+          term_es: "Términos Semejantes",
+          def_en:
+            "Terms with the same variable(s) raised to the same power; can be combined.",
+          def_es:
+            "Términos con la(s) misma(s) variable(s) elevada(s) al mismo exponente; pueden combinarse.",
+          ex_en: "3x and 7x are like terms: 3x + 7x = 10x",
+          ex_es: "3x y 7x son términos semejantes: 3x + 7x = 10x",
+        },
+
+        // ─── UNIT 7: Integers & Coordinate Plane ──────────────────────
+        {
+          unit: 7,
+          emoji: "➕",
+          term_en: "Integer",
+          term_es: "Entero",
+          def_en:
+            "Any whole number, its opposite, or zero (…−3, −2, −1, 0, 1, 2, 3…).",
+          def_es:
+            "Cualquier número entero, su opuesto, o cero (…−3, −2, −1, 0, 1, 2, 3…).",
+          ex_en: "-5, 0, and 12 are all integers",
+          ex_es: "-5, 0 y 12 son todos enteros",
+        },
+
+        {
+          unit: 7,
+          emoji: "📏",
+          term_en: "Absolute Value",
+          term_es: "Valor Absoluto",
+          def_en:
+            "The distance of a number from zero on the number line. Always positive or zero.",
+          def_es:
+            "La distancia de un número desde cero en la recta numérica. Siempre es positivo o cero.",
+          ex_en: "|−7| = 7 and |4| = 4",
+          ex_es: "|−7| = 7 y |4| = 4",
+        },
+
+        {
+          unit: 7,
+          emoji: "↔️",
+          term_en: "Opposite",
+          term_es: "Opuesto",
+          def_en:
+            "Two numbers that are the same distance from zero on opposite sides of the number line.",
+          def_es:
+            "Dos números que están a la misma distancia de cero en lados opuestos de la recta numérica.",
+          ex_en: "The opposite of 6 is −6; opposite of −3 is 3",
+          ex_es: "El opuesto de 6 es −6; el opuesto de −3 es 3",
+        },
+
+        {
+          unit: 7,
+          emoji: "🗺️",
+          term_en: "Coordinate Plane",
+          term_es: "Plano de Coordenadas",
+          def_en:
+            "A flat surface formed by two perpendicular number lines (the x-axis and y-axis) meeting at the origin.",
+          def_es:
+            "Una superficie plana formada por dos rectas numéricas perpendiculares (eje x y eje y) que se cruzan en el origen.",
+          ex_en: "Used to plot points and graph relationships",
+          ex_es: "Se usa para graficar puntos y relaciones",
+        },
+
+        {
+          unit: 7,
+          emoji: "🧭",
+          term_en: "Quadrant",
+          term_es: "Cuadrante",
+          def_en:
+            "One of the four sections of the coordinate plane, separated by the x- and y-axes.",
+          def_es:
+            "Una de las cuatro secciones del plano de coordenadas, separadas por los ejes x e y.",
+          ex_en: "Quadrant I: (+, +), Quadrant II: (−, +), etc.",
+          ex_es: "Cuadrante I: (+, +), Cuadrante II: (−, +), etc.",
+        },
+
+        {
+          unit: 7,
+          emoji: "📍",
+          term_en: "Ordered Pair",
+          term_es: "Par Ordenado",
+          def_en:
+            "Two numbers written in a specific order (x, y) used to locate a point on the coordinate plane.",
+          def_es:
+            "Dos números escritos en un orden específico (x, y) que localizan un punto en el plano de coordenadas.",
+          ex_en: "(3, −2) means go 3 right and 2 down from the origin",
+          ex_es:
+            "(3, −2) significa ir 3 a la derecha y 2 abajo desde el origen",
+        },
+
+        // ─── UNIT 8: Equations & Inequalities ─────────────────────────
+        {
+          unit: 8,
+          emoji: "🟰",
+          term_en: "Equation",
+          term_es: "Ecuación",
+          def_en:
+            "A mathematical statement that two expressions are equal, using an = sign.",
+          def_es:
+            "Un enunciado matemático que dice que dos expresiones son iguales, usando el signo =.",
+          ex_en: "2x + 3 = 11 is an equation",
+          ex_es: "2x + 3 = 11 es una ecuación",
+        },
+
+        {
+          unit: 8,
+          emoji: "✅",
+          term_en: "Solution",
+          term_es: "Solución",
+          def_en:
+            "The value of the variable that makes an equation or inequality true.",
+          def_es:
+            "El valor de la variable que hace que una ecuación o desigualdad sea verdadera.",
+          ex_en: "x = 4 is the solution to 2x + 3 = 11",
+          ex_es: "x = 4 es la solución de 2x + 3 = 11",
+        },
+
+        {
+          unit: 8,
+          emoji: "🔃",
+          term_en: "Inverse Operation",
+          term_es: "Operación Inversa",
+          def_en:
+            "The opposite operation used to undo another — addition ↔ subtraction, multiplication ↔ division.",
+          def_es:
+            "La operación opuesta que deshace otra — suma ↔ resta, multiplicación ↔ división.",
+          ex_en: "To solve x + 5 = 9, subtract 5 from both sides",
+          ex_es: "Para resolver x + 5 = 9, resta 5 de ambos lados",
+        },
+
+        {
+          unit: 8,
+          emoji: "📊",
+          term_en: "Inequality",
+          term_es: "Desigualdad",
+          def_en:
+            "A statement that compares two expressions using <, >, ≤, ≥, or ≠.",
+          def_es:
+            "Un enunciado que compara dos expresiones usando <, >, ≤, ≥ o ≠.",
+          ex_en: "x + 3 > 7 means x can be any number greater than 4",
+          ex_es:
+            "x + 3 > 7 significa que x puede ser cualquier número mayor que 4",
+        },
+
+        {
+          unit: 8,
+          emoji: "🔢",
+          term_en: "Constant",
+          term_es: "Constante",
+          def_en:
+            "A fixed number in an expression or equation — its value does not change.",
+          def_es:
+            "Un número fijo en una expresión o ecuación — su valor no cambia.",
+          ex_en: "In 4x + 7, the constant is 7",
+          ex_es: "En 4x + 7, la constante es 7",
+        },
+
+        // ─── UNIT 9: Relationships & Graphing ─────────────────────────
+        {
+          unit: 9,
+          emoji: "📥",
+          term_en: "Independent Variable",
+          term_es: "Variable Independiente",
+          def_en:
+            "The input variable in a relationship — its value is chosen freely.",
+          def_es:
+            "La variable de entrada en una relación — su valor se elige libremente.",
+          ex_en: "In y = 3x, x is the independent variable",
+          ex_es: "En y = 3x, x es la variable independiente",
+        },
+
+        {
+          unit: 9,
+          emoji: "📤",
+          term_en: "Dependent Variable",
+          term_es: "Variable Dependiente",
+          def_en:
+            "The output variable — its value depends on the independent variable.",
+          def_es:
+            "La variable de salida — su valor depende de la variable independiente.",
+          ex_en: "In y = 3x, y is the dependent variable",
+          ex_es: "En y = 3x, y es la variable dependiente",
+        },
+
+        {
+          unit: 9,
+          emoji: "📉",
+          term_en: "Linear Relationship",
+          term_es: "Relación Lineal",
+          def_en:
+            "A relationship between two quantities where the graph forms a straight line.",
+          def_es:
+            "Una relación entre dos cantidades donde la gráfica forma una línea recta.",
+          ex_en: "y = 2x + 1 is linear — its graph is a straight line",
+          ex_es: "y = 2x + 1 es lineal — su gráfica es una línea recta",
+        },
+
+        {
+          unit: 9,
+          emoji: "📋",
+          term_en: "Table of Values",
+          term_es: "Tabla de Valores",
+          def_en:
+            "An organized chart that shows input-output pairs for a relationship.",
+          def_es:
+            "Una tabla organizada que muestra pares de entrada-salida para una relación.",
+          ex_en: "x: 1, 2, 3 → y: 5, 10, 15 for y = 5x",
+          ex_es: "x: 1, 2, 3 → y: 5, 10, 15 para y = 5x",
+        },
+
+        {
+          unit: 9,
+          emoji: "📈",
+          term_en: "Rate of Change",
+          term_es: "Tasa de Cambio",
+          def_en:
+            "How much the dependent variable changes for every 1-unit increase in the independent variable.",
+          def_es:
+            "Cuánto cambia la variable dependiente por cada aumento de 1 unidad en la variable independiente.",
+          ex_en: "If y increases by 3 for every +1 in x, rate of change = 3",
+          ex_es: "Si y aumenta 3 por cada +1 en x, la tasa de cambio es 3",
+        },
+
+        // ─── UNIT 10: Volume & Surface Area ───────────────────────────
+        {
+          unit: 10,
+          emoji: "📦",
+          term_en: "Volume",
+          term_es: "Volumen",
+          def_en:
+            "The amount of 3-D space inside a solid figure, measured in cubic units.",
+          def_es:
+            "La cantidad de espacio tridimensional dentro de una figura sólida, medida en unidades cúbicas.",
+          ex_en: "Rectangular prism: V = length × width × height",
+          ex_es: "Prisma rectangular: V = largo × ancho × altura",
+        },
+
+        {
+          unit: 10,
+          emoji: "🎁",
+          term_en: "Surface Area",
+          term_es: "Área de Superficie",
+          def_en:
+            "The total area of all the faces (flat surfaces) of a 3-D figure.",
+          def_es:
+            "El área total de todas las caras (superficies planas) de una figura tridimensional.",
+          ex_en: "For a cube with side 3: SA = 6 × 3² = 54 sq units",
+          ex_es: "Para un cubo con lado 3: AS = 6 × 3² = 54 unidades cuadradas",
+        },
+
+        {
+          unit: 10,
+          emoji: "🗺️",
+          term_en: "Net",
+          term_es: "Red",
+          def_en: "A 2-D pattern that can be folded to form a 3-D solid.",
+          def_es:
+            "Un patrón en 2D que puede plegarse para formar un sólido en 3D.",
+          ex_en:
+            "Unfolding a cereal box gives you the net of a rectangular prism",
+          ex_es:
+            "Desdoblar una caja de cereal da la red de un prisma rectangular",
+        },
+
+        {
+          unit: 10,
+          emoji: "🏛️",
+          term_en: "Prism",
+          term_es: "Prisma",
+          def_en:
+            "A 3-D solid with two identical, parallel polygon bases connected by rectangular faces.",
+          def_es:
+            "Un sólido tridimensional con dos bases poligonales idénticas y paralelas unidas por caras rectangulares.",
+          ex_en:
+            "A triangular prism has triangle bases; V = Base area × height",
+          ex_es:
+            "Un prisma triangular tiene bases triangulares; V = área de la base × altura",
+        },
+
+        {
+          unit: 10,
+          emoji: "📏",
+          term_en: "Edge Length",
+          term_es: "Longitud de Arista",
+          def_en: "The length of one edge (side) of a 3-D figure.",
+          def_es:
+            "La longitud de una arista (lado) de una figura tridimensional.",
+          ex_en: "A cube with edge length 4 has V = 4³ = 64 cubic units",
+          ex_es:
+            "Un cubo con arista de longitud 4 tiene V = 4³ = 64 unidades cúbicas",
+        },
+      ];
+
+      /* ── APP STATE ────────────────────────────────────────────────────── */
+      let lang = "en"; // "en" | "es"
+      let filterUnit = 0; // 0 = all
+      let deck = [...CARDS]; // active ordered subset
+      let idx = 0; // current position
+      let flipped = false;
+      let progress = {}; // cardIndex → "know" | "review"
+
+      /* ── HELPERS ──────────────────────────────────────────────────────── */
+      function el(id) {
+        return document.getElementById(id);
+      }
+
+      function applyFilter() {
+        filterUnit = parseInt(el("unitFilter").value, 10);
+        deck =
+          filterUnit === 0
+            ? [...CARDS]
+            : CARDS.filter((c) => c.unit === filterUnit);
+        idx = 0;
+        flipped = false;
+        el("cardInner").classList.remove("flipped");
+        render();
+      }
+
+      function render() {
+        const stage = el("cardStage");
+        const noCards = el("noCards");
+        if (deck.length === 0) {
+          stage.style.display = "none";
+          noCards.style.display = "block";
+          el("cardCounter").textContent = "0 cards";
+          el("prevBtn").disabled = true;
+          el("nextBtn").disabled = true;
+          updateProgressBar();
+          return;
+        }
+        stage.style.display = "block";
+        noCards.style.display = "none";
+
+        const c = deck[idx];
+        const unitLabel = "Unit " + c.unit;
+
+        // Front
+        el("unitBadge").textContent = unitLabel;
+        el("cardEmoji").textContent = c.emoji;
+        el("cardTerm").textContent = lang === "en" ? c.term_en : c.term_es;
+        el("cardTermSub").textContent =
+          lang === "en"
+            ? c.term_es !== c.term_en
+              ? "(" + c.term_es + ")"
+              : ""
+            : c.term_en !== c.term_es
+              ? "(" + c.term_en + ")"
+              : "";
+
+        // Back
+        el("backBadge").textContent = unitLabel;
+        el("backTerm").textContent = lang === "en" ? c.term_en : c.term_es;
+        el("defLabel").textContent =
+          lang === "en" ? "Definition" : "Definición";
+        el("cardDef").textContent = lang === "en" ? c.def_en : c.def_es;
+        el("exLabel").textContent = lang === "en" ? "Example" : "Ejemplo";
+        el("cardExample").textContent = lang === "en" ? c.ex_en : c.ex_es;
+
+        // Unit-specific color class on the stage wrapper
+        const stage2 = el("cardStage");
+        stage2.removeAttribute("data-unit");
+        stage2.setAttribute("data-unit", c.unit);
+
+        // Counter
+        el("cardCounter").textContent =
+          "Card " + (idx + 1) + " of " + deck.length;
+        el("prevBtn").disabled = idx === 0;
+        el("nextBtn").disabled = idx === deck.length - 1;
+
+        updateProgressBar();
+        updatePiles();
+      }
+
+      function flipCard() {
+        flipped = !flipped;
+        el("cardInner").classList.toggle("flipped", flipped);
+      }
+
+      function goCard(dir) {
+        const newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= deck.length) return;
+
+        // Brief fade
+        const stage = el("cardStage");
+        stage.classList.add("fade");
+        setTimeout(() => {
+          idx = newIdx;
+          flipped = false;
+          el("cardInner").classList.remove("flipped");
+          render();
+          stage.classList.remove("fade");
+        }, 160);
+      }
+
+      function shuffleDeck() {
+        // Fisher-Yates
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        idx = 0;
+        flipped = false;
+        el("cardInner").classList.remove("flipped");
+        render();
+      }
+
+      function toggleLang() {
+        lang = lang === "en" ? "es" : "en";
+        el("langBtn").textContent = lang === "en" ? "🌐 ES" : "🌐 EN";
+        el("cardInner").classList.remove("flipped");
+        flipped = false;
+        render();
+      }
+
+      /* ── SPEECH ───────────────────────────────────────────────────────── */
+      function speakCard() {
+        if (!("speechSynthesis" in window)) {
+          alert(
+            "Your browser does not support text-to-speech. Try Chrome or Edge.",
+          );
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const c = deck[idx];
+        const term = lang === "en" ? c.term_en : c.term_es;
+        const def = lang === "en" ? c.def_en : c.def_es;
+        const sep = lang === "en" ? ". Definition: " : ". Definición: ";
+        const utt = new SpeechSynthesisUtterance(term + sep + def);
+        utt.lang = lang === "en" ? "en-US" : "es-ES";
+        utt.rate = 0.9;
+
+        const btn = el("audioBtn");
+        btn.classList.add("speaking");
+        utt.onend = () => btn.classList.remove("speaking");
+        utt.onerror = () => btn.classList.remove("speaking");
+        window.speechSynthesis.speak(utt);
+      }
+
+      /* ── PROGRESS ─────────────────────────────────────────────────────── */
+      function getCardKey(card) {
+        // Use original index in CARDS as stable key
+        return CARDS.indexOf(card);
+      }
+
+      function markCard(verdict) {
+        if (deck.length === 0) return;
+        const key = getCardKey(deck[idx]);
+        progress[key] = verdict;
+        updateProgressBar();
+        updatePiles();
+        // Advance automatically to next card if not last
+        if (idx < deck.length - 1) {
+          goCard(1);
+        }
+      }
+
+      function resetProgress() {
+        progress = {};
+        updateProgressBar();
+        updatePiles();
+      }
+
+      function updateProgressBar() {
+        const total = CARDS.length;
+        const knowKeys = Object.keys(progress).filter(
+          (k) => progress[k] === "know",
+        ).length;
+        const reviewKeys = Object.keys(progress).filter(
+          (k) => progress[k] === "review",
+        ).length;
+        const unseenKeys = total - knowKeys - reviewKeys;
+        el("knowCount").textContent = knowKeys + " know";
+        el("reviewCount").textContent = reviewKeys + " review";
+        el("unseenCount").textContent = unseenKeys + " unseen";
+        const pct = total === 0 ? 0 : Math.round((knowKeys / total) * 100);
+        el("progFill").style.width = pct + "%";
+      }
+
+      function updatePiles() {
+        const knowPile = el("knowPile");
+        const reviewPile = el("reviewPile");
+        knowPile.innerHTML = "";
+        reviewPile.innerHTML = "";
+        let kCount = 0,
+          rCount = 0;
+        Object.keys(progress).forEach((k) => {
+          const card = CARDS[parseInt(k, 10)];
+          if (!card) return;
+          const chip = document.createElement("button");
+          chip.className =
+            "pile-chip " +
+            (progress[k] === "know" ? "chip-know" : "chip-review");
+          chip.textContent = lang === "en" ? card.term_en : card.term_es;
+          chip.title = "Click to jump to this card";
+          chip.onclick = () => jumpToCard(card);
+          if (progress[k] === "know") {
+            knowPile.appendChild(chip);
+            kCount++;
+          } else {
+            reviewPile.appendChild(chip);
+            rCount++;
+          }
+        });
+        el("knowPileCount").textContent = kCount;
+        el("reviewPileCount").textContent = rCount;
+      }
+
+      function jumpToCard(card) {
+        // Find card in current deck
+        const pos = deck.indexOf(card);
+        if (pos >= 0) {
+          idx = pos;
+          flipped = false;
+          el("cardInner").classList.remove("flipped");
+          render();
+        } else {
+          // Switch filter to show all and jump
+          el("unitFilter").value = "0";
+          applyFilter();
+          const pos2 = deck.indexOf(card);
+          if (pos2 >= 0) {
+            idx = pos2;
+            render();
+          }
+        }
+      }
+
+      /* ── INIT ─────────────────────────────────────────────────────────── */
+      applyFilter(); // renders initial state
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

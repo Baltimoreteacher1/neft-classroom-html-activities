@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 5 Study Guide — Geometry &amp; Measurement | Neft Teacher
+    </title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f6f7f2;
+        color: #17202a;
+        line-height: 1.6;
+      }
+      .shell {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      .breadcrumb {
+        color: #5b6773;
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+      }
+      .breadcrumb a {
+        color: #0f766e;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 6px;
+      }
+      .subtitle {
+        color: #5b6773;
+        margin-bottom: 28px;
+        font-size: 1.05rem;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #d8dfdc;
+        padding-bottom: 8px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px 8px 0 0;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #5b6773;
+        transition: all 0.15s;
+      }
+      .tab.active {
+        background: #0f766e;
+        color: #fff;
+        border-color: #0f766e;
+      }
+      .tab:hover:not(.active) {
+        background: #eef4f3;
+      }
+      .lesson {
+        display: none;
+        animation: fadeIn 0.3s;
+      }
+      .lesson.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .lesson-header {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-top: 4px solid #0f766e;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(23, 32, 42, 0.08);
+      }
+      .lesson-header h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .lesson-header p {
+        color: #5b6773;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+        color: #0f766e;
+      }
+      .example {
+        background: #eef4f3;
+        border-left: 4px solid #b7791f;
+        padding: 14px 18px;
+        border-radius: 0 8px 8px 0;
+        margin: 12px 0;
+        font-size: 1rem;
+      }
+      .example strong {
+        color: #b7791f;
+      }
+      .number-line {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 12px 0;
+        text-align: center;
+        font-family: monospace;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+      }
+      .quiz h3 {
+        margin-bottom: 12px;
+      }
+      .question {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+      .question p {
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .opt {
+        padding: 10px 14px;
+        border: 2px solid #d8dfdc;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.15s;
+        background: #fff;
+      }
+      .opt:hover {
+        border-color: #0f766e;
+        background: #eef4f3;
+      }
+      .opt.correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+        pointer-events: none;
+      }
+      .opt.wrong {
+        border-color: #dc2626;
+        background: #fef2f2;
+        pointer-events: none;
+      }
+      .feedback {
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .feedback.wrong {
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .score-bar {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .score-bar .label {
+        font-weight: 700;
+        color: #0f766e;
+      }
+      .score-fill {
+        flex: 1;
+        height: 10px;
+        background: #d8dfdc;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .score-fill span {
+        display: block;
+        height: 100%;
+        background: #0f766e;
+        border-radius: 99px;
+        transition: width 0.4s;
+      }
+      .score-text {
+        font-weight: 700;
+        min-width: 50px;
+        text-align: right;
+      }
+      .vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .vocab-card {
+        background: #eef4f3;
+        border: 1px solid rgba(15, 118, 110, 0.18);
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .vocab-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.1);
+      }
+      .vocab-card .term {
+        font-weight: 800;
+        color: #0f766e;
+        font-size: 0.95rem;
+      }
+      .vocab-card .def {
+        color: #5b6773;
+        font-size: 0.85rem;
+        margin-top: 4px;
+        display: none;
+      }
+      .vocab-card.flipped .def {
+        display: block;
+      }
+      .vocab-card.flipped {
+        background: #fff;
+      }
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+      }
+      .nav-btn {
+        padding: 10px 20px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f766e;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .nav-btn:hover {
+        background: #0f766e;
+        color: #fff;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      @media (max-width: 600px) {
+        .tabs {
+          gap: 4px;
+        }
+        .tab {
+          padding: 6px 10px;
+          font-size: 0.8rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+      @media print {
+        body {
+          background: #fff !important;
+          color: #000 !important;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 11pt;
+          line-height: 1.4;
+        }
+        .shell {
+          max-width: 100%;
+          padding: 0;
+        }
+        .breadcrumb,
+        .tabs {
+          display: none !important;
+        }
+        .lesson {
+          display: block !important;
+          page-break-inside: avoid;
+          margin-bottom: 18pt;
+        }
+        .card,
+        .example,
+        .quiz {
+          border: 1pt solid #999;
+          box-shadow: none !important;
+          page-break-inside: avoid;
+        }
+        a[href]::after {
+          content: " (" attr(href) ")";
+          font-size: 9pt;
+          color: #666;
+        }
+        @page {
+          margin: 0.75in;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="shell">
+      <h1>Geometry &amp; Measurement</h1>
+      <p class="subtitle">
+        Interactive study guide — Reveal Math Unit 5 · Standard 6.G
+      </p>
+
+      <div class="tabs" id="tabs"></div>
+
+      <!-- LESSON 1 -->
+      <div class="lesson" data-lesson="1">
+        <div class="lesson-header">
+          <h2>5.1 — Area of Parallelograms</h2>
+          <p>
+            Find the area of a parallelogram using its base and perpendicular
+            height.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            A <strong>parallelogram</strong> has two pairs of parallel sides. To
+            find the area, multiply the base by the height.
+          </p>
+          <p><strong>Formula:</strong> A = b × h</p>
+          <p>
+            The <strong>height</strong> must be perpendicular to the base — not
+            the slanted side. Think of it as the straight-up distance between
+            the base and the opposite side.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> A parallelogram has a base of 8 cm and a
+            height of 5 cm.<br />A = 8 × 5 = 40 sq cm
+          </div>
+          <div class="example">
+            <strong>Tip:</strong> You can cut a parallelogram and rearrange it
+            into a rectangle with the same base and height — that's why the
+            formula works!
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>
+              A parallelogram has a base of 12 cm and a height of 7 cm. What is
+              the area?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">38 sq cm</div>
+              <div class="opt" data-idx="1">84 sq cm</div>
+              <div class="opt" data-idx="2">19 sq cm</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>
+              Which measurement must be perpendicular to the base when finding
+              area of a parallelogram?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">The height</div>
+              <div class="opt" data-idx="1">The slant side</div>
+              <div class="opt" data-idx="2">The diagonal</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>
+              A parallelogram has an area of 54 sq in and a base of 9 in. What
+              is the height?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">5 in</div>
+              <div class="opt" data-idx="1">63 in</div>
+              <div class="opt" data-idx="2">6 in</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 2 -->
+      <div class="lesson" data-lesson="2">
+        <div class="lesson-header">
+          <h2>5.2 — Area of Triangles</h2>
+          <p>
+            A triangle is half of a parallelogram, so its area formula uses
+            one-half.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            Two identical triangles can always be arranged to form a
+            parallelogram. That's why the area of a triangle is
+            <strong>half</strong> the area of the related parallelogram.
+          </p>
+          <p><strong>Formula:</strong> A = ½ × b × h</p>
+          <p>
+            The <strong>height</strong> is still the perpendicular distance from
+            the base to the opposite vertex.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> A triangle has a base of 10 in and a
+            height of 6 in.<br />A = ½ × 10 × 6 = ½ × 60 = 30 sq in
+          </div>
+          <div class="example">
+            <strong>Tip:</strong> Multiply base × height first, then divide by
+            2. It's easier that way!
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="2">
+            <p>
+              A triangle has a base of 14 cm and a height of 8 cm. What is the
+              area?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">112 sq cm</div>
+              <div class="opt" data-idx="1">22 sq cm</div>
+              <div class="opt" data-idx="2">56 sq cm</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>Why is the area formula for a triangle ½ × b × h?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">
+                A triangle is half of a parallelogram
+              </div>
+              <div class="opt" data-idx="1">
+                A triangle has half as many sides
+              </div>
+              <div class="opt" data-idx="2">You always divide shapes by 2</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>
+              A triangle has an area of 24 sq ft and a base of 8 ft. What is the
+              height?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">3 ft</div>
+              <div class="opt" data-idx="1">6 ft</div>
+              <div class="opt" data-idx="2">16 ft</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 3 -->
+      <div class="lesson" data-lesson="3">
+        <div class="lesson-header">
+          <h2>5.3 — Area of Trapezoids &amp; Composite Figures</h2>
+          <p>
+            Use the trapezoid formula and break composite figures into simpler
+            shapes.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Trapezoid Area</h3>
+          <p>
+            A <strong>trapezoid</strong> has exactly one pair of parallel sides
+            called <strong>bases</strong> (b&#8321; and b&#8322;).
+          </p>
+          <p><strong>Formula:</strong> A = ½(b&#8321; + b&#8322;) × h</p>
+          <p>Add the two bases, multiply by the height, then take half.</p>
+          <div class="example">
+            <strong>Example:</strong> A trapezoid has bases of 4 and 8 units and
+            a height of 5 units.<br />A = ½(4 + 8) × 5 = ½(12) × 5 = 6 × 5 = 30
+            sq units
+          </div>
+          <h3>Composite Figures</h3>
+          <p>
+            A <strong>composite figure</strong> is made up of two or more simple
+            shapes. Break it apart, find each area, then add them together.
+          </p>
+          <div class="example">
+            <strong>Strategy:</strong> Look for rectangles, triangles,
+            parallelograms, or trapezoids hiding inside the composite shape.
+            Find each area separately, then combine.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>
+              A trapezoid has bases of 6 cm and 10 cm and a height of 4 cm. What
+              is the area?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">40 sq cm</div>
+              <div class="opt" data-idx="1">32 sq cm</div>
+              <div class="opt" data-idx="2">24 sq cm</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>To find the area of a composite figure, you should:</p>
+            <div class="options">
+              <div class="opt" data-idx="0">
+                Break it into simpler shapes and add their areas
+              </div>
+              <div class="opt" data-idx="1">Multiply length × width</div>
+              <div class="opt" data-idx="2">Use only the trapezoid formula</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>
+              A trapezoid has bases of 5 in and 9 in and a height of 6 in. What
+              is the area?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">30 sq in</div>
+              <div class="opt" data-idx="1">54 sq in</div>
+              <div class="opt" data-idx="2">42 sq in</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 4 -->
+      <div class="lesson" data-lesson="4">
+        <div class="lesson-header">
+          <h2>5.4–5.5 — Nets &amp; Surface Area</h2>
+          <p>
+            Unfold 3D shapes into nets and find surface area by adding the areas
+            of all faces.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            A <strong>net</strong> is a 2D pattern that folds into a 3D shape.
+            Each face of the solid becomes a flat shape in the net.
+          </p>
+          <p>
+            <strong>Surface area (SA)</strong> is the total area of all the
+            faces of a 3D figure.
+          </p>
+          <h3>Rectangular Prism</h3>
+          <p>
+            A rectangular prism has 6 faces (3 pairs of identical rectangles).
+          </p>
+          <p><strong>Formula:</strong> SA = 2(lw + lh + wh)</p>
+          <div class="example">
+            <strong>Example:</strong> A rectangular prism is 3 × 4 × 5.<br />
+            SA = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 sq units
+          </div>
+          <div class="example">
+            <strong>Tip:</strong> Draw or visualize the net — it helps you see
+            all 6 faces and avoid missing any.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="0">
+            <p>A rectangular prism is 2 × 3 × 6. What is the surface area?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">72 sq units</div>
+              <div class="opt" data-idx="1">36 sq units</div>
+              <div class="opt" data-idx="2">66 sq units</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>How many faces does a rectangular prism have?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">4</div>
+              <div class="opt" data-idx="1">8</div>
+              <div class="opt" data-idx="2">6</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>A cube has edges of 5 cm. What is its surface area?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">125 sq cm</div>
+              <div class="opt" data-idx="1">150 sq cm</div>
+              <div class="opt" data-idx="2">100 sq cm</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 5 -->
+      <div class="lesson" data-lesson="5">
+        <div class="lesson-header">
+          <h2>5.6–5.8 — Volume of Rectangular Prisms</h2>
+          <p>
+            Find the volume of rectangular prisms, including those with
+            fractional edge lengths and composite 3D figures.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            <strong>Volume</strong> measures the space inside a 3D figure, in
+            <strong>cubic units</strong>.
+          </p>
+          <p>
+            <strong>Formulas:</strong> V = l × w × h &nbsp;or&nbsp; V = B × h
+            (where B is the area of the base)
+          </p>
+          <div class="example">
+            <strong>Example:</strong> A rectangular prism is 6 × 4 × 3.<br />
+            V = 6 × 4 × 3 = 72 cubic units
+          </div>
+          <h3>Fractional Edge Lengths</h3>
+          <p>The same formula works with fractions. Multiply carefully.</p>
+          <div class="example">
+            <strong>Example:</strong> V = 2½ × 3 × 4 = 5/2 × 3 × 4 = 30 cubic
+            units
+          </div>
+          <h3>Composite 3D Figures</h3>
+          <p>
+            Break composite solids into separate rectangular prisms, find each
+            volume, then add them together.
+          </p>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="2">
+            <p>A rectangular prism is 5 × 8 × 3. What is the volume?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">79 cubic units</div>
+              <div class="opt" data-idx="1">40 cubic units</div>
+              <div class="opt" data-idx="2">120 cubic units</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>
+              A rectangular prism has a base area of 20 sq cm and a height of 7
+              cm. What is the volume?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">140 cubic cm</div>
+              <div class="opt" data-idx="1">27 cubic cm</div>
+              <div class="opt" data-idx="2">54 cubic cm</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>A rectangular prism is ½ × 4 × 6. What is the volume?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">24 cubic units</div>
+              <div class="opt" data-idx="1">12 cubic units</div>
+              <div class="opt" data-idx="2">10 cubic units</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="lesson" data-lesson="vocab">
+        <div class="lesson-header">
+          <h2>Vocabulary</h2>
+          <p>Tap a card to reveal the definition.</p>
+        </div>
+        <div class="vocab">
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Area</div>
+            <div class="def">
+              The amount of space inside a 2D shape, measured in square units.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Base</div>
+            <div class="def">
+              The bottom side of a shape used in area formulas. A trapezoid has
+              two bases.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Height</div>
+            <div class="def">
+              The perpendicular distance from the base to the top of a shape.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Perpendicular</div>
+            <div class="def">
+              Meeting at a right angle (90°). The height is always perpendicular
+              to the base.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Parallelogram</div>
+            <div class="def">
+              A quadrilateral with two pairs of parallel sides. Area = base ×
+              height.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Trapezoid</div>
+            <div class="def">
+              A quadrilateral with exactly one pair of parallel sides (the
+              bases).
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Composite Figure</div>
+            <div class="def">
+              A shape made up of two or more simple shapes combined together.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Net</div>
+            <div class="def">
+              A 2D pattern that can be folded to form a 3D solid.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Surface Area</div>
+            <div class="def">
+              The total area of all the faces of a 3D figure, measured in square
+              units.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Volume</div>
+            <div class="def">
+              The amount of space inside a 3D figure, measured in cubic units.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Rectangular Prism</div>
+            <div class="def">
+              A 3D solid with 6 rectangular faces. Think of a box shape.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Cubic Units</div>
+            <div class="def">
+              Units used to measure volume, like cubic centimeters (cm³) or
+              cubic inches (in³).
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Face</div>
+            <div class="def">
+              A flat surface on a 3D solid. A rectangular prism has 6 faces.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Edge</div>
+            <div class="def">
+              A line segment where two faces of a 3D solid meet.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Vertex</div>
+            <div class="def">
+              A point where three or more edges meet on a 3D solid. Plural:
+              vertices.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
+        <button class="nav-btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const lessons = document.querySelectorAll(".lesson");
+        const tabsEl = document.getElementById("tabs");
+        const names = [
+          "5.1 Parallelograms",
+          "5.2 Triangles",
+          "5.3 Trapezoids",
+          "5.4–5.5 Surface Area",
+          "5.6–5.8 Volume",
+          "Vocabulary",
+        ];
+        let current = 0;
+
+        names.forEach((n, i) => {
+          const t = document.createElement("div");
+          t.className = "tab" + (i === 0 ? " active" : "");
+          t.textContent = n;
+          t.onclick = () => show(i);
+          tabsEl.appendChild(t);
+        });
+
+        function show(idx) {
+          current = idx;
+          lessons.forEach((l, i) => l.classList.toggle("active", i === idx));
+          tabsEl
+            .querySelectorAll(".tab")
+            .forEach((t, i) => t.classList.toggle("active", i === idx));
+          document.getElementById("prevBtn").disabled = idx === 0;
+          document.getElementById("nextBtn").disabled =
+            idx === lessons.length - 1;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.getElementById("prevBtn").onclick = () => {
+          if (current > 0) show(current - 1);
+        };
+        document.getElementById("nextBtn").onclick = () => {
+          if (current < lessons.length - 1) show(current + 1);
+        };
+
+        document.querySelectorAll(".question").forEach((q) => {
+          const correct = parseInt(q.dataset.correct);
+          const fb = q.querySelector(".feedback");
+          q.querySelectorAll(".opt").forEach((opt) => {
+            opt.onclick = () => {
+              const idx = parseInt(opt.dataset.idx);
+              q.querySelectorAll(".opt").forEach(
+                (o) => (o.style.pointerEvents = "none"),
+              );
+              if (idx === correct) {
+                opt.classList.add("correct");
+                fb.textContent = "Correct!";
+                fb.className = "feedback show correct";
+              } else {
+                opt.classList.add("wrong");
+                q.querySelectorAll(".opt")[correct].classList.add("correct");
+                fb.textContent = "Not quite — check the correct answer above.";
+                fb.className = "feedback show wrong";
+              }
+              updateScore(q.closest(".lesson"));
+            };
+          });
+        });
+
+        function updateScore(lesson) {
+          const qs = lesson.querySelectorAll(".question");
+          const answered = lesson.querySelectorAll(".opt.correct").length;
+          const bar = lesson.querySelector(".score-bar");
+          if (!bar) return;
+          const pct = Math.round((answered / qs.length) * 100);
+          bar.querySelector(".score-fill span").style.width = pct + "%";
+          bar.querySelector(".score-text").textContent =
+            answered + "/" + qs.length;
+        }
+
+        show(0);
+      })();
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

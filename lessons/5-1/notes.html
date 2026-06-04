@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Area of Parallelograms — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Area of Parallelograms · Standard 6.G.1";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+}
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="5-1-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/5-1-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/5-1-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 5 · Standard 6.G.1</p>
+    <h1>Area of Parallelograms </h1>
+    <p class="meta">Lesson 5-1</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  
+  <section class="section vocab">
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/parallelogram.svg" alt="Illustration of Parallelogram: A four-sided shape with two pairs of parallel sides." onerror="this.style.display='none'" />
+    <p class="vocab-caption">Think of a leaning door — the top and bottom are parallel, and the two sides are parallel, like a slanted rectangle</p>
+  </div>
+  <h3 class="vocab-term">Parallelogram</h3>
+  <p class="vocab-def">A four-sided shape with two pairs of parallel sides.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/base.svg" alt="Illustration of Base: A side of the shape you use to find the area." onerror="this.style.display='none'" />
+    <p class="vocab-caption">If the bottom of a parallelogram is 10 cm, then b = 10 cm in the formula A = b × h</p>
+  </div>
+  <h3 class="vocab-term">Base</h3>
+  <p class="vocab-def">A side of the shape you use to find the area.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/height.svg" alt="Illustration of Height: The straight-up distance from the base to the top." onerror="this.style.display='none'" />
+    <p class="vocab-caption">A dashed vertical line from the top side straight down to the base, forming a 90° angle — NOT the slanted side</p>
+  </div>
+  <h3 class="vocab-term">Height</h3>
+  <p class="vocab-def">The straight-up distance from the base to the top.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/area.svg" alt="Illustration of Area: How much space is inside a flat shape." onerror="this.style.display='none'" />
+    <p class="vocab-caption">A 3 cm × 4 cm rectangle covers 12 square centimeters — imagine 12 tiny 1×1 squares inside it</p>
+  </div>
+  <h3 class="vocab-term">Area</h3>
+  <p class="vocab-def">How much space is inside a flat shape.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/composite-figure.svg" alt="Illustration of Composite figure: A shape made by putting two or more simple shapes together." onerror="this.style.display='none'" />
+    <p class="vocab-caption">An L-shaped room = a 10×8 rectangle joined to a 4×5 rectangle; total area = 80 + 20 = 100 sq ft</p>
+  </div>
+  <h3 class="vocab-term">Composite figure</h3>
+  <p class="vocab-def">A shape made by putting two or more simple shapes together.</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="../../assets/vocab-images/expression.svg" alt="Illustration of Formula: A math rule written with symbols." onerror="this.style.display='none'" />
+    <p class="vocab-caption">A = b × h means Area equals base times height; for a parallelogram with b = 6 and h = 4, A = 24</p>
+  </div>
+  <h3 class="vocab-term">Formula</h3>
+  <p class="vocab-def">A math rule written with symbols.</p>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can find the area of a parallelogram using base × height.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">Your architecture firm is designing a parallelogram-shaped patio for a client's backyard.</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can find the area of a parallelogram using base × height.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Parallelogram</span><span class="notes-word-chip">Base</span><span class="notes-word-chip">Height</span><span class="notes-word-chip">Area</span><span class="notes-word-chip">Composite figure</span><span class="notes-word-chip">Formula</span></div>
+    </div></div>
+  <div class="think-block">
+    <h3>🤔 Think About It</h3>
+    <ul class="prompt-list"><li>What shape is the patio?</li><li>What measurements are given?</li><li>How is a parallelogram different from a rectangle?</li></ul>
+  </div>
+  <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the area of a parallelogram with base 10 cm and height 7 cm?</p>
+      <ol class="try-choices" type="A"><li>70 sq cm</li><li>34 sq cm</li><li>17 sq cm</li><li>70 cm</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> A = b × h = 10 × 7 = 70 square centimeters.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 70 sq cm</p>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A parallelogram has an area of 54 sq ft and a base of 9 ft. What is the height?</p>
+      <ol class="try-choices" type="A"><li>6 ft</li><li>45 ft</li><li>63 ft</li><li>27 ft</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the area of a parallelogram with base 9 cm and height 5 cm?</p>
+      <ol class="try-choices" type="A"><li>45 sq cm</li><li>14 sq cm</li><li>22.5 sq cm</li><li>90 sq cm</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+  </div>
+</section>
+  <section class="section turn-and-talk">
+  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
+  <div class="tt-card">
+  <span class="tt-phase">Launch</span>
+  <p class="tt-question">Look at the patio blueprint with a base of 14 feet and a height of 9 feet. Why do we use the height (9 ft) and not the slanted side to find the area?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> We use the height because it is perpendicular to the base.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;base&quot; or &quot;height&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">We use the height because it is ___ to the base.</span><span class="twr-es">Usamos la altura porque es ___ a la base.</span></p><p class="twr-frame"><span class="twr-en">The slanted side is not the height because ___.</span><span class="twr-es">El lado inclinado no es la altura porque ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">base</span><span class="tt-word">height</span><span class="tt-word">area</span><span class="tt-word">parallelogram</span><span class="tt-word">formula</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students connect 'height' to the perpendicular (straight-up) distance from base to top, and recognize the slanted side is longer and would overstate the area.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">If the client tilted the patio to make it more slanted but kept the base at 14 ft and the height at 9 ft, would the area change? Justify your answer.</p>
+    <ul class="tt-extend-stems"><li>The area would ___ because the formula only depends on ___ and ___.</li><li>Tilting the shape changes the slanted side but not the ___, so ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Explore</span>
+  <p class="tt-question">On the grid you cut a triangle off one end of the parallelogram and slid it to the other side. What shape did you make, and why does that prove the area is base x height?</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Rearranging the parallelogram makes a rectangle with the same base and height.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;rearrange&quot; or &quot;rectangle&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">When I move the triangle, I get a ___.</span><span class="twr-es">Cuando muevo el triángulo, obtengo un ___.</span></p><p class="twr-frame"><span class="twr-en">Area equals base times ___, so 14 times 9 equals ___.</span><span class="twr-es">El área es la base por ___, entonces 14 por 9 es ___.</span></p><p class="twr-frame"><span class="twr-en">It is like a rectangle because ___.</span><span class="twr-es">Es como un rectángulo porque ___.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">rearrange</span><span class="tt-word">rectangle</span><span class="tt-word">base</span><span class="tt-word">height</span><span class="tt-word">area</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer names a rectangle, states the area is 14 x 9 = 126 sq ft, and explains the rearranged rectangle has the same base and height as the parallelogram.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">A classmate says any quadrilateral's area is base x height. Critique this claim using what you know about parallelograms versus other four-sided shapes.</p>
+    <ul class="tt-extend-stems"><li>This claim is wrong because ___ only works when ___.</li><li>A counterexample is ___, which shows that ___.</li></ul>
+  </div>
+</div>
+<div class="tt-card">
+  <span class="tt-phase">Connect</span>
+  <p class="tt-question">The landscape architect tiles an 18 ft by 10 ft parallelogram courtyard and each tile covers 2 sq ft. Talk through how you find the number of tiles.</p>
+  <div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> First find the area, then divide by the tile size.</p>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;area&quot; or &quot;base&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">First I find the area: 18 times 10 equals ___ square feet.</span><span class="twr-es">Primero hallo el área: 18 por 10 es ___ pies cuadrados.</span></p><p class="twr-frame"><span class="twr-en">Then I divide by 2 because ___, so she needs ___ tiles.</span><span class="twr-es">Luego divido entre 2 porque ___, entonces necesita ___ baldosas.</span></p>
+    </div>
+    <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">area</span><span class="tt-word">base</span><span class="tt-word">height</span><span class="tt-word">parallelogram</span><span class="tt-word">tiles</span></div>
+    <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute area = 180 sq ft, then divide 180 / 2 = 90 tiles, and explain why dividing by the tile size gives the count.</p>
+  </div>
+  <div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    <p class="tt-extend-q">Tiles come in boxes of 12. Generalize a rule for finding how many full boxes the architect must buy for any courtyard area, and apply it here.</p>
+    <ul class="tt-extend-stems"><li>A rule for boxes is ___ because ___.</li><li>For this courtyard she needs ___ boxes, since ___.</li></ul>
+  </div>
+</div>
+</section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 5 Project — Area in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: apply area of polygons and composite figures to a real design challenge.</p>
+      <div class="project-links">
+        <a href="/math/unit-5/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏙️</span>
+        <h3 class="project-title">Area Architect — City Builder</h3>
+      </div>
+      <p class="project-desc">Build a city by calculating areas of parallelograms, triangles, trapezoids, and composite figures.</p>
+      <div class="project-links">
+        <a href="/games/unit5-area-architect.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🎢</span>
+        <h3 class="project-title">Graphic Novel #1 — Theme Park Engineer</h3>
+      </div>
+      <p class="project-desc">Story-driven area mission across parallelograms, triangles, and trapezoids.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit5/graphic-novel-1.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain how I found the area using the words base, height, area, and formula.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Parallelogram is a four-sided shape with two pairs of parallel sides.<span class="twr-es">Paralelogramo es una figura de cuatro lados con dos pares de lados paralelos.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about parallelogram. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre paralelogramo. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Parallelogram matters in math<span class="twr-es">Paralelogramo importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Parallelogram matters in math because ___.</span><span class="twr-es">Paralelogramo importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Parallelogram matters in math, but ___.</span><span class="twr-es">Paralelogramo importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Parallelogram matters in math, so ___.</span><span class="twr-es">Paralelogramo importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about parallelogram.<span class="twr-es">Di un hecho verdadero sobre parallelogram.</span></p>
+        <p class="twr-frame"><span class="twr-en">Parallelogram ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about parallelogram.<span class="twr-es">Haz una pregunta sobre parallelogram.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about parallelogram.<span class="twr-es">Muestra entusiasmo sobre parallelogram.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with parallelogram.<span class="twr-es">Dile a un compañero qué hacer con parallelogram.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">We use the height because it is ___ to the base.</span><span class="twr-es">Usamos la altura porque es ___ a la base.</span></p><p class="twr-frame"><span class="twr-en">The slanted side is not the height because ___.</span><span class="twr-es">El lado inclinado no es la altura porque ___.</span></p><p class="twr-frame"><span class="twr-en">When I move the triangle, I get a ___.</span><span class="twr-es">Cuando muevo el triángulo, obtengo un ___.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. Why is a parallelogram's area base × height and not base × slant side?</p>
+  <ol class="try-choices" type="A"><li>Height is the perpendicular distance between the bases</li><li>The slant side is always longer</li><li>Both give the same answer</li><li>The base is always the longest side</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A parallelogram has base 12 in and height 4.5 in. What is its area?</p>
+  <ol class="try-choices" type="A"><li>54 in²</li><li>16.5 in²</li><li>48 in²</li><li>27 in²</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">A parallelogram has a base of 12 cm. If you double the height, the area doubles too. Explain why this happens using the formula, and give a specific example with numbers.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> When the height doubles from ___ to ___, the area changes from ___ to ___ because in the formula A = b × h, the base stays at ___ and ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">A parallelogram has a base of 13 inches and a height of 5 inches. What is its area?</p>
+  <ol class="try-choices" type="A"><li>65 sq in</li><li>36 sq in</li><li>18 sq in</li><li>65 in</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key &amp; Teacher Guide</h2>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 6 ft <span class="ak-why">— A = b × h → 54 = 9 × h → h = 54 ÷ 9 = 6 ft.</span></li><li><strong>You Try (notes):</strong> A. 45 sq cm <span class="ak-why">— A = b × h = 9 × 5 = 45 square centimeters.</span></li><li><strong>Try It 1:</strong> A. Height is the perpendicular distance between the bases <span class="ak-why">— Area uses the perpendicular height, not the slanted side length.</span></li><li><strong>Try It 2:</strong> A. 54 in² <span class="ak-why">— 12 × 4.5 = 54 in².</span></li><li><strong>Exit Ticket:</strong> A. 65 sq in <span class="ak-why">— A = b x h = 13 x 5 = 65 square inches.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Parallelogram is a four-sided shape with two pairs of parallel sides.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 5-1 · Standard 6.G.1</footer>
+</main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

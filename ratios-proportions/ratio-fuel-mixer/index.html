@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ratio Table Fuel Mixer: An interactive cyberpunk equivalent ratio laboratory. Scale liquid mixtures, complete ratio tables, and plot coordinate grids.">
+  <title>Ratio Table Fuel Mixer | Neft Studio</title>
+
+  <!-- Google Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Cyberpunk Neon Design Tokens ── */
+    :root {
+      --bg-base: #04040c;
+      --bg-surface: #090a20;
+      --bg-card: rgba(14, 16, 42, 0.6);
+      --bg-glow: rgba(6, 182, 212, 0.08); /* Cyan glow */
+      
+      --primary: #06b6d4; /* Neon Cyan */
+      --primary-glow: rgba(6, 182, 212, 0.4);
+      --secondary: #10b981; /* Neon Emerald */
+      --secondary-glow: rgba(16, 185, 129, 0.4);
+      --accent: #ff007f; /* Cyber Pink */
+      --accent-glow: rgba(255, 0, 127, 0.4);
+      --warning: #f59e0b; /* Amber */
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dark: #475569;
+      
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-gaze: 0 0 20px rgba(6, 182, 212, 0.2);
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Breadcrumb & Navigation ── */
+    .breadcrumb {
+      margin: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .breadcrumb a:hover {
+      text-shadow: 0 0 8px var(--primary);
+    }
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    /* ── Hero Cyber banner ── */
+    .hero {
+      background: linear-gradient(135deg, #0b1c31 0%, #03040e 100%);
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      border-left: 6px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 20px 24px;
+      box-shadow: var(--shadow-gaze);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.4), transparent);
+    }
+    .hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff, #a5f3fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 0 16px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+    }
+    .hero-chip {
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-chip.accent {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.2);
+      color: var(--secondary);
+    }
+
+    /* ── Main Layout grid ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brand-block h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* ── Quest List Cards ── */
+    .quest-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .quest-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .quest-card:hover {
+      border-color: var(--primary);
+      background: rgba(6, 182, 212, 0.05);
+      transform: translateY(-1px);
+    }
+    .quest-card.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+    }
+    .quest-card .quest-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .quest-catalog .quest-card.completed {
+      border-color: var(--secondary);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    /* ── Main Workspace ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .glass-panel {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+    .panel-meta h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Ratio Controller */
+    .mixer-controllers {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .control-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .slider-header span.val-label {
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #141738;
+      border-radius: 4px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--primary-glow);
+      transition: var(--transition);
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: #fff;
+      transform: scale(1.15);
+    }
+
+    /* ── SVG Plot Viewport ── */
+    .model-viewport {
+      background: #020308;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-md);
+      min-height: 380px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .model-viewport svg {
+      width: 100%;
+      height: 380px;
+      display: block;
+    }
+
+    /* ── Case Objective HUD ── */
+    .objective-hud {
+      background: rgba(6, 182, 212, 0.03);
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .hud-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .hud-item.done {
+      border-color: var(--secondary);
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--secondary);
+    }
+
+    /* ── ESOL Bilingual Glossary ── */
+    .glossary-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .glossary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .glossary-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .glossary-lang-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .lang-tab {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .glossary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .vocab-chip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vocab-chip:hover {
+      border-color: var(--primary);
+      background: rgba(6, 182, 212, 0.08);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .vocab-chip .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background: #090b1e;
+      color: var(--text-main);
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .vocab-chip:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* ── TWR Writing Reporter ── */
+    .writing-reporter {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .writing-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .writing-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .writing-header p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .twr-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .twr-lane {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lane-label {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+    .twr-lane:nth-child(2) .lane-label { color: var(--warning); }
+    .twr-lane:nth-child(3) .lane-label { color: var(--secondary); }
+    .lane-kernel {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .twr-textarea {
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      resize: none;
+      outline: none;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .twr-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
+    }
+    .twr-conjunctions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .conj-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .conj-chip:hover {
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .report-pad-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+    }
+    .report-pad-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .report-pad-area {
+      width: 100%;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .report-pad-area:focus {
+      border-color: var(--secondary);
+    }
+    .report-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* ── Cyber Buttons ── */
+    .cyber-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, #0891b2 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+    }
+    .cyber-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+    }
+    .cyber-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .cyber-btn.sec {
+      background: linear-gradient(135deg, var(--secondary) 0%, #047857 100%);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .cyber-btn.sec:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+    .cyber-btn.outline {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+    .cyber-btn.outline:hover {
+      border-color: var(--primary);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    /* ── Diagnostics console overlay ── */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #05070f;
+      color: #00ff66;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 1px solid #14294a;
+      padding: 16px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #14294a;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .diag-line {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .diag-close {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: none;
+      }
+      .mixer-controllers {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/ratios-proportions/">Ratios</a>
+    <span>/</span>
+    <span>Ratio Table Fuel Mixer</span>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-row">
+      <div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px">
+          <span class="hero-chip">Unit 5 · Ratios</span>
+          <span class="hero-chip accent" id="langIndicator">English Mode</span>
+        </div>
+        <h1 id="heroTitle">Ratio Table Fuel Mixer</h1>
+        <p id="heroCopy">
+          Plot, balance, and scale equivalent chemical liquid coordinates. Drag sliders to adjust multiplier ratios, 
+          complete coordinate tables, and plot nodes on the sonar grid in real-time.
+        </p>
+        <div class="hero-stats">
+          <button class="cyber-btn outline" onclick="toggleLanguage()" id="btnLangToggle">
+            🌍 Translate to Spanish
+          </button>
+          <button class="cyber-btn outline" onclick="toggleDiagnostics()">
+            📊 Run System Checks
+          </button>
+          <button class="cyber-btn outline" id="btnSelfTest" onclick="triggerSelfTest()">
+            ⚙️ Run Self-Test
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-shell">
+    <!-- Sidebar: Mystery Quests -->
+    <aside class="sidebar-wrapper" aria-label="Mystery Cases">
+      <div class="brand-block">
+        <h2 id="sidebarTitle">🧬 Active Quests</h2>
+        <p id="sidebarSubtitle">Scale equivalent liquid ratios</p>
+      </div>
+
+      <div class="quest-catalog" id="questCatalog" role="radiogroup" aria-label="Select Case">
+        <!-- Dynamically populated quest cards -->
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="canvas-layout">
+      <!-- SVG Box Plot Sandbox -->
+      <section class="glass-panel" aria-labelledby="canvasHeading">
+        <div class="panel-meta">
+          <h3 id="canvasHeading">🔬 Equivalency Mixer & Coordinate Plotter</h3>
+          <button class="cyber-btn" onclick="resetActiveSliders()" id="btnResetData">
+            🔄 Reset Laboratory
+          </button>
+        </div>
+
+        <!-- Slider Controllers -->
+        <div class="mixer-controllers">
+          <div class="control-slider-group">
+            <div class="slider-header">
+              <span id="labelBlue">Blue Liquid Base</span>
+              <span class="val-label" id="valBlue">3 parts</span>
+            </div>
+            <input type="range" id="sliderBlue" min="1" max="10" value="3" step="1" oninput="updateMixer()">
+          </div>
+
+          <div class="control-slider-group">
+            <div class="slider-header">
+              <span id="labelGreen">Green Liquid Base</span>
+              <span class="val-label" id="valGreen">2 parts</span>
+            </div>
+            <input type="range" id="sliderGreen" min="1" max="10" value="2" step="1" oninput="updateMixer()">
+          </div>
+
+          <div class="control-slider-group" style="grid-column: span 2">
+            <div class="slider-header">
+              <span id="labelScale">Laboratory Scaling Factor (Multiplier)</span>
+              <span class="val-label" style="color:var(--secondary);" id="valScale">x 4</span>
+            </div>
+            <input type="range" id="sliderScale" min="1" max="5" value="4" step="1" oninput="updateMixer()">
+          </div>
+        </div>
+
+        <div class="model-viewport" id="viewport">
+          <svg id="canvasSvg" viewBox="0 0 800 380">
+            <rect width="800" height="380" fill="none" />
+            
+            <!-- Separator line between Mixer and Coordinate Grid -->
+            <line x1="420" y1="20" x2="420" y2="360" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4" />
+            
+            <!-- Views Titles -->
+            <text x="210" y="30" fill="#64748b" font-size="11" font-family="'Space Grotesk'" text-anchor="middle" letter-spacing="1" id="lblFlasks">CHEMICAL LIQUID MIXER</text>
+            <text x="610" y="30" fill="#64748b" font-size="11" font-family="'Space Grotesk'" text-anchor="middle" letter-spacing="1" id="lblGrid">RATIO COORDINATE PLOT</text>
+
+            <!-- Flasks elements group -->
+            <g id="flasksGroup"></g>
+            
+            <!-- Table elements group -->
+            <g id="tableGroup"></g>
+            
+            <!-- Coordinate Grid elements group -->
+            <g id="gridGroup"></g>
+          </svg>
+        </div>
+
+        <!-- Case Objective HUD -->
+        <div class="objective-hud">
+          <div class="hud-title" id="hudTitle">📌 Case Goals Checklist</div>
+          <div class="hud-checklist" id="hudChecklist">
+            <!-- Injected active quest items -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ESOL Bilingual Glossary -->
+      <section class="glossary-card" aria-labelledby="glossaryHeading">
+        <div class="glossary-header">
+          <h4 id="glossaryHeading">📖 Interactive Math Dictionary</h4>
+          <div class="glossary-lang-tabs" id="glossaryLangTabs" role="tablist" aria-label="Glossary Language">
+            <button class="lang-tab active" role="tab" aria-selected="true" onclick="setGlossaryLanguage('en')" id="tabEn">English</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('es')" id="tabEs">Español</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('ar')" id="tabAr">العربية</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('vi')" id="tabVi">Tiếng Việt</button>
+          </div>
+        </div>
+        <div class="glossary-grid" id="glossaryGrid">
+          <!-- Injected bilingual vocab cards -->
+        </div>
+      </section>
+
+      <!-- TWR Writing Pad -->
+      <section class="writing-reporter" aria-labelledby="reporterHeading">
+        <div class="writing-header">
+          <h4 id="reporterHeading">✍️ The Writing Revolution (TWR) Detective Report</h4>
+          <p id="reporterSub">Expand your kernels using transition connectors to synthesize your analytical case report.</p>
+        </div>
+        
+        <div class="twr-lanes">
+          <div class="twr-lane">
+            <span class="lane-label">Because</span>
+            <span class="lane-kernel" id="kernelBecause">The chemical ratio is balanced because...</span>
+            <textarea class="twr-textarea" id="textareaBecause" placeholder="Type reason..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaBecause', 'proportional scaling')">proportional scaling</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaBecause', 'equal multipliers')">equal multipliers</span>
+            </div>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">But</span>
+            <span class="lane-kernel" id="kernelBut">The total volume increases, but...</span>
+            <textarea class="twr-textarea" id="textareaBut" placeholder="Type contrast..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaBut', 'the ratio remains')">the ratio remains</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaBut', 'simplifies back')">simplifies back</span>
+            </div>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">So</span>
+            <span class="lane-kernel" id="kernelSo">The coordinate node sits on a line, so...</span>
+            <textarea class="twr-textarea" id="textareaSo" placeholder="Type result..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaSo', 'it forms equivalents')">it forms equivalents</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaSo', 'slopes align')">slopes align</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pad-section">
+          <span class="report-pad-title" id="padTitle">📜 Compiled Detective Report Pad</span>
+          <textarea class="report-pad-area" id="finalReportPad" readonly placeholder="Your structured report will compose here as you type in the lanes above..."></textarea>
+          <div class="report-actions">
+            <button class="cyber-btn sec" onclick="triggerReportSubmission()" id="btnSubmitReport">
+              🚀 Submit Case File
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Diagnostics overlay console -->
+  <div class="diag-overlay" id="diagConsole" aria-live="polite">
+    <div class="diag-head">
+      <span>SYSTEM DIAGNOSTICS CONTROL</span>
+      <button class="diag-close" onclick="toggleDiagnostics()">[CLOSE]</button>
+    </div>
+    <div class="diag-stream" id="diagStream">
+      <p class="diag-line" style="color: #66ff66;">&gt; Cybernetic ratio-table core initialized.</p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>Mr. Neft's Classroom Static Studio</span>
+    <span>&copy; SY 2025-26 · Pure Client-Side Static HTML5</span>
+  </footer>
+
+  <script src="/assets/app.js" defer></script>
+
+  <script>
+    // ── Educational Publishing Layer Architecture ──
+
+    // 1. CONFIG Preset Database
+    const CONFIG = {
+      lang: "en",
+      glossaryLang: "en",
+      activeCaseIdx: 0,
+      audioMaxGain: 0.08,
+      quests: [
+        {
+          titleEn: "Case 1: Hyper-Drive Fuel Mix",
+          titleEs: "Caso 1: Mezcla de Hiper-Propulsión",
+          descEn: "Complete a balanced fuel cell where the baseline ratio is 3:2 (Blue to Green). Scale it using the multiplier so that you get exactly 12 parts Blue to 8 parts Green.",
+          descEs: "Completa una celda de combustible donde la razón base sea 3:2. Escálala de modo que obtengas exactamente 12 partes de Azul y 8 partes de Verde.",
+          objectives: [
+            { id: "base_3_2", textEn: "Baseline ratio equals exactly 3:2", textEs: "La razón base es exactamente 3:2" },
+            { id: "scale_4", textEn: "Multiplier matches exactly x 4", textEs: "El multiplicador es exactamente x 4" },
+            { id: "total_12_8", textEn: "Total coordinates match exactly 12:8", textEs: "Las coordenadas totales son exactamente 12:8" }
+          ]
+        },
+        {
+          titleEn: "Case 2: The Ion Booster Mix",
+          titleEs: "Caso 2: Mezcla del Amplificador Ion",
+          descEn: "Form a chemical compound where the baseline ratio is 4:3 (Blue to Green). Scale the multiplier to x 4 to produce exactly 16 parts Blue to 12 parts Green.",
+          descEs: "Forma un compuesto químico donde la razón base sea 4:3. Escala el multiplicador a x 4 para producir exactamente 16 partes de Azul y 12 partes de Verde.",
+          objectives: [
+            { id: "base_4_3", textEn: "Baseline ratio equals exactly 4:3", textEs: "La razón base es exactamente 4:3" },
+            { id: "scale_4_boost", textEn: "Multiplier matches exactly x 4", textEs: "El multiplicador es exactamente x 4" },
+            { id: "total_16_12", textEn: "Total coordinates match exactly 16:12", textEs: "Las coordenadas totales son exactamente 16:12" }
+          ]
+        },
+        {
+          titleEn: "Case 3: Solar Flare Grid Override",
+          titleEs: "Caso 3: Anulación del Grid Destello",
+          descEn: "Mix a proportional compound where the baseline ratio is 5:4. Scale it up to exactly 20 parts Blue to 16 parts Green (Multiplier x 4).",
+          descEs: "Mezcla un compuesto donde la razón base sea 5:4. Escálala exactamente a 20 partes de Azul y 16 partes de Verde (Multiplicador x 4).",
+          objectives: [
+            { id: "base_5_4", textEn: "Baseline ratio equals exactly 5:4", textEs: "La razón base es exactamente 5:4" },
+            { id: "scale_4_flare", textEn: "Multiplier matches exactly x 4", textEs: "El multiplicador es exactamente x 4" },
+            { id: "total_20_16", textEn: "Total coordinates match exactly 20:16", textEs: "Las coordenadas son exactamente 20:16" }
+          ]
+        }
+      ],
+      dictionary: {
+        ratio: {
+          en: { word: "Ratio", syllables: "ra·ti·o", trans: "Razón / Relación", def: "A comparison of two quantities by division. Shows how many times one value contains another." },
+          es: { word: "Razón", syllables: "ra·zón", trans: "Ratio", def: "Una comparación de dos cantidades por división. Muestra la relación entre dos números." },
+          ar: { word: "النسبة", syllables: "al-nis-ba", trans: "Ratio", def: "مقارنة بين كميتين باستعمال القسمة، وتوضح العلاقة بين قيمتين." },
+          vi: { word: "Tỷ số", syllables: "tỷ số", trans: "Ratio", def: "Sự so sánh giữa hai đại lượng bằng cách chia đại lượng này cho đại lượng kia." }
+        },
+        equivalentRatio: {
+          en: { word: "Equivalent Ratios", syllables: "e·quiv·a·lent ra·ti·o", trans: "Razones equivalentes", def: "Ratios that express the same relationship between numbers. Formed by multiplying or dividing both parts by the same number." },
+          es: { word: "Razones equivalentes", syllables: "ra·zo·nes e·qui·va·len·tes", trans: "Equivalent Ratios", def: "Razones que expresan la misma relación entre números." },
+          ar: { word: "النسب المتكافئة", syllables: "al-ni-sab al-mu-ta-ka-fi-a", trans: "Equivalent Ratios", def: "النسب التي تعبر عن العلاقة نفسها بين الأعداد بعد التبسيط." },
+          vi: { word: "Tỷ số tương đương", syllables: "tỷ số tương đương", trans: "Equivalent Ratios", def: "Các tỷ số biểu thị cùng một mối quan hệ so sánh giữa các con số." }
+        },
+        ratioTable: {
+          en: { word: "Ratio Table", syllables: "ra·ti·o ta·ble", trans: "Tabla de razones", def: "A table of columns and rows structured to show equivalent ratios in organized sequences." },
+          es: { word: "Tabla de razones", syllables: "ta·bla de ra·zo·nes", trans: "Ratio Table", def: "Una tabla organizada para mostrar secuencias de razones equivalentes." },
+          ar: { word: "جدول النسب", syllables: "ja-dwal al-ni-sab", trans: "Ratio Table", def: "جدول منظم يحتوي على أعمدة وصفوف تُظهر النسب المتكافئة." },
+          vi: { word: "Bảng tỷ số", syllables: "bảng tỷ số", trans: "Ratio Table", def: "Bảng gồm nhiều cột và hàng được tổ chức để hiển thị chuỗi các tỷ số tương đương." }
+        },
+        coordinate: {
+          en: { word: "Coordinates", syllables: "co·or·di·nate", trans: "Coordenadas", def: "Pairs of numbers (x, y) describing a point's exact position on a grid." },
+          es: { word: "Coordenadas", syllables: "co·or·de·na·das", trans: "Coordinates", def: "Pares de números (x, y) que describen la posición exacta en un cuadrante o cuadrícula." },
+          ar: { word: "الإحداثيات", syllables: "al-i-hi-da-thi-yat", trans: "Coordinates", def: "زوج من الأعداد (س، ص) يحدد موقع نقطة على شبكة الإحداثيات." },
+          vi: { word: "Tọa độ", syllables: "tọa độ", trans: "Coordinates", def: "Cặp số (x, y) dùng để xác định vị trí chính xác của một điểm trên mặt phẳng." }
+        }
+      }
+    };
+
+    // 2. STATE Layer (Single Source of Truth)
+    let STATE = {
+      lang: "en",
+      activeCaseIdx: 0,
+      b: 3, // Blue base parts
+      g: 2, // Green base parts
+      scale: 4, // scaling multiplier
+      objectiveStatus: {},
+      reportBecause: "",
+      reportBut: "",
+      reportSo: "",
+      questCompleted: false
+    };
+
+    // Speech Synthesis helper
+    const synth = window.speechSynthesis;
+
+    // Web Audio Sound Synth Service
+    let audioCtx = null;
+    let masterGain = null;
+
+    function initAudio() {
+      if (audioCtx) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(CONFIG.audioMaxGain, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+        logDiag("Audio Engine scheduled successfully.");
+      } catch (err) {
+        logDiag("Audio initialization error: " + err.message);
+      }
+    }
+
+    function playTone(freq, duration, type = "sine") {
+      initAudio();
+      if (!audioCtx || audioCtx.state === "suspended") return;
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      
+      gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      
+      osc.connect(gainNode);
+      gainNode.connect(masterGain);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // Elegant chemical laboratory bubbling tone generator
+    function playChemicalBubble() {
+      initAudio();
+      if (!audioCtx || audioCtx.state === "suspended") return;
+      
+      const now = audioCtx.currentTime;
+      // High-frequency minor bleeps simulating gas bubbles
+      for (let i = 0; i < 4; i++) {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(800 + Math.random() * 400, now + i * 0.08);
+        
+        gainNode.gain.setValueAtTime(0.04, now + i * 0.08);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.1);
+        
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        
+        osc.start(now + i * 0.08);
+        osc.stop(now + i * 0.08 + 0.1);
+      }
+    }
+
+    function playSuccessSiren() {
+      initAudio();
+      if (!audioCtx || audioCtx.state === "suspended") return;
+      
+      const now = audioCtx.currentTime;
+      const notes = [440, 554, 659, 880];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+        
+        gainNode.gain.setValueAtTime(0.08, now + idx * 0.12);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.5);
+        
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        
+        osc.start(now + idx * 0.12);
+        osc.stop(now + idx * 0.12 + 0.5);
+      });
+    }
+
+    // 3. SERVICE Layer (Geometrical Compilations)
+    const RATIO_SERVICE = {
+      isEquivalent(bBase, gBase, bScaled, gScaled) {
+        return bBase * gScaled === gBase * bScaled;
+      },
+      getEquivalentSequence(b, g, maxScale = 5) {
+        const seq = [];
+        for (let i = 1; i <= maxScale; i++) {
+          seq.push({ scale: i, bParts: b * i, gParts: g * i });
+        }
+        return seq;
+      }
+    };
+
+    // Helper for validation schema
+    function validateConfig() {
+      if (!CONFIG.quests || CONFIG.quests.length === 0) {
+        throw new Error("Validation Error: System quests presets must be populated.");
+      }
+      CONFIG.quests.forEach((q, idx) => {
+        if (!q.objectives || q.objectives.length === 0) {
+          throw new Error(`Validation Error: Quest ${idx} is missing objectives.`);
+        }
+      });
+      logDiag("System Config validation status: PASSED.");
+    }
+
+    // 4. CONTROLLER & UI VIEW Layer
+
+    // Initialize layout
+    document.addEventListener("DOMContentLoaded", () => {
+      validateConfig();
+      setQuest(0);
+      setGlossaryLanguage("en");
+      
+      // Hook text areas
+      document.getElementById("textareaBecause").addEventListener("input", (e) => {
+        STATE.reportBecause = e.target.value;
+        composeFinalReport();
+      });
+      document.getElementById("textareaBut").addEventListener("input", (e) => {
+        STATE.reportBut = e.target.value;
+        composeFinalReport();
+      });
+      document.getElementById("textareaSo").addEventListener("input", (e) => {
+        STATE.reportSo = e.target.value;
+        composeFinalReport();
+      });
+    });
+
+    function logDiag(message) {
+      const stream = document.getElementById("diagStream");
+      if (stream) {
+        const line = document.createElement("p");
+        line.className = "diag-line";
+        line.textContent = `> ${message}`;
+        stream.appendChild(line);
+        stream.scrollTop = stream.scrollHeight;
+      }
+      console.log(message);
+    }
+
+    function toggleDiagnostics() {
+      const overlay = document.getElementById("diagConsole");
+      overlay.style.display = overlay.style.display === "flex" ? "none" : "flex";
+      playTone(600, 0.08);
+    }
+
+    function toggleLanguage() {
+      STATE.lang = STATE.lang === "en" ? "es" : "en";
+      playTone(500, 0.08);
+      
+      // Update UI labels
+      const langInd = document.getElementById("langIndicator");
+      const btnLang = document.getElementById("btnLangToggle");
+      const heroTitle = document.getElementById("heroTitle");
+      const heroCopy = document.getElementById("heroCopy");
+      const sidebarTitle = document.getElementById("sidebarTitle");
+      const sidebarSubtitle = document.getElementById("sidebarSubtitle");
+      const canvasHeading = document.getElementById("canvasHeading");
+      const btnReset = document.getElementById("btnResetData");
+      const hudTitle = document.getElementById("hudTitle");
+      const glossaryHeading = document.getElementById("glossaryHeading");
+      const reporterHeading = document.getElementById("reporterHeading");
+      const reporterSub = document.getElementById("reporterSub");
+      const padTitle = document.getElementById("padTitle");
+      const btnSubmit = document.getElementById("btnSubmitReport");
+      const labelB = document.getElementById("labelBlue");
+      const labelG = document.getElementById("labelGreen");
+      const labelS = document.getElementById("labelScale");
+      const lblF = document.getElementById("lblFlasks");
+      const lblG = document.getElementById("lblGrid");
+
+      if (STATE.lang === "es") {
+        langInd.textContent = "Modo Español";
+        btnLang.textContent = "🌍 Traducir a Inglés";
+        heroTitle.textContent = "Mezclador de Combustión de Razones";
+        heroCopy.textContent = "Traza, equilibra y escala coordenadas líquidas de razones. Arrastra controles para ajustar múltiplos, completar tablas y trazar nodos en el sonar en tiempo real.";
+        sidebarTitle.textContent = "🧬 Misiones Activas";
+        sidebarSubtitle.textContent = "Escalar razones equivalentes";
+        canvasHeading.textContent = "🔬 Mezclador Equivalente & Coordinador de Plot";
+        btnReset.textContent = "🔄 Restablecer Laboratorio";
+        hudTitle.textContent = "📌 Objetivos de la Misión";
+        glossaryHeading.textContent = "📖 Diccionario Matemático Interactivo";
+        reporterHeading.textContent = "✍️ Reporte de Investigación de TWR";
+        reporterSub.textContent = "Amplía tus ideas utilizando conectores de transición para componer el reporte oficial de tu caso.";
+        padTitle.textContent = "📜 Historial de Expedientes Compilados";
+        btnSubmit.textContent = "🚀 Enviar Expediente de Caso";
+        labelB.textContent = "Base Líquido Azul";
+        labelG.textContent = "Base Líquido Verde";
+        labelS.textContent = "Multiplicador de Escala de Laboratorio";
+        lblF.textContent = "MEZCLADOR DE QUÍMICOS";
+        lblG.textContent = "TRAZO DE COORDENADAS DE RAZÓN";
+      } else {
+        langInd.textContent = "English Mode";
+        btnLang.textContent = "🌍 Translate to Spanish";
+        heroTitle.textContent = "Ratio Table Fuel Mixer";
+        heroCopy.textContent = "Plot, balance, and scale equivalent chemical liquid coordinates. Drag sliders to adjust multiplier ratios, complete coordinate tables, and plot nodes on the sonar grid in real-time.";
+        sidebarTitle.textContent = "🧬 Active Quests";
+        sidebarSubtitle.textContent = "Scale equivalent liquid ratios";
+        canvasHeading.textContent = "🔬 Equivalency Mixer & Coordinate Plotter";
+        btnReset.textContent = "🔄 Reset Laboratory";
+        hudTitle.textContent = "📌 Case Goals Checklist";
+        glossaryHeading.textContent = "📖 Interactive Math Dictionary";
+        reporterHeading.textContent = "✍️ The Writing Revolution (TWR) Detective Report";
+        reporterSub.textContent = "Expand your kernels using transition connectors to synthesize your analytical case report.";
+        padTitle.textContent = "📜 Compiled Detective Report Pad";
+        btnSubmit.textContent = "🚀 Submit Case File";
+        labelB.textContent = "Blue Liquid Base";
+        labelG.textContent = "Green Liquid Base";
+        labelS.textContent = "Laboratory Scaling Factor (Multiplier)";
+        lblF.textContent = "CHEMICAL LIQUID MIXER";
+        lblG.textContent = "RATIO COORDINATE PLOT";
+      }
+
+      // Re-populate elements
+      populateQuestCatalog();
+      populateObjectiveHUD();
+      composeFinalReport();
+    }
+
+    function setQuest(idx) {
+      STATE.activeCaseIdx = idx;
+      STATE.questCompleted = false;
+      
+      // Clear TWR areas
+      document.getElementById("textareaBecause").value = "";
+      document.getElementById("textareaBut").value = "";
+      document.getElementById("textareaSo").value = "";
+      STATE.reportBecause = "";
+      STATE.reportBut = "";
+      STATE.reportSo = "";
+      
+      // Set quest baseline sliders
+      if (idx === 0) {
+        document.getElementById("sliderBlue").value = 3;
+        document.getElementById("sliderGreen").value = 2;
+        document.getElementById("sliderScale").value = 4;
+      } else if (idx === 1) {
+        document.getElementById("sliderBlue").value = 4;
+        document.getElementById("sliderGreen").value = 3;
+        document.getElementById("sliderScale").value = 4;
+      } else if (idx === 2) {
+        document.getElementById("sliderBlue").value = 5;
+        document.getElementById("sliderGreen").value = 4;
+        document.getElementById("sliderScale").value = 4;
+      }
+      
+      playTone(400, 0.15);
+      logDiag(`Loading Quest: ${CONFIG.quests[idx].titleEn}`);
+      
+      updateMixer();
+      populateQuestCatalog();
+      populateObjectiveHUD();
+      composeFinalReport();
+    }
+
+    function populateQuestCatalog() {
+      const container = document.getElementById("questCatalog");
+      container.innerHTML = "";
+      
+      CONFIG.quests.forEach((q, idx) => {
+        const isActive = STATE.activeCaseIdx === idx;
+        const card = document.createElement("button");
+        card.className = `quest-card ${isActive ? 'active' : ''}`;
+        card.setAttribute("role", "radio");
+        card.setAttribute("aria-checked", isActive ? "true" : "false");
+        
+        const title = STATE.lang === "en" ? q.titleEn : q.titleEs;
+        const desc = STATE.lang === "en" ? q.descEn : q.descEs;
+        
+        card.onclick = () => setQuest(idx);
+        card.innerHTML = `
+          <span class="quest-title">${title}</span>
+          <span class="quest-status" style="font-size:0.75rem; margin-top:4px;">${desc}</span>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function resetActiveSliders() {
+      document.getElementById("sliderBlue").value = 3;
+      document.getElementById("sliderGreen").value = 2;
+      document.getElementById("sliderScale").value = 4;
+      updateMixer();
+      logDiag("Mixer calibrated to standard 3:2 base ratio.");
+    }
+
+    function updateMixer() {
+      STATE.b = parseInt(document.getElementById("sliderBlue").value);
+      STATE.g = parseInt(document.getElementById("sliderGreen").value);
+      STATE.scale = parseInt(document.getElementById("sliderScale").value);
+      
+      document.getElementById("valBlue").textContent = `${STATE.b} parts`;
+      document.getElementById("valGreen").textContent = `${STATE.g} parts`;
+      document.getElementById("valScale").textContent = `x ${STATE.scale}`;
+      
+      // Bubble audio simulation
+      playChemicalBubble();
+      
+      recomputeCanvas();
+    }
+
+    function recomputeCanvas() {
+      const flasksGroup = document.getElementById("flasksGroup");
+      const tableGroup = document.getElementById("tableGroup");
+      const gridGroup = document.getElementById("gridGroup");
+      
+      flasksGroup.innerHTML = "";
+      tableGroup.innerHTML = "";
+      gridGroup.innerHTML = "";
+      
+      const totalBlue = STATE.b * STATE.scale;
+      const totalGreen = STATE.g * STATE.scale;
+      
+      // 1. Draw Liquid Flasks
+      // Blue cylinder container
+      drawCylinder(80, 240, 60, totalBlue, "#06b6d4", "Blue Liquid (w)", flasksGroup);
+      // Green cylinder container
+      drawCylinder(180, 240, 60, totalGreen, "#10b981", "Green Liquid (d)", flasksGroup);
+      
+      // 2. Draw Ratio Table UI overlay on left quadrant
+      drawRatioTable(40, 260, tableGroup);
+      
+      // 3. Draw Coordinate Grid (610 center)
+      drawCoordinateGrid(610, 200, gridGroup);
+      
+      evaluateQuestObjectives();
+    }
+
+    function drawCylinder(x, yBase, width, volumeParts, fill, label, parent) {
+      const maxHeight = 160;
+      const hPx = Math.min(maxHeight, volumeParts * 7); // scaled volume height
+      
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      
+      // Back cylinder frame
+      const border = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      border.setAttribute("x", x);
+      border.setAttribute("y", yBase - maxHeight);
+      border.setAttribute("width", width);
+      border.setAttribute("height", maxHeight);
+      border.setAttribute("rx", "10");
+      border.setAttribute("fill", "rgba(255, 255, 255, 0.02)");
+      border.setAttribute("stroke", "#1e293b");
+      border.setAttribute("stroke-width", "2");
+      g.appendChild(border);
+      
+      // Glowing liquid inside
+      if (hPx > 0) {
+        const liquid = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        liquid.setAttribute("x", x + 2);
+        liquid.setAttribute("y", yBase - hPx);
+        liquid.setAttribute("width", width - 4);
+        liquid.setAttribute("height", hPx);
+        liquid.setAttribute("rx", "8");
+        liquid.setAttribute("fill", fill);
+        liquid.setAttribute("opacity", "0.75");
+        liquid.setAttribute("style", `filter: drop-shadow(0 0 8px ${fill});`);
+        g.appendChild(liquid);
+      }
+      
+      // Text indicator
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", x + width / 2);
+      text.setAttribute("y", yBase + 20);
+      text.setAttribute("fill", "#fff");
+      text.setAttribute("font-size", "10");
+      text.setAttribute("font-family", "Share Tech Mono");
+      text.setAttribute("text-anchor", "middle");
+      text.textContent = `${volumeParts} mL`;
+      g.appendChild(text);
+      
+      // Column label
+      const name = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      name.setAttribute("x", x + width / 2);
+      name.setAttribute("y", yBase - maxHeight - 8);
+      name.setAttribute("fill", fill);
+      name.setAttribute("font-size", "10");
+      name.setAttribute("font-family", "Space Grotesk");
+      name.setAttribute("font-weight", "700");
+      name.setAttribute("text-anchor", "middle");
+      name.textContent = label;
+      g.appendChild(name);
+      
+      parent.appendChild(g);
+    }
+
+    function drawRatioTable(x, y, parent) {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      
+      // Headers
+      const headers = [
+        { label: STATE.lang === "en" ? "Blue" : "Azul", color: "#06b6d4" },
+        { label: STATE.lang === "en" ? "Green" : "Verde", color: "#10b981" },
+        { label: STATE.lang === "en" ? "Ratio" : "Razón", color: "#fff" }
+      ];
+      
+      const width = 110;
+      const height = 24;
+      
+      // Base title text
+      const headText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      headText.setAttribute("x", x + 160);
+      headText.setAttribute("y", y - 10);
+      headText.setAttribute("fill", "#475569");
+      headText.setAttribute("font-size", "9");
+      headText.setAttribute("font-family", "Share Tech Mono");
+      headText.setAttribute("text-anchor", "middle");
+      headText.textContent = "EQUIVALENT RATIO TABLE PREVIEW";
+      g.appendChild(headText);
+      
+      // Organize rows in sequence
+      const seq = RATIO_SERVICE.getEquivalentSequence(STATE.b, STATE.g, 4);
+      
+      // Draw grid rows
+      headers.forEach((h, colIdx) => {
+        const colX = x + colIdx * 110;
+        
+        // Header card
+        const card = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        card.setAttribute("x", colX);
+        card.setAttribute("y", y);
+        card.setAttribute("width", width);
+        card.setAttribute("height", height);
+        card.setAttribute("fill", "rgba(255,255,255,0.03)");
+        card.setAttribute("stroke", "#141b2d");
+        g.appendChild(card);
+        
+        const cardText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        cardText.setAttribute("x", colX + width / 2);
+        cardText.setAttribute("y", y + 16);
+        cardText.setAttribute("fill", h.color);
+        cardText.setAttribute("font-size", "10");
+        cardText.setAttribute("font-family", "Space Grotesk");
+        cardText.setAttribute("font-weight", "900");
+        cardText.setAttribute("text-anchor", "middle");
+        cardText.textContent = h.label;
+        g.appendChild(cardText);
+        
+        // Draw rows
+        seq.forEach((row, rowIdx) => {
+          const rowY = y + height + rowIdx * height;
+          const isHighlighted = row.scale === STATE.scale;
+          
+          const rowRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rowRect.setAttribute("x", colX);
+          rowRect.setAttribute("y", rowY);
+          rowRect.setAttribute("width", width);
+          rowRect.setAttribute("height", height);
+          rowRect.setAttribute("fill", isHighlighted ? "rgba(6, 182, 212, 0.08)" : "transparent");
+          rowRect.setAttribute("stroke", isHighlighted ? "var(--primary)" : "#141b2d");
+          g.appendChild(rowRect);
+          
+          const rowText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          rowText.setAttribute("x", colX + width / 2);
+          rowText.setAttribute("y", rowY + 16);
+          rowText.setAttribute("fill", isHighlighted ? "#fff" : "var(--text-muted)");
+          rowText.setAttribute("font-size", "10");
+          rowText.setAttribute("font-family", "Share Tech Mono");
+          rowText.setAttribute("text-anchor", "middle");
+          
+          if (colIdx === 0) rowText.textContent = `${row.bParts} mL`;
+          if (colIdx === 1) rowText.textContent = `${row.gParts} mL`;
+          if (colIdx === 2) rowText.textContent = `(${row.bParts} : ${row.gParts})`;
+          
+          g.appendChild(rowText);
+        });
+      });
+      
+      parent.appendChild(g);
+    }
+
+    function drawCoordinateGrid(isoX, isoY, parent) {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      
+      const gridWidth = 300;
+      const gridHeight = 240;
+      const startX = isoX - gridWidth / 2;
+      const startY = isoY - gridHeight / 2 + 20;
+      
+      // Plot axes lines
+      const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      yAxis.setAttribute("x1", startX);
+      yAxis.setAttribute("y1", startY);
+      yAxis.setAttribute("x2", startX);
+      yAxis.setAttribute("y2", startY + gridHeight);
+      yAxis.setAttribute("stroke", "#475569");
+      yAxis.setAttribute("stroke-width", "2");
+      g.appendChild(yAxis);
+      
+      const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      xAxis.setAttribute("x1", startX);
+      xAxis.setAttribute("y1", startY + gridHeight);
+      xAxis.setAttribute("x2", startX + gridWidth);
+      xAxis.setAttribute("y2", startY + gridHeight);
+      xAxis.setAttribute("stroke", "#475569");
+      xAxis.setAttribute("stroke-width", "2");
+      g.appendChild(xAxis);
+      
+      // Grid markings & labels (0 to 20 for axes)
+      const scaleXStep = gridWidth / 20;
+      const scaleYStep = gridHeight / 20;
+      
+      for (let mark = 5; mark <= 20; mark += 5) {
+        const xMarkPx = startX + mark * scaleXStep;
+        const yMarkPx = startY + gridHeight - mark * scaleYStep;
+        
+        // Vertical grid lines
+        const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        vLine.setAttribute("x1", xMarkPx);
+        vLine.setAttribute("y1", startY);
+        vLine.setAttribute("x2", xMarkPx);
+        vLine.setAttribute("y2", startY + gridHeight);
+        vLine.setAttribute("stroke", "rgba(255, 255, 255, 0.035)");
+        vLine.setAttribute("stroke-width", "1");
+        g.appendChild(vLine);
+        
+        // Horizontal grid lines
+        const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        hLine.setAttribute("x1", startX);
+        hLine.setAttribute("y1", yMarkPx);
+        hLine.setAttribute("x2", startX + gridWidth);
+        hLine.setAttribute("y2", yMarkPx);
+        hLine.setAttribute("stroke", "rgba(255, 255, 255, 0.035)");
+        hLine.setAttribute("stroke-width", "1");
+        g.appendChild(hLine);
+        
+        // Ticks & Numbers (X axis)
+        const xText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        xText.setAttribute("x", xMarkPx);
+        xText.setAttribute("y", startY + gridHeight + 14);
+        xText.setAttribute("fill", "#475569");
+        xText.setAttribute("font-size", "8");
+        xText.setAttribute("font-family", "Share Tech Mono");
+        xText.setAttribute("text-anchor", "middle");
+        xText.textContent = mark;
+        g.appendChild(xText);
+        
+        // Ticks & Numbers (Y axis)
+        const yText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        yText.setAttribute("x", startX - 10);
+        yText.setAttribute("y", yMarkPx + 3);
+        yText.setAttribute("fill", "#475569");
+        yText.setAttribute("font-size", "8");
+        yText.setAttribute("font-family", "Share Tech Mono");
+        yText.setAttribute("text-anchor", "end");
+        yText.textContent = mark;
+        g.appendChild(yText);
+      }
+      
+      // X & Y label names
+      const xName = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xName.setAttribute("x", startX + gridWidth / 2);
+      xName.setAttribute("y", startY + gridHeight + 30);
+      xName.setAttribute("fill", "var(--primary)");
+      xName.setAttribute("font-size", "9");
+      xName.setAttribute("font-family", "Space Grotesk");
+      xName.setAttribute("font-weight", "700");
+      xName.setAttribute("text-anchor", "middle");
+      xName.textContent = STATE.lang === "en" ? "Blue Liquid Coordinate (x)" : "Coordenada Azul (x)";
+      g.appendChild(xName);
+      
+      const yName = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yName.setAttribute("x", startX - 25);
+      yName.setAttribute("y", startY + gridHeight / 2);
+      yName.setAttribute("transform", `rotate(-90, ${startX - 25}, ${startY + gridHeight / 2})`);
+      yName.setAttribute("fill", "var(--secondary)");
+      yName.setAttribute("font-size", "9");
+      yName.setAttribute("font-family", "Space Grotesk");
+      yName.setAttribute("font-weight", "700");
+      yName.setAttribute("text-anchor", "middle");
+      yName.textContent = STATE.lang === "en" ? "Green Liquid Coordinate (y)" : "Coordenada Verde (y)";
+      g.appendChild(yName);
+      
+      // 4. Plot equivalent sequence line
+      const seq = RATIO_SERVICE.getEquivalentSequence(STATE.b, STATE.g, 5);
+      let linePoints = "";
+      
+      seq.forEach((node, nodeIdx) => {
+        const nodeX = startX + node.bParts * scaleXStep;
+        const nodeY = startY + gridHeight - node.gParts * scaleYStep;
+        
+        // Build slope connection line path
+        if (node.bParts <= 20 && node.gParts <= 20) {
+          linePoints += `${nodeX},${nodeY} `;
+        }
+        
+        // Draw coordinate circles
+        if (node.bParts <= 20 && node.gParts <= 20) {
+          const isCurrent = node.scale === STATE.scale;
+          
+          const pointGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          pointGroup.style.cursor = "help";
+          
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", nodeX);
+          circle.setAttribute("cy", nodeY);
+          circle.setAttribute("r", isCurrent ? "7" : "4.5");
+          circle.setAttribute("fill", isCurrent ? "var(--primary)" : "#1e293b");
+          circle.setAttribute("stroke", isCurrent ? "#fff" : "var(--primary)");
+          circle.setAttribute("stroke-width", "1.5");
+          
+          if (isCurrent) {
+            circle.setAttribute("style", "filter: drop-shadow(0 0 6px var(--primary));");
+          }
+          pointGroup.appendChild(circle);
+          
+          // Tooltip on hover
+          const tt = document.createElementNS("http://www.w3.org/2000/svg", "title");
+          tt.textContent = `Node coordinate: (${node.bParts}, ${node.gParts})`;
+          pointGroup.appendChild(tt);
+          
+          // Add label above circle if it matches scale
+          if (isCurrent) {
+            const lText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            lText.setAttribute("x", nodeX);
+            lText.setAttribute("y", nodeY - 10);
+            lText.setAttribute("fill", "#fff");
+            lText.setAttribute("font-size", "9");
+            lText.setAttribute("font-family", "Share Tech Mono");
+            lText.setAttribute("font-weight", "900");
+            lText.setAttribute("text-anchor", "middle");
+            lText.textContent = `(${node.bParts},${node.gParts})`;
+            pointGroup.appendChild(lText);
+          }
+          
+          g.appendChild(pointGroup);
+        }
+      });
+      
+      // Draw slope connector path line
+      if (linePoints.length > 0) {
+        const connector = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        connector.setAttribute("points", linePoints.trim());
+        connector.setAttribute("fill", "none");
+        connector.setAttribute("stroke", "rgba(6, 182, 212, 0.2)");
+        connector.setAttribute("stroke-width", "2");
+        connector.setAttribute("stroke-dasharray", "4");
+        g.insertBefore(connector, g.firstChild); // place behind points
+      }
+      
+      parent.appendChild(g);
+    }
+
+    // 5. EVALUATION Engine
+    function evaluateQuestObjectives() {
+      const q = CONFIG.quests[STATE.activeCaseIdx];
+      let allDone = true;
+      const status = {};
+      
+      q.objectives.forEach(obj => {
+        let isMet = false;
+        
+        if (obj.id === "base_3_2") {
+          isMet = STATE.b === 3 && STATE.g === 2;
+        } else if (obj.id === "scale_4") {
+          isMet = STATE.scale === 4;
+        } else if (obj.id === "total_12_8") {
+          isMet = STATE.b * STATE.scale === 12 && STATE.g * STATE.scale === 8;
+        } else if (obj.id === "base_4_3") {
+          isMet = STATE.b === 4 && STATE.g === 3;
+        } else if (obj.id === "scale_4_boost") {
+          isMet = STATE.scale === 4;
+        } else if (obj.id === "total_16_12") {
+          isMet = STATE.b * STATE.scale === 16 && STATE.g * STATE.scale === 12;
+        } else if (obj.id === "base_5_4") {
+          isMet = STATE.b === 5 && STATE.g === 4;
+        } else if (obj.id === "scale_4_flare") {
+          isMet = STATE.scale === 4;
+        } else if (obj.id === "total_20_16") {
+          isMet = STATE.b * STATE.scale === 20 && STATE.g * STATE.scale === 16;
+        }
+        
+        status[obj.id] = isMet;
+        if (!isMet) allDone = false;
+      });
+      
+      STATE.objectiveStatus = status;
+      populateObjectiveHUD();
+      
+      if (allDone && !STATE.questCompleted) {
+        STATE.questCompleted = true;
+        playSuccessSiren();
+        logDiag(`QUEST SUCCESS: ${q.titleEn} aligned!`);
+        triggerQuestCelebration();
+      }
+    }
+
+    function populateObjectiveHUD() {
+      const container = document.getElementById("hudChecklist");
+      container.innerHTML = "";
+      
+      const q = CONFIG.quests[STATE.activeCaseIdx];
+      q.objectives.forEach(obj => {
+        const isMet = STATE.objectiveStatus[obj.id] === true;
+        const item = document.createElement("div");
+        item.className = `hud-item ${isMet ? 'done' : ''}`;
+        
+        const txt = STATE.lang === "en" ? obj.textEn : obj.textEs;
+        item.innerHTML = `
+          <span class="item-icon">${isMet ? '✅' : '🔴'}</span>
+          <span>${txt}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function triggerQuestCelebration() {
+      const svg = document.getElementById("canvasSvg");
+      
+      for (let i = 0; i < 20; i++) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        const x = 450 + Math.random() * 300;
+        const y = 80 + Math.random() * 120;
+        
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", 2 + Math.random() * 5);
+        circle.setAttribute("fill", i % 2 === 0 ? "#06b6d4" : "#10b981");
+        circle.setAttribute("opacity", "1");
+        
+        const animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+        animate.setAttribute("attributeName", "cy");
+        animate.setAttribute("from", y);
+        animate.setAttribute("to", y - 60 - Math.random() * 40);
+        animate.setAttribute("dur", "1s");
+        animate.setAttribute("fill", "freeze");
+        circle.appendChild(animate);
+        
+        const animFade = document.createElementNS("http://www.w3.org/2000/svg", "opacity");
+        animFade.setAttribute("attributeName", "opacity");
+        animFade.setAttribute("from", "1");
+        animFade.setAttribute("to", "0");
+        animFade.setAttribute("dur", "1s");
+        animFade.setAttribute("fill", "freeze");
+        circle.appendChild(animFade);
+
+        svg.appendChild(circle);
+      }
+      
+      setTimeout(() => {
+        populateQuestCatalog();
+      }, 100);
+    }
+
+    // 6. ESOL Interactive Dictionary Views
+    function setGlossaryLanguage(lang) {
+      CONFIG.glossaryLang = lang;
+      
+      document.getElementById("tabEn").className = `lang-tab ${lang === 'en' ? 'active' : ''}`;
+      document.getElementById("tabEs").className = `lang-tab ${lang === 'es' ? 'active' : ''}`;
+      document.getElementById("tabAr").className = `lang-tab ${lang === 'ar' ? 'active' : ''}`;
+      document.getElementById("tabVi").className = `lang-tab ${lang === 'vi' ? 'active' : ''}`;
+      
+      const grid = document.getElementById("glossaryGrid");
+      grid.innerHTML = "";
+      
+      Object.keys(CONFIG.dictionary).forEach(key => {
+        const item = CONFIG.dictionary[key][lang] || CONFIG.dictionary[key]["en"];
+        const chip = document.createElement("div");
+        chip.className = "vocab-chip";
+        chip.onclick = () => readAloudWord(item.word);
+        
+        chip.innerHTML = `
+          <span>${item.word}</span>
+          <span style="font-size:0.7rem; color:var(--text-muted);">🔊</span>
+          <div class="tooltip-bubble">
+            <strong>${item.word}</strong> <span style="color:var(--primary); font-size:0.7rem;">(${item.syllables})</span><br>
+            <span style="color:var(--warning); font-size:0.72rem;">Trans: ${item.trans}</span><br>
+            <span style="color:var(--text-muted); font-size:0.72rem; line-height:1.35; display:block; margin-top:4px;">${item.def}</span>
+          </div>
+        `;
+        grid.appendChild(chip);
+      });
+    }
+
+    function readAloudWord(word) {
+      if (!synth) return;
+      if (synth.speaking) synth.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.rate = 0.75;
+      utterance.lang = CONFIG.glossaryLang === "es" ? "es-ES" : "en-US";
+      synth.speak(utterance);
+    }
+
+    // 7. TWR REPORT Composition Engine
+    function injectConjunction(targetId, phrase) {
+      const tx = document.getElementById(targetId);
+      tx.value = phrase + " ";
+      tx.focus();
+      
+      if (targetId === "textareaBecause") STATE.reportBecause = phrase;
+      if (targetId === "textareaBut") STATE.reportBut = phrase;
+      if (targetId === "textareaSo") STATE.reportSo = phrase;
+      
+      composeFinalReport();
+      playTone(450, 0.08);
+    }
+
+    function composeFinalReport() {
+      const because = document.getElementById("textareaBecause").value.trim();
+      const but = document.getElementById("textareaBut").value.trim();
+      const so = document.getElementById("textareaSo").value.trim();
+      const pad = document.getElementById("finalReportPad");
+      
+      if (!because && !but && !so) {
+        pad.value = STATE.lang === "en" 
+          ? "Analytical report details will compile automatically as you complete sentences..."
+          : "Los detalles del reporte de investigación se compilarán automáticamente a medida que completes las ideas...";
+        return;
+      }
+      
+      const sentence = `The liquid mix ratio forms equivalent points BECAUSE ${because || '_______'}, BUT the absolute parts are scaled up ${but || '_______'}, SO all coordinates fit properly along the slope line ${so || '_______'}.`;
+      pad.value = sentence;
+    }
+
+    function triggerReportSubmission() {
+      const pad = document.getElementById("finalReportPad");
+      const val = pad.value;
+      
+      if (val.includes("_______") || val.length < 30) {
+        playTone(220, 0.15, "square");
+        alert(STATE.lang === "en" ? "Error: Please complete all report details before submitting." : "Error: Por favor, completa todos los detalles del reporte antes de enviarlo.");
+        return;
+      }
+      
+      playSuccessSiren();
+      alert(STATE.lang === "en" ? "Report submitted successfully! Spark XP unlocked!" : "¡Reporte enviado con éxito! ¡Experiencia Spark desbloqueada!");
+      logDiag("Case File submitted successfully.");
+    }
+
+    // 8. Automated Verification selfTest()
+    function triggerSelfTest() {
+      logDiag("Initializing Automated Self-Test Suit...");
+      const results = [];
+      
+      try {
+        // Assert 1: Config presets integrity
+        if (CONFIG.quests.length === 3) {
+          results.push("PASS: Config Quests presetted successfully.");
+        } else {
+          throw new Error("FAIL: Presets count does not match 3.");
+        }
+        
+        // Assert 2: Equivalent check
+        const isEq = RATIO_SERVICE.isEquivalent(3, 2, 12, 8);
+        if (isEq) {
+          results.push("PASS: Ratio table equivalent mathematics confirmed.");
+        } else {
+          throw new Error("FAIL: Ratio table equivalent math failed.");
+        }
+        
+        // Assert 3: Sequence check
+        const seq = RATIO_SERVICE.getEquivalentSequence(4, 3, 3);
+        if (seq[0].bParts === 4 && seq[2].gParts === 9) {
+          results.push("PASS: Sequence equivalent array map confirmed.");
+        } else {
+          throw new Error("FAIL: Equivalent sequence elements mismatch.");
+        }
+
+        // Assert 4: Translation maps exist
+        if (CONFIG.dictionary.ratio.es.word === "Razón") {
+          results.push("PASS: Translation mappings exist.");
+        } else {
+          throw new Error("FAIL: Translation map missing.");
+        }
+
+        // Assert 5: Decibel cap validation
+        if (CONFIG.audioMaxGain <= 0.12) {
+          results.push("PASS: Safe Audio Gain ceiling logic check.");
+        } else {
+          throw new Error("FAIL: Audio safety decibel limit violated.");
+        }
+
+        logDiag("=== SELF-TEST RESULTS ===");
+        results.forEach(msg => logDiag(msg));
+        logDiag("System Verification: 100% COMPLETE & PASS.");
+        playSuccessSiren();
+        alert("Diagnostics Verification: 5/5 ASSERTS PASSED! System fully secure.");
+      } catch (err) {
+        logDiag(`CRITICAL FAILURE in selfTest(): ${err.message}`);
+        playTone(220, 0.4, "sawtooth");
+        alert(`Diagnostics Failed: ${err.message}`);
+      }
+    }
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,2060 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.NS.A.1 · Unit 2" data-standard="6.NS.A.1" data-unit="2" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 3: Fraction Meanings (6.NS.A.1) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+      .language-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .language-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid,
+        .vocab-grid,
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a href="../mission-2/">Previous Mission</a>
+          <a href="../mission-4/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 3 &middot; Unit 2</p>
+          <h1 id="mission-title">Fraction Meanings</h1>
+          <span class="standards">6.NS.A.1 &middot; Unit 2</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Interpret a fraction as division and as a quantity of equal parts.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="scenario">
+            The art teacher is mixing paint for a hallway mural. She has
+            <strong>3/4 of a gallon</strong> of blue paint and
+            <strong>5/8 of a gallon</strong> of yellow paint. She needs to
+            figure out which color she has more of, how much paint she has in
+            total, and where each amount falls on a number line from 0 to 1.
+            Your team must represent both fractions at least
+            <strong>three different ways</strong> and prove which is greater.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 360 400"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Paint cans with fraction bar models and a number line showing 3/4 and 5/8"
+          >
+            <!-- Background -->
+            <rect width="360" height="400" rx="16" fill="#edf5ff" />
+            <text
+              x="180"
+              y="30"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Mural Paint Mixing
+            </text>
+            <text
+              x="180"
+              y="50"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              Which color do we have more of?
+            </text>
+
+            <!-- Blue paint can -->
+            <rect
+              x="40"
+              y="70"
+              width="60"
+              height="80"
+              rx="6"
+              fill="#4a90d9"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <rect
+              x="45"
+              y="65"
+              width="50"
+              height="10"
+              rx="4"
+              fill="#3b7ac4"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="70"
+              y="118"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="900"
+              fill="#fff"
+            >
+              3/4
+            </text>
+            <text
+              x="70"
+              y="168"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Blue
+            </text>
+
+            <!-- Yellow paint can -->
+            <rect
+              x="140"
+              y="70"
+              width="60"
+              height="80"
+              rx="6"
+              fill="#f0c040"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <rect
+              x="145"
+              y="65"
+              width="50"
+              height="10"
+              rx="4"
+              fill="#daa820"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="170"
+              y="118"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="900"
+              fill="#23395d"
+            >
+              5/8
+            </text>
+            <text
+              x="170"
+              y="168"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Yellow
+            </text>
+
+            <!-- Fraction bar: 3/4 -->
+            <text
+              x="280"
+              y="80"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Bar Models
+            </text>
+            <rect
+              x="240"
+              y="90"
+              width="100"
+              height="24"
+              rx="4"
+              fill="#e8e8e8"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <rect x="240" y="90" width="75" height="24" rx="4" fill="#4a90d9" />
+            <line
+              x1="265"
+              y1="90"
+              x2="265"
+              y2="114"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="290"
+              y1="90"
+              x2="290"
+              y2="114"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="315"
+              y1="90"
+              x2="315"
+              y2="114"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <text
+              x="290"
+              y="133"
+              text-anchor="middle"
+              font-size="11"
+              fill="#4a90d9"
+              font-weight="700"
+            >
+              3/4 = 6/8
+            </text>
+
+            <!-- Fraction bar: 5/8 -->
+            <rect
+              x="240"
+              y="145"
+              width="100"
+              height="24"
+              rx="4"
+              fill="#e8e8e8"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <rect
+              x="240"
+              y="145"
+              width="62.5"
+              height="24"
+              rx="4"
+              fill="#f0c040"
+            />
+            <line
+              x1="252.5"
+              y1="145"
+              x2="252.5"
+              y2="169"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="265"
+              y1="145"
+              x2="265"
+              y2="169"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="277.5"
+              y1="145"
+              x2="277.5"
+              y2="169"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="290"
+              y1="145"
+              x2="290"
+              y2="169"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="302.5"
+              y1="145"
+              x2="302.5"
+              y2="169"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="315"
+              y1="145"
+              x2="315"
+              y2="169"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <line
+              x1="327.5"
+              y1="145"
+              x2="327.5"
+              y2="169"
+              stroke="#fff"
+              stroke-width="1"
+              opacity="0.5"
+            />
+            <text
+              x="290"
+              y="188"
+              text-anchor="middle"
+              font-size="11"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              5/8
+            </text>
+
+            <!-- Number line -->
+            <text
+              x="180"
+              y="218"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Number Line
+            </text>
+            <line
+              x1="30"
+              y1="250"
+              x2="330"
+              y2="250"
+              stroke="#23395d"
+              stroke-width="2.5"
+            />
+            <!-- Ticks for eighths -->
+            <line
+              x1="30"
+              y1="243"
+              x2="30"
+              y2="257"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="30"
+              y="272"
+              text-anchor="middle"
+              font-size="11"
+              fill="#23395d"
+            >
+              0
+            </text>
+            <line
+              x1="67.5"
+              y1="245"
+              x2="67.5"
+              y2="255"
+              stroke="#aaa"
+              stroke-width="1"
+            />
+            <line
+              x1="105"
+              y1="245"
+              x2="105"
+              y2="255"
+              stroke="#aaa"
+              stroke-width="1"
+            />
+            <line
+              x1="142.5"
+              y1="245"
+              x2="142.5"
+              y2="255"
+              stroke="#aaa"
+              stroke-width="1"
+            />
+            <line
+              x1="180"
+              y1="243"
+              x2="180"
+              y2="257"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="180"
+              y="272"
+              text-anchor="middle"
+              font-size="10"
+              fill="#5b6573"
+            >
+              4/8
+            </text>
+            <line
+              x1="217.5"
+              y1="245"
+              x2="217.5"
+              y2="255"
+              stroke="#aaa"
+              stroke-width="1"
+            />
+            <line
+              x1="255"
+              y1="245"
+              x2="255"
+              y2="255"
+              stroke="#aaa"
+              stroke-width="1"
+            />
+            <line
+              x1="292.5"
+              y1="245"
+              x2="292.5"
+              y2="255"
+              stroke="#aaa"
+              stroke-width="1"
+            />
+            <line
+              x1="330"
+              y1="243"
+              x2="330"
+              y2="257"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="330"
+              y="272"
+              text-anchor="middle"
+              font-size="11"
+              fill="#23395d"
+            >
+              1
+            </text>
+
+            <!-- 5/8 dot (yellow) -->
+            <circle
+              cx="217.5"
+              cy="250"
+              r="8"
+              fill="#f0c040"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="217.5"
+              y="238"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              5/8
+            </text>
+
+            <!-- 3/4 = 6/8 dot (blue) -->
+            <circle
+              cx="255"
+              cy="250"
+              r="8"
+              fill="#4a90d9"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="255"
+              y="238"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#4a90d9"
+            >
+              3/4
+            </text>
+
+            <!-- Area model -->
+            <text
+              x="100"
+              y="300"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Area Model: 3/4
+            </text>
+            <rect
+              x="40"
+              y="310"
+              width="120"
+              height="60"
+              rx="4"
+              fill="#e8e8e8"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <rect
+              x="40"
+              y="310"
+              width="90"
+              height="60"
+              rx="4"
+              fill="#4a90d9"
+              opacity="0.7"
+            />
+            <line
+              x1="70"
+              y1="310"
+              x2="70"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="100"
+              y1="310"
+              x2="100"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="130"
+              y1="310"
+              x2="130"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+
+            <text
+              x="270"
+              y="300"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Area Model: 5/8
+            </text>
+            <rect
+              x="200"
+              y="310"
+              width="140"
+              height="60"
+              rx="4"
+              fill="#e8e8e8"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <rect
+              x="200"
+              y="310"
+              width="87.5"
+              height="60"
+              rx="4"
+              fill="#f0c040"
+              opacity="0.7"
+            />
+            <line
+              x1="217.5"
+              y1="310"
+              x2="217.5"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="235"
+              y1="310"
+              x2="235"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="252.5"
+              y1="310"
+              x2="252.5"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="270"
+              y1="310"
+              x2="270"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="287.5"
+              y1="310"
+              x2="287.5"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="305"
+              y1="310"
+              x2="305"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+            <line
+              x1="322.5"
+              y1="310"
+              x2="322.5"
+              y2="370"
+              stroke="#fff"
+              stroke-width="1"
+            />
+
+            <!-- Conclusion -->
+            <rect
+              x="80"
+              y="380"
+              width="200"
+              height="16"
+              rx="8"
+              fill="#207a7a"
+            />
+            <text
+              x="180"
+              y="392"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#fff"
+            >
+              3/4 &gt; 5/8 because 6/8 &gt; 5/8
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the paint problem aloud, checks that the team creates
+                  all three representations, and manages the timer.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Draws fraction bar models, an area model, and a number line.
+                  Labels every part carefully with the fraction name.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Checks that all parts are equal size in each model, verifies
+                  equivalent fractions, and confirms the comparison symbol is
+                  correct.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: explains which fraction is greater and
+                  why, shows all three representations, and shares one
+                  correction the team made.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>
+                The art teacher has <strong>3/4 gallon</strong> of blue paint
+                and <strong>5/8 gallon</strong> of yellow paint.
+              </p>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>
+                  Represent 3/4 and 5/8 using a fraction bar model (equal parts
+                  shaded).
+                </li>
+                <li>Place both fractions on the same number line (0 to 1).</li>
+                <li>Draw an area model for each fraction.</li>
+                <li>
+                  Find an equivalent fraction so both have the same denominator.
+                </li>
+                <li>
+                  Compare: which amount of paint is greater? Write the
+                  comparison with &lt; or &gt;.
+                </li>
+                <li>Find the total paint: 3/4 + 5/8 = ?</li>
+              </ol>
+            </div>
+
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 560 220"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Number line from 0 to 1 divided into eighths with 3/4 and 5/8 marked"
+              >
+                <!-- Number line -->
+                <line
+                  x1="40"
+                  y1="100"
+                  x2="520"
+                  y2="100"
+                  stroke="#23395d"
+                  stroke-width="3"
+                />
+                <!-- Eighths ticks -->
+                <line
+                  x1="40"
+                  y1="88"
+                  x2="40"
+                  y2="112"
+                  stroke="#23395d"
+                  stroke-width="2.5"
+                />
+                <text
+                  x="40"
+                  y="130"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  0
+                </text>
+                <text
+                  x="40"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  0/8
+                </text>
+
+                <line
+                  x1="100"
+                  y1="92"
+                  x2="100"
+                  y2="108"
+                  stroke="#888"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="100"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  1/8
+                </text>
+
+                <line
+                  x1="160"
+                  y1="92"
+                  x2="160"
+                  y2="108"
+                  stroke="#888"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="160"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  2/8
+                </text>
+
+                <line
+                  x1="220"
+                  y1="92"
+                  x2="220"
+                  y2="108"
+                  stroke="#888"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="220"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  3/8
+                </text>
+
+                <line
+                  x1="280"
+                  y1="88"
+                  x2="280"
+                  y2="112"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="280"
+                  y="130"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#5b6573"
+                >
+                  1/2
+                </text>
+                <text
+                  x="280"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  4/8
+                </text>
+
+                <line
+                  x1="340"
+                  y1="92"
+                  x2="340"
+                  y2="108"
+                  stroke="#888"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="340"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  5/8
+                </text>
+
+                <line
+                  x1="400"
+                  y1="92"
+                  x2="400"
+                  y2="108"
+                  stroke="#888"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="400"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  6/8
+                </text>
+
+                <line
+                  x1="460"
+                  y1="92"
+                  x2="460"
+                  y2="108"
+                  stroke="#888"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="460"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  7/8
+                </text>
+
+                <line
+                  x1="520"
+                  y1="88"
+                  x2="520"
+                  y2="112"
+                  stroke="#23395d"
+                  stroke-width="2.5"
+                />
+                <text
+                  x="520"
+                  y="130"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  1
+                </text>
+                <text
+                  x="520"
+                  y="80"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  8/8
+                </text>
+
+                <!-- 5/8 marker (yellow) -->
+                <circle
+                  cx="340"
+                  cy="100"
+                  r="10"
+                  fill="#f0c040"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="340"
+                  y="155"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  5/8 yellow
+                </text>
+                <line
+                  x1="340"
+                  y1="110"
+                  x2="340"
+                  y2="145"
+                  stroke="#b7791f"
+                  stroke-width="1.5"
+                  stroke-dasharray="4,3"
+                />
+
+                <!-- 3/4 = 6/8 marker (blue) -->
+                <circle
+                  cx="400"
+                  cy="100"
+                  r="10"
+                  fill="#4a90d9"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="400"
+                  y="175"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#4a90d9"
+                >
+                  3/4 = 6/8 blue
+                </text>
+                <line
+                  x1="400"
+                  y1="110"
+                  x2="400"
+                  y2="165"
+                  stroke="#4a90d9"
+                  stroke-width="1.5"
+                  stroke-dasharray="4,3"
+                />
+
+                <!-- Comparison arrow -->
+                <text
+                  x="370"
+                  y="205"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="900"
+                  fill="#207a7a"
+                >
+                  3/4 &gt; 5/8
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Draw a fraction bar for 3/4</strong>
+                Draw a rectangle. Divide it into 4 equal parts. Shade 3 of the 4
+                parts. Label it 3/4.
+                <p class="guiding-q">
+                  What does each part represent? What does the shaded area
+                  represent?
+                </p>
+              </li>
+              <li>
+                <strong>Draw a fraction bar for 5/8</strong>
+                Draw another rectangle the same size. Divide it into 8 equal
+                parts. Shade 5 of the 8 parts. Label it 5/8.
+                <p class="guiding-q">
+                  Why does this bar have more pieces than the 3/4 bar? Are the
+                  pieces the same size?
+                </p>
+              </li>
+              <li>
+                <strong>Find a common denominator</strong>
+                To compare fairly, both fractions need the same size pieces.
+                Convert 3/4 to eighths: 3/4 = ?/8. Multiply both the numerator
+                and denominator by 2.
+                <p class="guiding-q">
+                  Why does multiplying top and bottom by the same number keep
+                  the fraction equal?
+                </p>
+              </li>
+              <li>
+                <strong>Place both on a number line</strong>
+                Draw a number line from 0 to 1. Divide it into 8 equal segments.
+                Plot 5/8 and 6/8 (which is 3/4). Which point is farther right?
+                <p class="guiding-q">
+                  On a number line, which direction means "greater"? How do you
+                  know?
+                </p>
+              </li>
+              <li>
+                <strong>Compare and write the inequality</strong>
+                Since 6/8 &gt; 5/8, we know 3/4 &gt; 5/8. The teacher has more
+                blue paint. Write both the fraction comparison and an
+                explanation.
+                <p class="guiding-q">
+                  Can you also compare using decimals? What is 3/4 as a decimal?
+                  What is 5/8?
+                </p>
+              </li>
+              <li>
+                <strong>Find the total paint</strong>
+                Add: 6/8 + 5/8 = 11/8 = 1 3/8 gallons total. Show this on the
+                number line (it goes past 1). Does the teacher have more than 1
+                gallon?
+                <p class="guiding-q">
+                  What does it mean when a fraction is greater than 1? How do
+                  you write it as a mixed number?
+                </p>
+              </li>
+            </ol>
+
+            <!-- Language SUPPORT -->
+            <div class="language-box">
+              <h3>Language Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Numerator:</strong> The top number - how many parts
+                  you have
+                </div>
+                <div class="vocab-item">
+                  <strong>Denominator:</strong> The bottom number - how many
+                  equal parts in the whole
+                </div>
+                <div class="vocab-item">
+                  <strong>Equivalent fraction:</strong> A different fraction
+                  that shows the same amount (3/4 = 6/8)
+                </div>
+                <div class="vocab-item">
+                  <strong>Number line:</strong> A straight line with marks
+                  showing numbers in order
+                </div>
+                <div class="vocab-item">
+                  <strong>Common denominator:</strong> When two fractions have
+                  the same bottom number
+                </div>
+                <div class="vocab-item">
+                  <strong>Mixed number:</strong> A whole number plus a fraction
+                  (like 1 3/8)
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "___ is equivalent to ___ because I multiplied both the
+                  numerator and denominator by ___."
+                </li>
+                <li>
+                  "On the number line, ___ is to the right of ___, so ___ is
+                  greater."
+                </li>
+                <li>"The total paint is ___ because ___ + ___ = ___."</li>
+                <li>
+                  "I can see in my bar model that ___ is greater because more
+                  parts are shaded."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>Fraction Bar</h4>
+                <p>
+                  Rectangles divided into equal parts with shading to show each
+                  fraction.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Number Line</h4>
+                <p>
+                  Plot both fractions on a line from 0 to 1. Farther right =
+                  greater.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Area Model</h4>
+                <p>
+                  Shade parts of same-size rectangles. Compare the shaded areas
+                  visually.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <!-- TIMED PHASES -->
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Launch phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  03:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="3"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the paint problem aloud. Assign roles. Each person
+                    underlines the two fractions (3/4 and 5/8) and the key
+                    questions (which is greater? how much total?).
+                  </p>
+                  <p class="guiding-q">
+                    Before you start drawing, can you estimate which fraction is
+                    greater just by thinking about it?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: every team member knows the two fractions
+                    and what the problem is asking.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Model Builder draws all three representations: fraction
+                    bars, number line, and area models. Label every part. Find
+                    the equivalent fraction 3/4 = 6/8.
+                  </p>
+                  <p class="guiding-q">
+                    Are the bars the same total length? Are the number line
+                    segments truly equal?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: three labeled models are drawn and the
+                    equivalent fraction is found.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Compare: 6/8 vs. 5/8. Write the inequality. Add: 6/8 + 5/8 =
+                    11/8 = 1 3/8. Precision Checker verifies the addition and
+                    the mixed number conversion.
+                  </p>
+                  <p class="guiding-q">
+                    How do you know 11/8 is the same as 1 3/8?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: comparison written, sum found, and
+                    converted to a mixed number.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares: show all three representations, state the
+                    comparison, give the total, and explain one revision the
+                    team made.
+                  </p>
+                  <p class="guiding-q">
+                    Which representation made it easiest to see the comparison?
+                    Why?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: Reporter can present the solution in under
+                    60 seconds.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                The art teacher finds <strong>2/3 of a gallon</strong> of red
+                paint in the closet. Now compare all three amounts: 3/4, 5/8,
+                and 2/3. Put them in order from least to greatest. You will need
+                to find a common denominator for ALL three fractions. (Hint:
+                what is the LCD of 4, 8, and 3?)
+              </p>
+            </div>
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                she needed exactly 1 gallon of blue? How much more blue paint
+                does she need?
+              </li>
+              <li>
+                you had to compare 7/12 and 3/5? How would you find a common
+                denominator?
+              </li>
+              <li>
+                the fractions were 3/4 and 6/8? What would the comparison look
+                like?
+              </li>
+            </ul>
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Cooks compare fractions when adjusting recipes. If a recipe needs
+              3/4 cup of flour and you only have a 1/8 cup measure, you need to
+              know that 3/4 = 6/8 to measure correctly.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>
+                Show your three representations. Which one made the comparison
+                clearest?
+              </li>
+              <li>How did you find the equivalent fraction for 3/4?</li>
+              <li>
+                Where are 5/8 and 3/4 on the number line? Which is farther
+                right?
+              </li>
+              <li>
+                What is the total amount of paint? Show your addition step by
+                step.
+              </li>
+              <li>Why did you need a common denominator to compare and add?</li>
+            </ol>
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>"We found that 3/4 is greater than 5/8 because..."</li>
+              <li>
+                "We converted 3/4 to 6/8 by multiplying the numerator and
+                denominator by ___."
+              </li>
+              <li>"The total paint is ___ gallons, which we found by..."</li>
+              <li>
+                "The representation that helped us most was ___ because..."
+              </li>
+            </ul>
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Visual Models</strong>All three representations are
+                accurate and labeled
+              </div>
+              <div class="rubric-item">
+                <strong>Comparison</strong>Clear inequality with equivalent
+                fraction proof
+              </div>
+              <div class="rubric-item">
+                <strong>Addition</strong>Correct sum with mixed number and
+                explanation
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>Fraction bar model for 3/4 and 5/8 (same total length)</li>
+                <li>Number line from 0 to 1 with both fractions plotted</li>
+                <li>Area model for each fraction</li>
+                <li>Equivalent fraction showing 3/4 = 6/8</li>
+                <li>Comparison: 3/4 &gt; 5/8 with explanation</li>
+                <li>Addition: 3/4 + 5/8 = 11/8 = 1 3/8 with steps shown</li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Fraction Bar for 3/4:</strong></p>
+        <br /><br />
+        <p><strong>Fraction Bar for 5/8:</strong></p>
+        <br /><br />
+        <p><strong>Number Line (0 to 1):</strong></p>
+        <br /><br />
+        <p><strong>Area Models:</strong></p>
+        <br /><br />
+        <p><strong>Comparison and Total:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var ai = 0,
+          rs = phases[0].minutes * 60,
+          tid = null;
+        var td = document.getElementById("timerDisplay"),
+          al = document.getElementById("activePhaseLabel"),
+          pl = document.getElementById("phaseList");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stop() {
+          if (tid) {
+            clearInterval(tid);
+            tid = null;
+          }
+        }
+        function sel(i) {
+          stop();
+          ai = i;
+          rs = phases[i].minutes * 60;
+          al.textContent = phases[i].title + " phase";
+          td.textContent = fmt(rs);
+          pl.querySelectorAll(".phase").forEach(function (a, x) {
+            a.classList.toggle("is-open", x === i);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              x === i ? "true" : "false",
+            );
+          });
+        }
+        pl.addEventListener("click", function (e) {
+          var t = e.target.closest(".phase-toggle");
+          if (t) sel(Number(t.dataset.phase));
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (tid) return;
+            tid = setInterval(function () {
+              rs = Math.max(0, rs - 1);
+              td.textContent = fmt(rs);
+              if (rs === 0) {
+                stop();
+                al.textContent = phases[ai].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+        document.getElementById("pauseTimer").addEventListener("click", stop);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            sel(ai);
+          });
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

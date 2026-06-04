@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Neft Teacher Student Growth Tracker — local-first per-student math analytics that auto-populate from classroom work: mastery, growth trend, projection, risk, and intervention groups."
+    />
+    <title>Student Growth Tracker | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <a class="skip-link" href="#tracker-main">Skip to tracker</a>
+    <main class="tracker-shell">
+
+      <header class="tracker-head">
+        <div>
+          <p class="eyebrow">Math Curriculum · Analytics</p>
+          <h1>Student Growth Tracker</h1>
+          <p class="lede">
+            Auto-populates from lesson, game, and assessment results saved on
+            this device, then recalculates mastery, growth trend, projection,
+            and risk in real time. Add results manually anytime. Nothing leaves
+            this browser.
+          </p>
+        </div>
+        <span class="updated" id="updated" aria-live="polite"></span>
+      </header>
+
+      <div class="toolbar" role="region" aria-label="Tracker controls">
+        <div class="tabs" role="tablist" aria-label="Views">
+          <button
+            class="tab active"
+            role="tab"
+            data-view="overview"
+            aria-selected="true"
+          >
+            Class overview
+          </button>
+          <button
+            class="tab"
+            role="tab"
+            data-view="roster"
+            aria-selected="false"
+          >
+            Roster
+          </button>
+        </div>
+        <span class="spacer"></span>
+        <label class="visually-hidden" for="f-search">Search students</label>
+        <input type="search" id="f-search" placeholder="Search students…" />
+        <label class="visually-hidden" for="f-period">Filter by period</label>
+        <select id="f-period" aria-label="Filter by period"></select>
+        <label class="visually-hidden" for="f-standard"
+          >Filter by standard</label
+        >
+        <select id="f-standard" aria-label="Filter by standard"></select>
+        <button class="btn" id="btn-refresh" title="Re-read student work">
+          ↻ Refresh
+        </button>
+        <button
+          class="btn"
+          id="btn-export"
+          title="Export current roster to CSV"
+        >
+          ⤓ CSV
+        </button>
+        <button
+          class="btn"
+          id="btn-export-docx"
+          title="Export current roster to Word"
+          style="background:#2b579a; color:white; border-color:#2b579a;"
+        >
+          ⤓ Word
+        </button>
+        <button class="btn primary" id="btn-add">+ Add result</button>
+      </div>
+
+      <div id="tracker-main">
+        <div id="view-root" aria-live="polite"></div>
+      </div>
+    </main>
+
+    <dialog class="manual" id="manual-dialog" aria-labelledby="manual-title">
+      <form method="dialog" id="manual-form" class="manual-body">
+        <h2 id="manual-title">Add a result</h2>
+        <div class="field">
+          <label for="m-student">Student name *</label>
+          <input id="m-student" required autocomplete="off" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="m-period">Period / class</label>
+            <input id="m-period" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="m-standard">Standard</label>
+            <input
+              id="m-standard"
+              placeholder="e.g. 6.NS.1"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label for="m-label">Assessment / activity</label>
+          <input
+            id="m-label"
+            placeholder="e.g. Unit 2 Review"
+            autocomplete="off"
+          />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="m-correct">Correct</label>
+            <input id="m-correct" type="number" min="0" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m-total">Out of</label>
+            <input id="m-total" type="number" min="0" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m-pct">or %</label>
+            <input
+              id="m-pct"
+              type="number"
+              min="0"
+              max="100"
+              inputmode="numeric"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label for="m-date">Date</label>
+          <input id="m-date" type="date" />
+        </div>
+        <p class="muted hint">
+          Enter correct/out-of, or a percent directly. Manual entries are stored
+          separately and never change source data.
+        </p>
+        <div class="dialog-actions">
+          <button type="button" class="btn" id="m-cancel">Cancel</button>
+          <button type="submit" class="btn primary">Save result</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

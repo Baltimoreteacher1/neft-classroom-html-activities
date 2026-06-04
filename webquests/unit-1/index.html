@@ -1,0 +1,1640 @@
+<!doctype html>
+<html lang="en" class="nt-theme-aware">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      WebQuest · Unit 1 · The Lemonade League — Ratios &amp; Unit Rates | Neft
+      Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 ratios WebQuest: open a juice cart at the spring festival by mixing a fixed-ratio recipe, scaling with a ratio table, finding the best unit price, and winning a delivery speed challenge (6.RP.A.1–3)."
+    />
+
+    <!-- Shared Neft design system -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+
+    <style>
+      /* ============================================================
+         Unit 1 WebQuest — uses shared --nt-* theme variables.
+         Scoped .wq-* styles only; all visuals are SVG/divs (no ASCII).
+         ============================================================ */
+      :root {
+        --wq-citrus: #f4b400;
+        --wq-lime: #7cb342;
+        --wq-berry: #e0457b;
+        --wq-grape: #7c4dff;
+        --wq-ice: #4fc3f7;
+        --wq-cup: #fff8e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
+      }
+      .wq-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 18px 80px;
+      }
+      .wq-backlink {
+        font-size: 0.95rem;
+        margin: 6px 0 4px;
+      }
+      .wq-backlink a {
+        color: var(--nt-accent, #245ea8);
+        font-weight: 700;
+        text-decoration: underline;
+      }
+
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #f59e0b 0%,
+          #e0457b 55%,
+          #7c4dff 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
+      }
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
+        display: inline-block;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #fff7ed;
+      }
+      .wq-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -6px;
+        bottom: -14px;
+        width: 200px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
+      }
+      .wq-l1 {
+        background: rgba(124, 179, 66, 0.12);
+        border-color: rgba(124, 179, 66, 0.5);
+      }
+      .wq-l2 {
+        background: rgba(124, 77, 255, 0.1);
+        border-color: rgba(124, 77, 255, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #558b2f;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c4dff;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Recipe / mixing visual ---------- */
+      .wq-recipe {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+        margin-top: 8px;
+      }
+      @media (max-width: 560px) {
+        .wq-recipe {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-mixcard {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        background: var(--nt-bg, #f8fafc);
+        padding: 12px;
+        text-align: center;
+      }
+
+      /* ---------- Ratio table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-data {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 460px;
+        font-size: 0.98rem;
+      }
+      table.wq-data th,
+      table.wq-data td {
+        padding: 10px 12px;
+        text-align: center;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-data thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+      }
+      table.wq-data tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-blank {
+        color: var(--wq-berry);
+        font-weight: 800;
+      }
+
+      /* ---------- Supplier price tiles ---------- */
+      .wq-suppliers {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .wq-supplier {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px;
+        background: var(--nt-bg, #f8fafc);
+        text-align: center;
+      }
+      .wq-supplier h4 {
+        margin: 0 0 8px;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-supplier .wq-price {
+        font-size: 1.5rem;
+        font-weight: 800;
+      }
+      .wq-supplier .wq-per {
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.9rem;
+      }
+
+      /* ---------- Mission / task ---------- */
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--wq-citrus);
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--wq-citrus);
+        background: rgba(244, 180, 0, 0.1);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: #b8860b;
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.04rem;
+      }
+
+      /* ---------- Rubric table ---------- */
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-text,
+      .wq-num {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 150px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-text:focus,
+      .wq-num:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(124, 179, 66, 0.16);
+        color: #33691e;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(224, 69, 123, 0.14);
+        color: #9b1b48;
+      }
+
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
+      }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Conclusion CTAs ---------- */
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="ntkit"></div>
+
+    <main class="wq-wrap">
+      <p class="wq-backlink">
+        <a href="/webquests/">← All WebQuests</a> ·
+        <a href="/math/">Math Hub</a>
+      </p>
+
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker"
+          >Grade 6 Math WebQuest · Unit 1 · 6.RP.A.1–3</span
+        >
+        <h1>The Lemonade League</h1>
+        <p>
+          Your school's Spring Festival is hiring one student-run drink cart,
+          and three teams want the spot. To win the contract,
+          <strong>your team</strong>
+          must prove it can mix the official "Sunrise Splash" recipe to an exact
+          ratio, scale it up for a crowd, buy ingredients at the best unit
+          price, and beat the rival cart on delivery speed. Every decision is a
+          ratio or a unit rate.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 1–2 class periods</span>
+          <span class="wq-badge">🍋 Ratios two ways</span>
+          <span class="wq-badge">📊 Ratio tables</span>
+          <span class="wq-badge">💲 Best-deal unit rates</span>
+        </div>
+        <!-- decorative drink-cup SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 160 200" aria-hidden="true">
+          <path
+            d="M28 60 L132 60 L120 188 Q119 196 110 196 L50 196 Q41 196 40 188 Z"
+            fill="rgba(255,255,255,0.92)"
+            stroke="#0b1f33"
+            stroke-width="3"
+          />
+          <rect
+            x="24"
+            y="48"
+            width="112"
+            height="14"
+            rx="7"
+            fill="#fff"
+            stroke="#0b1f33"
+            stroke-width="3"
+          />
+          <path
+            d="M88 14 L74 50 L96 50 Z"
+            fill="#7cb342"
+            stroke="#0b1f33"
+            stroke-width="3"
+          />
+          <rect x="86" y="6" width="6" height="46" rx="3" fill="#0b1f33" />
+          <circle cx="60" cy="120" r="9" fill="#f4b400" />
+          <circle cx="92" cy="148" r="8" fill="#e0457b" />
+          <circle cx="78" cy="100" r="7" fill="#7c4dff" />
+          <rect
+            x="50"
+            y="150"
+            width="60"
+            height="36"
+            rx="4"
+            fill="rgba(79,195,247,0.55)"
+          />
+        </svg>
+      </header>
+
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Bid for the Cart
+        </h2>
+        <p class="wq-lead">
+          A recipe is really a set of instructions about
+          <strong>amounts compared to other amounts</strong>. Change the
+          comparison and the drink tastes wrong. Keep the comparison equal —
+          even when you make 10 times as much — and every cup tastes exactly the
+          same. That equal comparison is a <strong>ratio</strong>, and the "cost
+          or amount for just 1" is a <strong>unit rate</strong>.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How can keeping a ratio constant — and comparing unit rates — help
+            a small business serve a big crowd, spend the least money, and still
+            win?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A ratio compares two amounts. "2 to 3" can be written
+          <strong>2 : 3</strong> or as the fraction <strong>2/3</strong>. A unit
+          rate tells you the amount for exactly <strong>1</strong> (like "$3 for
+          1 cup").
+          <span class="wq-es"
+            >En español: Una razón compara dos cantidades. "2 a 3" se escribe 2
+            : 3 o como la fracción 2/3. Una tasa unitaria dice la cantidad para
+            exactamente 1 (por ejemplo, "$3 por 1 vaso").</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Smart sellers compare two things at once. They watch the
+          <em>recipe ratio</em> (to keep quality) and the
+          <em>price-per-unit ratio</em>
+          (to keep profit). When you can hold one ratio steady while shopping
+          for the best of another, you think like an entrepreneur.
+        </div>
+      </section>
+
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <p>
+          By the end of this WebQuest, your team will turn in a
+          <strong>Festival Bid Card</strong> that proves you can run the cart. A
+          winning bid must:
+        </p>
+        <ul class="wq-deliverables">
+          <li>
+            Write the official <strong>Sunrise Splash recipe ratio</strong> two
+            ways (colon form and fraction form).
+          </li>
+          <li>
+            Use a <strong>ratio table</strong> to scale the recipe for a crowd
+            of customers.
+          </li>
+          <li>
+            Compare three suppliers and pick the one with the
+            <strong>lowest unit price</strong> (cost per cup of lemons).
+          </li>
+          <li>
+            Solve the <strong>delivery-speed challenge</strong> using miles per
+            hour to decide which cart reaches the field first.
+          </li>
+          <li>
+            Pass the <strong>Check Your Understanding</strong> self-check, then
+            save it with your name as PDF or DOC.
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work through the steps in order. Each step fills in one part of your
+          Bid Card.
+        </p>
+
+        <h3>Step 1 — Read the official recipe (write the ratio)</h3>
+        <p>
+          The Festival recipe for one batch of
+          <strong>Sunrise Splash</strong> is:
+          <strong>2 cups of lemon juice</strong> for every
+          <strong>3 cups of cold water</strong>, plus a scoop of ice. The
+          lemon-to-water comparison must never change, or the judges will taste
+          the difference.
+        </p>
+        <div class="wq-recipe">
+          <div class="wq-mixcard">
+            <svg
+              width="180"
+              height="120"
+              viewBox="0 0 180 120"
+              role="img"
+              aria-label="Two cups of lemon juice next to three cups of water"
+            >
+              <!-- 2 lemon cups -->
+              <g>
+                <rect
+                  x="8"
+                  y="40"
+                  width="26"
+                  height="60"
+                  rx="4"
+                  fill="var(--wq-citrus)"
+                  stroke="#0b1f33"
+                  stroke-width="2"
+                />
+                <rect
+                  x="40"
+                  y="40"
+                  width="26"
+                  height="60"
+                  rx="4"
+                  fill="var(--wq-citrus)"
+                  stroke="#0b1f33"
+                  stroke-width="2"
+                />
+                <text x="14" y="114" font-size="11" font-weight="700">
+                  lemon
+                </text>
+              </g>
+              <text
+                x="78"
+                y="78"
+                font-size="22"
+                font-weight="800"
+                fill="var(--nt-text,#17212f)"
+              >
+                :
+              </text>
+              <!-- 3 water cups -->
+              <g>
+                <rect
+                  x="96"
+                  y="40"
+                  width="24"
+                  height="60"
+                  rx="4"
+                  fill="var(--wq-ice)"
+                  stroke="#0b1f33"
+                  stroke-width="2"
+                />
+                <rect
+                  x="124"
+                  y="40"
+                  width="24"
+                  height="60"
+                  rx="4"
+                  fill="var(--wq-ice)"
+                  stroke="#0b1f33"
+                  stroke-width="2"
+                />
+                <rect
+                  x="152"
+                  y="40"
+                  width="24"
+                  height="60"
+                  rx="4"
+                  fill="var(--wq-ice)"
+                  stroke="#0b1f33"
+                  stroke-width="2"
+                />
+                <text x="112" y="114" font-size="11" font-weight="700">
+                  water
+                </text>
+              </g>
+            </svg>
+            <p style="margin: 6px 0 0; font-weight: 700">2 lemon : 3 water</p>
+          </div>
+          <div>
+            <p>
+              Write that comparison <strong>two ways</strong> for your Bid Card:
+            </p>
+            <ul>
+              <li>Colon form: <strong>2 : 3</strong></li>
+              <li>Fraction form: <strong>2/3</strong></li>
+            </ul>
+            <p class="wq-hint">
+              Order matters! "Lemon to water" is 2 : 3. "Water to lemon" would
+              be 3 : 2 — a different ratio.
+            </p>
+          </div>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Say it out loud: "two lemon for every three water." The first number
+          goes with the first word.
+          <span class="wq-es"
+            >En español: Dilo en voz alta: "dos de limón por cada tres de agua."
+            El primer número va con la primera palabra.</span
+          >
+        </div>
+
+        <h3>Step 2 — Mix it in the 3D game</h3>
+        <p>
+          Open the Unit 1 mixing game and fill at least three orders. Watch what
+          happens when you add too much of one ingredient: the meter shows the
+          ratio is no longer 2 : 3. Keeping both amounts in step is exactly what
+          you will do on paper next.
+        </p>
+
+        <h3>Step 3 — Scale up with a ratio table</h3>
+        <p>
+          The festival expects a crowd, so you must make many batches and keep
+          the ratio equal. A <strong>ratio table</strong> grows both amounts by
+          the same multiplier. Finish the missing values:
+        </p>
+        <div class="wq-table-scroll">
+          <table
+            class="wq-data"
+            aria-label="Ratio table for Sunrise Splash recipe"
+          >
+            <thead>
+              <tr>
+                <th>Batches</th>
+                <th>Lemon juice (cups)</th>
+                <th>Water (cups)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>4</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>6</td>
+                <td><span class="wq-blank">?</span></td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><span class="wq-blank">?</span></td>
+                <td>15</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>20</td>
+                <td><span class="wq-blank">?</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="wq-example">
+          <p><b>Worked example — Row of 3 batches:</b></p>
+          <p class="wq-work">
+            1 batch is 2 lemon : 3 water. Multiply both by 3: 2 × 3 = 6 lemon,
+            and 3 × 3 = <b>9 water</b>. The ratio 6 : 9 still equals 2 : 3.
+          </p>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          A festival pitcher holds 30 cups of finished drink. Using 2 : 3, how
+          many cups of lemon juice and water are in one full pitcher? (Hint: the
+          parts add to 5, so each "part" is 30 ÷ 5 = 6 cups.) Add this answer to
+          your Bid Card as a bonus.
+        </div>
+
+        <h3>Step 4 — Shop for the best unit price</h3>
+        <p>
+          Lemons cost money. Three suppliers sell bags of lemon-juice cups at
+          different prices. The smart move is to find the
+          <strong>unit price</strong> — the cost of just
+          <strong>1 cup</strong> — and pick the lowest.
+        </p>
+        <div class="wq-suppliers">
+          <div class="wq-supplier">
+            <h4>Sunny Farms</h4>
+            <div class="wq-price">$12</div>
+            <div class="wq-per">for 4 cups</div>
+          </div>
+          <div class="wq-supplier">
+            <h4>Citrus Co.</h4>
+            <div class="wq-price">$15</div>
+            <div class="wq-per">for 6 cups</div>
+          </div>
+          <div class="wq-supplier">
+            <h4>Market Fresh</h4>
+            <div class="wq-price">$20</div>
+            <div class="wq-per">for 10 cups</div>
+          </div>
+        </div>
+        <div class="wq-example">
+          <p><b>Worked example — Sunny Farms unit price:</b></p>
+          <p class="wq-work">
+            $12 ÷ 4 cups = <b>$3 per cup</b>. Now find the other two the same
+            way and compare. The smallest number is the best deal.
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Unit price means "price for 1." Always divide the dollars by the
+          number of cups: dollars ÷ cups = price for 1 cup.
+          <span class="wq-es"
+            >En español: El precio unitario es "el precio por 1". Divide los
+            dólares entre el número de vasos: dólares ÷ vasos = precio por 1
+            vaso.</span
+          >
+        </div>
+
+        <h3>Step 5 — Win the delivery-speed challenge</h3>
+        <p>
+          Carts are stored off-site and must drive to the field. Speed is a unit
+          rate: <strong>miles per hour</strong> means "miles for 1 hour." Your
+          truck travels <strong>90 miles in 2 hours</strong>. Find its speed,
+          then compare it to the rival cart in the self-check.
+        </p>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          The rival cart drives 120 miles in 3 hours. Whose unit rate (miles per
+          hour) is faster, and by how many miles per hour? Defend your answer
+          with numbers on your Bid Card.
+        </div>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-1/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 1 · 3D Mixing Game</span
+              ><span class="wq-rdesc"
+                >Fill orders and keep the 2 : 3 recipe ratio in balance.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-1/">
+            <span class="wq-ricon" aria-hidden="true">🧮</span>
+            <span
+              ><span class="wq-rtitle">Ratio Architect Activity</span
+              ><span class="wq-rdesc"
+                >Build ratio tables and test equivalent ratios step by
+                step.</span
+              ></span
+            >
+          </a>
+          <a href="/graphic-novels/unit1/graphic-novel-1.html">
+            <span class="wq-ricon" aria-hidden="true">📖</span>
+            <span
+              ><span class="wq-rtitle">Unit 1 Graphic Novel</span
+              ><span class="wq-rdesc"
+                >Read the ratio story to see the ideas in action.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <ul>
+          <li>
+            <strong>Ratio / Razón</strong> — a comparison of two amounts (2 : 3
+            or 2/3).
+          </li>
+          <li>
+            <strong>Equivalent ratios / Razones equivalentes</strong> — ratios
+            with the same value (2 : 3 and 6 : 9).
+          </li>
+          <li>
+            <strong>Unit rate / Tasa unitaria</strong> — the amount for exactly
+            1 (miles per 1 hour).
+          </li>
+          <li>
+            <strong>Unit price / Precio unitario</strong> — the cost for exactly
+            1 item or unit.
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Festival Bid Card will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Owner</th>
+                <th>3 · Manager</th>
+                <th>2 · Trainee</th>
+                <th>1 · Getting started</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Writing ratios</td>
+                <td>
+                  Ratio written correctly in both colon and fraction form.
+                </td>
+                <td>Ratio correct in one form.</td>
+                <td>Ratio written with a small order error.</td>
+                <td>Ratio not yet correct.</td>
+              </tr>
+              <tr>
+                <td>Ratio table</td>
+                <td>All blanks correct; ratios all equivalent.</td>
+                <td>One blank wrong.</td>
+                <td>Two or three blanks wrong.</td>
+                <td>Table not equivalent.</td>
+              </tr>
+              <tr>
+                <td>Best unit price</td>
+                <td>All 3 unit prices correct; best deal justified.</td>
+                <td>Unit prices correct; choice unclear.</td>
+                <td>One unit price error.</td>
+                <td>Unit prices missing or wrong.</td>
+              </tr>
+              <tr>
+                <td>Speed unit rate</td>
+                <td>Correct mph and correct comparison of carts.</td>
+                <td>Correct mph; comparison unclear.</td>
+                <td>Small calculation error.</td>
+                <td>Speed not found.</td>
+              </tr>
+              <tr>
+                <td>Self-check &amp; submission</td>
+                <td>Self-check passed; saved with name as PDF/DOC.</td>
+                <td>Self-check done; saved file.</td>
+                <td>Self-check started; file missing details.</td>
+                <td>No submission.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Sunrise Splash · Festival Bid Card</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Festival Bid Card</h3>
+          <ul>
+            <li><strong>Recipe ratio:</strong> lemon : water = <strong>2 : 3</strong> (colon form) = <strong>2/3</strong> (fraction form). Order matters — water : lemon would be 3 : 2.</li>
+            <li><strong>Ratio table (scale up):</strong> ×3 gives 6 lemon : 9 water; a 30-cup pitcher splits into 2 + 3 = 5 parts, so each part = 30 ÷ 5 = 6 cups → <strong>12 cups lemon : 18 cups water</strong>.</li>
+            <li><strong>Best unit price:</strong> $12 ÷ 4 = $3.00/cup; divide each supplier's dollars ÷ cups and pick the lowest cost per cup of lemons.</li>
+            <li><strong>Delivery speed:</strong> our truck 90 mi ÷ 2 h = <strong>45 mph</strong>; rival 120 mi ÷ 3 h = 40 mph → our cart is faster (higher unit rate).</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Watch for students reversing the ratio order or adding to one part only — both amounts must scale together.</li>
+            <li>For the supplier compare, insist on a true <em>unit</em> price ($ per 1 cup) so the comparison is fair.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.RP.A.1–3</strong>.</p>
+        </div>
+      </details>
+
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
+        <p>
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These questions match the steps in your bid.
+        </p>
+
+        <!-- Q1 ratio (text) -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="ratio"
+          data-answer="2:3"
+          data-skill="Writing ratios"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >The Sunrise Splash uses 2 cups of lemon juice for every 3 cups of
+              water. Write the ratio of <strong>lemon to water</strong> in colon
+              form.</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="160"
+              height="56"
+              viewBox="0 0 160 56"
+              role="img"
+              aria-label="Two yellow cups beside three blue cups"
+            >
+              <rect
+                x="6"
+                y="8"
+                width="18"
+                height="40"
+                rx="3"
+                fill="var(--wq-citrus)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <rect
+                x="28"
+                y="8"
+                width="18"
+                height="40"
+                rx="3"
+                fill="var(--wq-citrus)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text x="54" y="36" font-size="18" font-weight="800">:</text>
+              <rect
+                x="70"
+                y="8"
+                width="16"
+                height="40"
+                rx="3"
+                fill="var(--wq-ice)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <rect
+                x="90"
+                y="8"
+                width="16"
+                height="40"
+                rx="3"
+                fill="var(--wq-ice)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <rect
+                x="110"
+                y="8"
+                width="16"
+                height="40"
+                rx="3"
+                fill="var(--wq-ice)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <label for="q1in" class="sr-only">Lemon to water ratio</label>
+          <input
+            id="q1in"
+            class="wq-text"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="? : ?"
+          />
+          <div class="wq-hint">
+            Hint / Pista: lemon first, then water. Format 2:3.
+          </div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2 ratio table blank (num) -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="9"
+          data-tol="0.01"
+          data-skill="Ratio tables"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >In the ratio table, 3 batches use 6 cups of lemon juice. How many
+              cups of <strong>water</strong> are needed for 3 batches?</span
+            >
+          </div>
+          <label for="q2in" class="sr-only">Cups of water for 3 batches</label>
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="cups"
+          />
+          <div class="wq-hint">
+            Hint / Pista: 1 batch = 3 water. Multiply by 3.
+          </div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3 equivalent ratio (radio) -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Equivalent ratios"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >Which ratio is <strong>equivalent</strong> to the recipe ratio 2
+              : 3?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="a" /> 3 : 2</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="b" /> 6 : 9</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="c" /> 2 : 6</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="d" /> 4 : 5</label
+          >
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4 best unit price (radio) -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="radio"
+          data-answer="c"
+          data-skill="Unit price / best deal"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >Sunny Farms: $12 for 4 cups. Citrus Co.: $15 for 6 cups. Market
+              Fresh: $20 for 10 cups. Which supplier has the
+              <strong>lowest unit price</strong> per cup?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="a" /> Sunny Farms ($3.00 /
+            cup)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="b" /> Citrus Co. ($2.50 /
+            cup)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="c" /> Market Fresh ($2.00 /
+            cup)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q4" value="d" /> They all cost the
+            same.</label
+          >
+          <div class="wq-hint">
+            Hint / Pista: divide dollars ÷ cups for each.
+          </div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5 speed unit rate (num) -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="num"
+          data-answer="45"
+          data-tol="0.01"
+          data-skill="Unit rate (speed)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >Your cart travels 90 miles in 2 hours. What is its speed in
+              <strong>miles per hour</strong>?</span
+            >
+          </div>
+          <label for="q5in" class="sr-only">Speed in miles per hour</label>
+          <input
+            id="q5in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="mph"
+          />
+          <div class="wq-hint">
+            Hint / Pista: miles ÷ hours = miles for 1 hour.
+          </div>
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6 compare carts (radio) -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="radio"
+          data-answer="a"
+          data-skill="Comparing unit rates"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >Your cart goes 90 miles in 2 hours (45 mph). The rival cart goes
+              120 miles in 3 hours. Which cart is <strong>faster</strong>?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="a" /> Your cart — it is faster
+            (45 mph vs 40 mph).</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="b" /> The rival cart — it goes
+            more total miles.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="c" /> They tie at exactly the
+            same speed.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="d" /> You cannot compare
+            different distances.</label
+          >
+          <div class="wq-hint">
+            Hint / Pista: find each cart's miles per hour, then compare.
+          </div>
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did exactly what real business owners do: you held a recipe ratio
+          steady so every cup tasted the same, scaled it for a crowd with a
+          ratio table, shopped by unit price to save money, and used a speed
+          unit rate to beat the competition. With the best deal at
+          <strong>$2.00 per cup</strong> and a faster cart at
+          <strong>45 mph</strong>, the Lemonade League contract is yours!
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              If you buy 30 cups of lemon juice at the best unit price, what is
+              your total cost? Then set a fair selling price per cup so you make
+              a profit.
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              Describe one real situation from your own life where you compared
+              two amounts (a ratio) or found a "per one" value (a unit rate).
+              ¿Dónde usas razones o tasas unitarias en tu vida?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Chefs, store buyers, delivery planners, and small-business owners
+              all use ratios and unit rates every single day — the exact skills
+              you just used.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
+
+        var ACTIVITY_ID = "webquest-unit-1-lemonade";
+        var ACTIVITY_TITLE =
+          "WebQuest · Unit 1 · The Lemonade League (Ratios & Unit Rates)";
+        var STANDARD = "6.RP.A.1-3";
+
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        // Compare ratio answers tolerantly: 2:3 and 2/3 both accepted.
+        function ratioEquals(resp, answer) {
+          function toDecimal(s) {
+            s = String(s).trim().replace(/\s+/g, "");
+            var colon = s.match(/^(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)$/);
+            if (colon) return parseFloat(colon[1]) / parseFloat(colon[2]);
+            var slash = s.match(/^(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+            if (slash) return parseFloat(slash[1]) / parseFloat(slash[2]);
+            return NaN;
+          }
+          var a = toDecimal(resp);
+          var b = toDecimal(answer);
+          if (isNaN(a) || isNaN(b)) return false;
+          return Math.abs(a - b) < 1e-9;
+        }
+
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num, input.wq-text");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          if (type === "ratio")
+            return ratioEquals(resp, card.getAttribute("data-answer"));
+          // numeric
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
+        }
+
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the ratio or unit rate and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u1-q" + card.getAttribute("data-q"),
+              skill: card.getAttribute("data-skill") || "Ratios",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
+          });
+        }
+
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Bid approved — the Lemonade League contract is yours! ¡Felicidades!"
+                : " Review the questions marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              card
+                .querySelectorAll("input.wq-num, input.wq-text")
+                .forEach(function (i) {
+                  i.value = "";
+                });
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

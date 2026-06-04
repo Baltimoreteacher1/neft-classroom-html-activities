@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Box Plot & Dot Plot Builder</title>
+  <meta name="description" content="Drag data points to build dynamic dot plots, frequency histograms, and box plots in real time. Grade 6 statistics activities." />
+  
+  <!-- CSS Imports -->
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <link rel="stylesheet" href="/assets/design-tokens.css" />
+  
+  <style>
+    /* Premium Local Styles Override */
+    :root {
+      --accent: var(--teal);
+      --accent-dark: var(--teal-dark);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --shadow-premium: 0 12px 30px rgba(18, 53, 91, 0.08);
+      --border-accent: rgba(31, 166, 162, 0.2);
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .main-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--sp-6);
+      margin-top: var(--sp-4);
+    }
+
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Workspace Panel */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+    }
+
+    .board-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-premium);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: var(--sp-3);
+    }
+
+    .board-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    /* Stats Banner */
+    .stats-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-4);
+    }
+
+    .stat-badge {
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-2) var(--sp-3);
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .stat-badge.highlight {
+      background: var(--teal-light);
+      border-color: var(--accent);
+    }
+
+    .stat-val {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1.1;
+    }
+
+    .stat-lbl {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    /* Interactive SVG Charts */
+    .chart-container {
+      width: 100%;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3);
+      margin-bottom: var(--sp-4);
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+      position: relative;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Dot Plot Interactive Columns */
+    .dot-column {
+      cursor: pointer;
+    }
+    .dot-column:hover .column-hover-bg {
+      fill: rgba(31, 166, 162, 0.05);
+    }
+    .active-dot {
+      fill: var(--teal);
+      stroke: var(--navy);
+      stroke-width: 1.5px;
+      transition: all 0.2s ease-out;
+      cursor: pointer;
+    }
+    .active-dot:hover {
+      fill: var(--coral);
+      transform: scale(1.1);
+      transform-origin: center;
+    }
+
+    /* Challenge Panel */
+    .challenges-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-premium);
+      align-self: start;
+    }
+
+    .challenge-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      margin-top: var(--sp-4);
+    }
+
+    .challenge-item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3);
+      background: white;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .challenge-item.solved {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .challenge-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      cursor: pointer;
+    }
+
+    .chk-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: white;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .challenge-item.solved .chk-icon {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .challenge-title {
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: var(--navy);
+    }
+
+    .challenge-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: var(--sp-1);
+      line-height: 1.35;
+    }
+
+    /* Controls */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-2);
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 8px var(--sp-4);
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      transition: all 0.15s;
+      border: none;
+      font-family: var(--font-display);
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--teal-dark);
+    }
+
+    .btn-secondary {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: var(--navy);
+    }
+
+    .btn-secondary:hover {
+      background: var(--line);
+    }
+
+    .btn-accent {
+      background: var(--coral);
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background: #b84f33;
+    }
+
+    /* Tab switcher for charts */
+    .chart-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--line);
+      margin-bottom: var(--sp-4);
+      gap: var(--sp-2);
+    }
+
+    .chart-tab {
+      background: none;
+      border: none;
+      padding: var(--sp-2) var(--sp-4);
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s;
+      font-family: var(--font-display);
+    }
+
+    .chart-tab.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+
+    .chart-panel {
+      display: none;
+    }
+
+    .chart-panel.active {
+      display: block;
+    }
+
+    /* Audio alert feedback */
+    .toast {
+      position: fixed;
+      bottom: var(--sp-6);
+      right: var(--sp-6);
+      background: var(--navy);
+      color: white;
+      padding: var(--sp-3) var(--sp-5);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Print styling */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .page-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .hero, .site-footer, .controls-row, .chart-tabs, .btn, .chk-icon, .column-hover-bg {
+        display: none !important;
+      }
+      .main-container {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+      }
+      .board-card, .challenges-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+      }
+      .board-card::before {
+        display: none;
+      }
+      .chart-container {
+        border: 2px solid black !important;
+        page-break-inside: avoid;
+      }
+      .chart-panel {
+        display: block !important;
+        margin-bottom: 30px;
+      }
+      .stats-banner {
+        grid-template-columns: repeat(7, 1fr) !important;
+        border: 1px solid black;
+        margin-bottom: 20px;
+      }
+      .stat-badge {
+        border: none !important;
+        border-right: 1px solid black !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        padding: 5px !important;
+      }
+      .stat-badge:last-child {
+        border-right: none !important;
+      }
+      .stat-val {
+        font-size: 1.15rem !important;
+      }
+      .challenges-card {
+        margin-top: 30px;
+        page-break-before: always;
+      }
+      .challenge-item {
+        border: 1px solid black !important;
+        margin-bottom: 10px;
+      }
+      .challenge-item.solved {
+        background: #f0f0f0 !important;
+      }
+      .print-report-header {
+        display: block !important;
+        margin-bottom: 20px;
+        border-bottom: 3px double black;
+        padding-bottom: 10px;
+      }
+      .student-meta-inputs {
+        display: flex !important;
+        gap: 40px;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+    }
+
+    .print-report-header {
+      display: none;
+    }
+    
+    .student-meta-inputs {
+      display: none;
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div class="page-shell">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="/">Neft Hub</a> &middot; <a href="/math/">Grade 6 Math</a> &middot; <span>Box Plot & Dot Plot Builder</span>
+    </div>
+
+    <!-- Printable Report Header -->
+    <div class="print-report-header">
+      <h1 style="font-size: 2rem; margin: 0; font-family: Outfit, sans-serif;">DATA SCIENCE LAB REPORT</h1>
+      <p style="margin: 5px 0 0 0; color: #555;">Topic: 6.SP.B.4 & 6.SP.B.5 — Dot Plots, Histograms, & Box Plots</p>
+      <div class="student-meta-inputs">
+        <div>STUDENT NAME: ___________________________</div>
+        <div>DATE: __________________</div>
+      </div>
+    </div>
+
+    <!-- Page Title / Hero -->
+    <div class="hero">
+      <span class="eyebrow">📊 Unit 8 Statistics & Data</span>
+      <h1>Box Plot & Dot Plot Builder</h1>
+      <p class="hero-copy">
+        Drag dots to build your own custom data distributions. View the dot plot, box-and-whisker plot, and frequency histogram update programmatically in real-time. Complete the statistical analysis challenges to become a Data Scientist!
+      </p>
+    </div>
+
+    <main class="main-container">
+      
+      <!-- LEFT COLUMN: Main Workspace -->
+      <div class="workspace">
+        
+        <div class="board-card">
+          <div class="board-header">
+            <div class="board-title">
+              <span>🔧</span> Data Science Dashboard
+            </div>
+            
+            <div class="controls-row">
+              <button class="btn btn-secondary" onclick="clearData()" title="Remove all data points">🗑️ Reset Board</button>
+              <button class="btn btn-primary" onclick="loadSampleData('symmetric')" title="Load a symmetric dataset">Symmetric Sample</button>
+              <button class="btn btn-primary" onclick="loadSampleData('skewed')" title="Load a skewed dataset">Skewed Sample</button>
+              <button class="btn btn-accent" onclick="window.print()" title="Print your finished lab report">🖨️ Print Report</button>
+            </div>
+          </div>
+
+          <!-- Statistical Scoreboard -->
+          <div class="stats-banner">
+            <div class="stat-badge" id="badge-count">
+              <div class="stat-val" id="stat-count">0</div>
+              <div class="stat-lbl">Count (N)</div>
+            </div>
+            <div class="stat-badge" id="badge-min">
+              <div class="stat-val" id="stat-min">-</div>
+              <div class="stat-lbl">Min</div>
+            </div>
+            <div class="stat-badge" id="badge-q1">
+              <div class="stat-val" id="stat-q1">-</div>
+              <div class="stat-lbl">Q1 (Lower)</div>
+            </div>
+            <div class="stat-badge" id="badge-median">
+              <div class="stat-val" id="stat-median">-</div>
+              <div class="stat-lbl">Median</div>
+            </div>
+            <div class="stat-badge" id="badge-q3">
+              <div class="stat-val" id="stat-q3">-</div>
+              <div class="stat-lbl">Q3 (Upper)</div>
+            </div>
+            <div class="stat-badge" id="badge-max">
+              <div class="stat-val" id="stat-max">-</div>
+              <div class="stat-lbl">Max</div>
+            </div>
+            <div class="stat-badge highlight" id="badge-iqr">
+              <div class="stat-val" id="stat-iqr">-</div>
+              <div class="stat-lbl">IQR</div>
+            </div>
+          </div>
+
+          <!-- Interactive Area -->
+          <div class="chart-tabs">
+            <button class="chart-tab active" onclick="switchTab('box-plot')">📦 Box-and-Whisker Plot</button>
+            <button class="chart-tab" onclick="switchTab('histogram')">📊 Frequency Histogram</button>
+          </div>
+
+          <!-- Chart Area: Box-and-Whisker (Default Active) -->
+          <div class="chart-panel active" id="panel-box-plot">
+            <div class="chart-container" style="height: 180px;">
+              <svg id="box-plot-svg" class="chart-svg" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet">
+                <!-- SVG elements generated programmatically -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Chart Area: Frequency Histogram -->
+          <div class="chart-panel" id="panel-histogram">
+            <div class="chart-container" style="height: 180px;">
+              <svg id="histogram-svg" class="chart-svg" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet">
+                <!-- SVG elements generated programmatically -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- The Dot Plot Interactive Grid -->
+          <h3 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin-bottom: 8px; font-size: 1.05rem;">
+            🔴 Touch / Click Columns to Add/Remove Dots:
+          </h3>
+          <div class="chart-container" style="height: 240px; margin-bottom: 0;">
+            <svg id="dot-plot-svg" class="chart-svg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid meet">
+              <!-- SVG columns and grid generated programmatically -->
+            </svg>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Challenges -->
+      <div class="challenges-card">
+        <h2 style="font-family: var(--font-display); font-weight: 900; color: var(--navy); margin-bottom: var(--sp-2);">🎯 Math Missions</h2>
+        <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: var(--sp-4);">
+          Complete these data architect achievements by arranging your data points correctly.
+        </p>
+
+        <div class="challenge-list">
+          <!-- Challenge 1 -->
+          <div class="challenge-item" id="chk-item-1">
+            <div class="challenge-checkbox" onclick="speakChallenge(1)">
+              <div class="chk-icon" id="chk-icon-1">✓</div>
+              <div>
+                <div class="challenge-title">Mission 1: The Balanced Spread</div>
+                <div class="challenge-desc">
+                  Create a dataset with **at least 8 dots** where the Box Plot is **perfectly symmetrical** (distance from Min to Q1 equals Q3 to Max, and Q1 to Median equals Median to Q3).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 2 -->
+          <div class="challenge-item" id="chk-item-2">
+            <div class="challenge-checkbox" onclick="speakChallenge(2)">
+              <div class="chk-icon" id="chk-icon-2">✓</div>
+              <div>
+                <div class="challenge-title">Mission 2: Left-Skewed Shift</div>
+                <div class="challenge-desc">
+                  Position your dots to build a **skewed-left distribution** where the **Median is greater than the Mean** by at least **0.5 units** (Requires at least 6 data points).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 3 -->
+          <div class="challenge-item" id="chk-item-3">
+            <div class="challenge-checkbox" onclick="speakChallenge(3)">
+              <div class="chk-icon" id="chk-icon-3">✓</div>
+              <div>
+                <div class="challenge-title">Mission 3: The Target IQR</div>
+                <div class="challenge-desc">
+                  Build a dataset with **at least 10 data points** where the Interquartile Range (IQR) is **exactly 4 units**.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div>Neft Teacher &middot; Grade 6 Mathematics</div>
+      <div>Standard Reference: CCSS.MATH.CONTENT.6.SP.B.4</div>
+    </footer>
+  </div>
+
+  <!-- Audio and Achievement Toast -->
+  <div id="toast" class="toast">
+    <span style="font-size: 1.5rem;">🎉</span>
+    <div>
+      <div style="font-weight: 800;" id="toast-title">Achievement Unlocked!</div>
+      <div style="font-size: 0.78rem; opacity: 0.9;" id="toast-desc">Mission Completed successfully.</div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script>
+    // Audio Synth Engine (Retro Web Audio API)
+    const Synth = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) this.ctx = new AudioContextClass();
+        }
+      },
+      play(type) {
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gainNode = this.ctx.createGain();
+        const t = this.ctx.currentTime;
+
+        const presets = {
+          click: { type: 'sine', f: [300, 100], d: 0.08, v: 0.05 },
+          correct: { type: 'sine', f: [523.25, 783.99], d: 0.22, v: 0.08 }, // C5 to G5
+          complete: { type: 'sine', f: [440, 554.37, 659.25, 880], d: 0.4, v: 0.1 } // A major arpeggio
+        };
+
+        const config = presets[type] || presets.click;
+        osc.type = config.type;
+        osc.frequency.setValueAtTime(config.f[0], t);
+        
+        if (config.f.length === 2) {
+          osc.frequency.exponentialRampToValueAtTime(config.f[1], t + config.d);
+        } else if (config.f.length > 2) {
+          // Play arpeggio chord steps
+          const stepDur = config.d / config.f.length;
+          for(let i = 0; i < config.f.length; i++) {
+            osc.frequency.setValueAtTime(config.f[i], t + (i * stepDur));
+          }
+        }
+
+        gainNode.gain.setValueAtTime(0.001, t);
+        gainNode.gain.linearRampToValueAtTime(config.v, t + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, t + config.d);
+
+        osc.connect(gainNode).connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + config.d + 0.01);
+      }
+    };
+
+    // State Variables
+    let dataPoints = []; // Stores integers [0..10]
+    let activeTab = 'box-plot';
+    const maxDotsPerCol = 6;
+    
+    // Mission Solved States
+    let solvedMissions = { 1: false, 2: false, 3: false };
+
+    // HTML Elements
+    const dotSvg = document.getElementById('dot-plot-svg');
+    const boxSvg = document.getElementById('box-plot-svg');
+    const histSvg = document.getElementById('histogram-svg');
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      // Load clean dot plot columns
+      renderDotPlot();
+      updateChartsAndStats();
+    });
+
+    // Switch Panel Tabs
+    function switchTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll('.chart-tab').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.chart-panel').forEach(p => p.classList.remove('active'));
+      
+      // Activate
+      if (tabId === 'box-plot') {
+        document.querySelector('[onclick="switchTab(\'box-plot\')"]').classList.add('active');
+        document.getElementById('panel-box-plot').classList.add('active');
+      } else {
+        document.querySelector('[onclick="switchTab(\'histogram\')"]').classList.add('active');
+        document.getElementById('panel-histogram').classList.add('active');
+      }
+      Synth.play('click');
+      updateChartsAndStats();
+    }
+
+    // Load Sample Datasets
+    function loadSampleData(type) {
+      Synth.play('click');
+      if (type === 'symmetric') {
+        dataPoints = [2, 3, 4, 4, 5, 5, 5, 5, 6, 6, 7, 8];
+      } else if (type === 'skewed') {
+        // Skewed left (lots of high values, mean < median)
+        dataPoints = [2, 5, 7, 8, 9, 9, 10, 10, 10];
+      }
+      updateChartsAndStats();
+    }
+
+    // Clear Board
+    function clearData() {
+      Synth.play('click');
+      dataPoints = [];
+      updateChartsAndStats();
+    }
+
+    // Calculate Statistics
+    function calcStats(data) {
+      if (data.length === 0) {
+        return { count: 0, min: '-', q1: '-', median: '-', q3: '-', max: '-', iqr: '-', mean: 0 };
+      }
+      
+      const sorted = [...data].sort((a, b) => a - b);
+      const count = sorted.length;
+      const min = sorted[0];
+      const max = sorted[count - 1];
+      
+      const meanVal = sorted.reduce((sum, v) => sum + v, 0) / count;
+
+      // Quartile Calculations (Method: Tukey / Standard School Method)
+      function getMedianOfRange(arr, start, end) {
+        const slice = arr.slice(start, end);
+        const len = slice.length;
+        if (len === 0) return 0;
+        const mid = Math.floor(len / 2);
+        return len % 2 !== 0 ? slice[mid] : (slice[mid - 1] + slice[mid]) / 2;
+      }
+
+      // Median
+      const mid = Math.floor(count / 2);
+      const medianVal = count % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+
+      // Q1 and Q3
+      let q1, q3;
+      if (count % 2 === 0) {
+        q1 = getMedianOfRange(sorted, 0, mid);
+        q3 = getMedianOfRange(sorted, mid, count);
+      } else {
+        // Standard school math divides excluding the exact median item
+        q1 = getMedianOfRange(sorted, 0, mid);
+        q3 = getMedianOfRange(sorted, mid + 1, count);
+      }
+
+      const iqr = q3 - q1;
+
+      return {
+        count,
+        min,
+        q1: Math.round(q1 * 100) / 100,
+        median: Math.round(medianVal * 100) / 100,
+        q3: Math.round(q3 * 100) / 100,
+        max,
+        iqr: Math.round(iqr * 100) / 100,
+        mean: Math.round(meanVal * 100) / 100
+      };
+    }
+
+    // Main Render Loop
+    function updateChartsAndStats() {
+      const stats = calcStats(dataPoints);
+
+      // 1. Update stats panel
+      document.getElementById('stat-count').innerText = stats.count;
+      document.getElementById('stat-min').innerText = stats.min;
+      document.getElementById('stat-q1').innerText = stats.q1;
+      document.getElementById('stat-median').innerText = stats.median;
+      document.getElementById('stat-q3').innerText = stats.q3;
+      document.getElementById('stat-max').innerText = stats.max;
+      document.getElementById('stat-iqr').innerText = stats.iqr;
+
+      // 2. Highlight badges if populated
+      const badges = ['badge-min', 'badge-q1', 'badge-median', 'badge-q3', 'badge-max'];
+      badges.forEach(bId => {
+        const el = document.getElementById(bId);
+        if (stats.count > 0) {
+          el.classList.add('highlight');
+        } else {
+          el.classList.remove('highlight');
+        }
+      });
+
+      // 3. Render SVGs
+      renderDotPlot();
+      renderBoxPlot(stats);
+      renderHistogram();
+
+      // 4. Validate Challenges
+      checkChallenges(stats);
+    }
+
+    // SVG coordinate mapping
+    function getXPos(val) {
+      // Margins: left=50, right=50, width=700 (maps 0..10 to 50..750)
+      return 50 + (val / 10) * 700;
+    }
+
+    // RENDER: Interactive Dot Plot SVG
+    function renderDotPlot() {
+      let html = '';
+      
+      // Draw background vertical lines and ticks for 0 to 10
+      for (let i = 0; i <= 10; i++) {
+        const x = getXPos(i);
+        // Vertical dashed support grid line
+        html += `<line x1="${x}" y1="10" x2="${x}" y2="200" stroke="#e5edf5" stroke-dasharray="4,4" />`;
+        
+        // Dynamic clickable column rect for easy touch targets
+        html += `
+          <g class="dot-column" onclick="addColumnValue(${i})">
+            <rect class="column-hover-bg" x="${x - 30}" y="10" width="60" height="190" fill="transparent" />
+          </g>
+        `;
+      }
+
+      // Base solid horizontal axis line
+      html += `<line x1="40" y1="200" x2="760" y2="200" stroke="var(--navy)" stroke-width="3" stroke-linecap="round" />`;
+
+      // Label coordinate numbers
+      for (let i = 0; i <= 10; i++) {
+        const x = getXPos(i);
+        html += `
+          <text x="${x}" y="222" font-family="var(--font-display)" font-size="14" font-weight="800" text-anchor="middle" fill="var(--navy)">${i}</text>
+          <line x1="${x}" y1="200" x2="${x}" y2="206" stroke="var(--navy)" stroke-width="2" />
+        `;
+      }
+
+      // Group frequencies per column
+      const counts = Array(11).fill(0);
+      dataPoints.forEach(val => {
+        if (val >= 0 && val <= 10) counts[val]++;
+      });
+
+      // Render actual circles (dots) stacking vertically
+      const dotRadius = 13;
+      const dotSpacing = 28;
+      
+      for (let col = 0; col <= 10; col++) {
+        const count = counts[col];
+        const x = getXPos(col);
+        for (let row = 0; row < count; row++) {
+          const y = 200 - (row * dotSpacing) - dotRadius - 5;
+          
+          // Click dot to remove
+          html += `
+            <circle class="active-dot" cx="${x}" cy="${y}" r="${dotRadius}" 
+                    onclick="event.stopPropagation(); removeDot(${col}, ${row})" 
+                    title="Value: ${col} (Click to remove)" />
+          `;
+        }
+      }
+
+      dotSvg.innerHTML = html;
+    }
+
+    // RENDER: Dynamic SVG Box Plot
+    function renderBoxPlot(stats) {
+      if (stats.count === 0) {
+        boxSvg.innerHTML = `
+          <text x="400" y="90" font-family="var(--font-display)" font-size="16" font-weight="600" text-anchor="middle" fill="var(--muted)">
+            ⚠️ Drag dots onto the grid below to construct a Box-and-Whisker plot
+          </text>
+        `;
+        return;
+      }
+
+      const yPos = 80; // Box center line
+      const minX = getXPos(stats.min);
+      const q1X = getXPos(stats.q1);
+      const medX = getXPos(stats.median);
+      const q3X = getXPos(stats.q3);
+      const maxX = getXPos(stats.max);
+
+      let html = '';
+
+      // Ticks and background alignment grid
+      for (let i = 0; i <= 10; i++) {
+        const x = getXPos(i);
+        html += `<line x1="${x}" y1="30" x2="${x}" y2="150" stroke="#f0f4f8" stroke-dasharray="2,2" />`;
+      }
+
+      // Solid baseline ticks at bottom
+      html += `<line x1="40" y1="140" x2="760" y2="140" stroke="var(--line)" stroke-width="1" />`;
+      for (let i = 0; i <= 10; i++) {
+        const x = getXPos(i);
+        html += `
+          <text x="${x}" y="156" font-family="var(--font-body)" font-size="11" text-anchor="middle" fill="var(--muted)">${i}</text>
+          <line x1="${x}" y1="140" x2="${x}" y2="145" stroke="var(--muted)" />
+        `;
+      }
+
+      // 1. Whiskers (dashed horizontal lines from Min to Q1 and Q3 to Max)
+      html += `<line x1="${minX}" y1="${yPos}" x2="${q1X}" y2="${yPos}" stroke="var(--navy)" stroke-width="2.5" stroke-dasharray="5,3" />`;
+      html += `<line x1="${q3X}" y1="${yPos}" x2="${maxX}" y2="${yPos}" stroke="var(--navy)" stroke-width="2.5" stroke-dasharray="5,3" />`;
+
+      // 2. Whisker End Caps (Vertical lines at Min and Max)
+      html += `<line x1="${minX}" y1="${yPos - 20}" x2="${minX}" y2="${yPos + 20}" stroke="var(--navy)" stroke-width="3" stroke-linecap="round" />`;
+      html += `<line x1="${maxX}" y1="${yPos - 20}" x2="${maxX}" y2="${yPos + 20}" stroke="var(--navy)" stroke-width="3" stroke-linecap="round" />`;
+
+      // 3. Interquartile Range Shaded Box (Q1 to Q3)
+      const boxW = q3X - q1X;
+      html += `
+        <rect x="${q1X}" y="${yPos - 35}" width="${Math.max(1, boxW)}" height="70" 
+              fill="var(--teal-light)" stroke="var(--teal)" stroke-width="3" rx="4" />
+      `;
+
+      // 4. Median Line (Vertical line through box)
+      html += `<line x1="${medX}" y1="${yPos - 35}" x2="${medX}" y2="${yPos + 35}" stroke="var(--coral)" stroke-width="4.5" stroke-linecap="round" />`;
+
+      // 5. Annotations: Data Value Labels placed dynamically above elements
+      html += `
+        <text x="${minX}" y="${yPos - 28}" font-family="var(--font-display)" font-size="12" font-weight="800" text-anchor="middle" fill="var(--navy)">${stats.min}</text>
+        <text x="${q1X}" y="${yPos - 43}" font-family="var(--font-display)" font-size="12" font-weight="800" text-anchor="middle" fill="var(--teal)">Q1: ${stats.q1}</text>
+        <text x="${medX}" y="${yPos - 43}" font-family="var(--font-display)" font-size="13" font-weight="900" text-anchor="middle" fill="var(--coral)">Med: ${stats.median}</text>
+        <text x="${q3X}" y="${yPos - 43}" font-family="var(--font-display)" font-size="12" font-weight="800" text-anchor="middle" fill="var(--teal)">Q3: ${stats.q3}</text>
+        <text x="${maxX}" y="${yPos - 28}" font-family="var(--font-display)" font-size="12" font-weight="800" text-anchor="middle" fill="var(--navy)">${stats.max}</text>
+      `;
+
+      boxSvg.innerHTML = html;
+    }
+
+    // RENDER: SVG Frequency Histogram
+    function renderHistogram() {
+      // Define 4 intervals: 0-2, 3-5, 6-8, 9-10
+      const intervals = [
+        { label: '0 - 2', min: 0, max: 2, count: 0 },
+        { label: '3 - 5', min: 3, max: 5, count: 0 },
+        { label: '6 - 8', min: 6, max: 8, count: 0 },
+        { label: '9 - 10', min: 9, max: 10, count: 0 }
+      ];
+
+      // Populate counts
+      dataPoints.forEach(val => {
+        intervals.forEach(interval => {
+          if (val >= interval.min && val <= interval.max) {
+            interval.count++;
+          }
+        });
+      });
+
+      if (dataPoints.length === 0) {
+        histSvg.innerHTML = `
+          <text x="400" y="90" font-family="var(--font-display)" font-size="16" font-weight="600" text-anchor="middle" fill="var(--muted)">
+            ⚠️ Drag dots onto the grid below to construct a Histogram
+          </text>
+        `;
+        return;
+      }
+
+      const maxCount = Math.max(...intervals.map(i => i.count), 1);
+      const plotHeight = 120;
+      const baselineY = 140;
+
+      let html = '';
+
+      // Grid lines for frequency count
+      const gridSteps = Math.min(maxCount, 10);
+      for (let i = 0; i <= gridSteps; i++) {
+        const f = Math.round((i / gridSteps) * maxCount);
+        const y = baselineY - (f / maxCount) * plotHeight;
+        
+        // Prevent duplicate gridlines
+        if (i === 0 || f > 0) {
+          html += `
+            <line x1="80" y1="${y}" x2="720" y2="${y}" stroke="#f0f4f8" stroke-width="1" />
+            <text x="70" y="${y + 4}" font-family="var(--font-body)" font-size="11" text-anchor="end" fill="var(--muted)">${f}</text>
+          `;
+        }
+      }
+
+      // Render 4 colored column bars
+      const colors = ['var(--navy)', 'var(--teal)', 'var(--amber)', 'var(--coral)'];
+      const barSpacing = 140;
+      const barWidth = 100;
+      const startX = 150;
+
+      intervals.forEach((interval, idx) => {
+        const x = startX + idx * barSpacing;
+        const barH = (interval.count / maxCount) * plotHeight;
+        const y = baselineY - barH;
+
+        // Rectangle bar
+        html += `
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${Math.max(1, barH)}" 
+                fill="${colors[idx]}" stroke="var(--navy)" stroke-width="1.5" rx="3" />
+        `;
+
+        // Bar frequency label value text on top
+        if (interval.count > 0) {
+          html += `
+            <text x="${x + barWidth/2}" y="${y - 8}" font-family="var(--font-display)" font-size="13" 
+                  font-weight="900" text-anchor="middle" fill="${colors[idx]}">${interval.count}</text>
+          `;
+        }
+
+        // Interval range labels
+        html += `
+          <text x="${x + barWidth/2}" y="${baselineY + 22}" font-family="var(--font-display)" font-size="13" 
+                font-weight="800" text-anchor="middle" fill="var(--navy)">${interval.label}</text>
+        `;
+      });
+
+      // Axis Line
+      html += `<line x1="80" y1="${baselineY}" x2="720" y2="${baselineY}" stroke="var(--navy)" stroke-width="2.5" />`;
+
+      histSvg.innerHTML = html;
+    }
+
+    // Add Value to Dataset
+    function addColumnValue(val) {
+      // Find count currently in that column
+      const count = dataPoints.filter(v => v === val).length;
+      if (count >= maxDotsPerCol) {
+        return; // Full column
+      }
+      Synth.play('click');
+      dataPoints.push(val);
+      updateChartsAndStats();
+    }
+
+    // Remove specific dot (deletes last instance in column)
+    function removeDot(val, rowIdx) {
+      Synth.play('click');
+      // Remove exactly one instance of that value
+      const index = dataPoints.lastIndexOf(val);
+      if (index > -1) {
+        dataPoints.splice(index, 1);
+      }
+      updateChartsAndStats();
+    }
+
+    // Speak Challenge Criteria (Optional TTS integration)
+    function speakChallenge(chNum) {
+      // Just play small sound
+      Synth.play('click');
+    }
+
+    // Validate Challenges / Missions
+    function checkChallenges(stats) {
+      if (stats.count === 0) return;
+
+      // MISSION 1: The Balanced Spread (Perfect symmetry)
+      // Requirements: N >= 8, Symmetric Box: Med-Min = Max-Med, Med-Q1 = Q3-Med, Q1-Min = Max-Q3
+      let m1 = false;
+      if (stats.count >= 8) {
+        const dMin = stats.median - stats.min;
+        const dMax = stats.max - stats.median;
+        const dQ1 = stats.median - stats.q1;
+        const dQ3 = stats.q3 - stats.median;
+        
+        // Allow a small precision error margin due to rounding halves
+        const diff1 = Math.abs(dMin - dMax);
+        const diff2 = Math.abs(dQ1 - dQ3);
+        
+        if (diff1 <= 0.05 && diff2 <= 0.05) {
+          m1 = true;
+        }
+      }
+
+      // MISSION 2: Left-Skewed Shift
+      // Requirements: N >= 6, Median > Mean + 0.5
+      let m2 = false;
+      if (stats.count >= 6) {
+        if (stats.median >= stats.mean + 0.5) {
+          m2 = true;
+        }
+      }
+
+      // MISSION 3: Target IQR
+      // Requirements: N >= 10, IQR exactly 4
+      let m3 = false;
+      if (stats.count >= 10) {
+        if (Math.abs(stats.iqr - 4) < 0.02) {
+          m3 = true;
+        }
+      }
+
+      // Process unlocks and update DOM
+      updateMissionUI(1, m1);
+      updateMissionUI(2, m2);
+      updateMissionUI(3, m3);
+    }
+
+    function updateMissionUI(id, isSolved) {
+      const item = document.getElementById(`chk-item-${id}`);
+      
+      // Check if transitioned to solved
+      if (isSolved && !solvedMissions[id]) {
+        solvedMissions[id] = true;
+        item.classList.add('solved');
+        
+        // Show celebration toast
+        const titles = {
+          1: "Symmetry Master Unlocked!",
+          2: "Left-Skew Master Unlocked!",
+          3: "IQR Specialist Unlocked!"
+        };
+        showToast(titles[id], "Challenge checklist checked.");
+        Synth.play('correct');
+      } else if (!isSolved && solvedMissions[id]) {
+        // Lost solution
+        solvedMissions[id] = false;
+        item.classList.remove('solved');
+      }
+    }
+
+    function showToast(title, desc) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-desc').innerText = desc;
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

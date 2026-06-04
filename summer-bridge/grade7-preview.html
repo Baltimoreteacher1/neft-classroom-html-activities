@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grade 7 Preview: A Summer Sneak Peek 🚀</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --primary: #0f766e;
+        --bg: #ecfeff;
+        --accent: #f59e0b;
+        --correct: #16a34a;
+        --wrong: #dc2626;
+        --text: #134e4a;
+        --card-bg: #ffffff;
+        --shadow: 0 2px 8px rgba(15, 118, 110, 0.14);
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        text-align: center;
+      }
+      .login-screen h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+      .login-screen .emoji-hero {
+        font-size: 3.5rem;
+        margin-bottom: 12px;
+      }
+      .login-screen p {
+        color: #555;
+        margin-bottom: 20px;
+        max-width: 440px;
+      }
+      .preview-badge {
+        display: inline-block;
+        background: #cffafe;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 99px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 18px;
+      }
+      .login-screen input {
+        padding: 12px 16px;
+        font-size: 1.1rem;
+        border: 2px solid var(--primary);
+        border-radius: 8px;
+        width: 280px;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .login-screen input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      /* BUTTONS */
+      .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-accent {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+
+      /* PROGRESS */
+      .progress-bar-wrap {
+        background: #e5e7eb;
+        border-radius: 99px;
+        height: 12px;
+        margin: 16px 0 24px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px 10px 0 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      /* TEACH CARD */
+      .teach-card {
+        background: #f0fdfa;
+        border: 2px solid #99f6e4;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 18px;
+      }
+      .teach-card h3 {
+        color: var(--primary);
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+      }
+      .teach-card p {
+        margin-bottom: 8px;
+        font-size: 0.98rem;
+      }
+      .teach-card .example {
+        background: #fff;
+        border-left: 4px solid var(--accent);
+        border-radius: 0 8px 8px 0;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+      }
+      .teach-card p:last-child,
+      .teach-card .example:last-child {
+        margin-bottom: 0;
+      }
+
+      /* QUESTION CARD */
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .card-body {
+        padding: 20px;
+      }
+      .q-number {
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      /* MC OPTIONS */
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .option-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--accent);
+        background: #fffbeb;
+      }
+      .option-btn.selected {
+        border-color: var(--primary);
+        background: #ccfbf1;
+      }
+      .option-btn.correct-answer {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .option-btn.wrong-answer {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+
+      /* FILL-IN */
+      .fill-input {
+        padding: 10px 14px;
+        font-size: 1.1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        width: 160px;
+        text-align: center;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .fill-input.correct-border {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .fill-input.wrong-border {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+
+      /* FEEDBACK */
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        display: none;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+        display: block;
+      }
+      .feedback.wrong {
+        background: #fef3c7;
+        color: #92400e;
+        display: block;
+      }
+
+      /* SUMMARY */
+      .summary-screen {
+        display: none;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0 auto 20px;
+        color: #fff;
+      }
+      .score-a {
+        background: var(--correct);
+      }
+      .score-b {
+        background: var(--accent);
+      }
+      .score-c {
+        background: var(--primary);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .study-tips {
+        background: #ecfeff;
+        border-left: 4px solid var(--primary);
+        padding: 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 20px;
+      }
+      .study-tips h3 {
+        margin-bottom: 8px;
+      }
+      .study-tips li {
+        margin-bottom: 6px;
+      }
+
+      /* FOOTER */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 40px;
+      }
+
+      /* HIDDEN */
+      .hidden {
+        display: none !important;
+      }
+
+      /* NAV */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+
+      .option-btn:focus-visible,
+      .btn:focus-visible,
+      .fill-input:focus-visible,
+      .login-screen input:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px;
+        }
+        .login-screen h1 {
+          font-size: 1.5rem;
+        }
+        .q-text {
+          font-size: 1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="container" id="app">
+      <!-- LOGIN -->
+      <div class="login-screen" id="loginScreen">
+        <div class="emoji-hero" aria-hidden="true">🚀</div>
+        <h1>Grade 7 Preview</h1>
+        <h2 style="color: var(--accent); margin-bottom: 12px">
+          A Summer Sneak Peek
+        </h2>
+        <div class="preview-badge">
+          ✨ Preview &amp; enrichment — just for fun, not a graded test
+        </div>
+        <p>
+          You already learned so much in Grade 6! These ideas build right on top
+          of it. We will explain each one first, then you try a few. Take your
+          time — you've got this. 💪
+        </p>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter your name"
+          aria-label="Enter your name"
+          maxlength="30"
+          autocomplete="off"
+        />
+        <br />
+        <button class="btn btn-primary" onclick="startReview()">
+          Let's Take a Peek <span aria-hidden="true">🚀</span>
+        </button>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h2 id="sectionTitle" style="font-size: 1.1rem"></h2>
+          <span id="qCounter" style="font-size: 0.9rem; color: #6b7280"></span>
+        </div>
+        <div
+          class="progress-bar-wrap"
+          id="progressBar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Quiz progress"
+        >
+          <div
+            class="progress-bar-fill"
+            id="progressBarFill"
+            style="width: 0%"
+          ></div>
+        </div>
+        <div id="questionArea"></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">
+            Next &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <div style="text-align: center">
+          <div class="emoji-hero" aria-hidden="true">🌟</div>
+          <h1>Preview Complete!</h1>
+          <p id="summaryName" style="font-size: 1.1rem; color: #6b7280"></p>
+          <p style="color: #6b7280; margin-top: 4px">
+            This is just a sneak peek — every one of these is something you'll
+            master in Grade 7.
+          </p>
+        </div>
+        <div class="score-circle" id="scoreCircle"></div>
+        <div class="card"><div class="card-body" id="sectionScores"></div></div>
+        <div class="study-tips" id="studyTips"></div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn btn-primary" onclick="exportResults()">
+            Export Results 📄
+          </button>
+          <button class="btn btn-outline" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher) 📊
+          </button>
+          <button class="btn btn-accent" onclick="resetReview()">
+            Try Again 🔄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Neft Teacher &bull; Summer Bridge &bull; Grade 7 Preview (Enrichment)
+    </div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      const STORAGE_KEY = "grade7Preview_v1";
+      const SECTIONS = [
+        "Integers",
+        "Proportional Relationships",
+        "Two-Step Equations",
+        "Percent Change",
+      ];
+      const SECTION_EMOJIS = ["➕", "⚖️", "🧩", "📈"];
+
+      // Short friendly teach card shown above the FIRST question of each section.
+      const TEACH = [
+        {
+          title: "Working with Integers (positive AND negative numbers)",
+          html: `<p>In Grade 7 the number line stretches below zero into <strong>negative numbers</strong>. You already use them for temperatures and money owed!</p>
+            <p><strong>Adding:</strong> same signs &rarr; add and keep the sign. Different signs &rarr; subtract and take the sign of the bigger number.</p>
+            <p><strong>Multiplying/Dividing:</strong> same signs &rarr; <strong>positive</strong>; different signs &rarr; <strong>negative</strong>.</p>
+            <div class="example">Example: <strong>-3 + 8 = 5</strong> (different signs: 8 - 3 = 5, positive wins). And <strong>-4 × -2 = 8</strong> (same signs &rarr; positive).</div>`,
+        },
+        {
+          title: "Proportional Relationships & Unit Rates",
+          html: `<p>Two quantities are <strong>proportional</strong> when they grow at the same steady rate, so y &divide; x is always the same number. That number is the <strong>constant of proportionality (k)</strong>, and y = kx.</p>
+            <p>A <strong>unit rate</strong> is the amount for just <strong>one</strong> of something (like cost per 1 item or miles per 1 hour).</p>
+            <div class="example">Example: 3 apples cost $1.50, so the unit rate is $1.50 &divide; 3 = <strong>$0.50 per apple</strong>, and k = 0.50.</div>`,
+        },
+        {
+          title: "Two-Step Equations",
+          html: `<p>You solved one-step equations in Grade 6. A <strong>two-step equation</strong> just needs two moves. Undo in reverse order: first <strong>add or subtract</strong>, then <strong>multiply or divide</strong>.</p>
+            <div class="example">Example: <strong>2x + 3 = 11</strong>. Subtract 3 &rarr; 2x = 8. Divide by 2 &rarr; <strong>x = 4</strong>.</div>`,
+        },
+        {
+          title: "Percent Increase & Decrease",
+          html: `<p>You know percents! Now we use them to describe <strong>change</strong>. Percent change = (amount of change &divide; original amount) × 100.</p>
+            <p>To find a new amount fast: a 20% increase means the new value is <strong>120%</strong> of the old; a 20% decrease means <strong>80%</strong>.</p>
+            <div class="example">Example: a $50 jacket goes up 10%. Change = 0.10 × 50 = $5, so the new price is <strong>$55</strong>.</div>`,
+        },
+      ];
+
+      // ===== QUESTIONS =====
+      // section index references SECTIONS above. 17 questions total.
+      const questions = [
+        // ── SECTION 1: INTEGERS (5) ──
+        {
+          section: 0,
+          type: "mc",
+          text: "What is -6 + 10?",
+          choices: ["-16", "-4", "4", "16"],
+          answer: 2,
+          explain:
+            "Different signs, so subtract: 10 - 6 = 4. The bigger number (10) is positive, so the answer is +4.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "What is -3 + (-8)?",
+          choices: ["-11", "-5", "5", "11"],
+          answer: 0,
+          explain:
+            "Same signs (both negative), so add: 3 + 8 = 11, and keep the negative sign → -11.",
+        },
+        {
+          section: 0,
+          type: "fill",
+          text: "What is 5 - 9? (Type your answer, you can use a minus sign.)",
+          answer: "-4",
+          explain:
+            "Subtracting a bigger number gives a negative result: 5 - 9 = -4. Think of moving 9 steps left from 5 on the number line.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "What is -4 × 3?",
+          choices: ["-12", "-7", "7", "12"],
+          answer: 0,
+          explain:
+            "Different signs multiply to a negative: 4 × 3 = 12, so -4 × 3 = -12.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "What is -20 ÷ -5?",
+          choices: ["-100", "-4", "4", "25"],
+          answer: 2,
+          explain:
+            "Same signs (both negative) divide to a positive: 20 ÷ 5 = 4, so -20 ÷ -5 = 4.",
+        },
+
+        // ── SECTION 2: PROPORTIONAL RELATIONSHIPS (5) ──
+        {
+          section: 1,
+          type: "mc",
+          text: "A table shows y = 6 when x = 2, and y = 18 when x = 6. What is the constant of proportionality (k)?",
+          choices: ["2", "3", "6", "12"],
+          answer: 1,
+          explain:
+            "k = y ÷ x. Using 6 ÷ 2 = 3 (and 18 ÷ 6 = 3 too), so k = 3. The equation is y = 3x.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "4 notebooks cost $12. What is the unit rate (cost per notebook)?",
+          choices: ["$2", "$3", "$4", "$8"],
+          answer: 1,
+          explain: "Unit rate = total ÷ number = 12 ÷ 4 = $3 per notebook.",
+        },
+        {
+          section: 1,
+          type: "fill",
+          text: "A car travels 150 miles in 3 hours at a steady speed. What is the unit rate in miles per hour? (Type just the number.)",
+          answer: "50",
+          explain: "Unit rate = 150 ÷ 3 = 50 miles per hour.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Which equation shows a proportional relationship with constant of proportionality 5?",
+          choices: ["y = x + 5", "y = 5x", "y = x ÷ 5", "y = 5 - x"],
+          answer: 1,
+          explain:
+            "Proportional relationships have the form y = kx. With k = 5, that is y = 5x.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "On a map, the scale is 1 inch = 20 miles. How many miles is a distance of 4 inches?",
+          choices: ["5 miles", "16 miles", "24 miles", "80 miles"],
+          answer: 3,
+          explain: "Each inch is 20 miles, so 4 inches × 20 = 80 miles.",
+        },
+
+        // ── SECTION 3: TWO-STEP EQUATIONS (4) ──
+        {
+          section: 2,
+          type: "mc",
+          text: "Solve: 2x + 5 = 17",
+          choices: ["x = 6", "x = 11", "x = 8", "x = 22"],
+          answer: 0,
+          explain: "Subtract 5: 2x = 12. Divide by 2: x = 6.",
+        },
+        {
+          section: 2,
+          type: "mc",
+          text: "Solve: 3n - 4 = 11",
+          choices: ["n = 3", "n = 5", "n = 7", "n = 15"],
+          answer: 1,
+          explain: "Add 4: 3n = 15. Divide by 3: n = 5.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Solve: 4y + 2 = 22. What is y? (Type just the number.)",
+          answer: "5",
+          explain: "Subtract 2: 4y = 20. Divide by 4: y = 5.",
+        },
+        {
+          section: 2,
+          type: "mc",
+          text: "A taxi charges a $3 flat fee plus $2 per mile. The trip cost $15. The equation 2m + 3 = 15 models this. How many miles (m) was the trip?",
+          choices: ["m = 6", "m = 9", "m = 4", "m = 12"],
+          answer: 0,
+          explain: "Subtract 3: 2m = 12. Divide by 2: m = 6 miles.",
+        },
+
+        // ── SECTION 4: PERCENT CHANGE (3) ──
+        {
+          section: 3,
+          type: "mc",
+          text: "A $40 backpack is on sale for 25% off. What is the sale price?",
+          choices: ["$10", "$15", "$30", "$35"],
+          answer: 2,
+          explain:
+            "25% of 40 = 0.25 × 40 = $10 off. New price: 40 - 10 = $30. (Or 75% of 40 = $30.)",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "A plant was 20 cm tall and grew to 25 cm. What was the percent increase?",
+          choices: ["5%", "20%", "25%", "80%"],
+          answer: 1,
+          explain:
+            "Change = 25 - 20 = 5 cm. Compare to the ORIGINAL: 5 ÷ 20 = 0.25, and 0.25 × 100 = 25% increase.",
+        },
+        {
+          section: 3,
+          type: "fill",
+          text: "A video game costs $30 and the price goes up 10%. What is the new price in dollars? (Type just the number.)",
+          answer: "33",
+          explain:
+            "10% of 30 = 0.10 × 30 = $3 increase. New price: 30 + 3 = $33.",
+        },
+      ];
+
+      const TOTAL = questions.length;
+
+      // Precompute the question index where each section starts (for teach cards
+      // and section progress), since sections vary in length.
+      const sectionStart = [];
+      questions.forEach((q, i) => {
+        if (sectionStart[q.section] === undefined) sectionStart[q.section] = i;
+      });
+
+      // ===== STATE =====
+      let playerName = "";
+      let currentQ = 0;
+      let answers = new Array(TOTAL).fill(null);
+      let graded = new Array(TOTAL).fill(false);
+
+      // ===== INIT =====
+      function startReview() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (!name) {
+          document.getElementById("nameInput").style.borderColor =
+            "var(--wrong)";
+          return;
+        }
+        playerName = name;
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        loadState();
+        renderQuestion();
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved && saved.name === playerName) {
+            answers = saved.answers || new Array(TOTAL).fill(null);
+            graded = saved.graded || new Array(TOTAL).fill(false);
+            currentQ = saved.currentQ || 0;
+          }
+        } catch (e) {}
+      }
+
+      function saveState() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            name: playerName,
+            answers,
+            graded,
+            currentQ,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+
+      // ===== RENDER =====
+      function renderQuestion() {
+        const q = questions[currentQ];
+        const sIdx = q.section;
+        document.getElementById("sectionTitle").textContent =
+          `${SECTION_EMOJIS[sIdx]} ${SECTIONS[sIdx]}`;
+        document.getElementById("qCounter").textContent =
+          `Question ${currentQ + 1} of ${TOTAL}`;
+        const progPct = Math.round(((currentQ + 1) / TOTAL) * 100);
+        document.getElementById("progressBarFill").style.width = `${progPct}%`;
+        const progBar = document.getElementById("progressBar");
+        progBar.setAttribute("aria-valuenow", progPct);
+        progBar.setAttribute(
+          "aria-label",
+          `Question ${currentQ + 1} of ${TOTAL}`,
+        );
+
+        let html = "";
+
+        // Teach-then-try: show the explanation card at the start of each section.
+        if (currentQ === sectionStart[sIdx]) {
+          html += `<div class="section-header">${SECTION_EMOJIS[sIdx]} Section ${sIdx + 1}: ${SECTIONS[sIdx]}</div>`;
+          html += `<div class="teach-card"><h3>${TEACH[sIdx].title}</h3>${TEACH[sIdx].html}</div>`;
+        }
+
+        html += `<div class="card">`;
+        html += `<div class="card-body">`;
+        html += `<div class="q-number">Question ${currentQ + 1}</div>`;
+        html += `<div class="q-text">${q.text}</div>`;
+
+        if (q.type === "mc") {
+          html += `<div class="options">`;
+          const labels = ["A", "B", "C", "D"];
+          q.choices.forEach((ch, i) => {
+            let cls = "option-btn";
+            if (graded[currentQ]) {
+              cls += " locked";
+              if (i === q.answer) cls += " correct-answer";
+              else if (answers[currentQ] === i && i !== q.answer)
+                cls += " wrong-answer";
+            } else if (answers[currentQ] === i) {
+              cls += " selected";
+            }
+            html += `<button class="${cls}" onclick="selectMC(${i})" ${graded[currentQ] ? "disabled" : ""}>${labels[i]}. ${ch}</button>`;
+          });
+          html += `</div>`;
+          if (!graded[currentQ]) {
+            html += `<div style="margin-top:12px;text-align:right;">
+        <button class="btn btn-accent" onclick="submitAnswer()" ${answers[currentQ] === null ? "disabled" : ""} id="submitBtn">Check Answer</button>
+      </div>`;
+          }
+        } else {
+          // fill-in
+          let val = answers[currentQ] !== null ? answers[currentQ] : "";
+          let inputCls = "fill-input";
+          if (graded[currentQ]) {
+            inputCls += isCorrect(currentQ)
+              ? " correct-border"
+              : " wrong-border";
+          }
+          html += `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <input type="text" class="${inputCls}" id="fillInput" value="${val}" placeholder="Your answer"
+        ${graded[currentQ] ? "disabled" : ""} onkeydown="if(event.key==='Enter')submitAnswer()" oninput="onFillInput(this)">`;
+          if (!graded[currentQ]) {
+            html += `<button class="btn btn-accent" onclick="submitAnswer()" ${answers[currentQ] === null ? "disabled" : ""} id="submitBtn">Check Answer</button>`;
+          }
+          html += `</div>`;
+        }
+
+        // Feedback
+        if (graded[currentQ]) {
+          const ok = isCorrect(currentQ);
+          html += `<div class="feedback ${ok ? "correct" : "wrong"}" role="status" aria-live="polite"><span aria-hidden="true">${ok ? "✅" : "💡"}</span> ${ok ? "You got it!" : "Not quite — here's how it works:"} ${q.explain}</div>`;
+        }
+
+        html += `</div></div>`;
+        document.getElementById("questionArea").innerHTML = html;
+
+        // Nav buttons
+        document.getElementById("prevBtn").style.visibility =
+          currentQ === 0 ? "hidden" : "visible";
+        document.getElementById("nextBtn").textContent =
+          currentQ === TOTAL - 1 ? "Finish ✓" : "Next →";
+      }
+
+      function selectMC(idx) {
+        if (graded[currentQ]) return;
+        answers[currentQ] = idx;
+        saveState();
+        renderQuestion();
+      }
+
+      function onFillInput(el) {
+        answers[currentQ] = el.value.trim() || null;
+        const btn = document.getElementById("submitBtn");
+        if (btn) btn.disabled = !el.value.trim();
+        saveState();
+      }
+
+      function submitAnswer() {
+        if (graded[currentQ] || answers[currentQ] === null) return;
+        graded[currentQ] = true;
+        saveState();
+        renderQuestion();
+      }
+
+      function normalize(s) {
+        return String(s)
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .replace(/[$,]/g, "")
+          .replace(/^\+/, "")
+          .replace(/[−–—]/g, "-"); // unicode minus/dashes -> hyphen
+      }
+
+      function isCorrect(idx) {
+        const q = questions[idx];
+        if (q.type === "mc") return answers[idx] === q.answer;
+        return normalize(answers[idx]) === normalize(q.answer);
+      }
+
+      function navigate(dir) {
+        const next = currentQ + dir;
+        if (next < 0) return;
+        if (next >= TOTAL) {
+          const unanswered = graded.filter((g) => !g).length;
+          if (unanswered > 0) {
+            if (
+              !confirm(
+                `You have ${unanswered} question(s) you haven't tried yet. Finish anyway?`,
+              )
+            )
+              return;
+          }
+          showSummary();
+          return;
+        }
+        currentQ = next;
+        saveState();
+        renderQuestion();
+      }
+
+      // ===== SECTION TALLY HELPER =====
+      function sectionTally() {
+        // Returns array of {correct, total} per section.
+        const res = SECTIONS.map(() => ({ correct: 0, total: 0 }));
+        questions.forEach((q, i) => {
+          res[q.section].total += 1;
+          if (graded[i] && isCorrect(i)) res[q.section].correct += 1;
+        });
+        return res;
+      }
+
+      // ===== SUMMARY =====
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        document.getElementById("summaryScreen").style.display = "block";
+
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / TOTAL) * 100);
+        document.getElementById("summaryName").textContent =
+          `${playerName} — ${total}/${TOTAL} correct (${pct}%)`;
+
+        const circle = document.getElementById("scoreCircle");
+        circle.textContent = `${pct}%`;
+        circle.className =
+          "score-circle " +
+          (pct >= 80 ? "score-a" : pct >= 50 ? "score-b" : "score-c");
+
+        // Section scores
+        const tally = sectionTally();
+        let scoresHTML =
+          '<h3 style="margin-bottom:12px;">Section Breakdown</h3>';
+        tally.forEach((t, s) => {
+          const spct = t.total ? (t.correct / t.total) * 100 : 0;
+          scoresHTML += `<div class="section-score">
+      <span>${SECTION_EMOJIS[s]} ${SECTIONS[s]}</span>
+      <span style="font-weight:700;color:${spct >= 80 ? "var(--correct)" : spct >= 50 ? "var(--accent)" : "var(--primary)"}">${t.correct}/${t.total}</span>
+    </div>`;
+        });
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+
+        // Encouraging tips
+        let tips = [];
+        tally.forEach((t, s) => {
+          if (t.correct < t.total) {
+            if (s === 0)
+              tips.push(
+                "Integers: remember same signs add (keep the sign), different signs subtract. For × and ÷: same signs → positive, different → negative.",
+              );
+            if (s === 1)
+              tips.push(
+                "Proportional relationships: find k with y ÷ x, then y = kx. A unit rate is the amount for just 1.",
+              );
+            if (s === 2)
+              tips.push(
+                "Two-step equations: undo in reverse — add/subtract first, then multiply/divide.",
+              );
+            if (s === 3)
+              tips.push(
+                "Percent change: divide the change by the ORIGINAL amount, then multiply by 100.",
+              );
+          }
+        });
+        if (tips.length === 0)
+          tips.push(
+            "Wow — you nailed every preview concept! You are more than ready for Grade 7. 🌟",
+          );
+        else
+          tips.unshift(
+            "Great effort exploring Grade 7 ideas! These are brand-new, so anything you got is a head start. Here are a few friendly reminders:",
+          );
+
+        let tipsHTML =
+          '<h3>🚀 You\'re Getting Ready for Grade 7</h3><ul style="margin-top:8px;padding-left:20px;">';
+        tips.forEach((t) => (tipsHTML += `<li>${t}</li>`));
+        tipsHTML += "</ul>";
+        document.getElementById("studyTips").innerHTML = tipsHTML;
+
+        saveState();
+      }
+
+      // ===== EXPORT (plain text) =====
+      function exportResults() {
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / TOTAL) * 100);
+        let text = `GRADE 7 PREVIEW — A SUMMER SNEAK PEEK (enrichment, not a graded test)\n`;
+        text += `Student: ${playerName}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Explored: ${total}/${TOTAL} (${pct}%)\n\n`;
+
+        const tally = sectionTally();
+        questions.forEach((q, i) => {
+          if (i === sectionStart[q.section]) {
+            text += `--- ${SECTIONS[q.section]} ---\n`;
+          }
+          const ok = graded[i] && isCorrect(i);
+          const userAns =
+            q.type === "mc" && answers[i] !== null
+              ? q.choices[answers[i]]
+              : answers[i] || "No answer";
+          const correctAns = q.type === "mc" ? q.choices[q.answer] : q.answer;
+          text += `Q${i + 1}: ${ok ? "✓" : "✗"} | Your answer: ${userAns} | Correct: ${correctAns}\n`;
+        });
+        text += `\n`;
+        tally.forEach((t, s) => {
+          text += `${SECTIONS[s]}: ${t.correct}/${t.total}\n`;
+        });
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Grade7_Preview_${playerName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      // ===== CSV EXPORT (teacher-importable, shared module) =====
+      function downloadResultsCSV() {
+        const tally = sectionTally();
+        const sections = tally.map((t, s) => ({
+          name: SECTIONS[s],
+          correct: t.correct,
+          total: t.total,
+        }));
+        const total = tally.reduce((a, t) => a + t.correct, 0);
+        NTResults.finish({
+          student: playerName,
+          assessment: "Grade 7 Preview",
+          standard: "7.Preview",
+          sections: sections,
+          correct: total,
+          total: TOTAL,
+        });
+      }
+
+      function resetReview() {
+        if (!confirm("Start the preview over from the beginning?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        answers = new Array(TOTAL).fill(null);
+        graded = new Array(TOTAL).fill(false);
+        currentQ = 0;
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      // Enter key on login
+      document
+        .getElementById("nameInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") startReview();
+        });
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

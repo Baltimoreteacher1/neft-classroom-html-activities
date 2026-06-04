@@ -1,0 +1,1602 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 8 HyperDoc — Statistics &amp; Data | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 8: statistical questions, mean, median, mode, MAD, box plots, histograms, and the shape of data (6.SP.A & 6.SP.B)."
+    />
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script defer src="/assets/neft-theme.js"></script>
+    <script defer src="/assets/nt-activity-kit.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <style>
+      /* ---- Unit 8 HyperDoc: scoped styles layered on the shared Neft theme ---- */
+      .u8-wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 0 18px 64px;
+      }
+
+      .u8-hero {
+        position: relative;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background:
+          radial-gradient(
+            900px 240px at 10% -10%,
+            rgba(14, 165, 233, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            720px 220px at 96% 0%,
+            rgba(217, 70, 160, 0.15),
+            transparent 55%
+          ),
+          var(--nt-surface, #fff);
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+        margin: 18px 0 22px;
+        overflow: hidden;
+      }
+      .u8-hero h1 {
+        margin: 6px 0 4px;
+        font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
+        line-height: 1.15;
+      }
+      .u8-hero .u8-sub {
+        color: var(--nt-muted, #5b6472);
+        margin: 0 0 12px;
+        font-size: 1.02rem;
+      }
+      .u8-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        color: var(--nt-accent, #0ea5e9);
+        background: color-mix(
+          in srgb,
+          var(--nt-accent, #0ea5e9) 12%,
+          transparent
+        );
+        border-radius: 999px;
+        padding: 5px 12px;
+      }
+      .u8-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .u8-chip {
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--nt-bg, #f4f6fb);
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 4px 11px;
+      }
+
+      .u8-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
+      }
+      .u8-toc a {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 6px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u8-toc a:hover {
+        border-color: var(--nt-accent, #0ea5e9);
+        color: var(--nt-accent, #0ea5e9);
+      }
+      .u8-toc a:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+
+      .u8-step {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        border-radius: 18px;
+        padding: 22px 22px 20px;
+        margin: 16px 0;
+      }
+      .u8-step > h2 {
+        margin: 0 0 4px;
+        font-size: 1.28rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .u8-badge {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .b1 {
+        background: #0ea5e9;
+      }
+      .b2 {
+        background: #2563eb;
+      }
+      .b3 {
+        background: #0d9488;
+      }
+      .b4 {
+        background: #7c3aed;
+      }
+      .b5 {
+        background: #db2777;
+      }
+      .u8-step .u8-phase {
+        color: var(--nt-muted, #5b6472);
+        font-weight: 700;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 10px 40px;
+      }
+
+      .u8-card {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 12px 0;
+        background: var(--nt-bg, #f7f9fc);
+      }
+      .u8-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.02rem;
+      }
+
+      .u8-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 640px) {
+        .u8-grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .u8-fig {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .u8-fig svg {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      .u8-cap {
+        font-size: 0.82rem;
+        color: var(--nt-muted, #5b6472);
+        text-align: center;
+      }
+
+      .u8-formula {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        background: var(--nt-text, #1c2330);
+        color: var(--nt-surface, #fff);
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: inline-block;
+        font-size: 1rem;
+      }
+
+      .u8-data {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.98rem;
+        letter-spacing: 0.04em;
+      }
+
+      details.u8-level {
+        border: 1px dashed var(--nt-border, #c3cad6);
+        border-radius: 12px;
+        padding: 4px 14px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
+      }
+      details.u8-level > summary {
+        cursor: pointer;
+        font-weight: 700;
+        padding: 8px 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      details.u8-level > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.u8-level > summary::before {
+        content: "▸";
+        transition: transform 0.15s;
+        color: var(--nt-accent, #0ea5e9);
+      }
+      details.u8-level[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      .u8-tag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        color: #fff;
+      }
+      .u8-tag.l1 {
+        background: #0d9488;
+      }
+      .u8-tag.l2 {
+        background: #7c3aed;
+      }
+      .u8-es {
+        color: var(--nt-muted, #5b6472);
+        font-style: italic;
+      }
+
+      .u8-q {
+        margin: 14px 0;
+      }
+      .u8-q p.u8-prompt {
+        font-weight: 600;
+        margin: 0 0 8px;
+      }
+      .u8-q input[type="text"],
+      .u8-q input[type="number"] {
+        font: inherit;
+        padding: 9px 11px;
+        border-radius: 10px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        width: 160px;
+        max-width: 100%;
+      }
+      .u8-q input:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+      .u8-opts {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .u8-opts li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 11px;
+        padding: 10px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u8-opts li label:hover {
+        border-color: var(--nt-accent, #0ea5e9);
+      }
+      .u8-unit {
+        color: var(--nt-muted, #5b6472);
+        margin-left: 6px;
+      }
+      .u8-fb {
+        margin-top: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-height: 1.1em;
+      }
+      .u8-fb.ok {
+        color: #0d9488;
+      }
+      .u8-fb.no {
+        color: #db2777;
+      }
+
+      .u8-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .u8-btn {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--nt-accent, #0ea5e9);
+        background: var(--nt-accent, #0ea5e9);
+        color: #fff;
+        border-radius: 11px;
+        padding: 11px 18px;
+      }
+      .u8-btn.ghost {
+        background: transparent;
+        color: var(--nt-accent, #0ea5e9);
+      }
+      .u8-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+      .u8-score {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+
+      .u8-explore {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .u8-explore a.u8-link {
+        text-decoration: none;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        display: block;
+      }
+      .u8-explore a.u8-link:hover {
+        border-color: var(--nt-accent, #0ea5e9);
+        transform: translateY(-1px);
+      }
+      .u8-explore .u8-link strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 3px;
+      }
+      .u8-explore .u8-link span {
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      .u8-reflect textarea {
+        width: 100%;
+        min-height: 96px;
+        font: inherit;
+        padding: 11px 13px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        resize: vertical;
+      }
+      .u8-reflect textarea:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+
+      .u8-vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+      .u8-vocab dt {
+        font-weight: 800;
+      }
+      .u8-vocab dd {
+        margin: 2px 0 0;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      /* MAD interactive table */
+      .u8-madtable {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+        margin: 8px 0;
+      }
+      .u8-madtable th,
+      .u8-madtable td {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        padding: 7px 10px;
+        text-align: center;
+      }
+      .u8-madtable thead th {
+        background: var(--nt-bg, #eef2f8);
+      }
+      .u8-madtable tfoot td {
+        font-weight: 800;
+        background: color-mix(in srgb, #0d9488 10%, var(--nt-surface, #fff));
+      }
+
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .u8-toc,
+        .u8-actions {
+          display: none !important;
+        }
+        .u8-step {
+          break-inside: avoid;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="nt-theme-aware">
+    <div id="ntkit"></div>
+
+    <main class="u8-wrap">
+      <header class="u8-hero">
+        <span class="u8-kicker">Grade 6 • Unit 8 HyperDoc</span>
+        <h1>Reading the Numbers: Be a Data Detective</h1>
+        <p class="u8-sub">
+          The <strong>Lincoln Middle School</strong> survey just came back, and
+          the numbers are a mess. Your job is to turn a pile of raw data into a
+          clear story — using center, spread, and the shape of the data.
+          <span class="u8-es"
+            >Tú eres detective de datos: conviertes números en una historia
+            clara.</span
+          >
+        </p>
+        <div class="u8-meta">
+          <span class="u8-chip">Standard: 6.SP.A.1–3 · 6.SP.B.4–5</span>
+          <span class="u8-chip">Topic: Statistics &amp; Data</span>
+          <span class="u8-chip">MCAP-aligned</span>
+          <span class="u8-chip">Work time: ~45 min</span>
+        </div>
+      </header>
+
+      <nav class="u8-toc" aria-label="HyperDoc sections">
+        <a href="#engage">1 · Engage</a>
+        <a href="#explore">2 · Explore</a>
+        <a href="#explain">3 · Explain</a>
+        <a href="#apply">4 · Apply</a>
+        <a href="#reflect">5 · Reflect</a>
+        <a href="#extend">6 · Extend</a>
+      </nav>
+
+      <!-- ============ 1. ENGAGE ============ -->
+      <section class="u8-step" id="engage">
+        <h2><span class="u8-badge b1">1</span> Engage</h2>
+        <p class="u8-phase">Hook &amp; essential question</p>
+
+        <p>
+          A reporter for the school news asked two questions in the hallway.
+          Read both carefully:
+        </p>
+
+        <div class="u8-grid2">
+          <div class="u8-card">
+            <h3>Question A</h3>
+            <p>"How tall is the <strong>tallest</strong> 6th grader?"</p>
+            <p class="u8-cap">You get one single answer.</p>
+          </div>
+          <div class="u8-card">
+            <h3>Question B</h3>
+            <p>
+              "How tall are the <strong>6th graders</strong> at our school?"
+            </p>
+            <p class="u8-cap">You get many different answers.</p>
+          </div>
+        </div>
+
+        <p style="margin-top: 12px">
+          Only <strong>one</strong> of these is a <em>statistical question</em>.
+          A statistical question expects <strong>variability</strong> — the
+          answers differ from person to person, so you need a whole data set to
+          answer it.
+          <span class="u8-es"
+            >Una pregunta estadística espera variabilidad: las respuestas son
+            diferentes.</span
+          >
+        </p>
+
+        <div class="u8-card">
+          <p>
+            <strong>Quick think (no calculator):</strong> Which one is the
+            statistical question — A or B? In your notebook, write your choice
+            and one sentence explaining why. You will check your thinking in the
+            Apply section.
+          </p>
+        </div>
+
+        <p style="margin-top: 14px">
+          <strong>Essential question:</strong>
+          <em
+            >When I have a whole set of numbers, how do I describe the "typical"
+            value, how spread out the data is, and what the data is shaped
+            like?</em
+          >
+        </p>
+      </section>
+
+      <!-- ============ 2. EXPLORE ============ -->
+      <section class="u8-step" id="explore">
+        <h2><span class="u8-badge b2">2</span> Explore</h2>
+        <p class="u8-phase">Investigate before the lesson</p>
+
+        <p>
+          Explore each tool below for a few minutes. As you go, hunt for
+          <strong>one big idea</strong>: a single data set has a
+          <em>center</em> (what's typical), a <em>spread</em> (how much it
+          varies), and a <em>shape</em> (how it piles up).
+        </p>
+
+        <div class="u8-explore">
+          <a
+            class="u8-link"
+            href="/games/3d/unit-8/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🎮 Data Detective (3D Game)</strong>
+            <span
+              >Collect survey readings, build live dot plots and histograms, and
+              hunt down outliers in 3D.</span
+            >
+          </a>
+          <a
+            class="u8-link"
+            href="/math/unit-8/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>📊 Unit 8 Math Hub</strong>
+            <span
+              >Worked examples for mean, median, mode, MAD, box plots, and
+              histograms.</span
+            >
+          </a>
+          <a
+            class="u8-link"
+            href="/webquests/unit-8/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🧭 Data Detective WebQuest</strong>
+            <span>Run your own class survey and defend your conclusions.</span>
+          </a>
+        </div>
+
+        <div class="u8-card" style="margin-top: 14px">
+          <h3>The survey data: minutes of homework last night</h3>
+          <p>
+            Ten 6th graders answered "How many minutes did you spend on homework
+            last night?" Here is the raw data set you will use all the way
+            through this HyperDoc:
+          </p>
+          <p class="u8-data" style="text-align: center; font-size: 1.1rem">
+            20 · 25 · 30 · 30 · 35 · 40 · 40 · 45 · 50 · 85
+          </p>
+
+          <p style="margin-top: 10px">
+            Below is the <strong>dot plot</strong> of that same data. Each dot
+            is one student. Drag your eyes across it — where do the dots
+            <em>cluster</em>, and is there a dot sitting all alone?
+          </p>
+          <div class="u8-fig">
+            <svg
+              viewBox="0 0 460 185"
+              width="100%"
+              role="img"
+              aria-label="Dot plot of homework minutes. Dots cluster between 20 and 50 minutes, with one lonely dot far to the right at 85 minutes."
+            >
+              <line
+                x1="40"
+                y1="150"
+                x2="445"
+                y2="150"
+                stroke="#1c2330"
+                stroke-width="2"
+              />
+              <g font-size="11" fill="#1c2330" text-anchor="middle">
+                <line x1="55" y1="150" x2="55" y2="156" stroke="#1c2330" />
+                <text x="55" y="170">20</text>
+                <line x1="110" y1="150" x2="110" y2="156" stroke="#1c2330" />
+                <text x="110" y="170">30</text>
+                <line x1="165" y1="150" x2="165" y2="156" stroke="#1c2330" />
+                <text x="165" y="170">40</text>
+                <line x1="220" y1="150" x2="220" y2="156" stroke="#1c2330" />
+                <text x="220" y="170">50</text>
+                <line x1="275" y1="150" x2="275" y2="156" stroke="#1c2330" />
+                <text x="275" y="170">60</text>
+                <line x1="330" y1="150" x2="330" y2="156" stroke="#1c2330" />
+                <text x="330" y="170">70</text>
+                <line x1="412" y1="150" x2="412" y2="156" stroke="#1c2330" />
+                <text x="412" y="170">85</text>
+              </g>
+              <!-- dots: 20,25,30,30,35,40,40,45,50,85 -->
+              <g fill="#2563eb" stroke="#fff" stroke-width="1">
+                <circle cx="55" cy="138" r="7" />
+                <circle cx="82" cy="138" r="7" />
+                <circle cx="110" cy="138" r="7" />
+                <circle cx="110" cy="122" r="7" />
+                <circle cx="137" cy="138" r="7" />
+                <circle cx="165" cy="138" r="7" />
+                <circle cx="165" cy="122" r="7" />
+                <circle cx="192" cy="138" r="7" />
+                <circle cx="220" cy="138" r="7" />
+                <circle cx="412" cy="138" r="7" fill="#db2777" />
+              </g>
+              <text
+                x="412"
+                y="108"
+                font-size="11"
+                fill="#db2777"
+                text-anchor="middle"
+              >
+                outlier?
+              </text>
+              <text
+                x="245"
+                y="16"
+                font-size="12"
+                fill="#1c2330"
+                text-anchor="middle"
+              >
+                Minutes of homework (10 students)
+              </text>
+            </svg>
+            <p class="u8-cap">
+              Most dots pile up between 20 and 50. One dot sits far away at 85.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3. EXPLAIN ============ -->
+      <section class="u8-step" id="explain">
+        <h2><span class="u8-badge b3">3</span> Explain</h2>
+        <p class="u8-phase">The math, in plain language</p>
+
+        <p>
+          Every data set can be described three ways: its
+          <strong>center</strong> (the typical value), its
+          <strong>spread</strong> (how far apart the values are), and its
+          <strong>shape</strong> (how the values pile up). Here are the tools
+          for this unit.
+        </p>
+
+        <dl class="u8-vocab u8-card">
+          <div>
+            <dt>statistical question</dt>
+            <dd>
+              a question whose answers vary
+              <span class="u8-es">· pregunta estadística</span>
+            </dd>
+          </div>
+          <div>
+            <dt>mean</dt>
+            <dd>
+              the balance point: add all, divide by how many
+              <span class="u8-es">· la media / el promedio</span>
+            </dd>
+          </div>
+          <div>
+            <dt>median</dt>
+            <dd>
+              the middle value when sorted
+              <span class="u8-es">· la mediana</span>
+            </dd>
+          </div>
+          <div>
+            <dt>mode</dt>
+            <dd>
+              the value that appears most
+              <span class="u8-es">· la moda</span>
+            </dd>
+          </div>
+          <div>
+            <dt>range</dt>
+            <dd>
+              biggest − smallest
+              <span class="u8-es">· el rango</span>
+            </dd>
+          </div>
+          <div>
+            <dt>outlier</dt>
+            <dd>
+              a value far from the rest
+              <span class="u8-es">· valor atípico</span>
+            </dd>
+          </div>
+          <div>
+            <dt>MAD</dt>
+            <dd>
+              mean absolute deviation — typical distance from the mean
+              <span class="u8-es">· desviación media absoluta</span>
+            </dd>
+          </div>
+        </dl>
+
+        <h3 style="margin: 14px 0 4px">Center: three ways to say "typical"</h3>
+        <p>
+          Using our sorted data:
+          <span class="u8-data">20 25 30 30 35 40 40 45 50 85</span>
+        </p>
+        <div class="u8-grid2">
+          <div class="u8-card">
+            <h3>Mean (average)</h3>
+            <p class="u8-formula">mean = sum ÷ count</p>
+            <p>
+              20+25+30+30+35+40+40+45+50+85 = <strong>400</strong>.<br />
+              400 ÷ 10 = <strong>40 minutes</strong>.
+            </p>
+          </div>
+          <div class="u8-card">
+            <h3>Median (middle)</h3>
+            <p class="u8-formula">middle of sorted list</p>
+            <p>
+              With 10 values, average the 5th and 6th: (35 + 40) ÷ 2 =
+              <strong>37.5 minutes</strong>.
+            </p>
+          </div>
+          <div class="u8-card">
+            <h3>Mode (most common)</h3>
+            <p class="u8-formula">value seen most</p>
+            <p>
+              Both <strong>30</strong> and <strong>40</strong> appear twice, so
+              this set has two modes.
+            </p>
+          </div>
+          <div class="u8-card">
+            <h3>Mean vs. median</h3>
+            <p>
+              The 85 (outlier) pulls the <strong>mean up</strong> to 40, but the
+              <strong>median</strong> stays at 37.5. With an outlier, the median
+              describes "typical" better.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="margin: 16px 0 4px">Spread: range and MAD</h3>
+        <p>
+          <strong>Range</strong> = 85 − 20 = <strong>65 minutes</strong>. Range
+          is quick, but one outlier makes it huge. <strong>MAD</strong> is a
+          fairer measure of spread: it asks "on average, how far is each value
+          from the mean?"
+        </p>
+        <div class="u8-card">
+          <h3>Worked example — MAD of a smaller set</h3>
+          <p>
+            To see MAD clearly, use five quiz scores:
+            <span class="u8-data">6, 8, 10, 12, 14</span>. The mean is
+            (6+8+10+12+14) ÷ 5 = <strong>10</strong>. Now measure each distance
+            from 10:
+          </p>
+          <table class="u8-madtable">
+            <thead>
+              <tr>
+                <th>Value</th>
+                <th>6</th>
+                <th>8</th>
+                <th>10</th>
+                <th>12</th>
+                <th>14</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Distance from mean (10)</th>
+                <td>4</td>
+                <td>2</td>
+                <td>0</td>
+                <td>2</td>
+                <td>4</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>MAD = (4+2+0+2+4) ÷ 5</td>
+                <td colspan="4">= 12 ÷ 5 = <strong>2.4</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+          <p>
+            A MAD of 2.4 means scores are typically about 2.4 points away from
+            the average.
+            <span class="u8-formula">MAD = (sum of distances) ÷ count</span>
+          </p>
+        </div>
+
+        <h3 style="margin: 16px 0 4px">Shape: histograms &amp; box plots</h3>
+        <p>
+          A <strong>histogram</strong> groups data into equal intervals (bins)
+          and shows how many fall in each bin. A <strong>box plot</strong> shows
+          the five-number summary: minimum, Q1, median, Q3, and maximum — and
+          the box holds the middle half of the data.
+        </p>
+        <div class="u8-grid2">
+          <div class="u8-fig u8-card">
+            <h3 style="align-self: flex-start">
+              Histogram of the homework data
+            </h3>
+            <svg
+              viewBox="0 0 320 200"
+              width="100%"
+              role="img"
+              aria-label="Histogram with bins of width 20. The 20 to 39 bin has 4 students, the 40 to 59 bin has 5, the 60 to 79 bin has 0, and the 80 to 99 bin has 1 student."
+            >
+              <line
+                x1="40"
+                y1="165"
+                x2="305"
+                y2="165"
+                stroke="#1c2330"
+                stroke-width="2"
+              />
+              <line
+                x1="40"
+                y1="20"
+                x2="40"
+                y2="165"
+                stroke="#1c2330"
+                stroke-width="2"
+              />
+              <g font-size="10" fill="#1c2330" text-anchor="end">
+                <text x="35" y="168">0</text>
+                <text x="35" y="117">2</text>
+                <text x="35" y="69">4</text>
+              </g>
+              <!-- bars: 20-39 = 4, 40-59 = 5, 60-79 = 0, 80-99 = 1 ; 24px per unit -->
+              <rect
+                x="42"
+                y="69"
+                width="62"
+                height="96"
+                fill="#0d9488"
+                stroke="#fff"
+              />
+              <rect
+                x="106"
+                y="45"
+                width="62"
+                height="120"
+                fill="#0d9488"
+                stroke="#fff"
+              />
+              <rect
+                x="234"
+                y="141"
+                width="62"
+                height="24"
+                fill="#db2777"
+                stroke="#fff"
+              />
+              <g font-size="9" fill="#1c2330" text-anchor="middle">
+                <text x="73" y="178">20–39</text>
+                <text x="137" y="178">40–59</text>
+                <text x="201" y="178">60–79</text>
+                <text x="265" y="178">80–99</text>
+              </g>
+              <g
+                font-size="11"
+                fill="#fff"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                <text x="73" y="90">4</text>
+                <text x="137" y="66">5</text>
+                <text x="265" y="158">1</text>
+              </g>
+            </svg>
+            <p class="u8-cap">
+              Tall on the left, one short bar far right = skewed right.
+            </p>
+          </div>
+          <div class="u8-fig u8-card">
+            <h3 style="align-self: flex-start">
+              Box plot of the homework data
+            </h3>
+            <svg
+              viewBox="0 0 320 200"
+              width="100%"
+              role="img"
+              aria-label="Box plot with minimum 20, Q1 at 30, median at 37.5, Q3 at 45, and maximum 85. The whisker reaching the maximum is very long."
+            >
+              <line
+                x1="30"
+                y1="170"
+                x2="305"
+                y2="170"
+                stroke="#1c2330"
+                stroke-width="1.5"
+              />
+              <g font-size="10" fill="#1c2330" text-anchor="middle">
+                <text x="40" y="186">20</text>
+                <text x="100" y="186">30</text>
+                <text x="145" y="186">37.5</text>
+                <text x="190" y="186">45</text>
+                <text x="290" y="186">85</text>
+              </g>
+              <!-- scale rounded: 20=40, 30=100, 37.5=145, 45=190, 85=290 -->
+              <!-- left whisker min(40) to Q1(100) -->
+              <line
+                x1="40"
+                y1="90"
+                x2="100"
+                y2="90"
+                stroke="#2563eb"
+                stroke-width="2"
+              />
+              <line
+                x1="40"
+                y1="75"
+                x2="40"
+                y2="105"
+                stroke="#2563eb"
+                stroke-width="2"
+              />
+              <!-- box Q1(100) to Q3(190) -->
+              <rect
+                x="100"
+                y="65"
+                width="90"
+                height="50"
+                fill="#bfe3ff"
+                stroke="#2563eb"
+                stroke-width="2"
+              />
+              <line
+                x1="145"
+                y1="65"
+                x2="145"
+                y2="115"
+                stroke="#db2777"
+                stroke-width="3"
+              />
+              <!-- right whisker Q3(190) to max(290) -->
+              <line
+                x1="190"
+                y1="90"
+                x2="290"
+                y2="90"
+                stroke="#2563eb"
+                stroke-width="2"
+              />
+              <line
+                x1="290"
+                y1="75"
+                x2="290"
+                y2="105"
+                stroke="#2563eb"
+                stroke-width="2"
+              />
+              <text
+                x="145"
+                y="55"
+                font-size="9"
+                fill="#db2777"
+                text-anchor="middle"
+              >
+                median
+              </text>
+            </svg>
+            <p class="u8-cap">
+              The long right whisker is the outlier (85) stretching the data.
+            </p>
+          </div>
+        </div>
+        <p>
+          <strong>Reading shape:</strong> when one tail stretches far to the
+          right (like ours), we say the data is <strong>skewed right</strong>.
+          When the data is roughly even on both sides of the center, it is
+          <strong>symmetric</strong>.
+        </p>
+
+        <details class="u8-level">
+          <summary>
+            <span class="u8-tag l1">Level 1 · support</span> Step-by-step helper
+            / Ayuda paso a paso
+          </summary>
+          <ol>
+            <li>
+              <strong>Sort first.</strong> Always put numbers smallest → largest
+              before finding median, range, Q1, or Q3.
+            </li>
+            <li>
+              <strong>Mean:</strong> add every value, then divide by how many
+              there are (count the values!).
+            </li>
+            <li>
+              <strong>Median:</strong> cross off one from each end until you
+              reach the middle. If two are left, average them.
+            </li>
+            <li>
+              <strong>MAD:</strong> (1) find the mean, (2) find each distance
+              from the mean (always positive), (3) average those distances.
+              <span class="u8-es">La distancia siempre es positiva.</span>
+            </li>
+          </ol>
+        </details>
+
+        <details class="u8-level">
+          <summary>
+            <span class="u8-tag l2">Level 2 · enrichment</span> Push your
+            thinking
+          </summary>
+          <p>
+            Our data is skewed right because of the 85. Predict: if that student
+            had answered <strong>40</strong> instead of 85, which would change
+            more — the <em>mean</em> or the <em>median</em>? Recalculate both to
+            check, then write a rule about which measure of center is more
+            <em>resistant</em> to outliers and why.
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 4. APPLY ============ -->
+      <section class="u8-step" id="apply">
+        <h2><span class="u8-badge b4">4</span> Apply</h2>
+        <p class="u8-phase">Show what you can do — auto-checked</p>
+
+        <form id="u8-quiz" novalidate>
+          <div class="u8-q" data-type="mc" data-answer="b" id="q1">
+            <p class="u8-prompt">
+              1. Which one is a <strong>statistical question</strong>?
+            </p>
+            <ul class="u8-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q1" value="a" /> What time does
+                  first period start?</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q1" value="b" /> How many minutes
+                  do 6th graders sleep on a school night?</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q1" value="c" /> How many days are
+                  in February this year?</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q1" value="d" /> What is the room
+                  number of the gym?</label
+                >
+              </li>
+            </ul>
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u8-q"
+            data-type="text"
+            data-answer="40"
+            data-tol="0"
+            id="q2"
+          >
+            <p class="u8-prompt">
+              2. Find the <strong>mean</strong> of the homework data:
+              <span class="u8-data"
+                >20, 25, 30, 30, 35, 40, 40, 45, 50, 85</span
+              >
+              (the values add up to 400). Number only.
+            </p>
+            <label
+              >Mean =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Mean in minutes"
+              />
+              <span class="u8-unit">min</span></label
+            >
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u8-q"
+            data-type="text"
+            data-answer="37.5"
+            data-tol="0"
+            id="q3"
+          >
+            <p class="u8-prompt">
+              3. Find the <strong>median</strong> of that same data set (10
+              sorted values). Average the 5th and 6th values.
+            </p>
+            <label
+              >Median =
+              <input
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                aria-label="Median in minutes"
+              />
+              <span class="u8-unit">min</span></label
+            >
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u8-q"
+            data-type="text"
+            data-answer="65"
+            data-tol="0"
+            id="q4"
+          >
+            <p class="u8-prompt">
+              4. Find the <strong>range</strong> of the homework data (largest −
+              smallest).
+            </p>
+            <label
+              >Range =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Range in minutes"
+              />
+              <span class="u8-unit">min</span></label
+            >
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u8-q"
+            data-type="text"
+            data-answer="2"
+            data-tol="0"
+            id="q5"
+          >
+            <p class="u8-prompt">
+              5. <strong>MAD practice.</strong> A data set is
+              <span class="u8-data">3, 5, 7, 9</span> and its mean is 6. The
+              distances from the mean are 3, 1, 1, 3. What is the MAD? (add the
+              distances, then divide by 4)
+            </p>
+            <label
+              >MAD =
+              <input
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                aria-label="MAD"
+            /></label>
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u8-q" data-type="mc" data-answer="c" id="q6">
+            <p class="u8-prompt">
+              6. The homework data has an outlier at 85. Which statement is
+              true?
+            </p>
+            <ul class="u8-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="a" /> The outlier has no
+                  effect on any measure.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="b" /> The outlier pulls
+                  the median far up.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="c" /> The outlier pulls
+                  the mean up, so the median better shows "typical."</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="d" /> The outlier makes
+                  the mode equal to 85.</label
+                >
+              </li>
+            </ul>
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u8-q" data-type="mc" data-answer="b" id="q7">
+            <p class="u8-prompt">
+              7. Look at the histogram in Explain: a tall left side and one
+              short bar far to the right. What is the <strong>shape</strong> of
+              this data?
+            </p>
+            <ul class="u8-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q7" value="a" /> Symmetric (even on
+                  both sides)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q7" value="b" /> Skewed right (one
+                  long tail to the right)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q7" value="c" /> Skewed left (one
+                  long tail to the left)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q7" value="d" /> It has no
+                  shape</label
+                >
+              </li>
+            </ul>
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u8-q"
+            data-type="text"
+            data-answer="15"
+            data-tol="0"
+            id="q8"
+          >
+            <p class="u8-prompt">
+              8. On the box plot, Q1 = 30 and Q3 = 45. The
+              <strong>interquartile range</strong> is IQR = Q3 − Q1. What is the
+              IQR?
+            </p>
+            <label
+              >IQR =
+              <input type="number" inputmode="numeric" aria-label="IQR value"
+            /></label>
+            <p class="u8-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u8-actions">
+            <button type="button" class="u8-btn" id="u8-check">
+              Check my answers
+            </button>
+            <button type="button" class="u8-btn ghost" id="u8-reset">
+              Clear
+            </button>
+            <span class="u8-score" id="u8-scoreout" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <details class="u8-level" style="margin-top: 14px">
+          <summary>
+            <span class="u8-tag l1">Level 1 · support</span> Sentence starters
+            for explaining
+          </summary>
+          <p>
+            "I sorted the data first. To find the ____ I ____. The typical value
+            is about ____ minutes. The data is shaped ____ because ____."
+          </p>
+          <p class="u8-es">
+            "Ordené los datos primero. Para hallar el/la ____ yo ____. El valor
+            típico es de unos ____ minutos. Los datos tienen forma ____ porque
+            ____."
+          </p>
+        </details>
+
+        <details class="u8-level">
+          <summary>
+            <span class="u8-tag l2">Level 2 · enrichment</span> Build a
+            five-number summary
+          </summary>
+          <p>
+            For the homework data, list all five numbers of the box plot:
+            minimum, Q1, median, Q3, and maximum. Then explain why the IQR (the
+            width of the box) is a "fairer" spread than the range for this data
+            set, which contains the outlier 85.
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>
+            Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)
+          </h3>
+          <ul>
+            <li>
+              <strong>Engage:</strong> sort questions into statistical vs not
+              (do answers vary?).
+            </li>
+            <li>
+              <strong>Explore:</strong> compute center and spread on a small
+              data set.
+            </li>
+            <li>
+              <strong>Explain:</strong> mean, median, mode, range, MAD, and
+              reading box plots/histograms.
+            </li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li>
+              <strong>Reflect:</strong> students explain how an outlier pulls
+              the mean.
+            </li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1 — Statistical question (MC):</strong> answer
+              <strong>b</strong>.
+            </li>
+            <li><strong>Q2 — Mean:</strong> <strong>40</strong>.</li>
+            <li><strong>Q3 — Median:</strong> <strong>37.5</strong>.</li>
+            <li><strong>Q4 — Range:</strong> <strong>65</strong>.</li>
+            <li><strong>Q5 — MAD:</strong> <strong>2</strong>.</li>
+            <li>
+              <strong>Q6 — Outlier effect (MC):</strong> answer
+              <strong>c</strong>.
+            </li>
+            <li>
+              <strong>Q7 — Shape (MC):</strong> answer <strong>b</strong>.
+            </li>
+            <li>
+              <strong>Q8 — IQR (Q3 − Q1 = 45 − 30):</strong>
+              <strong>15</strong>.
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.SP.A.1–B.5</strong>.</p>
+        </div>
+      </details>
+
+      <section class="u8-step u8-reflect" id="reflect">
+        <h2><span class="u8-badge b5">5</span> Reflect</h2>
+        <p class="u8-phase">Think about your thinking</p>
+
+        <div class="u8-q">
+          <p class="u8-prompt">
+            A. In this data set the mean (40) and the median (37.5) were
+            different. Which one would you report to describe a "typical"
+            student, and why?
+          </p>
+          <textarea aria-label="Reflection A"></textarea>
+        </div>
+        <div class="u8-q">
+          <p class="u8-prompt">
+            B. Mean, MAD, and shape each tell you something different about a
+            data set. In your own words, what does each one tell you that the
+            others do not?
+          </p>
+          <textarea aria-label="Reflection B"></textarea>
+        </div>
+        <div class="u8-q">
+          <p class="u8-prompt">
+            C. One thing about reading data that is now clear to me / Una cosa
+            sobre los datos que ahora entiendo bien:
+          </p>
+          <textarea aria-label="Reflection C"></textarea>
+        </div>
+        <p class="u8-cap">
+          Your reflections save with this HyperDoc when you use Save as PDF or
+          Save as DOC above.
+        </p>
+      </section>
+
+      <!-- ============ 6. EXTEND ============ -->
+      <section class="u8-step" id="extend">
+        <h2>
+          <span class="u8-badge b3" style="background: #475569">6</span> Extend
+        </h2>
+        <p class="u8-phase">Optional challenge project</p>
+        <div class="u8-card">
+          <h3>Run your own data investigation</h3>
+          <p>
+            Pick a statistical question you actually care about (for example,
+            "How many hours of screen time do students get on a weekend?").
+            Then:
+          </p>
+          <ol>
+            <li>
+              Survey at least <strong>10</strong> people and record the raw
+              data.
+            </li>
+            <li>
+              Find the mean, median, mode, range, and MAD. Mark any outliers.
+            </li>
+            <li>
+              Draw a dot plot <em>and</em> a histogram of your data, and
+              describe its shape (symmetric or skewed).
+            </li>
+            <li>
+              Write one paragraph: what is the "typical" answer, how spread out
+              is it, and which measure of center is the most honest for your
+              data?
+            </li>
+          </ol>
+          <p class="u8-es">
+            Haz tu propia encuesta de 10 personas, calcula la media, la mediana
+            y la MAD, dibuja un histograma y describe la forma de los datos.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ---- Mount the shared Neft Activity Kit (name bar + Save as PDF/DOC + results) ----
+        function mountKit() {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            try {
+              NTKit.mount("#ntkit");
+            } catch (e) {
+              /* kit optional */
+            }
+          }
+        }
+        if (document.readyState !== "loading") mountKit();
+        else document.addEventListener("DOMContentLoaded", mountKit);
+
+        var form = document.getElementById("u8-quiz");
+
+        function checkOne(q) {
+          var type = q.getAttribute("data-type");
+          var fb = q.querySelector(".u8-fb");
+          var correct = false,
+            answered = true;
+
+          if (type === "mc") {
+            var sel = q.querySelector('input[type="radio"]:checked');
+            answered = !!sel;
+            correct = answered && sel.value === q.getAttribute("data-answer");
+          } else {
+            // text/number
+            var input = q.querySelector(
+              'input[type="number"], input[type="text"]',
+            );
+            var raw = (input.value || "").trim();
+            answered = raw !== "";
+            var ans = parseFloat(q.getAttribute("data-answer"));
+            var tol = parseFloat(q.getAttribute("data-tol") || "0");
+            var val = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+            correct = answered && !isNaN(val) && Math.abs(val - ans) <= tol;
+          }
+
+          if (fb) {
+            if (!answered) {
+              fb.textContent = "";
+              fb.className = "u8-fb";
+            } else if (correct) {
+              fb.textContent = "✓ Correct";
+              fb.className = "u8-fb ok";
+            } else {
+              fb.textContent =
+                "✗ Not yet — sort the data, then recheck your steps and units.";
+              fb.className = "u8-fb no";
+            }
+          }
+          return { correct: correct, answered: answered };
+        }
+
+        function checkAll() {
+          var qs = form.querySelectorAll(".u8-q[data-type]");
+          var score = 0,
+            total = qs.length;
+          var items = [];
+          qs.forEach(function (q, i) {
+            var r = checkOne(q);
+            if (r.correct) score++;
+            var promptEl = q.querySelector(".u8-prompt");
+            items.push({
+              id: q.id || "q" + (i + 1),
+              prompt: promptEl
+                ? promptEl.textContent.trim()
+                : "Question " + (i + 1),
+              correct: r.correct,
+            });
+          });
+
+          var out = document.getElementById("u8-scoreout");
+          var pct = Math.round((score / total) * 100);
+          out.textContent =
+            "Score: " + score + " / " + total + " (" + pct + "%)";
+
+          // Hand results to the shared kit if its grade() API is available.
+          if (window.NTKit && typeof NTKit.grade === "function") {
+            try {
+              NTKit.grade({
+                activityId: "hyperdoc-unit-8-statistics",
+                activityTitle: "Unit 8 HyperDoc — Statistics & Data",
+                standard: "6.SP.A.1–3, 6.SP.B.4–5",
+                score: score,
+                total: total,
+                items: items,
+              });
+            } catch (e) {
+              /* fallback score already shown */
+            }
+          }
+        }
+
+        document.getElementById("u8-check").addEventListener("click", checkAll);
+        document
+          .getElementById("u8-reset")
+          .addEventListener("click", function () {
+            form.reset();
+            form.querySelectorAll(".u8-fb").forEach(function (f) {
+              f.textContent = "";
+              f.className = "u8-fb";
+            });
+            document.getElementById("u8-scoreout").textContent = "";
+          });
+      })();
+    </script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

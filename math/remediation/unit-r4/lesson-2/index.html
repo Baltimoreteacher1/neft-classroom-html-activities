@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R4 · Lesson 2: Prime &amp; Composite · Prime Factorization — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: identify prime and composite numbers, build factor trees, and write prime factorizations. Builds toward 6.NS.4." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#1a6fb5 0%, #0f2b3c 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .tree { font-family: monospace; font-size: 16px; line-height: 2; background: var(--teal-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; white-space: pre; }
+      .prime-chip { display: inline-block; background: var(--green); color: #fff; border-radius: 8px; padding: 3px 10px; font-weight: 800; margin: 2px; font-size: 14px; }
+      .comp-chip { display: inline-block; background: var(--coral); color: #fff; border-radius: 8px; padding: 3px 10px; font-weight: 800; margin: 2px; font-size: 14px; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="phero">
+      <div class="deco">🧩</div>
+      <h1>Prime &amp; Composite · Prime Factorization</h1>
+      <p>Decide whether a number is prime or composite, build a factor tree, and express any composite number as a product of its prime factors.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R4 · Lesson 2</span>
+        <span class="tag">Builds 6.NS.4</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Finding the GCF and LCM
+        (6.NS.4) is fastest when you know the prime factorization of each
+        number. Prime factorization also underpins fraction simplification and
+        the distributive property — core Grade 6 skills.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Prime vs. Composite &amp; Factor Trees</h2></div></div>
+
+        <p>A <strong>prime</strong> number has exactly 2 factors: 1 and itself. A <strong>composite</strong> number has more than 2 factors.</p>
+
+        <div class="example">
+          <strong>Prime examples:</strong>
+          <span class="prime-chip">2</span>
+          <span class="prime-chip">3</span>
+          <span class="prime-chip">5</span>
+          <span class="prime-chip">7</span>
+          <span class="prime-chip">11</span>
+          <span class="prime-chip">13</span>
+          &nbsp; — each has only 1 and itself as factors.<br><br>
+          <strong>Composite examples:</strong>
+          <span class="comp-chip">4</span>
+          <span class="comp-chip">6</span>
+          <span class="comp-chip">9</span>
+          <span class="comp-chip">12</span>
+          <span class="comp-chip">18</span>
+          &nbsp; — each has at least one factor besides 1 and itself.<br><br>
+          <strong>Special case:</strong> 1 is <em>neither</em> prime nor composite.
+        </div>
+
+        <p>A <strong>factor tree</strong> breaks a number down step by step until every branch ends at a prime number. Those prime numbers, multiplied together, are the <strong>prime factorization</strong>.</p>
+
+        <div class="example">
+          <strong>Example 1 — Prime factorization of 12:</strong><br><br>
+          Start: 12 = 2 × 6<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 = 2 × 3 &nbsp;(both prime — stop)<br><br>
+          <strong>12 = 2 × 2 × 3 = 2² × 3</strong>
+        </div>
+
+        <div class="example">
+          <strong>Example 2 — Prime factorization of 18:</strong><br><br>
+          Start: 18 = 2 × 9<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 = 3 × 3 &nbsp;(both prime — stop)<br><br>
+          <strong>18 = 2 × 3 × 3 = 2 × 3²</strong>
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. Is <strong>7</strong> prime or composite?</p>
+          <div class="opts" data-mc="t1" data-ans="a">
+            <button class="opt" data-v="a">Prime — its only factors are 1 and 7</button>
+            <button class="opt" data-v="b">Composite — 7 has more than 2 factors</button>
+            <button class="opt" data-v="c">Neither — 7 is too small</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Try dividing 7 by 2, 3, 4, 5, 6. None divide evenly. So 7's only factors are 1 and 7 → prime.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Which lists the correct prime factorization of <strong>12</strong>?</p>
+          <div class="opts" data-mc="t2" data-ans="b">
+            <button class="opt" data-v="a">2 × 6</button>
+            <button class="opt" data-v="b">2 × 2 × 3</button>
+            <button class="opt" data-v="c">3 × 4</button>
+            <button class="opt" data-v="d">1 × 12</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>Prime factorization uses only prime numbers. 6 and 4 are not prime, so break them further: 12 = 2 × 6 = 2 × 2 × 3.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. How many prime factors does <strong>12</strong> have when fully factored? (Count with repetition: 2 × 2 × 3 has <em>three</em> prime factors.)</p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 3)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>12 = 2 × 2 × 3. That is three prime factors (two 2s and one 3).</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. What is the <strong>largest</strong> prime factor in the prime factorization of <strong>18</strong>?</p>
+          <input type="number" id="p4" placeholder="?" />
+          <button class="btn" onclick="checkNum('p4', 3)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>18 = 2 × 3 × 3. The prime factors are 2 and 3. The largest is 3.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. Which number between 10 and 20 is <strong>prime</strong>?</p>
+          <div class="opts" data-mc="p5" data-ans="b">
+            <button class="opt" data-v="a">15</button>
+            <button class="opt" data-v="b">17</button>
+            <button class="opt" data-v="c">18</button>
+            <button class="opt" data-v="d">20</button>
+          </div>
+          <button class="btn" onclick="checkMC('p5')">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>15 = 3×5 (composite). 18 = 2×9 (composite). 20 = 4×5 (composite). 17 has no factors other than 1 and 17 → prime.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. The prime factorization of 18 is written as 2 × 3<sup>?</sup>. What exponent goes on the 3?</p>
+          <input type="number" id="x6" placeholder="?" />
+          <button class="btn" onclick="checkNum('x6', 2)">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>18 = 2 × 3 × 3 = 2 × 3². The 3 appears twice, so the exponent is 2.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. True or false: <strong>9</strong> is a prime number. Choose the correct answer.</p>
+          <div class="opts" data-mc="x7" data-ans="b">
+            <button class="opt" data-v="a">True — 9 has only 2 factors</button>
+            <button class="opt" data-v="b">False — 9 = 3 × 3, so it is composite</button>
+            <button class="opt" data-v="c">True — 9 is odd so it must be prime</button>
+          </div>
+          <button class="btn" onclick="checkMC('x7')">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>9 ÷ 3 = 3, so 3 is a factor of 9. Factors of 9 are 1, 3, 9 — that is 3 factors, so 9 is composite.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r4/lesson-1/">← Lesson 1: Factors &amp; Divisibility</a>
+        <a href="/math/remediation/unit-r4/lesson-3/">Next: GCF →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R4 · Lesson 2 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

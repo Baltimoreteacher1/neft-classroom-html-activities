@@ -1,0 +1,1843 @@
+<!doctype html>
+<html lang="en" class="nt-theme-aware">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      WebQuest · Unit 10 · The Aquarium Build-Out — Volume, Nets &amp; Surface
+      Area | Neft Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 WebQuest: design acrylic tanks for a new public aquarium by finding the volume of rectangular prisms with fractional edges, unfolding prisms and pyramids into nets, and using nets to find surface area (6.G.A.2, 6.G.A.4)."
+    />
+
+    <!-- Shared Neft design system -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+
+    <style>
+      /* ============================================================
+     Unit 10 WebQuest — The Aquarium Build-Out.
+     Uses shared --nt-* theme variables. Scoped styles only;
+     all visuals are SVG/divs (no ASCII art).
+     ============================================================ */
+      :root {
+        --wq-water: #38bdf8;
+        --wq-water-deep: #0ea5e9;
+        --wq-acrylic: #bae6fd;
+        --wq-panel: #0284c7;
+        --wq-coral: #fb7185;
+        --wq-kelp: #34d399;
+        --wq-sand: #fcd34d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
+      }
+      .wq-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 18px 80px;
+      }
+
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #082f49 0%,
+          #0e7490 55%,
+          #0891b2 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(8, 47, 73, 0.34);
+      }
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
+        display: inline-block;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #e0f2fe;
+      }
+      .wq-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -8px;
+        bottom: -18px;
+        width: 240px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
+      }
+      .wq-l1 {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0f766e;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Formula / net reference ---------- */
+      .wq-formula-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .wq-formula {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+        text-align: center;
+      }
+      .wq-formula svg {
+        display: block;
+        margin: 0 auto 8px;
+      }
+      .wq-formula .wq-fname {
+        font-weight: 700;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-formula .wq-feq {
+        display: inline-block;
+        margin-top: 4px;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1rem;
+        background: rgba(36, 94, 168, 0.1);
+        padding: 3px 10px;
+        border-radius: 8px;
+        color: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Mission / task blueprint ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-blueprint {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-bg, #f8fafc);
+        padding: 10px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Net diagram helper ---------- */
+      .wq-netbox {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+        margin: 12px 0;
+      }
+      @media (max-width: 600px) {
+        .wq-netbox {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-netbox figure {
+        margin: 0;
+        text-align: center;
+      }
+      .wq-netbox figcaption {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 4px;
+      }
+
+      /* ---------- Rubric table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 130px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-num:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
+
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
+      }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
+      }
+
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="ntkit"></div>
+
+    <main class="wq-wrap">
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker"
+          >Grade 6 Math WebQuest · Unit 10 · 6.G.A.2 &amp; 6.G.A.4</span
+        >
+        <h1>The Aquarium Build-Out</h1>
+        <p>
+          Harbor City is opening the <strong>Blue Current Aquarium</strong>, and
+          the build team has hired <strong>your engineering crew</strong> to
+          design the acrylic display tanks. Every tank must hold the right
+          amount of water, and every panel of clear acrylic must be cut to the
+          exact size. Find the <strong>volume</strong> each tank holds, unfold
+          each tank into a <strong>net</strong>, and use the net to order the
+          <strong>surface area</strong> of acrylic — then submit your build
+          packet before opening day.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 2–3 class periods</span>
+          <span class="wq-badge">🧊 Volume of prisms</span>
+          <span class="wq-badge">📦 Nets</span>
+          <span class="wq-badge">📐 Surface area</span>
+        </div>
+        <!-- decorative aquarium tank SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 220 200" aria-hidden="true">
+          <polygon
+            points="40,60 150,60 185,40 75,40"
+            fill="#7dd3fc"
+            opacity="0.9"
+          />
+          <polygon
+            points="40,60 150,60 150,160 40,160"
+            fill="#38bdf8"
+            opacity="0.85"
+          />
+          <polygon
+            points="150,60 185,40 185,140 150,160"
+            fill="#0ea5e9"
+            opacity="0.9"
+          />
+          <polygon
+            points="44,78 146,78 178,58 78,58"
+            fill="#bae6fd"
+            opacity="0.55"
+          />
+          <path d="M62,160 q-6,-26 6,-40 q8,16 2,40 z" fill="#fb7185" />
+          <path d="M118,160 q4,-34 -6,-52 q14,18 12,52 z" fill="#34d399" />
+          <circle cx="92" cy="110" r="6" fill="#fcd34d" />
+          <circle cx="108" cy="98" r="4" fill="#fff" opacity="0.7" />
+          <g stroke="#082f49" stroke-width="2" fill="none" opacity="0.5">
+            <polygon points="40,60 150,60 185,40 75,40" />
+            <polygon points="40,60 150,60 150,160 40,160" />
+            <polygon points="150,60 185,40 185,140 150,160" />
+          </g>
+        </svg>
+      </header>
+
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Your Crew Gets
+          the Contract
+        </h2>
+        <p class="wq-lead">
+          A display tank is a sealed box of glass and acrylic. Engineers think
+          about it two completely different ways. The <strong>inside</strong> is
+          hollow space that holds water — that is <strong>volume</strong>,
+          measured in cubic units. The <strong>outside</strong> is flat panels
+          that must be cut and glued — that is <strong>surface area</strong>,
+          measured in square units. The tool that connects them is the
+          <strong>net</strong>: the tank unfolded flat, like a cardboard box
+          opened up.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How do engineers use volume, nets, and surface area to build a
+            container that holds exactly the right amount and uses exactly the
+            right materials?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          <strong>Volume</strong> = how much space fills the inside (cubic
+          units, like ft³). <strong>Surface area</strong> = how much material
+          covers the outside (square units, like ft²). Picture filling a tank
+          with sugar cubes (volume) versus wrapping it in paper (surface area).
+          <span class="wq-es"
+            >En español: El <strong>volumen</strong> es cuánto espacio llena el
+            interior (unidades cúbicas, pie³). El
+            <strong>área de superficie</strong> es cuánto material cubre el
+            exterior (unidades cuadradas, pie²). Imagina llenar el tanque con
+            cubitos (volumen) o envolverlo en papel (área de superficie).</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Two tanks can hold the same volume but need very different amounts of
+          acrylic. A tall, skinny tank has more surface area than a cube of the
+          same volume. As you design, watch how shape — not just size — changes
+          your material cost.
+        </div>
+      </section>
+
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of this WebQuest, your crew will submit a
+              <strong>Tank Build Packet</strong> for the Blue Current Aquarium.
+              A complete packet must:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                Find the <strong>volume</strong> of the
+                <strong>Reef Tank</strong> (a rectangular prism with
+                <strong>fractional edge lengths</strong>).
+              </li>
+              <li>
+                Find the volume of the small
+                <strong>Feeding-Prep Box</strong> by counting unit cubes.
+              </li>
+              <li>
+                Unfold the Reef Tank into a <strong>net</strong> and label all
+                six faces.
+              </li>
+              <li>
+                Use the net to find the <strong>surface area</strong> of acrylic
+                to order.
+              </li>
+              <li>
+                Find the surface area of the pyramid-topped
+                <strong>Touch-Tank Sign</strong> using its net.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom.
+              </li>
+            </ul>
+          </div>
+          <div class="wq-blueprint" aria-label="Aquarium build site blueprint">
+            <svg viewBox="0 0 280 230" role="img" aria-labelledby="bp-title">
+              <title id="bp-title">
+                Blueprint of the three builds: Reef Tank, Feeding-Prep Box, and
+                Touch-Tank Sign
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="230"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <!-- Reef Tank (large prism) -->
+              <polygon
+                points="22,70 130,70 158,48 50,48"
+                fill="var(--wq-acrylic)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="22,70 130,70 130,170 22,170"
+                fill="var(--wq-water)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="130,70 158,48 158,148 130,170"
+                fill="var(--wq-water-deep)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text
+                x="48"
+                y="125"
+                font-size="11"
+                fill="#082f49"
+                font-weight="700"
+              >
+                Reef Tank
+              </text>
+              <!-- Feeding-Prep Box (small cube) -->
+              <polygon
+                points="186,150 230,150 244,138 200,138"
+                fill="var(--wq-acrylic)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="186,150 230,150 230,190 186,190"
+                fill="var(--wq-water)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="230,150 244,138 244,178 230,190"
+                fill="var(--wq-water-deep)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text
+                x="184"
+                y="208"
+                font-size="10"
+                fill="#082f49"
+                font-weight="700"
+              >
+                Prep Box
+              </text>
+              <!-- Touch-Tank Sign (pyramid on box) -->
+              <polygon
+                points="190,70 244,70 217,38"
+                fill="var(--wq-sand)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="190,70 244,70 244,108 190,108"
+                fill="var(--wq-coral)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text
+                x="186"
+                y="126"
+                font-size="10"
+                fill="#082f49"
+                font-weight="700"
+              >
+                Sign
+              </text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work through the steps in order. Each step finishes one page of your
+          Build Packet.
+        </p>
+
+        <h3>Step 1 — Stock your formula toolbox</h3>
+        <p>
+          Keep these ideas open as you build. Volume fills the inside; surface
+          area covers the outside; a net is the tank unfolded flat.
+        </p>
+        <div class="wq-formula-grid">
+          <div class="wq-formula">
+            <svg width="92" height="62" viewBox="0 0 92 62" aria-hidden="true">
+              <polygon
+                points="14,28 62,28 80,16 32,16"
+                fill="var(--wq-acrylic)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="14,28 62,28 62,52 14,52"
+                fill="var(--wq-water)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="62,28 80,16 80,40 62,52"
+                fill="var(--wq-water-deep)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+            </svg>
+            <div class="wq-fname">Volume of a prism</div>
+            <span class="wq-feq">V = l × w × h</span>
+          </div>
+          <div class="wq-formula">
+            <svg width="92" height="62" viewBox="0 0 92 62" aria-hidden="true">
+              <g fill="var(--wq-acrylic)" stroke="#0b1f33" stroke-width="1.5">
+                <rect x="34" y="6" width="20" height="20" />
+                <rect x="14" y="26" width="20" height="20" />
+                <rect x="34" y="26" width="20" height="20" />
+                <rect x="54" y="26" width="20" height="20" />
+                <rect x="74" y="26" width="14" height="20" />
+                <rect x="34" y="46" width="20" height="12" />
+              </g>
+            </svg>
+            <div class="wq-fname">Net of a prism</div>
+            <span class="wq-feq">6 faces unfolded flat</span>
+          </div>
+          <div class="wq-formula">
+            <svg width="92" height="62" viewBox="0 0 92 62" aria-hidden="true">
+              <g fill="var(--wq-sand)" stroke="#0b1f33" stroke-width="1.5">
+                <rect x="34" y="22" width="22" height="22" />
+                <polygon points="34,22 56,22 45,4" />
+                <polygon points="34,44 56,44 45,60" />
+                <polygon points="34,22 34,44 16,33" />
+                <polygon points="56,22 56,44 74,33" />
+              </g>
+            </svg>
+            <div class="wq-fname">Net of a pyramid</div>
+            <span class="wq-feq">1 base + triangle faces</span>
+          </div>
+          <div class="wq-formula">
+            <svg width="92" height="62" viewBox="0 0 92 62" aria-hidden="true">
+              <rect
+                x="20"
+                y="14"
+                width="52"
+                height="34"
+                fill="var(--wq-kelp)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text
+                x="30"
+                y="36"
+                font-size="13"
+                fill="#082f49"
+                font-weight="700"
+              >
+                SA
+              </text>
+            </svg>
+            <div class="wq-fname">Surface area</div>
+            <span class="wq-feq">add the area of every face</span>
+          </div>
+        </div>
+
+        <h3>Step 2 — Fill the Reef Tank (volume with fractions)</h3>
+        <p>
+          The <strong>Reef Tank</strong> is a rectangular prism. Use these tank
+          dimensions (in feet) and the volume formula. Record the volume on your
+          Build Packet.
+        </p>
+        <ul>
+          <li><strong>Length:</strong> 4½ ft (4.5 ft)</li>
+          <li><strong>Width:</strong> 2 ft</li>
+          <li><strong>Height:</strong> 3 ft</li>
+        </ul>
+        <div class="wq-example">
+          <p><b>Worked example — Volume of the Reef Tank:</b></p>
+          <p class="wq-work">
+            V = l × w × h = 4½ × 2 × 3 = 4.5 × 2 × 3 = 9 × 3 = <b>27 ft³</b>
+          </p>
+          <p style="margin: 6px 0 0">
+            That means the tank holds 27 cubic feet of water. (1 ft³ ≈ 7.48
+            gallons, so that is a lot of fish!)
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A fraction edge does not change the steps — multiply the three
+          numbers. Turn 4½ into 4.5 first if that is easier, then multiply
+          across.
+          <span class="wq-es"
+            >En español: Una arista con fracción no cambia los pasos —
+            multiplica los tres números. Convierte 4½ a 4.5 si es más fácil, y
+            luego multiplica.</span
+          >
+        </div>
+
+        <h3>Step 3 — Count cubes in the Feeding-Prep Box</h3>
+        <p>
+          The small <strong>Feeding-Prep Box</strong> is packed with 1-ft unit
+          cubes so staff can measure scoops of food. Count the cubes to confirm
+          the volume, then check that it matches l × w × h. The box is
+          <strong>3 ft long, 2 ft wide, 2 ft high</strong>.
+        </p>
+        <p>
+          Counting cubes layer by layer should give the same answer as the
+          formula. This proves <em>why</em> the formula works.
+        </p>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          One bottom layer holds 3 × 2 = 6 cubes, and there are 2 layers tall.
+          Notice that "area of the base × height" gives the same result as "l ×
+          w × h." Use that base-area idea to find the volume of
+          <em>any</em> prism, even one with a triangle base.
+        </div>
+
+        <h3>Step 4 — Unfold the Reef Tank into a net</h3>
+        <p>
+          To order acrylic, the build team unfolds the tank flat into a
+          <strong>net</strong>. A rectangular prism has
+          <strong>6 faces in 3 matching pairs</strong>: top &amp; bottom, front
+          &amp; back, and two sides. Find the area of each face, then add them
+          all to get the surface area.
+        </p>
+        <div class="wq-netbox">
+          <figure>
+            <svg
+              width="170"
+              height="150"
+              viewBox="0 0 170 150"
+              role="img"
+              aria-label="Net of the Reef Tank unfolded into six labeled rectangles"
+            >
+              <g stroke="#0b1f33" stroke-width="1.5">
+                <rect
+                  x="58"
+                  y="6"
+                  width="54"
+                  height="26"
+                  fill="var(--wq-acrylic)"
+                />
+                <rect
+                  x="58"
+                  y="32"
+                  width="54"
+                  height="56"
+                  fill="var(--wq-water)"
+                />
+                <rect
+                  x="58"
+                  y="88"
+                  width="54"
+                  height="26"
+                  fill="var(--wq-acrylic)"
+                />
+                <rect
+                  x="58"
+                  y="114"
+                  width="54"
+                  height="30"
+                  fill="var(--wq-water)"
+                />
+                <rect
+                  x="22"
+                  y="32"
+                  width="36"
+                  height="56"
+                  fill="var(--wq-water-deep)"
+                />
+                <rect
+                  x="112"
+                  y="32"
+                  width="36"
+                  height="56"
+                  fill="var(--wq-water-deep)"
+                />
+              </g>
+              <g
+                font-size="9"
+                fill="#082f49"
+                font-weight="700"
+                text-anchor="middle"
+              >
+                <text x="85" y="22">top</text>
+                <text x="85" y="62">front</text>
+                <text x="85" y="103">bottom</text>
+                <text x="85" y="132">back</text>
+                <text x="40" y="62">side</text>
+                <text x="130" y="62">side</text>
+              </g>
+            </svg>
+            <figcaption>
+              The Reef Tank unfolded: 6 faces, 3 matching pairs.
+            </figcaption>
+          </figure>
+          <div>
+            <p style="margin: 0">
+              Tank dimensions: <strong>l = 4½ ft, w = 2 ft, h = 3 ft.</strong>
+              The three pairs of faces are:
+            </p>
+            <ul style="margin: 6px 0 0">
+              <li>Front &amp; back: 4½ × 3 each</li>
+              <li>Two sides: 2 × 3 each</li>
+              <li>Top &amp; bottom: 4½ × 2 each</li>
+            </ul>
+          </div>
+        </div>
+        <div class="wq-example">
+          <p><b>Worked example — Surface area of the Reef Tank:</b></p>
+          <p class="wq-work">
+            Front + back = 2 × (4.5 × 3) = 2 × 13.5 = 27<br />
+            Two sides = 2 × (2 × 3) = 2 × 6 = 12<br />
+            Top + bottom = 2 × (4.5 × 2) = 2 × 9 = 18<br />
+            Surface area = 27 + 12 + 18 = <b>57 ft²</b> of acrylic.
+          </p>
+        </div>
+
+        <h3>Step 5 — Order the Touch-Tank Sign (pyramid net)</h3>
+        <p>
+          The entrance <strong>Touch-Tank Sign</strong> is topped with a
+          <strong>square pyramid</strong>. Its net is one square base plus four
+          identical triangles. Find the area of the base, find the area of one
+          triangle, then add them to get the surface area of the sign topper.
+        </p>
+        <ul>
+          <li><strong>Square base:</strong> side = 4 ft.</li>
+          <li>
+            <strong>Each triangle face:</strong> base = 4 ft, slant height = 5
+            ft.
+          </li>
+        </ul>
+        <div class="wq-example">
+          <p><b>Worked example — Surface area of the pyramid:</b></p>
+          <p class="wq-work">
+            Base = 4 × 4 = 16 ft²<br />
+            One triangle = ½ × 4 × 5 = 10 ft²; four triangles = 4 × 10 = 40
+            ft²<br />
+            Surface area = 16 + 40 = <b>56 ft²</b>
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A pyramid net = 1 base + 4 triangle "flaps." Find each shape's area on
+          the flat net, then add. The net lets you see every face at once so
+          none is forgotten.
+          <span class="wq-es"
+            >En español: La red de una pirámide = 1 base + 4 triángulos. Halla
+            el área de cada figura en la red plana y súmalas. La red te deja ver
+            todas las caras a la vez.</span
+          >
+        </div>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you build. They open in the same
+          window — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-10/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 10 · 3D Volume &amp; Nets Lab</span
+              ><span class="wq-rdesc"
+                >Build prisms, fold and unfold nets, and watch volume fill in
+                3D.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-10/">
+            <span class="wq-ricon" aria-hidden="true">📐</span>
+            <span
+              ><span class="wq-rtitle">Volume Architect Activity</span
+              ><span class="wq-rdesc"
+                >Practice volume and surface area step by step.</span
+              ></span
+            >
+          </a>
+          <a href="/reveal-evidence-studio/">
+            <span class="wq-ricon" aria-hidden="true">🔍</span>
+            <span
+              ><span class="wq-rtitle">Reveal Evidence Studio</span
+              ><span class="wq-rdesc"
+                >Write your Claim–Evidence–Reasoning for the build packet.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <ul>
+          <li>
+            <strong>Volume / Volumen</strong> — the space inside a solid, in
+            cubic units (ft³).
+          </li>
+          <li>
+            <strong>Surface area / Área de superficie</strong> — the total area
+            of all faces, in square units (ft²).
+          </li>
+          <li>
+            <strong>Net / Red (plantilla)</strong> — a 3D solid unfolded flat
+            into all of its faces.
+          </li>
+          <li>
+            <strong>Prism / Prisma</strong> — a solid with two matching ends and
+            flat faces (a box is a rectangular prism).
+          </li>
+          <li>
+            <strong>Pyramid / Pirámide</strong> — a solid with one base and
+            triangle faces that meet at a point.
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Tank Build Packet will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Lead Engineer</th>
+                <th>3 · Builder</th>
+                <th>2 · Apprentice</th>
+                <th>1 · Getting started</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Volume accuracy</td>
+                <td>Both volumes correct, including the fractional edge.</td>
+                <td>One volume fully correct.</td>
+                <td>Right formula, arithmetic error.</td>
+                <td>Volume missing or incorrect.</td>
+              </tr>
+              <tr>
+                <td>Nets</td>
+                <td>Both nets drawn with all faces labeled correctly.</td>
+                <td>One net drawn and labeled.</td>
+                <td>Net attempted with missing faces.</td>
+                <td>No net shown.</td>
+              </tr>
+              <tr>
+                <td>Surface area</td>
+                <td>Prism and pyramid surface areas both correct.</td>
+                <td>One surface area correct.</td>
+                <td>Faces added with an error.</td>
+                <td>Surface area missing.</td>
+              </tr>
+              <tr>
+                <td>Units &amp; labels</td>
+                <td>ft³ for volume, ft² for surface area, every time.</td>
+                <td>Most answers labeled correctly.</td>
+                <td>Units mixed up in places.</td>
+                <td>No units shown.</td>
+              </tr>
+              <tr>
+                <td>Reasoning</td>
+                <td>Clear claim–evidence–reasoning explanation.</td>
+                <td>Explains most choices.</td>
+                <td>Brief or partial reasoning.</td>
+                <td>No explanation.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Aquarium Build-Out · Tank Build Packet</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Tank Build Packet</h3>
+          <ul>
+            <li><strong>Reef Tank volume:</strong> V = l × w × h = 4½ × 2 × 3 = 4.5 × 2 × 3 = <strong>27 ft³</strong>.</li>
+            <li><strong>Feeding-Prep Box (unit cubes):</strong> bottom layer 3 × 2 = 6 cubes × 2 layers = <strong>12 cubes (12 ft³)</strong> — matches l × w × h.</li>
+            <li><strong>Net:</strong> a rectangular prism unfolds into 6 faces in 3 matching pairs (top/bottom, front/back, two sides).</li>
+            <li><strong>Surface area:</strong> add all six face areas (2lw + 2lh + 2wh); for the 4.5 × 2 × 3 tank that is 2(9) + 2(13.5) + 2(6) = 18 + 27 + 12 = <strong>57 ft²</strong>.</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Volume fills the inside (ft³); surface area covers the outside (ft²) — keep units distinct.</li>
+            <li>Use the net so no face is missed; opposite faces come in equal pairs.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.G.A.2 & A.4</strong>.</p>
+        </div>
+      </details>
+
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
+        <p>
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These match the builds in your packet.
+        </p>
+
+        <!-- Q1 volume with fraction -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="num"
+          data-answer="27"
+          data-tol="0.5"
+          data-skill="Volume of a prism with fractional edge"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >Reef Tank: length = 4½ ft, width = 2 ft, height = 3 ft. What is
+              the volume?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="120"
+              height="74"
+              viewBox="0 0 120 74"
+              role="img"
+              aria-label="Rectangular prism tank, 4 and a half feet by 2 feet by 3 feet"
+            >
+              <polygon
+                points="14,30 86,30 108,14 36,14"
+                fill="var(--wq-acrylic)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="14,30 86,30 86,64 14,64"
+                fill="var(--wq-water)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <polygon
+                points="86,30 108,14 108,48 86,64"
+                fill="var(--wq-water-deep)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <text x="34" y="72" font-size="9">l = 4½</text>
+              <text x="90" y="60" font-size="9">w=2</text>
+              <text x="0" y="50" font-size="9">h=3</text>
+            </svg>
+          </div>
+          <label for="q1in" class="sr-only"
+            >Volume of the Reef Tank in cubic feet</label
+          >
+          <input
+            id="q1in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft³"
+          />
+          <div class="wq-hint">Hint / Pista: V = l × w × h. 4½ = 4.5.</div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2 volume by counting cubes -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="12"
+          data-tol="0.5"
+          data-skill="Volume by unit cubes"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >Feeding-Prep Box: 3 ft long, 2 ft wide, 2 ft high. What is its
+              volume?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="120"
+              height="70"
+              viewBox="0 0 120 70"
+              role="img"
+              aria-label="Small box made of unit cubes, 3 by 2 by 2"
+            >
+              <g fill="var(--wq-water)" stroke="#0b1f33" stroke-width="1.2">
+                <rect x="20" y="30" width="18" height="18" />
+                <rect x="38" y="30" width="18" height="18" />
+                <rect x="56" y="30" width="18" height="18" />
+                <rect x="20" y="48" width="18" height="18" />
+                <rect x="38" y="48" width="18" height="18" />
+                <rect x="56" y="48" width="18" height="18" />
+              </g>
+              <g fill="var(--wq-acrylic)" stroke="#0b1f33" stroke-width="1.2">
+                <polygon points="20,30 38,30 50,18 32,18" />
+                <polygon points="38,30 56,30 68,18 50,18" />
+                <polygon points="56,30 74,30 86,18 68,18" />
+              </g>
+            </svg>
+          </div>
+          <label for="q2in" class="sr-only"
+            >Volume of the Feeding-Prep Box in cubic feet</label
+          >
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft³"
+          />
+          <div class="wq-hint">
+            Hint / Pista: V = l × w × h, or count 6 cubes per layer × 2 layers.
+          </div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3 identify the net -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Identify the net of a prism"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >Which statement about the net of the Reef Tank (a rectangular
+              prism) is true?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="150"
+              height="100"
+              viewBox="0 0 150 100"
+              role="img"
+              aria-label="A net made of six rectangles in a cross shape"
+            >
+              <g fill="var(--wq-acrylic)" stroke="#0b1f33" stroke-width="1.5">
+                <rect x="58" y="6" width="34" height="22" />
+                <rect x="24" y="28" width="34" height="34" />
+                <rect x="58" y="28" width="34" height="34" />
+                <rect x="92" y="28" width="34" height="34" />
+                <rect x="58" y="62" width="34" height="22" />
+                <rect x="58" y="84" width="34" height="12" />
+              </g>
+            </svg>
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="a" /> A rectangular prism's
+            net always has exactly 4 faces.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="b" /> The net has 6 rectangles
+            that form 3 matching pairs.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="c" /> The net is made of 4
+            triangles and a square.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="d" /> A prism cannot be
+            unfolded into a net.</label
+          >
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4 surface area of prism -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="num"
+          data-answer="57"
+          data-tol="0.5"
+          data-skill="Surface area of a prism from its net"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >Using the Reef Tank net (l = 4½ ft, w = 2 ft, h = 3 ft), what is
+              the total surface area of acrylic?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="150"
+              height="110"
+              viewBox="0 0 150 110"
+              role="img"
+              aria-label="Net of the Reef Tank with face areas labeled"
+            >
+              <g
+                stroke="#0b1f33"
+                stroke-width="1.5"
+                font-size="8"
+                fill="#082f49"
+                font-weight="700"
+                text-anchor="middle"
+              >
+                <rect
+                  x="54"
+                  y="6"
+                  width="42"
+                  height="20"
+                  fill="var(--wq-acrylic)"
+                />
+                <text x="75" y="19">9</text>
+                <rect
+                  x="54"
+                  y="26"
+                  width="42"
+                  height="44"
+                  fill="var(--wq-water)"
+                />
+                <text x="75" y="50">13.5</text>
+                <rect
+                  x="54"
+                  y="70"
+                  width="42"
+                  height="20"
+                  fill="var(--wq-acrylic)"
+                />
+                <text x="75" y="83">9</text>
+                <rect
+                  x="22"
+                  y="26"
+                  width="32"
+                  height="44"
+                  fill="var(--wq-water-deep)"
+                />
+                <text x="38" y="50">6</text>
+                <rect
+                  x="96"
+                  y="26"
+                  width="32"
+                  height="44"
+                  fill="var(--wq-water-deep)"
+                />
+                <text x="112" y="50">6</text>
+                <rect
+                  x="54"
+                  y="90"
+                  width="42"
+                  height="14"
+                  fill="var(--wq-water)"
+                />
+                <text x="75" y="100">13.5</text>
+              </g>
+            </svg>
+          </div>
+          <label for="q4in" class="sr-only"
+            >Surface area of the Reef Tank in square feet</label
+          >
+          <input
+            id="q4in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft²"
+          />
+          <div class="wq-hint">
+            Hint / Pista: add all 6 faces: 2(13.5) + 2(6) + 2(9).
+          </div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5 surface area of pyramid -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="num"
+          data-answer="56"
+          data-tol="0.5"
+          data-skill="Surface area of a pyramid from its net"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >Touch-Tank Sign pyramid: square base side = 4 ft; each triangle
+              face has base 4 ft and slant height 5 ft. What is the surface
+              area?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="110"
+              height="100"
+              viewBox="0 0 110 100"
+              role="img"
+              aria-label="Net of a square pyramid: one square and four triangles"
+            >
+              <g stroke="#0b1f33" stroke-width="1.5">
+                <rect
+                  x="42"
+                  y="40"
+                  width="26"
+                  height="26"
+                  fill="var(--wq-sand)"
+                />
+                <polygon points="42,40 68,40 55,16" fill="var(--wq-coral)" />
+                <polygon points="42,66 68,66 55,90" fill="var(--wq-coral)" />
+                <polygon points="42,40 42,66 18,53" fill="var(--wq-coral)" />
+                <polygon points="68,40 68,66 92,53" fill="var(--wq-coral)" />
+              </g>
+            </svg>
+          </div>
+          <label for="q5in" class="sr-only"
+            >Surface area of the pyramid sign in square feet</label
+          >
+          <input
+            id="q5in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft²"
+          />
+          <div class="wq-hint">
+            Hint / Pista: base (4×4) + four triangles (each ½×4×5).
+          </div>
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6 reasoning: same volume, different surface area -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="radio"
+          data-answer="c"
+          data-skill="Connect volume and surface area"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >The team has two tank plans that each hold the same
+              <strong>24 ft³</strong> of water. Which statement is true?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="a" /> They must use the exact
+            same amount of acrylic.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="b" /> The taller, thinner tank
+            always uses less acrylic.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="c" /> Same volume can need
+            different surface areas, so the shape matters for material
+            cost.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="d" /> Volume and surface area
+            are always equal.</label
+          >
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did exactly what aquarium engineers, package designers, and
+          architects do every day: you measured the inside of a container as
+          <strong>volume</strong>, unfolded it into a <strong>net</strong>, and
+          added every face to find the <strong>surface area</strong> of material
+          to order. Your Reef Tank holds <strong>27 ft³</strong> of water and
+          needs <strong>57 ft²</strong> of acrylic — the Blue Current Aquarium
+          is ready for opening day!
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              Redesign the Reef Tank to hold the <em>same</em> 27 ft³ of water
+              but use <em>less</em> acrylic. What dimensions get you closest to
+              a cube? Compare the surface areas.
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              How did drawing the net make the surface area easier to find?
+              Explain in 2–3 sentences. ¿Cómo te ayudó dibujar la red a hallar
+              el área de superficie?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Aquarium engineers, shipping-box designers, and architects all use
+              volume, nets, and surface area to build containers that hold the
+              right amount and use the right materials — exactly what you just
+              did.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
+
+        var ACTIVITY_ID = "webquest-unit-10-aquarium";
+        var ACTIVITY_TITLE = "WebQuest · Unit 10 · The Aquarium Build-Out";
+        var STANDARD = "6.G.A.2, 6.G.A.4";
+
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
+        }
+
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the formula and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u10-q" + card.getAttribute("data-q"),
+              skill: card.getAttribute("data-skill") || "Volume & surface area",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
+          });
+        }
+
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Build packet approved — the aquarium opens on time! ¡Felicidades!"
+                : " Review the builds marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              var input = card.querySelector("input.wq-num");
+              if (input) input.value = "";
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

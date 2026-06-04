@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R1 · Lesson 3: Multiply Multi-Digit Numbers — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: multiply multi-digit whole numbers using the standard algorithm and an area model. Builds toward Grade 6 number fluency (6.NS.2/3)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#0f2b3c 0%, #0e8a7d 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .algo { font-family: "Courier New", monospace; font-size: 17px; line-height: 1.8; background: var(--teal-light); border-radius: 10px; padding: 12px 18px; display: inline-block; margin: 8px 0; }
+      .area-grid { border-collapse: collapse; margin: 12px auto; text-align: center; font-size: 15px; }
+      .area-grid th, .area-grid td { border: 2px solid var(--navy); padding: 10px 18px; }
+      .area-grid th { background: var(--navy); color: #fff; font-size: 13px; }
+      .area-grid td { background: var(--blue-light); font-weight: 700; color: var(--navy); font-size: 16px; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="phero">
+      <div class="deco">🔢</div>
+      <h1>Multiply Multi-Digit Numbers</h1>
+      <p>Master the standard algorithm and see multiplication as area. These skills unlock decimal multiplication in Grade 6.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R1 · Lesson 3</span>
+        <span class="tag">Builds 6.NS.2/3</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Standard 6.NS.2 calls for
+        fluent multi-digit multiplication as part of the standard algorithm for
+        division. 6.NS.3 extends this to decimal multiplication — if you can
+        multiply whole numbers confidently, decimals are just one extra step.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Multiplying Multi-Digit Numbers</h2></div></div>
+
+        <p><strong>One-digit multiplier:</strong> Multiply each digit by the one-digit number, right to left. Regroup (carry) when needed.</p>
+        <div class="example">
+          <strong>Example 1:</strong> 213 × 7<br>
+          <div class="algo">
+            &nbsp;&nbsp;213<br>
+            ×&nbsp;&nbsp;&nbsp;7<br>
+            ─────<br>
+            &nbsp;1,491
+          </div>
+          <br>
+          Ones: 3×7=21, write 1 carry 2 · Tens: 1×7+2=9 · Hundreds: 2×7=14 → <strong>1,491</strong>
+        </div>
+
+        <p><strong>Two-digit multiplier (standard algorithm):</strong> Multiply by the ones digit, then by the tens digit (shifting one place left), then add the partial products.</p>
+        <div class="example">
+          <strong>Example 2:</strong> 34 × 26<br>
+          <div class="algo">
+            &nbsp;&nbsp;&nbsp;34<br>
+            ×&nbsp;&nbsp;26<br>
+            ────<br>
+            &nbsp; 204 &nbsp;← 34×6<br>
+            + 680 &nbsp;← 34×20<br>
+            ────<br>
+            &nbsp; 884
+          </div>
+          <br>
+          34 × 6 = 204 &nbsp;|&nbsp; 34 × 20 = 680 &nbsp;|&nbsp; 204 + 680 = <strong>884</strong>
+        </div>
+
+        <p><strong>Multiplying by multiples of 10:</strong> Multiply the non-zero parts, then attach the zeros.</p>
+        <div class="example">
+          <strong>Example 3 (Area context):</strong> A rectangular hall is 125 ft long and 40 ft wide. What is its area?<br><br>
+          125 × 40 = 125 × 4 × 10 = 500 × 10 = <strong>5,000 sq ft</strong><br><br>
+          <em>Area model:</em>
+          <table class="area-grid">
+            <tr><th></th><th>100</th><th>20</th><th>5</th></tr>
+            <tr><th>40</th><td>4,000</td><td>800</td><td>200</td></tr>
+          </table>
+          4,000 + 800 + 200 = <strong>5,000</strong> ✓
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. What is <strong>312 × 4</strong>?</p>
+          <input type="number" id="t1" placeholder="?" />
+          <button class="btn" onclick="checkNum('t1', 1248)">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Ones: 2×4=8 · Tens: 1×4=4 · Hundreds: 3×4=12 → 1,248.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Which partial product is correct for <strong>45 × 30</strong>?</p>
+          <div class="opts" data-mc="t2" data-ans="c">
+            <button class="opt" data-v="a">135</button>
+            <button class="opt" data-v="b">1,200</button>
+            <button class="opt" data-v="c">1,350</button>
+            <button class="opt" data-v="d">450</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>45 × 30 = 45 × 3 × 10 = 135 × 10 = 1,350.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. Compute: <strong>417 × 6</strong></p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 2502)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>Ones: 7×6=42, write 2 carry 4 · Tens: 1×6+4=10, write 0 carry 1 · Hundreds: 4×6+1=25 → 2,502.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. Compute: <strong>34 × 26</strong></p>
+          <input type="number" id="p4" placeholder="?" />
+          <button class="btn" onclick="checkNum('p4', 884)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>34 × 6 = 204. 34 × 20 = 680. Add: 204 + 680 = 884.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. A classroom has 24 rows of tiles, each row is 15 tiles wide. How many tiles are there in all?</p>
+          <input type="number" id="p5" placeholder="?" />
+          <button class="btn" onclick="checkNum('p5', 360)">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>24 × 15: 24×5=120, 24×10=240. 120+240=360 tiles.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. Compute: <strong>125 × 40</strong></p>
+          <input type="number" id="x6" placeholder="?" />
+          <button class="btn" onclick="checkNum('x6', 5000)">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>125 × 4 = 500. Attach one zero: 500 × 10 = 5,000.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. What is <strong>53 × 18</strong>?</p>
+          <input type="number" id="x7" placeholder="?" />
+          <button class="btn" onclick="checkNum('x7', 954)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>53 × 8 = 424. 53 × 10 = 530. 424 + 530 = 954.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r1/lesson-2/">← Lesson 2: Add &amp; Subtract</a>
+        <a href="/math/remediation/unit-r1/lesson-4/">Next: Long Division →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R1 · Lesson 3 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

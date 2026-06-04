@@ -1,0 +1,5038 @@
+<!doctype html>
+<html data-nt-level="2" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      Theme Park Engineer — Area, Surface Area &amp; Volume | Neft Teacher
+     — Level 2 (Enrichment)</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ═══════════════════════════════════════════════════════
+   THEME PARK ENGINEER — Unit 5 Post-Test Project
+   Theme: Vivid Purple / Orange / Bright Cyan / Yellow
+   ═══════════════════════════════════════════════════════ */
+      :root {
+        --park-purple: #7c3aed;
+        --park-purple-dark: #5b21b6;
+        --park-purple-light: #ede9fe;
+        --park-orange: #ea580c;
+        --park-orange-dark: #c2410c;
+        --park-orange-light: #fff7ed;
+        --park-cyan: #06b6d4;
+        --park-cyan-dark: #0891b2;
+        --park-cyan-light: #ecfeff;
+        --park-yellow: #fbbf24;
+        --park-yellow-dark: #d97706;
+        --park-yellow-light: #fef9c3;
+        --park-bg: #faf5ff;
+        --park-surface: #ffffff;
+        --park-ink: #1e1b4b;
+        --park-muted: #6b7280;
+        --park-line: #e5e7eb;
+        --park-success: #059669;
+        --park-success-bg: #d1fae5;
+        --park-error: #dc2626;
+        --park-error-bg: #fee2e2;
+        --park-radius: 16px;
+        --park-shadow: 0 4px 24px rgba(124, 58, 237, 0.12);
+        --park-shadow-lg: 0 12px 48px rgba(124, 58, 237, 0.18);
+        --park-font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --park-font-display: "Segoe UI", system-ui, sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--park-font);
+        color: var(--park-ink);
+        background: var(--park-bg);
+        line-height: 1.6;
+        -webkit-text-size-adjust: 100%;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Print Styles */
+      @media print {
+        .no-print,
+        .progress-bar-container,
+        .hint-btn,
+        .phase-nav,
+        .fab-help,
+        #confetti-canvas {
+          display: none !important;
+        }
+        .phase-section {
+          break-inside: avoid;
+          page-break-inside: avoid;
+          border: 1px solid #ccc !important;
+          box-shadow: none !important;
+        }
+        body {
+          background: #fff;
+          font-size: 11pt;
+        }
+        .app-header {
+          background: #7c3aed !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+
+      /* ── HEADER ─────────────────────────────────────── */
+      .app-header {
+        background: linear-gradient(
+          135deg,
+          var(--park-purple-dark) 0%,
+          var(--park-purple) 40%,
+          var(--park-orange) 100%
+        );
+        color: #fff;
+        padding: 2.5rem 1.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .app-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 20% 80%,
+            rgba(6, 182, 212, 0.3) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(251, 191, 36, 0.3) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+      .header-content {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 0.35rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .header-title {
+        font-family: var(--park-font-display);
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+      .header-subtitle {
+        font-size: 1.05rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Floating park decorations */
+      .park-floats {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .park-float {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0.15;
+        animation: floatPark 6s ease-in-out infinite;
+      }
+      .park-float:nth-child(1) {
+        left: 5%;
+        top: 20%;
+        animation-delay: 0s;
+      }
+      .park-float:nth-child(2) {
+        left: 15%;
+        top: 60%;
+        animation-delay: 1s;
+        font-size: 2rem;
+      }
+      .park-float:nth-child(3) {
+        left: 75%;
+        top: 15%;
+        animation-delay: 2s;
+      }
+      .park-float:nth-child(4) {
+        left: 85%;
+        top: 55%;
+        animation-delay: 3s;
+        font-size: 1.8rem;
+      }
+      .park-float:nth-child(5) {
+        left: 45%;
+        top: 10%;
+        animation-delay: 4s;
+      }
+      .park-float:nth-child(6) {
+        left: 60%;
+        top: 70%;
+        animation-delay: 1.5s;
+        font-size: 2.2rem;
+      }
+
+      @keyframes floatPark {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(15deg);
+        }
+      }
+
+      /* ── PROGRESS BAR ───────────────────────────────── */
+      .progress-bar-container {
+        background: var(--park-surface);
+        border-bottom: 1px solid var(--park-line);
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+      .progress-inner {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--park-muted);
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      .progress-track {
+        height: 10px;
+        background: var(--park-purple-light);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--park-purple),
+          var(--park-orange)
+        );
+        border-radius: 99px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+      }
+      .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .progress-step:hover {
+        transform: translateY(-2px);
+      }
+      .step-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--park-purple-light);
+        border: 2px solid var(--park-line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--park-muted);
+        transition: all 0.3s;
+      }
+      .step-dot.active {
+        background: var(--park-purple);
+        border-color: var(--park-purple);
+        color: #fff;
+      }
+      .step-dot.complete {
+        background: var(--park-success);
+        border-color: var(--park-success);
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--park-muted);
+        text-align: center;
+        max-width: 80px;
+      }
+
+      /* ── MAIN LAYOUT ────────────────────────────────── */
+      .main-container {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      /* ── PHASE SECTIONS ─────────────────────────────── */
+      .phase-section {
+        background: var(--park-surface);
+        border-radius: var(--park-radius);
+        box-shadow: var(--park-shadow);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out both;
+      }
+      .phase-section[hidden] {
+        display: none;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .phase-header {
+        padding: 1.75rem 2rem 1.5rem;
+        border-bottom: 1px solid var(--park-line);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .phase-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .phase-icon.purple {
+        background: var(--park-purple-light);
+        color: var(--park-purple);
+      }
+      .phase-icon.orange {
+        background: var(--park-orange-light);
+        color: var(--park-orange);
+      }
+      .phase-icon.cyan {
+        background: var(--park-cyan-light);
+        color: var(--park-cyan);
+      }
+      .phase-icon.green {
+        background: var(--park-success-bg);
+        color: var(--park-success);
+      }
+
+      .phase-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .phase-desc {
+        font-size: 0.88rem;
+        color: var(--park-muted);
+        margin-top: 0.15rem;
+      }
+      .phase-body {
+        padding: 2rem;
+      }
+
+      /* ── TASK CARDS ─────────────────────────────────── */
+      .task-card {
+        background: var(--park-bg);
+        border: 1px solid var(--park-line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+      .task-card:hover {
+        box-shadow: 0 4px 16px rgba(124, 58, 237, 0.08);
+        border-color: var(--park-purple-light);
+      }
+      .task-card.completed {
+        border-left: 4px solid var(--park-success);
+        background: var(--park-success-bg);
+      }
+
+      .task-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--park-purple);
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+      .task-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .task-instruction {
+        font-size: 0.92rem;
+        color: var(--park-muted);
+        margin-bottom: 1rem;
+        line-height: 1.65;
+      }
+
+      /* Scenario box */
+      .scenario-box {
+        background: linear-gradient(
+          135deg,
+          var(--park-purple-light),
+          var(--park-cyan-light)
+        );
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(124, 58, 237, 0.15);
+      }
+      .scenario-box h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--park-purple-dark);
+      }
+      .scenario-box p {
+        font-size: 0.92rem;
+        color: var(--park-ink);
+        line-height: 1.65;
+      }
+
+      /* ── FORM ELEMENTS ──────────────────────────────── */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        color: var(--park-ink);
+      }
+      .form-sublabel {
+        font-size: 0.78rem;
+        color: var(--park-muted);
+        font-weight: 400;
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 2px solid var(--park-line);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        background: var(--park-surface);
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--park-purple);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+      }
+      .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .form-input-sm {
+        max-width: 200px;
+      }
+      .form-input-inline {
+        display: inline-block;
+        width: 120px;
+        margin: 0 0.3rem;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      /* ── BUTTONS ────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--park-purple);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--park-purple-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--park-shadow);
+      }
+      .btn-secondary {
+        background: var(--park-purple-light);
+        color: var(--park-purple);
+      }
+      .btn-secondary:hover {
+        background: #ddd6fe;
+      }
+      .btn-orange {
+        background: var(--park-orange);
+        color: #fff;
+      }
+      .btn-orange:hover {
+        background: var(--park-orange-dark);
+      }
+      .btn-cyan {
+        background: var(--park-cyan);
+        color: #fff;
+      }
+      .btn-cyan:hover {
+        background: var(--park-cyan-dark);
+      }
+      .btn-success {
+        background: var(--park-success);
+        color: #fff;
+      }
+      .btn-success:hover {
+        background: #047857;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--park-purple);
+        color: var(--park-purple);
+      }
+      .btn-outline:hover {
+        background: var(--park-purple-light);
+      }
+      .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem;
+      }
+      .btn-lg {
+        padding: 0.85rem 2rem;
+        font-size: 1rem;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      /* ── INTERACTIVE TOOLS ──────────────────────────── */
+      .tool-panel {
+        background: linear-gradient(to bottom, #faf5ff, #ede9fe);
+        border: 2px solid var(--park-purple-light);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+      .tool-panel-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--park-purple);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .calc-display {
+        background: var(--park-purple-dark);
+        color: #c4b5fd;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-family: "Courier New", monospace;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      /* ── DATA TABLE ─────────────────────────────────── */
+      .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--park-line);
+        margin: 1rem 0;
+      }
+      .data-table th {
+        background: var(--park-purple);
+        color: #fff;
+        padding: 0.65rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-align: left;
+      }
+      .data-table td {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--park-line);
+      }
+      .data-table tr:nth-child(even) td {
+        background: #faf8ff;
+      }
+      .data-table tr:hover td {
+        background: var(--park-purple-light);
+      }
+
+      /* ── HINT SYSTEM ────────────────────────────────── */
+      .hint-container {
+        margin-top: 0.75rem;
+      }
+      .hint-btn {
+        background: none;
+        border: none;
+        color: var(--park-purple);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0;
+      }
+      .hint-btn:hover {
+        text-decoration: underline;
+      }
+      .hint-content {
+        display: none;
+        background: var(--park-yellow-light);
+        border-left: 3px solid var(--park-yellow);
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.88rem;
+        color: var(--park-ink);
+      }
+      .hint-content.visible {
+        display: block;
+        animation: fadeInUp 0.3s ease-out;
+      }
+
+      /* ── SUPPORT / CHALLENGE MODES ──────────────────── */
+      .mode-toggle-bar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        background: var(--park-purple-light);
+        border-radius: 10px;
+        padding: 0.35rem;
+      }
+      .mode-btn {
+        flex: 1;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: transparent;
+        color: var(--park-muted);
+        transition: all 0.2s;
+      }
+      .mode-btn.active {
+        background: var(--park-surface);
+        color: var(--park-purple);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .support-box {
+        background: var(--park-cyan-light);
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        font-size: 0.88rem;
+        display: none;
+      }
+      .support-box.visible {
+        display: block;
+      }
+      .challenge-box {
+        background: var(--park-orange-light);
+        border: 1px solid rgba(234, 88, 12, 0.2);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        font-size: 0.88rem;
+        display: none;
+      }
+      .challenge-box.visible {
+        display: block;
+      }
+
+      /* ── ACHIEVEMENT BADGES ─────────────────────────── */
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .badge-card {
+        flex: 1;
+        min-width: 140px;
+        text-align: center;
+        padding: 1.25rem 1rem;
+        border-radius: 14px;
+        border: 2px solid var(--park-line);
+        background: var(--park-surface);
+        transition: all 0.3s;
+      }
+      .badge-card.earned {
+        border-color: var(--park-yellow);
+        background: var(--park-yellow-light);
+        box-shadow: 0 4px 16px rgba(251, 191, 36, 0.15);
+      }
+      .badge-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .badge-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── PHASE NAVIGATION ───────────────────────────── */
+      .phase-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-top: 1px solid var(--park-line);
+        background: #faf8ff;
+      }
+
+      /* ── RUBRIC ─────────────────────────────────────── */
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .rubric-cell {
+        border: 2px solid var(--park-line);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .rubric-cell:hover {
+        border-color: var(--park-purple-light);
+      }
+      .rubric-cell.selected {
+        border-color: var(--park-purple);
+        background: var(--park-purple-light);
+      }
+      .rubric-score {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--park-purple);
+      }
+      .rubric-desc {
+        font-size: 0.82rem;
+        color: var(--park-muted);
+        margin-top: 0.35rem;
+      }
+
+      /* ── SVG SCENES ─────────────────────────────────── */
+      .svg-scene {
+        display: flex;
+        justify-content: center;
+        margin: 1.5rem 0;
+      }
+      .svg-scene svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ── RESPONSIVE ─────────────────────────────────── */
+      @media (max-width: 768px) {
+        .phase-body {
+          padding: 1.25rem;
+        }
+        .phase-header {
+          padding: 1.25rem;
+        }
+        .task-card {
+          padding: 1.15rem;
+        }
+        .phase-nav {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .badge-row {
+          gap: 0.65rem;
+        }
+      }
+
+      /* ── GOOGLE CLASSROOM BTN ───────────────────────── */
+      .gc-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #1a73e8;
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .gc-btn:hover {
+        background: #1557b0;
+      }
+
+      /* Student info row */
+      .student-info-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      @media (max-width: 600px) {
+        .student-info-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Score display */
+      .score-display {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(
+          135deg,
+          var(--park-purple),
+          var(--park-orange)
+        );
+        color: #fff;
+        border-radius: 14px;
+        margin: 1.5rem 0;
+      }
+      .score-big {
+        font-size: 3.5rem;
+        font-weight: 800;
+      }
+      .score-label {
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+
+      /* Reference cards */
+      .ref-card {
+        background: var(--park-surface);
+        border: 1px solid var(--park-line);
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        align-items: start;
+        gap: 1rem;
+      }
+      .ref-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .ref-title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 0.25rem;
+      }
+      .ref-body {
+        font-size: 0.85rem;
+        color: var(--park-muted);
+        line-height: 1.6;
+      }
+      .ref-code {
+        font-family: "Courier New", monospace;
+        background: var(--park-purple-light);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+
+      /* 3D wireframe canvas area */
+      .wireframe-area {
+        background: #1e1b4b;
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        text-align: center;
+      }
+
+      /* ══ ENHANCEMENT: Animations ══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes statCountUp {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .phase-section:not([hidden]) .task-card {
+        animation: cardEntrance 0.5s ease-out both;
+      }
+      .phase-section:not([hidden]) .task-card:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .phase-section:not([hidden]) .task-card:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.98) !important;
+      }
+      .xp-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        margin-bottom: 14px;
+        background: var(--park-surface);
+        border: 1px solid var(--park-line);
+        border-radius: 12px;
+        box-shadow: var(--park-shadow);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .xp-bar-container .xp-label {
+        color: var(--park-purple);
+        white-space: nowrap;
+        min-width: 70px;
+      }
+      .xp-bar-track {
+        flex: 1;
+        height: 8px;
+        background: var(--park-purple-light);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-bar-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--park-purple),
+          var(--park-orange)
+        );
+        border-radius: 99px;
+        transition: width 0.6s ease;
+        width: 0%;
+      }
+      .xp-bar-container .xp-value {
+        color: var(--park-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        border: 1px dashed var(--park-line);
+      }
+      .word-bank-title {
+        width: 100%;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--park-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        padding: 4px 12px;
+        background: #fff;
+        border: 1px solid var(--park-line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .word-chip:hover {
+        border-color: var(--park-purple);
+        transform: translateY(-1px);
+      }
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--park-cyan);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        margin-top: 6px;
+      }
+      .example-toggle:hover {
+        color: var(--park-purple);
+      }
+      .example-box {
+        display: none;
+        margin-top: 8px;
+        padding: 14px;
+        background: rgba(0, 0, 0, 0.02);
+        border-left: 3px solid var(--park-cyan);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.9rem;
+        color: var(--park-muted);
+      }
+      .example-box.visible {
+        display: block;
+        animation: cardEntrance 0.3s ease;
+      }
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border: 3px solid var(--park-purple);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        animation: badgePop 0.5s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.08),
+          transparent 50%,
+          rgba(234, 88, 12, 0.06)
+        );
+        pointer-events: none;
+      }
+      .certificate-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--park-purple);
+        margin-bottom: 4px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .cert-stat {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--park-line);
+        animation: statCountUp 0.5s ease both;
+      }
+      .cert-stat:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .cert-stat:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .cert-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--park-purple);
+      }
+      .cert-stat-label {
+        font-size: 0.75rem;
+        color: var(--park-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 12px;
+        background: var(--park-purple);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      @media (max-width: 500px) {
+        .cert-stats {
+          grid-template-columns: 1fr;
+        }
+        .certificate-card {
+          padding: 24px;
+        }
+      }
+      @media print {
+        .xp-bar-container,
+        .certificate-overlay,
+        .example-toggle,
+        .word-bank {
+          display: none !important;
+        }
+      }
+
+      /* Confetti canvas */
+      #confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* Formula reference box */
+      .formula-ref {
+        background: var(--park-purple-light);
+        border: 2px solid var(--park-purple);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin: 1rem 0;
+      }
+      .formula-ref h4 {
+        color: var(--park-purple);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.75rem;
+      }
+      .formula-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.4rem 0;
+        font-size: 0.88rem;
+      }
+      .formula-item .formula-shape {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+      }
+      .formula-item code {
+        font-family: "Courier New", monospace;
+        background: var(--park-surface);
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+    </style>
+  <style id="nt-upgrade-styles">
+    /* ── Neft Teacher readability upgrade ── */
+    html { font-size: 112.5%; }            /* lift root so rem-based text grows */
+    body { line-height: 1.65; }
+    p, li, td, th, label, span, a, button, input, textarea, select,
+    .question, .task, .prompt, .instructions, figcaption, dd, dt {
+      font-size: max(1em, 17px);
+    }
+    /* Restore intentionally-large display text rather than shrink it */
+    h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); line-height: 1.2; }
+    h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.25; }
+    h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); line-height: 1.3; }
+    h4 { font-size: 1.18rem; }
+    /* Floor any element that set a tiny rem/px font inline or via class */
+    [style*="font-size:0.7"], [style*="font-size: 0.7"],
+    [style*="font-size:0.75"], [style*="font-size: 0.75"],
+    [style*="font-size:0.78"], [style*="font-size: 0.78"],
+    [style*="font-size:0.8"], [style*="font-size: 0.8"],
+    [style*="font-size:0.82"], [style*="font-size: 0.82"],
+    [style*="font-size:0.85"], [style*="font-size: 0.85"],
+    [style*="font-size:0.88"], [style*="font-size: 0.88"],
+    [style*="font-size:0.9"], [style*="font-size: 0.9"],
+    [style*="font-size:11px"], [style*="font-size: 11px"],
+    [style*="font-size:12px"], [style*="font-size: 12px"],
+    [style*="font-size:13px"], [style*="font-size: 13px"],
+    [style*="font-size:14px"], [style*="font-size: 14px"] {
+      font-size: 1rem !important;
+    }
+  
+    /* ── Neft Teacher help widgets ── */
+    .nt-level-banner {
+      position: sticky; top: 0; z-index: 9000;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 16px; font-size: 1rem; font-weight: 700;
+      color: #0b1f33; background: linear-gradient(90deg,#f2c15b,#1fa6a2);
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .nt-level-banner .nt-pill {
+      background: rgba(255,255,255,.92); color:#12355b; border-radius:999px;
+      padding: 3px 12px; font-size: .95rem;
+    }
+    .nt-level-banner .nt-sub { font-weight: 600; color:#06283d; font-size:.95rem; }
+
+    .nt-fab-wrap {
+      position: fixed; right: 18px; bottom: 18px; z-index: 9500;
+      display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    }
+    .nt-fab {
+      border: none; cursor: pointer; border-radius: 999px;
+      padding: 12px 18px; font-size: 1rem; font-weight: 700; color:#fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,.35); display:flex; gap:8px; align-items:center;
+    }
+    .nt-fab-help { background:#1fa6a2; }
+    .nt-fab-hint { background:#7c3aed; }
+    .nt-fab:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+
+    .nt-panel {
+      position: fixed; right: 18px; bottom: 90px; z-index: 9600;
+      width: min(340px, calc(100vw - 36px)); max-height: 70vh; overflow:auto;
+      background:#fff; color:#21313f; border-radius:16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.4); padding: 18px; display:none;
+      border: 2px solid #1fa6a2;
+    }
+    .nt-panel[data-open="true"] { display:block; }
+    .nt-panel h3 { margin:0 0 6px; color:#12355b; font-size:1.25rem; }
+    .nt-panel p.nt-lede { margin:0 0 12px; color:#5f6f80; font-size:1rem; }
+    .nt-panel h4 { margin:14px 0 6px; color:#12355b; font-size:1.05rem; }
+    .nt-panel ul { margin:0; padding-left: 18px; }
+    .nt-panel li { margin: 6px 0; font-size:1rem; }
+    .nt-panel a { color:#0f6f6b; font-weight:600; }
+    .nt-panel .nt-close {
+      float:right; border:none; background:#eef3f7; border-radius:8px;
+      cursor:pointer; font-size:1.1rem; line-height:1; padding:6px 10px; color:#12355b;
+    }
+    .nt-vocab { margin:0; padding:0; list-style:none; }
+    .nt-vocab li { padding:8px 0; border-bottom:1px solid #e6edf3; }
+    .nt-vocab b { color:#7c3aed; }
+
+    /* Hint pop-ups attached to tasks */
+    .nt-hint-btn {
+      display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+      border:1px solid #f2c15b; background:#fef7e0; color:#875f00;
+      border-radius:999px; padding:5px 12px; font-size:.95rem; font-weight:700;
+      margin: 6px 6px 6px 0;
+    }
+    .nt-hint-btn:focus-visible { outline:3px solid #7c3aed; outline-offset:2px; }
+    .nt-hint-body {
+      display:none; margin:6px 0 10px; padding:12px 14px; font-size:1rem;
+      background:#fef7e0; color:#5a4300; border-left:4px solid #f2c15b;
+      border-radius:0 10px 10px 0;
+    }
+    .nt-hint-body[data-open="true"] { display:block; }
+
+    /* Inline tooltips on key terms */
+    .nt-tip {
+      border-bottom:2px dotted #1fa6a2; cursor:help; position:relative;
+      color: inherit;
+    }
+    .nt-tip:focus-visible { outline:2px solid #1fa6a2; outline-offset:2px; }
+    .nt-tip[data-show="true"]::after, .nt-tip:hover::after {
+      content: attr(data-nt-tip);
+      position:absolute; left:0; bottom:calc(100% + 8px); z-index:9700;
+      width: max-content; max-width:260px; padding:8px 12px;
+      background:#12355b; color:#fff; border-radius:10px; font-size:.95rem;
+      font-weight:500; line-height:1.4; box-shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+
+    /* Level 1 scaffolding callouts */
+    .nt-scaffold {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#dff2ee; border:1px solid #1fa6a2; color:#0b4d4a; font-size:1rem;
+    }
+    html[data-nt-level="1"] .nt-scaffold { display:block; }
+    /* Level 2 enrichment callouts */
+    .nt-enrich {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#fef7e0; border:1px solid #f2c15b; color:#5a4300; font-size:1rem;
+    }
+    html[data-nt-level="2"] .nt-enrich { display:block; }
+    .nt-enrich b, .nt-scaffold b { display:block; margin-bottom:4px; }
+
+    @media (max-width: 520px) {
+      .nt-fab { padding:11px 15px; font-size:.95rem; }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+<div class="nt-level-banner"><span class="nt-pill">Level 2</span><span class="nt-sub">Regular + Enrichment — full activity plus challenge tasks and "explain your reasoning" prompts.</span></div>
+
+<div class="nt-enrich" role="note">
+  <b>🌟 Enrichment Challenge — Area, Surface Area & Volume</b>
+  Once you finish, push further:
+  <ul>
+    <li><strong>Explain your reasoning:</strong> In 2–3 sentences, describe the strategy you used and why it works.</li>
+    <li><strong>Make it harder:</strong> Create your own problem using bigger numbers, then solve it.</li>
+    <li><strong>Teach it:</strong> Write how you would explain this skill to a classmate who is stuck.</li>
+  </ul>
+</div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ═══════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════ -->
+    <header class="app-header">
+      <div class="park-floats">
+        <span class="park-float">&#127906;</span>
+        <span class="park-float">&#127922;</span>
+        <span class="park-float">&#9978;</span>
+        <span class="park-float">&#128506;</span>
+        <span class="park-float">&#127905;</span>
+        <span class="park-float">&#128170;</span>
+      </div>
+      <div class="header-content">
+        <div class="header-badge">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle
+              cx="8"
+              cy="8"
+              r="7"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M5 8l2 2 4-4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Unit 5 Post-Test Project
+        </div>
+        <h1 class="header-title">Theme Park Engineer</h1>
+        <p class="header-subtitle">
+          Use area, surface area, and volume to design the ultimate amusement
+          park!
+        </p>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════
+     PROGRESS BAR
+     ═══════════════════════════════════════════════ -->
+    <div class="progress-bar-container no-print">
+      <div class="progress-inner">
+        <div class="progress-label">
+          <span>Park Construction Progress</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step" onclick="goToPhase(1)">
+            <div class="step-dot active" id="dot1">1</div>
+            <span class="step-label">Mission Briefing</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(2)">
+            <div class="step-dot" id="dot2">2</div>
+            <span class="step-label">Park Research</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(3)">
+            <div class="step-dot" id="dot3">3</div>
+            <span class="step-label">Blueprint Planning</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(4)">
+            <div class="step-dot" id="dot4">4</div>
+            <span class="step-label">Construction</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(5)">
+            <div class="step-dot" id="dot5">5</div>
+            <span class="step-label">Portfolio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════ -->
+    <main class="main-container">
+      <!-- Enhancement: XP Bar -->
+      <div class="xp-bar-container" id="xpBarContainer">
+        <span class="xp-label">Engineer XP</span>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill"></div>
+        </div>
+        <span class="xp-value" id="xpValue">0 / 500 XP</span>
+      </div>
+
+      <!-- Mode Toggle -->
+      <div class="mode-toggle-bar no-print">
+        <button class="mode-btn" id="modeSupport" onclick="setMode('support')">
+          &#128218; Support Mode
+        </button>
+        <button
+          class="mode-btn active"
+          id="modeStandard"
+          onclick="setMode('standard')"
+        >
+          &#127906; Standard
+        </button>
+        <button
+          class="mode-btn"
+          id="modeChallenge"
+          onclick="setMode('challenge')"
+        >
+          &#127775; Challenge Mode
+        </button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 1: MISSION BRIEFING
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase1">
+        <div class="phase-header">
+          <div class="phase-icon purple">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="3"
+                y="5"
+                width="22"
+                height="18"
+                rx="3"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path d="M3 10h22" stroke="currentColor" stroke-width="2" />
+              <circle
+                cx="14"
+                cy="18"
+                r="3"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 1: Mission Briefing</div>
+            <div class="phase-desc">
+              Welcome, Theme Park Engineer! Learn about your mission.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Park SVG Scene -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 600 280"
+              width="600"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#c4b5fd" />
+                  <stop offset="60%" stop-color="#ede9fe" />
+                  <stop offset="100%" stop-color="#ecfeff" />
+                </linearGradient>
+              </defs>
+              <rect width="600" height="280" fill="url(#skyGrad)" rx="14" />
+              <!-- Ground -->
+              <rect
+                x="0"
+                y="220"
+                width="600"
+                height="60"
+                rx="0"
+                fill="#059669"
+                opacity=".2"
+              />
+              <!-- Roller coaster track -->
+              <path
+                d="M30,200 Q80,60 150,180 Q200,260 260,140 Q310,40 380,170 Q420,240 470,120 Q520,30 570,190"
+                stroke="#7c3aed"
+                stroke-width="4"
+                fill="none"
+                stroke-linecap="round"
+              />
+              <path
+                d="M30,200 Q80,60 150,180 Q200,260 260,140 Q310,40 380,170 Q420,240 470,120 Q520,30 570,190"
+                stroke="#ea580c"
+                stroke-width="2"
+                fill="none"
+                stroke-dasharray="6 4"
+                opacity=".5"
+              />
+              <!-- Support pillars -->
+              <line
+                x1="80"
+                y1="130"
+                x2="80"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <line
+                x1="150"
+                y1="180"
+                x2="150"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <line
+                x1="260"
+                y1="140"
+                x2="260"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <line
+                x1="310"
+                y1="90"
+                x2="310"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <line
+                x1="380"
+                y1="170"
+                x2="380"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <line
+                x1="470"
+                y1="120"
+                x2="470"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <line
+                x1="520"
+                y1="80"
+                x2="520"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <!-- Coaster car -->
+              <rect
+                x="295"
+                y="32"
+                width="30"
+                height="16"
+                rx="4"
+                fill="#ea580c"
+                stroke="#c2410c"
+                stroke-width="1.5"
+              />
+              <circle cx="302" cy="52" r="4" fill="#fbbf24" />
+              <circle cx="318" cy="52" r="4" fill="#fbbf24" />
+              <!-- Ferris wheel -->
+              <circle
+                cx="530"
+                cy="160"
+                r="50"
+                fill="none"
+                stroke="#06b6d4"
+                stroke-width="3"
+              />
+              <line
+                x1="530"
+                y1="110"
+                x2="530"
+                y2="210"
+                stroke="#06b6d4"
+                stroke-width="2"
+              />
+              <line
+                x1="480"
+                y1="160"
+                x2="580"
+                y2="160"
+                stroke="#06b6d4"
+                stroke-width="2"
+              />
+              <line
+                x1="495"
+                y1="125"
+                x2="565"
+                y2="195"
+                stroke="#06b6d4"
+                stroke-width="1.5"
+              />
+              <line
+                x1="565"
+                y1="125"
+                x2="495"
+                y2="195"
+                stroke="#06b6d4"
+                stroke-width="1.5"
+              />
+              <!-- Gondolas -->
+              <circle cx="530" cy="110" r="6" fill="#fbbf24" />
+              <circle cx="530" cy="210" r="6" fill="#ea580c" />
+              <circle cx="480" cy="160" r="6" fill="#7c3aed" />
+              <circle cx="580" cy="160" r="6" fill="#06b6d4" />
+              <!-- Ferris wheel base -->
+              <line
+                x1="510"
+                y1="210"
+                x2="530"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <line
+                x1="550"
+                y1="210"
+                x2="530"
+                y2="220"
+                stroke="#5b21b6"
+                stroke-width="3"
+              />
+              <!-- Entrance gate -->
+              <rect
+                x="20"
+                y="195"
+                width="80"
+                height="30"
+                rx="4"
+                fill="#7c3aed"
+              />
+              <text
+                x="60"
+                y="215"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="10"
+                font-weight="700"
+                font-family="sans-serif"
+              >
+                ENTRANCE
+              </text>
+              <!-- Sun -->
+              <circle cx="500" cy="40" r="20" fill="#fbbf24" opacity=".6" />
+            </svg>
+          </div>
+
+          <div class="scenario-box">
+            <h3>&#127906; Your Mission</h3>
+            <p>
+              Congratulations! You have been hired as the
+              <strong>Lead Engineer</strong> for a brand-new theme park. Your
+              job is to design ride platforms, calculate building materials,
+              fill pools and fountains, and plan landscaping. Every decision
+              requires calculating
+              <strong>area, surface area, and volume</strong>.
+            </p>
+            <p style="margin-top: 0.75rem">
+              Your park covers <strong>50,000 square feet</strong> of land. You
+              will use geometry formulas to design every part of the park, from
+              ride footprints to 3D structures. Build the most amazing park
+              possible!
+            </p>
+          </div>
+
+          <!-- Task 1: Student Info -->
+          <div class="task-card">
+            <div class="task-number">1</div>
+            <div class="task-title">Theme Park Engineer Registration</div>
+            <div class="task-instruction">
+              Enter your information and name your theme park to begin!
+            </div>
+            <div class="student-info-row">
+              <div class="form-group">
+                <label class="form-label">Engineer Name (Your Name)</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="studentName"
+                  placeholder="First Last"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Period</label>
+                <select
+                  class="form-select"
+                  id="studentPeriod"
+                  onchange="autoSave()"
+                >
+                  <option value="">Select...</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                  <option>7</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  id="studentDate"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">&#127906; Name Your Theme Park</label>
+              <input
+                type="text"
+                class="form-input"
+                id="parkName"
+                placeholder='e.g., "Galaxy Coaster World" or "Adventure Kingdom"'
+                oninput="
+                  autoSave();
+                  updateParkName();
+                "
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Describe your park's theme and attractions in 2-3
+                sentences</label
+              >
+              <textarea
+                class="form-textarea"
+                id="parkTheme"
+                rows="3"
+                placeholder="What kind of rides? What's the theme? Who visits?"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 2: Area Vocabulary Review -->
+          <div class="task-card">
+            <div class="task-number">2</div>
+            <div class="task-title">Geometry Vocabulary Review</div>
+            <div class="task-instruction">
+              Before we start building, review the key formulas you will use
+              throughout this project.
+            </div>
+
+            <div class="formula-ref">
+              <h4>&#128208; Formula Reference Sheet</h4>
+              <div class="formula-item">
+                <svg class="formula-shape" viewBox="0 0 28 28">
+                  <polygon
+                    points="2,24 14,4 26,24"
+                    fill="none"
+                    stroke="#ea580c"
+                    stroke-width="2"
+                  />
+                </svg>
+                <span
+                  ><strong>Triangle Area:</strong>
+                  <code>A = &frac12; &times; b &times; h</code></span
+                >
+              </div>
+              <div class="formula-item">
+                <svg class="formula-shape" viewBox="0 0 28 28">
+                  <polygon
+                    points="4,22 10,6 26,6 20,22"
+                    fill="none"
+                    stroke="#7c3aed"
+                    stroke-width="2"
+                  />
+                </svg>
+                <span
+                  ><strong>Parallelogram Area:</strong>
+                  <code>A = b &times; h</code></span
+                >
+              </div>
+              <div class="formula-item">
+                <svg class="formula-shape" viewBox="0 0 28 28">
+                  <polygon
+                    points="6,22 2,8 26,8 22,22"
+                    fill="none"
+                    stroke="#06b6d4"
+                    stroke-width="2"
+                  />
+                </svg>
+                <span
+                  ><strong>Trapezoid Area:</strong>
+                  <code>A = &frac12;(b1 + b2) &times; h</code></span
+                >
+              </div>
+              <div class="formula-item">
+                <svg class="formula-shape" viewBox="0 0 28 28">
+                  <rect
+                    x="2"
+                    y="2"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="#fbbf24"
+                    stroke-width="2"
+                    rx="1"
+                  />
+                </svg>
+                <span
+                  ><strong>Rectangle Area:</strong>
+                  <code>A = l &times; w</code></span
+                >
+              </div>
+              <div class="formula-item">
+                <svg class="formula-shape" viewBox="0 0 28 28">
+                  <rect
+                    x="2"
+                    y="8"
+                    width="24"
+                    height="16"
+                    fill="none"
+                    stroke="#059669"
+                    stroke-width="2"
+                    rx="1"
+                  />
+                  <line
+                    x1="2"
+                    y1="8"
+                    x2="8"
+                    y2="2"
+                    stroke="#059669"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="26"
+                    y1="8"
+                    x2="20"
+                    y2="2"
+                    stroke="#059669"
+                    stroke-width="2"
+                    stroke-dasharray="3 2"
+                  />
+                  <rect
+                    x="8"
+                    y="2"
+                    width="12"
+                    height="6"
+                    fill="none"
+                    stroke="#059669"
+                    stroke-width="2"
+                    stroke-dasharray="3 2"
+                  />
+                </svg>
+                <span
+                  ><strong>Prism Surface Area:</strong>
+                  <code>SA = 2B + Ph</code></span
+                >
+              </div>
+              <div class="formula-item">
+                <svg class="formula-shape" viewBox="0 0 28 28">
+                  <rect
+                    x="4"
+                    y="6"
+                    width="20"
+                    height="18"
+                    fill="none"
+                    stroke="#ea580c"
+                    stroke-width="2"
+                    rx="1"
+                  />
+                </svg>
+                <span
+                  ><strong>Rectangular Prism Volume:</strong>
+                  <code>V = l &times; w &times; h</code></span
+                >
+              </div>
+            </div>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label form-sublabel"
+                  >Area of a triangle with b = 10 ft, h = 6 ft:</label
+                >
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_tri"
+                  placeholder="A = ?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel"
+                  >Area of a rectangle 12 ft by 8 ft:</label
+                >
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_rect"
+                  placeholder="A = ?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel"
+                  >Volume of a box 5 ft &times; 4 ft &times; 3 ft:</label
+                >
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_vol"
+                  placeholder="V = ?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel"
+                  >What UNIT do we use for area vs. volume?</label
+                >
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_units"
+                  placeholder="Area = ft__, Volume = ft__"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_vocab')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_vocab">
+                Triangle: A = 1/2 &times; 10 &times; 6 = 30 sq ft. Rectangle: A
+                = 12 &times; 8 = 96 sq ft. Volume: V = 5 &times; 4 &times; 3 =
+                60 cubic ft. Area uses square units (ft&sup2;), volume uses
+                cubic units (ft&sup3;).
+              </div>
+            </div>
+            <div class="support-box" id="support_vocab">
+              <strong>&#128218; Support:</strong> Area measures how much flat
+              space a shape covers (like painting a wall). It uses square units
+              like ft&sup2;. Volume measures how much space a 3D object holds
+              inside (like filling a box with water). It uses cubic units like
+              ft&sup3;.
+            </div>
+          </div>
+
+          <!-- Task 3: Park Layout Overview -->
+          <div class="task-card">
+            <div class="task-number">3</div>
+            <div class="task-title">Park Layout Overview</div>
+            <div class="task-instruction">
+              Your park has 50,000 sq ft of land. Study how it will be divided
+              into zones. Calculate the area allocated to each zone.
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Zone</th>
+                  <th>Shape</th>
+                  <th>Dimensions</th>
+                  <th>Area (sq ft)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#127906; Thrill Rides</td>
+                  <td>Rectangle</td>
+                  <td>200 ft &times; 80 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="zone_thrill"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127904; Kids Zone</td>
+                  <td>Rectangle</td>
+                  <td>120 ft &times; 100 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="zone_kids"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127828; Food Court</td>
+                  <td>Rectangle</td>
+                  <td>80 ft &times; 60 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="zone_food"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#128758; Parking</td>
+                  <td>Rectangle</td>
+                  <td>250 ft &times; 100 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="zone_parking"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Add up all 4 zones. How much land is used? How much is left
+                over for paths and landscaping?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="zone_total"
+                rows="2"
+                placeholder="Total used = ___ sq ft. Left over = 50,000 - ___ = ___ sq ft."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="challenge-box" id="challenge_zones">
+              <strong>&#127775; Challenge:</strong> If you wanted to add a water
+              park zone that uses exactly 20% of the remaining land, what would
+              its area be? Design its rectangular dimensions.
+              <textarea
+                class="form-textarea"
+                id="challenge_zones_answer"
+                rows="3"
+                placeholder="Remaining land = ___ sq ft. 20% = 0.20 x ___ = ___ sq ft. Dimensions: ___ ft x ___ ft"
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <div></div>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(2)">
+              Continue to Park Research &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 2: PARK RESEARCH
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase2" hidden>
+        <div class="phase-header">
+          <div class="phase-icon orange">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="18"
+                y1="18"
+                x2="25"
+                y2="25"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 2: Park Research</div>
+            <div class="phase-desc">
+              Calculate areas for ride platforms and polygon-shaped attractions.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Area Calculator Tool -->
+          <div class="tool-panel">
+            <div class="tool-panel-title">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <polygon
+                  points="2,16 9,2 16,16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+              Area Calculator
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: auto 1fr 1fr 1fr auto;
+                gap: 0.5rem;
+                align-items: end;
+                margin-bottom: 0.75rem;
+              "
+            >
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Shape</label>
+                <select
+                  class="form-select"
+                  id="areaShape"
+                  style="min-width: 120px"
+                >
+                  <option value="triangle">Triangle</option>
+                  <option value="parallelogram">Parallelogram</option>
+                  <option value="trapezoid">Trapezoid</option>
+                  <option value="rectangle">Rectangle</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Base / Length</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="areaDim1"
+                  placeholder="b"
+                  min="0"
+                />
+              </div>
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Height / Width</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="areaDim2"
+                  placeholder="h"
+                  min="0"
+                />
+              </div>
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Base 2 (trap.)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="areaDim3"
+                  placeholder="b2"
+                  min="0"
+                />
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="calcArea()">
+                Calculate
+              </button>
+            </div>
+            <div class="calc-display" id="areaDisplay">
+              Select a shape and enter dimensions...
+            </div>
+          </div>
+
+          <!-- Task 4: Triangle Ride Platforms -->
+          <div class="task-card">
+            <div class="task-number">4</div>
+            <div class="task-title">Triangle Ride Platforms</div>
+            <div class="task-instruction">
+              Several ride platforms in your park are triangular. Calculate the
+              area of each platform. Remember:
+              <span class="ref-code">A = &frac12; &times; b &times; h</span>
+            </div>
+
+            <!-- SVG: Triangle shapes -->
+            <div class="svg-scene">
+              <svg
+                viewBox="0 0 500 120"
+                width="500"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="500" height="120" rx="10" fill="#1e1b4b" />
+                <polygon
+                  points="50,100 130,100 90,20"
+                  fill="none"
+                  stroke="#ea580c"
+                  stroke-width="2.5"
+                />
+                <text
+                  x="90"
+                  y="115"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="10"
+                  font-weight="600"
+                >
+                  b=16ft
+                </text>
+                <text x="140" y="65" fill="#c4b5fd" font-size="10">h=12ft</text>
+                <line
+                  x1="90"
+                  y1="20"
+                  x2="90"
+                  y2="100"
+                  stroke="#c4b5fd"
+                  stroke-width="1"
+                  stroke-dasharray="4 3"
+                />
+
+                <polygon
+                  points="200,100 300,100 250,30"
+                  fill="none"
+                  stroke="#06b6d4"
+                  stroke-width="2.5"
+                />
+                <text
+                  x="250"
+                  y="115"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="10"
+                  font-weight="600"
+                >
+                  b=20ft
+                </text>
+                <text x="310" y="70" fill="#c4b5fd" font-size="10">h=14ft</text>
+                <line
+                  x1="250"
+                  y1="30"
+                  x2="250"
+                  y2="100"
+                  stroke="#c4b5fd"
+                  stroke-width="1"
+                  stroke-dasharray="4 3"
+                />
+
+                <polygon
+                  points="370,100 470,100 420,40"
+                  fill="none"
+                  stroke="#fbbf24"
+                  stroke-width="2.5"
+                />
+                <text
+                  x="420"
+                  y="115"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="10"
+                  font-weight="600"
+                >
+                  b=24ft
+                </text>
+                <text x="478" y="75" fill="#c4b5fd" font-size="10">h=10ft</text>
+                <line
+                  x1="420"
+                  y1="40"
+                  x2="420"
+                  y2="100"
+                  stroke="#c4b5fd"
+                  stroke-width="1"
+                  stroke-dasharray="4 3"
+                />
+              </svg>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ride Platform</th>
+                  <th>Base (ft)</th>
+                  <th>Height (ft)</th>
+                  <th>Show Your Work</th>
+                  <th>Area (sq ft)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#127906; Dragon Drop</td>
+                  <td>16</td>
+                  <td>12</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tri_a_work"
+                      placeholder="1/2 x 16 x 12"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tri_a"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127922; Cyclone Spin</td>
+                  <td>20</td>
+                  <td>14</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tri_b_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tri_b"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#128640; Rocket Launch</td>
+                  <td>24</td>
+                  <td>10</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tri_c_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="tri_c"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Which platform is largest? If each sq ft costs $15 to pave, how
+                much would it cost to pave the largest one?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="tri_compare"
+                rows="2"
+                placeholder="The largest is... It costs ___ sq ft x $15 = $___"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_tri')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_tri">
+                For Dragon Drop: A = 1/2 &times; 16 &times; 12 = 1/2 &times; 192
+                = 96 sq ft. Don't forget the 1/2!
+              </div>
+            </div>
+            <div class="support-box" id="support_tri">
+              <strong>&#128218; Support:</strong> The formula for a triangle is
+              A = 1/2 &times; base &times; height. Think of it this way: a
+              triangle is exactly half of a rectangle with the same base and
+              height. So find the rectangle area first (b &times; h), then
+              divide by 2.
+            </div>
+          </div>
+
+          <!-- Task 5: Parallelogram & Trapezoid Areas -->
+          <div class="task-card">
+            <div class="task-number">5</div>
+            <div class="task-title">
+              Parallelogram &amp; Trapezoid Attractions
+            </div>
+            <div class="task-instruction">
+              Some attractions have parallelogram and trapezoid-shaped
+              footprints. Calculate each area.
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
+            >
+              <div>
+                <div
+                  style="
+                    font-weight: 700;
+                    margin-bottom: 0.75rem;
+                    color: var(--park-purple);
+                  "
+                >
+                  Parallelograms: A = b &times; h
+                </div>
+                <div class="form-group">
+                  <label class="form-label"
+                    >Bumper Cars arena: b = 30 ft, h = 18 ft</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="para_bumper"
+                    placeholder="A = 30 x 18 = ___ sq ft"
+                    oninput="autoSave()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label"
+                    >Haunted House floor: b = 45 ft, h = 22 ft</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="para_haunt"
+                    placeholder="A = ___ sq ft"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+              <div>
+                <div
+                  style="
+                    font-weight: 700;
+                    margin-bottom: 0.75rem;
+                    color: var(--park-cyan);
+                  "
+                >
+                  Trapezoids: A = &frac12;(b1 + b2) &times; h
+                </div>
+                <div class="form-group">
+                  <label class="form-label"
+                    >Stage area: b1 = 40 ft, b2 = 60 ft, h = 25 ft</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="trap_stage"
+                    placeholder="A = 1/2(40+60) x 25 = ___ sq ft"
+                    oninput="autoSave()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label"
+                    >Gift shop: b1 = 20 ft, b2 = 32 ft, h = 15 ft</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="trap_gift"
+                    placeholder="A = ___ sq ft"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >A parallelogram and a rectangle both have a base of 30 ft and
+                height of 18 ft. Do they have the same area? Explain why or why
+                not.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="para_vs_rect"
+                rows="3"
+                placeholder="They have the same/different area because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 6: Composite Area -->
+          <div class="task-card">
+            <div class="task-number">6</div>
+            <div class="task-title">Composite Shape &mdash; Park Entrance</div>
+            <div class="task-instruction">
+              The park entrance is a composite shape: a rectangle (40 ft &times;
+              20 ft) with a triangle on top (base 40 ft, height 15 ft). Find the
+              total area.
+            </div>
+
+            <div class="svg-scene">
+              <svg
+                viewBox="0 0 300 200"
+                width="300"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="300" height="200" rx="10" fill="#1e1b4b" />
+                <rect
+                  x="80"
+                  y="100"
+                  width="140"
+                  height="70"
+                  fill="none"
+                  stroke="#fbbf24"
+                  stroke-width="2.5"
+                />
+                <polygon
+                  points="80,100 150,30 220,100"
+                  fill="none"
+                  stroke="#ea580c"
+                  stroke-width="2.5"
+                />
+                <text
+                  x="150"
+                  y="145"
+                  text-anchor="middle"
+                  fill="#c4b5fd"
+                  font-size="12"
+                >
+                  40 ft &times; 20 ft
+                </text>
+                <text
+                  x="150"
+                  y="75"
+                  text-anchor="middle"
+                  fill="#c4b5fd"
+                  font-size="11"
+                >
+                  h = 15 ft
+                </text>
+                <line
+                  x1="150"
+                  y1="30"
+                  x2="150"
+                  y2="100"
+                  stroke="#c4b5fd"
+                  stroke-width="1"
+                  stroke-dasharray="4 3"
+                />
+                <text
+                  x="150"
+                  y="190"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="11"
+                  font-weight="600"
+                >
+                  Park Entrance
+                </text>
+              </svg>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Rectangle area:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="comp_rect"
+                placeholder="40 x 20 = ___ sq ft"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Triangle area:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="comp_tri"
+                placeholder="1/2 x 40 x 15 = ___ sq ft"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Total composite area:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="comp_total"
+                placeholder="___ + ___ = ___ sq ft"
+                oninput="autoSave()"
+              />
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(1)">
+              &#8592; Back to Briefing
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(3)">
+              Continue to Blueprint Planning &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 3: BLUEPRINT PLANNING
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase3" hidden>
+        <div class="phase-header">
+          <div class="phase-icon cyan">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="3"
+                y="6"
+                width="22"
+                height="16"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="14"
+                y1="6"
+                x2="14"
+                y2="22"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="3"
+                y1="14"
+                x2="25"
+                y2="14"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 3: Blueprint Planning</div>
+            <div class="phase-desc">
+              Calculate surface area for materials and volume for structures.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Surface Area / Volume Tool -->
+          <div class="tool-panel">
+            <div class="tool-panel-title">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect
+                  x="1"
+                  y="4"
+                  width="12"
+                  height="10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  rx="1"
+                />
+                <line
+                  x1="1"
+                  y1="4"
+                  x2="5"
+                  y2="1"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="13"
+                  y1="4"
+                  x2="17"
+                  y2="1"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="5"
+                  y1="1"
+                  x2="17"
+                  y2="1"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="17"
+                  y1="1"
+                  x2="17"
+                  y2="11"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="13"
+                  y1="14"
+                  x2="17"
+                  y2="11"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+              Surface Area &amp; Volume Calculator
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr auto;
+                gap: 0.5rem;
+                align-items: end;
+                margin-bottom: 0.75rem;
+              "
+            >
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Length (ft)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="boxL"
+                  placeholder="l"
+                  min="0"
+                />
+              </div>
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Width (ft)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="boxW"
+                  placeholder="w"
+                  min="0"
+                />
+              </div>
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label form-sublabel">Height (ft)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="boxH"
+                  placeholder="h"
+                  min="0"
+                />
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="calcBox()">
+                Calculate
+              </button>
+            </div>
+            <div class="calc-display" id="boxDisplay">
+              Enter dimensions to calculate SA &amp; Volume...
+            </div>
+          </div>
+
+          <!-- Task 7: Surface Area of Buildings -->
+          <div class="task-card">
+            <div class="task-number">7</div>
+            <div class="task-title">
+              Surface Area &mdash; Painting Buildings
+            </div>
+            <div class="task-instruction">
+              You need to paint the exterior walls and roof of park buildings
+              (rectangular prisms). Calculate the
+              <strong>surface area</strong> to determine how much paint to buy.
+              <span class="ref-code">SA = 2lw + 2lh + 2wh</span>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Building</th>
+                  <th>Length</th>
+                  <th>Width</th>
+                  <th>Height</th>
+                  <th>Show Your Work</th>
+                  <th>Surface Area</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#127978; Ticket Booth</td>
+                  <td>8 ft</td>
+                  <td>6 ft</td>
+                  <td>10 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="sa_booth_work"
+                      placeholder="2(8x6)+2(8x10)+2(6x10)"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="sa_booth"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127828; Snack Stand</td>
+                  <td>12 ft</td>
+                  <td>10 ft</td>
+                  <td>9 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="sa_snack_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="sa_snack"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#127915; Gift Shop</td>
+                  <td>20 ft</td>
+                  <td>15 ft</td>
+                  <td>12 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="sa_gift_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="sa_gift"
+                      placeholder="sq ft"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >One gallon of paint covers 350 sq ft. How many gallons are
+                needed for the Gift Shop? (Round up!)</label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="sa_paint"
+                placeholder="___ sq ft / 350 = ___ gallons (round up)"
+                oninput="autoSave()"
+              />
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_sa')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_sa">
+                For the Ticket Booth: SA = 2(8&times;6) + 2(8&times;10) +
+                2(6&times;10) = 2(48) + 2(80) + 2(60) = 96 + 160 + 120 = 376 sq
+                ft. Think of it as finding the area of all 6 faces.
+              </div>
+            </div>
+            <div class="support-box" id="support_sa">
+              <strong>&#128218; Support:</strong> A rectangular prism has 6
+              faces. There are 3 pairs of matching faces: top/bottom
+              (l&times;w), front/back (l&times;h), and left/right (w&times;h).
+              Find each pair's area, multiply by 2, then add all three together.
+            </div>
+          </div>
+
+          <!-- Task 8: Nets & Surface Area -->
+          <div class="task-card">
+            <div class="task-number">8</div>
+            <div class="task-title">
+              Unfolding Nets &mdash; Material Planning
+            </div>
+            <div class="task-instruction">
+              When you unfold a 3D shape flat, you get its <strong>net</strong>.
+              This helps engineers plan how to cut materials. A rectangular
+              prism net has 6 rectangles.
+            </div>
+
+            <!-- SVG: Net diagram -->
+            <div class="svg-scene">
+              <svg
+                viewBox="0 0 400 220"
+                width="400"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="400" height="220" rx="10" fill="#1e1b4b" />
+                <!-- Net of a rectangular prism -->
+                <!-- Top face -->
+                <rect
+                  x="140"
+                  y="10"
+                  width="80"
+                  height="50"
+                  fill="none"
+                  stroke="#06b6d4"
+                  stroke-width="2"
+                />
+                <text
+                  x="180"
+                  y="40"
+                  text-anchor="middle"
+                  fill="#06b6d4"
+                  font-size="10"
+                >
+                  Top
+                </text>
+                <!-- Front face -->
+                <rect
+                  x="140"
+                  y="60"
+                  width="80"
+                  height="60"
+                  fill="none"
+                  stroke="#ea580c"
+                  stroke-width="2"
+                />
+                <text
+                  x="180"
+                  y="95"
+                  text-anchor="middle"
+                  fill="#ea580c"
+                  font-size="10"
+                >
+                  Front
+                </text>
+                <!-- Bottom face -->
+                <rect
+                  x="140"
+                  y="120"
+                  width="80"
+                  height="50"
+                  fill="none"
+                  stroke="#06b6d4"
+                  stroke-width="2"
+                />
+                <text
+                  x="180"
+                  y="150"
+                  text-anchor="middle"
+                  fill="#06b6d4"
+                  font-size="10"
+                >
+                  Bottom
+                </text>
+                <!-- Back face -->
+                <rect
+                  x="140"
+                  y="170"
+                  width="80"
+                  height="40"
+                  fill="none"
+                  stroke="#ea580c"
+                  stroke-width="2"
+                  stroke-dasharray="5 3"
+                />
+                <text
+                  x="180"
+                  y="195"
+                  text-anchor="middle"
+                  fill="#ea580c"
+                  font-size="10"
+                >
+                  Back
+                </text>
+                <!-- Left face -->
+                <rect
+                  x="60"
+                  y="60"
+                  width="80"
+                  height="60"
+                  fill="none"
+                  stroke="#fbbf24"
+                  stroke-width="2"
+                />
+                <text
+                  x="100"
+                  y="95"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="10"
+                >
+                  Left
+                </text>
+                <!-- Right face -->
+                <rect
+                  x="220"
+                  y="60"
+                  width="80"
+                  height="60"
+                  fill="none"
+                  stroke="#fbbf24"
+                  stroke-width="2"
+                />
+                <text
+                  x="260"
+                  y="95"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="10"
+                >
+                  Right
+                </text>
+                <!-- Dimensions -->
+                <text
+                  x="180"
+                  y="85"
+                  text-anchor="middle"
+                  fill="#c4b5fd"
+                  font-size="9"
+                >
+                  10&times;8
+                </text>
+                <text
+                  x="100"
+                  y="85"
+                  text-anchor="middle"
+                  fill="#c4b5fd"
+                  font-size="9"
+                >
+                  5&times;8
+                </text>
+                <text
+                  x="260"
+                  y="85"
+                  text-anchor="middle"
+                  fill="#c4b5fd"
+                  font-size="9"
+                >
+                  5&times;8
+                </text>
+                <text
+                  x="180"
+                  y="30"
+                  text-anchor="middle"
+                  fill="#c4b5fd"
+                  font-size="9"
+                >
+                  10&times;5
+                </text>
+              </svg>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >A souvenir box is 10 in &times; 5 in &times; 8 in. List the
+                area of each face, then find the total surface area.</label
+              >
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label form-sublabel"
+                  >Top/Bottom (10&times;5) &times; 2 =</label
+                >
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="net_tb"
+                  placeholder="sq in"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel"
+                  >Front/Back (10&times;8) &times; 2 =</label
+                >
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="net_fb"
+                  placeholder="sq in"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel"
+                  >Left/Right (5&times;8) &times; 2 =</label
+                >
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="net_lr"
+                  placeholder="sq in"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Total SA =</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="net_total"
+                placeholder="___ + ___ + ___ = ___ sq in"
+                oninput="autoSave()"
+              />
+            </div>
+          </div>
+
+          <!-- Task 9: Triangular Prism SA -->
+          <div class="task-card">
+            <div class="task-number">9</div>
+            <div class="task-title">Triangular Prism Rooftop</div>
+            <div class="task-instruction">
+              The park's main building has a triangular prism roof. Find the
+              surface area of the roof (2 triangular faces + 3 rectangular
+              faces). Triangle: base = 20 ft, height = 8 ft, slant sides = 10.8
+              ft each. Prism length = 30 ft.
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Area of ONE triangle face:</label>
+              <input
+                type="text"
+                class="form-input"
+                id="triprism_triface"
+                placeholder="1/2 x 20 x 8 = ___ sq ft"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Area of BOTH triangle faces:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="triprism_tris"
+                placeholder="___ x 2 = ___ sq ft"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Area of the 3 rectangular faces (bottom: 20&times;30, two slant
+                sides: 10.8&times;30 each):</label
+              >
+              <textarea
+                class="form-textarea"
+                id="triprism_rects"
+                rows="2"
+                placeholder="Bottom: 20x30=___. Sides: 2 x (10.8x30) = ___. Total rects = ___"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Total surface area of the triangular prism:</label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="triprism_total"
+                placeholder="Triangles + Rectangles = ___ sq ft"
+                oninput="autoSave()"
+              />
+            </div>
+          </div>
+
+          <!-- Task 10: Volume of Structures -->
+          <div class="task-card">
+            <div class="task-number">10</div>
+            <div class="task-title">
+              Volume &mdash; Filling Pools &amp; Fountains
+            </div>
+            <div class="task-instruction">
+              Your water features need to be filled! Calculate the volume of
+              each rectangular pool.
+              <span class="ref-code">V = l &times; w &times; h</span>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Water Feature</th>
+                  <th>Length</th>
+                  <th>Width</th>
+                  <th>Depth</th>
+                  <th>Show Your Work</th>
+                  <th>Volume (ft&sup3;)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#128166; Wave Pool</td>
+                  <td>60 ft</td>
+                  <td>40 ft</td>
+                  <td>5 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="vol_wave_work"
+                      placeholder="60 x 40 x 5"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="vol_wave"
+                      placeholder="ft&sup3;"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#9970; Lazy River</td>
+                  <td>100 ft</td>
+                  <td>8 ft</td>
+                  <td>3 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="vol_lazy_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="vol_lazy"
+                      placeholder="ft&sup3;"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>&#9978; Fountain</td>
+                  <td>15 ft</td>
+                  <td>15 ft</td>
+                  <td>2 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="vol_fount_work"
+                      placeholder="Show work"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="vol_fount"
+                      placeholder="ft&sup3;"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >1 cubic foot = 7.48 gallons of water. How many gallons does the
+                Wave Pool hold?</label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="vol_gallons"
+                placeholder="___ ft&sup3; x 7.48 = ___ gallons"
+                oninput="autoSave()"
+              />
+            </div>
+
+            <div class="challenge-box" id="challenge_vol">
+              <strong>&#127775; Challenge:</strong> If you need to fill the wave
+              pool and it takes 500 gallons per minute, how long (in hours and
+              minutes) would it take to fill the entire pool?
+              <textarea
+                class="form-textarea"
+                id="challenge_vol_answer"
+                rows="3"
+                placeholder="Total gallons = ___. Time = ___ gallons / 500 gal per min = ___ minutes = ___ hours ___ min"
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_vol')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_vol">
+                Wave Pool: V = 60 &times; 40 &times; 5 = 12,000 ft&sup3;.
+                Gallons = 12,000 &times; 7.48 = 89,760 gallons.
+              </div>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(2)">
+              &#8592; Back to Research
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(4)">
+              Continue to Construction &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 4: CONSTRUCTION BUILD
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase4" hidden>
+        <div class="phase-header">
+          <div class="phase-icon purple">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M14 3l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 4: Construction Build</div>
+            <div class="phase-desc">
+              Build structures and calculate final material costs!
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Task 11: Design Your Own Ride -->
+          <div class="task-card">
+            <div class="task-number">11</div>
+            <div class="task-title">Design Your Own Ride Structure</div>
+            <div class="task-instruction">
+              Design a custom ride building. Choose your own dimensions and
+              calculate both surface area and volume.
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">&#127906; Name your ride:</label>
+              <input
+                type="text"
+                class="form-input"
+                id="custom_ride_name"
+                placeholder="e.g., Thunder Mountain"
+                oninput="autoSave()"
+              />
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 1rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Length (ft)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="custom_l"
+                  placeholder="Choose 10-100"
+                  min="10"
+                  max="100"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Width (ft)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="custom_w"
+                  placeholder="Choose 10-100"
+                  min="10"
+                  max="100"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Height (ft)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="custom_h"
+                  placeholder="Choose 10-50"
+                  min="10"
+                  max="50"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Show your surface area calculation:</label
+              >
+              <textarea
+                class="form-textarea"
+                id="custom_sa_work"
+                rows="2"
+                placeholder="SA = 2(l x w) + 2(l x h) + 2(w x h) = ..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Surface Area =</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="custom_sa"
+                placeholder="sq ft"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Show your volume calculation:</label>
+              <textarea
+                class="form-textarea"
+                id="custom_vol_work"
+                rows="2"
+                placeholder="V = l x w x h = ..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Volume =</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="custom_vol"
+                placeholder="ft&sup3;"
+                oninput="autoSave()"
+              />
+            </div>
+          </div>
+
+          <!-- Task 12: Landscaping Calculations -->
+          <div class="task-card">
+            <div class="task-number">12</div>
+            <div class="task-title">
+              Landscaping &mdash; Sod, Mulch, and Gravel
+            </div>
+            <div class="task-instruction">
+              Your park needs landscaping! Calculate area for sod (grass) and
+              volume for mulch/gravel beds.
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
+            >
+              <div
+                style="
+                  background: var(--park-success-bg);
+                  border-radius: 12px;
+                  padding: 1.25rem;
+                  border: 2px solid rgba(5, 150, 105, 0.2);
+                "
+              >
+                <div
+                  style="
+                    font-weight: 700;
+                    color: var(--park-success);
+                    margin-bottom: 0.75rem;
+                  "
+                >
+                  &#127793; SOD (Grass) &mdash; Area
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Rectangular lawn: 80 ft &times; 50 ft</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="sod_rect"
+                    placeholder="sq ft"
+                    oninput="autoSave()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Triangular garden: b=30ft, h=20ft</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="sod_tri"
+                    placeholder="sq ft"
+                    oninput="autoSave()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Total sod needed:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="sod_total"
+                    placeholder="sq ft"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+              <div
+                style="
+                  background: var(--park-orange-light);
+                  border-radius: 12px;
+                  padding: 1.25rem;
+                  border: 2px solid rgba(234, 88, 12, 0.2);
+                "
+              >
+                <div
+                  style="
+                    font-weight: 700;
+                    color: var(--park-orange);
+                    margin-bottom: 0.75rem;
+                  "
+                >
+                  &#127794; MULCH &mdash; Volume
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Flower bed: 25ft &times; 10ft &times; 0.5ft deep</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="mulch_bed"
+                    placeholder="ft&sup3;"
+                    oninput="autoSave()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Path border: 60ft &times; 3ft &times; 0.25ft</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="mulch_path"
+                    placeholder="ft&sup3;"
+                    oninput="autoSave()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Total mulch needed:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="mulch_total"
+                    placeholder="ft&sup3;"
+                    oninput="autoSave()"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem">
+              <label class="form-label"
+                >If sod costs $0.85 per sq ft and mulch costs $3.50 per cubic
+                ft, what is the total landscaping cost?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="landscape_cost"
+                rows="2"
+                placeholder="Sod: ___ sq ft x $0.85 = $___. Mulch: ___ ft&sup3; x $3.50 = $___. Total = $___"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 13: Material Cost Summary -->
+          <div class="task-card">
+            <div class="task-number">13</div>
+            <div class="task-title">Total Material Cost Summary</div>
+            <div class="task-instruction">
+              Add up all your material costs for the park construction.
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
+            >
+              <div
+                style="
+                  background: var(--park-error-bg);
+                  border-radius: 12px;
+                  padding: 1.25rem;
+                  border: 2px solid rgba(220, 38, 38, 0.2);
+                "
+              >
+                <div
+                  style="
+                    font-weight: 700;
+                    color: var(--park-error);
+                    margin-bottom: 0.75rem;
+                  "
+                >
+                  &#128308; MATERIAL COSTS
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Paint (buildings):</label
+                  ><input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="cost_paint"
+                    placeholder="$"
+                    oninput="
+                      autoSave();
+                      updateTotal();
+                    "
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel">Water (pools):</label
+                  ><input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="cost_water"
+                    placeholder="$"
+                    oninput="
+                      autoSave();
+                      updateTotal();
+                    "
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel">Landscaping:</label
+                  ><input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="cost_landscape"
+                    placeholder="$"
+                    oninput="
+                      autoSave();
+                      updateTotal();
+                    "
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-sublabel"
+                    >Paving ($15/sq ft):</label
+                  ><input
+                    type="text"
+                    class="form-input form-input-sm"
+                    id="cost_pave"
+                    placeholder="$"
+                    oninput="
+                      autoSave();
+                      updateTotal();
+                    "
+                  />
+                </div>
+                <div
+                  style="
+                    border-top: 2px solid rgba(220, 38, 38, 0.2);
+                    padding-top: 0.75rem;
+                    margin-top: 0.5rem;
+                    font-weight: 700;
+                    font-size: 1.1rem;
+                    color: var(--park-error);
+                  "
+                >
+                  Total: $<span id="total_cost">0</span>
+                </div>
+              </div>
+              <div>
+                <div class="form-group">
+                  <label class="form-label"
+                    >Write a paragraph explaining your park's construction
+                    costs. Which area was most expensive? Were any costs
+                    surprising?</label
+                  >
+                  <textarea
+                    class="form-textarea"
+                    id="cost_reflection"
+                    rows="5"
+                    placeholder="The most expensive part was... I was surprised by..."
+                    oninput="autoSave()"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="challenge-box" id="challenge_cost">
+              <strong>&#127775; Challenge:</strong> If the park owner gives you
+              a budget of $50,000 for materials, are you over or under budget?
+              By how much? What would you cut or add?
+              <textarea
+                class="form-textarea"
+                id="challenge_cost_answer"
+                rows="3"
+                placeholder="Total cost = $___. Budget = $50,000. I am $__ over/under budget. I would..."
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 14: Volume Comparison -->
+          <div class="task-card">
+            <div class="task-number">14</div>
+            <div class="task-title">
+              Volume Comparison &mdash; Storage Buildings
+            </div>
+            <div class="task-instruction">
+              Compare the storage capacity of different building designs. Which
+              holds the most?
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Storage Building</th>
+                  <th>Dimensions</th>
+                  <th>Volume</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Design A (tall &amp; narrow)</td>
+                  <td>10 ft &times; 10 ft &times; 20 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="store_a"
+                      placeholder="ft&sup3;"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Design B (wide &amp; short)</td>
+                  <td>20 ft &times; 20 ft &times; 5 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="store_b"
+                      placeholder="ft&sup3;"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Design C (balanced)</td>
+                  <td>15 ft &times; 12 ft &times; 11 ft</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="store_c"
+                      placeholder="ft&sup3;"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Which design holds the most? Which uses the least surface area
+                (and therefore the least building material)? Calculate all 3
+                surface areas to compare.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="store_compare"
+                rows="4"
+                placeholder="Design A: SA = ___. Design B: SA = ___. Design C: SA = ___. The best value is Design ___ because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(3)">
+              &#8592; Back to Blueprints
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(5)">
+              Continue to Portfolio &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 5: ENGINEER PORTFOLIO
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase5" hidden>
+        <div class="phase-header">
+          <div class="phase-icon green">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M14 3l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 5: Engineer Portfolio</div>
+            <div class="phase-desc">
+              Review your park designs and submit your project.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Park Poster SVG -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 400 260"
+              width="400"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="posterGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#7c3aed" />
+                  <stop offset="50%" stop-color="#ea580c" />
+                  <stop offset="100%" stop-color="#fbbf24" />
+                </linearGradient>
+              </defs>
+              <rect width="400" height="260" rx="16" fill="url(#posterGrad)" />
+              <rect
+                x="10"
+                y="10"
+                width="380"
+                height="240"
+                rx="12"
+                fill="none"
+                stroke="rgba(255,255,255,0.3)"
+                stroke-width="2"
+              />
+              <text
+                x="200"
+                y="55"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="11"
+                font-weight="600"
+                letter-spacing="4"
+                opacity=".8"
+              >
+                WELCOME TO
+              </text>
+              <text
+                x="200"
+                y="100"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="32"
+                font-weight="800"
+                font-family="sans-serif"
+                id="posterParkName"
+              >
+                YOUR PARK
+              </text>
+              <line
+                x1="100"
+                y1="115"
+                x2="300"
+                y2="115"
+                stroke="rgba(255,255,255,0.4)"
+                stroke-width="1"
+              />
+              <text
+                x="200"
+                y="140"
+                text-anchor="middle"
+                fill="#fef9c3"
+                font-size="13"
+                font-weight="600"
+              >
+                RIDES &bull; WATER &bull; ADVENTURE
+              </text>
+              <text
+                x="200"
+                y="165"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.7)"
+                font-size="11"
+              >
+                Designed with Area, Surface Area &amp; Volume
+              </text>
+              <polygon
+                points="60,200 63,210 73,210 65,216 68,226 60,220 52,226 55,216 47,210 57,210"
+                fill="#fbbf24"
+                opacity=".7"
+              />
+              <polygon
+                points="200,190 203,200 213,200 205,206 208,216 200,210 192,216 195,206 187,200 197,200"
+                fill="#fbbf24"
+                opacity=".7"
+              />
+              <polygon
+                points="340,200 343,210 353,210 345,216 348,226 340,220 332,226 335,216 327,210 337,210"
+                fill="#fbbf24"
+                opacity=".7"
+              />
+              <text
+                x="200"
+                y="250"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.5)"
+                font-size="10"
+                id="posterEngineer"
+              >
+                Engineered by [Your Name]
+              </text>
+            </svg>
+          </div>
+
+          <!-- Score -->
+          <div class="score-display" id="scoreDisplay">
+            <div class="score-label">Theme Park Engineer Score</div>
+            <div class="score-big" id="scoreValue">--</div>
+            <div class="score-label">out of 100 points</div>
+          </div>
+
+          <!-- Badges -->
+          <div class="badge-row">
+            <div class="badge-card" id="badge1">
+              <div class="badge-icon">&#128208;</div>
+              <div class="badge-label">Area Ace</div>
+            </div>
+            <div class="badge-card" id="badge2">
+              <div class="badge-icon">&#127922;</div>
+              <div class="badge-label">Shape Master</div>
+            </div>
+            <div class="badge-card" id="badge3">
+              <div class="badge-icon">&#128230;</div>
+              <div class="badge-label">Surface Pro</div>
+            </div>
+            <div class="badge-card" id="badge4">
+              <div class="badge-icon">&#128166;</div>
+              <div class="badge-label">Volume Expert</div>
+            </div>
+            <div class="badge-card" id="badge5">
+              <div class="badge-icon">&#127775;</div>
+              <div class="badge-label">Park Engineer</div>
+            </div>
+          </div>
+
+          <!-- Self-Assessment -->
+          <div class="task-card">
+            <div class="task-number">15</div>
+            <div class="task-title">Self-Assessment Rubric</div>
+            <div class="task-instruction">
+              Rate your own work on each skill. Click a score for each category.
+            </div>
+
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">
+                Area of Polygons
+              </div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_area', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">I struggled with area formulas</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_area', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">
+                    I calculated some areas with help
+                  </div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_area', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">I calculated areas correctly</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_area', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">
+                    I calculated all areas confidently
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">
+                Surface Area
+              </div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_sa', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">I couldn't find surface area</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_sa', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">I found SA with some errors</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_sa', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">I found SA accurately</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_sa', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">
+                    I mastered surface area problems
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">Volume</div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_vol', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">I didn't understand volume</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_vol', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">I calculated simple volumes</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_vol', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">I calculated volumes accurately</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_vol', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">
+                    I solved complex volume problems
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem">
+              <div style="font-weight: 700; margin-bottom: 0.5rem">
+                Real-World Application
+              </div>
+              <div class="rubric-grid">
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 1, this)"
+                >
+                  <div class="rubric-score">1</div>
+                  <div class="rubric-desc">
+                    I didn't connect math to the park
+                  </div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 2, this)"
+                >
+                  <div class="rubric-score">2</div>
+                  <div class="rubric-desc">I made some connections</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 3, this)"
+                >
+                  <div class="rubric-score">3</div>
+                  <div class="rubric-desc">I applied math well to designs</div>
+                </div>
+                <div
+                  class="rubric-cell"
+                  onclick="selectRubric('rubric_apply', 4, this)"
+                >
+                  <div class="rubric-score">4</div>
+                  <div class="rubric-desc">Every design was math-driven</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reflection -->
+          <div class="task-card">
+            <div class="task-number">16</div>
+            <div class="task-title">Reflection Journal</div>
+            <div class="task-instruction">
+              Write thoughtful reflections about your learning.
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >1. What was the most challenging part of this project? How did
+                you overcome it?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect1"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >2. Give a real-world example (not from this project) where
+                someone uses area, surface area, or volume.</label
+              ><textarea
+                class="form-textarea"
+                id="reflect2"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >3. Explain the difference between surface area and volume. When
+                would an engineer use each one?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect3"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >4. If you could redesign your park, what geometry concept would
+                you use differently and why?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect4"
+                rows="3"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Final Actions -->
+          <div class="task-card" style="text-align: center; padding: 2rem">
+            <div style="font-size: 2.5rem; margin-bottom: 0.75rem">
+              &#127906;
+            </div>
+            <h2
+              style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem"
+            >
+              Park Construction Complete!
+            </h2>
+            <p style="color: var(--park-muted); margin-bottom: 1.5rem">
+              Export and submit your project below.
+            </p>
+            <div
+              style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                justify-content: center;
+              "
+            >
+              <button class="btn btn-primary btn-lg" onclick="calculateScore()">
+                &#128202; Calculate Final Score
+              </button>
+            <button class="btn btn-primary" onclick="ntDownloadResultsCSV()">
+              &#128202; Download Results (CSV for teacher)
+            </button>
+              <button class="btn btn-orange btn-lg" onclick="printProject()">
+                &#128424; Print Project
+              </button>
+              <button
+                class="btn btn-success btn-lg"
+                onclick="downloadProject()"
+              >
+                &#128190; Download Summary
+              </button>
+              <button class="gc-btn" onclick="submitToClassroom()">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                  <path
+                    fill="#fff"
+                    d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm-4 30V14l14 10-14 10z"
+                  />
+                </svg>
+                Submit to Google Classroom
+              </button>
+              <button
+                class="btn btn-primary btn-lg"
+                onclick="showCertificate()"
+              >
+                &#127906; View Certificate
+              </button>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(4)">
+              &#8592; Back to Construction
+            </button>
+            <div style="font-size: 0.82rem; color: var(--park-muted)">
+              &#128274; Auto-saved to your browser
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════ -->
+    <script>
+      (function () {
+        "use strict";
+
+        var STORAGE_KEY = "neft_unit5_theme_park_v2";
+        var currentPhase = 1;
+        var currentMode = "standard";
+        var rubricScores = {};
+
+        window.goToPhase = function (n) {
+          document.querySelectorAll(".phase-section").forEach(function (s) {
+            s.hidden = true;
+          });
+          var target = document.getElementById("phase" + n);
+          if (target) {
+            target.hidden = false;
+            target.style.animation = "none";
+            target.offsetHeight;
+            target.style.animation = "fadeInUp .5s ease-out both";
+            currentPhase = n;
+            updateProgress();
+            window.scrollTo({ top: target.offsetTop - 80, behavior: "smooth" });
+            autoSave();
+          }
+        };
+
+        function updateProgress() {
+          var pct = Math.round(((currentPhase - 1) / 4) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("progressPct").textContent = pct + "%";
+          for (var i = 1; i <= 5; i++) {
+            var dot = document.getElementById("dot" + i);
+            dot.classList.remove("active", "complete");
+            if (i < currentPhase) dot.classList.add("complete");
+            else if (i === currentPhase) dot.classList.add("active");
+          }
+        }
+
+        window.setMode = function (mode) {
+          currentMode = mode;
+          document.querySelectorAll(".mode-btn").forEach(function (b) {
+            b.classList.remove("active");
+          });
+          document
+            .getElementById(
+              "mode" + mode.charAt(0).toUpperCase() + mode.slice(1),
+            )
+            .classList.add("active");
+          document.querySelectorAll(".support-box").forEach(function (el) {
+            el.classList.toggle("visible", mode === "support");
+          });
+          document.querySelectorAll(".challenge-box").forEach(function (el) {
+            el.classList.toggle("visible", mode === "challenge");
+          });
+          autoSave();
+        };
+
+        window.toggleHint = function (id) {
+          document.getElementById(id).classList.toggle("visible");
+        };
+
+        // ── Area Calculator ──────────────────────────
+        window.calcArea = function () {
+          var shape = document.getElementById("areaShape").value;
+          var d1 = parseFloat(document.getElementById("areaDim1").value) || 0;
+          var d2 = parseFloat(document.getElementById("areaDim2").value) || 0;
+          var d3 = parseFloat(document.getElementById("areaDim3").value) || 0;
+          var area = 0;
+          var formula = "";
+          if (shape === "triangle") {
+            area = 0.5 * d1 * d2;
+            formula = "A = 1/2 &times; " + d1 + " &times; " + d2;
+          } else if (shape === "parallelogram") {
+            area = d1 * d2;
+            formula = "A = " + d1 + " &times; " + d2;
+          } else if (shape === "trapezoid") {
+            area = 0.5 * (d1 + d3) * d2;
+            formula = "A = 1/2(" + d1 + " + " + d3 + ") &times; " + d2;
+          } else {
+            area = d1 * d2;
+            formula = "A = " + d1 + " &times; " + d2;
+          }
+          document.getElementById("areaDisplay").innerHTML =
+            formula +
+            ' = <strong style="color:#c4b5fd;font-size:1.3rem">' +
+            area.toLocaleString() +
+            " sq ft</strong>";
+        };
+
+        // ── Box Calculator (SA & Volume) ─────────────
+        window.calcBox = function () {
+          var l = parseFloat(document.getElementById("boxL").value) || 0;
+          var w = parseFloat(document.getElementById("boxW").value) || 0;
+          var h = parseFloat(document.getElementById("boxH").value) || 0;
+          var vol = l * w * h;
+          var sa = 2 * (l * w + l * h + w * h);
+          document.getElementById("boxDisplay").innerHTML =
+            "SA = " +
+            sa.toLocaleString() +
+            ' sq ft | Volume = <strong style="color:#c4b5fd;font-size:1.2rem">' +
+            vol.toLocaleString() +
+            " ft&sup3;</strong>";
+        };
+
+        // ── Material Cost Totals ─────────────────────
+        window.updateTotal = function () {
+          var parse = function (id) {
+            return (
+              parseFloat(
+                (document.getElementById(id).value || "0").replace(/[$,]/g, ""),
+              ) || 0
+            );
+          };
+          var total =
+            parse("cost_paint") +
+            parse("cost_water") +
+            parse("cost_landscape") +
+            parse("cost_pave");
+          document.getElementById("total_cost").textContent =
+            total.toLocaleString();
+          autoSave();
+        };
+
+        // ── Park Name Updates ────────────────────────
+        window.updateParkName = function () {
+          var name = document.getElementById("parkName").value || "YOUR PARK";
+          var el = document.getElementById("posterParkName");
+          if (el) el.textContent = name.toUpperCase();
+          var eng = document.getElementById("posterEngineer");
+          if (eng)
+            eng.textContent =
+              "Engineered by " +
+              (document.getElementById("studentName").value || "Your Name");
+        };
+
+        // ── Rubric Selection ─────────────────────────
+        window.selectRubric = function (key, score, el) {
+          rubricScores[key] = score;
+          el.parentElement
+            .querySelectorAll(".rubric-cell")
+            .forEach(function (c) {
+              c.classList.remove("selected");
+            });
+          el.classList.add("selected");
+          autoSave();
+        };
+
+        // ── Score Calculation ────────────────────────
+        window.calculateScore = function () {
+          var fields = document.querySelectorAll(
+            'input[type="text"], textarea, select',
+          );
+          var filled = 0;
+          fields.forEach(function (f) {
+            if (f.value && f.value.trim()) filled++;
+          });
+          var score = Math.round((filled / fields.length) * 80);
+          var rubricTotal = Object.values(rubricScores).reduce(function (a, b) {
+            return a + b;
+          }, 0);
+          score += Math.round((rubricTotal / 16) * 20);
+          score = Math.min(score, 100);
+          document.getElementById("scoreValue").textContent = score;
+          if (score >= 20)
+            document.getElementById("badge1").classList.add("earned");
+          if (score >= 40)
+            document.getElementById("badge2").classList.add("earned");
+          if (score >= 60)
+            document.getElementById("badge3").classList.add("earned");
+          if (score >= 80)
+            document.getElementById("badge4").classList.add("earned");
+          if (score >= 95)
+            document.getElementById("badge5").classList.add("earned");
+          if (score >= 70) launchConfetti();
+          autoSave();
+        };
+
+        window.printProject = function () {
+          window.print();
+        };
+
+        window.downloadProject = function () {
+          var name = document.getElementById("studentName").value || "Student";
+          var parkN = document.getElementById("parkName").value || "Park";
+          var text =
+            "THEME PARK ENGINEER - PROJECT SUMMARY\n======================================\n\n";
+          text +=
+            "Engineer: " +
+            name +
+            "\nPark: " +
+            parkN +
+            "\nDate: " +
+            (document.getElementById("studentDate").value || "N/A") +
+            "\n\n";
+          text +=
+            "Score: " +
+            (document.getElementById("scoreValue").textContent ||
+              "Not calculated") +
+            "/100\n\n";
+          document.querySelectorAll(".task-card").forEach(function (card) {
+            var title = card.querySelector(".task-title");
+            if (title) text += "\n--- " + title.textContent + " ---\n";
+            card
+              .querySelectorAll("input, textarea, select")
+              .forEach(function (f) {
+                if (f.value && f.value.trim()) {
+                  var label =
+                    (f.previousElementSibling
+                      ? f.previousElementSibling.textContent
+                      : "") ||
+                    f.placeholder ||
+                    "";
+                  text += label.substring(0, 60) + ": " + f.value + "\n";
+                }
+              });
+          });
+          var blob = new Blob([text], { type: "text/plain" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "Park_Engineer_" + name.replace(/\s+/g, "_") + ".txt";
+          a.click();
+        };
+
+        window.submitToClassroom = function () {
+          window.open(
+            "https://classroom.google.com/share?url=" +
+              encodeURIComponent(window.location.href),
+            "_blank",
+          );
+        };
+
+        function launchConfetti() {
+          var canvas = document.getElementById("confetti-canvas");
+          var ctx = canvas.getContext("2d");
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          var pieces = [];
+          var colors = [
+            "#7c3aed",
+            "#ea580c",
+            "#06b6d4",
+            "#fbbf24",
+            "#059669",
+            "#c4b5fd",
+          ];
+          for (var i = 0; i < 120; i++) {
+            pieces.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * -canvas.height,
+              w: Math.random() * 10 + 5,
+              h: Math.random() * 6 + 3,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              vy: Math.random() * 3 + 2,
+              vx: Math.random() * 2 - 1,
+              rot: Math.random() * 360,
+              vr: Math.random() * 6 - 3,
+            });
+          }
+          var frame = 0;
+          function animate() {
+            if (frame++ > 200) {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pieces.forEach(function (p) {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rot += p.vr;
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate((p.rot * Math.PI) / 180);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+            });
+            requestAnimationFrame(animate);
+          }
+          animate();
+        }
+
+        window.autoSave = function () {
+          var data = {
+            phase: currentPhase,
+            mode: currentMode,
+            rubric: rubricScores,
+            fields: {},
+          };
+          document
+            .querySelectorAll("input, textarea, select")
+            .forEach(function (el) {
+              if (el.id) data.fields[el.id] = el.value;
+            });
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          } catch (e) {}
+        };
+
+        function loadSave() {
+          try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            var data = JSON.parse(raw);
+            if (data.fields) {
+              Object.entries(data.fields).forEach(function (entry) {
+                var el = document.getElementById(entry[0]);
+                if (el) el.value = entry[1];
+              });
+            }
+            if (data.mode) setMode(data.mode);
+            if (data.rubric) rubricScores = data.rubric;
+            if (data.phase) goToPhase(data.phase);
+            updateParkName();
+          } catch (e) {}
+        }
+
+        loadSave();
+        updateProgress();
+        updateParkName();
+        if (!document.getElementById("studentDate").value) {
+          document.getElementById("studentDate").value = new Date()
+            .toISOString()
+            .split("T")[0];
+        }
+
+        // ══ ENHANCEMENT: XP System ══
+        var _xp = 0,
+          _xpMax = 500,
+          _fieldsAwarded = {};
+        function _addXP(a, id) {
+          if (id && _fieldsAwarded[id]) return;
+          if (id) _fieldsAwarded[id] = true;
+          _xp = Math.min(_xp + a, _xpMax);
+          _updateXPBar();
+          if (a > 0) _playSound("xp");
+          _saveEnhState();
+        }
+        function _updateXPBar() {
+          var b = document.getElementById("xpBarFill"),
+            v = document.getElementById("xpValue");
+          if (b) b.style.width = Math.round((_xp / _xpMax) * 100) + "%";
+          if (v) v.textContent = _xp + " / " + _xpMax + " XP";
+        }
+        document.addEventListener("input", function (e) {
+          var el = e.target;
+          if (!el.id) return;
+          if (el.value && el.value.trim().length > 2)
+            _addXP(5, "field_" + el.id);
+        });
+        var _origGTP2 = window.goToPhase;
+        window.goToPhase = function (n) {
+          var p = currentPhase;
+          _origGTP2(n);
+          if (n > p) _addXP(25, "phase_" + p);
+        };
+
+        // ══ ENHANCEMENT: Sound Effects ══
+        var _audioCtx2 = null;
+        function _getAC() {
+          if (!_audioCtx2)
+            try {
+              _audioCtx2 = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          return _audioCtx2;
+        }
+        function _playSound(t) {
+          var c = _getAC();
+          if (!c) return;
+          try {
+            var o = c.createOscillator(),
+              g = c.createGain();
+            o.connect(g);
+            g.connect(c.destination);
+            g.gain.value = 0.08;
+            if (t === "xp") {
+              o.frequency.value = 466;
+              o.type = "sine";
+              g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.15);
+              o.start(c.currentTime);
+              o.stop(c.currentTime + 0.15);
+            } else if (t === "complete") {
+              [1, 1.25, 1.5, 2].forEach(function (n, i) {
+                var o2 = c.createOscillator(),
+                  g2 = c.createGain();
+                o2.connect(g2);
+                g2.connect(c.destination);
+                o2.frequency.value = 466 * n;
+                o2.type = "sine";
+                g2.gain.value = 0.06;
+                g2.gain.exponentialRampToValueAtTime(
+                  0.01,
+                  c.currentTime + 0.15 * (i + 1) + 0.2,
+                );
+                o2.start(c.currentTime + 0.15 * i);
+                o2.stop(c.currentTime + 0.15 * (i + 1) + 0.2);
+              });
+              return;
+            }
+          } catch (e) {}
+        }
+
+        // ══ ENHANCEMENT: Certificate ══
+        window.toggleExample = function (id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.toggle("visible");
+        };
+        window.showCertificate = function () {
+          var n = document.getElementById("studentName");
+          n = n ? n.value || "Engineer" : "Engineer";
+          document.getElementById("certStudentName").textContent = n;
+          document.getElementById("certXP").textContent = _xp;
+          var fs = document.querySelectorAll('input[type="text"],textarea'),
+            f = 0;
+          fs.forEach(function (x) {
+            if (x.value && x.value.trim().length > 0) f++;
+          });
+          document.getElementById("certTasks").textContent = f;
+          document.getElementById("certAccuracy").textContent =
+            (fs.length > 0 ? Math.round((f / fs.length) * 100) : 0) + "%";
+          document
+            .getElementById("certificateOverlay")
+            .classList.add("visible");
+          _playSound("complete");
+          _addXP(50, "certificate_earned");
+        };
+
+        // ══ ENHANCEMENT: Save/Load ══
+        function _saveEnhState() {
+          try {
+            localStorage.setItem(
+              "neft_unit5_theme_park_v2_enhance",
+              JSON.stringify({ xp: _xp, fields: _fieldsAwarded }),
+            );
+          } catch (e) {}
+        }
+        function _loadEnhState() {
+          try {
+            var r = localStorage.getItem("neft_unit5_theme_park_v2_enhance");
+            if (r) {
+              var d = JSON.parse(r);
+              if (d.xp) _xp = d.xp;
+              if (d.fields) _fieldsAwarded = d.fields;
+              _updateXPBar();
+            }
+          } catch (e) {}
+        }
+        _loadEnhState();
+        _updateXPBar();
+      })();
+    </script>
+
+    <!-- Enhancement: Certificate Overlay -->
+    <div class="certificate-overlay" id="certificateOverlay">
+      <div class="certificate-card">
+        <div class="cert-badge">&#127906;</div>
+        <div class="cert-title">Theme Park Engineer Certificate</div>
+        <div class="cert-name" id="certStudentName">Engineer Name</div>
+        <p
+          style="
+            color: var(--park-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+          "
+        >
+          Has demonstrated outstanding mathematical skills and earned the rank
+          of <strong>Lead Engineer</strong>.
+        </p>
+        <div class="cert-stats">
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certXP">0</div>
+            <div class="cert-stat-label">Total XP</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certTasks">0</div>
+            <div class="cert-stat-label">Tasks Done</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certAccuracy">0%</div>
+            <div class="cert-stat-label">Completion</div>
+          </div>
+        </div>
+        <button
+          class="cert-close"
+          onclick="
+            document
+              .getElementById('certificateOverlay')
+              .classList.remove('visible')
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  
+<!-- ── Neft Teacher help widgets ── -->
+<div class="nt-fab-wrap">
+  <button type="button" class="nt-fab nt-fab-hint" id="ntHintFab"
+    aria-expanded="false" aria-controls="ntHintPanel">💡 <span>Hints</span></button>
+  <button type="button" class="nt-fab nt-fab-help" id="ntHelpFab"
+    aria-expanded="false" aria-controls="ntHelpPanel">🛟 <span>Need help?</span></button>
+</div>
+
+<div class="nt-panel" id="ntHelpPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHelpTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHelpClose" aria-label="Close help panel">✕</button>
+  <h3 id="ntHelpTitle">Need help? Explore these</h3>
+  <p class="nt-lede">Trusted sites for <strong>Area, Surface Area & Volume</strong>. Each opens in a new tab.</p>
+  <h4>Vocabulary</h4>
+  <ul class="nt-vocab"><li><b>Area:</b> The space inside a flat (2D) shape, measured in square units.</li><li><b>Surface Area:</b> The total area of all the faces of a 3D solid.</li><li><b>Volume:</b> The space inside a 3D solid, measured in cubic units.</li><li><b>Net:</b> A flat pattern that folds up into a 3D shape.</li><li><b>Face:</b> One flat side of a 3D solid.</li></ul>
+  <h4>Learn more</h4>
+  <ul><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic/cc-6th-area" target="_blank" rel="noopener noreferrer">Khan Academy: Area</a></li><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic/cc-6th-volume" target="_blank" rel="noopener noreferrer">Khan Academy: Surface Area & Volume</a></li><li><a href="https://www.mathsisfun.com/area.html" target="_blank" rel="noopener noreferrer">Math is Fun: Area</a></li><li><a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer">Desmos Calculator</a></li></ul>
+</div>
+
+<div class="nt-panel" id="ntHintPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHintTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHintClose" aria-label="Close hints panel">✕</button>
+  <h3 id="ntHintTitle">Helpful hints</h3>
+  <p class="nt-lede">Stuck on a step? Try these tips for <strong>Area, Surface Area & Volume</strong>.</p>
+  <ul id="ntHintList"></ul>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var HINTS = ["Area of a rectangle = length × width. Always use the same units.","For surface area, find the area of every face, then add them all together.","Volume of a box = length × width × height.","A net helps you see every face. Count them so you don't miss one."];
+  var VOCAB = [["Area","The space inside a flat (2D) shape, measured in square units."],["Surface Area","The total area of all the faces of a 3D solid."],["Volume","The space inside a 3D solid, measured in cubic units."],["Net","A flat pattern that folds up into a 3D shape."],["Face","One flat side of a 3D solid."]];
+
+  /* Build hint list */
+  var hl = document.getElementById("ntHintList");
+  if (hl) HINTS.forEach(function(h){ var li=document.createElement("li"); li.textContent=h; hl.appendChild(li); });
+
+  function wirePanel(fabId, panelId, closeId){
+    var fab=document.getElementById(fabId), panel=document.getElementById(panelId),
+        close=document.getElementById(closeId);
+    if(!fab||!panel) return;
+    function setOpen(o){
+      panel.setAttribute("data-open", o?"true":"false");
+      fab.setAttribute("aria-expanded", o?"true":"false");
+      if(o){ var f=panel.querySelector("a,button"); if(f) f.focus(); }
+    }
+    fab.addEventListener("click", function(){ setOpen(panel.getAttribute("data-open")!=="true"); });
+    if(close) close.addEventListener("click", function(){ setOpen(false); fab.focus(); });
+    panel.addEventListener("keydown", function(e){ if(e.key==="Escape"){ setOpen(false); fab.focus(); } });
+  }
+  wirePanel("ntHelpFab","ntHelpPanel","ntHelpClose");
+  wirePanel("ntHintFab","ntHintPanel","ntHintClose");
+
+  /* Auto-attach a Hint button to each task/question section */
+  var SEL = ".task, .question, .challenge-card, .mission-card, .activity, .problem, .qcard, .task-card, [data-task]";
+  var blocks = document.querySelectorAll(SEL);
+  var seen = 0;
+  blocks.forEach(function(b, i){
+    if (b.querySelector(".nt-hint-btn")) return;
+    if (seen >= 40) return; seen++;
+    var tip = HINTS[i % HINTS.length];
+    var btn = document.createElement("button");
+    btn.type="button"; btn.className="nt-hint-btn";
+    btn.setAttribute("aria-expanded","false");
+    btn.innerHTML='💡 Hint';
+    var body = document.createElement("div");
+    body.className="nt-hint-body"; body.setAttribute("data-open","false");
+    body.textContent = tip;
+    btn.addEventListener("click", function(){
+      var open = body.getAttribute("data-open")==="true";
+      body.setAttribute("data-open", open?"false":"true");
+      btn.setAttribute("aria-expanded", open?"false":"true");
+    });
+    b.appendChild(btn); b.appendChild(body);
+  });
+
+  /* Tooltip key terms in body text (first occurrence each) */
+  var done = {};
+  function tipify(node){
+    if(node.nodeType===3){
+      var txt=node.nodeValue; if(!txt||!txt.trim()) return;
+      for(var k=0;k<VOCAB.length;k++){
+        var term=VOCAB[k][0]; if(done[term]) continue;
+        var re=new RegExp("\\b("+term.replace(/[.*+?^${}()|[\]\\]/g,function(c){return "\\"+c;})+")\\b");
+        var m=re.exec(txt);
+        if(m){
+          var span=document.createElement("span");
+          span.className="nt-tip"; span.tabIndex=0;
+          span.setAttribute("data-nt-tip", VOCAB[k][1]);
+          span.setAttribute("role","note");
+          span.textContent=m[0];
+          var after=node.splitText(m.index);
+          after.nodeValue=after.nodeValue.substring(m[0].length);
+          node.parentNode.insertBefore(span, after);
+          done[term]=true;
+          span.addEventListener("focus",function(){this.setAttribute("data-show","true");});
+          span.addEventListener("blur",function(){this.removeAttribute("data-show");});
+          return;
+        }
+      }
+    } else if(node.nodeType===1){
+      var tn=node.tagName;
+      if(/^(SCRIPT|STYLE|BUTTON|A|INPUT|TEXTAREA|SELECT|SVG|H1)$/.test(tn)) return;
+      if(node.classList && (node.classList.contains("nt-tip")||node.classList.contains("nt-panel")||node.classList.contains("nt-level-banner")||node.classList.contains("nt-fab-wrap"))) return;
+      var kids=Array.prototype.slice.call(node.childNodes);
+      for(var i=0;i<kids.length;i++) tipify(kids[i]);
+    }
+  }
+  try { tipify(document.body); } catch(e){}
+})();
+</script>
+
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      /* nt-results wiring — reuses this game's real completion + self-rating tallies. */
+      function ntResultsTally() {
+        var sel = document.querySelectorAll(
+          '.form-input, .form-textarea, .form-select, input[type=text], textarea, select'
+        );
+        var total = 0, filled = 0, seen = {};
+        sel.forEach(function (el) {
+          if (seen[el]) return; seen[el] = 1;
+          var id = el.id || '';
+          if (/^calc/i.test(id)) return;            // skip calculator helper fields
+          if (/^rubric/i.test(el.name || '')) return;
+          if (el.type === 'radio' || el.type === 'checkbox') return;
+          total++;
+          if (el.value && String(el.value).trim()) filled++;
+        });
+        // Self-rating: radios named rubric* OR selected rubric-cells.
+        var rubric = 0, rubricMax = 0;
+        var radios = {};
+        document.querySelectorAll('input[name^=rubric]').forEach(function (r) {
+          radios[r.name] = Math.max(radios[r.name] || 0, parseInt(r.value, 10) || 0);
+        });
+        var radioNames = Object.keys(radios);
+        if (radioNames.length) {
+          radioNames.forEach(function (n) {
+            rubricMax += radios[n];
+            var c = document.querySelector('input[name="' + n + '"]:checked');
+            if (c) rubric += parseInt(c.value, 10) || 0;
+          });
+        } else {
+          var groups = {};
+          document.querySelectorAll('.rubric-cell').forEach(function (cell) {
+            var m = /selectRubric\(\s*['\"]([^'\"]+)['\"]\s*,\s*(\d+)/.exec(
+              cell.getAttribute('onclick') || ''
+            );
+            if (!m) return;
+            var key = m[1], val = parseInt(m[2], 10) || 0;
+            groups[key] = Math.max(groups[key] || 0, val);
+            if (cell.classList.contains('selected')) {
+              cell._sel = val;
+            }
+          });
+          Object.keys(groups).forEach(function (k) { rubricMax += groups[k]; });
+          document.querySelectorAll('.rubric-cell.selected').forEach(function (cell) {
+            var m = /,\s*(\d+)\s*,/.exec(cell.getAttribute('onclick') || '');
+            if (m) rubric += parseInt(m[1], 10) || 0;
+          });
+        }
+        return { filled: filled, total: total, rubric: rubric, rubricMax: rubricMax };
+      }
+      function ntDownloadResultsCSV() {
+        var nameEl = document.getElementById('studentName');
+        var student = (nameEl && nameEl.value && nameEl.value.trim()) || 'Student';
+        var t = ntResultsTally();
+        var sections = [
+          { name: 'Completion', correct: t.filled, total: t.total }
+        ];
+        if (t.rubricMax > 0)
+          sections.push({ name: 'Self-rating', correct: t.rubric, total: t.rubricMax });
+        NTResults.finish({
+          student: student,
+          assessment: 'Unit 5 Post-Test: Theme Park Engineer',
+          standard: '6.G.1',
+        level: '2',
+          sections: sections,
+          correct: t.filled,
+          total: t.total,
+        });
+      }
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

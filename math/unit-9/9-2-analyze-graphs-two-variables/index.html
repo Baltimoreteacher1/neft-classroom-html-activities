@@ -1,0 +1,2129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Lesson 9-2: Analyze Graphs of Relationships Between Two Variables
+    </title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .header h1 {
+        font-size: clamp(22px, 4vw, 30px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .header p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0;
+        max-width: 600px;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      /* Level Toggle */
+      .level-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--card);
+        color: var(--navy);
+        box-shadow: 0 1px 4px rgba(15, 43, 60, 0.12);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--navy);
+      }
+      .level-desc {
+        font-size: 13px;
+        color: var(--faint);
+        margin-left: auto;
+      }
+      .progress-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .progress-track {
+        height: 4px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--teal), var(--blue));
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+
+      /* Main Content */
+      .main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 20px 24px 80px;
+      }
+
+      /* Section Headers */
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 32px 0 16px;
+      }
+      .section-header:first-child {
+        margin-top: 8px;
+      }
+      .section-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .section-icon.warmup {
+        background: var(--gold);
+      }
+      .section-icon.practice {
+        background: var(--blue);
+      }
+      .section-icon.challenge {
+        background: var(--coral);
+      }
+      .section-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0;
+      }
+      .section-header .count {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+
+      /* Question Card */
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: border-color 0.2s;
+      }
+      .q-card.correct {
+        border-color: var(--green);
+      }
+      .q-card.incorrect {
+        border-color: var(--coral);
+      }
+      .q-card.correct .q-status {
+        display: flex;
+      }
+      .q-card.incorrect .q-status-wrong {
+        display: flex;
+      }
+      .q-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.45;
+      }
+      .q-prompt .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+      }
+
+      /* Scaffold (Level 1 only) */
+      .scaffold {
+        background: var(--teal-light);
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #1a5c54;
+        line-height: 1.45;
+        display: none;
+      }
+      .scaffold strong {
+        color: var(--teal);
+      }
+      .scaffold .vocab {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 700;
+        margin: 2px;
+      }
+      body.level-1 .scaffold {
+        display: block;
+      }
+
+      /* Multiple Choice */
+      .mc-options {
+        display: grid;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .mc-btn:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn .letter {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: var(--line);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mc-btn:hover .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn.selected .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .mc-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Fill-in */
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fill-input {
+        width: 100px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .fill-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.12);
+      }
+      .fill-input.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .fill-input.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .fill-text {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      /* True/False & Yes/No */
+      .tf-options {
+        display: flex;
+        gap: 8px;
+      }
+      .tf-btn {
+        flex: 1;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .tf-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .tf-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .tf-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .tf-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+      .tf-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Check Button */
+      .check-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .check-btn:hover {
+        background: #155fa0;
+        transform: translateY(-1px);
+      }
+      .check-btn:active {
+        transform: scale(0.98);
+      }
+      .check-btn:disabled {
+        background: var(--line);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+      }
+
+      /* Feedback */
+      .q-status,
+      .q-status-wrong {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .q-status {
+        background: var(--green-light);
+        color: #1a5c36;
+        border: 1px solid rgba(45, 135, 75, 0.15);
+      }
+      .q-status-wrong {
+        background: var(--coral-light);
+        color: #8a3322;
+        border: 1px solid rgba(196, 90, 60, 0.15);
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* Explain (Level 2 only) */
+      .explain-section {
+        display: none;
+        margin-top: 12px;
+      }
+      body.level-2 .explain-section {
+        display: block;
+      }
+      .explain-prompt {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .explain-input {
+        width: 100%;
+        min-height: 60px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.4;
+      }
+      .explain-input:focus {
+        border-color: var(--blue);
+      }
+
+      /* Sentence frame (Level 1) */
+      .sentence-frame {
+        display: none;
+      }
+      body.level-1 .sentence-frame {
+        display: block;
+      }
+      .sentence-frame p {
+        font-size: 13px;
+        color: var(--teal);
+        font-weight: 600;
+        margin: 6px 0 0;
+        font-style: italic;
+      }
+
+      /* Drag & Drop */
+      .drag-zone {
+        min-height: 52px;
+        border: 2px dashed var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        transition: border-color 0.15s;
+        background: var(--bg);
+      }
+      .drag-zone.over {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .drag-zone.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        border-style: solid;
+      }
+      .drag-zone.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        border-style: solid;
+      }
+      .drag-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: grab;
+        user-select: none;
+        transition: all 0.15s;
+        color: var(--ink);
+      }
+      .drag-item:active {
+        cursor: grabbing;
+        opacity: 0.7;
+      }
+      .drag-item.placed {
+        background: var(--blue-light);
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .drag-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .drop-grid {
+        display: grid;
+        gap: 10px;
+      }
+      .drop-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+      .drop-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      /* Equation Display */
+      .eq-display {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-size: 22px;
+        text-align: center;
+        padding: 14px;
+        background: var(--bg);
+        border-radius: 10px;
+        margin-bottom: 12px;
+        color: var(--navy);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      /* Number Line */
+      .number-line-wrap {
+        margin: 14px 0;
+        padding: 10px 0;
+      }
+      .number-line-svg {
+        width: 100%;
+        height: 60px;
+      }
+
+      /* Data Table */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 14px;
+        font-size: 15px;
+      }
+      .data-table th,
+      .data-table td {
+        border: 2px solid var(--line);
+        padding: 10px 14px;
+        text-align: center;
+      }
+      .data-table th {
+        background: var(--blue-light);
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .data-table td {
+        background: var(--card);
+        font-weight: 600;
+      }
+
+      /* SVG Graph Container */
+      .graph-wrap {
+        margin: 14px 0;
+        text-align: center;
+      }
+      .graph-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Score Footer */
+      .score-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        padding: 10px 24px;
+      }
+      .score-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .score-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-text span {
+        color: var(--teal);
+      }
+      .reset-btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .reset-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .header {
+          padding: 20px 16px 16px;
+        }
+        .level-bar {
+          padding: 12px 16px;
+        }
+        .main {
+          padding: 16px 16px 80px;
+        }
+        .q-card {
+          padding: 16px;
+        }
+        .drop-row {
+          grid-template-columns: 1fr;
+        }
+        .level-desc {
+          display: none;
+        }
+      }
+
+      /* Print */
+      @media print {
+        .score-bar,
+        .level-bar,
+        .progress-bar {
+          display: none;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    
+      /* ===== Level 0 (most-supported tier) ===== */
+      .level0-support { display:none; }
+      body.level-0 .level0-support {
+        display:block; max-width:860px; margin:14px auto 0; padding:14px 16px;
+        background:#fff7ed; border:1px solid #fdba74; border-radius:12px;
+        font-size:14px; color:#7c2d12; line-height:1.5;
+      }
+      body.level-0 .level0-support h3 { margin:0 0 8px; font-size:15px; color:#9a3412; }
+      body.level-0 .level0-support ul { margin:6px 0 0; padding-left:20px; }
+      body.level-0 .level0-support .l0-frames { margin-top:8px; font-style:italic; }
+      .read-aloud-btn {
+        border:1px solid #fdba74; background:#fff; color:#9a3412; border-radius:8px;
+        padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; margin-left:8px;
+      }
+      .read-aloud-btn:hover { background:#ffedd5; }
+      body:not(.level-0) .read-aloud-btn { display:none; }
+      body.level-0 [class*="hint"] { display:block !important; }
+      body.level-0.reading p, body.level-0.reading li, body.level-0.reading label { cursor:help; }
+
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="level-1">
+    <header class="header">
+      <div class="header-inner">
+        <h1>Analyze Graphs of Relationships Between Two Variables</h1>
+        <p>
+          Read and interpret tables and graphs showing how two quantities change
+          in relationship to one another.
+        </p>
+        <span class="standard-badge"
+          >6.EE.C.9 · Two-Variable Relationships</span
+        >
+      </div>
+    </header>
+
+    <div class="level-bar">
+      <span class="level-label">Level</span>
+      <div class="level-toggle">
+        <button class="level-btn" data-level="0">Level 0</button>
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+        <button id="readAloudBtn" class="read-aloud-btn" type="button">🔊 Read aloud</button>
+      </div>
+      <span class="level-desc" id="levelDesc"
+        >Guided practice with vocabulary support</span
+      >
+    </div>
+
+    
+      <div class="level0-support" role="note" aria-label="Level 0 extra support">
+        <h3>🟠 Level 0 — Extra Support</h3>
+        <ul>
+          <li><strong>Watch first:</strong> the worked example and hints are already shown for you.</li>
+          <li><strong>One at a time:</strong> answer one question, check it, then go on.</li>
+          <li><strong>Read aloud:</strong> press 🔊 Read aloud, then click any sentence to hear it.</li>
+        </ul>
+        <div class="l0-frames"><strong>Sentence starters:</strong> “First, I…” · “The answer is… because…” · “I know this because…”</div>
+      </div>
+
+    <div class="progress-bar">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- WARM-UP -->
+      <div class="section-header">
+        <div class="section-icon warmup">W</div>
+        <h2>Warm-Up</h2>
+        <span class="count">2 questions</span>
+      </div>
+
+      <!-- W1: Multiple Choice -->
+      <article class="q-card" data-q="w1">
+        <div class="q-num">Warm-Up 1</div>
+        <div class="q-prompt">
+          Look at the table below. What is <strong class="math">y</strong> when
+          <strong class="math">x</strong> = 5?
+        </div>
+        <table class="data-table">
+          <tr>
+            <th>x</th>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <th>y</th>
+            <td>3</td>
+            <td>6</td>
+            <td>9</td>
+            <td>12</td>
+            <td>?</td>
+          </tr>
+        </table>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong> A
+          <span class="vocab">table</span> organizes data in rows and columns. A
+          <span class="vocab">pattern</span> is a rule that repeats. Look at how
+          y changes each time x increases by 1.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>13</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>14</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>15</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>16</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! The pattern is y = 3x. Each time x goes up by 1, y goes up
+            by 3. So when x = 5, y = 15.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Not quite. Look at the pattern: 3, 6, 9, 12 ... y increases by 3
+            each time. So the next value is 12 + 3 = <strong>15</strong> (answer
+            C).</span
+          >
+        </div>
+      </article>
+
+      <!-- W2: True/False -->
+      <article class="q-card" data-q="w2">
+        <div class="q-num">Warm-Up 2</div>
+        <div class="q-prompt">
+          True or false: "A graph that goes up from left to right shows that as
+          <strong class="math">x</strong> increases,
+          <strong class="math">y</strong> decreases."
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong> A <span class="vocab">graph</span> shows
+          the relationship between two variables visually. If a line goes
+          <em>up</em> from left to right, the y-values are getting
+          <em>larger</em>, not smaller.
+        </div>
+        <div class="tf-options">
+          <button class="tf-btn" data-val="true">True</button>
+          <button class="tf-btn" data-val="false">False</button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! A graph going up from left to right means y
+            <em>increases</em> as x increases, not decreases.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Think again: when a graph goes up from left to right, y is getting
+            larger. The statement says y decreases, so it is
+            <strong>false</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- PRACTICE -->
+      <div class="section-header">
+        <div class="section-icon practice">P</div>
+        <h2>Practice</h2>
+        <span class="count">5 questions</span>
+      </div>
+
+      <!-- P1: Fill-in -->
+      <article class="q-card" data-q="p1">
+        <div class="q-num">Practice 1</div>
+        <div class="q-prompt">
+          Complete the table using the rule
+          <strong class="math">y</strong> = 2<strong class="math">x</strong> +
+          1.
+        </div>
+        <div class="scaffold">
+          <strong>How to use the rule:</strong> Replace
+          <span class="vocab">x</span> with the number in the top row, then
+          multiply by 2 and add 1.<br />
+          <strong>Example:</strong> When x = 1, y = 2(1) + 1 = 3.
+        </div>
+        <div style="display: grid; gap: 14px">
+          <div class="fill-row">
+            <span class="fill-text"><strong>x = 1:</strong> y =</span>
+            <input
+              class="fill-input"
+              data-answer="3"
+              placeholder="?"
+              aria-label="y when x=1"
+            />
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"><strong>x = 2:</strong> y =</span>
+            <input
+              class="fill-input"
+              data-answer="5"
+              placeholder="?"
+              aria-label="y when x=2"
+            />
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"><strong>x = 3:</strong> y =</span>
+            <input
+              class="fill-input"
+              data-answer="7"
+              placeholder="?"
+              aria-label="y when x=3"
+            />
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"><strong>x = 4:</strong> y =</span>
+            <input
+              class="fill-input"
+              data-answer="9"
+              placeholder="?"
+              aria-label="y when x=4"
+            />
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"><strong>x = 5:</strong> y =</span>
+            <input
+              class="fill-input"
+              data-answer="11"
+              placeholder="?"
+              aria-label="y when x=5"
+            />
+          </div>
+        </div>
+        <button class="check-btn" id="p1-check">Check All</button>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "I found each y-value by substituting x into the
+            rule y = 2x + 1. When x = ___, y = 2(___) + 1 = ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! The y-values are 3, 5, 7, 9, 11. Notice y increases by
+            2 each time x increases by 1.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some values need another look. Remember: multiply x by 2, then add
+            1. The correct values are 3, 5, 7, 9, 11.</span
+          >
+        </div>
+      </article>
+
+      <!-- P2: MC with SVG graph -->
+      <article class="q-card" data-q="p2">
+        <div class="q-num">Practice 2</div>
+        <div class="q-prompt">
+          Which description best matches the graph below?
+        </div>
+        <div class="graph-wrap">
+          <svg
+            viewBox="0 0 320 240"
+            width="320"
+            height="240"
+            aria-label="Line graph going up from left to right, with x-axis labeled Number of Items and y-axis labeled Total Cost in dollars"
+            role="img"
+          >
+            <!-- Grid -->
+            <rect
+              x="50"
+              y="10"
+              width="260"
+              height="200"
+              fill="#f7f9fb"
+              stroke="#e2e7ec"
+              stroke-width="1"
+            />
+            <!-- Y gridlines -->
+            <line
+              x1="50"
+              y1="50"
+              x2="310"
+              y2="50"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <line
+              x1="50"
+              y1="90"
+              x2="310"
+              y2="90"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <line
+              x1="50"
+              y1="130"
+              x2="310"
+              y2="130"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <line
+              x1="50"
+              y1="170"
+              x2="310"
+              y2="170"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <!-- Axes -->
+            <line
+              x1="50"
+              y1="210"
+              x2="310"
+              y2="210"
+              stroke="#1a2633"
+              stroke-width="2"
+            />
+            <line
+              x1="50"
+              y1="10"
+              x2="50"
+              y2="210"
+              stroke="#1a2633"
+              stroke-width="2"
+            />
+            <!-- X labels -->
+            <text
+              x="102"
+              y="228"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              1
+            </text>
+            <text
+              x="154"
+              y="228"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              2
+            </text>
+            <text
+              x="206"
+              y="228"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              3
+            </text>
+            <text
+              x="258"
+              y="228"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              4
+            </text>
+            <!-- Y labels -->
+            <text
+              x="42"
+              y="214"
+              text-anchor="end"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              0
+            </text>
+            <text
+              x="42"
+              y="174"
+              text-anchor="end"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              2
+            </text>
+            <text
+              x="42"
+              y="134"
+              text-anchor="end"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              4
+            </text>
+            <text x="42" y="94" text-anchor="end" font-size="12" fill="#5e6e7e">
+              6
+            </text>
+            <text x="42" y="54" text-anchor="end" font-size="12" fill="#5e6e7e">
+              8
+            </text>
+            <!-- Axis titles -->
+            <text
+              x="180"
+              y="242"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#0f2b3c"
+            >
+              Number of Items
+            </text>
+            <text
+              x="14"
+              y="110"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#0f2b3c"
+              transform="rotate(-90,14,110)"
+            >
+              Total Cost ($)
+            </text>
+            <!-- Line: (1,2) (2,4) (3,6) (4,8) -->
+            <polyline
+              points="102,170 154,130 206,90 258,50"
+              fill="none"
+              stroke="#1a6fb5"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- Points -->
+            <circle cx="102" cy="170" r="5" fill="#1a6fb5" />
+            <circle cx="154" cy="130" r="5" fill="#1a6fb5" />
+            <circle cx="206" cy="90" r="5" fill="#1a6fb5" />
+            <circle cx="258" cy="50" r="5" fill="#1a6fb5" />
+          </svg>
+        </div>
+        <div class="scaffold">
+          <strong>Reading a graph:</strong> Look at the
+          <span class="vocab">coordinate pairs</span> (x, y) on the graph. As x
+          moves right, does y go up or down? By how much each time?
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span
+            ><span
+              >As the number of items increases, the total cost stays the
+              same</span
+            >
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span
+            ><span
+              >As the number of items increases, the total cost increases by $2
+              each time</span
+            >
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span
+            ><span
+              >As the number of items increases, the total cost decreases</span
+            >
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span
+            ><span
+              >There is no relationship between the number of items and total
+              cost</span
+            >
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="I can tell from the graph that..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The graph shows that as x increases by 1, y
+            increases by ___. This means each item costs $___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! The graph shows the points (1,2), (2,4), (3,6), (4,8).
+            Each item adds $2 to the total cost.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Look at the y-values: 2, 4, 6, 8. Each goes up by 2. The answer is
+            <strong>B</strong>: the total cost increases by $2 each time.</span
+          >
+        </div>
+      </article>
+
+      <!-- P3: Drag and Drop -->
+      <article class="q-card" data-q="p3">
+        <div class="q-num">Practice 3</div>
+        <div class="q-prompt">
+          Match each table to the description that fits its pattern.
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong> A <span class="vocab">relationship</span>
+          describes how two variables change together. Look at how
+          <span class="vocab">y</span> changes as
+          <span class="vocab">x</span> increases by 1. Does y go up by the same
+          amount? Does it double?
+        </div>
+        <div class="drag-bank" id="p3-bank">
+          <div class="drag-item" draggable="true" data-id="d1" data-cat="z1">
+            x: 1,2,3,4 &rarr; y: 3,6,9,12
+          </div>
+          <div class="drag-item" draggable="true" data-id="d2" data-cat="z2">
+            x: 1,2,3,4 &rarr; y: 2,4,8,16
+          </div>
+          <div class="drag-item" draggable="true" data-id="d3" data-cat="z3">
+            x: 1,2,3,4 &rarr; y: 5,5,5,5
+          </div>
+          <div class="drag-item" draggable="true" data-id="d4" data-cat="z4">
+            x: 1,2,3,4 &rarr; y: 10,8,6,4
+          </div>
+        </div>
+        <div class="drop-grid">
+          <div class="drop-row">
+            <div class="drop-label">y increases by 3 each time</div>
+            <div class="drag-zone" data-cat="z1" id="p3-z1"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">y doubles each time</div>
+            <div class="drag-zone" data-cat="z2" id="p3-z2"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">y stays the same</div>
+            <div class="drag-zone" data-cat="z3" id="p3-z3"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">y decreases by 2 each time</div>
+            <div class="drag-zone" data-cat="z4" id="p3-z4"></div>
+          </div>
+        </div>
+        <button class="check-btn" id="p3-check">Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! You identified all four patterns: +3, doubling,
+            constant, and &minus;2.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some matches are wrong. Look at the differences between consecutive
+            y-values in each table and try again.</span
+          >
+        </div>
+      </article>
+
+      <!-- P4: MC -->
+      <article class="q-card" data-q="p4">
+        <div class="q-num">Practice 4</div>
+        <div class="q-prompt">
+          A student tracked hours spent studying and test scores. What is the
+          pattern in the table?
+        </div>
+        <table class="data-table">
+          <tr>
+            <th>Hours Studying</th>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <th>Test Score</th>
+            <td>65</td>
+            <td>70</td>
+            <td>75</td>
+            <td>80</td>
+            <td>85</td>
+          </tr>
+        </table>
+        <div class="scaffold">
+          <strong>Hint:</strong> Look at the <span class="vocab">pattern</span>
+          in the test scores. What happens to the score each time the student
+          studies one more hour? Subtract consecutive scores: 70 &minus; 65 = ?
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span
+            ><span
+              >The test score increases by 10 for each additional hour</span
+            >
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span
+            ><span>The test score increases by 5 for each additional hour</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span
+            ><span>The test score doubles each hour</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span
+            ><span>There is no pattern in the data</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain the pattern you found:</div>
+          <textarea
+            class="explain-input"
+            placeholder="I noticed that each time the hours go up by 1..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "Each time the student studies ___ more hour(s), the
+            test score goes up by ___. This means the pattern is ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! The test score increases by 5 points for each additional
+            hour of studying: 65, 70, 75, 80, 85.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Find the difference: 70 &minus; 65 = 5, 75 &minus; 70 = 5, and so
+            on. The score goes up by <strong>5</strong> each hour (answer
+            B).</span
+          >
+        </div>
+      </article>
+
+      <!-- P5: True/False -->
+      <article class="q-card" data-q="p5">
+        <div class="q-num">Practice 5</div>
+        <div class="q-prompt">
+          True or false: "If a graph is a straight line that passes through the
+          origin (0, 0), the relationship is proportional."
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong> A
+          <span class="vocab">proportional relationship</span> means y = kx for
+          some constant k. Its graph is always a straight line through the
+          <span class="vocab">origin</span>
+          (the point where x = 0 and y = 0).
+        </div>
+        <div class="tf-options">
+          <button class="tf-btn" data-val="true">True</button>
+          <button class="tf-btn" data-val="false">False</button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="A proportional relationship means..."
+          ></textarea>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! A proportional relationship has a constant rate (y = kx)
+            and its graph is always a straight line through (0, 0).</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Actually, this is <strong>true</strong>. A straight line through
+            the origin means y is always a constant multiple of x, which is the
+            definition of a proportional relationship.</span
+          >
+        </div>
+      </article>
+
+      <!-- CHALLENGE -->
+      <div class="section-header">
+        <div class="section-icon challenge">&#9733;</div>
+        <h2>Challenge</h2>
+        <span class="count">1 question</span>
+      </div>
+
+      <!-- C1: Open Response with SVG -->
+      <article class="q-card" data-q="c1">
+        <div class="q-num">Challenge</div>
+        <div class="q-prompt">
+          The graph below shows a car's journey over time. Describe what is
+          happening during each section of the trip. What does each part of the
+          graph tell you about the car's speed?
+        </div>
+        <div class="graph-wrap">
+          <svg
+            viewBox="0 0 380 240"
+            width="380"
+            height="240"
+            aria-label="Distance versus time graph with three sections: rising steeply, flat, then rising gently"
+            role="img"
+          >
+            <!-- Grid -->
+            <rect
+              x="55"
+              y="10"
+              width="310"
+              height="200"
+              fill="#f7f9fb"
+              stroke="#e2e7ec"
+              stroke-width="1"
+            />
+            <!-- Y gridlines -->
+            <line
+              x1="55"
+              y1="50"
+              x2="365"
+              y2="50"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <line
+              x1="55"
+              y1="90"
+              x2="365"
+              y2="90"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <line
+              x1="55"
+              y1="130"
+              x2="365"
+              y2="130"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <line
+              x1="55"
+              y1="170"
+              x2="365"
+              y2="170"
+              stroke="#e2e7ec"
+              stroke-width="0.5"
+            />
+            <!-- Axes -->
+            <line
+              x1="55"
+              y1="210"
+              x2="365"
+              y2="210"
+              stroke="#1a2633"
+              stroke-width="2"
+            />
+            <line
+              x1="55"
+              y1="10"
+              x2="55"
+              y2="210"
+              stroke="#1a2633"
+              stroke-width="2"
+            />
+            <!-- X labels: 0,1,2,3,4,5,6 hours -->
+            <text
+              x="55"
+              y="228"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              0
+            </text>
+            <text
+              x="107"
+              y="228"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              1
+            </text>
+            <text
+              x="158"
+              y="228"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              2
+            </text>
+            <text
+              x="210"
+              y="228"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              3
+            </text>
+            <text
+              x="262"
+              y="228"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              4
+            </text>
+            <text
+              x="313"
+              y="228"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              5
+            </text>
+            <text
+              x="365"
+              y="228"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              6
+            </text>
+            <!-- Y labels: 0,30,60,90,120 miles -->
+            <text
+              x="47"
+              y="214"
+              text-anchor="end"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              0
+            </text>
+            <text
+              x="47"
+              y="174"
+              text-anchor="end"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              30
+            </text>
+            <text
+              x="47"
+              y="134"
+              text-anchor="end"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              60
+            </text>
+            <text x="47" y="94" text-anchor="end" font-size="11" fill="#5e6e7e">
+              90
+            </text>
+            <text x="47" y="54" text-anchor="end" font-size="11" fill="#5e6e7e">
+              120
+            </text>
+            <!-- Axis titles -->
+            <text
+              x="210"
+              y="242"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#0f2b3c"
+            >
+              Time (hours)
+            </text>
+            <text
+              x="14"
+              y="110"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#0f2b3c"
+              transform="rotate(-90,14,110)"
+            >
+              Distance (miles)
+            </text>
+            <!-- Section A labels -->
+            <text
+              x="130"
+              y="155"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#1a6fb5"
+            >
+              A
+            </text>
+            <text
+              x="235"
+              y="105"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#d4952a"
+            >
+              B
+            </text>
+            <text
+              x="340"
+              y="60"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#0e8a7d"
+            >
+              C
+            </text>
+            <!-- Line: Section A (0,0) to (2,60) steep rise -->
+            <polyline
+              points="55,210 107,170 158,130"
+              fill="none"
+              stroke="#1a6fb5"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- Section B (2,60) to (4,60) flat -->
+            <polyline
+              points="158,130 210,130 262,130"
+              fill="none"
+              stroke="#d4952a"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- Section C (4,60) to (6,90) gentle rise -->
+            <polyline
+              points="262,130 313,110 365,90"
+              fill="none"
+              stroke="#0e8a7d"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- Points -->
+            <circle cx="55" cy="210" r="4" fill="#1a6fb5" />
+            <circle cx="107" cy="170" r="4" fill="#1a6fb5" />
+            <circle cx="158" cy="130" r="4" fill="#1a6fb5" />
+            <circle cx="210" cy="130" r="4" fill="#d4952a" />
+            <circle cx="262" cy="130" r="4" fill="#d4952a" />
+            <circle cx="313" cy="110" r="4" fill="#0e8a7d" />
+            <circle cx="365" cy="90" r="4" fill="#0e8a7d" />
+          </svg>
+        </div>
+        <div class="scaffold">
+          <strong>Reading guide:</strong> This graph shows
+          <span class="vocab">distance</span> on the y-axis and
+          <span class="vocab">time</span> on the x-axis. A steep line means
+          moving fast. A flat line means <em>stopped</em> (no distance gained).
+          A gentle slope means moving slowly.<br />
+          <strong>Section A</strong> (blue) = hours 0&ndash;2<br />
+          <strong>Section B</strong> (gold) = hours 2&ndash;4<br />
+          <strong>Section C</strong> (teal) = hours 4&ndash;6
+        </div>
+        <div style="display: grid; gap: 10px">
+          <div>
+            <div class="explain-prompt">Section A (hours 0&ndash;2):</div>
+            <textarea
+              class="explain-input"
+              placeholder="During section A, the car..."
+              aria-label="Describe section A"
+            ></textarea>
+          </div>
+          <div>
+            <div class="explain-prompt">Section B (hours 2&ndash;4):</div>
+            <textarea
+              class="explain-input"
+              placeholder="During section B, the car..."
+              aria-label="Describe section B"
+            ></textarea>
+          </div>
+          <div>
+            <div class="explain-prompt">Section C (hours 4&ndash;6):</div>
+            <textarea
+              class="explain-input"
+              placeholder="During section C, the car..."
+              aria-label="Describe section C"
+            ></textarea>
+          </div>
+        </div>
+        <button class="check-btn" id="c1-check">Submit</button>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "In section ___, the car traveled ___ miles in ___
+            hours. The line is ___ (steep/flat/gentle), which means the car was
+            ___ (moving fast/stopped/moving slowly)."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Great response! Section A: the car traveled 60 miles in 2 hours
+            (moving fast, 30 mph). Section B: the car stopped for 2 hours
+            (distance stayed at 60 miles). Section C: the car traveled 30 more
+            miles in 2 hours (moving slowly, 15 mph).</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Try to describe each section more fully. Look at whether the line
+            is going up (moving), flat (stopped), steep (fast), or gentle
+            (slow).</span
+          >
+        </div>
+      </article>
+    </main>
+
+    <footer class="score-bar">
+      <div class="score-inner">
+        <span class="score-text"
+          ><span id="scoreCount">0</span> of
+          <span id="scoreTotal">8</span> correct</span
+        >
+        <button class="reset-btn" id="resetBtn">Start Over</button>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const ANSWERS = {
+          w1: "c",
+          w2: "false",
+          p2: "b",
+          p4: "b",
+          p5: "true",
+        };
+
+        let score = 0;
+        let total = 0;
+        const totalQ = 8;
+
+        // Level toggle
+        const levelBtns = document.querySelectorAll(".level-btn");
+        const levelDesc = document.getElementById("levelDesc");
+        const descs = {
+          0: "Step-by-step support with read-aloud and worked examples",
+          1: "Guided practice with vocabulary support",
+          2: "Grade-level practice with explanations",
+        };
+        levelBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            levelBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.body.className = (btn.dataset.level === "0") ? "level-0 level-1" : "level-" + btn.dataset.level;
+            levelDesc.textContent = descs[btn.dataset.level];
+          });
+        });
+
+        function updateProgress() {
+          const pct = Math.round((total / totalQ) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("scoreCount").textContent = score;
+        }
+
+        // MC questions
+        document.querySelectorAll(".mc-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".mc-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".mc-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => {
+              b.classList.add("locked");
+              if (b.dataset.val === ANSWERS[qId]) b.classList.add("is-correct");
+            });
+            if (!correct) selected.classList.add("is-wrong");
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // TF questions
+        document.querySelectorAll(".tf-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".tf-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".tf-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => b.classList.add("locked"));
+            if (correct) {
+              selected.classList.add("is-correct");
+              score++;
+              card.classList.add("correct");
+            } else {
+              selected.classList.add("is-wrong");
+              btns.forEach((b) => {
+                if (b.dataset.val === ANSWERS[qId])
+                  b.classList.add("is-correct");
+              });
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // Drag and Drop (P3)
+        const bank = document.getElementById("p3-bank");
+        const zones = document.querySelectorAll(".drag-zone");
+        let draggedItem = null;
+
+        if (bank) {
+          bank.querySelectorAll(".drag-item").forEach((item) => {
+            item.addEventListener("dragstart", (e) => {
+              draggedItem = item;
+              e.dataTransfer.effectAllowed = "move";
+              setTimeout(() => (item.style.opacity = ".4"), 0);
+            });
+            item.addEventListener("dragend", () => {
+              item.style.opacity = "1";
+              draggedItem = null;
+            });
+            item.addEventListener(
+              "touchstart",
+              (e) => {
+                draggedItem = item;
+              },
+              { passive: true },
+            );
+          });
+
+          zones.forEach((zone) => {
+            zone.addEventListener("dragover", (e) => {
+              e.preventDefault();
+              zone.classList.add("over");
+            });
+            zone.addEventListener("dragleave", () =>
+              zone.classList.remove("over"),
+            );
+            zone.addEventListener("drop", (e) => {
+              e.preventDefault();
+              zone.classList.remove("over");
+              if (draggedItem) {
+                zone.appendChild(draggedItem);
+                draggedItem.classList.add("placed");
+              }
+            });
+            zone.addEventListener("click", (e) => {
+              const item = e.target.closest(".drag-item");
+              if (item) {
+                bank.appendChild(item);
+                item.classList.remove("placed");
+              }
+            });
+          });
+
+          // Click-to-place fallback
+          bank.addEventListener("click", (e) => {
+            const item = e.target.closest(".drag-item");
+            if (!item) return;
+            const cat = item.dataset.cat;
+            const targetZone = document.querySelector(
+              `.drag-zone[data-cat="${cat}"]`,
+            );
+            if (targetZone) {
+              targetZone.appendChild(item);
+              item.classList.add("placed");
+            }
+          });
+
+          document
+            .getElementById("p3-check")
+            .addEventListener("click", function () {
+              total++;
+              let allCorrect = true;
+              zones.forEach((zone) => {
+                const cat = zone.dataset.cat;
+                zone.querySelectorAll(".drag-item").forEach((item) => {
+                  if (item.dataset.cat !== cat) allCorrect = false;
+                });
+                if (zone.childElementCount === 0) allCorrect = false;
+              });
+              const card = this.closest(".q-card");
+              if (allCorrect) {
+                score++;
+                card.classList.add("correct");
+              } else {
+                card.classList.add("incorrect");
+              }
+              this.disabled = true;
+              updateProgress();
+            });
+        }
+
+        // Fill-in (P1)
+        const p1Check = document.getElementById("p1-check");
+        if (p1Check) {
+          p1Check.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const inputs = card.querySelectorAll(".fill-input");
+            let allCorrect = true;
+            inputs.forEach((inp) => {
+              const val = inp.value.trim();
+              const ans = inp.dataset.answer;
+              if (val === ans) {
+                inp.classList.add("is-correct");
+              } else {
+                inp.classList.add("is-wrong");
+                allCorrect = false;
+              }
+              inp.readOnly = true;
+            });
+            total++;
+            if (allCorrect) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+
+        // Challenge (C1) - open response, scored on completion
+        const c1Check = document.getElementById("c1-check");
+        if (c1Check) {
+          c1Check.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const textareas = card.querySelectorAll(".explain-input");
+            let hasContent = true;
+            textareas.forEach((ta) => {
+              if (ta.value.trim().length < 5) hasContent = false;
+            });
+            total++;
+            if (hasContent) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+
+        // Reset
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          score = 0;
+          total = 0;
+          document.querySelectorAll(".q-card").forEach((card) => {
+            card.classList.remove("correct", "incorrect");
+          });
+          document.querySelectorAll(".mc-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".tf-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".fill-input").forEach((inp) => {
+            inp.classList.remove("is-correct", "is-wrong");
+            inp.value = "";
+            inp.readOnly = false;
+          });
+          document.querySelectorAll(".drag-item").forEach((item) => {
+            item.classList.remove("placed");
+            if (bank) bank.appendChild(item);
+          });
+          document.querySelectorAll(".drag-zone").forEach((z) => {
+            z.classList.remove("is-correct", "is-wrong");
+          });
+          document
+            .querySelectorAll(".check-btn")
+            .forEach((b) => (b.disabled = false));
+          document
+            .querySelectorAll(".explain-input")
+            .forEach((t) => (t.value = ""));
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        updateProgress();
+      })();
+    
+        // ===== Level 0 read-aloud (click any text to hear it) =====
+        (function(){
+          var raBtn = document.getElementById("readAloudBtn");
+          if(!raBtn) return;
+          var on = false;
+          function speak(t){ try{ window.speechSynthesis.cancel();
+            var u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.speak(u);}catch(e){} }
+          raBtn.addEventListener("click", function(){
+            on=!on; document.body.classList.toggle("reading", on);
+            raBtn.textContent = on ? "🔊 Tap text to hear" : "🔊 Read aloud";
+            if(!on){ try{window.speechSynthesis.cancel();}catch(e){} }
+          });
+          document.addEventListener("click", function(e){
+            if(!on || !document.body.classList.contains("level-0")) return;
+            if(e.target.closest(".level-bar")) return;
+            var el = e.target.closest("p,li,h1,h2,h3,label,.question,.prompt,.q-text,.scaffold,.sentence-frame");
+            if(el && el.textContent.trim()){ speak(el.textContent.trim()); }
+          }, true);
+        })();
+
+      </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

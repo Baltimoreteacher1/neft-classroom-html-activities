@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Noam School — Focus & Plan</title>
+    <meta
+      name="description"
+      content="A calm, focused planner that helps with starting work, breaking it into steps, and keeping track of school — online or offline."
+    />
+    <meta name="theme-color" content="#1e293b" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Noam School" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="wrap">
+      <header class="top">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">N</div>
+          <div>
+            <h1 id="brandName">Noam School</h1>
+            <p>Focus &amp; Plan</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="chip online" id="connChip" title="Connection status"
+            ><span class="dot" aria-hidden="true"></span
+            ><span id="connText">Online</span></span
+          >
+          <button class="btn sm" data-act="install" id="installBtn" hidden>
+            ⬇️ Install
+          </button>
+        </div>
+      </header>
+
+      <section id="hero" class="hero" aria-label="Right now"></section>
+      <main id="main" tabindex="-1"></main>
+    </div>
+
+    <button
+      class="fab"
+      id="fab"
+      data-act="quick-add"
+      aria-label="Quick add an assignment"
+      title="Quick add an assignment"
+    >
+      ＋
+    </button>
+
+    <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
+
+    <div
+      class="modal-back"
+      id="modalBack"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+      aria-hidden="true"
+    >
+      <div class="modal">
+        <div class="head">
+          <h2 id="modalTitle">Edit</h2>
+          <button
+            class="btn sm danger"
+            data-act="close-modal"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <div
+      class="focus-overlay"
+      id="focusOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Focus session"
+    >
+      <div class="fhead">
+        <div>
+          <div class="ftitle" id="fTitle">Focus</div>
+          <div class="fclass" id="fClass"></div>
+        </div>
+        <button class="btn sm" data-act="focus-stop" aria-label="Exit focus">
+          ✕ Exit
+        </button>
+      </div>
+      <div class="timer-ring">
+        <svg viewBox="0 0 300 300" aria-hidden="true">
+          <circle
+            class="track"
+            cx="150"
+            cy="150"
+            r="130"
+            fill="none"
+            stroke-width="16"
+          ></circle>
+          <circle
+            class="prog"
+            id="fProg"
+            cx="150"
+            cy="150"
+            r="130"
+            fill="none"
+            stroke-width="16"
+            stroke-dasharray="816.81"
+            stroke-dashoffset="0"
+          ></circle>
+        </svg>
+        <div class="time" id="fTime" role="timer" aria-live="off">15:00</div>
+        <div class="phase" id="fPhase">Focus</div>
+      </div>
+      <div class="fsteps" id="fSteps"></div>
+      <div class="factions">
+        <button class="btn" data-act="focus-stop">⏹ Stop</button>
+        <button class="btn go" data-act="complete" id="fDone">
+          ✓ Mark done
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="guide-overlay"
+      id="guideOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Guided routine"
+    >
+      <div class="ghead">
+        <div>
+          <div class="gtitle" id="gTitle">Routine</div>
+          <div class="gsub" id="gSub"></div>
+        </div>
+        <button class="btn sm" data-act="guide-stop" aria-label="Exit routine">
+          ✕ Exit
+        </button>
+      </div>
+      <div class="gprog" aria-hidden="true">
+        <div class="gprog-bar"><span id="gBar"></span></div>
+        <div class="gprog-text" id="gCount"></div>
+      </div>
+      <div class="gbody" id="gBody"></div>
+      <div class="gcountdown" id="gCountdown" aria-live="polite"></div>
+      <div class="gactions" id="gActions"></div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js" defer></script>
+    <!-- Intentionally NOT loading /assets/nt-page-enhance.js here: its fixed
+         "Save as PDF/DOC" bar (position:fixed; bottom:0; max z-index) overlays
+         this PWA's own bottom tab nav + quick-add button and blocks taps. This
+         app is a self-contained planner and needs none of the hub enhancer. -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

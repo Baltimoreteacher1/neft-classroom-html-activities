@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neft Teacher Do Now / Warm-up Generator</title>
+    <meta
+      name="description"
+      content="Build ready-to-use Do Nows, warm-ups, and quizzes from real Grade 6 items with answer keys. Project, print, upload slides, or export for Google Forms."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <aside class="sidebar" aria-label="Do Now Generator navigation">
+        <div class="brand">
+          <span class="badge info">Local-first</span>
+          <h1>Neft Teacher Do Now / Warm-up Generator</h1>
+          <p>
+            Pick a lesson or type a request → edit questions → Google Form code.
+          </p>
+        </div>
+        <nav class="nav" aria-label="Sections">
+          <button class="active" data-tab="start" type="button">
+            Start Here
+          </button>
+          <button data-tab="build" type="button">1. Build Questions</button>
+          <button data-tab="edit" type="button">2. Review &amp; Edit</button>
+          <button data-tab="present" type="button">
+            3. Present &amp; Export
+          </button>
+          <button data-tab="slides" type="button">Upload Slides</button>
+          <button data-tab="about" type="button">How Outputs Work</button>
+        </nav>
+        <div class="sidebar-foot">
+          v2.0 · 666-item bank + 74-lesson manifest ·
+          <a href="../">Back to Teacher Tools</a>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h2 id="pageTitle">Start Here</h2>
+            <p id="pageSubtitle">Make today's Do Now in three steps.</p>
+          </div>
+          <div class="top-actions">
+            <span class="badge neutral">No login · no student data</span>
+            <span class="badge neutral" id="countBadge" aria-live="polite"
+              >0 questions</span
+            >
+            <button
+              class="btn"
+              id="themeBtn"
+              type="button"
+              aria-pressed="false"
+            >
+              Theme
+            </button>
+          </div>
+        </header>
+
+        <section class="body">
+          <!-- ============ START ============ -->
+          <section id="start" class="screen active" aria-labelledby="startH">
+            <div class="hero">
+              <span class="badge info">Recommended workflow</span>
+              <h2 id="startH">Make today's Do Now in minutes.</h2>
+              <p>
+                Build a complete Do Now, warm-up, or quiz from a 666-item
+                Grade&nbsp;6 bank where every question carries its verified
+                answer key. Filter by unit, standard, tier, and length; or pick
+                a lesson, type a request, or upload your own slides. Then
+                project it, print it, or export it for Google Forms. No account,
+                no server, works offline.
+              </p>
+              <div class="button-row">
+                <button class="btn primary" data-go="build" type="button">
+                  Start building questions
+                </button>
+                <button class="btn" data-go="about" type="button">
+                  What does it output?
+                </button>
+              </div>
+            </div>
+
+            <div class="grid g3">
+              <article class="card">
+                <h3>1. Build Questions</h3>
+                <p class="muted">
+                  Use the <strong>Assessment Builder</strong> to pull real items
+                  with answer keys (Do-Now, Warm-up, Quiz, or Spiral mix), or
+                  <strong>pick a lesson</strong> /
+                  <strong>type a request</strong>.
+                </p>
+              </article>
+              <article class="card">
+                <h3>2. Review &amp; Edit</h3>
+                <p class="muted">
+                  Add, remove, and edit questions. Set each type
+                  (multiple-choice, short answer, paragraph) and confirm correct
+                  answers.
+                </p>
+              </article>
+              <article class="card">
+                <h3>3. Present &amp; Export</h3>
+                <p class="muted">
+                  Project the clean student view (reveal answers on demand),
+                  print, or export a Google Forms&nbsp;/ quiz import
+                  (list&nbsp;+ CSV) or Apps Script.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <!-- ============ BUILD ============ -->
+          <section id="build" class="screen" aria-labelledby="buildH">
+            <div class="card">
+              <h3 id="buildH">Choose how to build your Do Now</h3>
+              <div class="mode-tabs" role="tablist" aria-label="Input mode">
+                <button
+                  class="mode-tab"
+                  data-mode="bank"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="modeBank"
+                  type="button"
+                >
+                  <strong>A · Assessment Builder</strong><br />
+                  <span class="muted"
+                    >Real items + answer keys, by unit / standard / tier.</span
+                  >
+                </button>
+                <button
+                  class="mode-tab"
+                  data-mode="lesson"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="modeLesson"
+                  type="button"
+                >
+                  <strong>B · Pick a lesson</strong><br />
+                  <span class="muted"
+                    >Auto-seed review questions from a lesson.</span
+                  >
+                </button>
+                <button
+                  class="mode-tab"
+                  data-mode="type"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="modeType"
+                  type="button"
+                >
+                  <strong>C · Type a request</strong><br />
+                  <span class="muted"
+                    >Describe topic, standard, count, types.</span
+                  >
+                </button>
+              </div>
+
+              <!-- MODE: ASSESSMENT BUILDER (real items + answers) -->
+              <div id="modeBank" role="tabpanel">
+                <p class="muted" id="bankStatus">Loading question bank…</p>
+                <div class="grid g3">
+                  <label class="field" for="bankPreset">
+                    Assessment type
+                    <select id="bankPreset">
+                      <option value="do-now">Do-Now (3 Qs)</option>
+                      <option value="warmup">Warm-up (5 Qs)</option>
+                      <option value="quiz">Quiz (10 Qs, graded)</option>
+                      <option value="spiral">
+                        Spiral mix (6 Qs, all units)
+                      </option>
+                    </select>
+                  </label>
+                  <label class="field" for="bankCount">
+                    Length (questions)
+                    <input
+                      id="bankCount"
+                      type="number"
+                      min="1"
+                      max="25"
+                      value="3"
+                    />
+                  </label>
+                  <label class="field" for="bankTier">
+                    Tier
+                    <select id="bankTier">
+                      <option value="">Any tier</option>
+                      <option value="approaching">Level 1 · support</option>
+                      <option value="onLevel">On level</option>
+                      <option value="optional">Level 2 · enrichment</option>
+                      <option value="vocab">Vocabulary</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="grid g2">
+                  <label class="field" for="bankUnit">
+                    Unit
+                    <select id="bankUnit">
+                      <option value="">All units</option>
+                    </select>
+                  </label>
+                  <label class="field" for="bankStandard">
+                    Standard
+                    <select id="bankStandard">
+                      <option value="">All standards</option>
+                    </select>
+                  </label>
+                </div>
+                <p class="hint" id="bankAvail" aria-live="polite"></p>
+                <div class="button-row">
+                  <button
+                    class="btn primary"
+                    id="buildAssessment"
+                    type="button"
+                  >
+                    Build assessment
+                  </button>
+                </div>
+                <p class="muted" style="margin-top: 12px">
+                  Every item comes from the Grade&nbsp;6 spiral-review bank with
+                  a verified correct answer. Items without a usable answer are
+                  skipped automatically (counts are reported).
+                </p>
+              </div>
+
+              <!-- MODE A -->
+              <div id="modeLesson" role="tabpanel" hidden>
+                <label class="field" for="lessonSelect">
+                  Lesson
+                  <select id="lessonSelect">
+                    <option value="">Loading lessons…</option>
+                  </select>
+                  <span class="hint" id="lessonHint">
+                    Selecting a lesson seeds 3-5 warm-up review questions you
+                    can then edit.
+                  </span>
+                </label>
+                <label class="field" for="lessonCount">
+                  How many questions to seed
+                  <select id="lessonCount">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                  </select>
+                </label>
+                <div class="button-row">
+                  <button class="btn primary" id="seedFromLesson" type="button">
+                    Seed Do Now from this lesson
+                  </button>
+                </div>
+              </div>
+
+              <!-- MODE B -->
+              <div id="modeType" role="tabpanel" hidden>
+                <label class="field" for="reqText">
+                  Describe what you want
+                  <textarea
+                    id="reqText"
+                    placeholder="Example: 4 questions on dividing fractions, standard 6.NS.1. Mostly multiple choice, one short answer. Quick review level."
+                  ></textarea>
+                  <span class="hint">
+                    Mention a topic, an optional standard (like 6.NS.1), a
+                    number of questions, and question types. Generation is
+                    deterministic and runs entirely in your browser.
+                  </span>
+                </label>
+                <div class="grid g3">
+                  <label class="field" for="reqCount">
+                    Number of questions
+                    <input
+                      id="reqCount"
+                      type="number"
+                      min="1"
+                      max="20"
+                      value="4"
+                    />
+                  </label>
+                  <label class="field" for="reqStandard">
+                    Standard (optional)
+                    <input id="reqStandard" type="text" placeholder="6.NS.1" />
+                  </label>
+                  <label class="field" for="reqTypes">
+                    Question types
+                    <select id="reqTypes">
+                      <option value="mixed">Mixed (MC + short answer)</option>
+                      <option value="multiple-choice">
+                        Multiple choice only
+                      </option>
+                      <option value="short-answer">Short answer only</option>
+                      <option value="paragraph">Paragraph only</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="button-row">
+                  <button class="btn primary" id="genFromText" type="button">
+                    Generate questions
+                  </button>
+                </div>
+                <p class="muted" style="margin-top: 12px">
+                  Optional AI hook: an https-only endpoint stub exists in
+                  <code>app.js</code> (<code>AI_ENDPOINT</code>), disabled by
+                  default with a local fallback. No network call is made unless
+                  you set it.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ EDIT ============ -->
+          <section id="edit" class="screen" aria-labelledby="editH">
+            <div class="card">
+              <h3 id="editH">Review &amp; edit your questions</h3>
+              <div class="grid g2">
+                <label class="field" for="formTitle">
+                  Form title
+                  <input id="formTitle" type="text" value="Do Now" />
+                </label>
+                <label class="field" for="formDate">
+                  Date (shown in title)
+                  <input id="formDate" type="date" />
+                </label>
+              </div>
+              <label
+                class="inline"
+                for="quizMode"
+                style="
+                  margin: 4px 0 12px;
+                  display: inline-flex;
+                  gap: 8px;
+                  align-items: center;
+                "
+              >
+                <input id="quizMode" type="checkbox" />
+                Quiz mode (auto-grade MC, assign 1 point each)
+              </label>
+              <div class="button-row">
+                <button class="btn" id="addMc" type="button">
+                  + Multiple choice
+                </button>
+                <button class="btn" id="addShort" type="button">
+                  + Short answer
+                </button>
+                <button class="btn" id="addPara" type="button">
+                  + Paragraph
+                </button>
+                <button class="btn danger" id="clearAll" type="button">
+                  Clear all
+                </button>
+              </div>
+            </div>
+            <div class="card">
+              <div id="qList" class="q-list" aria-live="polite">
+                <p class="q-empty">
+                  No questions yet. Build some on step 1, or add them above.
+                </p>
+              </div>
+              <div class="button-row">
+                <button class="btn primary" data-go="present" type="button">
+                  Present &amp; export →
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ PRESENT & EXPORT ============ -->
+          <section id="present" class="screen" aria-labelledby="presH">
+            <div class="card">
+              <h3 id="presH">Present &amp; export your set</h3>
+              <div class="view-tabs" role="tablist" aria-label="View">
+                <button
+                  class="view-tab"
+                  data-view="student"
+                  role="tab"
+                  aria-selected="true"
+                  type="button"
+                >
+                  Student view
+                </button>
+                <button
+                  class="view-tab"
+                  data-view="key"
+                  role="tab"
+                  aria-selected="false"
+                  type="button"
+                >
+                  Answer key
+                </button>
+                <button
+                  class="view-tab"
+                  data-view="export"
+                  role="tab"
+                  aria-selected="false"
+                  type="button"
+                >
+                  Export
+                </button>
+              </div>
+
+              <!-- STUDENT VIEW -->
+              <div class="view-panel active" data-viewpanel="student">
+                <div class="button-row">
+                  <button
+                    class="btn"
+                    id="revealAllBtn"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    Reveal all answers
+                  </button>
+                  <button class="btn" id="printStudent" type="button">
+                    Print student copy
+                  </button>
+                </div>
+                <p class="hint">
+                  Clean, projectable, and printable. Answers stay hidden until
+                  you reveal them (per item, or all at once) — ideal for
+                  projecting a Do Now.
+                </p>
+                <div id="studentView" class="sheet">
+                  <p class="q-empty">Build some questions first (step 1).</p>
+                </div>
+              </div>
+
+              <!-- ANSWER KEY -->
+              <div class="view-panel" data-viewpanel="key">
+                <div class="button-row">
+                  <button class="btn" id="printKey" type="button">
+                    Print answer key
+                  </button>
+                </div>
+                <p class="hint">
+                  Teacher copy with the correct choice marked and an explanation
+                  when the bank provides one.
+                </p>
+                <div id="answerKey" class="sheet">
+                  <p class="q-empty">Build some questions first (step 1).</p>
+                </div>
+              </div>
+
+              <!-- EXPORT -->
+              <div class="view-panel" data-viewpanel="export">
+                <div
+                  class="export-tabs"
+                  role="tablist"
+                  aria-label="Export type"
+                >
+                  <button
+                    class="export-tab"
+                    data-exp="forms"
+                    role="tab"
+                    aria-selected="true"
+                    type="button"
+                  >
+                    Google Forms / quiz import
+                  </button>
+                  <button
+                    class="export-tab"
+                    data-exp="gs"
+                    role="tab"
+                    aria-selected="false"
+                    type="button"
+                  >
+                    Apps Script (.gs)
+                  </button>
+                </div>
+
+                <!-- FORMS IMPORT (list + CSV) -->
+                <div class="export-panel active" data-exp="forms">
+                  <p class="muted">
+                    A clean, importable format for building a Google Form /
+                    quiz. Copy the formatted list (question + options + marked
+                    correct answer) or download a CSV (question, optionA…D,
+                    correctAnswer).
+                  </p>
+                  <div class="button-row">
+                    <button
+                      class="btn primary"
+                      id="copyFormsList"
+                      type="button"
+                    >
+                      Copy question list
+                    </button>
+                    <button class="btn" id="downloadFormsList" type="button">
+                      Download list (.txt)
+                    </button>
+                    <button class="btn" id="downloadCsv" type="button">
+                      Download CSV
+                    </button>
+                  </div>
+                  <div class="code-wrap" style="margin-top: 12px">
+                    <label class="sr-only" for="formsListOut"
+                      >Google Forms import list</label
+                    >
+                    <pre class="code" id="formsListOut" tabindex="0">
+Build some questions first (step 1).</pre
+                    >
+                  </div>
+                  <p class="muted" style="margin-top: 10px">
+                    Live Forms-API auto-creation (one click, no paste) is a
+                    future add — it needs Google OAuth and a signed-in backend,
+                    out of scope for this static, login-free tool.
+                  </p>
+                </div>
+
+                <!-- APPS SCRIPT -->
+                <div class="export-panel" data-exp="gs">
+                  <p class="muted">
+                    Generate a self-contained Apps Script, then run it in
+                    <strong>your own</strong> Google account — this site never
+                    sees your login. Pick what you want it to build:
+                  </p>
+
+                  <div
+                    class="gs-target"
+                    role="radiogroup"
+                    aria-label="What to generate"
+                  >
+                    <button
+                      class="gs-target-btn"
+                      data-gstarget="form"
+                      role="radio"
+                      aria-checked="true"
+                      type="button"
+                    >
+                      <strong>Google Form (quiz)</strong>
+                      <span class="muted"
+                        >Real graded form. Correct answers become the answer
+                        key, 1 pt each, with feedback.</span
+                      >
+                    </button>
+                    <button
+                      class="gs-target-btn"
+                      data-gstarget="doc"
+                      role="radio"
+                      aria-checked="false"
+                      type="button"
+                    >
+                      <strong>Google Doc</strong>
+                      <span class="muted"
+                        >Printable worksheet — Student or Answer Key
+                        version.</span
+                      >
+                    </button>
+                    <button
+                      class="gs-target-btn"
+                      data-gstarget="slides"
+                      role="radio"
+                      aria-checked="false"
+                      type="button"
+                    >
+                      <strong>Google Slides</strong>
+                      <span class="muted"
+                        >One projectable slide per question, plus answer
+                        slides.</span
+                      >
+                    </button>
+                  </div>
+
+                  <label
+                    class="inline gs-docmode"
+                    id="gsDocModeWrap"
+                    for="gsDocMode"
+                    hidden
+                    style="
+                      margin: 6px 0 0;
+                      display: inline-flex;
+                      gap: 8px;
+                      align-items: center;
+                    "
+                  >
+                    Doc version
+                    <select id="gsDocMode" style="width: auto">
+                      <option value="student">Student (no answers)</option>
+                      <option value="key">Answer Key (answers marked)</option>
+                    </select>
+                  </label>
+
+                  <ol class="steps" style="margin: 14px 0 4px">
+                    <li>
+                      Open
+                      <code>script.google.com</code> →
+                      <strong>New project</strong>.
+                    </li>
+                    <li>
+                      Delete the sample code, then paste the script below.
+                    </li>
+                    <li>
+                      Click <strong>Run</strong> → authorize (first time only).
+                    </li>
+                    <li>
+                      Your Form / Doc / Slides appears in your
+                      <strong>Google Drive</strong> (the URL is also logged).
+                    </li>
+                  </ol>
+
+                  <div class="button-row">
+                    <button class="btn primary" id="copyCode" type="button">
+                      Copy code
+                    </button>
+                    <button class="btn" id="downloadCode" type="button">
+                      Download .gs
+                    </button>
+                    <a
+                      class="btn"
+                      id="openScript"
+                      href="https://script.google.com/home/projects/create"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >Open script.google.com</a
+                    >
+                  </div>
+                  <div class="code-wrap" style="margin-top: 12px">
+                    <label class="sr-only" for="codeOut"
+                      >Generated Google Apps Script</label
+                    >
+                    <pre class="code" id="codeOut" tabindex="0">
+Build some questions first (step 1).</pre
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ UPLOAD SLIDES ============ -->
+          <section id="slides" class="screen" aria-labelledby="slidesH">
+            <div class="card">
+              <h3 id="slidesH">Upload slides → projectable Do Now</h3>
+              <p class="muted">
+                Drop in images (PNG/JPG), a PDF, or a PowerPoint (PPTX). Each
+                becomes a slide you can project one at a time with a
+                think-timer. Everything stays in your browser — nothing is
+                uploaded to a server. (PDF and PPTX parsing load small libraries
+                from a CDN; if you are offline they degrade gracefully.)
+              </p>
+              <div
+                id="slideDrop"
+                class="slide-drop"
+                role="button"
+                tabindex="0"
+                aria-label="Upload slides"
+              >
+                <strong>Drag &amp; drop files here</strong>
+                <span class="muted">or</span>
+                <label class="btn primary" for="slideFile">
+                  Choose files
+                  <input
+                    id="slideFile"
+                    type="file"
+                    accept="image/*,application/pdf,.pptx,.png,.jpg,.jpeg"
+                    multiple
+                    hidden
+                  />
+                </label>
+                <span class="muted" id="slideStatus"></span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="slide-toolbar">
+                <button class="btn" id="slidePrev" type="button">← Prev</button>
+                <span id="slideCounter" class="badge neutral"></span>
+                <button class="btn" id="slideNext" type="button">Next →</button>
+                <span class="spacer"></span>
+                <label class="inline" for="timerSecs"
+                  >Timer (sec)
+                  <input
+                    id="timerSecs"
+                    type="number"
+                    min="5"
+                    max="900"
+                    value="60"
+                    style="width: 72px"
+                  />
+                </label>
+                <button class="btn" id="startTimer" type="button">Start</button>
+                <button class="btn" id="stopTimer" type="button">Stop</button>
+                <span id="timerLabel" class="timer-label">0:00</span>
+                <button class="btn" id="fullscreenBtn" type="button">
+                  Fullscreen
+                </button>
+                <button class="btn danger" id="clearSlides" type="button">
+                  Clear
+                </button>
+              </div>
+              <div id="slideStageWrap" class="slide-stage-wrap">
+                <div id="slideStage" class="slide-stage">
+                  <p class="muted slide-placeholder">
+                    Upload images, a PDF, or a PPTX to start a projectable
+                    slideshow.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div id="slideText" class="slide-textbox"></div>
+            </div>
+          </section>
+
+          <!-- ============ ABOUT ============ -->
+          <section id="about" class="screen" aria-labelledby="aboutH">
+            <div class="card">
+              <h3 id="aboutH">What each output is</h3>
+              <div class="grid g2">
+                <article class="card" style="margin: 0">
+                  <h3>Google Apps Script (.gs) — used here</h3>
+                  <p class="muted">
+                    A short program that runs inside Google's own environment
+                    (script.google.com). When you press Run, Google's
+                    <code>FormApp</code> service creates the Form in your Drive
+                    and prints its URL. This site never sees your Google
+                    account, so no login is needed here. This is the route this
+                    tool uses.
+                  </p>
+                </article>
+                <article class="card" style="margin: 0">
+                  <h3>Google Forms / quiz import (list + CSV)</h3>
+                  <p class="muted">
+                    A formatted question list (with the correct answer marked)
+                    and a CSV (question, optionA…D, correctAnswer) you can paste
+                    or import when building a Form or quiz. Live Forms-API
+                    auto-creation needs Google OAuth and a signed-in backend, so
+                    it is intentionally left as a future add to keep this tool
+                    static, login-free, and student-data-free.
+                  </p>
+                </article>
+              </div>
+              <div class="notice" role="note">
+                Teacher tool only. No student data is collected or stored. Your
+                draft questions stay in this browser (localStorage) and never
+                leave your device.
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+</body>
+</html>

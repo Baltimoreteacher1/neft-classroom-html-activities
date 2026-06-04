@@ -1,0 +1,1451 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sports Stats Scout — Unit 3 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 3 Ratios &amp; Rates culminating project. Scout a real athlete (or your own stats) with unit rates, compare with a partner using equivalent ratios, then compare points-per-game to real youth players around the world."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .phero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
+      }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .intro-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--blue);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+
+      .phase {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .phase-num {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .task strong {
+        color: var(--navy);
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      input[type="url"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--blue);
+        border: 2px solid var(--line);
+      }
+
+      .readout {
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
+
+      .ratio-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 15px;
+      }
+      .ratio-table th,
+      .ratio-table td {
+        border: 1px solid var(--line);
+        padding: 10px 14px;
+        text-align: center;
+      }
+      .ratio-table th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .ratio-table td:first-child {
+        font-weight: 700;
+        background: var(--blue-light);
+        text-align: left;
+      }
+
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
+
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
+      @media print {
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
+    <header class="phero">
+      <div class="deco">🏆</div>
+      <h1>Sports Stats Scout</h1>
+      <p>
+        Scout a <strong>real athlete you look up</strong> — or use your own
+        stats. Compute a unit rate (points per game), compare with a partner's
+        athlete using <em>equivalent ratios</em>, then see how your player's
+        scoring rate stacks up against real youth players around the world.
+      </p>
+      <div class="tags">
+        <span class="tag gold">Unit 3 · Ratios &amp; Rates</span>
+        <span class="tag">6.RP.1</span>
+        <span class="tag">6.RP.2</span>
+        <span class="tag">6.RP.3</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u3ProjectB')">💾 Save</button>
+        <button
+          onclick="PK.load('u3ProjectB', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <h2>📋 Your Mission</h2>
+        <p>
+          Scout an athlete in three steps using ratios and rates.
+          <strong>Part 1 (Self):</strong> pick a real athlete you look up
+          (record their name + source) or use your own stats, and compute the
+          scoring unit rate. <strong>Part 2 (Peer):</strong> interview a partner
+          about <em>their</em> athlete and compare with equivalent ratios scaled
+          to the same games. <strong>Part 3 (World):</strong> compare your
+          points per game to real youth players. Finish the scouting report,
+          checklist, and export.
+        </p>
+      </div>
+
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">⚖️</span><b>Ratio</b>
+            <p>A compare of two amounts, like 84 points to 12 games (84:12).</p>
+            <p class="pk-es">
+              Razón: una comparación de dos cantidades, como 84 puntos por 12
+              juegos (84:12).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🟰</span><b>Equivalent Ratio</b>
+            <p>
+              The same ratio made bigger or smaller by × the same number. 84:12
+              = 420:60.
+            </p>
+            <p class="pk-es">
+              Razón equivalente: la misma razón al multiplicar ambas partes por
+              el mismo número.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">1️⃣</span><b>Unit Rate</b>
+            <p>
+              How much for just ONE: total ÷ quantity, like points per 1 game.
+            </p>
+            <p class="pk-es">
+              Tasa unitaria: cuánto por UNO solo: total ÷ cantidad, como puntos
+              por 1 juego.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🛒</span><b>Better Buy / Better Rate</b>
+            <p>
+              Comparing rates fairly: a higher points-per-game is the stronger
+              scorer.
+            </p>
+            <p class="pk-es">
+              Comparar tasas de forma justa: más puntos por juego = mejor
+              anotador.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>Ratio:</b> a : b (points : games)</p>
+            <p>
+              <b>Equivalent ratio:</b> multiply both parts by the same factor
+            </p>
+            <p><b>Unit rate:</b> total ÷ quantity (points ÷ games)</p>
+            <p>
+              <b>Compare fairly:</b> scale both to the same games, then compare
+              points
+            </p>
+            <p class="pk-lvl2">
+              <b>Rate as data (preview):</b> mean ppg = (sum of player rates) ÷
+              (how many)
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "My athlete's unit rate is ___ points per game because ___ ÷ ___ =
+              ___."
+            </p>
+            <p>
+              "At ___ games, my athlete scores ___ and my partner's scores ___."
+            </p>
+            <p>"My athlete's rate is higher / lower than ___ because ___."</p>
+            <p class="pk-es">
+              "La tasa de mi atleta es ___ puntos por juego porque ___ ÷ ___ =
+              ___."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <span class="arc-banner">Part 1 · Self — your real athlete</span>
+            <div class="skill">Ratios · Unit rate · Ratio table · 6.RP.1–3</div>
+            <h2>Scout YOUR Athlete</h2>
+          </div>
+        </div>
+        <p>
+          Pick a <strong>real athlete you look up</strong> (look up their season
+          points and games), or use your own stats. Record where you found the
+          numbers. Not sure yet? Click <em>Use example numbers</em> to model the
+          math, then change them.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="ath-name"
+              >Athlete name (real player or you)</label
+            >
+            <input
+              type="text"
+              id="ath-name"
+              data-save
+              placeholder="example: A. Wilson"
+            />
+          </div>
+          <div>
+            <label class="fld" for="ath-source"
+              >Where did you find the stats? (source)</label
+            >
+            <input
+              type="text"
+              id="ath-source"
+              data-save
+              placeholder="example: ESPN.com, team website, my coach"
+            />
+          </div>
+        </div>
+
+        <!-- 1a Unit rate -->
+        <h3 style="margin-top: 18px">1️⃣ Scoring unit rate (6.RP.2)</h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: try numbers that divide evenly, like 84 points in 12
+          games. The points box is pre-filled to get you started.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="r-pts">Total points (season)</label>
+            <input
+              type="number"
+              id="r-pts"
+              data-save
+              min="0"
+              placeholder="example: 84"
+              oninput="calcRate()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="r-games">Games played</label>
+            <input
+              type="number"
+              id="r-games"
+              data-save
+              min="1"
+              placeholder="example: 12"
+              oninput="calcRate()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcRate()">
+          Calculate points per game
+        </button>
+        <div class="readout" id="rate-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Unit rate = total ÷ number of games. 84 points in 12 games is 84 ÷
+            12 = <strong>7 points per game</strong>. The ratio 84:12 can also be
+            written 7:1 — that is the unit rate.
+          </p>
+        </details>
+
+        <!-- 1b Ratio table / projection -->
+        <h3 style="margin-top: 24px">
+          🟰 Project the season — ratio table (6.RP.3)
+        </h3>
+        <p style="font-size: 14px; color: var(--muted)">
+          Use your athlete's unit rate to project points at 10, 20, and 30
+          games. All rows are equivalent ratios — the rate stays constant.
+        </p>
+        <button class="btn alt" type="button" onclick="calcTable()">
+          Build season projection table
+        </button>
+        <div class="readout" id="table-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            At 7 points per game: 10 games → 70 pts, 20 games → 140 pts, 30
+            games → 210 pts. Each row multiplies the unit rate by the number of
+            games.
+          </p>
+        </details>
+
+        <!-- 1c quick self-check -->
+        <div class="task" style="margin-top: 18px">
+          <strong>Quick rate check:</strong> A player scores 20 points in 5
+          games. What is the unit rate (points per game)?
+        </div>
+        <label class="fld" for="check-ppg">Your answer (points per game)</label>
+        <input
+          type="number"
+          id="check-ppg"
+          data-save
+          step="0.01"
+          placeholder="Type a number"
+        />
+        <button class="btn alt" type="button" onclick="checkPPGFn()">
+          Check answer
+        </button>
+        <div class="feedback" id="check-ppgFb"></div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 worked step: 20 ÷ 5 = 4 points per game.
+        </p>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div>
+            <span class="arc-banner">Part 2 · Peer — interview a partner</span>
+            <div class="skill">Compare with equivalent ratios · 6.RP.3</div>
+            <h2>Interview &amp; Compare Athletes</h2>
+          </div>
+        </div>
+        <p>
+          Ask a partner about <strong>their</strong> athlete and type in the
+          points and games. We scale both athletes to a common number of games
+          using <em>equivalent ratios</em> so you can compare points fairly.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>
+            "Which athlete did you scout? What is their points-per-game rate?"
+          </p>
+          <p>"How many total points and games did they play?"</p>
+          <p>"Who scores more at the same number of games?"</p>
+          <p class="pk-es">
+            "¿A qué atleta investigaste? ¿Cuál es su tasa por juego?"
+          </p>
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-common"
+              >Common base — scale both to this many games</label
+            >
+            <input
+              type="number"
+              id="p-common"
+              data-save
+              min="1"
+              value="60"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-pts">Partner athlete: total points</label>
+            <input
+              type="number"
+              id="p-pts"
+              data-save
+              min="0"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-games"
+              >Partner athlete: games played</label
+            >
+            <input
+              type="number"
+              id="p-games"
+              data-save
+              min="1"
+              oninput="comparePeer()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare with equivalent ratios
+        </button>
+        <div class="readout" id="peer-out"></div>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <label class="fld" for="peerReflect"
+          >Whose athlete scores more at the same number of games, and how do you
+          know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="At ___ games, my athlete has ___ points and my partner's has ___, so ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner">Part 3 · World — real youth players</span>
+            <div class="skill">Unit rate vs the world · 6.RP.2 · 6.RP.3</div>
+            <h2>How Does Your Player Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are realistic points-per-game rates for youth players around the
+          world. Type your athlete's points per game and see where it lands
+          versus the global average.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="myWorld"
+              >My athlete's points per game</label
+            >
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your ppg"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: your unit rate from Part 1 is the value to type here.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>Youth Player Sample 🌍</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>Player / Country</th>
+                  <th>Points per game</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+            <p style="font-size: 13px; color: var(--muted)">
+              👀 Spot the outlier: one player's rate is far above the rest. Test
+              it in the What-If Lab below.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Add a hot-streak game (extra points) to your athlete and watch the
+            average points-per-game change. This is rate-as-data.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="wf-pts"
+                >Extra points in one hot-streak game</label
+              >
+              <input
+                type="number"
+                id="wf-pts"
+                min="0"
+                placeholder="example: 30"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter your athlete's stats in Part 1, then a hot-streak value.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is your athlete's rate higher or lower than the world average? Why
+          might that be?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My athlete's ppg is ___ the world average because ___."
+        ></textarea>
+
+        <div class="pk-lvl2">
+          <div class="task" style="margin-top: 4px">
+            <strong>Level 2 — Rate-as-data (preview of statistics):</strong> The
+            player rates are a small data set. Find the <em>mean</em> points per
+            game, then spot the <em>outlier</em> (the player far above the
+            rest). Explain how one outlier pulls the mean up.
+          </div>
+          <label class="fld" for="worldMean"
+            >Mean points per game you computed</label
+          >
+          <input
+            type="number"
+            id="worldMean"
+            data-save
+            step="0.01"
+            placeholder="sum of rates ÷ how many players"
+          />
+          <label class="fld" for="worldOutlier"
+            >Which player is the outlier, and how does it change the
+            mean?</label
+          >
+          <textarea
+            id="worldOutlier"
+            data-save
+            placeholder="The outlier is ___ at ___ ppg. It pulls the mean UP because ___."
+          ></textarea>
+        </div>
+
+        <label class="fld" for="careful"
+          >Careful thinking: why can it be unfair to compare scoring rates
+          between players?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="It can be unfair to compare because ___ (different sport, league level, minutes played, position...)."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Scouting Report</h2>
+          </div>
+        </div>
+        <p>
+          Write a short scouting report (3–5 sentences) using your real numbers
+          from above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="I scouted ___ (source: ___). Their unit rate is ___ points per game (___ pts ÷ ___ games). Over a 30-game season they project to ___ points. Compared to my partner's athlete scaled to ___ games, mine scored ___ vs ___. My athlete's rate is higher / lower than the world average of ___ ppg because ___."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Scouting Report Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I recorded a real
+            athlete (or my own stats) with a source.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I computed the unit
+            rate (points per game).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I built a season
+            projection ratio table (10, 20, 30 games).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I checked my rate
+            reasoning with the quick check.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I interviewed a partner
+            and compared athletes with equivalent ratios.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> I compared my athlete's
+            rate to the world player sample.
+          </li>
+        </ul>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.downloadText('scouting-report.txt', 'reportBox')"
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your scouting summary.
+        </div>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--navy)">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Unit Rate (6.RP.2)</td>
+            <td>Unit rate correct; division shown; interpretation stated</td>
+            <td>Unit rate numerically correct</td>
+            <td>Rate attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Ratio Table / Projection (6.RP.3)</td>
+            <td>All rows correct; explains why rows are equivalent ratios</td>
+            <td>All table rows correct</td>
+            <td>One or two rows correct; pattern partially shown</td>
+          </tr>
+          <tr>
+            <td>Equivalent Ratios (Peer) (6.RP.1, 6.RP.3)</td>
+            <td>
+              Correct scaling for both athletes; explains why ratios are
+              equivalent
+            </td>
+            <td>Both athletes scaled correctly to common games</td>
+            <td>Scaling attempted with one computational error</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Compares athletes and world data with clear rate reasoning</td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>
+              Report clearly justifies the recommendation using all numbers
+            </td>
+            <td>Report uses most numbers</td>
+            <td>Report is unclear or missing numbers</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">
+        Neft Teacher · Unit 3 Culminating Project · Version B ·
+        <span id="yr"></span>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
+
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      // running state used by report + world
+      const proj = { pts: null, games: null, rate: null };
+
+      function calcRate() {
+        const p = num("r-pts"),
+          g = num("r-games");
+        if (isNaN(p) || p < 0 || isNaN(g) || g <= 0) {
+          $("rate-out").classList.remove("show");
+          proj.pts = proj.games = proj.rate = null;
+          return;
+        }
+        const rate = p / g;
+        proj.pts = p;
+        proj.games = g;
+        proj.rate = rate;
+        show(
+          "rate-out",
+          '<div class="big">' +
+            rate.toFixed(2) +
+            " points per game</div>" +
+            "Unit rate: " +
+            p +
+            " pts &divide; " +
+            g +
+            " games = <strong>" +
+            rate.toFixed(2) +
+            " points per game</strong>.<br>" +
+            "As a ratio, " +
+            p +
+            ":" +
+            g +
+            " is equivalent to the unit rate <strong>" +
+            rate.toFixed(2) +
+            ":1</strong>. ✅",
+        );
+        calcTable();
+      }
+
+      function calcTable() {
+        const rate = proj.rate;
+        if (rate == null) {
+          $("table-out").classList.remove("show");
+          return;
+        }
+        const games = [10, 20, 30];
+        let rows = "";
+        games.forEach((g) => {
+          rows +=
+            "<tr><td>" +
+            g +
+            " games</td><td>" +
+            (rate * g).toFixed(1) +
+            " pts</td></tr>";
+        });
+        show(
+          "table-out",
+          '<div class="big">30-game projection: ' +
+            (rate * 30).toFixed(0) +
+            " pts</div>" +
+            '<table class="ratio-table" style="margin-top:10px;">' +
+            "<tr><th>Games Played</th><th>Projected points</th></tr>" +
+            rows +
+            "</table>" +
+            "<br>Every row is an <strong>equivalent ratio</strong> of " +
+            rate.toFixed(2) +
+            ":1 — the rate stays constant. ✅",
+        );
+      }
+
+      function checkPPGFn() {
+        const ok = PK.checkWork("check-ppg", 4, 0);
+        if ($("check-ppgFb") && $("check-ppg").value.trim() && ok) {
+          $("check-ppgFb").innerHTML =
+            '<span class="pk-ok">✅ Correct! 20 ÷ 5 = 4 points per game.</span>';
+        }
+        updateProgress();
+        return ok;
+      }
+
+      /* ---- Part 2: peer compare with equivalent ratios ---- */
+      function comparePeer() {
+        const myP = proj.pts,
+          myG = proj.games;
+        const pP = num("p-pts"),
+          pG = num("p-games");
+        const base = num("p-common");
+        if (
+          myP == null ||
+          myG == null ||
+          isNaN(pP) ||
+          pP < 0 ||
+          isNaN(pG) ||
+          pG <= 0 ||
+          isNaN(base) ||
+          base <= 0
+        ) {
+          $("peer-out").classList.remove("show");
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish your athlete in Part 1, then enter your partner’s athlete and a common base.</p>';
+          return;
+        }
+        const myAtBase = (myP / myG) * base;
+        const pAtBase = (pP / pG) * base;
+        const lead =
+          myAtBase > pAtBase
+            ? "Your athlete"
+            : pAtBase > myAtBase
+              ? "Your partner’s athlete"
+              : "Both athletes (tie)";
+        show(
+          "peer-out",
+          '<div class="big">In ' +
+            base +
+            " games</div>" +
+            "You: " +
+            myP +
+            ":" +
+            myG +
+            " &rarr; <strong>" +
+            myAtBase.toFixed(1) +
+            " points</strong> in " +
+            base +
+            " games<br>" +
+            "Partner: " +
+            pP +
+            ":" +
+            pG +
+            " &rarr; <strong>" +
+            pAtBase.toFixed(1) +
+            " points</strong> in " +
+            base +
+            " games<br><br>" +
+            lead +
+            " scores more at the same number of games. ✅",
+        );
+        PK.peerCompare("peerBox", [
+          {
+            label: "Pts @ base",
+            me: myAtBase,
+            partner: pAtBase,
+            fmt: (x) => Number(x).toFixed(1),
+          },
+        ]);
+        updateProgress();
+      }
+
+      /* ---- Part 3: world dataset + meter ---- */
+      // [player/country, points per game] — realistic youth rates, with one outlier "phenom"
+      const world = [
+        ["Maya · USA", 8.5],
+        ["Leo · Brazil", 6.2],
+        ["Aiko · Japan", 7.1],
+        ["Sam · UK", 5.8],
+        ["Nadia · Nigeria", 9.0],
+        ["Diego · Mexico", 6.7],
+        ["Priya · India", 7.4],
+        ["Phenom (outlier)", 22.0],
+      ];
+
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) => `<tr><td>${r[0]}</td><td>${r[1].toFixed(1)} ppg</td></tr>`,
+          )
+          .join("");
+      }
+      function worldSample() {
+        return world.map((r) => r[1]);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        PK.worldMeter("worldMeter", worldSample(), my, {
+          mean: "World avg",
+          me: "Me",
+        });
+        updateProgress();
+      }
+      function runWhatIf() {
+        const extra = parseFloat($("wf-pts").value);
+        if (proj.pts == null || proj.games == null) {
+          $("whatIfBox").textContent =
+            "Finish Part 1 first so we know your athlete’s stats.";
+          return;
+        }
+        if (isNaN(extra) || extra < 0) {
+          $("whatIfBox").textContent = "Enter a hot-streak point value first.";
+          return;
+        }
+        const before = proj.pts / proj.games;
+        const after = (proj.pts + extra) / (proj.games + 1);
+        PK.whatIf(
+          "whatIfBox",
+          { "points per game": before.toFixed(2) },
+          { "points per game": after.toFixed(2) },
+          "Adding one hot-streak game with " + extra + " points:",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          "ath-name": "A. Wilson",
+          "ath-source": "team website",
+          "r-pts": 84,
+          "r-games": 12,
+          "p-pts": 70,
+          "p-games": 10,
+          "p-common": 60,
+          myWorld: "",
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      function recalcAll() {
+        calcRate();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f = (x, d) =>
+          x == null
+            ? "(not finished)"
+            : typeof x === "number"
+              ? x.toFixed(d || 2)
+              : x;
+        return (
+          "SPORTS STATS SCOUT — MY REPORT\n" +
+          "==============================\n\n" +
+          "PART 1: MY ATHLETE (SELF)\n" +
+          "Athlete: " +
+          ($("ath-name").value || "(none)") +
+          "   Source: " +
+          ($("ath-source").value || "(none)") +
+          "\n" +
+          "Stats: " +
+          (proj.pts == null
+            ? "(not finished)"
+            : proj.pts + " pts in " + proj.games + " games") +
+          "\n" +
+          "Unit rate: " +
+          f(proj.rate) +
+          " points per game\n" +
+          "30-game projection: " +
+          (proj.rate == null
+            ? "(not finished)"
+            : (proj.rate * 30).toFixed(0) + " pts") +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "Partner athlete: " +
+          ($("p-pts").value || "-") +
+          " pts in " +
+          ($("p-games").value || "-") +
+          " games\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "My rate vs world: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n" +
+          "Careful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "SCOUTING REPORT:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["athlete", $("ath-name").value],
+          ["source", $("ath-source").value],
+          ["total_points", proj.pts],
+          ["games", proj.games],
+          ["points_per_game", proj.rate],
+          ["partner", $("partnerName").value],
+          ["partner_points", $("p-pts").value],
+          ["partner_games", $("p-games").value],
+        ];
+        PK.downloadCsv("scouting-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 3 (rate, table, peer)
+        const ppgOk = $("check-ppgFb").querySelector(".pk-ok") ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + ppgOk + checks + wrld + pitch; // max 3+1+6+1+1 = 12
+        const pct = Math.min(100, Math.round((total / 12) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      $("checklist").addEventListener("change", updateProgress);
+      $("pitch").addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills one part if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          if (!$("r-pts").value) {
+            $("r-pts").value = 84;
+            calcRate();
+          }
+        }
+      };
+
+      /* ---- init (runs after deferred kit script is ready) ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u3ProjectB", default: "level-1" });
+        PK.load("u3ProjectB", { after: recalcAll });
+        updateProgress();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

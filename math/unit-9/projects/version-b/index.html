@@ -1,0 +1,1888 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Plan Showdown — Unit 9 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 9 Two-Variable Relationships culminating project. Compare your family's ACTUAL phone plan against a real competitor using independent/dependent variables, y = kx, tables, a two-line graph, a classmate interview, and real carrier prices."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .phero {
+        background: linear-gradient(135deg, #0e8a7d 0%, #1a3a6b 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
+      }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .intro-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--teal);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+
+      .phase {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .phase-num {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--teal);
+        background: var(--teal-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .task strong {
+        color: var(--navy);
+      }
+
+      .xtopic {
+        background: var(--gold-light);
+        border: 1px solid #f0d48a;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 16px 0;
+        font-size: 14px;
+      }
+      .xtopic strong {
+        color: #8a5a00;
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .btn {
+        background: var(--teal);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--blue);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--teal);
+        border: 2px solid var(--line);
+      }
+
+      .readout {
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--teal);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
+
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
+
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
+      table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 15px;
+      }
+      table.data-table th,
+      table.data-table td {
+        border: 1px solid var(--line);
+        padding: 9px 14px;
+        text-align: center;
+      }
+      table.data-table th {
+        background: var(--teal-light);
+        font-weight: 700;
+        color: var(--navy);
+      }
+      table.data-table tr:nth-child(even) td {
+        background: #f0faf8;
+      }
+
+      svg.linegraph {
+        display: block;
+        margin: 16px auto 0;
+        max-width: 100%;
+      }
+      .legend {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 6px;
+      }
+      .legend .sw {
+        display: inline-block;
+        width: 16px;
+        height: 4px;
+        border-radius: 2px;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+
+      .showwork-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      @media (max-width: 560px) {
+        .showwork-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .showwork-cell {
+        background: var(--teal-light);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .showwork-cell .q {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--navy);
+      }
+
+      @media print {
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
+    <header class="phero">
+      <div class="deco">📱</div>
+      <h1>Phone Plan Showdown</h1>
+      <p>
+        Use your family's <strong>actual</strong> phone plan price and a real
+        competitor you look up. Model both with <em>y = kx</em>, graph them on
+        the same axes, compare with a classmate, then check against real carrier
+        prices.
+      </p>
+      <div class="tags">
+        <span class="tag gold">Unit 9 · Two-Variable Relationships</span>
+        <span class="tag">6.EE.9</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u9ProjectB')">💾 Save</button>
+        <button
+          onclick="PK.load('u9ProjectB', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <h2>📋 Your Mission</h2>
+        <p>
+          Compare two real phone plans in three steps.
+          <strong>Part 1 (Self):</strong> enter your family's actual monthly
+          price and a real competitor price you look up, then run the equation,
+          table, and two-line graph. <strong>Part 2 (Peer):</strong> interview a
+          classmate about their family's plan and auto-compare who pays more.
+          <strong>Part 3 (World):</strong> compare to real carrier prices, run
+          the What-If Lab, and write your recommendation memo.
+        </p>
+      </div>
+
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">📅</span><b>Independent variable (x)</b>
+            <p>The input you control. Here it is the number of months.</p>
+            <p class="pk-es">
+              Variable independiente (x): la entrada que controlas. Aquí es el
+              número de meses.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">💵</span><b>Dependent variable (y)</b>
+            <p>The output that depends on x. Here it is total cost.</p>
+            <p class="pk-es">
+              Variable dependiente (y): el resultado que depende de x. Aquí es
+              el costo total.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⚡</span
+            ><b>Constant of proportionality (k)</b>
+            <p>The fixed number you multiply x by. The monthly price.</p>
+            <p class="pk-es">
+              Constante de proporcionalidad (k): el número fijo por el que
+              multiplicas x. El precio mensual.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">📐</span><b>Rate of change</b>
+            <p>How much y goes up each time x goes up by 1. It equals k.</p>
+            <p class="pk-es">
+              Tasa de cambio: cuánto sube y cada vez que x sube en 1. Es igual a
+              k.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🎯</span><b>Origin (0, 0)</b>
+            <p>Where a proportional line starts. At month 0, cost = $0.</p>
+            <p class="pk-es">
+              Origen (0, 0): donde empieza una recta proporcional. En el mes 0,
+              costo = $0.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>The equation:</b> y = kx</p>
+            <p><b>Find y when you know x:</b> y = k × x</p>
+            <p><b>Find x when you know y:</b> x = y ÷ k</p>
+            <p><b>Steepness of the line:</b> = k (bigger k → steeper)</p>
+            <p class="pk-lvl2">
+              <b>Level 2 — with an activation fee:</b> y = kx + b (no longer
+              proportional)
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "My independent variable is ___ and my dependent variable is ___."
+            </p>
+            <p>
+              "Our plan's k is $___ per month, so our equation is y = ___x."
+            </p>
+            <p>"After ___ months our plan costs $___ because ___."</p>
+            <p class="pk-es">
+              "Mi variable independiente es ___ y mi variable dependiente es
+              ___. Nuestra k es $___, así que la ecuación es y = ___x."
+            </p>
+          </div>
+        </div>
+        <div class="xtopic">
+          <strong>Cross-topic connection:</strong> Your <em>k</em> is a
+          <b>unit rate</b> — dollars per month, just like the unit rates you
+          built in Units 3 and 4. And each row of your cost table is an
+          <b>ordered pair (x, y)</b> you can plot on the coordinate plane from
+          Unit 7.
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <span class="arc-banner"
+              >Part 1 · Self — your family's real plan</span
+            >
+            <div class="skill">
+              Variables · Equation · Table · Graph · 6.EE.9
+            </div>
+            <h2>Model YOUR Two Plans</h2>
+          </div>
+        </div>
+        <p>
+          Enter your family's <strong>actual</strong> monthly phone price as
+          Plan A, and look up a <strong>real competitor</strong> price for Plan
+          B. Not sure yet? Click <em>Use example numbers</em>, then change them
+          to your real prices.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="planAname"
+              >Plan A name (your family's carrier)</label
+            >
+            <input
+              type="text"
+              id="planAname"
+              data-save
+              placeholder="example: our T-Mobile plan"
+            />
+          </div>
+          <div>
+            <label class="fld" for="k-plan"
+              >Plan A monthly cost in $ (your real price — this is k)</label
+            >
+            <input
+              type="number"
+              id="k-plan"
+              data-save
+              min="1"
+              max="500"
+              placeholder="example: 25"
+              oninput="calcEquation()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="planBname"
+              >Plan B name (real competitor)</label
+            >
+            <input
+              type="text"
+              id="planBname"
+              data-save
+              placeholder="example: Mint Mobile"
+            />
+          </div>
+          <div>
+            <label class="fld" for="k-plan-b"
+              >Plan B monthly cost in $ (real price you looked up)</label
+            >
+            <input
+              type="number"
+              id="k-plan-b"
+              data-save
+              min="1"
+              max="500"
+              placeholder="example: 18"
+              oninput="calcEquation()"
+            />
+          </div>
+        </div>
+        <label class="fld" for="kwhy"
+          >Where did these prices come from? Name your real sources.</label
+        >
+        <textarea
+          id="kwhy"
+          data-save
+          placeholder="Plan A is our family's actual bill of $___ a month. I looked up Plan B at ___ (website/store) and it costs $___ a month."
+        ></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: round to friendly prices like $20 and $15 to keep the
+          table easy.
+        </p>
+
+        <!-- 1a equation -->
+        <h3 style="margin-top: 20px">✍️ Write your equations (y = kx)</h3>
+        <button class="btn" type="button" onclick="calcEquation()">
+          Write both equations
+        </button>
+        <div class="readout" id="eq-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            The independent variable x = months. The dependent variable y =
+            total cost in dollars. If the monthly charge is constant, that
+            amount is k. y = kx means total cost = monthly rate × number of
+            months. At month 0, you have paid $0 (the origin).
+          </p>
+        </details>
+
+        <!-- 1b table -->
+        <h3 style="margin-top: 24px">📊 Build a cost table (months 1–6)</h3>
+        <div class="task">
+          <strong>Remember:</strong> For y = kx, substitute each month number
+          for x and multiply. The total cost grows by k every month — that
+          constant increase is what makes it proportional.
+        </div>
+        <button class="btn alt" type="button" onclick="calcTable()">
+          Generate cost table
+        </button>
+        <div class="readout" id="table-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            If Plan A k = 25: month 1 → 25 × 1 = $25; month 2 → 25 × 2 = $50;
+            and so on. Each row increases by $25 because k = 25. Each row is an
+            ordered pair (x, y) you can plot.
+          </p>
+        </details>
+
+        <!-- 1c two-line graph + readings -->
+        <h3 style="margin-top: 24px">📈 Graph both plans on one grid</h3>
+        <p style="color: var(--muted)">
+          Find the total cost for either plan at a month you choose, and work
+          backwards to find how many months reach a target cost.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="find-x"
+              >Find total cost at month (enter x)</label
+            >
+            <input
+              type="number"
+              id="find-x"
+              data-save
+              min="0"
+              placeholder="example: 8"
+              oninput="calcGraph()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="find-y"
+              >Find the month when Plan A cost = $ (enter y)</label
+            >
+            <input
+              type="number"
+              id="find-y"
+              data-save
+              min="0"
+              placeholder="example: 200"
+              oninput="calcGraph()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcGraph()">
+          Calculate &amp; show graph
+        </button>
+        <div class="readout" id="graph-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            To find y: substitute x into y = kx and multiply. To find x: divide
+            y by k (x = y ÷ k). Both lines start at the origin (0, 0); the plan
+            with the bigger k (higher monthly price) is the steeper line.
+          </p>
+        </details>
+
+        <!-- 1d show-your-work grid -->
+        <h3 style="margin-top: 24px">🧮 Show Your Work</h3>
+        <p style="color: var(--muted)">
+          Use <em>your own</em> Plan A k. Each box is checked against your
+          equation.
+        </p>
+        <div class="showwork-grid">
+          <div class="showwork-cell">
+            <div class="q">1. Plan A cost when x = 3 &nbsp;(y = k × 3)</div>
+            <label class="fld" for="sw-y3">Total cost at month 3 ($)</label>
+            <input
+              type="number"
+              id="sw-y3"
+              data-save
+              placeholder="type y"
+              step="0.01"
+            />
+            <button class="btn alt" type="button" onclick="checkSwY3()">
+              Check
+            </button>
+            <div class="pk-fb" id="sw-y3Fb"></div>
+          </div>
+          <div class="showwork-cell">
+            <div class="q" id="sw-xq">
+              2. Find x when Plan A cost = (your target)
+            </div>
+            <label class="fld" for="sw-target">Target cost (y, $)</label>
+            <input
+              type="number"
+              id="sw-target"
+              data-save
+              step="0.01"
+              placeholder="example: 150"
+              oninput="updateSwTargetLabel()"
+            />
+            <label class="fld" for="sw-x">Months to reach it (x = y ÷ k)</label>
+            <input
+              type="number"
+              id="sw-x"
+              data-save
+              placeholder="type x"
+              step="0.01"
+            />
+            <button class="btn alt" type="button" onclick="checkSwX()">
+              Check
+            </button>
+            <div class="pk-fb" id="sw-xFb"></div>
+          </div>
+          <div class="showwork-cell">
+            <div class="q">3. 12-month total for Plan A &nbsp;(y = k × 12)</div>
+            <label class="fld" for="sw-year">Cost after 12 months ($)</label>
+            <input
+              type="number"
+              id="sw-year"
+              data-save
+              placeholder="type total"
+              step="0.01"
+            />
+            <button class="btn alt" type="button" onclick="checkSwYear()">
+              Check
+            </button>
+            <div class="pk-fb" id="sw-yearFb"></div>
+          </div>
+        </div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 worked step for box 1: if k = 25 → 25 × 3 = $75. Each box uses
+          your own Plan A k, so check your equation first.
+        </p>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--blue)">2</div>
+          <div>
+            <span class="arc-banner"
+              >Part 2 · Peer — interview a classmate</span
+            >
+            <div class="skill">Compare relationships · 6.EE.9</div>
+            <h2>Family Plan Showdown</h2>
+          </div>
+        </div>
+        <p>
+          Ask a classmate about <strong>their</strong> family's monthly plan
+          price. Type their k to auto-compare who pays more and whose line is
+          steeper at a chosen number of months.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>
+            "What carrier does your family use, and what is the monthly price
+            (k)?"
+          </p>
+          <p>"At ___ months, how much does your equation say it costs?"</p>
+          <p>"Whose line is steeper — and why does a bigger k mean steeper?"</p>
+          <p class="pk-es">
+            "¿Qué compañía usa tu familia y cuál es el precio mensual (k)?"
+          </p>
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="ch-a">Your plan A monthly cost k ($)</label>
+            <input
+              type="number"
+              id="ch-a"
+              data-save
+              min="1"
+              placeholder="example: 25"
+              oninput="calcCompare()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="partnerName"
+              >Classmate name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
+          </div>
+          <div>
+            <label class="fld" for="ch-b"
+              >Classmate plan monthly cost k ($)</label
+            >
+            <input
+              type="number"
+              id="ch-b"
+              data-save
+              min="1"
+              placeholder="example: 30"
+              oninput="calcCompare()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="ch-weeks">Compare at month (x)</label>
+            <input
+              type="number"
+              id="ch-weeks"
+              data-save
+              min="1"
+              placeholder="example: 12"
+              oninput="calcCompare()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="calcCompare()">
+          Compare our plans
+        </button>
+        <div class="readout" id="compare-out"></div>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <label class="fld" for="peerReflect"
+          >Whose line is steeper, and who pays more at that month? How do you
+          know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My k is $___ and my classmate's k is $___, so my line is steeper / flatter. At month ___ I pay $___ and they pay $___, because ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner">Part 3 · World — real carrier prices</span>
+            <div class="skill">Compare to real data · 6.EE.9</div>
+            <h2>How Does Your Plan Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are realistic typical monthly prices for single-line phone
+          plans. See where your Plan A monthly cost lands.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="k">Monthly plan cost k ($/month)</option>
+            </select>
+            <label class="fld" for="myWorld"
+              >My Plan A monthly cost k ($)</label
+            >
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your k"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: use the same Plan A price from Part 1.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>Real Carrier Prices 🌐</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>Carrier (single line)</th>
+                  <th>Typical $/month</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Add a one-time sign-up fee and watch your 12-month total change.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="whatIfVal"
+                >One-time sign-up fee ($)</label
+              >
+              <input
+                type="number"
+                id="whatIfVal"
+                step="0.01"
+                placeholder="example: 35"
+              />
+            </div>
+            <div>
+              <label class="fld" for="whatIfMo">Predict at month</label>
+              <input type="number" id="whatIfMo" value="12" min="1" />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter a fee to test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is your plan above or below the average carrier price? Why might that
+          be?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My plan's k is ___ the average carrier price because ___."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 — find when the two lines are equal &amp; add a fee: Plan A
+            is y = kx with no fee. A competitor charges a lower monthly rate but
+            a one-time $40 fee, so its equation is y = kx + 40. Is that still
+            proportional? At what month do the two plans cost the same? Show
+            your thinking.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="y = kx + 40 is NOT proportional because it does not pass through (0,0). Set the two equations equal to find the month where total cost is the same: ___ ."
+          ></textarea>
+        </div>
+        <label class="fld" for="careful"
+          >Careful thinking: why is it tricky to compare phone plans between
+          families?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="It can be unfair to compare because ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Plan Recommendation</h2>
+          </div>
+        </div>
+        <p>
+          Write a short recommendation memo (3–5 sentences) to your family using
+          your real numbers from above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="The independent variable is months (x) and the dependent variable is total cost (y). Plan A (our ___) is y = ___x and Plan B (___) is y = ___x. After ___ months, Plan A costs $___ and Plan B costs $___. I recommend Plan ___ because ___."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Investigation Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I named the independent
+            variable (months, x) and dependent variable (total cost, y).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I wrote y = kx for both
+            plans using a real Plan A price and a real competitor price.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I built the cost table
+            and graphed both plans on one grid.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I finished the
+            show-your-work grid (cost at x=3, x at my target, 12-month total).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I interviewed a
+            classmate and compared whose line is steeper.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> I compared my plan to
+            real carrier prices.
+          </li>
+        </ul>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="
+                PK.downloadText('phone-plan-recommendation.txt', 'reportBox')
+              "
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your recommendation summary.
+        </div>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--navy)">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Identifying Variables</td>
+            <td>
+              Independent and dependent variables named correctly with
+              real-world justification
+            </td>
+            <td>Both variables correctly identified</td>
+            <td>One variable correct or labels swapped</td>
+          </tr>
+          <tr>
+            <td>Writing the Equation</td>
+            <td>
+              y = kx written for both plans; k identified as the real monthly
+              rate
+            </td>
+            <td>Equations are correct</td>
+            <td>Equation has a minor error or k not explained</td>
+          </tr>
+          <tr>
+            <td>Table, Graph &amp; Show Your Work</td>
+            <td>
+              Table correct; both plans graphed; all three work-grid answers
+              accurate
+            </td>
+            <td>Table correct; graph and most work-grid answers correct</td>
+            <td>Table partially correct or some work attempted</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>
+              Compares classmate and real carriers with clear reasoning about
+              steepness
+            </td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Recommendation clearly justifies every number used</td>
+            <td>Recommendation uses most numbers</td>
+            <td>Recommendation is unclear or missing data</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">
+        Neft Teacher · Unit 9 Culminating Project · Version B ·
+        <span id="yr"></span>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
+
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+      function hide(id) {
+        const el = $(id);
+        if (el) el.classList.remove("show");
+      }
+
+      const proj = { ka: null, kb: null };
+
+      function getKA() {
+        const k = num("k-plan");
+        return !isNaN(k) && k > 0 ? k : null;
+      }
+      function getKB() {
+        const k = num("k-plan-b");
+        return !isNaN(k) && k > 0 ? k : null;
+      }
+
+      /* ---- Part 1a: equations ---- */
+      function calcEquation() {
+        const ka = getKA(),
+          kb = getKB();
+        proj.ka = ka;
+        proj.kb = kb;
+        if (ka == null) {
+          hide("eq-out");
+          return;
+        }
+        const aName = $("planAname").value || "Plan A";
+        const bName = $("planBname").value || "Plan B";
+        let html =
+          '<div class="big">' +
+          aName +
+          ": y = " +
+          ka +
+          "x</div>" +
+          "<strong>Independent variable (x):</strong> months &nbsp;|&nbsp; <strong>Dependent variable (y):</strong> total cost ($)<br>" +
+          aName +
+          " charges <strong>$" +
+          ka +
+          "</strong> per month, so y = " +
+          ka +
+          " &times; x.";
+        if (kb != null) {
+          html +=
+            "<br>" +
+            bName +
+            ": y = " +
+            kb +
+            "x &nbsp;(charges <strong>$" +
+            kb +
+            "</strong> per month).";
+        }
+        show("eq-out", html);
+        calcTable();
+        calcGraph();
+      }
+
+      /* ---- Part 1b: table ---- */
+      function calcTable() {
+        const ka = getKA(),
+          kb = getKB();
+        if (ka == null) {
+          hide("table-out");
+          return;
+        }
+        const aName = $("planAname").value || "Plan A";
+        const bName = $("planBname").value || "Plan B";
+        const headB = kb != null ? "<th>" + bName + " (y)</th>" : "";
+        let rows = "";
+        for (let x = 1; x <= 6; x++) {
+          const ya = ka * x;
+          const cellB =
+            kb != null
+              ? "<td><strong>$" + (kb * x).toFixed(2) + "</strong></td>"
+              : "";
+          rows +=
+            "<tr><td>" +
+            x +
+            "</td><td>$" +
+            ya.toFixed(2) +
+            "</td>" +
+            cellB +
+            "</tr>";
+        }
+        show(
+          "table-out",
+          '<table class="data-table"><tr><th>Month (x)</th><th>' +
+            aName +
+            " (y)</th>" +
+            headB +
+            "</tr>" +
+            rows +
+            "</table>" +
+            '<p style="margin:10px 0 0;font-size:13px;color:var(--muted);">&#x2705; ' +
+            aName +
+            " grows by <strong>$" +
+            ka +
+            "</strong> each month — the constant rate of change. Each row is an ordered pair (x, y).</p>",
+        );
+      }
+
+      /* ---- Part 1c: TWO-LINE graph (cloned from Version A's calcGraph) ---- */
+      function calcGraph() {
+        const ka = getKA(),
+          kb = getKB();
+        if (ka == null) {
+          hide("graph-out");
+          return;
+        }
+        const xVal = num("find-x");
+        const yVal = num("find-y");
+        if (isNaN(xVal) || xVal < 0 || isNaN(yVal) || yVal < 0) {
+          hide("graph-out");
+          return;
+        }
+        const yA = ka * xVal;
+        const yB = kb != null ? kb * xVal : null;
+        const xForA = yVal / ka;
+
+        const W = 360,
+          H = 210,
+          padL = 54,
+          padB = 36,
+          padT = 14,
+          padR = 20;
+        const maxX = 12;
+        const maxY = Math.max(ka, kb || 0) * maxX || 1;
+        function px(x) {
+          return padL + (x / maxX) * (W - padL - padR);
+        }
+        function py(y) {
+          return H - padB - (y / maxY) * (H - padB - padT);
+        }
+        // Plan A polyline
+        let ptsA = "";
+        for (let x = 0; x <= maxX; x++) {
+          ptsA += px(x) + "," + py(ka * x) + " ";
+        }
+        // Plan B polyline
+        let ptsB = "";
+        if (kb != null) {
+          for (let x = 0; x <= maxX; x++) {
+            ptsB += px(x) + "," + py(kb * x) + " ";
+          }
+        }
+        let xLabels = "",
+          yLabels = "";
+        for (let x = 0; x <= maxX; x += 3) {
+          xLabels +=
+            '<text x="' +
+            px(x) +
+            '" y="' +
+            (H - 10) +
+            '" text-anchor="middle" font-size="11" fill="#5e6e7e">' +
+            x +
+            "</text>";
+        }
+        for (let i = 0; i <= 4; i++) {
+          const yv = Math.round((maxY / 4) * i);
+          yLabels +=
+            '<text x="' +
+            (padL - 6) +
+            '" y="' +
+            (py(yv) + 4) +
+            '" text-anchor="end" font-size="11" fill="#5e6e7e">$' +
+            yv +
+            "</text>";
+          yLabels +=
+            '<line x1="' +
+            padL +
+            '" y1="' +
+            py(yv) +
+            '" x2="' +
+            (W - padR) +
+            '" y2="' +
+            py(yv) +
+            '" stroke="#e2e7ec" stroke-width="1"/>';
+        }
+        const hx = Math.min(xVal, maxX);
+        const dotA =
+          '<circle cx="' +
+          px(hx) +
+          '" cy="' +
+          py(ka * hx) +
+          '" r="5" fill="var(--teal)"/>';
+        const dotB =
+          kb != null
+            ? '<circle cx="' +
+              px(hx) +
+              '" cy="' +
+              py(kb * hx) +
+              '" r="5" fill="var(--coral)"/>'
+            : "";
+        const lineB =
+          kb != null
+            ? '<polyline points="' +
+              ptsB.trim() +
+              '" fill="none" stroke="var(--coral)" stroke-width="2.5"/>'
+            : "";
+        const svg =
+          '<svg class="linegraph" viewBox="0 0 ' +
+          W +
+          " " +
+          H +
+          '" width="' +
+          W +
+          '" height="' +
+          H +
+          '" xmlns="http://www.w3.org/2000/svg">' +
+          yLabels +
+          '<polyline points="' +
+          ptsA.trim() +
+          '" fill="none" stroke="var(--teal)" stroke-width="2.5"/>' +
+          lineB +
+          dotA +
+          dotB +
+          xLabels +
+          '<text x="' +
+          W / 2 +
+          '" y="' +
+          (H - 1) +
+          '" text-anchor="middle" font-size="11" fill="#5e6e7e">Months (x)</text>' +
+          '<text x="12" y="' +
+          H / 2 +
+          '" text-anchor="middle" font-size="11" fill="#5e6e7e" transform="rotate(-90,12,' +
+          H / 2 +
+          ')">Total cost (y)</text>' +
+          "</svg>";
+
+        const aName = $("planAname").value || "Plan A";
+        const bName = $("planBname").value || "Plan B";
+        const legend =
+          '<div class="legend"><span><span class="sw" style="background:var(--teal)"></span>' +
+          aName +
+          "</span>" +
+          (kb != null
+            ? '<span><span class="sw" style="background:var(--coral)"></span>' +
+              bName +
+              "</span>"
+            : "") +
+          "</div>";
+
+        show(
+          "graph-out",
+          '<div class="big">Month ' +
+            xVal +
+            ": " +
+            aName +
+            " = $" +
+            yA.toFixed(2) +
+            (kb != null ? ", " + bName + " = $" + yB.toFixed(2) : "") +
+            "</div>" +
+            aName +
+            ": y = " +
+            ka +
+            " &times; " +
+            xVal +
+            " = <strong>$" +
+            yA.toFixed(2) +
+            "</strong><br>" +
+            (kb != null
+              ? bName +
+                ": y = " +
+                kb +
+                " &times; " +
+                xVal +
+                " = <strong>$" +
+                yB.toFixed(2) +
+                "</strong><br>"
+              : "") +
+            "To reach <strong>$" +
+            yVal +
+            "</strong> on " +
+            aName +
+            ": x = " +
+            yVal +
+            " &divide; " +
+            ka +
+            " = <strong>" +
+            xForA.toFixed(2) +
+            " months</strong>" +
+            svg +
+            legend,
+        );
+      }
+
+      /* ---- Part 1d: show-your-work grid (uses Plan A k) ---- */
+      function updateSwTargetLabel() {
+        const t = num("sw-target");
+        $("sw-xq").textContent =
+          "2. Find x when Plan A cost = " +
+          (isNaN(t) ? "(your target)" : "$" + t);
+      }
+      function checkSwY3() {
+        const k = getKA();
+        if (k == null) {
+          $("sw-y3Fb").innerHTML =
+            '<span class="pk-bad">Enter your Plan A monthly cost in Part 1 first.</span>';
+          return;
+        }
+        PK.checkWork("sw-y3", k * 3, 0.005);
+        updateProgress();
+      }
+      function checkSwX() {
+        const k = getKA();
+        const t = num("sw-target");
+        if (k == null || isNaN(t)) {
+          $("sw-xFb").innerHTML =
+            '<span class="pk-bad">Enter Plan A k (Part 1) and a target cost first.</span>';
+          return;
+        }
+        PK.checkWork("sw-x", t / k, 0.05);
+        updateProgress();
+      }
+      function checkSwYear() {
+        const k = getKA();
+        if (k == null) {
+          $("sw-yearFb").innerHTML =
+            '<span class="pk-bad">Enter your Plan A monthly cost in Part 1 first.</span>';
+          return;
+        }
+        PK.checkWork("sw-year", k * 12, 0.005);
+        updateProgress();
+      }
+
+      /* ---- Part 2: peer compare ---- */
+      function calcCompare() {
+        const ka = num("ch-a"),
+          kb = num("ch-b"),
+          x = num("ch-weeks");
+        if (
+          isNaN(ka) ||
+          isNaN(kb) ||
+          isNaN(x) ||
+          ka <= 0 ||
+          kb <= 0 ||
+          x <= 0
+        ) {
+          hide("compare-out");
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Enter both monthly costs and a month to compare.</p>';
+          return;
+        }
+        const ya = ka * x,
+          yb = kb * x;
+        const diff = Math.abs(ya - yb);
+        const name = $("partnerName").value || "Classmate";
+        const cheaper =
+          ya < yb
+            ? "Your plan"
+            : ya > yb
+              ? name + "'s plan"
+              : "Both plans cost the same";
+        show(
+          "compare-out",
+          '<div class="big">' +
+            cheaper +
+            (ya !== yb ? " is cheaper" : "") +
+            "</div>" +
+            "At month " +
+            x +
+            ":<br>You (k = $" +
+            ka +
+            "/mo): y = " +
+            ka +
+            " &times; " +
+            x +
+            " = <strong>$" +
+            ya.toFixed(2) +
+            "</strong><br>" +
+            name +
+            " (k = $" +
+            kb +
+            "/mo): y = " +
+            kb +
+            " &times; " +
+            x +
+            " = <strong>$" +
+            yb.toFixed(2) +
+            "</strong><br>" +
+            (ya !== yb
+              ? cheaper +
+                " saves <strong>$" +
+                diff.toFixed(2) +
+                "</strong> at month " +
+                x +
+                ". A higher k means a <strong>steeper</strong> line."
+              : "Same k, so the lines overlap."),
+        );
+        PK.peerCompare("peerBox", [
+          {
+            label: "Monthly cost k $",
+            me: ka,
+            partner: kb,
+            fmt: (v) => Number(v).toFixed(2),
+          },
+          {
+            label: "Cost at month " + x + " $",
+            me: ya,
+            partner: yb,
+            fmt: (v) => Number(v).toFixed(2),
+          },
+        ]);
+        updateProgress();
+      }
+
+      /* ---- Part 3: world dataset + meter ---- */
+      // [carrier, typical $/month single line] — realistic U.S. carrier prices
+      const world = [
+        ["Mint Mobile", 15],
+        ["Visible", 25],
+        ["Cricket Wireless", 30],
+        ["Metro by T-Mobile", 40],
+        ["T-Mobile (Essentials)", 50],
+        ["AT&T (Value Plus)", 51],
+        ["Verizon (Unlimited Welcome)", 65],
+      ];
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map((r) => "<tr><td>" + r[0] + "</td><td>$" + r[1] + "</td></tr>")
+          .join("");
+      }
+      function worldSample() {
+        return world.map((r) => r[1]);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        PK.worldMeter("worldMeter", worldSample(), my, {
+          mean: "Avg $",
+          me: "My plan $",
+        });
+        updateProgress();
+      }
+      function runWhatIf() {
+        const k = getKA();
+        const fee = parseFloat($("whatIfVal").value);
+        const mo = Math.max(1, parseFloat($("whatIfMo").value) || 12);
+        if (k == null || isNaN(fee)) {
+          $("whatIfBox").textContent =
+            "Enter your Plan A monthly cost (Part 1) and a sign-up fee first.";
+          return;
+        }
+        const before = k * mo;
+        const after = k * mo + fee;
+        PK.whatIf(
+          "whatIfBox",
+          { ["Month " + mo + " total"]: "$" + before.toFixed(2) },
+          { ["Month " + mo + " total"]: "$" + after.toFixed(2) },
+          "Adding a one-time sign-up fee of $" +
+            fee.toFixed(2) +
+            " (note: y = kx + " +
+            fee.toFixed(2) +
+            " is no longer proportional):",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          planAname: "our T-Mobile plan",
+          "k-plan": 25,
+          planBname: "Mint Mobile",
+          "k-plan-b": 18,
+          "find-x": 8,
+          "find-y": 200,
+          "sw-target": 150,
+          "ch-a": 25,
+          "ch-b": 30,
+          "ch-weeks": 12,
+          myWorld: 25,
+        };
+        Object.entries(ex).forEach(([key, v]) => {
+          if ($(key)) $(key).value = v;
+        });
+        updateSwTargetLabel();
+        recalcAll();
+      }
+
+      function recalcAll() {
+        calcEquation();
+        calcTable();
+        calcGraph();
+        calcCompare();
+        renderWorld();
+        worldGo();
+        updateSwTargetLabel();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const ka = getKA(),
+          kb = getKB();
+        const f = (x) => (x == null || isNaN(x) ? "(not finished)" : x);
+        const aName = $("planAname").value || "Plan A";
+        const bName = $("planBname").value || "Plan B";
+        return (
+          "PHONE PLAN SHOWDOWN — MY RECOMMENDATION\n" +
+          "=======================================\n\n" +
+          "PART 1: MY PLANS (SELF)\n" +
+          aName +
+          ": y = " +
+          f(ka) +
+          "x  (k = $/month)\n" +
+          bName +
+          ": y = " +
+          f(kb) +
+          "x\n" +
+          "Sources: " +
+          ($("kwhy").value || "(not written)") +
+          "\n" +
+          aName +
+          " cost at month 3: $" +
+          (ka == null ? "-" : (ka * 3).toFixed(2)) +
+          "\n" +
+          aName +
+          " 12-month total: $" +
+          (ka == null ? "-" : (ka * 12).toFixed(2)) +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Classmate: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "My k: $" +
+          ($("ch-a").value || "-") +
+          "  |  Classmate k: $" +
+          ($("ch-b").value || "-") +
+          "\nReflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "My plan vs carriers: " +
+          ($("worldReflect").value || "(not written)") +
+          "\nCareful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "RECOMMENDATION:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const ka = getKA(),
+          kb = getKB();
+        const rows = [
+          ["field", "value"],
+          ["plan_a_name", $("planAname").value],
+          ["plan_a_k_per_month", ka],
+          ["plan_b_name", $("planBname").value],
+          ["plan_b_k_per_month", kb],
+          ["plan_a_cost_month_3", ka == null ? "" : (ka * 3).toFixed(2)],
+          ["plan_a_12_month_total", ka == null ? "" : (ka * 12).toFixed(2)],
+          ["my_k", $("ch-a").value],
+          ["classmate", $("partnerName").value],
+          ["classmate_k", $("ch-b").value],
+          ["compare_month", $("ch-weeks").value],
+        ];
+        PK.downloadCsv("phone-plan-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 3 (eq, table, graph)
+        const swOk = document.querySelectorAll(
+          "#sw-y3Fb .pk-ok, #sw-xFb .pk-ok, #sw-yearFb .pk-ok",
+        ).length; // max 3
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const peer = $("ch-b").value ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + swOk + checks + peer + wrld + pitch; // max 15
+        const pct = Math.min(100, Math.round((total / 15) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills friendly prices if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          if (!$("k-plan").value) {
+            $("k-plan").value = 20;
+            $("k-plan-b").value = 15;
+            calcEquation();
+          }
+        }
+      };
+
+      /* ---- init ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        updateSwTargetLabel();
+        PK.initLevel({ storageKey: "u9ProjectB", default: "level-1" });
+        PK.load("u9ProjectB", { after: recalcAll });
+        updateProgress();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

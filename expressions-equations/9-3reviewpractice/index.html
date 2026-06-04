@@ -438,7 +438,12 @@ textarea:focus,input:focus{outline:none;border-color:rgba(5,212,203,.46);backgro
   .hud{gap:5px;}
 }
 @media(max-width:440px){.progress-strip{flex-direction:column;align-items:flex-start;}.acc-badge{align-self:flex-start;}}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
 
@@ -1275,5 +1280,9 @@ document.getElementById('nextBtn').addEventListener('click',nextQ);
 S.q=makeQ(0);
 renderQ();
 </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Math Path — Neft Teacher</title>
+    <meta
+      name="description"
+      content="Check in on every Grade 6 math skill, see where you're strong, and jump straight to the practice that helps you most. Your ratings are saved on this device."
+    />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --red: #c0392b;
+        --red-light: #fdecea;
+        --amber: #b8860b;
+        --amber-light: #fbf3df;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #fff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      a {
+        color: inherit;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 18px 80px;
+      }
+      .skip {
+        position: absolute;
+        left: -999px;
+        top: 0;
+        background: #fff;
+        color: var(--navy);
+        padding: 10px 16px;
+        border-radius: 8px;
+        z-index: 50;
+      }
+      .skip:focus {
+        left: 12px;
+        top: 12px;
+      }
+      /* Hero */
+      .hero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 34px 24px 30px;
+        text-align: center;
+      }
+      .hero .deco {
+        font-size: 48px;
+      }
+      .hero h1 {
+        font-size: clamp(24px, 4.8vw, 36px);
+        margin: 8px 0 6px;
+        letter-spacing: -0.02em;
+      }
+      .hero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 16px;
+      }
+      /* Cards */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 22px;
+        margin-top: 22px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 20px;
+        color: var(--navy);
+        letter-spacing: -0.01em;
+      }
+      .card .sub {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0 0 16px;
+      }
+      /* Overall progress */
+      .overall {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .ring {
+        --pct: 0;
+        flex: 0 0 auto;
+        width: 116px;
+        height: 116px;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--green) calc(var(--pct) * 1%),
+          var(--line) 0
+        );
+        display: grid;
+        place-items: center;
+        position: relative;
+      }
+      .ring::before {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        background: var(--card);
+        border-radius: 50%;
+      }
+      .ring span {
+        position: relative;
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .ring small {
+        position: relative;
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-top: 2px;
+      }
+      .legend {
+        flex: 1 1 240px;
+        min-width: 220px;
+      }
+      .legend .row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        margin: 6px 0;
+      }
+      .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+      }
+      .dot.lost {
+        background: var(--red);
+      }
+      .dot.shaky {
+        background: var(--amber);
+      }
+      .dot.got {
+        background: var(--green);
+      }
+      .dot.none {
+        background: var(--line);
+      }
+      .legend b {
+        color: var(--navy);
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 18px;
+      }
+      .toolbar label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      select,
+      .btn {
+        font-family: var(--font);
+        font-size: 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: 9px 14px;
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      select:focus,
+      .btn:focus,
+      .rate:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
+      }
+      .btn.ghost {
+        background: var(--blue-light);
+        border-color: transparent;
+        color: var(--blue);
+        font-weight: 700;
+      }
+      /* Focus next */
+      .focus-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .focus-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 10px 0;
+        border-top: 1px solid var(--line);
+      }
+      .focus-list li:first-child {
+        border-top: 0;
+      }
+      .pill {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 50px;
+      }
+      .pill.lost {
+        background: var(--red-light);
+        color: var(--red);
+      }
+      .pill.shaky {
+        background: var(--amber-light);
+        color: var(--amber);
+      }
+      .focus-list .glabel {
+        flex: 1 1 200px;
+        min-width: 0;
+      }
+      .focus-list .glabel b {
+        color: var(--navy);
+      }
+      .mini-link {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--blue);
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .mini-link:hover {
+        text-decoration: underline;
+      }
+      .empty {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      /* Unit blocks */
+      .unit {
+        margin-top: 26px;
+      }
+      .unit-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      .unit-head h2 {
+        margin: 0;
+        font-size: 19px;
+        color: var(--navy);
+      }
+      .unit-bar {
+        flex: 1 1 160px;
+        min-width: 140px;
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+        display: flex;
+      }
+      .unit-bar .seg {
+        height: 100%;
+      }
+      .unit-bar .seg.got {
+        background: var(--green);
+      }
+      .unit-bar .seg.shaky {
+        background: var(--amber);
+      }
+      .unit-bar .seg.lost {
+        background: var(--red);
+      }
+      .unit-pct {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--green);
+        flex: 0 0 auto;
+      }
+      /* Lesson rows */
+      .lesson {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .lesson .top {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .lesson .meta {
+        flex: 1 1 260px;
+        min-width: 0;
+      }
+      .lesson .std {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--teal);
+        background: var(--teal-light);
+        padding: 2px 8px;
+        border-radius: 50px;
+        display: inline-block;
+        margin-bottom: 4px;
+      }
+      .lesson h3 {
+        margin: 0;
+        font-size: 16px;
+        color: var(--navy);
+      }
+      .lesson h3 .lno {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .rates {
+        display: flex;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+      .rate {
+        border: 2px solid var(--line);
+        background: #fff;
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition:
+          transform 0.08s,
+          border-color 0.12s;
+      }
+      .rate:hover {
+        transform: translateY(-1px);
+      }
+      .rate .emoji {
+        font-size: 16px;
+      }
+      .rate[aria-pressed="true"].lost {
+        border-color: var(--red);
+        background: var(--red-light);
+        color: var(--red);
+      }
+      .rate[aria-pressed="true"].shaky {
+        border-color: var(--amber);
+        background: var(--amber-light);
+        color: var(--amber);
+      }
+      .rate[aria-pressed="true"].got {
+        border-color: var(--green);
+        background: var(--green-light);
+        color: var(--green);
+      }
+      /* Routing area */
+      .route {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--line);
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .route .msg {
+        flex: 1 1 220px;
+        font-size: 14px;
+        color: var(--ink);
+        min-width: 0;
+      }
+      .route .msg b {
+        color: var(--navy);
+      }
+      .go {
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 8px 14px;
+        border-radius: 10px;
+        white-space: nowrap;
+        border: 1px solid transparent;
+      }
+      .go.primary {
+        background: var(--blue);
+        color: #fff;
+      }
+      .go.warn {
+        background: var(--coral);
+        color: #fff;
+      }
+      .go.soft {
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .go.lesson-link {
+        background: #fff;
+        color: var(--navy);
+        border-color: var(--line);
+      }
+      .go:hover {
+        filter: brightness(1.05);
+      }
+      .hidden {
+        display: none !important;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 36px;
+      }
+      footer a {
+        color: var(--blue);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      @media (max-width: 560px) {
+        .rates {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .rate {
+          flex: 1;
+          justify-content: center;
+          padding: 8px 6px;
+        }
+      }
+      /* Print */
+      @media print {
+        .hero {
+          background: var(--navy) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .toolbar,
+        .route .go,
+        .btn,
+        .mini-link {
+          display: none !important;
+        }
+        .card,
+        .lesson {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <a class="skip" href="#paths">Skip to my lessons</a>
+    <header class="hero">
+      <div class="deco" aria-hidden="true">🧭</div>
+      <h1>My Math Path</h1>
+      <p>
+        Tap how you feel about each skill. You'll get the exact warm-up or
+        lesson that helps you most — and you can watch your progress grow. Your
+        check-ins are saved right here on this device.
+      </p>
+    </header>
+
+    <main class="wrap">
+      <!-- Overall progress -->
+      <section class="card" aria-labelledby="overview-h">
+        <h2 id="overview-h">Where I'm at</h2>
+        <p class="sub">
+          This updates the moment you rate a skill. There's no wrong answer — it
+          just helps you aim your practice.
+        </p>
+        <div class="overall">
+          <div class="ring" id="ring" role="img" aria-label="Overall progress">
+            <span id="ringPct">0%</span>
+            <small>Got it</small>
+          </div>
+          <div class="legend" aria-hidden="false">
+            <div class="row">
+              <span class="dot got"></span>
+              <span><b id="cGot">0</b> Got it 🟢 — ready to roll</span>
+            </div>
+            <div class="row">
+              <span class="dot shaky"></span>
+              <span><b id="cShaky">0</b> Shaky 🟡 — a quick warm-up helps</span>
+            </div>
+            <div class="row">
+              <span class="dot lost"></span>
+              <span><b id="cLost">0</b> Lost 🔴 — let's build it back up</span>
+            </div>
+            <div class="row">
+              <span class="dot none"></span>
+              <span><b id="cNone">0</b> Not checked in yet</span>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <label for="unitFilter">Jump to:</label>
+          <select id="unitFilter" aria-label="Filter lessons by unit">
+            <option value="all">All units</option>
+          </select>
+          <button class="btn ghost" id="focusBtn" type="button">
+            Show what to work on next
+          </button>
+          <button class="btn" id="printBtn" type="button">Print my path</button>
+          <button class="btn" id="resetBtn" type="button">
+            Reset check-ins
+          </button>
+        </div>
+      </section>
+
+      <!-- Focus next -->
+      <section class="card" id="focusCard" aria-labelledby="focus-h">
+        <h2 id="focus-h">Work on these next 🎯</h2>
+        <p class="sub">Your "Lost" and "Shaky" skills, ready to tackle.</p>
+        <ul class="focus-list" id="focusList"></ul>
+      </section>
+
+      <!-- Paths -->
+      <section id="paths" aria-label="My lessons" tabindex="-1"></section>
+
+      <footer>
+        <p>
+          Need more practice by topic? Visit the
+          <a href="/math/catch-up/">Catch-Up &amp; Bridge hub</a> or the
+          <a href="/math/get-ready/">Get Ready hub</a>. You've got this. 💪
+        </p>
+      </footer>
+    </main>
+
+    <script>
+      // ---- Embedded lesson data (derived from scripts/readiness/data/*.json, flagship dupes skipped) ----
+      var LESSONS = [
+        {
+          id: "1-1",
+          unit: 1,
+          no: 1,
+          title: "Prime Factorization",
+          std: "6.NS.4",
+        },
+        {
+          id: "1-2",
+          unit: 1,
+          no: 2,
+          title: "Greatest Common Factor",
+          std: "6.NS.4",
+        },
+        {
+          id: "1-3",
+          unit: 1,
+          no: 3,
+          title: "Least Common Multiple",
+          std: "6.NS.4",
+        },
+        {
+          id: "1-4",
+          unit: 1,
+          no: 4,
+          title: "Divide Multi-Digit Numbers",
+          std: "6.NS.2",
+        },
+        {
+          id: "1-5",
+          unit: 1,
+          no: 5,
+          title: "Add and Subtract Decimals",
+          std: "6.NS.3",
+        },
+        {
+          id: "1-6",
+          unit: 1,
+          no: 6,
+          title: "Multiply Decimals",
+          std: "6.NS.3",
+        },
+        { id: "1-7", unit: 1, no: 7, title: "Divide Decimals", std: "6.NS.3" },
+        {
+          id: "2-1",
+          unit: 2,
+          no: 1,
+          title: "Interpret Division of Fractions",
+          std: "6.NS.1",
+        },
+        {
+          id: "2-2",
+          unit: 2,
+          no: 2,
+          title: "Divide Whole Numbers by Fractions",
+          std: "6.NS.1",
+        },
+        { id: "2-3", unit: 2, no: 3, title: "Divide Fractions", std: "6.NS.1" },
+        {
+          id: "2-4",
+          unit: 2,
+          no: 4,
+          title: "Divide Mixed Numbers",
+          std: "6.NS.1",
+        },
+        {
+          id: "2-5",
+          unit: 2,
+          no: 5,
+          title: "Fraction Division Problem Solving",
+          std: "6.NS.1",
+        },
+        {
+          id: "3-1",
+          unit: 3,
+          no: 1,
+          title: "Understand Ratios",
+          std: "6.RP.1",
+        },
+        { id: "3-2", unit: 3, no: 2, title: "Ratio Tables", std: "6.RP.3a" },
+        {
+          id: "3-3",
+          unit: 3,
+          no: 3,
+          title: "Graph Ratio Tables",
+          std: "6.RP.3a",
+        },
+        {
+          id: "3-4",
+          unit: 3,
+          no: 4,
+          title: "Equivalent Ratios",
+          std: "6.RP.3",
+        },
+        { id: "3-5", unit: 3, no: 5, title: "Compare Ratios", std: "6.RP.3" },
+        {
+          id: "3-6",
+          unit: 3,
+          no: 6,
+          title: "Use Ratio Reasoning",
+          std: "6.RP.3",
+        },
+        {
+          id: "3-7",
+          unit: 3,
+          no: 7,
+          title: "Ratio and Rate Problem Solving",
+          std: "6.RP.3",
+        },
+        {
+          id: "4-1",
+          unit: 4,
+          no: 1,
+          title: "Rates and Unit Rates",
+          std: "6.RP.2",
+        },
+        {
+          id: "4-2",
+          unit: 4,
+          no: 2,
+          title: "Relate Fractions, Decimals, and Percents",
+          std: "6.RP.3c",
+        },
+        {
+          id: "4-3",
+          unit: 4,
+          no: 3,
+          title: "Percents Greater Than 100% and Less Than 1%",
+          std: "6.RP.3c",
+        },
+        {
+          id: "4-4",
+          unit: 4,
+          no: 4,
+          title: "Find the Percent of a Number",
+          std: "6.RP.3c",
+        },
+        {
+          id: "4-5",
+          unit: 4,
+          no: 5,
+          title: "Use Percent to Solve Problems",
+          std: "6.RP.3c",
+        },
+        {
+          id: "4-6",
+          unit: 4,
+          no: 6,
+          title: "Convert Measurement Units",
+          std: "6.RP.3d",
+        },
+        {
+          id: "4-7",
+          unit: 4,
+          no: 7,
+          title: "Solve Problems with Unit Rates",
+          std: "6.RP.3b",
+        },
+        {
+          id: "5-1",
+          unit: 5,
+          no: 1,
+          title: "Area of Parallelograms",
+          std: "6.G.1",
+        },
+        {
+          id: "5-2",
+          unit: 5,
+          no: 2,
+          title: "Area of Trapezoids",
+          std: "6.G.1",
+        },
+        { id: "5-3", unit: 5, no: 3, title: "Area of Triangles", std: "6.G.1" },
+        {
+          id: "5-4",
+          unit: 5,
+          no: 4,
+          title: "Area of Regular Polygons",
+          std: "6.G.1",
+        },
+        {
+          id: "5-5",
+          unit: 5,
+          no: 5,
+          title: "Area of Composite Figures",
+          std: "6.G.1",
+        },
+        {
+          id: "6-1",
+          unit: 6,
+          no: 1,
+          title: "Powers and Exponents",
+          std: "6.EE.1",
+        },
+        {
+          id: "6-2",
+          unit: 6,
+          no: 2,
+          title: "Evaluate Expressions",
+          std: "6.EE.2c",
+        },
+        {
+          id: "6-3",
+          unit: 6,
+          no: 3,
+          title: "Write Algebraic Expressions",
+          std: "6.EE.2a",
+        },
+        {
+          id: "6-4",
+          unit: 6,
+          no: 4,
+          title: "Properties of Operations",
+          std: "6.EE.3",
+        },
+        {
+          id: "6-5",
+          unit: 6,
+          no: 5,
+          title: "The Distributive Property",
+          std: "6.EE.3",
+        },
+        {
+          id: "6-6",
+          unit: 6,
+          no: 6,
+          title: "Equivalent Expressions",
+          std: "6.EE.4",
+        },
+        {
+          id: "6-7",
+          unit: 6,
+          no: 7,
+          title: "Simplify Algebraic Expressions",
+          std: "6.EE.3",
+        },
+        { id: "7-1", unit: 7, no: 1, title: "Write Equations", std: "6.EE.6" },
+        {
+          id: "7-2",
+          unit: 7,
+          no: 2,
+          title: "Solve One-Step Addition and Subtraction Equations",
+          std: "6.EE.7",
+        },
+        {
+          id: "7-3",
+          unit: 7,
+          no: 3,
+          title: "Solve Multiplication and Division Equations",
+          std: "6.EE.7",
+        },
+        {
+          id: "7-4",
+          unit: 7,
+          no: 4,
+          title: "Write Inequalities",
+          std: "6.EE.8",
+        },
+        {
+          id: "7-5",
+          unit: 7,
+          no: 5,
+          title: "Graph Inequalities",
+          std: "6.EE.8",
+        },
+        {
+          id: "7-6",
+          unit: 7,
+          no: 6,
+          title: "Solve and Graph Inequalities",
+          std: "6.EE.5",
+        },
+        {
+          id: "7-7",
+          unit: 7,
+          no: 7,
+          title: "Equations and Inequalities Problem Solving",
+          std: "6.EE.7",
+        },
+        {
+          id: "8-1",
+          unit: 8,
+          no: 1,
+          title: "Statistical Questions and Data",
+          std: "6.SP.1",
+        },
+        {
+          id: "8-2",
+          unit: 8,
+          no: 2,
+          title: "Mean, Median, and Mode",
+          std: "6.SP.3",
+        },
+        {
+          id: "8-3",
+          unit: 8,
+          no: 3,
+          title: "Mean Absolute Deviation",
+          std: "6.SP.5c",
+        },
+        {
+          id: "8-4",
+          unit: 8,
+          no: 4,
+          title: "Appropriate Measures",
+          std: "6.SP.5d",
+        },
+        {
+          id: "8-5",
+          unit: 8,
+          no: 5,
+          title: "Display Data: Box Plots",
+          std: "6.SP.4",
+        },
+        {
+          id: "8-6",
+          unit: 8,
+          no: 6,
+          title: "Display Data: Histograms",
+          std: "6.SP.4",
+        },
+        {
+          id: "8-7",
+          unit: 8,
+          no: 7,
+          title: "Shape of Data Distributions",
+          std: "6.SP.2",
+        },
+        {
+          id: "9-1",
+          unit: 9,
+          no: 1,
+          title: "Graph on the Coordinate Plane",
+          std: "6.NS.6",
+        },
+        {
+          id: "9-2",
+          unit: 9,
+          no: 2,
+          title: "Integers and Absolute Value",
+          std: "6.NS.7",
+        },
+        {
+          id: "9-3",
+          unit: 9,
+          no: 3,
+          title: "Compare and Order Integers",
+          std: "6.NS.7",
+        },
+        {
+          id: "9-4",
+          unit: 9,
+          no: 4,
+          title: "Rational Numbers on the Number Line",
+          std: "6.NS.6",
+        },
+        {
+          id: "9-5",
+          unit: 9,
+          no: 5,
+          title: "Ordered Pairs in All Four Quadrants",
+          std: "6.NS.6b",
+        },
+        {
+          id: "9-6",
+          unit: 9,
+          no: 6,
+          title: "Distance on the Coordinate Plane",
+          std: "6.NS.8",
+        },
+        {
+          id: "9-7",
+          unit: 9,
+          no: 7,
+          title: "Reflect Points Across Axes",
+          std: "6.NS.6b",
+        },
+        {
+          id: "10-1",
+          unit: 10,
+          no: 1,
+          title: "Volume with Whole Number Edges",
+          std: "6.G.2",
+        },
+        {
+          id: "10-2",
+          unit: 10,
+          no: 2,
+          title: "Volume of Rectangular Prisms",
+          std: "6.G.2",
+        },
+        {
+          id: "10-3",
+          unit: 10,
+          no: 3,
+          title: "Surface Area Using Nets",
+          std: "6.G.4",
+        },
+        {
+          id: "10-4",
+          unit: 10,
+          no: 4,
+          title: "Surface Area of Prisms",
+          std: "6.G.4",
+        },
+        {
+          id: "10-5",
+          unit: 10,
+          no: 5,
+          title: "Surface Area of Pyramids",
+          std: "6.G.4",
+        },
+      ];
+
+      var UNIT_NAMES = {
+        1: "The Number System",
+        2: "Fraction Division",
+        3: "Ratios",
+        4: "Rates & Percents",
+        5: "Area",
+        6: "Expressions",
+        7: "Equations & Inequalities",
+        8: "Statistics & Data",
+        9: "Integers & the Coordinate Plane",
+        10: "Volume & Surface Area",
+      };
+
+      var STORE_KEY = "neft.myMathPath.v1";
+      var ROUTE_ORDER = { lost: 0, shaky: 1, got: 2 };
+
+      // ---- Storage ----
+      function loadRatings() {
+        try {
+          var raw = localStorage.getItem(STORE_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+          return {};
+        }
+      }
+      function saveRatings(r) {
+        try {
+          localStorage.setItem(STORE_KEY, JSON.stringify(r));
+        } catch (e) {
+          /* storage may be unavailable; ratings stay in-memory for this session */
+        }
+      }
+      var ratings = loadRatings();
+
+      // ---- Routing copy ----
+      function routeLinks(lesson, rating) {
+        var rd = "/lessons/" + lesson.id + "/readiness/";
+        var ls = "/lessons/" + lesson.id + "/";
+        if (rating === "lost") {
+          return {
+            msg: "<b>No problem — let's rebuild this one.</b> Start with the warm-up, then practice the whole skill at your pace.",
+            links: [
+              { href: rd, cls: "warn", text: "Warm-up first →" },
+              {
+                href: "/math/catch-up/",
+                cls: "soft",
+                text: "Catch-Up &amp; Bridge",
+              },
+              { href: ls, cls: "lesson-link", text: "Open lesson" },
+            ],
+          };
+        }
+        if (rating === "shaky") {
+          return {
+            msg: "<b>Almost there!</b> A quick warm-up will lock it in, then jump into the lesson.",
+            links: [
+              { href: rd, cls: "primary", text: "Quick warm-up →" },
+              { href: ls, cls: "lesson-link", text: "Open lesson" },
+            ],
+          };
+        }
+        if (rating === "got") {
+          return {
+            msg: "<b>Nice — you've got this!</b> Open the lesson to review or push further.",
+            links: [
+              { href: ls, cls: "primary", text: "Open lesson / review →" },
+            ],
+          };
+        }
+        // unrated
+        return {
+          msg: "Rate how you feel and I'll point you to the right spot.",
+          links: [{ href: ls, cls: "lesson-link", text: "Open lesson" }],
+        };
+      }
+
+      // ---- Rendering ----
+      var pathsEl = document.getElementById("paths");
+
+      function buildPaths() {
+        var units = [];
+        LESSONS.forEach(function (l) {
+          if (units.indexOf(l.unit) === -1) units.push(l.unit);
+        });
+        var filterSel = document.getElementById("unitFilter");
+        units.forEach(function (u) {
+          var opt = document.createElement("option");
+          opt.value = String(u);
+          opt.textContent = "Unit " + u + " · " + (UNIT_NAMES[u] || "");
+          filterSel.appendChild(opt);
+        });
+
+        units.forEach(function (u) {
+          var block = document.createElement("div");
+          block.className = "unit";
+          block.dataset.unit = String(u);
+
+          var head = document.createElement("div");
+          head.className = "unit-head";
+          head.innerHTML =
+            "<h2>Unit " +
+            u +
+            " · " +
+            (UNIT_NAMES[u] || "") +
+            '</h2><div class="unit-bar" id="bar-' +
+            u +
+            '" role="img" aria-label="Unit ' +
+            u +
+            ' progress"></div><span class="unit-pct" id="pct-' +
+            u +
+            '">0%</span>';
+          block.appendChild(head);
+
+          LESSONS.filter(function (l) {
+            return l.unit === u;
+          }).forEach(function (l) {
+            block.appendChild(renderLesson(l));
+          });
+
+          pathsEl.appendChild(block);
+        });
+      }
+
+      function renderLesson(l) {
+        var row = document.createElement("article");
+        row.className = "lesson";
+        row.id = "lesson-" + l.id;
+
+        var rating = ratings[l.id] || null;
+        var ratesHtml =
+          '<div class="rates" role="group" aria-label="How do you feel about ' +
+          escapeAttr(l.title) +
+          '?">' +
+          rateBtn(l, "lost", "🔴", "Lost") +
+          rateBtn(l, "shaky", "🟡", "Shaky") +
+          rateBtn(l, "got", "🟢", "Got it") +
+          "</div>";
+
+        row.innerHTML =
+          '<div class="top"><div class="meta">' +
+          '<span class="std">' +
+          l.std +
+          "</span>" +
+          "<h3>" +
+          escapeHtml(l.title) +
+          ' <span class="lno">· Lesson ' +
+          l.no +
+          "</span></h3>" +
+          "</div>" +
+          ratesHtml +
+          '</div><div class="route" id="route-' +
+          l.id +
+          '"></div>';
+
+        // wire buttons
+        row.querySelectorAll(".rate").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            setRating(l.id, btn.dataset.val);
+          });
+        });
+
+        updateRoute(row, l, rating);
+        return row;
+      }
+
+      function rateBtn(l, val, emoji, label) {
+        var pressed = (ratings[l.id] || null) === val;
+        return (
+          '<button type="button" class="rate ' +
+          val +
+          '" data-val="' +
+          val +
+          '" aria-pressed="' +
+          (pressed ? "true" : "false") +
+          '"><span class="emoji" aria-hidden="true">' +
+          emoji +
+          "</span>" +
+          label +
+          "</button>"
+        );
+      }
+
+      function updateRoute(row, l, rating) {
+        var routeEl = row.querySelector(".route");
+        var info = routeLinks(l, rating);
+        var html = '<span class="msg">' + info.msg + "</span>";
+        info.links.forEach(function (lk) {
+          html +=
+            '<a class="go ' +
+            lk.cls +
+            '" href="' +
+            lk.href +
+            '">' +
+            lk.text +
+            "</a>";
+        });
+        routeEl.innerHTML = html;
+      }
+
+      function setRating(id, val) {
+        if (ratings[id] === val) {
+          delete ratings[id]; // tapping the active one clears it
+        } else {
+          ratings[id] = val;
+        }
+        saveRatings(ratings);
+
+        var lesson = LESSONS.filter(function (l) {
+          return l.id === id;
+        })[0];
+        var row = document.getElementById("lesson-" + id);
+        var cur = ratings[id] || null;
+        row.querySelectorAll(".rate").forEach(function (b) {
+          b.setAttribute(
+            "aria-pressed",
+            b.dataset.val === cur ? "true" : "false",
+          );
+        });
+        updateRoute(row, lesson, cur);
+        refreshProgress();
+      }
+
+      // ---- Progress ----
+      function refreshProgress() {
+        var counts = { lost: 0, shaky: 0, got: 0, none: 0 };
+        var perUnit = {};
+        LESSONS.forEach(function (l) {
+          var r = ratings[l.id] || "none";
+          counts[r === "none" ? "none" : r]++;
+          if (!perUnit[l.unit])
+            perUnit[l.unit] = { lost: 0, shaky: 0, got: 0, none: 0, total: 0 };
+          perUnit[l.unit][r]++;
+          perUnit[l.unit].total++;
+        });
+
+        var total = LESSONS.length;
+        var pctGot = Math.round((counts.got / total) * 100);
+
+        document.getElementById("cGot").textContent = counts.got;
+        document.getElementById("cShaky").textContent = counts.shaky;
+        document.getElementById("cLost").textContent = counts.lost;
+        document.getElementById("cNone").textContent = counts.none;
+
+        var ring = document.getElementById("ring");
+        ring.style.setProperty("--pct", pctGot);
+        ring.setAttribute("aria-label", pctGot + "% of skills marked Got it");
+        document.getElementById("ringPct").textContent = pctGot + "%";
+
+        Object.keys(perUnit).forEach(function (u) {
+          var d = perUnit[u];
+          var bar = document.getElementById("bar-" + u);
+          if (!bar) return;
+          var g = (d.got / d.total) * 100;
+          var s = (d.shaky / d.total) * 100;
+          var lo = (d.lost / d.total) * 100;
+          bar.innerHTML =
+            '<span class="seg got" style="width:' +
+            g +
+            '%"></span>' +
+            '<span class="seg shaky" style="width:' +
+            s +
+            '%"></span>' +
+            '<span class="seg lost" style="width:' +
+            lo +
+            '%"></span>';
+          document.getElementById("pct-" + u).textContent = Math.round(g) + "%";
+        });
+
+        refreshFocus();
+      }
+
+      function refreshFocus() {
+        var list = document.getElementById("focusList");
+        var needs = LESSONS.filter(function (l) {
+          var r = ratings[l.id];
+          return r === "lost" || r === "shaky";
+        }).sort(function (a, b) {
+          var ra = ROUTE_ORDER[ratings[a.id]];
+          var rb = ROUTE_ORDER[ratings[b.id]];
+          if (ra !== rb) return ra - rb; // lost before shaky
+          if (a.unit !== b.unit) return a.unit - b.unit;
+          return a.no - b.no;
+        });
+
+        if (needs.length === 0) {
+          list.innerHTML =
+            '<li class="empty">Nothing flagged yet. Rate your skills above, and anything that needs work will show up here. 🌱</li>';
+          return;
+        }
+
+        list.innerHTML = needs
+          .slice(0, 12)
+          .map(function (l) {
+            var r = ratings[l.id];
+            var pillTxt = r === "lost" ? "Lost" : "Shaky";
+            var primary =
+              r === "lost"
+                ? "/math/catch-up/"
+                : "/lessons/" + l.id + "/readiness/";
+            var primaryTxt = r === "lost" ? "Catch-Up" : "Warm-up";
+            return (
+              '<li><span class="pill ' +
+              r +
+              '">' +
+              pillTxt +
+              "</span>" +
+              '<span class="glabel">U' +
+              l.unit +
+              "·L" +
+              l.no +
+              " <b>" +
+              escapeHtml(l.title) +
+              '</b> <span style="color:var(--muted)">(' +
+              l.std +
+              ")</span></span>" +
+              '<a class="mini-link" href="' +
+              primary +
+              '">' +
+              primaryTxt +
+              " →</a>" +
+              '<a class="mini-link" href="#lesson-' +
+              l.id +
+              '">Go to row</a></li>'
+            );
+          })
+          .join("");
+      }
+
+      // ---- Filter ----
+      function applyFilter(val) {
+        document.querySelectorAll(".unit").forEach(function (block) {
+          var show = val === "all" || block.dataset.unit === val;
+          block.classList.toggle("hidden", !show);
+        });
+      }
+
+      // ---- Helpers ----
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function escapeAttr(s) {
+        return escapeHtml(s).replace(/"/g, "&quot;");
+      }
+
+      // ---- Init ----
+      buildPaths();
+      refreshProgress();
+
+      document
+        .getElementById("unitFilter")
+        .addEventListener("change", function (e) {
+          applyFilter(e.target.value);
+        });
+      document
+        .getElementById("focusBtn")
+        .addEventListener("click", function () {
+          document
+            .getElementById("focusCard")
+            .scrollIntoView({ behavior: "smooth" });
+        });
+      document
+        .getElementById("printBtn")
+        .addEventListener("click", function () {
+          window.print();
+        });
+      document
+        .getElementById("resetBtn")
+        .addEventListener("click", function () {
+          if (
+            confirm(
+              "Clear all your check-ins? This starts your path fresh. (Your lessons stay the same.)",
+            )
+          ) {
+            ratings = {};
+            saveRatings(ratings);
+            // re-render rows
+            document.querySelectorAll(".lesson").forEach(function (row) {
+              var id = row.id.replace("lesson-", "");
+              var lesson = LESSONS.filter(function (l) {
+                return l.id === id;
+              })[0];
+              row.querySelectorAll(".rate").forEach(function (b) {
+                b.setAttribute("aria-pressed", "false");
+              });
+              updateRoute(row, lesson, null);
+            });
+            refreshProgress();
+          }
+        });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

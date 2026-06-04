@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      6A Write &amp; Evaluate Expressions Study Guide | Neft Teacher
+    </title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>6A | Write &amp; Evaluate Expressions Study Guide</h1>
+        <div class="guide-meta">
+          Unit 6: Expressions &amp; Equations &bull; Lesson 6.5 &bull;
+          Standards: 6.EE.1, 6.EE.2
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Expression</strong> &mdash; a math phrase with numbers,
+          variables, and operations (no = sign).
+          <span class="spanish">(expresi&oacute;n)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Variable</strong> &mdash; a letter (like x or n) that stands
+          for an unknown number.
+          <span class="spanish">(variable)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Evaluate</strong> &mdash; to find the value of an expression
+          by replacing the variable with a number.
+          <span class="spanish">(evaluar)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Substitute</strong> &mdash; to replace a variable with a given
+          number.
+          <span class="spanish">(sustituir)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Coefficient</strong> &mdash; the number multiplied by a
+          variable (in 5x, the coefficient is 5).
+          <span class="spanish">(coeficiente)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Constant</strong> &mdash; a number that stands alone (no
+          variable attached).
+          <span class="spanish">(constante)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Visual Example</h2>
+        <div class="example-box">
+          <strong>Writing an expression from words:</strong><br /><br />
+          "Three more than a number" &rarr; <strong>n + 3</strong><br />
+          "Twice a number" &rarr; <strong>2n</strong><br />
+          "A number divided by 4" &rarr; <strong>n &divide; 4</strong> or
+          <strong>n/4</strong>
+        </div>
+        <div class="example-box">
+          <strong>Evaluating an expression:</strong><br /><br />
+          Evaluate 3x + 7 when x = 4<br />
+          Step 1: Replace x with 4 &rarr; 3(4) + 7<br />
+          Step 2: Multiply &rarr; 12 + 7<br />
+          Step 3: Add &rarr; <strong>19</strong>
+        </div>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step</h2>
+        <h3 style="color: var(--guide-primary); margin-bottom: 0.5rem">
+          Writing Expressions
+        </h3>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> Read the words carefully. Find the
+            key math words (sum, product, difference, quotient).
+          </li>
+          <li>
+            <span class="step-num">2</span> Choose a variable for the unknown
+            number.
+          </li>
+          <li>
+            <span class="step-num">3</span> Write the expression using numbers,
+            the variable, and the operation.
+          </li>
+        </ol>
+        <h3 style="color: var(--guide-primary); margin: 1rem 0 0.5rem">
+          Evaluating Expressions
+        </h3>
+        <ol class="step-list">
+          <li><span class="step-num">1</span> Write the expression.</li>
+          <li>
+            <span class="step-num">2</span> Substitute (replace) the variable
+            with the given number.
+          </li>
+          <li>
+            <span class="step-num">3</span> Follow the order of operations
+            (PEMDAS) to solve.
+          </li>
+        </ol>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Order of Operations (PEMDAS)</h2>
+        <div class="formula-highlight">
+          P &rarr; Parentheses first<br />
+          E &rarr; Exponents<br />
+          M/D &rarr; Multiply and Divide (left to right)<br />
+          A/S &rarr; Add and Subtract (left to right)
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>An expression is NOT an equation.</strong> Expressions have
+            no equals sign (=). Equations do.
+          </li>
+          <li>
+            <strong>"5 less than x" = x &minus; 5</strong>, NOT 5 &minus; x. The
+            order matters with subtraction!
+          </li>
+          <li>
+            <strong>"Twice a number" = 2n.</strong> In algebra, we write the
+            number before the variable (not n2).
+          </li>
+          <li>
+            <strong>Always follow order of operations</strong> when evaluating.
+            Multiply before you add!
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p><strong>1.</strong> Evaluate 2x + 5 when x = 6.</p>
+          <input type="text" id="q1" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q1', '17', 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>2.</strong> Evaluate 4(n &minus; 3) when n = 10.</p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q2', '28', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> Write an expression for: "8 more than twice a
+            number." Use n for the variable. (Example format: 2n+8)
+          </p>
+          <input type="text" id="q3" placeholder="Type your expression..." />
+          <button class="check-btn" onclick="checkExpr('q3', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>4.</strong> Evaluate 10 &minus; x/2 when x = 4.</p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q4', '8', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkExpr(inputId, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "").toLowerCase();
+        var accepted = ["2n+8", "8+2n", "2*n+8", "8+2*n", "2(n)+8", "8+2(n)"];
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else if (accepted.indexOf(val) !== -1) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent =
+            "Not quite. Hint: 'twice a number' means 2n, and '8 more than' means + 8.";
+        }
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

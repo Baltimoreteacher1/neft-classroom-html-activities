@@ -1,0 +1,2190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 8 Supplemental — Equations &amp; Inequalities | Neft Teacher
+    </title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --esol-primary: #0e8a7d;
+        --esol-light: #e4f5f3;
+        --esol-dark: #0a6b61;
+        --esol-accent: #1a6fb5;
+        --esol-accent-light: #e8f2fc;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #f3eeff;
+        --enrich-dark: #5b21b6;
+        --enrich-accent: #d4952a;
+        --enrich-accent-light: #fdf3e0;
+        --navy: #0f2b3c;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --green: #2d874b;
+        --coral: #c45a3c;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: #fff;
+      }
+      .header h1 {
+        font-size: 1.8rem;
+        margin: 0 0 4px;
+      }
+      .header .subtitle {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 1rem;
+        margin: 0;
+      }
+
+      /* Shell */
+      .shell {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px 16px 60px;
+      }
+
+      /* Tab Navigation */
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        margin-bottom: 0;
+        border-bottom: 3px solid var(--line);
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: var(--card);
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.2s;
+        border-radius: var(--radius) var(--radius) 0 0;
+        position: relative;
+      }
+      .tab-btn.esol-tab {
+        border-top: 3px solid transparent;
+      }
+      .tab-btn.enrich-tab {
+        border-top: 3px solid transparent;
+      }
+      .tab-btn.esol-tab.active {
+        color: var(--esol-primary);
+        border-top-color: var(--esol-primary);
+        background: var(--esol-light);
+      }
+      .tab-btn.enrich-tab.active {
+        color: var(--enrich-primary);
+        border-top-color: var(--enrich-primary);
+        background: var(--enrich-light);
+      }
+      .tab-btn:hover:not(.active) {
+        background: #f0f2f4;
+      }
+
+      /* Tab Content */
+      .tab-panel {
+        display: none;
+        animation: fadeUp 0.3s ease;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Section Cards */
+      .section-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 20px 0;
+        box-shadow: var(--shadow);
+      }
+      .esol-section .section-card {
+        border-left: 4px solid var(--esol-primary);
+      }
+      .enrich-section .section-card {
+        border-left: 4px solid var(--enrich-primary);
+      }
+      .section-card h2 {
+        font-size: 1.3rem;
+        margin: 0 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .esol-section h2 {
+        color: var(--esol-dark);
+      }
+      .enrich-section h2 {
+        color: var(--enrich-dark);
+      }
+      .section-card h3 {
+        font-size: 1.05rem;
+        margin: 16px 0 8px;
+        color: var(--ink);
+      }
+
+      /* Visual Vocabulary */
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+      }
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid #c4e6e2;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+      .vocab-card svg {
+        display: block;
+        margin: 0 auto 10px;
+      }
+      .vocab-term {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.85rem;
+        color: var(--esol-primary);
+        font-style: italic;
+        margin: 2px 0;
+      }
+      .vocab-def {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* Sentence Frames */
+      .frame-list {
+        list-style: none;
+        padding: 0;
+      }
+      .frame-list li {
+        background: var(--esol-accent-light);
+        border: 1px solid #c8ddf0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+      .frame-list .blank {
+        display: inline-block;
+        min-width: 80px;
+        border-bottom: 2px solid var(--esol-accent);
+        color: var(--esol-accent);
+        font-weight: 600;
+        text-align: center;
+        padding: 0 4px;
+      }
+
+      /* Step Guide */
+      .step-guide {
+        counter-reset: step;
+      }
+      .step-item {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .step-item:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        counter-increment: step;
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--esol-primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      .step-num::after {
+        content: counter(step);
+      }
+      .step-content {
+        flex: 1;
+      }
+      .step-content .math-display {
+        background: var(--esol-light);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 8px 0;
+        font-size: 1.1rem;
+        font-family: "Courier New", monospace;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .step-arrow {
+        color: var(--esol-primary);
+        font-weight: 700;
+        font-size: 1.2rem;
+      }
+      .color-add {
+        color: var(--esol-primary);
+        font-weight: 700;
+      }
+      .color-sub {
+        color: var(--coral);
+        font-weight: 700;
+      }
+      .color-mult {
+        color: var(--enrich-primary);
+        font-weight: 700;
+      }
+      .color-div {
+        color: var(--enrich-accent);
+        font-weight: 700;
+      }
+      .color-result {
+        color: var(--green);
+        font-weight: 700;
+      }
+
+      /* Practice Problems */
+      .practice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+      }
+      .practice-item {
+        background: #fafbfc;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .practice-item .problem {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .practice-item .hint-toggle,
+      .practice-item .answer-toggle {
+        font-size: 0.85rem;
+        color: var(--esol-primary);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        font-weight: 600;
+        display: inline-block;
+        margin-right: 12px;
+      }
+      .enrich-section .practice-item .hint-toggle,
+      .enrich-section .practice-item .answer-toggle {
+        color: var(--enrich-primary);
+      }
+      .practice-item .hint-content,
+      .practice-item .answer-content {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      .practice-item .hint-content {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+      }
+      .practice-item .answer-content {
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
+      }
+      .practice-item .hint-content.show,
+      .practice-item .answer-content.show {
+        display: block;
+      }
+
+      /* Real-World Cards */
+      .rw-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      .rw-card {
+        border-radius: 12px;
+        padding: 20px;
+      }
+      .esol-section .rw-card {
+        background: var(--esol-accent-light);
+        border: 1px solid #c8ddf0;
+      }
+      .enrich-section .rw-card {
+        background: var(--enrich-accent-light);
+        border: 1px solid #e8d5a8;
+      }
+      .rw-card h4 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rw-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      /* Challenge Problems (Enrichment) */
+      .challenge-item {
+        background: var(--enrich-light);
+        border: 1px solid #ddd0f5;
+        border-radius: 10px;
+        padding: 16px;
+        margin: 10px 0;
+      }
+      .challenge-item .difficulty {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .difficulty.medium {
+        background: #fdf3e0;
+        color: #b8860b;
+      }
+      .difficulty.hard {
+        background: #fce4ec;
+        color: #c62828;
+      }
+      .difficulty.expert {
+        background: #ede7f6;
+        color: #4a148c;
+      }
+
+      /* Investigation Cards */
+      .investigation {
+        background: var(--card);
+        border: 2px solid var(--enrich-primary);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin: 14px 0;
+      }
+      .investigation h4 {
+        color: var(--enrich-dark);
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+      .investigation p {
+        margin: 4px 0;
+        font-size: 0.92rem;
+      }
+      .investigation .materials {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      /* Brain Teasers */
+      .teaser {
+        background: linear-gradient(135deg, #fdf3e0, #fff8e1);
+        border: 1px solid #ffe082;
+        border-radius: 12px;
+        padding: 18px;
+        margin: 12px 0;
+      }
+      .teaser h4 {
+        color: #b8860b;
+        margin: 0 0 6px;
+      }
+
+      /* Self-Assessment */
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .check-box {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--enrich-primary);
+        border-radius: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        background: #fff;
+      }
+      .check-box.checked {
+        background: var(--enrich-primary);
+        border-color: var(--enrich-primary);
+      }
+      .check-box.checked::after {
+        content: "✓";
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      /* Extension Topics */
+      .extension-box {
+        background: linear-gradient(135deg, var(--enrich-light), #f3eeff);
+        border-radius: var(--radius);
+        padding: 20px;
+        border: 1px solid #ddd0f5;
+      }
+      .extension-box h4 {
+        color: var(--enrich-dark);
+        margin: 0 0 6px;
+      }
+      .extension-box p {
+        font-size: 0.92rem;
+        margin: 4px 0;
+        color: var(--muted);
+      }
+
+      /* Print Button */
+      .print-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin: 16px 0;
+      }
+      .print-btn {
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+      }
+      .print-btn:hover {
+        background: #1a4a6b;
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .header h1 {
+          font-size: 1.4rem;
+        }
+        .vocab-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .practice-grid {
+          grid-template-columns: 1fr;
+        }
+        .rw-cards {
+          grid-template-columns: 1fr;
+        }
+        .tab-btn {
+          font-size: 0.85rem;
+          padding: 10px 12px;
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        .tab-bar,
+        .print-bar,
+        .hint-toggle,
+        .answer-toggle {
+          display: none !important;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .tab-panel::before {
+          content: attr(data-tab-title);
+          display: block;
+          font-size: 1.4rem;
+          font-weight: 700;
+          margin: 20px 0 10px;
+          page-break-before: always;
+        }
+        .tab-panel:first-of-type::before {
+          page-break-before: auto;
+        }
+        .hint-content,
+        .answer-content {
+          display: block !important;
+        }
+        .section-card {
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+<div class="l0-extra-support" role="note">
+  🟠 <b>Level 0 — Most Support.</b> Same skills as Level 1, with extra help:
+  press <button id="readAloudBtn" class="l0-readaloud" type="button">🔊 Read aloud</button>
+  then tap any text to hear it. Open every 💡 Hint — that is okay here.
+</div>
+<style>
+.l0-extra-support{display:none;max-width:900px;margin:10px auto;padding:12px 16px;background:#fff7ed;border:1px solid #fdba74;border-radius:12px;color:#7c2d12;font-size:15px;line-height:1.5;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+body.l0on .l0-extra-support{display:block}
+.l0-readaloud{border:1px solid #fdba74;background:#fff;color:#9a3412;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;font-size:14px}
+.l0-readaloud:hover{background:#ffedd5}
+.tab-btn[data-tab="level0"]{color:#9a3412}
+.tab-btn.active[data-tab="level0"]{background:#fff7ed;border-color:#fdba74;color:#9a3412}
+body.l0-reading *{cursor:help}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<script>
+(function(){var b=document.getElementById("readAloudBtn");if(!b)return;var on=false;
+function speak(t){try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=0.9;window.speechSynthesis.speak(u);}catch(e){}}
+b.addEventListener("click",function(){on=!on;document.body.classList.toggle("l0-reading",on);b.textContent=on?"🔊 Tap text to hear":"🔊 Read aloud";if(!on){try{window.speechSynthesis.cancel();}catch(e){}}});
+document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(".l0-extra-support"))return;var el=e.target.closest("p,li,h1,h2,h3,h4,label,td,.q-text");if(el){var t=el.textContent.trim();if(t&&t.length<400)speak(t);}},true);})();
+</script>
+
+    <header class="header">
+      <div class="header-inner">
+        <h1>Unit 8 Supplemental Resources</h1>
+        <p class="subtitle">
+          Equations &amp; Inequalities &mdash; Standards 6.EE.B.5&ndash;8
+        </p>
+      </div>
+    </header>
+
+    <div class="shell">
+      <div class="print-bar">
+        <button class="print-btn" onclick="window.print()">
+          &#128424; Print This Page
+        </button>
+        <button class="print-btn" onclick="NeftDocx.exportPage()">⬇ Download Word Doc</button>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn tab-btn-l0 level0-btn" data-tab="level0" onclick="switchTab('level0')">
+          🟠 Level 0 · Most Support
+        </button>
+        <button
+          class="tab-btn esol-tab active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          &#127759; Level 1 Support
+        </button>
+        <button
+          class="tab-btn enrich-tab"
+          data-tab="enrich"
+          onclick="switchTab('enrich')"
+        >
+          &#127775; Enrichment
+        </button>
+      </div>
+
+      <!-- ======================== LEVEL 1 SUPPORT TAB ======================== -->
+      <div
+        class="tab-panel esol-section active"
+        id="tab-esol"
+        data-tab-title="Level 1 Support"
+      >
+        <!-- Visual Vocabulary -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="2"
+                y="4"
+                width="24"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="8"
+                y1="10"
+                x2="20"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="8"
+                y1="14"
+                x2="17"
+                y2="14"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+              <line
+                x1="8"
+                y1="18"
+                x2="14"
+                y2="18"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+            </svg>
+            Visual Vocabulary
+          </h2>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <rect
+                  x="4"
+                  y="20"
+                  width="22"
+                  height="24"
+                  rx="4"
+                  fill="#e4f5f3"
+                  stroke="#0e8a7d"
+                  stroke-width="2"
+                />
+                <text
+                  x="15"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="700"
+                  fill="#0e8a7d"
+                >
+                  x+3
+                </text>
+                <text
+                  x="32"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="700"
+                  fill="#0a6b61"
+                >
+                  =
+                </text>
+                <rect
+                  x="38"
+                  y="20"
+                  width="22"
+                  height="24"
+                  rx="4"
+                  fill="#e4f5f3"
+                  stroke="#0e8a7d"
+                  stroke-width="2"
+                />
+                <text
+                  x="49"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="700"
+                  fill="#0e8a7d"
+                >
+                  10
+                </text>
+              </svg>
+              <div class="vocab-term">Equation</div>
+              <div class="vocab-spanish">Ecuaci&oacute;n</div>
+              <div class="vocab-def">
+                A math sentence with an equal sign (=). Both sides are the same
+                value.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="22"
+                  fill="#e4f5f3"
+                  stroke="#0e8a7d"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#5e6e7e"
+                >
+                  x =
+                </text>
+                <text
+                  x="32"
+                  y="42"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="700"
+                  fill="#0e8a7d"
+                >
+                  7
+                </text>
+                <path
+                  d="M20 48 L32 54 L44 48"
+                  fill="none"
+                  stroke="#2d874b"
+                  stroke-width="2"
+                />
+              </svg>
+              <div class="vocab-term">Solution</div>
+              <div class="vocab-spanish">Soluci&oacute;n</div>
+              <div class="vocab-def">
+                The number that makes the equation true. It is the answer.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <rect
+                  x="8"
+                  y="22"
+                  width="20"
+                  height="20"
+                  rx="3"
+                  fill="#e8f2fc"
+                  stroke="#1a6fb5"
+                  stroke-width="2"
+                />
+                <text
+                  x="18"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="700"
+                  fill="#1a6fb5"
+                >
+                  x
+                </text>
+                <text x="36" y="36" font-size="10" fill="#5e6e7e">unknown</text>
+                <path
+                  d="M42 28 L50 28 L50 36 L42 36"
+                  fill="none"
+                  stroke="#1a6fb5"
+                  stroke-width="1.5"
+                  stroke-dasharray="3,3"
+                />
+              </svg>
+              <div class="vocab-term">Variable</div>
+              <div class="vocab-spanish">Variable</div>
+              <div class="vocab-def">
+                A letter (like x or y) that stands for a number we do not know
+                yet.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <path d="M14 32 L28 32" stroke="#0e8a7d" stroke-width="3" />
+                <path d="M28 24 L28 40" stroke="#0e8a7d" stroke-width="3" />
+                <path d="M36 32 L50 32" stroke="#c45a3c" stroke-width="3" />
+                <text
+                  x="32"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#5e6e7e"
+                >
+                  undo + with &minus;
+                </text>
+              </svg>
+              <div class="vocab-term">Inverse Operation</div>
+              <div class="vocab-spanish">Operaci&oacute;n inversa</div>
+              <div class="vocab-def">
+                The opposite math action. Addition undoes subtraction.
+                Multiplication undoes division.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <line
+                  x1="8"
+                  y1="40"
+                  x2="56"
+                  y2="40"
+                  stroke="#0a6b61"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="32"
+                  cy="40"
+                  r="5"
+                  fill="#fff"
+                  stroke="#c45a3c"
+                  stroke-width="2"
+                />
+                <path
+                  d="M32 40 L56 34"
+                  stroke="#c45a3c"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+                <text
+                  x="32"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  x &gt; 5
+                </text>
+              </svg>
+              <div class="vocab-term">Inequality</div>
+              <div class="vocab-spanish">Desigualdad</div>
+              <div class="vocab-def">
+                A math sentence using &gt;, &lt;, &ge;, or &le;. Shows that two
+                sides are NOT always equal.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <text
+                  x="14"
+                  y="30"
+                  font-size="20"
+                  font-weight="700"
+                  fill="#7c3aed"
+                >
+                  3
+                </text>
+                <text
+                  x="28"
+                  y="30"
+                  font-size="20"
+                  font-weight="700"
+                  fill="#0e8a7d"
+                >
+                  x
+                </text>
+                <path
+                  d="M12 38 L42 38"
+                  stroke="#5e6e7e"
+                  stroke-width="1"
+                  stroke-dasharray="2,2"
+                />
+                <text x="14" y="52" font-size="9" fill="#5e6e7e">number</text>
+                <text x="32" y="52" font-size="9" fill="#5e6e7e">variable</text>
+              </svg>
+              <div class="vocab-term">Coefficient</div>
+              <div class="vocab-spanish">Coeficiente</div>
+              <div class="vocab-def">
+                The number in front of a variable. In 3x, the coefficient is 3.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="3"
+                y="5"
+                width="22"
+                height="18"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="7"
+                y1="10"
+                x2="15"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="17"
+                y1="10"
+                x2="21"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="1"
+                stroke-dasharray="2,2"
+              />
+              <line
+                x1="7"
+                y1="14"
+                x2="12"
+                y2="14"
+                stroke="#0e8a7d"
+                stroke-width="1"
+                stroke-dasharray="2,2"
+              />
+              <line
+                x1="14"
+                y1="14"
+                x2="21"
+                y2="14"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+            </svg>
+            Sentence Frames
+          </h2>
+          <ul class="frame-list">
+            <li>
+              To solve this equation, I need to
+              <span class="blank">___</span> both sides by
+              <span class="blank">___</span>.
+            </li>
+            <li>
+              The inverse operation of addition is
+              <span class="blank">subtraction</span>.
+            </li>
+            <li>
+              The variable <span class="blank">___</span> represents the unknown
+              number in this problem.
+            </li>
+            <li>
+              I can check my solution by
+              <span class="blank">substituting</span> the answer back into the
+              equation.
+            </li>
+            <li>
+              The inequality x &gt; <span class="blank">___</span> means x is
+              <span class="blank">greater than</span> that number.
+            </li>
+            <li>
+              On the number line, an
+              <span class="blank">open circle</span> means the number is NOT
+              included.
+            </li>
+            <li>
+              A <span class="blank">closed circle</span> on the number line
+              means the number IS included.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Step-by-Step Visual Guides -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8 L14 14 L19 14"
+                stroke="#0e8a7d"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Step-by-Step Visual Guides
+          </h2>
+
+          <h3>Example 1: Solve x + 5 = 12</h3>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Read the problem.</strong> We need to find what number
+                plus 5 equals 12.
+                <div class="math-display">x + 5 = 12</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Use the inverse operation.</strong> The equation has
+                <span class="color-add">+ 5</span>. The inverse is
+                <span class="color-sub">&minus; 5</span>.
+                <div class="math-display">
+                  x + 5 <span class="color-sub">&minus; 5</span> = 12
+                  <span class="color-sub">&minus; 5</span>
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Solve!</strong>
+                <div class="math-display">
+                  <span class="color-result">x = 7</span>
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Check:</strong> Replace x with 7. Does 7 + 5 = 12?
+                <span class="color-result">Yes! &#10003;</span>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 24px">Example 2: Solve 4x = 20</h3>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Read the problem.</strong> 4 times some number equals
+                20.
+                <div class="math-display">4x = 20</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Use the inverse operation.</strong> The equation has
+                <span class="color-mult">&times; 4</span>. The inverse is
+                <span class="color-div">&divide; 4</span>.
+                <div class="math-display">
+                  4x <span class="color-div">&divide; 4</span> = 20
+                  <span class="color-div">&divide; 4</span>
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Solve!</strong>
+                <div class="math-display">
+                  <span class="color-result">x = 5</span>
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Check:</strong> Does 4 &times; 5 = 20?
+                <span class="color-result">Yes! &#10003;</span>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 24px">
+            Example 3: Graph x &gt; 3 on a number line
+          </h3>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Find 3 on the number line.</strong>
+                <svg width="320" height="50" viewBox="0 0 320 50">
+                  <line
+                    x1="20"
+                    y1="25"
+                    x2="300"
+                    y2="25"
+                    stroke="#0a6b61"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="60"
+                    y1="20"
+                    x2="60"
+                    y2="30"
+                    stroke="#5e6e7e"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="60"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#5e6e7e"
+                  >
+                    1
+                  </text>
+                  <line
+                    x1="120"
+                    y1="20"
+                    x2="120"
+                    y2="30"
+                    stroke="#5e6e7e"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="120"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#5e6e7e"
+                  >
+                    2
+                  </text>
+                  <line
+                    x1="180"
+                    y1="20"
+                    x2="180"
+                    y2="30"
+                    stroke="#c45a3c"
+                    stroke-width="2"
+                  />
+                  <text
+                    x="180"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    font-weight="700"
+                    fill="#c45a3c"
+                  >
+                    3
+                  </text>
+                  <line
+                    x1="240"
+                    y1="20"
+                    x2="240"
+                    y2="30"
+                    stroke="#5e6e7e"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="240"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#5e6e7e"
+                  >
+                    4
+                  </text>
+                </svg>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Open or closed circle?</strong> The symbol is &gt; (not
+                &ge;), so use an <span class="color-sub">open circle</span>. 3
+                is NOT a solution.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Shade the arrow to the right</strong> (greater than
+                means bigger numbers).
+                <svg width="320" height="50" viewBox="0 0 320 50">
+                  <line
+                    x1="20"
+                    y1="25"
+                    x2="300"
+                    y2="25"
+                    stroke="#0a6b61"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="60"
+                    y1="20"
+                    x2="60"
+                    y2="30"
+                    stroke="#5e6e7e"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="60"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#5e6e7e"
+                  >
+                    1
+                  </text>
+                  <line
+                    x1="120"
+                    y1="20"
+                    x2="120"
+                    y2="30"
+                    stroke="#5e6e7e"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="120"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#5e6e7e"
+                  >
+                    2
+                  </text>
+                  <line
+                    x1="180"
+                    y1="20"
+                    x2="180"
+                    y2="30"
+                    stroke="#5e6e7e"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="180"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#5e6e7e"
+                  >
+                    3
+                  </text>
+                  <line
+                    x1="240"
+                    y1="20"
+                    x2="240"
+                    y2="30"
+                    stroke="#5e6e7e"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="240"
+                    y="44"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#5e6e7e"
+                  >
+                    4
+                  </text>
+                  <circle
+                    cx="180"
+                    cy="25"
+                    r="6"
+                    fill="#fff"
+                    stroke="#c45a3c"
+                    stroke-width="2.5"
+                  />
+                  <line
+                    x1="186"
+                    y1="25"
+                    x2="300"
+                    y2="25"
+                    stroke="#c45a3c"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                  />
+                  <polygon points="296,20 304,25 296,30" fill="#c45a3c" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M9 14 L12 17 L19 10"
+                stroke="#0e8a7d"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+            Simplified Practice
+          </h2>
+          <div class="practice-grid">
+            <div class="practice-item">
+              <div class="problem">1. Solve: x + 3 = 10</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Think: What number plus 3 gives you 10? Use the inverse:
+                subtract 3 from both sides.
+              </div>
+              <div class="answer-content">x = 7 (because 10 &minus; 3 = 7)</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">2. Solve: x &minus; 4 = 6</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                The inverse of subtracting 4 is adding 4. Add 4 to both sides.
+              </div>
+              <div class="answer-content">x = 10 (because 6 + 4 = 10)</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">3. Solve: 5x = 25</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                5 times what number equals 25? Divide both sides by 5.
+              </div>
+              <div class="answer-content">
+                x = 5 (because 25 &divide; 5 = 5)
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">4. Solve: x &divide; 3 = 4</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                The inverse of dividing by 3 is multiplying by 3. Multiply both
+                sides by 3.
+              </div>
+              <div class="answer-content">
+                x = 12 (because 4 &times; 3 = 12)
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">5. Solve: x + 8 = 15</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Subtract 8 from both sides.</div>
+              <div class="answer-content">x = 7 (because 15 &minus; 8 = 7)</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">6. Solve: 6x = 42</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Divide both sides by 6.</div>
+              <div class="answer-content">
+                x = 7 (because 42 &divide; 6 = 7)
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                7. Write an inequality: Maria has more than 5 stickers.
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                "More than" means greater than (&gt;). Let s = number of
+                stickers.
+              </div>
+              <div class="answer-content">s &gt; 5</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">8. Is x = 4 a solution to x + 6 &gt; 9?</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Replace x with 4. Is 4 + 6 &gt; 9? Is 10 &gt; 9?
+              </div>
+              <div class="answer-content">
+                Yes! 10 &gt; 9 is true, so x = 4 is a solution.
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">9. Solve: x &minus; 9 = 3</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Add 9 to both sides.</div>
+              <div class="answer-content">x = 12 (because 3 + 9 = 12)</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                10. Graph x &le; 2 on a number line. Open or closed circle?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                &le; means "less than or equal to." Equal means the number IS
+                included.
+              </div>
+              <div class="answer-content">
+                Closed circle at 2, shade to the left. 2 is included because of
+                &le;.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M8 14 Q14 6 20 14 Q14 22 8 14Z"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+              <line
+                x1="14"
+                y1="3"
+                x2="14"
+                y2="25"
+                stroke="#0e8a7d"
+                stroke-width="1"
+              />
+            </svg>
+            Real-World Connections
+          </h2>
+          <div class="rw-cards">
+            <div class="rw-card">
+              <h4>&#127790; Saving Money</h4>
+              <p>
+                You saved $8 and need $20 for a game. The equation x + 8 = 20
+                helps you find how much more you need. Answer: $12 more.
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#127828; Sharing Pizza</h4>
+              <p>
+                You and 3 friends share pizza equally. If there are 24 slices
+                total: 4x = 24. Each person gets 6 slices.
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#128652; Ride Limits</h4>
+              <p>
+                A ride says "You must be at least 48 inches tall." This is an
+                inequality: h &ge; 48. Your height h must be 48 or more.
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#128218; Reading Goal</h4>
+              <p>
+                You want to read more than 15 books this year. Right now you
+                have read 9. Books left: b + 9 &gt; 15, so b &gt; 6.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================== ENRICHMENT TAB ======================== -->
+      <div
+        class="tab-panel enrich-section"
+        id="tab-enrich"
+        data-tab-title="Enrichment"
+      >
+        <!-- Challenge Problems -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <polygon
+                points="14,2 18,10 26,11 20,17 21,25 14,21 7,25 8,17 2,11 10,10"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+            </svg>
+            Challenge Problems
+          </h2>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <div class="problem">1. Solve: 3x + 7 = 28</div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              First subtract 7 from both sides, then divide by 3. This is a
+              two-step equation.
+            </div>
+            <div class="answer-content">
+              3x = 21, so x = 7. Check: 3(7) + 7 = 21 + 7 = 28 &#10003;
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <div class="problem">
+              2. Write an equation and solve: A number divided by 5, then
+              increased by 4, equals 10.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Translate the words: x/5 + 4 = 10. Solve step by step.
+            </div>
+            <div class="answer-content">
+              x/5 + 4 = 10 &rarr; x/5 = 6 &rarr; x = 30
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <div class="problem">
+              3. Find all whole-number solutions to: x + 3 &lt; 10 where x &ge;
+              0.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Solve x + 3 &lt; 10 first, then list whole numbers that work.
+            </div>
+            <div class="answer-content">
+              x &lt; 7. Whole numbers from 0 to 6: {0, 1, 2, 3, 4, 5, 6} &mdash;
+              seven solutions.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <div class="problem">
+              4. Two consecutive even numbers have a sum of 54. Write an
+              equation and find both numbers.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Let the first even number be x. The next even number is x + 2.
+              Their sum: x + (x + 2) = 54.
+            </div>
+            <div class="answer-content">
+              2x + 2 = 54 &rarr; 2x = 52 &rarr; x = 26. The numbers are 26 and
+              28.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <div class="problem">
+              5. A rectangle has a perimeter of 38 cm. Its length is 3 cm more
+              than its width. Find the dimensions.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Let width = w. Then length = w + 3. Perimeter = 2(w) + 2(w + 3) =
+              38.
+            </div>
+            <div class="answer-content">
+              2w + 2w + 6 = 38 &rarr; 4w = 32 &rarr; w = 8. Width = 8 cm, Length
+              = 11 cm.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <div class="problem">
+              6. Marcus has $45. He buys n notebooks at $3.50 each and has at
+              least $10 left. Write and solve an inequality.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Total cost: 3.50n. Money left: 45 &minus; 3.50n &ge; 10.
+            </div>
+            <div class="answer-content">
+              45 &minus; 3.50n &ge; 10 &rarr; 35 &ge; 3.50n &rarr; n &le; 10.
+              Marcus can buy at most 10 notebooks.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              7. Create a real-world situation where the solution to the
+              equation 2x + 5 = 23 would make sense. Solve it and explain your
+              context.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Think of a scenario with a starting amount (5) and groups of 2.
+              Total is 23.
+            </div>
+            <div class="answer-content">
+              Example: A parking garage charges $5 entry plus $2 per hour. If
+              the total bill is $23, how many hours did you park? 2x + 5 = 23
+              &rarr; x = 9 hours.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              8. For what values of x is BOTH x + 2 &gt; 5 AND 2x &lt; 18 true
+              at the same time?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Solve each inequality separately, then find the overlap.
+            </div>
+            <div class="answer-content">
+              x &gt; 3 AND x &lt; 9. So x must be between 3 and 9 (not including
+              3 and 9): 3 &lt; x &lt; 9.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              9. A triangle has angles measuring x&deg;, (x + 20)&deg;, and (2x
+              &minus; 10)&deg;. Find all three angle measures.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Triangle angles sum to 180&deg;. Set up: x + (x + 20) + (2x
+              &minus; 10) = 180.
+            </div>
+            <div class="answer-content">
+              4x + 10 = 180 &rarr; 4x = 170 &rarr; x = 42.5. Angles: 42.5&deg;,
+              62.5&deg;, 75&deg;. Check: 42.5 + 62.5 + 75 = 180 &#10003;
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              10. A phone plan costs $25/month plus $0.10 per text. Another plan
+              costs $35/month with unlimited texts. Write an inequality to find
+              when the first plan is cheaper.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Let t = number of texts. Plan 1: 25 + 0.10t. Plan 2: 35. When is
+              Plan 1 &lt; Plan 2?
+            </div>
+            <div class="answer-content">
+              25 + 0.10t &lt; 35 &rarr; 0.10t &lt; 10 &rarr; t &lt; 100. The
+              first plan is cheaper when you send fewer than 100 texts.
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <line
+                x1="18"
+                y1="18"
+                x2="25"
+                y2="25"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Real-World Investigations
+          </h2>
+
+          <div class="investigation">
+            <h4>Investigation 1: Budget Planner</h4>
+            <p>
+              You have $100 to plan a class party. Create a budget using
+              equations: food costs $f, decorations cost $d, drinks cost $k.
+              Write an equation where f + d + k = 100. If decorations cost twice
+              as much as drinks (d = 2k) and food costs $40, find the exact
+              budget for each category. Then write an inequality showing how the
+              budget changes if you get a $20 donation.
+            </p>
+            <p class="materials">
+              Materials: calculator, paper for organizing work
+            </p>
+          </div>
+
+          <div class="investigation">
+            <h4>Investigation 2: Sports Statistics Analyst</h4>
+            <p>
+              A basketball player scores an average of p points per game. After
+              8 games, she has 152 total points. Write an equation to find her
+              average. Then: if she needs at least 200 points in 10 games to
+              qualify for the all-star team, write an inequality for the minimum
+              points she needs in the last 2 games. Graph the solution on a
+              number line.
+            </p>
+            <p class="materials">
+              Materials: number line template, colored pencils
+            </p>
+          </div>
+
+          <div class="investigation">
+            <h4>Investigation 3: Temperature Converter</h4>
+            <p>
+              The formula to convert Celsius to Fahrenheit is F = 1.8C + 32. Use
+              this equation to: (a) Find what 25&deg;C is in Fahrenheit. (b)
+              Find what temperature in Celsius equals 100&deg;F. (c) Write an
+              inequality for Celsius temperatures where the Fahrenheit
+              equivalent is above freezing (F &gt; 32). What does this tell you
+              about real life?
+            </p>
+            <p class="materials">
+              Materials: calculator, thermometer (optional)
+            </p>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="12"
+                r="9"
+                fill="none"
+                stroke="#d4952a"
+                stroke-width="2"
+              />
+              <path
+                d="M11 21 L11 25 L17 25 L17 21"
+                stroke="#d4952a"
+                stroke-width="2"
+                fill="none"
+              />
+              <line
+                x1="14"
+                y1="25"
+                x2="14"
+                y2="27"
+                stroke="#d4952a"
+                stroke-width="1.5"
+              />
+            </svg>
+            Brain Teasers
+          </h2>
+
+          <div class="teaser">
+            <h4>Teaser 1: The Mystery Numbers</h4>
+            <p>
+              I am thinking of two numbers. Their sum is 20 and their difference
+              is 4. Can you write TWO equations and find both numbers?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              x + y = 20 and x &minus; y = 4. Adding both: 2x = 24, so x = 12, y
+              = 8.
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 2: The Balance Scale</h4>
+            <p>
+              On one side of a balance scale, you have 3 identical boxes and a
+              2-pound weight. On the other side, you have 17 pounds. How much
+              does each box weigh? Write and solve the equation.
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              3b + 2 = 17 &rarr; 3b = 15 &rarr; b = 5 pounds each.
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 3: The Inequality Riddle</h4>
+            <p>
+              I am a whole number. I am greater than 10. I am less than 20. When
+              you divide me by 3, the answer is a whole number. When you
+              subtract 6, the result is odd. What numbers could I be?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              Divisible by 3 between 10 and 20: {12, 15, 18}. Subtract 6: {6, 9,
+              12}. Odd results: 9 and 12 are candidates, but 9 is odd (from 15)
+              &rarr; 15. Also 12 gives 6 (even), 18 gives 12 (even). Only
+              answer: 15.
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 4: The Parking Puzzle</h4>
+            <p>
+              A parking lot charges $4 to enter and $2 for each hour. Jamie paid
+              less than $16. Write an inequality. What is the maximum number of
+              FULL hours Jamie could have parked?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              4 + 2h &lt; 16 &rarr; 2h &lt; 12 &rarr; h &lt; 6. Maximum full
+              hours = 5.
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <path d="M14 4 L14 24" stroke="#7c3aed" stroke-width="2" />
+              <path
+                d="M14 4 L20 10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M14 4 L8 10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Where This Math Leads &mdash; 7th Grade Preview
+          </h2>
+          <div class="extension-box">
+            <h4>Two-Step &amp; Multi-Step Equations</h4>
+            <p>
+              In 7th grade, you will solve equations like 3x + 5 = 20 and 2(x
+              &minus; 4) = 10 regularly. The one-step skills you learned here
+              are the building blocks!
+            </p>
+          </div>
+          <div class="extension-box" style="margin-top: 12px">
+            <h4>Inequalities with Negative Numbers</h4>
+            <p>
+              You will learn that multiplying or dividing an inequality by a
+              negative number FLIPS the inequality sign. For example, &minus;2x
+              &gt; 6 becomes x &lt; &minus;3.
+            </p>
+          </div>
+          <div class="extension-box" style="margin-top: 12px">
+            <h4>Systems of Equations</h4>
+            <p>
+              By 8th grade, you will solve TWO equations with TWO variables at
+              the same time. The mystery numbers brain teaser above is a taste
+              of this!
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <path
+                d="M9 14 L12 17 L19 10"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+            Self-Assessment Checklist
+          </h2>
+          <p
+            style="color: var(--muted); font-size: 0.9rem; margin-bottom: 12px"
+          >
+            Click each box to track your understanding:
+          </p>
+          <ul class="checklist">
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can determine if a value is a solution to an equation
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can solve one-step addition and subtraction equations
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can solve one-step multiplication and division equations
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can write equations from word problems
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can write inequalities using &gt;, &lt;, &ge;, &le;
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can graph inequalities on a number line (open vs. closed
+              circles)
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I understand that inequalities have many solutions
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can solve two-step equations (challenge level)
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can create real-world problems using equations and inequalities
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can solve compound inequalities (expert level)
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer
+      style="
+        text-align: center;
+        padding: 20px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border-top: 1px solid var(--line);
+      "
+    >
+      Neft Teacher &middot; Unit 8 Supplemental &middot;
+      <span data-current-year></span>
+    </footer>
+
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelector(`.tab-btn[data-tab="${tab}"]`)
+          .classList.add("active");
+        document.getElementById(`tab-${tab === "level0" ? "esol" : tab}`).classList.add("active");
+        document.body.classList.toggle("l0on", tab === "level0");
+      }
+
+      function toggleHint(btn) {
+        const content = btn.parentElement.querySelector(".hint-content");
+        content.classList.toggle("show");
+        btn.textContent = content.classList.contains("show")
+          ? "Hide Hint"
+          : "Show Hint";
+      }
+
+      function toggleAnswer(btn) {
+        const content = btn.parentElement.querySelector(".answer-content");
+        content.classList.toggle("show");
+        btn.textContent = content.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+
+      function toggleCheck(box) {
+        box.classList.toggle("checked");
+      }
+
+      // Year
+      document.querySelectorAll("[data-current-year]").forEach((el) => {
+        el.textContent = new Date().getFullYear();
+      });
+    </script>
+      <script src="/assets/docx-export.js"></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

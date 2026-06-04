@@ -1,0 +1,1878 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Authentic WIDA ACCESS 2.0 Reading practice for Grades 6-8. Academic passages across science, social studies, math, and ELA with selected-response items that progress from Entering to Bridging, inline diagrams, vocabulary-in-context support, immediate feedback, and set scoring."
+    />
+    <title>WIDA ACCESS Reading Practice (Grades 6-8) | Neft Hub</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+
+    <style>
+      :root {
+        --primary: #ea580c;
+        --primary-dark: #c2410c;
+        --primary-light: #fff7ed;
+        --navy-deep: #0b1f33;
+        --navy: #12355b;
+        --amber: #d97706;
+        --amber-light: #fef3c7;
+        --green-success: #15803d;
+        --green-light: #dcfce7;
+        --red: #b91c1c;
+        --red-light: #fee2e2;
+        --bg-canvas: #f8fafc;
+        --bg-studio: #f1f5f9;
+        --white: #ffffff;
+        --line-muted: #e2e8f0;
+        --slate-ink: #1e293b;
+        --slate-muted: #64748b;
+        --shadow-premium:
+          0 10px 30px -10px rgba(234, 88, 12, 0.12),
+          0 20px 40px -15px rgba(11, 31, 51, 0.08);
+        --shadow-card:
+          0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        --radius-premium: 16px;
+        --radius-field: 10px;
+        --font-outfit: "Outfit", system-ui, sans-serif;
+        --font-space: "Space Grotesk", system-ui, sans-serif;
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      body {
+        font-family: var(--font-outfit);
+        background: linear-gradient(185deg, #f8fafc 0%, var(--bg-studio) 100%);
+        color: var(--slate-ink);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      .page-shell {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 18px 16px 72px;
+      }
+
+      .breadcrumb {
+        font-size: 0.82rem;
+        color: var(--slate-muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .breadcrumb a {
+        color: var(--primary-dark);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+        color: #fff;
+        border-radius: var(--radius-premium);
+        padding: 26px 28px;
+        border-top: 6px solid var(--primary);
+        box-shadow: var(--shadow-premium);
+        margin-bottom: 24px;
+      }
+      .hero .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #fdba74;
+        margin: 0 0 6px;
+      }
+      .hero h1 {
+        font-family: var(--font-space);
+        font-weight: 700;
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+        line-height: 1.1;
+      }
+      .hero p {
+        margin: 0;
+        max-width: 760px;
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        line-height: 1.55;
+      }
+      .hero-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .stat-pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .pill {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 30px;
+        padding: 8px 14px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Set picker */
+      .set-picker {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+        margin-bottom: 26px;
+      }
+      .set-card {
+        text-align: left;
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-left: 5px solid var(--primary);
+        border-radius: var(--radius-field);
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: var(--shadow-card);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-family: inherit;
+      }
+      .set-card:hover,
+      .set-card:focus-visible {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-premium);
+        outline: none;
+        border-left-color: var(--primary-dark);
+      }
+      .set-card.active {
+        background: var(--primary-light);
+        border-left-width: 7px;
+      }
+      .set-card .area {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--primary-dark);
+      }
+      .set-card .stitle {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--navy-deep);
+        line-height: 1.25;
+      }
+      .set-card .smeta {
+        font-size: 0.78rem;
+        color: var(--slate-muted);
+      }
+      .set-card .done-tag {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--green-success);
+      }
+
+      /* Workspace */
+      .workspace {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-premium);
+        box-shadow: var(--shadow-card);
+        padding: 22px;
+      }
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .panel-head h2 {
+        font-family: var(--font-space);
+        font-size: 1.15rem;
+        color: var(--navy-deep);
+        margin: 0;
+      }
+      .area-tag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--white);
+        background: var(--primary);
+        padding: 5px 10px;
+        border-radius: 30px;
+      }
+
+      .passage {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--slate-ink);
+      }
+      .passage p {
+        margin: 0 0 12px;
+      }
+      .passage h3 {
+        font-family: var(--font-space);
+        font-size: 1.05rem;
+        color: var(--navy-deep);
+        margin: 0 0 8px;
+      }
+      .passage .source {
+        font-size: 0.78rem;
+        color: var(--slate-muted);
+        font-style: italic;
+        margin-top: 4px;
+      }
+      /* vocabulary-in-context: dotted underline + tooltip */
+      .vocab {
+        border-bottom: 2px dotted var(--primary);
+        cursor: help;
+        font-weight: 600;
+        position: relative;
+      }
+      .vocab:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+      .vocab-glossary {
+        margin-top: 14px;
+        background: var(--primary-light);
+        border: 1px solid #fed7aa;
+        border-radius: var(--radius-field);
+        padding: 12px 14px;
+      }
+      .vocab-glossary h4 {
+        margin: 0 0 8px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary-dark);
+      }
+      .vocab-glossary dl {
+        margin: 0;
+        display: grid;
+        gap: 6px;
+      }
+      .vocab-glossary dt {
+        font-weight: 700;
+        color: var(--navy-deep);
+        font-size: 0.92rem;
+      }
+      .vocab-glossary dd {
+        margin: 0 0 6px;
+        font-size: 0.88rem;
+        color: var(--slate-ink);
+      }
+
+      /* Visual figure */
+      .figure {
+        margin: 14px 0;
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 12px;
+        background: var(--bg-canvas);
+      }
+      .figure svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .figure figcaption {
+        font-size: 0.8rem;
+        color: var(--slate-muted);
+        margin-top: 8px;
+        text-align: center;
+      }
+
+      /* Scaffold toggle */
+      .scaffold-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .level-switch {
+        display: inline-flex;
+        border: 1px solid var(--line-muted);
+        border-radius: 30px;
+        padding: 3px;
+        background: var(--bg-canvas);
+      }
+      .level-switch button {
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.82rem;
+        padding: 8px 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        color: var(--slate-muted);
+        min-height: 44px;
+      }
+      .level-switch button.active {
+        background: var(--primary);
+        color: #fff;
+      }
+      .scaffold-note {
+        font-size: 0.8rem;
+        color: var(--slate-muted);
+      }
+
+      /* Item / quiz */
+      .progress-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .progress-bar {
+        flex: 1;
+        height: 8px;
+        min-width: 120px;
+        background: var(--line-muted);
+        border-radius: 30px;
+        overflow: hidden;
+      }
+      .progress-bar span {
+        display: block;
+        height: 100%;
+        background: var(--primary);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .score-chip {
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--navy-deep);
+        white-space: nowrap;
+      }
+      .elp-badge {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border-radius: 30px;
+        background: var(--amber-light);
+        color: #92400e;
+      }
+      .item-type-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--slate-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .item-stem {
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.5;
+        margin: 8px 0 14px;
+        color: var(--navy-deep);
+      }
+      .item-support {
+        background: var(--green-light);
+        border-radius: var(--radius-field);
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        color: #14532d;
+        margin-bottom: 12px;
+      }
+
+      .options {
+        display: grid;
+        gap: 10px;
+        list-style: none;
+        margin: 0 0 14px;
+        padding: 0;
+      }
+      .opt {
+        width: 100%;
+        text-align: left;
+        font-family: inherit;
+        font-size: 0.98rem;
+        background: var(--white);
+        border: 2px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: var(--transition);
+        min-height: 44px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        color: var(--slate-ink);
+      }
+      .opt:hover:not(:disabled),
+      .opt:focus-visible:not(:disabled) {
+        border-color: var(--primary);
+        outline: none;
+      }
+      .opt .key {
+        font-weight: 800;
+        color: var(--primary-dark);
+        flex-shrink: 0;
+      }
+      .opt.correct {
+        border-color: var(--green-success);
+        background: var(--green-light);
+      }
+      .opt.incorrect {
+        border-color: var(--red);
+        background: var(--red-light);
+      }
+      .opt:disabled {
+        cursor: default;
+      }
+
+      /* Sequencing / matching */
+      .seq-list {
+        list-style: none;
+        margin: 0 0 14px;
+        padding: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .seq-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg-canvas);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 8px 12px;
+      }
+      .seq-item label {
+        flex: 1;
+        font-size: 0.95rem;
+      }
+      .seq-item select {
+        font-family: inherit;
+        font-size: 0.95rem;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid var(--line-muted);
+        min-height: 44px;
+        background: var(--white);
+      }
+      .seq-item.correct {
+        border-color: var(--green-success);
+        background: var(--green-light);
+      }
+      .seq-item.incorrect {
+        border-color: var(--red);
+        background: var(--red-light);
+      }
+
+      .feedback {
+        border-radius: var(--radius-field);
+        padding: 12px 14px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin-bottom: 14px;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: var(--green-light);
+        border: 1px solid #86efac;
+        color: #14532d;
+      }
+      .feedback.incorrect {
+        background: var(--red-light);
+        border: 1px solid #fca5a5;
+        color: #7f1d1d;
+      }
+      .feedback strong {
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .item-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.92rem;
+        border-radius: var(--radius-field);
+        padding: 12px 18px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        min-height: 44px;
+        transition: var(--transition);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover:not(:disabled) {
+        background: var(--primary-dark);
+      }
+      .btn-ghost {
+        background: var(--white);
+        border-color: var(--line-muted);
+        color: var(--navy-deep);
+      }
+      .btn-ghost:hover:not(:disabled) {
+        border-color: var(--primary);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      /* Set summary */
+      .summary {
+        text-align: center;
+        padding: 10px 0;
+      }
+      .summary .big-score {
+        font-family: var(--font-space);
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+      .summary .elp-result {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        margin: 6px 0 4px;
+      }
+      .summary p {
+        color: var(--slate-muted);
+        font-size: 0.92rem;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+
+      @media (max-width: 880px) {
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+        .hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+      @media (max-width: 400px) {
+        .page-shell {
+          padding: 14px 10px 60px;
+        }
+        .panel {
+          padding: 16px;
+        }
+        .hero {
+          padding: 20px 18px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Neft Hub</a>
+        <span>/</span>
+        <a href="/wida-access/">WIDA Center</a>
+        <span>/</span>
+        <span aria-current="page">ACCESS Reading Practice</span>
+      </nav>
+
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <p class="eyebrow">
+              WIDA ACCESS 2.0 &middot; Reading &middot; Grades 6-8
+            </p>
+            <h1>ACCESS Reading Practice</h1>
+            <p>
+              Read academic passages across science, social studies, math, and
+              English language arts. Each set has selected-response items that
+              build from <strong>Entering</strong> to <strong>Bridging</strong>,
+              just like the real test. Tap a vocabulary word for its meaning,
+              answer, and get instant feedback with a short explanation.
+            </p>
+          </div>
+          <div class="stat-pills" aria-hidden="true">
+            <div class="pill">📚 6 Reading Sets</div>
+            <div class="pill">🎯 Levels 1-5</div>
+          </div>
+        </div>
+      </section>
+
+      <h2 class="sr-only">Choose a reading set</h2>
+      <div
+        class="set-picker"
+        id="setPicker"
+        role="list"
+        aria-label="Reading sets"
+      ></div>
+
+      <section class="workspace" aria-label="Reading practice workspace">
+        <!-- Passage panel -->
+        <div class="panel" id="passagePanel">
+          <div class="panel-head">
+            <h2 id="passageTitle">Passage</h2>
+            <span class="area-tag" id="areaTag">Science</span>
+          </div>
+
+          <div class="scaffold-bar">
+            <div
+              class="level-switch"
+              role="group"
+              aria-label="Reading support level"
+            >
+              <button id="lvl1Btn" type="button" aria-pressed="false">
+                Level 1 · Support
+              </button>
+              <button id="lvl2Btn" type="button" aria-pressed="true">
+                Level 2 · Full
+              </button>
+            </div>
+            <span class="scaffold-note" id="scaffoldNote">
+              Level 1 adds shorter sentences and a glossary.
+            </span>
+          </div>
+
+          <div class="passage" id="passageBody" aria-live="polite"></div>
+          <div id="glossaryHost"></div>
+        </div>
+
+        <!-- Item panel -->
+        <div class="panel" id="itemPanel" aria-label="Questions">
+          <div class="progress-row">
+            <span class="elp-badge" id="elpBadge">Entering · Level 1</span>
+            <div
+              class="progress-bar"
+              role="progressbar"
+              aria-label="Set progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span id="progressFill"></span>
+            </div>
+            <span class="score-chip" id="scoreChip">0 / 0</span>
+          </div>
+
+          <div id="itemHost" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      "use strict";
+
+      /* ============================================================
+         WIDA ACCESS 2.0 Reading — Grades 6-8
+         Each SET = an academic passage (Level 1 support + Level 2 full)
+         + an optional inline SVG/CSS figure
+         + 5 selected-response items that progress across WIDA levels
+           (Entering 1 -> Bridging 5), with mixed item types.
+         Item types: mc-graphic, main-idea, sequence, match,
+                     vocab-in-context, inference.
+         Answer keys verified against passage text below each set.
+         ============================================================ */
+
+      /* ---------- Inline SVG figures (no external images) ---------- */
+      const FIGURES = {
+        waterCycle: `
+          <svg viewBox="0 0 360 220" role="img" aria-label="Diagram of the water cycle showing evaporation from the ocean, condensation into a cloud, and precipitation as rain.">
+            <rect x="0" y="170" width="360" height="50" fill="#bae6fd"/>
+            <text x="180" y="200" text-anchor="middle" font-size="13" fill="#075985" font-family="Outfit,sans-serif">Ocean</text>
+            <circle cx="60" cy="40" r="22" fill="#fcd34d"/>
+            <text x="60" y="44" text-anchor="middle" font-size="10" fill="#92400e">Sun</text>
+            <ellipse cx="250" cy="55" rx="55" ry="26" fill="#e2e8f0" stroke="#94a3b8"/>
+            <text x="250" y="59" text-anchor="middle" font-size="11" fill="#334155">Cloud</text>
+            <path d="M95 150 C110 110 110 90 130 75" stroke="#0ea5e9" stroke-width="3" fill="none" marker-end="url(#arrUp)"/>
+            <text x="118" y="120" font-size="11" fill="#0369a1" transform="rotate(-55 118 120)">evaporation</text>
+            <path d="M210 70 C200 95 195 110 195 120" stroke="#64748b" stroke-width="2.5" fill="none" marker-end="url(#arrDn)"/>
+            <text x="150" y="58" font-size="11" fill="#475569">condensation</text>
+            <g stroke="#2563eb" stroke-width="2">
+              <line x1="225" y1="82" x2="220" y2="150"/>
+              <line x1="250" y1="82" x2="245" y2="150"/>
+              <line x1="275" y1="82" x2="270" y2="150"/>
+            </g>
+            <text x="280" y="130" font-size="11" fill="#1d4ed8">rain</text>
+            <defs>
+              <marker id="arrUp" markerWidth="8" markerHeight="8" refX="4" refY="2" orient="auto"><path d="M0,4 L4,0 L8,4 Z" fill="#0ea5e9"/></marker>
+              <marker id="arrDn" markerWidth="8" markerHeight="8" refX="4" refY="6" orient="auto"><path d="M0,4 L4,8 L8,4 Z" fill="#64748b"/></marker>
+            </defs>
+          </svg>`,
+        timeline: `
+          <svg viewBox="0 0 380 130" role="img" aria-label="Timeline of the U.S. transcontinental railroad: 1862 Pacific Railway Act, 1863 construction begins, 1869 rails meet at Promontory Summit.">
+            <line x1="20" y1="70" x2="360" y2="70" stroke="#94a3b8" stroke-width="3"/>
+            <g font-family="Outfit,sans-serif" text-anchor="middle">
+              <circle cx="60" cy="70" r="7" fill="#ea580c"/>
+              <text x="60" y="52" font-size="12" font-weight="700" fill="#0b1f33">1862</text>
+              <text x="60" y="98" font-size="10" fill="#475569">Railway Act</text>
+              <circle cx="180" cy="70" r="7" fill="#ea580c"/>
+              <text x="180" y="52" font-size="12" font-weight="700" fill="#0b1f33">1863</text>
+              <text x="180" y="98" font-size="10" fill="#475569">Building starts</text>
+              <circle cx="320" cy="70" r="7" fill="#ea580c"/>
+              <text x="320" y="52" font-size="12" font-weight="700" fill="#0b1f33">1869</text>
+              <text x="320" y="98" font-size="10" fill="#475569">Rails meet</text>
+            </g>
+          </svg>`,
+        barChart: `
+          <svg viewBox="0 0 340 210" role="img" aria-label="Bar graph of favorite class pet votes: dog 12, cat 9, fish 6, bird 3.">
+            <line x1="50" y1="20" x2="50" y2="170" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="50" y1="170" x2="320" y2="170" stroke="#94a3b8" stroke-width="2"/>
+            <g font-family="Outfit,sans-serif" text-anchor="middle">
+              <rect x="70" y="50" width="42" height="120" fill="#ea580c"/><text x="91" y="186" font-size="11">Dog</text><text x="91" y="44" font-size="11" font-weight="700">12</text>
+              <rect x="135" y="80" width="42" height="90" fill="#f97316"/><text x="156" y="186" font-size="11">Cat</text><text x="156" y="74" font-size="11" font-weight="700">9</text>
+              <rect x="200" y="110" width="42" height="60" fill="#fb923c"/><text x="221" y="186" font-size="11">Fish</text><text x="221" y="104" font-size="11" font-weight="700">6</text>
+              <rect x="265" y="140" width="42" height="30" fill="#fdba74"/><text x="286" y="186" font-size="11">Bird</text><text x="286" y="134" font-size="11" font-weight="700">3</text>
+            </g>
+            <text x="30" y="95" font-size="10" fill="#475569" transform="rotate(-90 30 95)">Votes</text>
+          </svg>`,
+        foodWeb: `
+          <svg viewBox="0 0 360 210" role="img" aria-label="Food web: grass is eaten by grasshopper and rabbit; grasshopper is eaten by frog; frog and rabbit are eaten by hawk.">
+            <g font-family="Outfit,sans-serif" text-anchor="middle" font-size="12">
+              <rect x="140" y="160" width="80" height="34" rx="8" fill="#dcfce7" stroke="#15803d"/><text x="180" y="182">Grass</text>
+              <rect x="30" y="90" width="100" height="34" rx="8" fill="#fef3c7" stroke="#d97706"/><text x="80" y="112">Grasshopper</text>
+              <rect x="240" y="90" width="90" height="34" rx="8" fill="#fef3c7" stroke="#d97706"/><text x="285" y="112">Rabbit</text>
+              <rect x="60" y="20" width="70" height="34" rx="8" fill="#ffedd5" stroke="#ea580c"/><text x="95" y="42">Frog</text>
+              <rect x="220" y="20" width="70" height="34" rx="8" fill="#fee2e2" stroke="#b91c1c"/><text x="255" y="42">Hawk</text>
+            </g>
+            <g stroke="#64748b" stroke-width="2" fill="none">
+              <path d="M160 160 L95 124" marker-end="url(#a)"/>
+              <path d="M205 160 L280 124" marker-end="url(#a)"/>
+              <path d="M80 90 L95 54" marker-end="url(#a)"/>
+              <path d="M105 36 L215 36" marker-end="url(#a)"/>
+              <path d="M285 90 L270 54" marker-end="url(#a)"/>
+            </g>
+            <defs><marker id="a" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+          </svg>`,
+        rainfall: `
+          <svg viewBox="0 0 340 200" role="img" aria-label="Line graph of monthly rainfall in centimeters: January 4, February 6, March 9, April 7, May 3.">
+            <line x1="45" y1="20" x2="45" y2="165" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="45" y1="165" x2="320" y2="165" stroke="#94a3b8" stroke-width="2"/>
+            <polyline points="70,125 125,95 180,65 235,85 290,135" fill="none" stroke="#ea580c" stroke-width="3"/>
+            <g fill="#c2410c"><circle cx="70" cy="125" r="4"/><circle cx="125" cy="95" r="4"/><circle cx="180" cy="65" r="4"/><circle cx="235" cy="85" r="4"/><circle cx="290" cy="135" r="4"/></g>
+            <g font-family="Outfit,sans-serif" text-anchor="middle" font-size="10" fill="#475569">
+              <text x="70" y="182">Jan</text><text x="125" y="182">Feb</text><text x="180" y="182">Mar</text><text x="235" y="182">Apr</text><text x="290" y="182">May</text>
+            </g>
+            <text x="28" y="95" font-size="10" fill="#475569" transform="rotate(-90 28 95)">cm of rain</text>
+          </svg>`,
+      };
+
+      /* ---------- Reading sets ----------
+         Items ordered by WIDA ELP: 1 Entering, 2 Emerging, 3 Developing,
+         4 Expanding, 5 Bridging. correct = index (mc) ; for sequence/match
+         answer is an ordered/keyed array. */
+      const SETS = [
+        /* ===== SET 1 — SCIENCE ===== */
+        {
+          id: "s1",
+          area: "Science",
+          title: "The Water Cycle",
+          figure: "waterCycle",
+          caption:
+            "Figure 1. The movement of water between the ocean, air, and land.",
+          glossary: [
+            [
+              "evaporation",
+              "when heat turns liquid water into a gas (water vapor)",
+            ],
+            [
+              "condensation",
+              "when water vapor cools and turns back into tiny drops",
+            ],
+            [
+              "precipitation",
+              "water that falls from clouds as rain, snow, or hail",
+            ],
+          ],
+          passageL2: `<h3>The Water Cycle</h3>
+            <p>Water on Earth is always moving in a repeating pattern called the water cycle. The cycle is powered by energy from the Sun. When sunlight warms the surface of the ocean, liquid water changes into an invisible gas through <span class="vocab" tabindex="0" data-term="evaporation">evaporation</span>. This water vapor rises high into the air.</p>
+            <p>As the vapor rises, it cools. Cooling causes the vapor to change back into tiny droplets through <span class="vocab" tabindex="0" data-term="condensation">condensation</span>. Billions of these droplets gather together to form clouds.</p>
+            <p>When the droplets in a cloud grow large and heavy, they fall back to Earth as <span class="vocab" tabindex="0" data-term="precipitation">precipitation</span>, such as rain or snow. The water then flows across the land and back into the ocean, and the cycle begins again.</p>
+            <p class="source">Adapted from a middle-school Earth science text.</p>`,
+          passageL1: `<h3>The Water Cycle</h3>
+            <p>Water on Earth keeps moving in a cycle. The Sun gives the energy.</p>
+            <p>First, the Sun heats the ocean. The heat turns liquid water into a gas. This is <span class="vocab" tabindex="0" data-term="evaporation">evaporation</span>. The gas rises into the air.</p>
+            <p>Next, the gas cools high in the sky. Cooling turns the gas back into tiny drops. This is <span class="vocab" tabindex="0" data-term="condensation">condensation</span>. The drops make clouds.</p>
+            <p>Last, the drops get big and heavy. They fall as rain or snow. This is <span class="vocab" tabindex="0" data-term="precipitation">precipitation</span>. The water flows back to the ocean. Then the cycle starts again.</p>`,
+          items: [
+            {
+              type: "mc-graphic",
+              elp: 1,
+              skill: "Match words to a picture",
+              stem: "Look at Figure 1. What does the Sun do in the water cycle?",
+              options: [
+                "It heats the ocean water",
+                "It makes the clouds rain",
+                "It cools the air",
+                "It stops the cycle",
+              ],
+              correct: 0,
+              why: [
+                "The diagram and text show the Sun's heat warming the ocean to start the cycle.",
+                "Heavy droplets cause rain, not the Sun directly.",
+                "The Sun warms, it does not cool, the water.",
+                "The Sun powers the cycle; it does not stop it.",
+              ],
+            },
+            {
+              type: "vocab-in-context",
+              elp: 2,
+              skill: "Locate explicit information",
+              stem: "In the passage, what happens during <em>evaporation</em>?",
+              options: [
+                "Liquid water changes into a gas",
+                "Drops fall as rain",
+                "Clouds turn dark",
+                "Water freezes into ice",
+              ],
+              correct: 0,
+              why: [
+                "The text says heat changes liquid water into an invisible gas during evaporation.",
+                "That is precipitation, which happens later.",
+                "The passage does not say clouds turn dark.",
+                "Evaporation makes a gas, not ice.",
+              ],
+            },
+            {
+              type: "sequence",
+              elp: 3,
+              skill: "Identify sequence of events",
+              stem: "Put the steps of the water cycle in the correct order.",
+              steps: [
+                "The Sun heats the ocean",
+                "Water vapor rises and cools",
+                "Clouds form and rain falls",
+              ],
+              order: [0, 1, 2],
+              why: "The text follows this order: the Sun heats the ocean (evaporation), the vapor rises and cools (condensation), then clouds form and rain falls (precipitation).",
+            },
+            {
+              type: "main-idea",
+              elp: 4,
+              skill: "Identify the main idea",
+              stem: "What is the main idea of the passage?",
+              options: [
+                "Water keeps moving through Earth in a repeating cycle powered by the Sun",
+                "Clouds are made of tiny water droplets",
+                "Rain is heavier than snow",
+                "The ocean covers most of Earth",
+              ],
+              correct: 0,
+              why: [
+                "Every paragraph describes a step in this repeating, Sun-powered cycle, so this is the main idea.",
+                "True, but only one detail, not the main idea.",
+                "The passage never compares the weight of rain and snow.",
+                "The passage is about the cycle, not how much ocean covers Earth.",
+              ],
+            },
+            {
+              type: "inference",
+              elp: 5,
+              skill: "Make an inference",
+              stem: "Based on the passage, what would most likely happen if the Sun stopped warming the ocean?",
+              options: [
+                "Evaporation would slow, so fewer clouds and less rain would form",
+                "It would rain much more than usual",
+                "The ocean would immediately freeze solid",
+                "Condensation would speed up",
+              ],
+              correct: 0,
+              why: [
+                "The Sun drives evaporation, which feeds the rest of the cycle, so less Sun means less evaporation and less rain. This is an inference the text supports.",
+                "Less evaporation would mean less rain, not more.",
+                "The text gives no support for instant freezing.",
+                "With less vapor rising, condensation would not speed up.",
+              ],
+            },
+          ],
+        },
+
+        /* ===== SET 2 — SOCIAL STUDIES ===== */
+        {
+          id: "s2",
+          area: "Social Studies",
+          title: "Building the Transcontinental Railroad",
+          figure: "timeline",
+          caption:
+            "Figure 2. Key dates in building the transcontinental railroad.",
+          glossary: [
+            [
+              "transcontinental",
+              "crossing an entire continent from one side to the other",
+            ],
+            ["laborers", "people who do hard physical work for pay"],
+            ["summit", "the highest point, often the top of a mountain"],
+          ],
+          passageL2: `<h3>Building the Transcontinental Railroad</h3>
+            <p>In 1862, the United States Congress passed the Pacific Railway Act. This law called for a <span class="vocab" tabindex="0" data-term="transcontinental">transcontinental</span> railroad that would connect the eastern states to California in the west.</p>
+            <p>Construction began in 1863. Two companies built the line. One built westward from Nebraska, while the other built eastward from California. Thousands of <span class="vocab" tabindex="0" data-term="laborers">laborers</span>, including many Chinese and Irish immigrants, blasted through mountains and laid track across deserts in dangerous conditions.</p>
+            <p>On May 10, 1869, the two railroads finally met at Promontory <span class="vocab" tabindex="0" data-term="summit">Summit</span> in Utah. A golden spike was driven into the track to mark the joining. A journey that once took months by wagon could now be made in about one week by train.</p>
+            <p class="source">Adapted from a U.S. history reading.</p>`,
+          passageL1: `<h3>Building the Transcontinental Railroad</h3>
+            <p>In 1862, Congress passed a law. The law called for a railroad to cross the whole country. It would connect the East to California. A railroad that crosses a continent is <span class="vocab" tabindex="0" data-term="transcontinental">transcontinental</span>.</p>
+            <p>Building started in 1863. Two companies built the railroad. One built west. One built east. Thousands of <span class="vocab" tabindex="0" data-term="laborers">laborers</span> did the hard work. Many were Chinese and Irish immigrants. They blasted through mountains and crossed deserts.</p>
+            <p>In 1869, the two railroads met in Utah. Workers drove a golden spike to join them. Before, the trip took months by wagon. Now it took about one week by train.</p>`,
+          items: [
+            {
+              type: "mc-graphic",
+              elp: 1,
+              skill: "Locate a date on a timeline",
+              stem: "Look at Figure 2. In what year did the two railroads finally meet?",
+              options: ["1862", "1863", "1869", "1900"],
+              correct: 2,
+              why: [
+                "1862 is when the law was passed.",
+                "1863 is when building started.",
+                "The timeline and text both show the rails met in 1869.",
+                "1900 does not appear on the timeline.",
+              ],
+            },
+            {
+              type: "vocab-in-context",
+              elp: 2,
+              skill: "Vocabulary in context",
+              stem: "In this passage, the word <em>laborers</em> means people who —",
+              options: [
+                "do hard physical work",
+                "ride the train",
+                "make the laws",
+                "draw the maps",
+              ],
+              correct: 0,
+              why: [
+                "The text describes laborers blasting through mountains and laying track, so they do hard physical work.",
+                "Passengers ride the train; that is not the meaning here.",
+                "Congress made the law, not the laborers.",
+                "The passage does not say laborers drew maps.",
+              ],
+            },
+            {
+              type: "match",
+              elp: 3,
+              skill: "Match events to dates",
+              stem: "Match each event to the correct year.",
+              pairs: [
+                {
+                  left: "Congress passes the Pacific Railway Act",
+                  right: "1862",
+                },
+                { left: "Construction of the railroad begins", right: "1863" },
+                { left: "The two railroads meet in Utah", right: "1869" },
+              ],
+              options: ["1862", "1863", "1869"],
+              why: "The passage and timeline give these dates: the Act in 1862, building begins in 1863, and the rails meet in 1869.",
+            },
+            {
+              type: "main-idea",
+              elp: 4,
+              skill: "Identify main idea",
+              stem: "Which sentence best states the main idea of the passage?",
+              options: [
+                "The United States built a railroad across the country, and many workers made it possible.",
+                "A golden spike is made of real gold.",
+                "Utah is located in the western United States.",
+                "Wagons were a slow way to travel.",
+              ],
+              correct: 0,
+              why: [
+                "The whole passage tells the story of building the cross-country railroad and the workers who did it.",
+                "The golden spike is one detail, not the main idea.",
+                "Where Utah is located is a minor detail.",
+                "Wagon speed is mentioned only to show the change the railroad made.",
+              ],
+            },
+            {
+              type: "inference",
+              elp: 5,
+              skill: "Analyze author's purpose / infer",
+              stem: "Why does the author most likely mention that the trip once took months by wagon but only a week by train?",
+              options: [
+                "To show how greatly the railroad changed travel across the country",
+                "To prove that wagons were dangerous to ride",
+                "To explain how trains are built",
+                "To describe the weather in Utah",
+              ],
+              correct: 0,
+              why: [
+                "The comparison highlights the railroad's huge impact on travel time, which is the author's purpose.",
+                "The passage never says wagons were dangerous.",
+                "How trains are built is not discussed.",
+                "Utah's weather is not mentioned.",
+              ],
+            },
+          ],
+        },
+
+        /* ===== SET 3 — MATH ===== */
+        {
+          id: "s3",
+          area: "Mathematics",
+          title: "Reading a Bar Graph: Class Pet Vote",
+          figure: "barChart",
+          caption: "Figure 3. Votes for the class pet (30 students voted).",
+          glossary: [
+            ["data", "facts or numbers that are collected and studied"],
+            ["greatest", "the largest amount or value"],
+            ["combined", "added together to make one total"],
+          ],
+          passageL2: `<h3>Reading a Bar Graph</h3>
+            <p>Mr. Lopez's class took a vote to choose a class pet. Each of the 30 students voted one time. The teacher showed the <span class="vocab" tabindex="0" data-term="data">data</span> in the bar graph in Figure 3.</p>
+            <p>The dog received 12 votes, the cat received 9 votes, the fish received 6 votes, and the bird received 3 votes. The height of each bar shows how many votes each pet received. The taller the bar, the more votes that pet got.</p>
+            <p>To compare two choices, you can find the difference between the bars. To find a total, you can add the values that are <span class="vocab" tabindex="0" data-term="combined">combined</span>.</p>
+            <p class="source">Adapted from a grade 6 math reading task.</p>`,
+          passageL1: `<h3>Reading a Bar Graph</h3>
+            <p>Mr. Lopez's class voted for a class pet. There are 30 students. Each student voted one time. The bar graph in Figure 3 shows the <span class="vocab" tabindex="0" data-term="data">data</span>.</p>
+            <p>The dog got 12 votes. The cat got 9 votes. The fish got 6 votes. The bird got 3 votes. A taller bar means more votes.</p>
+            <p>To compare, find the difference between two bars. To find a total, add the bars that are <span class="vocab" tabindex="0" data-term="combined">combined</span>.</p>`,
+          items: [
+            {
+              type: "mc-graphic",
+              elp: 1,
+              skill: "Read a value from a graph",
+              stem: "Look at Figure 3. How many votes did the cat receive?",
+              options: ["3 votes", "6 votes", "9 votes", "12 votes"],
+              correct: 2,
+              why: [
+                "3 votes is the bird.",
+                "6 votes is the fish.",
+                "The cat's bar and the text both show 9 votes.",
+                "12 votes is the dog.",
+              ],
+            },
+            {
+              type: "mc-graphic",
+              elp: 2,
+              skill: "Compare values on a graph",
+              stem: "Which pet received the <strong>greatest</strong> number of votes?",
+              options: ["Dog", "Cat", "Fish", "Bird"],
+              correct: 0,
+              why: [
+                "The dog's bar is tallest at 12 votes, the greatest amount.",
+                "The cat got 9 votes, fewer than the dog.",
+                "The fish got 6 votes.",
+                "The bird got the fewest, 3 votes.",
+              ],
+            },
+            {
+              type: "mc-graphic",
+              elp: 3,
+              skill: "Compute a difference from data",
+              stem: "How many <strong>more</strong> votes did the dog get than the fish?",
+              options: ["3 votes", "6 votes", "9 votes", "18 votes"],
+              correct: 1,
+              why: [
+                "3 is the difference between dog and cat, not dog and fish.",
+                "The dog had 12 and the fish had 6; 12 − 6 = 6.",
+                "9 is the cat's total, not the difference.",
+                "18 is the sum, not the difference.",
+              ],
+            },
+            {
+              type: "mc-graphic",
+              elp: 4,
+              skill: "Combine data values",
+              stem: "What is the <strong>combined</strong> number of votes for the fish and the bird?",
+              options: ["6 votes", "9 votes", "12 votes", "15 votes"],
+              correct: 1,
+              why: [
+                "6 is only the fish.",
+                "Fish (6) + bird (3) = 9 votes combined.",
+                "12 is the dog's votes.",
+                "15 would add the cat too, which the question did not ask.",
+              ],
+            },
+            {
+              type: "inference",
+              elp: 5,
+              skill: "Draw a conclusion from data",
+              stem: "A pet wins if it gets more than half of all 30 votes. Based on the data, did any pet win?",
+              options: [
+                "No, because no pet got more than 15 votes",
+                "Yes, the dog won with 12 votes",
+                "Yes, the dog and cat together won",
+                "There is not enough information",
+              ],
+              correct: 0,
+              why: [
+                "Half of 30 is 15. The most any single pet got was 12, which is not more than 15, so no pet won. This conclusion uses the data.",
+                "12 is not more than half (15), so the dog did not win.",
+                "A single pet, not two combined, must pass 15 to win.",
+                "The graph gives all the data needed to decide.",
+              ],
+            },
+          ],
+        },
+
+        /* ===== SET 4 — ELA (literary) ===== */
+        {
+          id: "s4",
+          area: "English Language Arts",
+          title: "The Last Race (Short Story)",
+          figure: null,
+          caption: null,
+          glossary: [
+            ["hesitated", "paused because of doubt or worry before acting"],
+            ["determined", "having a firm decision and refusing to give up"],
+            [
+              "roared",
+              "made a very loud, powerful sound, like a crowd cheering",
+            ],
+          ],
+          passageL2: `<h3>The Last Race</h3>
+            <p>Maya stood at the starting line of the final race of the season. Her legs felt heavy, and for a moment she <span class="vocab" tabindex="0" data-term="hesitated">hesitated</span>. All season she had finished second, never first. A small voice in her head whispered that today would be no different.</p>
+            <p>Then she remembered the early mornings of training, the cold air burning her lungs, the coach who believed in her. Maya pressed her lips together, <span class="vocab" tabindex="0" data-term="determined">determined</span> to give everything she had. When the whistle blew, she shot forward like an arrow.</p>
+            <p>With twenty meters left, she was even with the leader. Maya did not look back. She leaned forward and crossed the line first. The crowd <span class="vocab" tabindex="0" data-term="roared">roared</span>. For the first time all year, Maya had won.</p>
+            <p class="source">Original short narrative for reading practice.</p>`,
+          passageL1: `<h3>The Last Race</h3>
+            <p>Maya stood at the starting line. It was the last race of the season. Her legs felt heavy. She <span class="vocab" tabindex="0" data-term="hesitated">hesitated</span>, or paused with worry. All season she had finished second, never first. She thought today would be the same.</p>
+            <p>Then she remembered her hard training. She remembered her coach who believed in her. Maya felt <span class="vocab" tabindex="0" data-term="determined">determined</span>. She would not give up. The whistle blew. She ran fast.</p>
+            <p>Near the end, she was even with the leader. Maya did not look back. She leaned forward and crossed the line first. The crowd <span class="vocab" tabindex="0" data-term="roared">roared</span>, or cheered very loudly. Maya had won for the first time all year.</p>`,
+          items: [
+            {
+              type: "mc-graphic",
+              elp: 1,
+              skill: "Locate explicit detail",
+              stem: "Where is Maya at the beginning of the story?",
+              options: [
+                "At the starting line of a race",
+                "At her home",
+                "In a classroom",
+                "At the finish line",
+              ],
+              correct: 0,
+              why: [
+                "The first sentence says Maya stood at the starting line.",
+                "Her home is not mentioned.",
+                "There is no classroom in the story.",
+                "She reaches the finish line at the end, not the beginning.",
+              ],
+            },
+            {
+              type: "vocab-in-context",
+              elp: 2,
+              skill: "Vocabulary in context",
+              stem: "In paragraph 1, the word <em>hesitated</em> shows that Maya —",
+              options: [
+                "paused because she felt unsure",
+                "ran very quickly",
+                "felt angry at the coach",
+                "fell down on the track",
+              ],
+              correct: 0,
+              why: [
+                "The text says her legs felt heavy and a voice said today would be no different, so she paused out of doubt.",
+                "She runs fast later, but 'hesitated' means she paused.",
+                "The story does not show anger at the coach.",
+                "Maya does not fall.",
+              ],
+            },
+            {
+              type: "sequence",
+              elp: 3,
+              skill: "Sequence of events",
+              stem: "Put these story events in the order they happen.",
+              steps: [
+                "Maya hesitates at the starting line",
+                "Maya remembers her training and feels determined",
+                "Maya crosses the finish line first",
+              ],
+              order: [0, 1, 2],
+              why: "Maya first hesitates, then remembers her training and becomes determined, and finally crosses the line first to win.",
+            },
+            {
+              type: "inference",
+              elp: 4,
+              skill: "Make an inference about character",
+              stem: "Why does Maya most likely 'not look back' during the race?",
+              options: [
+                "She is focused on finishing and refuses to give up",
+                "She is afraid of the crowd",
+                "She forgot which way to run",
+                "She wanted to wave to her coach",
+              ],
+              correct: 0,
+              why: [
+                "Earlier she felt determined and gave everything, so not looking back shows her focus on winning.",
+                "Nothing shows she fears the crowd.",
+                "The story gives no sign she forgot the route.",
+                "There is no mention of waving to the coach.",
+              ],
+            },
+            {
+              type: "main-idea",
+              elp: 5,
+              skill: "Theme / author's message",
+              stem: "What is the central theme, or message, of the story?",
+              options: [
+                "Believing in yourself and not giving up can lead to success",
+                "Running is the best sport",
+                "Coaches are always right",
+                "Winning is the only thing that matters in life",
+              ],
+              correct: 0,
+              why: [
+                "Maya overcomes her doubt and her record of second-place finishes by staying determined, which shows this theme.",
+                "The story is not arguing that running is the best sport.",
+                "The coach helps, but the message is about Maya's effort, not that coaches are always right.",
+                "The story celebrates effort and self-belief, not winning at any cost.",
+              ],
+            },
+          ],
+        },
+
+        /* ===== SET 5 — SCIENCE (food web graphic) ===== */
+        {
+          id: "s5",
+          area: "Science",
+          title: "Energy in a Food Web",
+          figure: "foodWeb",
+          caption: "Figure 4. A simple food web in a grassland habitat.",
+          glossary: [
+            [
+              "producer",
+              "a living thing, like a plant, that makes its own food using sunlight",
+            ],
+            [
+              "consumer",
+              "a living thing that gets energy by eating other living things",
+            ],
+            ["predator", "an animal that hunts and eats other animals"],
+          ],
+          passageL2: `<h3>Energy in a Food Web</h3>
+            <p>A food web shows how energy moves through living things in a habitat. Energy starts with the Sun. In the grassland, grass is a <span class="vocab" tabindex="0" data-term="producer">producer</span> because it uses sunlight to make its own food.</p>
+            <p>Animals are <span class="vocab" tabindex="0" data-term="consumer">consumers</span> because they must eat to get energy. In Figure 4, the grasshopper and the rabbit eat the grass. The frog eats the grasshopper. At the top, the hawk is a <span class="vocab" tabindex="0" data-term="predator">predator</span> that eats both the frog and the rabbit.</p>
+            <p>The arrows in the food web point in the direction that energy flows — from the living thing that is eaten to the living thing that eats it.</p>
+            <p class="source">Adapted from a life science reading.</p>`,
+          passageL1: `<h3>Energy in a Food Web</h3>
+            <p>A food web shows how energy moves in a habitat. Energy starts with the Sun. Grass is a <span class="vocab" tabindex="0" data-term="producer">producer</span>. It uses sunlight to make its own food.</p>
+            <p>Animals are <span class="vocab" tabindex="0" data-term="consumer">consumers</span>. They eat to get energy. In Figure 4, the grasshopper and rabbit eat the grass. The frog eats the grasshopper. The hawk is a <span class="vocab" tabindex="0" data-term="predator">predator</span>. It eats the frog and the rabbit.</p>
+            <p>The arrows show how energy flows. They point from the food to the animal that eats it.</p>`,
+          items: [
+            {
+              type: "mc-graphic",
+              elp: 1,
+              skill: "Read a food-web diagram",
+              stem: "Look at Figure 4. Which living thing makes its own food?",
+              options: ["Grass", "Frog", "Hawk", "Rabbit"],
+              correct: 0,
+              why: [
+                "Grass is the producer; it uses sunlight to make food.",
+                "The frog is a consumer that eats the grasshopper.",
+                "The hawk eats other animals.",
+                "The rabbit eats grass; it does not make its own food.",
+              ],
+            },
+            {
+              type: "vocab-in-context",
+              elp: 2,
+              skill: "Vocabulary in context",
+              stem: "In the passage, a <em>consumer</em> is a living thing that —",
+              options: [
+                "eats other living things for energy",
+                "makes its own food",
+                "never needs energy",
+                "only eats sunlight",
+              ],
+              correct: 0,
+              why: [
+                "The text says animals are consumers because they must eat to get energy.",
+                "Producers make their own food; consumers do not.",
+                "Every living thing needs energy.",
+                "Only producers use sunlight to make food.",
+              ],
+            },
+            {
+              type: "match",
+              elp: 3,
+              skill: "Match organisms to roles",
+              stem: "Match each living thing to its role in the food web.",
+              pairs: [
+                { left: "Grass", right: "Producer" },
+                { left: "Rabbit", right: "Consumer" },
+                { left: "Hawk", right: "Predator (top consumer)" },
+              ],
+              options: ["Producer", "Consumer", "Predator (top consumer)"],
+              why: "Grass makes its own food (producer), the rabbit eats grass (consumer), and the hawk hunts other animals at the top of the web (predator).",
+            },
+            {
+              type: "inference",
+              elp: 4,
+              skill: "Interpret arrows / trace energy",
+              stem: "Following the arrows, where does the energy in the grasshopper go next?",
+              options: [
+                "To the frog",
+                "Back to the grass",
+                "To the Sun",
+                "To the rabbit",
+              ],
+              correct: 0,
+              why: [
+                "The arrow points from the grasshopper to the frog, so energy flows to the frog.",
+                "Energy moves forward through the web, not back to the grass.",
+                "Energy does not flow back to the Sun.",
+                "The rabbit eats grass, not the grasshopper.",
+              ],
+            },
+            {
+              type: "inference",
+              elp: 5,
+              skill: "Predict effects in a system",
+              stem: "Based on the food web, what would most likely happen to the grasshopper population if all the frogs disappeared?",
+              options: [
+                "It would likely increase, because fewer grasshoppers would be eaten",
+                "It would disappear completely",
+                "It would stay exactly the same",
+                "The grass would stop growing",
+              ],
+              correct: 0,
+              why: [
+                "Frogs eat grasshoppers, so without frogs fewer grasshoppers are eaten and the population would likely grow. This is a supported prediction.",
+                "Grasshoppers still have grass to eat, so they would not disappear.",
+                "Losing a predator would change the population, not keep it the same.",
+                "The grass does not depend on frogs to grow.",
+              ],
+            },
+          ],
+        },
+
+        /* ===== SET 6 — INFORMATIONAL (graph + ELA reading) ===== */
+        {
+          id: "s6",
+          area: "ELA / Informational",
+          title: "Reading a Weather Report",
+          figure: "rainfall",
+          caption:
+            "Figure 5. Average monthly rainfall (in centimeters) in Rivertown.",
+          glossary: [
+            [
+              "average",
+              "the usual or middle amount, found by sharing a total evenly",
+            ],
+            [
+              "trend",
+              "the general direction in which something changes over time",
+            ],
+            ["peak", "the highest point or greatest amount"],
+          ],
+          passageL2: `<h3>Reading a Weather Report</h3>
+            <p>Scientists who study weather often record how much rain falls each month. The line graph in Figure 5 shows the <span class="vocab" tabindex="0" data-term="average">average</span> rainfall in the town of Rivertown from January through May.</p>
+            <p>In January, only 4 centimeters of rain fell. The amount rose in February and reached its <span class="vocab" tabindex="0" data-term="peak">peak</span> of 9 centimeters in March. After March, the rainfall began to fall, dropping to just 3 centimeters by May.</p>
+            <p>By studying the shape of the line, a reader can spot a <span class="vocab" tabindex="0" data-term="trend">trend</span>: rainfall increases in late winter and early spring, then decreases as summer approaches. Farmers use information like this to plan when to plant their crops.</p>
+            <p class="source">Adapted from an informational science reading.</p>`,
+          passageL1: `<h3>Reading a Weather Report</h3>
+            <p>Scientists record how much rain falls each month. The line graph in Figure 5 shows the <span class="vocab" tabindex="0" data-term="average">average</span> rainfall in Rivertown from January to May.</p>
+            <p>In January, 4 cm of rain fell. The rain went up in February. It reached its <span class="vocab" tabindex="0" data-term="peak">peak</span> of 9 cm in March. After March, the rain went down. By May, only 3 cm fell.</p>
+            <p>The shape of the line shows a <span class="vocab" tabindex="0" data-term="trend">trend</span>. Rain goes up in early spring. Then it goes down near summer. Farmers use this to plan when to plant.</p>`,
+          items: [
+            {
+              type: "mc-graphic",
+              elp: 1,
+              skill: "Read a point on a line graph",
+              stem: "Look at Figure 5. How much rain fell in January?",
+              options: ["3 cm", "4 cm", "6 cm", "9 cm"],
+              correct: 1,
+              why: [
+                "3 cm is the rainfall in May.",
+                "The graph and text both show 4 cm in January.",
+                "6 cm is the rainfall in February.",
+                "9 cm is the rainfall in March.",
+              ],
+            },
+            {
+              type: "vocab-in-context",
+              elp: 2,
+              skill: "Vocabulary in context",
+              stem: "In this passage, the word <em>peak</em> means the —",
+              options: [
+                "highest amount",
+                "lowest amount",
+                "first month",
+                "average of all months",
+              ],
+              correct: 0,
+              why: [
+                "The text uses 'peak' for the greatest rainfall (9 cm in March), so peak means highest amount.",
+                "The lowest amount is the opposite of a peak.",
+                "Peak refers to an amount, not a month position.",
+                "Peak is the highest single value, not the average.",
+              ],
+            },
+            {
+              type: "mc-graphic",
+              elp: 3,
+              skill: "Identify a trend",
+              stem: "Look at Figure 5. What happens to the rainfall after March?",
+              options: [
+                "It decreases",
+                "It increases",
+                "It stays the same",
+                "It rises to its peak",
+              ],
+              correct: 0,
+              why: [
+                "After the March peak, the line goes down toward May, so rainfall decreases.",
+                "It rises only until March; after that it falls.",
+                "The values change, so it does not stay the same.",
+                "The peak is in March; after that it drops.",
+              ],
+            },
+            {
+              type: "main-idea",
+              elp: 4,
+              skill: "Identify main idea / purpose",
+              stem: "What is the main purpose of this passage and graph?",
+              options: [
+                "To show how rainfall changes over several months and why that matters",
+                "To prove that March is the best month for vacations",
+                "To explain how rain forms in clouds",
+                "To compare Rivertown with other towns",
+              ],
+              correct: 0,
+              why: [
+                "The passage describes the monthly rainfall trend and notes that farmers use it, which is the main purpose.",
+                "Vacations are never mentioned.",
+                "How rain forms is not the topic here.",
+                "No other town is compared in the passage.",
+              ],
+            },
+            {
+              type: "inference",
+              elp: 5,
+              skill: "Apply information / infer",
+              stem: "A farmer wants to plant a crop that needs the most rain. Based on the graph, which month would be best to rely on?",
+              options: ["March", "January", "May", "December"],
+              correct: 0,
+              why: [
+                "March has the peak rainfall of 9 cm, the most of any month shown, so it best fits a crop needing the most rain.",
+                "January has only 4 cm, far less than March.",
+                "May has the least rain, just 3 cm.",
+                "December is not shown on the graph.",
+              ],
+            },
+          ],
+        },
+      ];
+
+      /* ---------- State ---------- */
+      const state = {
+        setIdx: 0,
+        itemIdx: 0,
+        level: 2, // 1 = support, 2 = full
+        score: 0,
+        answered: 0,
+        done: {}, // setId -> best score string
+      };
+
+      const ELP_NAMES = {
+        1: "Entering",
+        2: "Emerging",
+        3: "Developing",
+        4: "Expanding",
+        5: "Bridging",
+      };
+
+      /* ---------- Persistence ---------- */
+      function loadProgress() {
+        try {
+          const raw = localStorage.getItem("widaReadingSets");
+          if (raw) state.done = JSON.parse(raw) || {};
+        } catch (e) {
+          state.done = {};
+        }
+      }
+      function saveProgress() {
+        try {
+          localStorage.setItem("widaReadingSets", JSON.stringify(state.done));
+        } catch (e) {}
+      }
+
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) =>
+        String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+
+      /* ---------- Set picker ---------- */
+      function renderPicker() {
+        const host = $("setPicker");
+        host.innerHTML = "";
+        SETS.forEach((set, i) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "set-card" + (i === state.setIdx ? " active" : "");
+          btn.setAttribute("role", "listitem");
+          btn.setAttribute(
+            "aria-pressed",
+            i === state.setIdx ? "true" : "false",
+          );
+          const done = state.done[set.id];
+          btn.innerHTML =
+            `<span class="area">${esc(set.area)}</span>` +
+            `<span class="stitle">${esc(set.title)}</span>` +
+            `<span class="smeta">${set.items.length} items · Levels 1-5</span>` +
+            (done ? `<span class="done-tag">✓ Best: ${esc(done)}</span>` : "");
+          btn.onclick = () => selectSet(i);
+          host.appendChild(btn);
+        });
+      }
+
+      function selectSet(i) {
+        state.setIdx = i;
+        state.itemIdx = 0;
+        state.score = 0;
+        state.answered = 0;
+        renderPicker();
+        renderPassage();
+        renderItem();
+      }
+
+      /* ---------- Passage + scaffold ---------- */
+      function setLevel(lvl) {
+        state.level = lvl;
+        $("lvl1Btn").classList.toggle("active", lvl === 1);
+        $("lvl2Btn").classList.toggle("active", lvl === 2);
+        $("lvl1Btn").setAttribute("aria-pressed", lvl === 1 ? "true" : "false");
+        $("lvl2Btn").setAttribute("aria-pressed", lvl === 2 ? "true" : "false");
+        renderPassage();
+      }
+
+      function renderPassage() {
+        const set = SETS[state.setIdx];
+        $("passageTitle").textContent = set.title;
+        $("areaTag").textContent = set.area;
+
+        let html = "";
+        if (set.figure && FIGURES[set.figure]) {
+          html +=
+            `<figure class="figure">${FIGURES[set.figure]}` +
+            (set.caption
+              ? `<figcaption>${esc(set.caption)}</figcaption>`
+              : "") +
+            `</figure>`;
+        }
+        html += state.level === 1 ? set.passageL1 : set.passageL2;
+        $("passageBody").innerHTML = html;
+
+        // Glossary: always available; emphasized at Level 1
+        let g = "";
+        if (set.glossary && set.glossary.length) {
+          g += `<div class="vocab-glossary"><h4>Vocabulary in context</h4><dl>`;
+          set.glossary.forEach(([term, def]) => {
+            g += `<dt>${esc(term)}</dt><dd>${esc(def)}</dd>`;
+          });
+          g += `</dl></div>`;
+        }
+        $("glossaryHost").innerHTML = g;
+
+        // tooltip on vocab words (build a lookup from glossary)
+        const lookup = {};
+        (set.glossary || []).forEach(([t, d]) => (lookup[t.toLowerCase()] = d));
+        document.querySelectorAll("#passageBody .vocab").forEach((el) => {
+          const term = (el.dataset.term || el.textContent).toLowerCase();
+          if (lookup[term]) {
+            el.setAttribute("title", lookup[term]);
+            el.setAttribute("aria-label", el.textContent + ": " + lookup[term]);
+          }
+        });
+      }
+
+      /* ---------- Items ---------- */
+      function renderItem() {
+        const set = SETS[state.setIdx];
+        const host = $("itemHost");
+
+        // progress + score
+        const total = set.items.length;
+        const pct = Math.round((state.answered / total) * 100);
+        $("progressFill").style.width = pct + "%";
+        document
+          .querySelector(".progress-bar")
+          .setAttribute("aria-valuenow", String(pct));
+        $("scoreChip").textContent = `${state.score} / ${state.answered}`;
+
+        if (state.itemIdx >= total) {
+          renderSummary();
+          return;
+        }
+
+        const item = set.items[state.itemIdx];
+        $("elpBadge").textContent =
+          `${ELP_NAMES[item.elp]} · Level ${item.elp}`;
+
+        let html =
+          `<p class="item-type-tag">Question ${state.itemIdx + 1} of ${total} · ${esc(item.skill)}</p>` +
+          `<p class="item-stem">${item.stem}</p>`;
+
+        // Level 1 support hint
+        if (state.level === 1 && item.support) {
+          html += `<div class="item-support">💡 ${esc(item.support)}</div>`;
+        }
+
+        if (item.type === "sequence") {
+          html += renderSequence(item);
+        } else if (item.type === "match") {
+          html += renderMatch(item);
+        } else {
+          html += renderMC(item);
+        }
+
+        html += `<div class="feedback" id="fb" role="alert"></div>`;
+        html +=
+          `<div class="item-actions">` +
+          (item.type === "sequence" || item.type === "match"
+            ? `<button class="btn btn-primary" id="checkBtn" type="button">Check answer</button>`
+            : "") +
+          `<button class="btn btn-ghost" id="nextBtn" type="button" disabled>Next question →</button>` +
+          `</div>`;
+
+        host.innerHTML = html;
+        wireItem(item);
+      }
+
+      function renderMC(item) {
+        let h = `<ul class="options" role="list">`;
+        item.options.forEach((opt, i) => {
+          const key = String.fromCharCode(65 + i);
+          h += `<li><button class="opt" type="button" data-i="${i}"><span class="key">${key}</span><span>${opt}</span></button></li>`;
+        });
+        h += `</ul>`;
+        return h;
+      }
+
+      function renderSequence(item) {
+        // shuffled display order with selects 1..n
+        let h = `<p class="scaffold-note" style="margin-bottom:10px">Choose the order number for each step.</p><ul class="seq-list">`;
+        item.steps.forEach((step, i) => {
+          let opts = `<option value="">—</option>`;
+          for (let n = 1; n <= item.steps.length; n++)
+            opts += `<option value="${n}">${n}</option>`;
+          h += `<li class="seq-item" data-i="${i}"><label for="seq${i}">${esc(step)}</label><select id="seq${i}" aria-label="Order for: ${esc(step)}">${opts}</select></li>`;
+        });
+        h += `</ul>`;
+        return h;
+      }
+
+      function renderMatch(item) {
+        let h = `<p class="scaffold-note" style="margin-bottom:10px">Choose the matching answer for each item.</p><ul class="seq-list">`;
+        item.pairs.forEach((pair, i) => {
+          let opts = `<option value="">— choose —</option>`;
+          item.options.forEach(
+            (o) => (opts += `<option value="${esc(o)}">${esc(o)}</option>`),
+          );
+          h += `<li class="seq-item" data-i="${i}"><label for="mt${i}">${esc(pair.left)}</label><select id="mt${i}" aria-label="Match for: ${esc(pair.left)}">${opts}</select></li>`;
+        });
+        h += `</ul>`;
+        return h;
+      }
+
+      function wireItem(item) {
+        const fb = $("fb");
+        const nextBtn = $("nextBtn");
+        nextBtn.onclick = goNext;
+
+        if (item.type === "sequence" || item.type === "match") {
+          $("checkBtn").onclick = () => checkComplex(item);
+          return;
+        }
+
+        // MC
+        const opts = Array.from(document.querySelectorAll(".opt"));
+        opts.forEach((btn) => {
+          btn.onclick = () => {
+            const chosen = parseInt(btn.dataset.i, 10);
+            const correct = item.correct;
+            opts.forEach((b) => (b.disabled = true));
+            opts[correct].classList.add("correct");
+            const ok = chosen === correct;
+            if (!ok) btn.classList.add("incorrect");
+            showFeedback(ok, item.why[chosen], item);
+            recordAnswer(ok);
+            nextBtn.disabled = false;
+            nextBtn.focus();
+          };
+        });
+      }
+
+      function checkComplex(item) {
+        const fb = $("fb");
+        let ok = true;
+        if (item.type === "sequence") {
+          item.steps.forEach((_, i) => {
+            const sel = $("seq" + i);
+            const li = document.querySelector(`.seq-item[data-i="${i}"]`);
+            // correct order position of step i = position of i in item.order + 1
+            const correctPos = item.order.indexOf(i) + 1;
+            const val = parseInt(sel.value, 10);
+            const right = val === correctPos;
+            li.classList.toggle("correct", right);
+            li.classList.toggle("incorrect", !right);
+            sel.disabled = true;
+            if (!right) ok = false;
+          });
+        } else {
+          item.pairs.forEach((pair, i) => {
+            const sel = $("mt" + i);
+            const li = document.querySelector(`.seq-item[data-i="${i}"]`);
+            const right = sel.value === pair.right;
+            li.classList.toggle("correct", right);
+            li.classList.toggle("incorrect", !right);
+            sel.disabled = true;
+            if (!right) ok = false;
+          });
+        }
+        $("checkBtn").disabled = true;
+        showFeedback(ok, item.why, item);
+        recordAnswer(ok);
+        const nb = $("nextBtn");
+        nb.disabled = false;
+        nb.focus();
+      }
+
+      function showFeedback(ok, why, item) {
+        const fb = $("fb");
+        fb.className = "feedback show " + (ok ? "correct" : "incorrect");
+        const head = ok ? "✅ Correct!" : "Not quite —";
+        fb.innerHTML = `<strong>${head}</strong>${esc(why || "")}`;
+      }
+
+      function recordAnswer(ok) {
+        state.answered += 1;
+        if (ok) state.score += 1;
+        const total = SETS[state.setIdx].items.length;
+        const pct = Math.round((state.answered / total) * 100);
+        $("progressFill").style.width = pct + "%";
+        document
+          .querySelector(".progress-bar")
+          .setAttribute("aria-valuenow", String(pct));
+        $("scoreChip").textContent = `${state.score} / ${state.answered}`;
+      }
+
+      function goNext() {
+        state.itemIdx += 1;
+        renderItem();
+      }
+
+      function renderSummary() {
+        const set = SETS[state.setIdx];
+        const total = set.items.length;
+        const scoreStr = `${state.score} / ${total}`;
+        const pct = state.score / total;
+
+        // approximate ELP outcome from how far the student got correct
+        let elp = "Entering (Level 1)";
+        if (pct >= 0.9) elp = "Bridging (Level 5)";
+        else if (pct >= 0.7) elp = "Expanding (Level 4)";
+        else if (pct >= 0.5) elp = "Developing (Level 3)";
+        else if (pct >= 0.3) elp = "Emerging (Level 2)";
+
+        // store best
+        const prevBest = state.done[set.id];
+        const prevNum = prevBest ? parseInt(prevBest, 10) : -1;
+        if (state.score > prevNum) {
+          state.done[set.id] = scoreStr;
+          saveProgress();
+          renderPicker();
+        }
+
+        $("elpBadge").textContent = "Set complete";
+        $("itemHost").innerHTML =
+          `<div class="summary">` +
+          `<div class="big-score">${scoreStr}</div>` +
+          `<p class="elp-result">Estimated reading level: ${elp}</p>` +
+          `<p>You answered ${state.score} of ${total} items correctly across WIDA Levels 1-5.</p>` +
+          `<div class="item-actions" style="justify-content:center;margin-top:14px">` +
+          `<button class="btn btn-primary" id="retryBtn" type="button">Try this set again</button>` +
+          `</div></div>`;
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.score,
+              maxScore: total,
+              problemsCorrect: state.score,
+              problemsAttempted: total,
+            });
+        } catch (e) {}
+        $("retryBtn").onclick = () => selectSet(state.setIdx);
+      }
+
+      /* ---------- Init ---------- */
+      function init() {
+        loadProgress();
+        renderPicker();
+        $("lvl1Btn").onclick = () => setLevel(1);
+        $("lvl2Btn").onclick = () => setLevel(2);
+        setLevel(2);
+        renderItem();
+      }
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,2279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.G.A · 6.EE.C · Unit 10" data-standard="6.G.A · 6.EE.C" data-unit="10" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 26: Culminating Design Lab (6.G.A · 6.EE.C) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #115e59;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #eef7ee;
+        --soft-red: #fef2f2;
+        --line: #d9e1e8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg);
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .mission-nav a:hover {
+        text-decoration: underline;
+      }
+
+      /* HERO - special culminating style */
+      .mission-hero {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 28px;
+        align-items: center;
+        padding: clamp(28px, 5vw, 48px);
+        background: linear-gradient(
+          135deg,
+          rgba(35, 57, 93, 0.06),
+          rgba(183, 121, 31, 0.08)
+        );
+        border: 2px solid var(--gold);
+        border-top: 8px solid var(--navy);
+        border-radius: 8px;
+        box-shadow: 0 18px 40px rgba(26, 40, 58, 0.16);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 3.2rem);
+        line-height: 1.05;
+        margin-bottom: 12px;
+        color: var(--navy);
+      }
+      .mission-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .culminating-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        background: var(--gold);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 900;
+        margin-bottom: 8px;
+        letter-spacing: 0.03em;
+      }
+      .standard-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-teal);
+        color: var(--teal-dark);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin: 2px 3px;
+      }
+      .hero-scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-svg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+        border-bottom: 2px solid var(--soft-blue);
+        padding-bottom: 8px;
+      }
+      .panel h3 {
+        color: var(--teal-dark);
+        font-size: 1.12rem;
+        margin-top: 18px;
+        margin-bottom: 8px;
+      }
+      .panel-highlight {
+        border: 2px solid var(--gold);
+        border-top: 5px solid var(--gold);
+      }
+      .problem-box {
+        padding: 18px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 1.05rem;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        display: block;
+        margin-top: 4px;
+      }
+      .language-box {
+        padding: 18px;
+        background: #f0faf9;
+        border: 2px dashed #8bbab3;
+        border-radius: 8px;
+        margin: 18px 0;
+      }
+      .language-box h3 {
+        color: var(--teal-dark);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .vocab-item .def {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .sentence-frames {
+        padding: 12px 16px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .sentence-frames p {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role-card {
+        padding: 14px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+        border-radius: 8px;
+      }
+      .role-card strong {
+        display: block;
+        color: #115e60;
+        margin-bottom: 4px;
+      }
+      .role-card .task {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .timer-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        min-height: 42px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn:focus-visible {
+        outline: 3px solid rgba(32, 122, 122, 0.35);
+        outline-offset: 2px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .phase-header {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 4px 14px 14px;
+        color: var(--muted);
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .challenge-box {
+        padding: 16px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        padding: 12px 16px;
+        background: var(--soft-blue);
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .sentence-starter {
+        display: block;
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+      .exit-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "☐";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .svg-container {
+        display: flex;
+        justify-content: center;
+        margin: 18px 0;
+      }
+      .svg-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .rep-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .rep-tab {
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .rep-tab.active {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .rep-content {
+        display: none;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .rep-content.active {
+        display: block;
+      }
+
+      /* TIMELINE */
+      .timeline {
+        list-style: none;
+        padding-left: 0;
+        position: relative;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 18px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--teal);
+        border-radius: 2px;
+      }
+      .timeline li {
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+      }
+      .timeline li::before {
+        content: "";
+        position: absolute;
+        left: 12px;
+        top: 16px;
+        width: 14px;
+        height: 14px;
+        background: var(--teal);
+        border: 3px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 2px var(--teal);
+      }
+      .timeline .day-label {
+        display: block;
+        font-weight: 900;
+        color: var(--navy);
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .timeline .day-desc {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      /* RUBRIC TABLE */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        padding: 10px;
+        border: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .rubric-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+        font-weight: 800;
+        text-align: left;
+      }
+      .rubric-table .score-4 {
+        background: #e8f5e9;
+      }
+      .rubric-table .score-3 {
+        background: #fff6df;
+      }
+      .rubric-table .score-2 {
+        background: #fff3e0;
+      }
+      .rubric-table .score-1 {
+        background: var(--soft-red);
+      }
+
+      /* MATH DOMAIN CARDS */
+      .domain-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .domain-card {
+        padding: 12px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        border-left: 4px solid var(--teal);
+      }
+      .domain-card strong {
+        display: block;
+        color: var(--navy);
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+      }
+      .domain-card span {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      /* PRESENTATION GUIDE */
+      .pres-step {
+        padding: 14px;
+        margin-bottom: 10px;
+        background: var(--soft-teal);
+        border-radius: 8px;
+        border-left: 4px solid var(--navy);
+      }
+      .pres-step strong {
+        color: var(--navy);
+      }
+      .pres-step .time-hint {
+        display: inline-block;
+        padding: 2px 8px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-left: 6px;
+      }
+
+      .full-width {
+        grid-column: 1/-1;
+      }
+      .print-only {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-bar,
+        .timer-buttons,
+        .btn,
+        .rep-tabs {
+          display: none !important;
+        }
+        .panel,
+        .mission-hero {
+          box-shadow: none;
+          border-color: #999;
+          break-inside: avoid;
+        }
+        .phase-body,
+        .rep-content {
+          display: block !important;
+        }
+        .print-only {
+          display: block;
+        }
+        .content-grid {
+          display: block;
+        }
+        .content-grid > * {
+          margin-bottom: 18px;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero,
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          order: -1;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-25/">&#8592; Mission 25</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <span style="color: var(--muted); font-size: 0.9rem"
+          >Final Mission</span
+        >
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <span class="culminating-badge">CULMINATING PROJECT</span>
+          <span class="mission-badge">Mission 26</span>
+          <span
+            class="mission-badge"
+            style="background: var(--soft-teal); color: var(--teal-dark)"
+            >Unit 10</span
+          >
+          <div style="margin: 6px 0 10px">
+            <span class="standard-tag">6.RP.A.3</span>
+            <span class="standard-tag">6.NS.B.3</span>
+            <span class="standard-tag">6.EE.B.6</span>
+            <span class="standard-tag">6.EE.C.9</span>
+            <span class="standard-tag">6.G.A.1</span>
+            <span class="standard-tag">6.G.A.2</span>
+            <span class="standard-tag">6.G.A.4</span>
+            <span class="standard-tag">6.SP.B.5</span>
+          </div>
+          <h1 id="hero-title">Dream Space Design Lab</h1>
+          <span class="mlm-standard">6.G.A · 6.EE.C &middot; Unit 10</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Apply ratios, area, volume, and expressions to a multi-step design.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="hero-scenario">
+            Your team has been hired as junior architects to design a
+            <strong>Dream Classroom or Community Space</strong> for your school.
+            You have a <strong>$5,000 budget</strong> and a
+            <strong>40 ft x 30 ft</strong> rectangular room. Your design must
+            include furniture layout (area), storage units (volume and surface
+            area), a materials budget (ratios and rates), a data display showing
+            class preferences, and an equation that models at least one
+            relationship. This is your chance to use
+            <strong>ALL the math you learned this year</strong> in one real
+            project.
+          </p>
+        </div>
+        <div class="hero-svg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 420 460"
+            width="420"
+            height="460"
+            aria-label="Blueprint-style floor plan of a dream classroom showing furniture, storage, and measurements"
+          >
+            <rect width="420" height="460" rx="12" fill="#edf5ff" />
+            <text
+              x="210"
+              y="26"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Dream Space Blueprint
+            </text>
+
+            <!-- Grid background -->
+            <rect
+              x="30"
+              y="40"
+              width="360"
+              height="270"
+              rx="4"
+              fill="#fff"
+              stroke="#23395d"
+              stroke-width="2.5"
+            />
+            <!-- Grid lines -->
+            <g stroke="#e8edf2" stroke-width="0.5">
+              <line x1="30" y1="85" x2="390" y2="85" />
+              <line x1="30" y1="130" x2="390" y2="130" />
+              <line x1="30" y1="175" x2="390" y2="175" />
+              <line x1="30" y1="220" x2="390" y2="220" />
+              <line x1="30" y1="265" x2="390" y2="265" />
+              <line x1="120" y1="40" x2="120" y2="310" />
+              <line x1="210" y1="40" x2="210" y2="310" />
+              <line x1="300" y1="40" x2="300" y2="310" />
+            </g>
+
+            <!-- Room dimensions -->
+            <text
+              x="210"
+              y="325"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              40 ft
+            </text>
+            <line
+              x1="35"
+              y1="318"
+              x2="385"
+              y2="318"
+              stroke="#23395d"
+              stroke-width="1.5"
+              marker-start="url(#al)"
+              marker-end="url(#ar)"
+            />
+            <text
+              x="16"
+              y="175"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+              transform="rotate(-90,16,175)"
+            >
+              30 ft
+            </text>
+
+            <!-- Seating area (desks) -->
+            <g>
+              <rect
+                x="45"
+                y="55"
+                width="80"
+                height="55"
+                rx="3"
+                fill="rgba(32,122,122,0.12)"
+                stroke="#207a7a"
+                stroke-width="1.5"
+              />
+              <rect
+                x="45"
+                y="120"
+                width="80"
+                height="55"
+                rx="3"
+                fill="rgba(32,122,122,0.12)"
+                stroke="#207a7a"
+                stroke-width="1.5"
+              />
+              <rect
+                x="45"
+                y="185"
+                width="80"
+                height="55"
+                rx="3"
+                fill="rgba(32,122,122,0.12)"
+                stroke="#207a7a"
+                stroke-width="1.5"
+              />
+              <text
+                x="85"
+                y="80"
+                text-anchor="middle"
+                font-size="8"
+                fill="#115e59"
+                font-weight="700"
+              >
+                Group 1
+              </text>
+              <text
+                x="85"
+                y="148"
+                text-anchor="middle"
+                font-size="8"
+                fill="#115e59"
+                font-weight="700"
+              >
+                Group 2
+              </text>
+              <text
+                x="85"
+                y="213"
+                text-anchor="middle"
+                font-size="8"
+                fill="#115e59"
+                font-weight="700"
+              >
+                Group 3
+              </text>
+            </g>
+
+            <!-- Reading nook (triangle) -->
+            <polygon
+              points="310,55 375,55 375,120"
+              fill="rgba(183,121,31,0.15)"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text
+              x="355"
+              y="80"
+              text-anchor="middle"
+              font-size="7"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              Reading
+            </text>
+            <text
+              x="355"
+              y="90"
+              text-anchor="middle"
+              font-size="7"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              Nook
+            </text>
+
+            <!-- Storage shelf -->
+            <rect
+              x="145"
+              y="250"
+              width="100"
+              height="45"
+              rx="3"
+              fill="rgba(35,57,93,0.12)"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="195"
+              y="275"
+              text-anchor="middle"
+              font-size="8"
+              fill="#23395d"
+              font-weight="700"
+            >
+              Storage Unit
+            </text>
+            <text
+              x="195"
+              y="287"
+              text-anchor="middle"
+              font-size="7"
+              fill="#5b6573"
+            >
+              4x2x3 ft
+            </text>
+
+            <!-- Maker station -->
+            <rect
+              x="260"
+              y="150"
+              width="115"
+              height="70"
+              rx="3"
+              fill="rgba(47,125,50,0.12)"
+              stroke="#2f7d32"
+              stroke-width="1.5"
+            />
+            <text
+              x="318"
+              y="185"
+              text-anchor="middle"
+              font-size="8"
+              fill="#2f7d32"
+              font-weight="700"
+            >
+              Maker Station
+            </text>
+            <text
+              x="318"
+              y="196"
+              text-anchor="middle"
+              font-size="7"
+              fill="#5b6573"
+            >
+              12x8 ft
+            </text>
+
+            <!-- Teacher area -->
+            <rect
+              x="145"
+              y="55"
+              width="95"
+              height="50"
+              rx="3"
+              fill="rgba(183,121,31,0.08)"
+              stroke="#b7791f"
+              stroke-width="1.5"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="192"
+              y="80"
+              text-anchor="middle"
+              font-size="8"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              Teacher Hub
+            </text>
+
+            <!-- Legend -->
+            <rect
+              x="30"
+              y="345"
+              width="360"
+              height="105"
+              rx="8"
+              fill="#fff"
+              stroke="#d9e1e8"
+            />
+            <text
+              x="210"
+              y="365"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Math Domains Used
+            </text>
+            <g font-size="10">
+              <rect
+                x="45"
+                y="375"
+                width="10"
+                height="10"
+                rx="2"
+                fill="rgba(32,122,122,0.3)"
+              />
+              <text x="60" y="384" fill="#263242">
+                Area (seating: 10x6 ft each = 60 ft²)
+              </text>
+              <rect
+                x="45"
+                y="393"
+                width="10"
+                height="10"
+                rx="2"
+                fill="rgba(183,121,31,0.3)"
+              />
+              <text x="60" y="402" fill="#263242">
+                Triangle Area (reading nook: ½ x 8 x 8)
+              </text>
+              <rect
+                x="45"
+                y="411"
+                width="10"
+                height="10"
+                rx="2"
+                fill="rgba(35,57,93,0.3)"
+              />
+              <text x="60" y="420" fill="#263242">
+                Volume (storage: 4 x 2 x 3 = 24 ft³)
+              </text>
+              <rect
+                x="45"
+                y="429"
+                width="10"
+                height="10"
+                rx="2"
+                fill="rgba(47,125,50,0.3)"
+              />
+              <text x="60" y="438" fill="#263242">
+                Ratios + Equations (budget: c = 150n + 800)
+              </text>
+            </g>
+
+            <defs>
+              <marker
+                id="al"
+                markerWidth="6"
+                markerHeight="6"
+                refX="0"
+                refY="3"
+                orient="auto"
+              >
+                <polygon points="6,0 0,3 6,6" fill="#23395d" />
+              </marker>
+              <marker
+                id="ar"
+                markerWidth="6"
+                markerHeight="6"
+                refX="6"
+                refY="3"
+                orient="auto"
+              >
+                <polygon points="0,0 6,3 0,6" fill="#23395d" />
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <!-- LEFT COLUMN -->
+        <div>
+          <!-- THE PROJECT -->
+          <section class="panel panel-highlight">
+            <h2>The Design Challenge</h2>
+            <div class="problem-box">
+              <strong>Design your dream classroom or community space!</strong>
+              Your room is 40 ft x 30 ft (1,200 sq ft total). Your budget is
+              $5,000. Your design must use math from at least
+              <strong>5 different units</strong> you studied this year. The
+              final product is a scale blueprint, a budget spreadsheet, a data
+              display, and a 3-minute team presentation.
+            </div>
+
+            <h3>Required Math Connections</h3>
+            <p>
+              Your design must include at least one calculation from each of
+              these domains:
+            </p>
+            <div class="domain-grid">
+              <div class="domain-card">
+                <strong>Area</strong>
+                <span
+                  >Calculate the floor area of at least 3 zones in your room.
+                  (Units 5, 10)</span
+                >
+              </div>
+              <div class="domain-card">
+                <strong>Volume</strong>
+                <span
+                  >Calculate the volume of at least 1 storage unit or planter.
+                  (Unit 5)</span
+                >
+              </div>
+              <div class="domain-card" style="border-left-color: var(--gold)">
+                <strong>Ratios &amp; Rates</strong>
+                <span>Use unit rates to compare material costs. (Unit 3)</span>
+              </div>
+              <div class="domain-card" style="border-left-color: var(--gold)">
+                <strong>Equations</strong>
+                <span
+                  >Write an equation for cost vs. quantity. (Units 6-7, 9)</span
+                >
+              </div>
+              <div class="domain-card" style="border-left-color: var(--navy)">
+                <strong>Data &amp; Statistics</strong>
+                <span>Survey classmates and display results. (Unit 8)</span>
+              </div>
+              <div class="domain-card" style="border-left-color: var(--navy)">
+                <strong>Coordinates</strong>
+                <span>Use a coordinate grid for the floor plan. (Unit 7)</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- MULTI-DAY TIMELINE -->
+          <section class="panel panel-highlight">
+            <h2>Multi-Day Project Timeline</h2>
+            <ul class="timeline">
+              <li>
+                <span class="day-label"
+                  >Day 1: Dream &amp; Plan (Full Lab Cycle)</span
+                >
+                <span class="day-desc"
+                  >Brainstorm your space. Survey 10+ classmates on what features
+                  they want most (reading nook, maker station, gaming corner,
+                  music area, etc.). Assign team roles. Sketch rough ideas.
+                  Decide your room zones.</span
+                >
+              </li>
+              <li>
+                <span class="day-label">Day 2: Design &amp; Calculate</span>
+                <span class="day-desc"
+                  >Draw the scale floor plan on graph paper (1 square = 2 ft).
+                  Calculate area of each zone. Calculate volume of at least one
+                  3D object (bookshelf, cabinet, planter). Write your cost
+                  equation.</span
+                >
+              </li>
+              <li>
+                <span class="day-label">Day 3: Budget &amp; Data</span>
+                <span class="day-desc"
+                  >Research material costs (desks: $150 each, chairs: $45 each,
+                  paint: $35/gallon, shelving: $80/unit). Build your budget
+                  spreadsheet. Create a data display (bar graph, dot plot, or
+                  box plot) from your survey. Make sure you stay under
+                  $5,000.</span
+                >
+              </li>
+              <li>
+                <span class="day-label">Day 4: Polish &amp; Present</span>
+                <span class="day-desc"
+                  >Finalize the blueprint. Label all measurements. Prepare the
+                  3-minute presentation. Practice answering defense questions.
+                  Every team member must speak.</span
+                >
+              </li>
+            </ul>
+          </section>
+
+          <!-- INVESTIGATION GUIDE -->
+          <section class="panel">
+            <h2>Investigation Guide</h2>
+            <ol class="step-list">
+              <li>
+                <strong>Survey your classmates.</strong> Ask at least 10
+                students: "What is the most important feature in a dream
+                classroom?" Give 5 choices. Record and display the data.
+                <span class="guiding-q"
+                  >What type of data display best shows the results? Why?</span
+                >
+              </li>
+              <li>
+                <strong>Sketch the floor plan.</strong> Use graph paper. Each
+                square = 2 ft. The room is 20 squares x 15 squares. Draw at
+                least 4 zones (seating, workspace, storage, a special feature).
+                <span class="guiding-q"
+                  >How do you make sure your zones do not overlap and still
+                  leave walking space?</span
+                >
+              </li>
+              <li>
+                <strong>Calculate areas.</strong> Find the area of each zone.
+                Include at least one non-rectangular shape (triangle, trapezoid,
+                or composite shape). Show that all zones plus walkways equal the
+                total room area (1,200 sq ft).
+                <span class="guiding-q"
+                  >What fraction of the room is seating? What fraction is
+                  walkway? Do those ratios make sense?</span
+                >
+              </li>
+              <li>
+                <strong>Design a 3D object.</strong> Choose a bookshelf, supply
+                cabinet, or planter. Give it dimensions. Calculate its volume
+                (how much it holds) and surface area (how much material to build
+                it).
+                <span class="guiding-q"
+                  >If you need 3 of these, how do you find the total volume and
+                  total surface area?</span
+                >
+              </li>
+              <li>
+                <strong>Write a cost equation.</strong> Example: If desks cost
+                $150 each, the equation is c = 150d where d = number of desks.
+                Use the equation to find the cost for different quantities.
+                <span class="guiding-q"
+                  >Which variable is independent? Which is dependent? What is
+                  the rate?</span
+                >
+              </li>
+              <li>
+                <strong>Build the budget.</strong> List every item, quantity,
+                unit cost, and total. Add everything up. Are you under $5,000?
+                If not, what do you cut or change?
+                <span class="guiding-q"
+                  >What is the ratio of furniture cost to total budget? Is that
+                  reasonable?</span
+                >
+              </li>
+            </ol>
+          </section>
+
+          <!-- Language -->
+          <div class="panel">
+            <div class="language-box" style="margin: 0">
+              <h3>Language Support: Key Vocabulary</h3>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Blueprint</strong>
+                  <div class="def">
+                    A detailed plan or drawing that shows measurements and
+                    layout.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Scale</strong>
+                  <div class="def">
+                    A ratio that compares a drawing size to real size. Example:
+                    1 square = 2 feet.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Budget</strong>
+                  <div class="def">
+                    A plan for how to spend money. Lists items, costs, and a
+                    total.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Zone</strong>
+                  <div class="def">
+                    A separate area in the room for a specific purpose (reading,
+                    working, etc.).
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Unit Rate</strong>
+                  <div class="def">
+                    Cost for 1 item. Example: $150 per desk. Helps you compare
+                    prices.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Composite Shape</strong>
+                  <div class="def">
+                    A shape made of two or more simpler shapes combined.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Survey</strong>
+                  <div class="def">
+                    Questions asked to a group of people to collect data about
+                    their opinions.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Presentation</strong>
+                  <div class="def">
+                    Sharing your work with an audience. Explain your design and
+                    math clearly.
+                  </div>
+                </div>
+              </div>
+              <div class="sentence-frames">
+                <strong>Sentence Frames for Presentation:</strong>
+                <p>
+                  "Our dream space includes ___ because the survey showed ___."
+                </p>
+                <p>
+                  "The ___ zone has an area of ___ ft² because we calculated
+                  ___."
+                </p>
+                <p>
+                  "Our storage unit holds ___ ft³, which is enough for ___."
+                </p>
+                <p>"We stayed under budget by ___. Our total cost is $___."</p>
+                <p>
+                  "The equation c = ___ shows that for every ___, the cost
+                  increases by ___."
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- MULTIPLE REPRESENTATIONS -->
+          <section class="panel">
+            <h3>Sample Calculations</h3>
+            <div class="rep-tabs" role="tablist">
+              <button
+                class="rep-tab active"
+                role="tab"
+                data-target="rep1"
+                aria-selected="true"
+              >
+                Area
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep2"
+                aria-selected="false"
+              >
+                Volume
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep3"
+                aria-selected="false"
+              >
+                Budget Equation
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep4"
+                aria-selected="false"
+              >
+                Data Display
+              </button>
+            </div>
+            <div class="rep-content active" id="rep1">
+              <p><strong>Room:</strong> 40 x 30 = 1,200 ft² total</p>
+              <p>
+                <strong>3 Group seating areas:</strong> 10 x 6 = 60 ft² each, 3
+                x 60 = 180 ft²
+              </p>
+              <p>
+                <strong>Reading nook (triangle):</strong> 1/2 x 8 x 8 = 32 ft²
+              </p>
+              <p><strong>Maker station:</strong> 12 x 8 = 96 ft²</p>
+              <p><strong>Teacher hub:</strong> 10 x 6 = 60 ft²</p>
+              <p><strong>Storage area:</strong> 12 x 5 = 60 ft²</p>
+              <p>
+                <strong>Walkways &amp; open space:</strong> 1,200 - 180 - 32 -
+                96 - 60 - 60 = 772 ft²
+              </p>
+              <p style="color: var(--teal-dark); font-weight: 700">
+                Walkways are 64% of the room -- plenty of space to move!
+              </p>
+            </div>
+            <div class="rep-content" id="rep2">
+              <p>
+                <strong>Bookshelf:</strong> 4 ft long x 2 ft wide x 3 ft tall
+              </p>
+              <p>
+                Volume = 4 x 2 x 3 = <strong>24 ft³</strong> of storage space
+              </p>
+              <p>
+                Surface area = 2(4x2) + 2(4x3) + 2(2x3) = 16 + 24 + 12 =
+                <strong>52 ft²</strong> of material
+              </p>
+              <p>
+                If we need 3 shelves: Total volume = 3 x 24 =
+                <strong>72 ft³</strong>
+              </p>
+            </div>
+            <div class="rep-content" id="rep3">
+              <table
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 0.9rem;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--soft-blue)">
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Item
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Unit Cost
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Qty
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Student desks
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $150
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      12
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $1,800
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Chairs
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $45
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      24
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $1,080
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Bookshelves
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $80
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      3
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $240
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Paint (gallons)
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $35
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      6
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $210
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Beanbag chairs
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $60
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      4
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $240
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Maker supplies
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      --
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      --
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $500
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Whiteboard
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $200
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      2
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $400
+                    </td>
+                  </tr>
+                  <tr style="background: var(--soft-gold); font-weight: 700">
+                    <td
+                      style="padding: 8px; border: 1px solid var(--line)"
+                      colspan="3"
+                    >
+                      TOTAL
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $4,470
+                    </td>
+                  </tr>
+                  <tr style="background: var(--soft-green)">
+                    <td
+                      style="padding: 8px; border: 1px solid var(--line)"
+                      colspan="3"
+                    >
+                      Remaining Budget
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      $530
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="margin-top: 8px">
+                <strong>Equation:</strong> Desk cost = 150d. For d desks: c =
+                150d. If d = 12, c = $1,800.
+              </p>
+            </div>
+            <div class="rep-content" id="rep4">
+              <div class="svg-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 400 220"
+                  width="400"
+                  height="220"
+                >
+                  <rect width="400" height="220" rx="6" fill="#fff" />
+                  <text
+                    x="200"
+                    y="18"
+                    text-anchor="middle"
+                    font-size="12"
+                    font-weight="800"
+                    fill="#23395d"
+                  >
+                    Survey: What Feature Do You Want Most?
+                  </text>
+                  <!-- Bars -->
+                  <g>
+                    <rect
+                      x="50"
+                      y="35"
+                      width="200"
+                      height="25"
+                      rx="3"
+                      fill="#207a7a"
+                      opacity="0.8"
+                    />
+                    <text
+                      x="45"
+                      y="52"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#263242"
+                      font-weight="700"
+                    >
+                      Reading Nook
+                    </text>
+                    <text
+                      x="256"
+                      y="52"
+                      font-size="10"
+                      fill="#207a7a"
+                      font-weight="700"
+                    >
+                      10 votes
+                    </text>
+
+                    <rect
+                      x="50"
+                      y="68"
+                      width="160"
+                      height="25"
+                      rx="3"
+                      fill="#b7791f"
+                      opacity="0.8"
+                    />
+                    <text
+                      x="45"
+                      y="85"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#263242"
+                      font-weight="700"
+                    >
+                      Maker Station
+                    </text>
+                    <text
+                      x="216"
+                      y="85"
+                      font-size="10"
+                      fill="#b7791f"
+                      font-weight="700"
+                    >
+                      8 votes
+                    </text>
+
+                    <rect
+                      x="50"
+                      y="101"
+                      width="120"
+                      height="25"
+                      rx="3"
+                      fill="#23395d"
+                      opacity="0.7"
+                    />
+                    <text
+                      x="45"
+                      y="118"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#263242"
+                      font-weight="700"
+                    >
+                      Gaming Corner
+                    </text>
+                    <text
+                      x="176"
+                      y="118"
+                      font-size="10"
+                      fill="#23395d"
+                      font-weight="700"
+                    >
+                      6 votes
+                    </text>
+
+                    <rect
+                      x="50"
+                      y="134"
+                      width="60"
+                      height="25"
+                      rx="3"
+                      fill="#2f7d32"
+                      opacity="0.7"
+                    />
+                    <text
+                      x="45"
+                      y="151"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#263242"
+                      font-weight="700"
+                    >
+                      Music Area
+                    </text>
+                    <text
+                      x="116"
+                      y="151"
+                      font-size="10"
+                      fill="#2f7d32"
+                      font-weight="700"
+                    >
+                      3 votes
+                    </text>
+
+                    <rect
+                      x="50"
+                      y="167"
+                      width="60"
+                      height="25"
+                      rx="3"
+                      fill="#b42318"
+                      opacity="0.6"
+                    />
+                    <text
+                      x="45"
+                      y="184"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#263242"
+                      font-weight="700"
+                    >
+                      Quiet Zone
+                    </text>
+                    <text
+                      x="116"
+                      y="184"
+                      font-size="10"
+                      fill="#b42318"
+                      font-weight="700"
+                    >
+                      3 votes
+                    </text>
+                  </g>
+                  <text
+                    x="200"
+                    y="210"
+                    text-anchor="middle"
+                    font-size="10"
+                    fill="#5b6573"
+                  >
+                    n = 30 students surveyed
+                  </text>
+                </svg>
+              </div>
+              <p>
+                Reading nook got the most votes (10/30 = 1/3 of students). We
+                included it in our design!
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+          <section class="panel">
+            <h2>Team Roles (Extended)</h2>
+            <div class="role-grid">
+              <div class="role-card">
+                <strong>Facilitator / Project Manager</strong>
+                <div class="task">
+                  Keep the team on the timeline. Check off deliverables each
+                  day. Make sure every team member contributes equally. Run the
+                  survey on Day 1.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Model Builder / Architect</strong>
+                <div class="task">
+                  Draw the scale floor plan. Create the 3D object sketches.
+                  Build the coordinate grid layout. Make sure all measurements
+                  are labeled.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Precision Checker / Accountant</strong>
+                <div class="task">
+                  Verify every calculation. Build the budget spreadsheet. Check
+                  that area totals equal room area. Ensure the budget stays
+                  under $5,000.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Reporter / Presenter</strong>
+                <div class="task">
+                  Create the data display from survey results. Write the
+                  presentation script. Make sure every team member has a
+                  speaking part. Time the presentation (3 min max).
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- DAY 1 TIMER -->
+          <section class="panel">
+            <h2>Day 1: Lab Cycle Timer</h2>
+            <div class="timer-bar">
+              <div>
+                <strong id="activePhaseLabel">Ready</strong>
+                <div style="font-size: 0.9rem; color: var(--muted)">
+                  Use on Day 1 for the initial planning cycle.
+                </div>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">
+                03:00
+              </div>
+            </div>
+            <div class="timer-buttons">
+              <button class="btn btn-primary" id="startTimer">Start</button>
+              <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+              <button class="btn btn-secondary" id="resetTimer">Reset</button>
+            </div>
+            <div style="margin-top: 14px">
+              <article class="phase-card open">
+                <button class="phase-header" data-phase="0" data-minutes="3">
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Read the entire design challenge.</li>
+                    <li>Assign roles for the project.</li>
+                    <li>Brainstorm: what kind of space do you want?</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does everyone know their role
+                      and the 4-day timeline?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="1" data-minutes="6">
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Write survey questions (5 feature choices).</li>
+                    <li>Sketch 2-3 rough floor plan ideas.</li>
+                    <li>List the math domains you will use.</li>
+                    <li>Start identifying which calculations go where.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Do you have a survey ready
+                      and at least one rough sketch?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="2" data-minutes="5">
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Pick your best design from the sketches.</li>
+                    <li>Start assigning zones to the floor plan.</li>
+                    <li>
+                      Make a list of items you want to buy and estimate costs.
+                    </li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does your plan have at least
+                      4 zones?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="3" data-minutes="4">
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>
+                      Share your plan with the class (quick 30-second pitch).
+                    </li>
+                    <li>Write down what you need to finish on Days 2-4.</li>
+                    <li>Identify who does what tomorrow.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can every member explain the
+                      plan in one sentence?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <h2>Challenge Extensions</h2>
+            <div class="challenge-box">
+              <strong>Gold Level:</strong> Add a coordinate grid to your floor
+              plan. Place furniture using ordered pairs. Create a legend so
+              anyone can read your blueprint.
+            </div>
+            <div class="challenge-box" style="border-left-color: var(--navy)">
+              <strong>Platinum Level:</strong> Compare two different furniture
+              options using unit rates. Example: Store A sells desks for $150
+              each with free delivery. Store B sells desks for $130 each but
+              charges a $200 delivery fee. Write an equation for each store and
+              find the break-even point.
+            </div>
+            <div class="whatif">
+              <strong>What If...?</strong>
+              <ul>
+                <li>
+                  What if your budget were only $3,000? What would you cut?
+                </li>
+                <li>
+                  What if the room were L-shaped instead of rectangular? How
+                  would your calculations change?
+                </li>
+                <li>
+                  What if you had to design for 40 students instead of 24?
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- PRESENTATION GUIDE -->
+          <section class="panel panel-highlight">
+            <h2>Presentation Guide (3 Minutes)</h2>
+            <div class="pres-step">
+              <strong>Opening: The Vision</strong
+              ><span class="time-hint">30 sec</span>
+              <p style="margin: 4px 0 0; font-size: 0.92rem">
+                "Our team designed a ___ because our survey showed ___. We used
+                math from ___ different units."
+              </p>
+            </div>
+            <div class="pres-step">
+              <strong>The Blueprint Tour</strong
+              ><span class="time-hint">60 sec</span>
+              <p style="margin: 4px 0 0; font-size: 0.92rem">
+                Walk the audience through your floor plan. Point to each zone
+                and give its area. Show the reading nook triangle or any
+                non-rectangular shape calculation.
+              </p>
+            </div>
+            <div class="pres-step">
+              <strong>The 3D Object</strong
+              ><span class="time-hint">30 sec</span>
+              <p style="margin: 4px 0 0; font-size: 0.92rem">
+                Show your bookshelf/cabinet sketch. State the volume and surface
+                area. Explain why these measurements matter (how much it holds,
+                how much material to build).
+              </p>
+            </div>
+            <div class="pres-step">
+              <strong>The Budget</strong><span class="time-hint">30 sec</span>
+              <p style="margin: 4px 0 0; font-size: 0.92rem">
+                Show the budget table and equation. State the total and
+                remaining funds. Mention one trade-off your team made.
+              </p>
+            </div>
+            <div class="pres-step">
+              <strong>Closing: What We Learned</strong
+              ><span class="time-hint">30 sec</span>
+              <p style="margin: 4px 0 0; font-size: 0.92rem">
+                "The most important math we used was ___ because ___. If we had
+                more time, we would ___."
+              </p>
+            </div>
+          </section>
+
+          <!-- RUBRIC -->
+          <section class="panel panel-highlight">
+            <h2>Project Rubric</h2>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th style="width: 22%">Category</th>
+                  <th class="score-4" style="width: 26%">Exceeds (4)</th>
+                  <th class="score-3" style="width: 26%">Meets (3)</th>
+                  <th class="score-2" style="width: 26%">Approaching (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 700">Math Accuracy</td>
+                  <td class="score-4">
+                    All calculations correct with units. Uses 6+ math domains.
+                  </td>
+                  <td class="score-3">
+                    Most calculations correct. Uses 5 math domains.
+                  </td>
+                  <td class="score-2">
+                    Some errors or missing units. Uses 3-4 domains.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700">Blueprint &amp; Scale</td>
+                  <td class="score-4">
+                    Floor plan is to scale with grid, all zones labeled with
+                    dimensions.
+                  </td>
+                  <td class="score-3">
+                    Floor plan has most measurements. Scale is consistent.
+                  </td>
+                  <td class="score-2">
+                    Floor plan is rough or missing some measurements.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700">Budget</td>
+                  <td class="score-4">
+                    Complete budget table with equation. Under $5,000 with
+                    trade-offs explained.
+                  </td>
+                  <td class="score-3">Budget table complete. Under $5,000.</td>
+                  <td class="score-2">
+                    Budget is incomplete or over $5,000 without explanation.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700">Data Display</td>
+                  <td class="score-4">
+                    Survey results displayed with title, labels, and
+                    interpretation.
+                  </td>
+                  <td class="score-3">Data displayed with title and labels.</td>
+                  <td class="score-2">
+                    Data collected but display is incomplete.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700">Presentation</td>
+                  <td class="score-4">
+                    All members speak. Clear explanations with math vocabulary.
+                    Under 3 minutes.
+                  </td>
+                  <td class="score-3">
+                    Most members speak. Explanations are clear.
+                  </td>
+                  <td class="score-2">
+                    Only 1-2 members speak or math is not explained.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700">Teamwork</td>
+                  <td class="score-4">
+                    All roles fulfilled. Evidence of revision and collaboration.
+                  </td>
+                  <td class="score-3">
+                    Roles mostly filled. Team worked together.
+                  </td>
+                  <td class="score-2">
+                    Uneven contribution or roles not clear.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--muted)">
+              <strong>Total possible: 24 points.</strong> 20-24 = Exceeds, 15-19
+              = Meets, 12-14 = Approaching, Below 12 = Not Yet.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel">
+            <h2>Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                How did your survey data influence your design?
+                <span class="sentence-starter"
+                  >"The survey showed that ___ was the most popular, so we
+                  included ___."</span
+                >
+              </li>
+              <li>
+                Show one area calculation and explain why it matters.
+                <span class="sentence-starter"
+                  >"The ___ zone is ___ ft² because we calculated ___. This
+                  matters because ___."</span
+                >
+              </li>
+              <li>
+                What equation did you use and what does each part mean?
+                <span class="sentence-starter"
+                  >"Our equation is c = ___, where ___ represents ___ and ___
+                  represents ___."</span
+                >
+              </li>
+              <li>
+                How did you stay under budget? What trade-offs did you make?
+                <span class="sentence-starter"
+                  >"We chose ___ instead of ___ because ___. This saved us
+                  $___."</span
+                >
+              </li>
+              <li>
+                What math skill from this year was most useful for this project?
+                <span class="sentence-starter"
+                  >"The most useful skill was ___ because without it we could
+                  not have ___."</span
+                >
+              </li>
+            </ol>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel panel-highlight">
+            <h2>Exit Product: Final Deliverables</h2>
+            <div class="exit-box">
+              <strong>Your team submits a project folder with:</strong>
+              <ul class="checklist">
+                <li>
+                  Scale floor plan (graph paper or digital) with all zones
+                  labeled
+                </li>
+                <li>
+                  Area calculations for at least 4 zones (including one
+                  non-rectangle)
+                </li>
+                <li>
+                  Volume and surface area of at least 1 storage/furniture item
+                </li>
+                <li>
+                  Cost equation with table showing at least 3 input-output pairs
+                </li>
+                <li>
+                  Budget spreadsheet with all items, quantities, and totals
+                  (under $5,000)
+                </li>
+                <li>
+                  Survey data display (bar graph, dot plot, or box plot) with
+                  labels
+                </li>
+                <li>3-minute team presentation where all members speak</li>
+              </ul>
+            </div>
+            <div style="margin-top: 14px">
+              <strong>Team Self-Assessment:</strong>
+              <ul class="checklist">
+                <li>We used math from at least 5 different units</li>
+                <li>Every calculation has correct units (ft², ft³, $)</li>
+                <li>Our budget is under $5,000</li>
+                <li>
+                  Our data display has a title, labels, and interpretation
+                </li>
+                <li>Our floor plan is to scale and labeled</li>
+                <li>Every team member contributed and can explain the math</li>
+                <li>We can answer 3+ defense questions with evidence</li>
+              </ul>
+            </div>
+            <div style="margin-top: 14px">
+              <strong>Individual Reflection (each student writes):</strong>
+              <ul class="checklist">
+                <li>"The math concept I used most was ___"</li>
+                <li>"One thing I learned from my teammates was ___"</li>
+                <li>"If I did this project again, I would change ___"</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="print-only">
+        <h2>Work Space</h2>
+        <p><strong>Survey Data:</strong></p>
+        <br /><br />
+        <p><strong>Floor Plan Sketch:</strong></p>
+        <br /><br /><br />
+        <p><strong>Area Calculations:</strong></p>
+        <br /><br />
+        <p><strong>Volume / Surface Area:</strong></p>
+        <br /><br />
+        <p><strong>Budget Table:</strong></p>
+        <br /><br />
+        <p><strong>Equation:</strong></p>
+        <br />
+        <p><strong>Presentation Notes:</strong></p>
+        <br /><br />
+      </section>
+
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-25/">&#8592; Mission 25</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <span style="color: var(--muted); font-size: 0.9rem"
+          >Final Mission</span
+        >
+      </nav>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        document.querySelectorAll(".rep-tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            document.querySelectorAll(".rep-tab").forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            document.querySelectorAll(".rep-content").forEach(function (c) {
+              c.classList.remove("active");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            var target = document.getElementById(tab.dataset.target);
+            if (target) target.classList.add("active");
+          });
+        });
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0,
+          remainingSeconds = phases[0].minutes * 60,
+          timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay"),
+          activePhaseLabel = document.getElementById("activePhaseLabel");
+        function formatTime(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+        document.querySelectorAll(".phase-header").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.phase);
+            activePhaseIndex = idx;
+            remainingSeconds = parseInt(btn.dataset.minutes) * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent = phases[idx].title + " phase";
+            document.querySelectorAll(".phase-card").forEach(function (c, i) {
+              if (i === idx) c.classList.add("open");
+              else c.classList.remove("open");
+            });
+            stopTimer();
+          });
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stopTimer();
+            remainingSeconds = phases[activePhaseIndex].minutes * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent =
+              phases[activePhaseIndex].title + " phase";
+          });
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

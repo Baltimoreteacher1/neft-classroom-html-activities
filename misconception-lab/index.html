@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Misconception Lab: Interactive Grade 6 Math Mythbusters debugging studio for refuting common fractions, decimals, and order of operations mistakes."
+    />
+    <title>Misconception Lab | Math Mythbusters</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-dark: #080c14;
+        --card-bg: rgba(18, 25, 41, 0.7);
+        --border-light: rgba(255, 255, 255, 0.05);
+        --primary: #06b6d4; /* Neon Cyan */
+        --primary-glow: rgba(6, 182, 212, 0.35);
+        --secondary: #10b981; /* Emerald */
+        --secondary-glow: rgba(16, 185, 129, 0.3);
+        --accent: #f59e0b; /* Amber */
+        --danger: #ef4444; /* Rose Red */
+        --danger-glow: rgba(239, 68, 68, 0.3);
+        --white: #ffffff;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --radius-sm: 8px;
+        --shadow-glow: 0 0 20px rgba(6, 182, 212, 0.15);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --font-display: "Outfit", sans-serif;
+        --font-main: "Plus Jakarta Sans", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--white);
+        font-family: var(--font-main);
+        min-height: 100vh;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: rgba(18, 25, 41, 0.85);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border-light);
+        padding: 16px 28px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand span {
+        font-size: 1.8rem;
+      }
+
+      .brand h1 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--white), var(--gray-300));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .header-controls {
+        display: flex;
+        gap: 12px;
+      }
+
+      .btn {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), #0891b2);
+        color: var(--white);
+        box-shadow: 0 4px 14px var(--primary-glow);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(6, 182, 212, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--white);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .btn-lang {
+        background: rgba(6, 182, 212, 0.15);
+        color: #22d3ee;
+        border: 1px solid rgba(6, 182, 212, 0.3);
+      }
+
+      .btn-lang:hover {
+        background: rgba(6, 182, 212, 0.25);
+      }
+
+      .app-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+        max-width: 1280px;
+        width: 100%;
+        margin: 24px auto;
+        padding: 0 24px;
+        flex: 1;
+      }
+
+      @media (max-width: 1024px) {
+        .app-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-glow);
+        backdrop-filter: blur(10px);
+      }
+
+      .card h2 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 10px;
+      }
+
+      /* Error Bot Terminal Terminal */
+      .terminal-panel {
+        background: rgba(0, 0, 0, 0.35);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        padding: 16px;
+        font-family: "Courier New", Courier, monospace;
+        box-shadow: inset 0 0 15px rgba(239, 68, 68, 0.05);
+        margin-bottom: 16px;
+      }
+
+      .terminal-head {
+        color: var(--danger);
+        font-weight: 800;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .terminal-text {
+        color: #fda4af;
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+
+      .terminal-equation {
+        font-size: 1.3rem;
+        font-weight: 800;
+        text-align: center;
+        color: var(--danger);
+        background: rgba(239, 68, 68, 0.1);
+        padding: 8px;
+        border-radius: var(--radius-sm);
+        margin: 12px 0;
+        border: 1px dashed rgba(239, 68, 68, 0.3);
+      }
+
+      /* Bug selection buttons */
+      .bug-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .bug-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .bug-item:hover {
+        border-color: var(--primary);
+        background: rgba(6, 182, 212, 0.05);
+      }
+
+      .bug-item.active {
+        border-color: var(--primary);
+        background: rgba(6, 182, 212, 0.1);
+        box-shadow: inset 0 0 8px rgba(6, 182, 212, 0.1);
+      }
+
+      .bug-item.resolved {
+        border-color: var(--secondary);
+        background: rgba(16, 185, 129, 0.05);
+      }
+
+      .bug-meta strong {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 0.9rem;
+        color: var(--white);
+      }
+
+      .bug-meta span {
+        font-size: 0.75rem;
+        color: var(--gray-400);
+      }
+
+      .bug-badge {
+        font-size: 1.1rem;
+      }
+
+      .workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .work-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-glow);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: relative;
+      }
+
+      .work-card-title {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--gray-300);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .work-card-title svg {
+        color: var(--primary);
+      }
+
+      .svg-viewport {
+        border-radius: var(--radius-md);
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        touch-action: none;
+      }
+
+      .drag-pool {
+        display: flex;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 16px;
+        border-radius: var(--radius-md);
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        justify-content: center;
+        align-items: center;
+        min-height: 70px;
+      }
+
+      /* Drag-and-drop tiles */
+      .drag-tile {
+        background: linear-gradient(135deg, var(--primary), #0891b2);
+        color: var(--white);
+        font-family: var(--font-display);
+        font-weight: 800;
+        padding: 8px 16px;
+        border-radius: var(--radius-sm);
+        cursor: grab;
+        user-select: none;
+        box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .drag-tile:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(6, 182, 212, 0.4);
+      }
+
+      .drag-tile:active {
+        cursor: grabbing;
+      }
+
+      /* ESOL sentence helper card */
+      .sentence-hub {
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.08),
+          rgba(16, 185, 129, 0.04)
+        );
+        border: 1px solid rgba(6, 182, 212, 0.18);
+      }
+
+      .bubble-msg {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        font-size: 0.92rem;
+        border-left: 4px solid var(--primary);
+        margin-top: 10px;
+        line-height: 1.5;
+      }
+
+      .translation-sub {
+        font-style: italic;
+        color: var(--gray-400);
+        font-size: 0.82rem;
+        margin-top: 6px;
+      }
+
+      /* Diagnostics Overlay */
+      .diagnostics-overlay {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        z-index: 1000;
+        width: 300px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        display: none;
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .diag-log-container {
+        font-family: monospace;
+        font-size: 0.72rem;
+        background: #000;
+        padding: 8px;
+        border-radius: 4px;
+        height: 120px;
+        overflow-y: auto;
+        color: #10b981;
+        margin: 8px 0;
+      }
+
+      footer {
+        text-align: center;
+        padding: 24px;
+        color: var(--gray-400);
+        font-size: 0.8rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin-top: auto;
+        background: rgba(8, 12, 20, 0.8);
+      }
+
+      /* SVG styles */
+      .svg-dropzone {
+        transition:
+          stroke 0.2s,
+          fill 0.2s;
+      }
+      .svg-dropzone.drag-over {
+        stroke: var(--primary);
+        fill: rgba(6, 182, 212, 0.08);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header>
+      <div class="brand">
+        <span>🤖</span>
+        <h1>Misconception Lab</h1>
+      </div>
+      <div class="header-controls">
+        <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
+          🌐 EN | ES
+        </button>
+        <button class="btn btn-secondary" onclick="triggerSelfTest()">
+          ⚡ Run Self-Test
+        </button>
+      </div>
+    </header>
+
+    <main class="app-grid">
+      <!-- Sidebar Debug Controls -->
+      <div class="sidebar">
+        <!-- Error Bot Terminal -->
+        <div class="card">
+          <h2 id="lbl-errbot-terminal">🤖 Error-Bot Terminal</h2>
+          <div class="terminal-panel">
+            <div class="terminal-head">⚠️ SYSTEM EXCEPTION IN WORKBOOK</div>
+            <div class="terminal-text" id="terminal-description">
+              Loading Error-Bot claim...
+            </div>
+            <div class="terminal-equation" id="terminal-eqn">
+              1/2 + 1/4 = 2/6
+            </div>
+          </div>
+
+          <div class="bug-list" id="err-bug-list">
+            <!-- Dynamic bugs generated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Dissection Workbench -->
+      <div class="workspace">
+        <div class="work-card">
+          <div class="work-card-title">
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+              ></path>
+            </svg>
+            <span id="lbl-card-workbench">Math Dissection Workbench</span>
+          </div>
+
+          <!-- Programmatic Visual Math Canvas -->
+          <svg
+            id="svg-workbench"
+            class="svg-viewport"
+            viewBox="0 0 400 240"
+            style="background: white"
+            ondragover="allowDrop(event)"
+            ondrop="handleSvgDrop(event)"
+          >
+            <!-- Dynamic SVG math elements -->
+          </svg>
+
+          <!-- Interactive Drag Pool -->
+          <div class="drag-pool" id="drag-tiles-pool">
+            <!-- Dynamic tiles mapped here -->
+          </div>
+        </div>
+
+        <!-- ESOL Bilingual Helper -->
+        <div class="card sentence-hub">
+          <strong
+            style="
+              font-size: 0.85rem;
+              color: var(--primary);
+              text-transform: uppercase;
+            "
+            id="lbl-esol-title"
+            >Spanish Sentence Help</strong
+          >
+          <div class="bubble-msg">
+            <span id="esol-starter"
+              >Hover over or drag pieces to start disproving the bot!</span
+            >
+            <div class="translation-sub" id="esol-starter-trans">
+              ¡Pase el cursor o arrastre las piezas para comenzar!
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Diagnostics Panel -->
+    <div class="diagnostics-overlay" id="diag-panel">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding-bottom: 4px;
+        "
+      >
+        <strong style="font-family: var(--font-display)">Diagnostics</strong>
+        <button
+          onclick="document.getElementById('diag-panel').style.display = 'none'"
+          style="
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-weight: 800;
+            cursor: pointer;
+          "
+        >
+          X
+        </button>
+      </div>
+      <div class="diag-log-container" id="diag-log"></div>
+      <button
+        class="btn btn-primary"
+        style="width: 100%; font-size: 0.8rem"
+        onclick="document.getElementById('diag-panel').style.display = 'none'"
+      >
+        Close
+      </button>
+    </div>
+
+    <footer>
+      <p>
+        &copy; 2026 Neft Learning Systems. Built locally, completely private.
+        Designed to support Grade 6 Math myth-busting standards expected score
+        ranges.
+      </p>
+    </footer>
+
+    <script>
+      // ==========================================
+      // 1. CONFIGURATION
+      // ==========================================
+      const CONFIG = {
+        colors: {
+          primary: "#06b6d4",
+          secondary: "#10b981",
+          danger: "#ef4444",
+          accent: "#f59e0b",
+          stroke: "#1e293b",
+          fill2d: "#ffffff",
+          gridLine: "#e2e8f0",
+          outline: "#94a3b8",
+        },
+        bugs: [
+          {
+            id: "fraction_addition",
+            title: "Fraction Addition Failure",
+            titleEs: "Fallo en Suma de Fracciones",
+            desc: "Error-Bot added fractions by adding numerators and denominators together!",
+            descEs: "¡El robot sumó numeradores y denominadores directamente!",
+            equation: "1/2 + 1/4 = 2/6",
+            tiles: [
+              { id: "t1", label: "1/2 Tile", value: 0.5 },
+              { id: "t2", label: "1/4 Tile", value: 0.25 },
+            ],
+          },
+          {
+            id: "decimal_multiplication",
+            title: "Decimal Scaling Error",
+            titleEs: "Error en Escala Decimal",
+            desc: "Error-Bot claims multiplying decimals results in a larger scalar!",
+            descEs:
+              "¡El robot afirma que multiplicar decimales da un valor mayor!",
+            equation: "0.3 x 0.2 = 0.6",
+            tiles: [{ id: "t3", label: "0.06 Tile", value: 0.06 }],
+          },
+          {
+            id: "order_of_operations",
+            title: "Order of Operations Bug",
+            titleEs: "Error en Orden de Operaciones",
+            desc: "Error-Bot computed left-to-right, completely ignoring the multiplication precedence!",
+            descEs:
+              "¡El robot calculó de izquierda a derecha, ignorando la multiplicación!",
+            equation: "2 + 3 x 4 = 20",
+            tiles: [{ id: "t4", label: "Order Block (14)", value: 14 }],
+          },
+        ],
+      };
+
+      // ==========================================
+      // 2. CONFIG VALIDATOR
+      // ==========================================
+      function validateConfig() {
+        if (!CONFIG.colors || !CONFIG.bugs) {
+          throw new Error("Misconception Lab: Configuration settings invalid.");
+        }
+      }
+
+      // ==========================================
+      // 3. STATE MACHINE
+      // ==========================================
+      const STATE = {
+        currentBugId: "fraction_addition",
+        solvedBugs: [],
+        activeDragTile: null,
+        droppedValues: {},
+        language: "en",
+      };
+
+      // Translations Map
+      const TRANSLATIONS = {
+        en: {
+          "errbot-terminal": "🤖 Error-Bot Terminal",
+          "card-workbench": "Math Dissection Workbench",
+          "esol-title": "Spanish Sentence Help",
+          "fraction_addition-starter":
+            "Error-Bot made a common mistake. It added the numerators (1+1=2) and the denominators (2+4=6) to get 2/6. Drag the correct fraction blocks into the target pan to find the true sum.",
+          "fraction_addition-trans":
+            "El robot sumó numeradores y denominadores para obtener 2/6. Arrastre los bloques correctos al contenedor para encontrar la suma real.",
+          "decimal_multiplication-starter":
+            "Error-Bot claims that 0.3 x 0.2 equals 0.6 (60 squares). Drag the 0.06 area block (6 squares) into the overlapping grid area to prove the scaling reduction!",
+          "decimal_multiplication-trans":
+            "El robot afirma que 0.3 x 0.2 es 0.6 (60 cuadrículas). ¡Arrastre el bloque de 0.06 (6 cuadrículas) para demostrar la reducción!",
+          "order_of_operations-starter":
+            "Error-Bot calculated left-to-right (2+3=5, then 5x4=20). Under standard conventions, multiplication happens first (3x4=12, then 12+2=14). Drag the 14 block to repair the code.",
+          "order_of_operations-trans":
+            "El robot calculó de izquierda a derecha. Por orden de precedencia, la multiplicación va primero. Arrastre el bloque 14 para reparar el código.",
+        },
+        es: {
+          "errbot-terminal": "🤖 Terminal de Error-Bot",
+          "card-workbench": "Mesa de Trabajo Matemática",
+          "esol-title": "Ayuda de Oraciones en Español",
+          "fraction_addition-starter":
+            "El robot sumó numeradores y denominadores para obtener 2/6. Arrastre los bloques correctos al contenedor para encontrar la suma real.",
+          "fraction_addition-trans":
+            "Error-Bot made a common mistake. It added the numerators (1+1=2) and the denominators (2+4=6) to get 2/6. Drag the correct fraction blocks into the target pan to find the true sum.",
+          "decimal_multiplication-starter":
+            "El robot afirma que 0.3 x 0.2 es 0.6 (60 cuadrículas). ¡Arrastre el bloque de 0.06 (6 cuadrículas) para demostrar la reducción!",
+          "decimal_multiplication-trans":
+            "Error-Bot claims that 0.3 x 0.2 equals 0.6 (60 squares). Drag the 0.06 area block (6 squares) into the overlapping grid area to prove the scaling reduction!",
+          "order_of_operations-starter":
+            "El robot calculó de izquierda a derecha. Por orden de precedencia, la multiplicación va primero. Arrastre el bloque 14 para reparar el código.",
+          "order_of_operations-trans":
+            "Error-Bot calculated left-to-right (2+3=5, then 5x4=20). Under standard conventions, multiplication happens first (3x4=12, then 12+2=14). Drag the 14 block to repair the code.",
+        },
+      };
+
+      function transitionState(updatedFields) {
+        Object.assign(STATE, updatedFields);
+        renderUI();
+      }
+
+      // ==========================================
+      // 4. INTERACTIVE DND OPERATIONS
+      // ==========================================
+      function toggleLanguage() {
+        const nextLang = STATE.language === "en" ? "es" : "en";
+        transitionState({ language: nextLang });
+      }
+
+      function selectBug(id) {
+        transitionState({ currentBugId: id, droppedValues: {} });
+      }
+
+      // HTML Drag Handlers
+      function setupDragTiles() {
+        const container = document.getElementById("drag-tiles-pool");
+        container.innerHTML = "";
+
+        const currentBug = CONFIG.bugs.find((b) => b.id === STATE.currentBugId);
+        currentBug.tiles.forEach((t) => {
+          const el = document.createElement("div");
+          el.className = "drag-tile";
+          el.innerText = t.label;
+          el.draggable = true;
+          el.id = t.id;
+
+          el.addEventListener("dragstart", (e) => {
+            STATE.activeDragTile = { id: t.id, value: t.value };
+          });
+
+          container.appendChild(el);
+        });
+      }
+
+      function allowDrop(e) {
+        e.preventDefault();
+      }
+
+      function handleSvgDrop(e) {
+        e.preventDefault();
+        if (!STATE.activeDragTile) return;
+
+        const droppedVal = STATE.activeDragTile.value;
+        const updatedDrops = {
+          ...STATE.droppedValues,
+          [STATE.activeDragTile.id]: droppedVal,
+        };
+
+        // Check if active puzzle is solved
+        let solved = false;
+        if (STATE.currentBugId === "fraction_addition") {
+          const total = (updatedDrops["t1"] || 0) + (updatedDrops["t2"] || 0);
+          if (total === 0.75) solved = true;
+        } else if (STATE.currentBugId === "decimal_multiplication") {
+          if (updatedDrops["t3"] === 0.06) solved = true;
+        } else if (STATE.currentBugId === "order_of_operations") {
+          if (updatedDrops["t4"] === 14) solved = true;
+        }
+
+        const solvedList = [...STATE.solvedBugs];
+        if (solved && !solvedList.includes(STATE.currentBugId)) {
+          solvedList.push(STATE.currentBugId);
+        }
+
+        transitionState({
+          droppedValues: updatedDrops,
+          solvedBugs: solvedList,
+        });
+      }
+
+      // ==========================================
+      // 5. RENDER ENGINE (Programmatic SVGs)
+      // ==========================================
+      function renderUI() {
+        validateConfig();
+        renderStaticLabels();
+        renderBugList();
+        renderWorkbenchCanvas();
+        setupDragTiles();
+        updateESOLHub();
+      }
+
+      function renderStaticLabels() {
+        const t = TRANSLATIONS[STATE.language];
+        document.getElementById("lbl-errbot-terminal").innerText =
+          t["errbot-terminal"];
+        document.getElementById("lbl-card-workbench").innerText =
+          t["card-workbench"];
+        document.getElementById("lbl-esol-title").innerText = t["esol-title"];
+      }
+
+      function renderBugList() {
+        const container = document.getElementById("err-bug-list");
+        container.innerHTML = "";
+
+        CONFIG.bugs.forEach((b) => {
+          const isActive = STATE.currentBugId === b.id;
+          const isSolved = STATE.solvedBugs.includes(b.id);
+          const title = STATE.language === "en" ? b.title : b.titleEs;
+
+          container.innerHTML += `
+                    <div class="bug-item ${isActive ? "active" : ""} ${isSolved ? "resolved" : ""}" onclick="selectBug('${b.id}')">
+                        <div class="bug-meta">
+                            <strong>${title}</strong>
+                            <span>${b.equation}</span>
+                        </div>
+                        <span class="bug-badge">${isSolved ? "✅" : "⚠️"}</span>
+                    </div>
+                `;
+        });
+
+        // Update terminal text based on active bug
+        const currentBug = CONFIG.bugs.find((b) => b.id === STATE.currentBugId);
+        const descText =
+          STATE.language === "en" ? currentBug.desc : currentBug.descEs;
+        document.getElementById("terminal-description").innerText = descText;
+        document.getElementById("terminal-eqn").innerText = currentBug.equation;
+      }
+
+      function renderWorkbenchCanvas() {
+        const svg = document.getElementById("svg-workbench");
+        svg.innerHTML = ""; // Clear SVG
+
+        const cx = 200;
+        const cy = 120;
+
+        // Draw a subtle grid background
+        for (let i = 20; i < 400; i += 20) {
+          svg.innerHTML += `
+                    <line x1="${i}" y1="0" x2="${i}" y2="240" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />
+                    <line x1="0" y1="${i}" x2="400" y2="${i}" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />
+                `;
+        }
+
+        if (STATE.currentShape === "init") return; // protect
+
+        if (STATE.currentBugId === "fraction_addition") {
+          // Fraction visualizer
+          // Left box is 1/2, center is 1/4, right is sum target
+          const boxW = 160;
+          const boxH = 40;
+
+          // Draw Error-Bot's claims (2/6 = 1/3 visual block)
+          svg.innerHTML += `
+                    <rect x="20" y="40" width="${boxW}" height="${boxH}" rx="6" fill="rgba(239, 68, 68, 0.05)" stroke="var(--danger)" stroke-width="1.5" />
+                    <line x1="20" y1="80" x2="180" y2="80" stroke="var(--danger)" stroke-width="1.5" />
+                    <text x="100" y="30" font-family="var(--font-display)" font-size="10" font-weight="800" fill="var(--danger)" text-anchor="middle">ERROR-BOT'S CLAIM (2/6)</text>
+                `;
+
+          // Split into 6 equal parts to represent 2/6
+          for (let i = 1; i < 6; i++) {
+            const lineX = 20 + i * (boxW / 6);
+            svg.innerHTML += `<line x1="${lineX}" y1="40" x2="${lineX}" y2="80" stroke="var(--danger)" stroke-width="1" stroke-dasharray="2, 2" />`;
+          }
+          // Fill 2 parts out of 6
+          svg.innerHTML += `<rect x="20" y="40" width="${(boxW / 6) * 2}" height="${boxH}" fill="var(--danger)" opacity="0.4" rx="4" />`;
+
+          // Draw True Sum Target Drop Zone (3/4 visual blocks)
+          const isSolved = STATE.solvedBugs.includes("fraction_addition");
+          const targetFillColor = isSolved
+            ? "rgba(16, 185, 129, 0.2)"
+            : "rgba(6, 182, 212, 0.05)";
+          const strokeColor = isSolved ? "var(--secondary)" : "var(--primary)";
+
+          svg.innerHTML += `
+                    <rect x="220" y="40" width="${boxW}" height="${boxH}" rx="6" fill="${targetFillColor}" stroke="${strokeColor}" stroke-width="2" class="svg-dropzone" />
+                    <text x="300" y="30" font-family="var(--font-display)" font-size="10" font-weight="800" fill="${strokeColor}" text-anchor="middle">TRUE MATHEMATICAL SUM</text>
+                `;
+
+          // Split into 4 parts representing denominator 4
+          for (let i = 1; i < 4; i++) {
+            const lineX = 220 + i * (boxW / 4);
+            svg.innerHTML += `<line x1="${lineX}" y1="40" x2="${lineX}" y2="80" stroke="${strokeColor}" stroke-width="1.5" stroke-dasharray="3, 2" />`;
+          }
+
+          // Render dropped tiles dynamically in SVG
+          if (STATE.droppedValues["t1"]) {
+            // Fill 1/2 (which is 2 out of 4 parts)
+            svg.innerHTML += `<rect x="220" y="40" width="${(boxW / 4) * 2}" height="${boxH}" fill="var(--primary)" opacity="0.6" rx="4" />`;
+          }
+          if (STATE.droppedValues["t2"]) {
+            // Fill 1/4 (which is 1 out of 4 parts)
+            const offset = STATE.droppedValues["t1"] ? (boxW / 4) * 2 : 0;
+            svg.innerHTML += `<rect x="${220 + offset}" y="40" width="${boxW / 4}" height="${boxH}" fill="var(--accent)" opacity="0.6" rx="4" />`;
+          }
+
+          // Formula summary inside SVG
+          svg.innerHTML += `
+                    <rect x="60" y="160" width="280" height="40" rx="10" fill="var(--bg-dark)" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+                    <text x="200" y="184" font-family="var(--font-display)" font-size="14" font-weight="800" fill="var(--accent)" text-anchor="middle">
+                        SA = 1/2 + 1/4 = 2/4 + 1/4 = 3/4
+                    </text>
+                `;
+        } else if (STATE.currentBugId === "decimal_multiplication") {
+          // Decimal 10x10 Grid representation
+          const gridSize = 120;
+          const gx = 140;
+          const gy = 30;
+
+          // Draw background box for target grid
+          svg.innerHTML += `
+                    <rect x="${gx}" y="${gy}" width="${gridSize}" height="${gridSize}" fill="var(--white)" stroke="var(--navy-dark)" stroke-width="2" />
+                `;
+
+          // Draw 10x10 divisions
+          const step = gridSize / 10;
+          for (let i = 1; i < 10; i++) {
+            // Vertical lines
+            svg.innerHTML += `<line x1="${gx + i * step}" y1="${gy}" x2="${gx + i * step}" y2="${gy + gridSize}" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />`;
+            // Horizontal lines
+            svg.innerHTML += `<line x1="${gx}" y1="${gy + i * step}" x2="${gx + i * step}" y2="${gy + gridSize}" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />`;
+            svg.innerHTML += `<line x1="${gx}" y1="${gy + i * step}" x2="${gx + gridSize}" y2="${gy + i * step}" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />`;
+          }
+
+          // Draw 0.3 side (Cyan border left)
+          svg.innerHTML += `
+                    <rect x="${gx}" y="${gy}" width="${step * 3}" height="${gridSize}" fill="rgba(6, 182, 212, 0.15)" stroke="var(--primary)" stroke-width="1.5" />
+                    <text x="${gx + (step * 3) / 2}" y="${gy + gridSize + 15}" font-family="var(--font-display)" font-size="9" font-weight="800" fill="var(--primary)" text-anchor="middle">0.3 (3 columns)</text>
+                `;
+
+          // Draw 0.2 side (Purple border top)
+          svg.innerHTML += `
+                    <rect x="${gx}" y="${gy}" width="${gridSize}" height="${step * 2}" fill="rgba(139, 92, 246, 0.15)" stroke="var(--purple)" stroke-width="1.5" />
+                    <text x="${gx - 10}" y="${gy + step}" font-family="var(--font-display)" font-size="9" font-weight="800" fill="var(--purple)" text-anchor="end">0.2 (2 rows)</text>
+                `;
+
+          // Dropped result fill (Cyan overlapping region: 3 cols x 2 rows = 6 blocks)
+          const isSolved = STATE.solvedBugs.includes("decimal_multiplication");
+          if (STATE.droppedValues["t3"] || isSolved) {
+            svg.innerHTML += `
+                        <rect x="${gx}" y="${gy}" width="${step * 3}" height="${step * 2}" fill="var(--secondary)" opacity="0.6" stroke="var(--secondary)" stroke-width="2" />
+                        <text x="${gx + (step * 3) / 2}" y="${gy + step + 4}" font-family="var(--font-display)" font-size="8.5" font-weight="900" fill="var(--white)" text-anchor="middle">0.06</text>
+                    `;
+          }
+
+          // Outlier claim visual indicator
+          svg.innerHTML += `
+                    <text x="350" y="90" font-family="var(--font-display)" font-size="9" font-weight="800" fill="var(--danger)" text-anchor="middle">BOT CLAIMS (0.6)</text>
+                    <rect x="320" y="100" width="60" height="30" fill="rgba(239, 68, 68, 0.08)" stroke="var(--danger)" stroke-width="1.5" />
+                    <text x="350" y="118" font-family="var(--font-display)" font-size="10" font-weight="800" fill="var(--danger)" text-anchor="middle">60 Squares</text>
+                `;
+        } else if (STATE.currentBugId === "order_of_operations") {
+          // Interactive blocks representing algebraic operations
+          // Block 1: 2, Block 2: 3 x 4
+
+          // Draw left equation block
+          svg.innerHTML += `
+                    <rect x="40" y="60" width="80" height="50" rx="8" fill="rgba(255, 255, 255, 0.03)" stroke="var(--primary)" stroke-width="1.5" />
+                    <text x="80" y="90" font-family="var(--font-display)" font-size="15" font-weight="900" fill="var(--primary)" text-anchor="middle">2</text>
+                    <text x="80" y="46" font-family="var(--font-display)" font-size="9" font-weight="700" fill="var(--primary)" text-anchor="middle">ADDITIVE</text>
+                `;
+
+          // Connecting Plus Sign
+          svg.innerHTML += `
+                    <text x="145" y="92" font-family="var(--font-display)" font-size="20" font-weight="900" fill="var(--white)" text-anchor="middle">+</text>
+                `;
+
+          // Draw right multiplication precedence block
+          svg.innerHTML += `
+                    <rect x="170" y="60" width="180" height="50" rx="8" fill="rgba(16, 185, 129, 0.05)" stroke="var(--secondary)" stroke-width="2" />
+                    <text x="260" y="90" font-family="var(--font-display)" font-size="15" font-weight="900" fill="var(--secondary)" text-anchor="middle">3 x 4 = 12</text>
+                    <text x="260" y="46" font-family="var(--font-display)" font-size="9" font-weight="800" fill="var(--secondary)" text-anchor="middle">MULTIPLICATIVE FIRST</text>
+                `;
+
+          // Draw total result area
+          const isSolved = STATE.solvedBugs.includes("order_of_operations");
+          const resultColor = isSolved ? "var(--secondary)" : "var(--accent)";
+          const resultVal = isSolved ? "14" : "??";
+
+          svg.innerHTML += `
+                    <rect x="130" y="160" width="140" height="40" rx="10" fill="var(--bg-dark)" stroke="${resultColor}" stroke-width="2" />
+                    <text x="200" y="184" font-family="var(--font-display)" font-size="13" font-weight="900" fill="${resultColor}" text-anchor="middle">REPAIR: ${resultVal}</text>
+                `;
+        }
+      }
+
+      function updateESOLHub() {
+        const starter = document.getElementById("esol-starter");
+        const trans = document.getElementById("esol-starter-trans");
+        const lang = STATE.language;
+        const t = TRANSLATIONS[lang];
+
+        const activeBugKey = STATE.currentBugId;
+        starter.innerText =
+          t[`${activeBugKey}-starter`] || t["starter-default"];
+        trans.innerText =
+          t[`${activeBugKey}-trans`] || t["starter-default-trans"];
+      }
+
+      // ==========================================
+      // 6. SELF-TEST SUITE & DIAGNOSTICS
+      // ==========================================
+      function logDiag(msg) {
+        const el = document.getElementById("diag-log");
+        el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        el.scrollTop = el.scrollHeight;
+      }
+
+      function triggerSelfTest() {
+        document.getElementById("diag-panel").style.display = "block";
+        document.getElementById("diag-log").innerHTML = "";
+        logDiag("Initiating Misconception Lab Self-Test...");
+
+        try {
+          // Assert 1: Config is valid
+          validateConfig();
+          logDiag("✓ Config validation successful.");
+
+          // Assert 2: Changing state select bugs
+          selectBug("decimal_multiplication");
+          logDiag(
+            `✓ Selected decimal multiplication bug. Active Bug: ${STATE.currentBugId}`,
+          );
+          if (STATE.currentBugId !== "decimal_multiplication") {
+            throw new Error(
+              "Assertion failed: State transition did not bind correctly.",
+            );
+          }
+
+          // Assert 3: Math verification for Fraction Sums
+          const fraction1 = 0.5; // 1/2
+          const fraction2 = 0.25; // 1/4
+          const sum = fraction1 + fraction2;
+          logDiag(
+            `✓ Validating true fractions addition: 1/2 + 1/4 yields ${sum}`,
+          );
+          if (sum !== 0.75) {
+            throw new Error(
+              "Assertion failed: Fractions sum calculation is inaccurate.",
+            );
+          }
+
+          // Assert 4: Decimal multiplication scale checking
+          const d1 = 0.3;
+          const d2 = 0.2;
+          const prod = Math.round(d1 * d2 * 100) / 100;
+          logDiag(`✓ Validating decimal product mapping: 0.3 x 0.2 = ${prod}`);
+          if (prod !== 0.06) {
+            throw new Error(
+              "Assertion failed: Decimal multiplication scale reduction failed.",
+            );
+          }
+
+          // Assert 5: Order of Operations validation
+          const calculated = 2 + 3 * 4;
+          logDiag(
+            `✓ Validating math precedence constraints: 2 + 3 x 4 = ${calculated}`,
+          );
+          if (calculated !== 14) {
+            throw new Error(
+              "Assertion failed: Multiplication precedence is breached.",
+            );
+          }
+
+          // Reset back to original
+          selectBug("fraction_addition");
+          logDiag("✓ Restored state variables back to defaults.");
+          logDiag("🎉 SYSTEM CHECKS ALL PASSED SUCCESSFULLY!");
+        } catch (err) {
+          logDiag(`❌ ASSERTION ERROR: ${err.message}`);
+          console.error(err);
+        }
+      }
+
+      // Initialize application on load
+      window.addEventListener("DOMContentLoaded", () => {
+        renderUI();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

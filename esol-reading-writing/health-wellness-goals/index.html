@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Grade 3 choose-your-own-adventure about goals, healthy choices, feelings, and responsible decisions. Bilingual English/Spanish with read-aloud."
+    />
+    <title>Goal Adventure: Health &amp; Wellness — Neft Teacher</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="wrap">
+      <header class="topbar">
+        <div class="brand">
+          <span class="logo" aria-hidden="true">🌟</span>
+          <div>
+            <h1>Goal Adventure</h1>
+            <p class="sub">Health &amp; Wellness · What Are Your Goals?</p>
+          </div>
+        </div>
+        <a class="back-link" href="/esol-reading-writing/">← Back / Atrás</a>
+      </header>
+
+      <!-- Progress -->
+      <section class="progress-wrap" aria-label="Your progress / Tu progreso">
+        <div class="progress-top">
+          <strong>My Adventure Map · Mi mapa de aventura</strong>
+          <span class="star-count" id="starCount" aria-live="polite">⭐ 0</span>
+        </div>
+        <div
+          class="bar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Adventure progress"
+        >
+          <span id="barFill"></span>
+        </div>
+        <div
+          style="
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+          "
+        >
+          <span
+            id="progressText"
+            style="font-size: 0.9rem; color: var(--ink-soft)"
+            >Pick any stop to begin! · ¡Elige una parada para empezar!</span
+          >
+          <button class="reset-btn" id="resetBtn" type="button">
+            Start over · Empezar de nuevo
+          </button>
+        </div>
+      </section>
+
+      <!-- HUB / MAP -->
+      <main id="hub">
+        <div class="map-intro">
+          <h2>
+            Choose your adventure!
+            <button
+              class="say"
+              type="button"
+              data-say-en="Choose your adventure! Pick any stop on the map."
+              data-say-es="¡Elige tu aventura! Toca cualquier parada del mapa."
+              aria-label="Read aloud"
+            >
+              🔊
+            </button>
+          </h2>
+          <p>
+            Tap any stop. Do them in any order. · Toca cualquier parada. En el
+            orden que quieras.
+          </p>
+        </div>
+        <div class="map" id="mapGrid" role="list"></div>
+      </main>
+
+      <!-- ACTIVITY SCREEN (injected) -->
+      <section id="stage" class="hidden" aria-live="polite"></section>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

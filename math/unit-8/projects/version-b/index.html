@@ -1,0 +1,1970 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fundraiser Goal Tracker — Unit 8 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 8 Equations &amp; Inequalities culminating project. Plan YOUR class fundraiser with one-step equations and inequalities, compare plans with a partner, then compare to sample school fundraisers."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --emerald: #0d7a4e;
+        --emerald-light: #e2f5ed;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .phero {
+        background: linear-gradient(
+          135deg,
+          #0d7a4e 0%,
+          #0e8a7d 55%,
+          #1a6fb5 100%
+        );
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
+      }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .intro-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--emerald);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .intro-card .scenario {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      .phase {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .phase-num {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--emerald);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--emerald);
+        background: var(--emerald-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background: var(--emerald-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .task strong {
+        color: var(--emerald);
+      }
+
+      .eq-display {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--navy);
+        text-align: center;
+        letter-spacing: 0.03em;
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .btn {
+        background: var(--emerald);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.blue {
+        background: var(--blue);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--emerald);
+        border: 2px solid var(--line);
+      }
+
+      .readout {
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--emerald-light);
+        border: 1px solid #9fd5bc;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--emerald);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
+
+      /* Number line SVG wrapper */
+      .nline-wrap {
+        margin-top: 16px;
+        overflow-x: auto;
+      }
+      .nline-wrap svg {
+        display: block;
+        margin: 0 auto;
+      }
+
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
+
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--emerald), var(--teal));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
+      @media print {
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
+    <header class="phero">
+      <div class="deco">🎯</div>
+      <h1>Fundraiser Goal Tracker</h1>
+      <p>
+        Plan <strong>your own</strong> class fundraiser. Name the cause, set a
+        real goal, and choose what to sell. Use equations and inequalities to
+        track progress, compare plans with a partner, and see how you stack up
+        against real school fundraisers.
+      </p>
+      <div class="tags">
+        <span class="tag gold">Unit 8 · Equations &amp; Inequalities</span>
+        <span class="tag">6.EE.5</span>
+        <span class="tag">6.EE.7</span>
+        <span class="tag">6.EE.8</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u8ProjectB')">💾 Save</button>
+        <button
+          onclick="PK.load('u8ProjectB', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <h2>💰 Your Mission</h2>
+        <p class="scenario">
+          Plan a real fundraiser in three steps.
+          <strong>Part 1 (Self):</strong> name your cause, enter your real goal
+          and how much is already raised, and pick an item and price.
+          <strong>Part 2 (Peer):</strong> enter a partner's fundraiser and
+          auto-compare who is closer to their goal and by how much.
+          <strong>Part 3 (World):</strong> compare your progress to sample
+          school fundraisers and run a What-If Lab. Finish the plan, checklist,
+          and report.
+        </p>
+      </div>
+
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">🔤</span><b>Variable</b>
+            <p>A letter (like x) that stands for an unknown number.</p>
+            <p class="pk-es">
+              Variable: una letra (como x) que representa un número desconocido.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🔁</span><b>Inverse Operation</b>
+            <p>The operation that undoes another: + undoes −, × undoes ÷.</p>
+            <p class="pk-es">
+              Operación inversa: la que deshace otra: + deshace −, × deshace ÷.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">✖️</span><b>Coefficient</b>
+            <p>The number multiplied by the variable, like price in price·n.</p>
+            <p class="pk-es">
+              Coeficiente: el número que multiplica a la variable, como el
+              precio en precio·n.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🎯</span><b>Solution</b>
+            <p>The value that makes the equation true.</p>
+            <p class="pk-es">
+              Solución: el valor que hace verdadera la ecuación.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⚖️</span><b>Equation</b>
+            <p>A math sentence saying two amounts are equal (=).</p>
+            <p class="pk-es">
+              Ecuación: dice que dos cantidades son iguales (=).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🔎</span><b>Substitution</b>
+            <p>Putting your answer back in to check it.</p>
+            <p class="pk-es">
+              Sustitución: poner tu respuesta en la ecuación para comprobarla.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">↔️</span><b>Inequality</b>
+            <p>Compares amounts with &gt;, &lt;, ≥, or ≤ instead of =.</p>
+            <p class="pk-es">
+              Desigualdad: compara con &gt;, &lt;, ≥ o ≤ en vez de =.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🌒</span><b>Solution Set</b>
+            <p>All the values that make an inequality true.</p>
+            <p class="pk-es">
+              Conjunto solución: todos los valores que hacen verdadera la
+              desigualdad.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⚪</span><b>Open / Closed Circle</b>
+            <p>
+              Open = not included (&gt; or &lt;); closed = included (≥ or ≤).
+            </p>
+            <p class="pk-es">
+              Abierto = no incluido (&gt; o &lt;); cerrado = incluido (≥ o ≤).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⬆️</span><b>At Least / At Most</b>
+            <p>"At least" means ≥ (or more). "At most" means ≤ (or fewer).</p>
+            <p class="pk-es">
+              "Al menos" = ≥ (o más). "Como máximo" = ≤ (o menos).
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>How much more:</b> raised + x = goal → x = goal − raised</p>
+            <p><b>Items to sell:</b> price · n = target → n = target ÷ price</p>
+            <p>
+              <b>Goal condition:</b> "at least the goal" → x ≥ goal (closed
+              circle, shade right)
+            </p>
+            <p class="pk-lvl2">
+              <b>Compound inequality:</b> goal ≤ x ≤ stretch goal (between two
+              amounts)
+            </p>
+            <p class="pk-lvl2">
+              <b>Minimize items:</b> fewest n with price · n ≥ amount needed → n
+              = ⌈needed ÷ price⌉
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "We have raised ___, so we still need ___ to reach our goal of
+              ___."
+            </p>
+            <p>"At ___ per item, we must sell ___ items to earn ___."</p>
+            <p>"Our plan ___ meet the goal because ___ ≥ / &lt; ___."</p>
+            <p class="pk-es">
+              "Hemos recaudado ___, así que aún necesitamos ___ para llegar a la
+              meta de ___."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <span class="arc-banner">Part 1 · Self — your real plan</span>
+            <div class="skill">Equations &amp; inequalities · 6.EE.7–8</div>
+            <h2>Plan YOUR Class Fundraiser</h2>
+          </div>
+        </div>
+        <p>
+          Enter your <strong>own</strong> real numbers. Not sure yet? Click
+          <em>Use example numbers</em> to model the math, then change them to
+          fit your cause.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <div class="grid2">
+          <div>
+            <label class="fld" for="cause">What is the fundraiser for?</label>
+            <input
+              type="text"
+              id="cause"
+              data-save
+              placeholder="example: 6th grade field trip"
+              oninput="updateProgress()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="item">What will you sell?</label>
+            <input
+              type="text"
+              id="item"
+              data-save
+              placeholder="example: cupcakes"
+              oninput="updateProgress()"
+            />
+          </div>
+        </div>
+
+        <!-- 1a: how much more (addition equation) -->
+        <h3 style="margin-top: 22px">
+          💵 How much more do we need? (raised + x = goal)
+        </h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: keep the goal a round number like $200 so the subtraction
+          is friendly.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="f1-raised">Amount already raised ($)</label>
+            <input
+              type="number"
+              id="f1-raised"
+              data-save
+              min="0"
+              placeholder="example: 85"
+              oninput="solvePhase1()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="f1-goal">Your fundraiser goal ($)</label>
+            <input
+              type="number"
+              id="f1-goal"
+              data-save
+              min="1"
+              placeholder="example: 300"
+              oninput="solvePhase1()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="solvePhase1()">
+          Solve &amp; Verify
+        </button>
+        <div class="readout" id="p1-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            The equation is raised + x = goal. Subtract raised from both sides.
+            For 85 + x = 300 → x = 300 − 85 = 215. Verify: 85 + 215 = 300 ✓
+          </p>
+        </details>
+
+        <!-- 1b: sales plan (multiplication equation) -->
+        <h3 style="margin-top: 24px">🧮 Plan the sales (price · n = target)</h3>
+        <div class="task">
+          <strong>Your sales plan:</strong> choose a price per item and a sales
+          target. The target must be divisible by the price so the number of
+          items is a whole number.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="f2-price"
+              >Price per item ($, whole number)</label
+            >
+            <input
+              type="number"
+              id="f2-price"
+              data-save
+              min="1"
+              max="50"
+              placeholder="example: 5"
+              oninput="solvePhase2()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="f2-target"
+              >Sales target ($, divisible by price)</label
+            >
+            <input
+              type="number"
+              id="f2-target"
+              data-save
+              min="1"
+              placeholder="example: 150"
+              oninput="solvePhase2()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="solvePhase2()">
+          Solve &amp; Verify
+        </button>
+        <div class="readout" id="p2-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            The equation is price · n = target. Divide both sides by price. For
+            5n = 150 → n = 150 ÷ 5 = 30 items. Verify: 5 × 30 = 150 ✓.
+          </p>
+        </details>
+
+        <!-- 1c: goal condition (inequality) -->
+        <h3 style="margin-top: 24px">↔️ Set the goal condition (inequality)</h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1: use ≥ ("at least the goal").
+        </p>
+        <div class="task">
+          <strong>Condition:</strong> the total raised (x) must be
+          <strong>at least</strong>
+          your goal. Write x ≥ goal, then see the solution set and number line.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="f3-goal">Minimum goal amount ($)</label>
+            <input
+              type="number"
+              id="f3-goal"
+              data-save
+              min="1"
+              placeholder="example: 300"
+              oninput="solvePhase3()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="f3-symbol">Inequality symbol</label>
+            <select id="f3-symbol" data-save onchange="solvePhase3()">
+              <option value=">=" selected>≥ (at least)</option>
+              <option value=">">&#62; (more than)</option>
+              <option value="<=">≤ (at most)</option>
+              <option value="<">&#60; (less than)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn blue" type="button" onclick="solvePhase3()">
+          Write &amp; Graph Inequality
+        </button>
+        <div class="readout" id="p3-out"></div>
+        <div class="nline-wrap" id="nline-wrap" style="display: none"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            For "at least $300", use ≥: x ≥ 300. The solution set is 300, 301,
+            310, 400 … On a number line draw a closed circle at 300 (includes
+            300) and shade right. Strictly &gt; uses an open circle.
+          </p>
+        </details>
+
+        <div class="pk-lvl2" style="margin-top: 16px">
+          <div class="task">
+            <strong>Level 2 — compound inequality:</strong> set a stretch goal
+            so the "great" range is goal ≤ x ≤ stretch. Then minimize items:
+            what is the <em>fewest</em> number of items at your price to at
+            least cover the amount still needed?
+          </div>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="f3b-stretch"
+                >Stretch goal ($, above your goal)</label
+              >
+              <input
+                type="number"
+                id="f3b-stretch"
+                data-save
+                min="1"
+                placeholder="example: 500"
+                oninput="solveCompound()"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="solveCompound()">
+            Build compound inequality &amp; minimize items
+          </button>
+          <div class="readout" id="p3b-out"></div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div>
+            <span class="arc-banner">Part 2 · Peer — compare plans</span>
+            <div class="skill">Compare &amp; reason · 6.EE.7–8</div>
+            <h2>Compare Fundraiser Plans</h2>
+          </div>
+        </div>
+        <p>
+          Ask a partner about <strong>their</strong> fundraiser and enter their
+          goal and amount raised. We will auto-compute who is closer to their
+          goal and by how much.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Sentence Frames</h3>
+          <p>"What is your goal? How much have you raised so far?"</p>
+          <p>"You are ___ away from your goal; I am ___ away."</p>
+          <p>"___ is closer to the goal by ___."</p>
+          <p class="pk-es">
+            "¿Cuál es tu meta? ¿Cuánto has recaudado? Estás a ___ de tu meta."
+          </p>
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+              oninput="comparePeer()"
+            />
+          </div>
+          <div></div>
+          <div>
+            <label class="fld" for="p-goal">Partner: fundraiser goal ($)</label>
+            <input
+              type="number"
+              id="p-goal"
+              data-save
+              min="1"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-raised">Partner: amount raised ($)</label>
+            <input
+              type="number"
+              id="p-raised"
+              data-save
+              min="0"
+              oninput="comparePeer()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare our plans
+        </button>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <div class="readout" id="peer-verdict"></div>
+        <label class="fld" for="peerReflect"
+          >Who is closer to their goal, and what would you advise the other
+          person to do?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="___ is closer to the goal by $___. I would tell the other person to ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner"
+              >Part 3 · World — sample school fundraisers</span
+            >
+            <div class="skill">Compare to real data · 6.EE.7–8</div>
+            <h2>How Does Your Fundraiser Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are sample school fundraisers with their goal, amount raised,
+          and percent to goal. Pick what to compare and see where you land.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="pct">Percent of goal reached (%)</option>
+              <option value="goal">Goal amount ($)</option>
+              <option value="raised">Amount raised ($)</option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your value"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: your percent to goal is raised ÷ goal × 100.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>Sample School Fundraisers 🏫</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>School</th>
+                  <th>Goal</th>
+                  <th>Raised</th>
+                  <th>% to goal</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- What-If Lab: change price/items, watch projected total + x ≥ goal flip live -->
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab — change your price &amp; items</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Change the price per item and how many you sell. Watch the projected
+            total and whether your goal condition
+            <strong>x ≥ goal</strong> flips from FALSE to TRUE.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="wi-price">New price per item ($)</label>
+              <input
+                type="number"
+                id="wi-price"
+                data-save
+                min="0"
+                step="0.25"
+                placeholder="example: 6"
+                oninput="runWhatIf()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="wi-items"
+                >Number of items you will sell</label
+              >
+              <input
+                type="number"
+                id="wi-items"
+                data-save
+                min="0"
+                placeholder="example: 40"
+                oninput="runWhatIf()"
+              />
+            </div>
+          </div>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter a price and item count to project your total. Uses your
+            "already raised" and "goal" from Part 1.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect" style="margin-top: 18px"
+          >Is your fundraiser ahead of or behind the samples? Use a percent to
+          explain.</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My percent to goal is ___%, which is higher / lower than the sample average of ___%, so we are ___."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 question: A school needs at least $480 and sells items at
+            $8. What is the fewest number of items they must sell? Show your
+            reasoning.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="8n ≥ 480 → n ≥ 480 ÷ 8 = 60, so at least 60 items because ___"
+          ></textarea>
+        </div>
+        <label class="fld" for="careful"
+          >Careful thinking: why is comparing two fundraisers by raw dollars
+          alone sometimes unfair?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="It can be unfair to compare by dollars because ___ (think about different goal sizes)."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Submit Your Fundraiser Plan</h2>
+          </div>
+        </div>
+        <p>
+          Write your complete plan (3–5 sentences) using your real numbers: how
+          much more is needed, the sales equation and item count, the inequality
+          condition, and your conclusion.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="Our fundraiser is for ___. Our goal is $___ and we have raised $___, so $___ + x = $___ gives x = $___ more needed. Selling ___ at $___ each, we must sell ___ items (___n = ___). The success condition is x ≥ $___. Based on our plan we [will / will not] meet the goal because ___."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I named my cause and
+            what we will sell.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I solved an addition
+            equation for how much more is needed.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I solved a
+            multiplication equation for the sales plan.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I wrote an inequality
+            and described its solution set.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I compared plans with a
+            partner and to the samples.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> My plan states a clear
+            conclusion with real numbers.
+          </li>
+        </ul>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.downloadText('fundraiser-plan.txt', 'reportBox')"
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your plan summary.
+        </div>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--navy)">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Add/Sub Equations (6.EE.7)</td>
+            <td>
+              Equation correct; solution verified by substitution with work
+              shown
+            </td>
+            <td>Solution correct</td>
+            <td>Attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Mult/Div Equations (6.EE.7)</td>
+            <td>
+              Equation correct; solution verified by substitution with work
+              shown
+            </td>
+            <td>Solution correct</td>
+            <td>Attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Inequalities (6.EE.8)</td>
+            <td>
+              Correct symbol, solution set described, number line correct,
+              sample values tested
+            </td>
+            <td>Correct inequality and solution set</td>
+            <td>Correct symbol but solution set incomplete</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Compares plans and data with clear reasoning and percents</td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>
+              Plan gives a clear conclusion supported by all equation and
+              inequality work
+            </td>
+            <td>Plan uses most numbers and reaches a conclusion</td>
+            <td>Plan unclear or missing key numbers</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">
+        Neft Teacher · Unit 8 Culminating Project · Version B ·
+        <span id="yr"></span>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
+
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+      function hide(id) {
+        const el = $(id);
+        if (el) el.classList.remove("show");
+      }
+
+      // running state used by peer, world, report
+      const proj = {
+        raised: null,
+        goal: null,
+        need: null,
+        price: null,
+        target: null,
+        items: null,
+        ineqGoal: null,
+        ineqSym: null,
+      };
+
+      /* ---- Phase 1: raised + x = goal ---- */
+      function solvePhase1() {
+        const raised = num("f1-raised"),
+          goal = num("f1-goal");
+        if (isNaN(raised) || raised < 0 || isNaN(goal) || goal <= 0) {
+          hide("p1-out");
+          proj.raised = proj.goal = proj.need = null;
+          return;
+        }
+        proj.raised = raised;
+        proj.goal = goal;
+        if (raised >= goal) {
+          proj.need = 0;
+          show(
+            "p1-out",
+            '<div class="big">Goal met!</div>You have raised $' +
+              raised.toFixed(2) +
+              ", meeting or exceeding the $" +
+              goal.toFixed(2) +
+              " goal. x = 0 more needed. ✅",
+          );
+          runWhatIf();
+          return;
+        }
+        const x = goal - raised,
+          verify = raised + x;
+        proj.need = x;
+        show(
+          "p1-out",
+          '<div class="big">x = $' +
+            x.toFixed(2) +
+            " more needed</div>" +
+            "Equation: <strong>$" +
+            raised.toFixed(2) +
+            " + x = $" +
+            goal.toFixed(2) +
+            "</strong><br>" +
+            "Inverse operation: subtract $" +
+            raised.toFixed(2) +
+            " from both sides → x = $" +
+            goal.toFixed(2) +
+            " − $" +
+            raised.toFixed(2) +
+            " = <strong>$" +
+            x.toFixed(2) +
+            "</strong><br>" +
+            "Substitution check: $" +
+            raised.toFixed(2) +
+            " + $" +
+            x.toFixed(2) +
+            " = <strong>$" +
+            verify.toFixed(2) +
+            "</strong>" +
+            (Math.abs(verify - goal) < 0.001 ? " ✅ Verified!" : " ❌"),
+        );
+        runWhatIf();
+      }
+
+      /* ---- Phase 2: price · n = target ---- */
+      function solvePhase2() {
+        const price = num("f2-price"),
+          target = num("f2-target");
+        if (isNaN(price) || price <= 0 || isNaN(target) || target <= 0) {
+          hide("p2-out");
+          proj.price = proj.target = proj.items = null;
+          return;
+        }
+        if (target % price !== 0) {
+          proj.items = null;
+          show(
+            "p2-out",
+            "⚠️ $" +
+              target +
+              " ÷ $" +
+              price +
+              " has a remainder. Try a target like $" +
+              price * Math.round(target / price) +
+              " so the answer is a whole number of items.",
+          );
+          return;
+        }
+        const n = target / price,
+          verify = n * price;
+        proj.price = price;
+        proj.target = target;
+        proj.items = n;
+        show(
+          "p2-out",
+          '<div class="big">' +
+            n +
+            " items to sell</div>" +
+            "Equation: <strong>n × $" +
+            price +
+            " = $" +
+            target +
+            "</strong><br>" +
+            "Inverse operation: divide both sides by $" +
+            price +
+            " → n = $" +
+            target +
+            " ÷ $" +
+            price +
+            " = <strong>" +
+            n +
+            "</strong><br>" +
+            "Substitution check: " +
+            n +
+            " × $" +
+            price +
+            " = <strong>$" +
+            verify +
+            "</strong>" +
+            (verify === target
+              ? " ✅ Verified! Sell " + n + " items at $" + price + " each."
+              : " ❌"),
+        );
+      }
+
+      /* ---- Phase 3: inequality + number line ---- */
+      function solvePhase3() {
+        const goal = num("f3-goal"),
+          sym = $("f3-symbol").value;
+        if (isNaN(goal) || goal <= 0) {
+          hide("p3-out");
+          $("nline-wrap").style.display = "none";
+          proj.ineqGoal = null;
+          return;
+        }
+        proj.ineqGoal = goal;
+        proj.ineqSym = sym;
+        const symDisplay =
+          sym === ">=" ? "≥" : sym === ">" ? ">" : sym === "<=" ? "≤" : "<";
+        const isClosed = sym === ">=" || sym === "<=";
+        const isRight = sym === ">=" || sym === ">";
+        const samples = [];
+        for (let i = 0; i < 5; i++) {
+          const v = goal - 2 + i * 2;
+          let satisfies =
+            sym === ">="
+              ? v >= goal
+              : sym === ">"
+                ? v > goal
+                : sym === "<="
+                  ? v <= goal
+                  : v < goal;
+          samples.push({ v, satisfies });
+        }
+        const sampleHtml = samples
+          .map(
+            (s) =>
+              "x = " +
+              s.v +
+              ": " +
+              s.v +
+              " " +
+              symDisplay +
+              " " +
+              goal +
+              " → " +
+              (s.satisfies
+                ? '<span style="color:var(--green)">✅ True</span>'
+                : '<span style="color:var(--coral)">❌ False</span>'),
+          )
+          .join("<br>");
+        show(
+          "p3-out",
+          '<div class="big">x ' +
+            symDisplay +
+            " " +
+            goal +
+            "</div>" +
+            "Solution set: all x " +
+            (sym === ">="
+              ? "greater than or equal to " + goal
+              : sym === ">"
+                ? "strictly greater than " + goal
+                : sym === "<="
+                  ? "less than or equal to " + goal
+                  : "strictly less than " + goal) +
+            ".<br>" +
+            "Infinite set: " +
+            (isRight
+              ? goal +
+                ", " +
+                (goal + 1) +
+                ", " +
+                (goal + 5) +
+                ", " +
+                (goal + 10) +
+                " … to the right."
+              : goal +
+                ", " +
+                (goal - 1) +
+                ", " +
+                (goal - 5) +
+                ", " +
+                (goal - 10) +
+                " … to the left.") +
+            "<br><br><strong>Sample value check:</strong><br>" +
+            sampleHtml,
+        );
+        drawNumberLine(goal, sym, symDisplay, isClosed, isRight);
+        $("nline-wrap").style.display = "block";
+        updateProgress();
+      }
+
+      /* ---- Level 2: compound inequality + minimize items ---- */
+      function solveCompound() {
+        const goal = num("f3-goal"),
+          stretch = num("f3b-stretch"),
+          price = num("f2-price");
+        const need = proj.need;
+        if (isNaN(goal) || goal <= 0 || isNaN(stretch) || stretch <= goal) {
+          show(
+            "p3b-out",
+            "⚠️ Enter a goal in 1a and a stretch goal greater than the goal.",
+          );
+          return;
+        }
+        let minItemsLine = "";
+        if (!isNaN(price) && price > 0 && need != null && need > 0) {
+          const n = Math.ceil(need / price);
+          minItemsLine =
+            "<br><br><strong>Minimize items:</strong> you still need $" +
+            need.toFixed(2) +
+            ". At $" +
+            price +
+            " each: " +
+            price +
+            "n ≥ " +
+            need.toFixed(2) +
+            " → n ≥ " +
+            (need / price).toFixed(2) +
+            ", so the fewest whole number of items is <strong>" +
+            n +
+            "</strong> (raises $" +
+            (n * price).toFixed(2) +
+            ").";
+        } else if (need === 0) {
+          minItemsLine =
+            "<br><br><strong>Minimize items:</strong> goal already met — 0 more items needed.";
+        }
+        show(
+          "p3b-out",
+          '<div class="big">' +
+            goal +
+            " ≤ x ≤ " +
+            stretch +
+            "</div>" +
+            'Compound inequality: a "great" fundraiser raises between $' +
+            goal +
+            " and $" +
+            stretch +
+            " (inclusive).<br>" +
+            "Solution set: every amount from " +
+            goal +
+            " up to " +
+            stretch +
+            "." +
+            minItemsLine,
+        );
+      }
+
+      function drawNumberLine(goal, sym, symDisplay, isClosed, isRight) {
+        const W = 520,
+          H = 80,
+          cx = W / 2,
+          y = 44,
+          tickH = 10,
+          labelY = y + 22,
+          arrowLen = 18,
+          tickSpacing = 50;
+        const ticks = [];
+        for (let i = -4; i <= 4; i++)
+          ticks.push({ val: goal + i, x: cx + i * tickSpacing });
+        const shadeColor = "#0d7a4e",
+          shadeOpacity = "0.18";
+        let shadeX, shadeW;
+        if (isRight) {
+          shadeX = cx;
+          shadeW = cx + 4 * tickSpacing + arrowLen;
+        } else {
+          shadeX = cx - 4 * tickSpacing - arrowLen;
+          shadeW = cx;
+        }
+        const circleFill = isClosed ? shadeColor : "#fff";
+        let svg =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="' +
+          W +
+          '" height="' +
+          H +
+          '" viewBox="0 0 ' +
+          W +
+          " " +
+          H +
+          '" role="img" aria-label="Number line showing x ' +
+          symDisplay +
+          " " +
+          goal +
+          '">';
+        svg +=
+          '<rect x="' +
+          shadeX +
+          '" y="' +
+          (y - 6) +
+          '" width="' +
+          Math.abs(shadeW - shadeX) +
+          '" height="12" fill="' +
+          shadeColor +
+          '" opacity="' +
+          shadeOpacity +
+          '"/>';
+        svg +=
+          '<line x1="' +
+          (cx - 4 * tickSpacing - arrowLen) +
+          '" y1="' +
+          y +
+          '" x2="' +
+          (cx + 4 * tickSpacing + arrowLen) +
+          '" y2="' +
+          y +
+          '" stroke="#1a2633" stroke-width="2.5"/>';
+        svg +=
+          '<polygon points="' +
+          (cx + 4 * tickSpacing + arrowLen) +
+          "," +
+          y +
+          " " +
+          (cx + 4 * tickSpacing + arrowLen - 10) +
+          "," +
+          (y - 5) +
+          " " +
+          (cx + 4 * tickSpacing + arrowLen - 10) +
+          "," +
+          (y + 5) +
+          '" fill="#1a2633"/>';
+        svg +=
+          '<polygon points="' +
+          (cx - 4 * tickSpacing - arrowLen) +
+          "," +
+          y +
+          " " +
+          (cx - 4 * tickSpacing - arrowLen + 10) +
+          "," +
+          (y - 5) +
+          " " +
+          (cx - 4 * tickSpacing - arrowLen + 10) +
+          "," +
+          (y + 5) +
+          '" fill="#1a2633"/>';
+        ticks.forEach(function (t) {
+          if (Math.abs(t.val - goal) <= 2) {
+            svg +=
+              '<line x1="' +
+              t.x +
+              '" y1="' +
+              (y - tickH) +
+              '" x2="' +
+              t.x +
+              '" y2="' +
+              (y + tickH) +
+              '" stroke="#1a2633" stroke-width="1.5"/>';
+            svg +=
+              '<text x="' +
+              t.x +
+              '" y="' +
+              labelY +
+              '" text-anchor="middle" font-size="13" font-family="sans-serif" fill="#1a2633">' +
+              t.val +
+              "</text>";
+          }
+        });
+        svg +=
+          '<circle cx="' +
+          cx +
+          '" cy="' +
+          y +
+          '" r="7" fill="' +
+          circleFill +
+          '" stroke="' +
+          shadeColor +
+          '" stroke-width="2.5"/>';
+        svg +=
+          '<text x="' +
+          cx +
+          '" y="' +
+          (y - 14) +
+          '" text-anchor="middle" font-size="13" font-weight="700" font-family="sans-serif" fill="' +
+          shadeColor +
+          '">x ' +
+          symDisplay +
+          " " +
+          goal +
+          "</text>";
+        svg += "</svg>";
+        $("nline-wrap").innerHTML = svg;
+      }
+
+      /* ---- Part 2: peer compare — who is closer to goal ---- */
+      function comparePeer() {
+        const myGoal = proj.goal,
+          myRaised = proj.raised;
+        const pGoal = num("p-goal"),
+          pRaised = num("p-raised");
+        if (
+          myGoal == null ||
+          myRaised == null ||
+          isNaN(pGoal) ||
+          pGoal <= 0 ||
+          isNaN(pRaised) ||
+          pRaised < 0
+        ) {
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish Part 1 and enter your partner\'s goal and raised amount.</p>';
+          hide("peer-verdict");
+          updateProgress();
+          return;
+        }
+        const myAway = Math.max(0, myGoal - myRaised);
+        const pAway = Math.max(0, pGoal - pRaised);
+        const myPct = (myRaised / myGoal) * 100;
+        const pPct = (pRaised / pGoal) * 100;
+        PK.statDiffCards("peerBox", [
+          ["Me — % to goal", myPct.toFixed(0) + "%"],
+          ["Me — $ away", "$" + myAway.toFixed(2)],
+          ["Partner — % to goal", pPct.toFixed(0) + "%"],
+          ["Partner — $ away", "$" + pAway.toFixed(2)],
+        ]);
+        let verdict;
+        if (Math.abs(myPct - pPct) < 0.01)
+          verdict = "It is a tie — both are " + myPct.toFixed(0) + "% to goal.";
+        else if (myPct > pPct)
+          verdict =
+            "You are closer to your goal (" +
+            myPct.toFixed(0) +
+            "% vs " +
+            pPct.toFixed(0) +
+            "%), ahead by " +
+            (myPct - pPct).toFixed(0) +
+            " percentage points.";
+        else
+          verdict =
+            ($("partnerName").value || "Your partner") +
+            " is closer to goal (" +
+            pPct.toFixed(0) +
+            "% vs " +
+            myPct.toFixed(0) +
+            "%), ahead by " +
+            (pPct - myPct).toFixed(0) +
+            " percentage points.";
+        show("peer-verdict", '<div class="big">Who\'s closer?</div>' + verdict);
+        updateProgress();
+      }
+
+      /* ---- Part 3: world dataset + meter ---- */
+      // [school, goal, raised] — % computed
+      const world = [
+        ["Maple MS", 300, 240],
+        ["Oak Ridge", 500, 175],
+        ["Riverside", 250, 250],
+        ["Hillcrest", 400, 320],
+        ["Lincoln", 600, 150],
+        ["Eastview", 350, 315],
+        ["Pine Valley", 450, 90],
+        ["Summit", 200, 220],
+      ];
+      function worldPct(r) {
+        return Math.round((r[2] / r[1]) * 100);
+      }
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              "<tr><td>" +
+              r[0] +
+              "</td><td>$" +
+              r[1] +
+              "</td><td>$" +
+              r[2] +
+              "</td><td>" +
+              worldPct(r) +
+              "%</td></tr>",
+          )
+          .join("");
+      }
+      function worldSample() {
+        const cat = $("worldCat").value;
+        if (cat === "goal") return world.map((r) => r[1]);
+        if (cat === "raised") return world.map((r) => r[2]);
+        return world.map(worldPct);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        const isMoney = $("worldCat").value !== "pct";
+        PK.worldMeter("worldMeter", worldSample(), my, {
+          mean: isMoney ? "Sample avg $" : "Sample avg %",
+          me: "Me",
+        });
+        updateProgress();
+      }
+
+      /* ---- What-If Lab: projected total + x ≥ goal flip ---- */
+      function runWhatIf() {
+        const price = num("wi-price"),
+          items = num("wi-items");
+        const raised = proj.raised,
+          goal = proj.goal;
+        if (isNaN(price) || price < 0 || isNaN(items) || items < 0) {
+          $("whatIfBox").innerHTML =
+            'Enter a price and item count to project your total. Uses your "already raised" and "goal" from Part 1.';
+          return;
+        }
+        const fromSales = price * items;
+        if (raised == null || goal == null) {
+          $("whatIfBox").innerHTML =
+            "Selling " +
+            items +
+            " items at $" +
+            price.toFixed(2) +
+            " raises <b>$" +
+            fromSales.toFixed(2) +
+            "</b>. Fill in Part 1 (raised + goal) to test x ≥ goal.";
+          return;
+        }
+        const total = raised + fromSales;
+        const meets = total >= goal;
+        PK.whatIf(
+          "whatIfBox",
+          {
+            sales: "$" + fromSales.toFixed(2),
+            "already raised": "$" + raised.toFixed(2),
+          },
+          {
+            "projected total": "$" + total.toFixed(2),
+            goal: "$" + goal.toFixed(2),
+          },
+          "Selling " + items + " items at $" + price.toFixed(2) + " each:",
+        );
+        $("whatIfBox").innerHTML +=
+          '<p style="margin:8px 0 0"><b>Goal condition x ≥ ' +
+          goal +
+          ":</b> " +
+          total.toFixed(2) +
+          " ≥ " +
+          goal +
+          " → " +
+          (meets
+            ? '<span style="color:var(--green)">✅ TRUE — plan meets the goal!</span>'
+            : '<span style="color:var(--coral)">❌ FALSE — short by $' +
+              (goal - total).toFixed(2) +
+              ".</span>") +
+          "</p>";
+        updateProgress();
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          cause: "6th grade field trip",
+          item: "cupcakes",
+          "f1-raised": 85,
+          "f1-goal": 300,
+          "f2-price": 5,
+          "f2-target": 150,
+          "f3-goal": 300,
+          "f3b-stretch": 500,
+          "wi-price": 6,
+          "wi-items": 40,
+          "p-goal": 400,
+          "p-raised": 250,
+          myWorld: "",
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      function recalcAll() {
+        solvePhase1();
+        solvePhase2();
+        solvePhase3();
+        if (document.body.classList.contains("pk-level-2")) solveCompound();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        runWhatIf();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f = (x) => (x == null ? "(not finished)" : x);
+        return (
+          "FUNDRAISER GOAL TRACKER — MY PLAN\n" +
+          "=================================\n\n" +
+          "Cause: " +
+          ($("cause").value || "(none)") +
+          "\n" +
+          "Item sold: " +
+          ($("item").value || "(none)") +
+          "\n\n" +
+          "PART 1: MY PLAN (SELF)\n" +
+          "Already raised: $" +
+          f(proj.raised) +
+          "  |  Goal: $" +
+          f(proj.goal) +
+          "\n" +
+          "How much more needed (x = goal − raised): $" +
+          f(proj.need) +
+          "\n" +
+          "Sales: " +
+          f(proj.price) +
+          " per item, target $" +
+          f(proj.target) +
+          " → items: " +
+          f(proj.items) +
+          "\n" +
+          "Goal condition: x ≥ $" +
+          f(proj.ineqGoal) +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "Partner goal: $" +
+          ($("p-goal").value || "-") +
+          "  raised: $" +
+          ($("p-raised").value || "-") +
+          "\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "Comparison: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n" +
+          "Careful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "PLAN:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["cause", $("cause").value],
+          ["item", $("item").value],
+          ["raised", proj.raised],
+          ["goal", proj.goal],
+          ["more_needed", proj.need],
+          ["price", proj.price],
+          ["sales_target", proj.target],
+          ["items", proj.items],
+          ["inequality_goal", proj.ineqGoal],
+          ["partner", $("partnerName").value],
+          ["partner_goal", $("p-goal").value],
+          ["partner_raised", $("p-raised").value],
+        ];
+        PK.downloadCsv("fundraiser-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(
+          ".readout.show:not(#peer-verdict)",
+        ).length; // self readouts
+        const named = $("cause").value.trim() && $("item").value.trim() ? 1 : 0;
+        const peer = $("peer-verdict").classList.contains("show") ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + named + peer + wrld + checks + pitch; // max ~ 4+1+1+1+6+1 = 14
+        const pct = Math.min(100, Math.round((total / 14) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+      document
+        .getElementById("peerReflect")
+        .addEventListener("input", updateProgress);
+      document
+        .getElementById("worldReflect")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-2") solveCompound();
+        if (level === "level-1") {
+          const empty = !$("f1-raised").value && !$("f1-goal").value;
+          if (empty) {
+            $("f1-raised").value = 60;
+            $("f1-goal").value = 200;
+            solvePhase1();
+          }
+        }
+        updateProgress();
+      };
+
+      /* ---- init ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u8ProjectB", default: "level-1" });
+        PK.load("u8ProjectB", { after: recalcAll });
+        updateProgress();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

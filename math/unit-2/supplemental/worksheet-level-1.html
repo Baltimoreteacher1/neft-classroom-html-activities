@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 2 Worksheet — Level 1 — Statistics &amp; Data | Neft Teacher
+    </title>
+    <style>
+      :root {
+        --accent: #0891b2;
+        --accent-light: #ecfeff;
+        --accent-border: #a5f3fc;
+        --accent-dark: #155e75;
+        --ink: #21313f;
+        --muted: #5f6f80;
+        --line: #d7e2ed;
+        --paper: #f7f4ec;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Georgia, "Times New Roman", serif;
+        color: var(--ink);
+        background: var(--paper);
+        margin: 0;
+        padding: 24px;
+        line-height: 1.5;
+      }
+      .sheet {
+        max-width: 8.5in;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6in;
+      }
+      .toolbar {
+        max-width: 8.5in;
+        margin: 0 auto 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .level-tag {
+        display: inline-block;
+        background: var(--accent-light);
+        border: 1px solid var(--accent-border);
+        color: var(--accent-dark);
+        font-family: system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      .print-btn {
+        font-family: system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin: 0 0 2px;
+      }
+      .eyebrow {
+        font-family: system-ui, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent-dark);
+        margin: 0 0 6px;
+      }
+      .standard {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-style: italic;
+        margin: 0 0 14px;
+      }
+      .namebar {
+        display: flex;
+        gap: 24px;
+        border-top: 2px solid var(--ink);
+        border-bottom: 2px solid var(--ink);
+        padding: 8px 0;
+        margin-bottom: 18px;
+        font-family: system-ui, sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .namebar span {
+        flex: 1;
+      }
+      .namebar .line {
+        display: inline-block;
+        border-bottom: 1px solid var(--ink);
+        min-width: 60%;
+      }
+      h2 {
+        font-size: 1.1rem;
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: 4px;
+        margin: 22px 0 12px;
+      }
+      .directions {
+        background: var(--accent-light);
+        border-left: 4px solid var(--accent);
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+      }
+      .vocab-box {
+        border: 1.5px solid var(--accent-border);
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 18px;
+        background: #fbfeff;
+      }
+      .vocab-box h3 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+        font-family: system-ui, sans-serif;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .vocab-item {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 0.88rem;
+      }
+      .vocab-item .term {
+        font-weight: 700;
+        color: var(--accent-dark);
+      }
+      .vocab-item .emoji {
+        font-size: 1.2rem;
+        margin-right: 4px;
+      }
+      .worked {
+        border: 1px dashed var(--accent);
+        border-radius: 8px;
+        background: #fafdff;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+      }
+      .worked h4 {
+        margin: 0 0 8px;
+        font-family: system-ui, sans-serif;
+      }
+      .worked .step {
+        margin: 4px 0;
+        padding-left: 8px;
+      }
+      .frame {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin: 6px 0;
+        font-size: 0.95rem;
+      }
+      .blank {
+        display: inline-block;
+        min-width: 70px;
+        border-bottom: 1.5px solid var(--accent);
+      }
+      ol.problems {
+        padding-left: 0;
+        list-style: none;
+        counter-reset: p;
+        margin: 0;
+      }
+      ol.problems > li {
+        counter-increment: p;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 14px 12px 44px;
+        margin-bottom: 12px;
+        position: relative;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      ol.problems > li::before {
+        content: counter(p);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 50%;
+        font-family: system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-align: center;
+        line-height: 24px;
+      }
+      .hint {
+        font-size: 0.85rem;
+        color: var(--accent-dark);
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 6px;
+        padding: 6px 10px;
+        margin-top: 8px;
+        font-style: italic;
+      }
+      .work-space {
+        border: 1px dotted #b9c7d4;
+        border-radius: 6px;
+        min-height: 0.7in;
+        margin-top: 8px;
+      }
+      .answer-key {
+        margin-top: 28px;
+        border-top: 3px double var(--ink);
+        padding-top: 14px;
+        page-break-before: always;
+        break-before: page;
+      }
+      .answer-key h2 {
+        border-color: var(--ink);
+      }
+      .answer-key ol {
+        font-size: 0.9rem;
+        line-height: 1.7;
+      }
+      @page {
+        size: letter;
+        margin: 0.75in;
+      }
+      @media print {
+        body {
+          background: #fff;
+          padding: 0;
+          color: #000;
+        }
+        .sheet {
+          border: none;
+          border-radius: 0;
+          padding: 0;
+          max-width: 100%;
+        }
+        .toolbar {
+          display: none;
+        }
+        .directions,
+        .vocab-box,
+        .worked,
+        .frame {
+          background: #fff !important;
+        }
+        .level-tag,
+        .vocab-item .term,
+        .eyebrow,
+        h2 {
+          color: #000;
+        }
+        h2 {
+          border-bottom-color: #000;
+        }
+        ol.problems > li::before {
+          background: #000;
+        }
+        .hint {
+          background: #fff;
+          border-color: #999;
+          color: #000;
+        }
+        ol.problems > li {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="toolbar">
+      <span class="level-tag">Level 1 · Support</span>
+      <button class="print-btn" onclick="window.print()">
+        Print Worksheet
+      </button>
+    </div>
+    <div class="sheet">
+      <p class="eyebrow">Reveal Math · Unit 2 · Supplemental</p>
+      <h1>Statistics &amp; Data</h1>
+      <p class="standard">
+        Grade 6 · Standards 6.SP.A.1, 6.SP.B.5 — statistical questions &amp;
+        measures of center
+      </p>
+      <div class="namebar">
+        <span>Name: <span class="line"></span></span>
+        <span>Date: <span class="line"></span></span>
+      </div>
+
+      <div class="vocab-box">
+        <h3>Word Bank</h3>
+        <div class="vocab-grid">
+          <div class="vocab-item">
+            <span class="emoji">❓</span
+            ><span class="term">Statistical question</span> — a question that
+            has many different answers (varies).
+          </div>
+          <div class="vocab-item">
+            <span class="emoji">⚖️</span><span class="term">Mean</span> — the
+            average: add all values, then divide by how many.
+          </div>
+          <div class="vocab-item">
+            <span class="emoji">🎯</span><span class="term">Median</span> — the
+            middle value when numbers are in order.
+          </div>
+          <div class="vocab-item">
+            <span class="emoji">🔁</span><span class="term">Mode</span> — the
+            value that appears the most.
+          </div>
+          <div class="vocab-item">
+            <span class="emoji">📏</span><span class="term">Range</span> — the
+            biggest value minus the smallest value.
+          </div>
+          <div class="vocab-item">
+            <span class="emoji">📊</span><span class="term">Dot plot</span> — a
+            graph that stacks a dot for each data value.
+          </div>
+        </div>
+      </div>
+
+      <h2>Worked Example</h2>
+      <div class="worked">
+        <h4>Find the mean of 3, 5, 7, 9, 6</h4>
+        <div class="step">
+          Step 1: Add all the values: 3 + 5 + 7 + 9 + 6 = 30.
+        </div>
+        <div class="step">Step 2: Count how many values there are: 5.</div>
+        <div class="step">
+          Step 3: Divide the total by the count: 30 ÷ 5 = 6.
+        </div>
+        <div class="step"><strong>Answer: the mean is 6.</strong></div>
+      </div>
+
+      <h2>Sentence Frames</h2>
+      <div class="frame">
+        This <span class="blank"></span> a statistical question because the
+        answers <span class="blank"></span>.
+      </div>
+      <div class="frame">
+        To find the mean, I add <span class="blank"></span> and divide by
+        <span class="blank"></span>.
+      </div>
+      <div class="frame">
+        The median is <span class="blank"></span> because it is the
+        <span class="blank"></span> number in order.
+      </div>
+
+      <h2>Guided Practice</h2>
+      <div class="directions">
+        Directions: Solve each problem. Show your work in the space provided and
+        use the hint cue when you get stuck.
+      </div>
+      <ol class="problems">
+        <li>
+          Is this a statistical question? "How old is the principal?" (Yes / No)
+          <div class="hint">
+            Hint: does it have just one answer, or many different answers?
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Is this a statistical question? "How many siblings do students in our
+          class have?" (Yes / No)
+          <div class="hint">
+            Hint: will different students give different answers?
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Find the mean: 3, 5, 7, 9, 6
+          <div class="hint">Hint: add them all, then divide by 5.</div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Find the median: 2, 8, 4, 10, 6
+          <div class="hint">
+            Hint: put them in order first, then find the middle.
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Find the mode: 4, 7, 2, 7, 5, 3, 7, 5
+          <div class="hint">Hint: which number appears the most times?</div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Find the range: 15, 22, 8, 31, 12
+          <div class="hint">Hint: biggest minus smallest.</div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Find the median: 10, 4, 8, 6, 12, 2
+          <div class="hint">Hint: 6 numbers — average the two middle ones.</div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          A dot plot has 3 dots over 5, 1 over 6, 4 over 7, 2 over 8. How many
+          data points in all? What is the mode?
+          <div class="hint">
+            Hint: add the dots; the mode has the most dots.
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Test scores: 80, 90, 70, 85, 95. Find the mean and the range.
+          <div class="hint">
+            Hint: mean = total ÷ 5; range = highest − lowest.
+          </div>
+          <div class="work-space"></div>
+        </li>
+        <li>
+          Find the mean: 12, 18, 15, 15
+          <div class="hint">Hint: add the four numbers, then divide by 4.</div>
+          <div class="work-space"></div>
+        </li>
+      </ol>
+
+      <div class="answer-key">
+        <h2>Answer Key</h2>
+        <ol>
+          <li>No — the principal has one age, so there is no variation.</li>
+          <li>Yes — students have different numbers of siblings.</li>
+          <li>30 ÷ 5 = 6.</li>
+          <li>In order 2, 4, 6, 8, 10 → median 6.</li>
+          <li>Mode is 7 (appears 3 times).</li>
+          <li>31 − 8 = 23.</li>
+          <li>In order 2, 4, 6, 8, 10, 12 → (6 + 8) ÷ 2 = 7.</li>
+          <li>3 + 1 + 4 + 2 = 10 data points; mode = 7.</li>
+          <li>Mean (80+90+70+85+95) ÷ 5 = 420 ÷ 5 = 84; range 95 − 70 = 25.</li>
+          <li>(12 + 18 + 15 + 15) ÷ 4 = 60 ÷ 4 = 15.</li>
+        </ol>
+      </div>
+    </div>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

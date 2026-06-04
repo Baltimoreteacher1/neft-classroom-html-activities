@@ -1,0 +1,1755 @@
+<!doctype html>
+<html lang="en" class="nt-theme-aware">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      WebQuest · Unit 4 · The Hydration Lab — Rates, Percents &amp; Conversions
+      | Neft Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 WebQuest: as a sports-science intern, build a race-day fuel and hydration plan using unit rates, percents, and measurement conversion (6.RP.3)."
+    />
+
+    <!-- Shared Neft design system -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+
+    <style>
+      /* ============================================================
+         Unit 4 WebQuest — uses shared --nt-* theme variables.
+         Scoped styles only; visuals are SVG/divs (no ASCII art).
+         ============================================================ */
+      :root {
+        --wq-water: #2563eb;
+        --wq-water-2: #38bdf8;
+        --wq-energy: #f59e0b;
+        --wq-go: #10b981;
+        --wq-stop: #ef4444;
+        --wq-track: #7c3aed;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
+      }
+      .wq-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 18px 80px;
+      }
+
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #0c4a6e 0%,
+          #2563eb 52%,
+          #0f766e 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
+      }
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
+        display: inline-block;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #eef2ff;
+      }
+      .wq-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -6px;
+        bottom: -18px;
+        width: 215px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
+      }
+      .wq-l1 {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0f766e;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Conversion reference grid ---------- */
+      .wq-conv-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .wq-conv {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .wq-conv svg {
+        flex: 0 0 auto;
+      }
+      .wq-conv .wq-cname {
+        font-weight: 700;
+        color: var(--nt-text, #17212f);
+        display: block;
+      }
+      .wq-conv .wq-ceq {
+        display: inline-block;
+        margin-top: 4px;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1rem;
+        background: rgba(36, 94, 168, 0.1);
+        padding: 2px 9px;
+        border-radius: 8px;
+        color: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Mission / task panel ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-panel {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-bg, #f8fafc);
+        padding: 10px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Runner roster table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-data {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 520px;
+        font-size: 0.96rem;
+      }
+      table.wq-data th,
+      table.wq-data td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-data thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-data tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-data td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Double number line (SVG container) ---------- */
+      .wq-dnl {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        background: var(--nt-bg, #f8fafc);
+        padding: 12px;
+        margin: 14px 0;
+        overflow-x: auto;
+      }
+
+      /* ---------- Rubric table ---------- */
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 140px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-num:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
+
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
+      }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
+      }
+
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      @media print {
+        details.teacher-only,
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="ntkit"></div>
+
+    <main class="wq-wrap">
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker">Grade 6 Math WebQuest · Unit 4 · 6.RP.3</span>
+        <h1>The Hydration Lab</h1>
+        <p>
+          Race day is Saturday. The Maple Ridge cross-country team runs a 5K (5
+          kilometers) in the morning heat, and the coach just hired
+          <strong>your sports-science intern team</strong> to keep every runner
+          safe and fueled. Your tools: unit rates, percents, and measurement
+          conversions. Your mission: turn the numbers into a winning race-day
+          plan — without busting the team's $90 supply budget.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 2–3 class periods</span>
+          <span class="wq-badge">💧 Unit rates</span>
+          <span class="wq-badge">📊 Percents</span>
+          <span class="wq-badge">📏 Measurement conversion</span>
+        </div>
+        <!-- decorative hydration / lab SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 200 200" aria-hidden="true">
+          <!-- water bottle -->
+          <rect
+            x="74"
+            y="40"
+            width="52"
+            height="120"
+            rx="16"
+            fill="rgba(255,255,255,0.16)"
+            stroke="#fff"
+            stroke-width="3"
+          />
+          <rect x="86" y="24" width="28" height="20" rx="5" fill="#fff" />
+          <!-- fill level -->
+          <rect x="80" y="96" width="40" height="58" rx="10" fill="#38bdf8" />
+          <!-- measurement ticks -->
+          <g stroke="#fff" stroke-width="2">
+            <line x1="74" y1="70" x2="86" y2="70" />
+            <line x1="74" y1="96" x2="90" y2="96" />
+            <line x1="74" y1="122" x2="86" y2="122" />
+          </g>
+          <!-- percent ring -->
+          <circle
+            cx="150"
+            cy="150"
+            r="26"
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            stroke-width="8"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="26"
+            fill="none"
+            stroke="#10b981"
+            stroke-width="8"
+            stroke-dasharray="122 163"
+            stroke-linecap="round"
+            transform="rotate(-90 150 150)"
+          />
+          <text
+            x="150"
+            y="155"
+            font-size="15"
+            fill="#fff"
+            font-weight="800"
+            text-anchor="middle"
+          >
+            75%
+          </text>
+        </svg>
+      </header>
+
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Welcome to the
+          Lab
+        </h2>
+        <p class="wq-lead">
+          Sports scientists do not guess. They measure how fast a runner loses
+          water, how many calories a snack delivers, and how many milliliters
+          fit in a bottle — then they use <strong>rates</strong>,
+          <strong>percents</strong>, and <strong>conversions</strong> to build a
+          plan that fits real bottles, real budgets, and real bodies. In this
+          WebQuest you become a <strong>hydration analyst</strong> for the Maple
+          Ridge team.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How do rates, percents, and unit conversions work together to turn
+            raw measurements into a plan people can actually use?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A <strong>rate</strong> compares two different units, like "250 mL
+          every 15 minutes." A <strong>unit rate</strong> tells you the amount
+          for just <em>one</em> of something (per 1 minute, per 1 bottle). A
+          <strong>percent</strong> means "out of 100."
+          <span class="wq-es"
+            >En español: Una <em>tasa</em> compara dos unidades distintas (250
+            mL cada 15 minutos). Una <em>tasa unitaria</em> da la cantidad por
+            <em>uno</em> (por 1 minuto, por 1 botella). Un
+            <em>porcentaje</em> significa "de cada 100."</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Pro analysts treat every rate as a <em>conversion factor</em> they can
+          flip. "250 mL per 15 min" can become "15 min per 250 mL" — choose the
+          version that cancels the unit you want to remove. The same trick turns
+          $/bottle into bottles/$ when you are stretching a budget.
+        </div>
+      </section>
+
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of this WebQuest, your intern team submits a
+              <strong>Race-Day Fuel &amp; Hydration Plan</strong> for Maple
+              Ridge. A complete plan must:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                Use a runner's <strong>sweat rate</strong> (mL per minute) to
+                predict how much water she loses in a 30-minute race.
+              </li>
+              <li>
+                Convert between <strong>mL and L</strong> and between
+                <strong>fluid ounces and cups</strong> so the plan fits real
+                bottle sizes.
+              </li>
+              <li>
+                Convert the race distance between
+                <strong>kilometers and miles</strong> for the family flyer.
+              </li>
+              <li>
+                Use <strong>percents</strong> to check fuel goals, apply a
+                <strong>bulk discount</strong>, and stay under the
+                <strong>$90 supply budget</strong>.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom.
+              </li>
+            </ul>
+          </div>
+          <div class="wq-panel" aria-label="Race-day station map">
+            <svg viewBox="0 0 280 230" role="img" aria-labelledby="map-title">
+              <title id="map-title">
+                A 5K course loop with three hydration stations and a finish line
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="230"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <!-- track loop -->
+              <path
+                d="M40,180 C20,110 60,40 140,40 C220,40 260,110 240,180
+                C230,210 50,210 40,180 Z"
+                fill="none"
+                stroke="var(--wq-track)"
+                stroke-width="10"
+                stroke-linecap="round"
+              />
+              <!-- start/finish -->
+              <rect x="34" y="172" width="14" height="18" fill="#0b1f33" />
+              <text
+                x="14"
+                y="205"
+                font-size="11"
+                fill="var(--nt-muted,#5b6b80)"
+              >
+                Start / Finish
+              </text>
+              <!-- station 1 -->
+              <circle
+                cx="140"
+                cy="40"
+                r="11"
+                fill="var(--wq-water)"
+                stroke="#fff"
+                stroke-width="2"
+              />
+              <text x="132" y="45" font-size="11" fill="#fff" font-weight="700">
+                1
+              </text>
+              <!-- station 2 -->
+              <circle
+                cx="240"
+                cy="150"
+                r="11"
+                fill="var(--wq-water)"
+                stroke="#fff"
+                stroke-width="2"
+              />
+              <text
+                x="232"
+                y="155"
+                font-size="11"
+                fill="#fff"
+                font-weight="700"
+              >
+                2
+              </text>
+              <!-- station 3 -->
+              <circle
+                cx="48"
+                cy="120"
+                r="11"
+                fill="var(--wq-energy)"
+                stroke="#fff"
+                stroke-width="2"
+              />
+              <text x="40" y="125" font-size="11" fill="#fff" font-weight="700">
+                3
+              </text>
+              <text
+                x="78"
+                y="155"
+                font-size="12"
+                fill="var(--nt-text,#17212f)"
+                font-weight="700"
+              >
+                5K loop
+              </text>
+              <text
+                x="64"
+                y="225"
+                font-size="10"
+                fill="var(--nt-muted,#5b6b80)"
+              >
+                1–2 water · 3 fuel
+              </text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work through the steps in order. Each step fills in one part of your
+          Fuel &amp; Hydration Plan.
+        </p>
+
+        <h3>Step 1 — Stock your conversion toolbox</h3>
+        <p>
+          Sports science mixes metric and customary units. Keep these
+          conversions open as you work.
+        </p>
+        <div class="wq-conv-grid">
+          <div class="wq-conv">
+            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+              <rect
+                x="12"
+                y="6"
+                width="16"
+                height="30"
+                rx="5"
+                fill="var(--wq-water-2)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+            </svg>
+            <span>
+              <span class="wq-cname">Volume (metric)</span>
+              <span class="wq-ceq">1 L = 1,000 mL</span>
+            </span>
+          </div>
+          <div class="wq-conv">
+            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+              <path
+                d="M8,12 h24 l-3,22 h-18 z"
+                fill="var(--wq-water)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+            </svg>
+            <span>
+              <span class="wq-cname">Volume (customary)</span>
+              <span class="wq-ceq">1 cup = 8 fl oz</span>
+            </span>
+          </div>
+          <div class="wq-conv">
+            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+              <line
+                x1="6"
+                y1="20"
+                x2="34"
+                y2="20"
+                stroke="var(--wq-track)"
+                stroke-width="3"
+              />
+              <circle cx="6" cy="20" r="3" fill="var(--wq-track)" />
+              <circle cx="34" cy="20" r="3" fill="var(--wq-track)" />
+            </svg>
+            <span>
+              <span class="wq-cname">Distance</span>
+              <span class="wq-ceq">1 mi ≈ 1.6 km</span>
+            </span>
+          </div>
+          <div class="wq-conv">
+            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+              <rect
+                x="9"
+                y="14"
+                width="22"
+                height="16"
+                rx="3"
+                fill="var(--wq-energy)"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+            </svg>
+            <span>
+              <span class="wq-cname">Mass</span>
+              <span class="wq-ceq">1 kg ≈ 2.2 lb</span>
+            </span>
+          </div>
+          <div class="wq-conv">
+            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+              <circle
+                cx="20"
+                cy="20"
+                r="13"
+                fill="none"
+                stroke="rgba(16,185,129,0.3)"
+                stroke-width="5"
+              />
+              <circle
+                cx="20"
+                cy="20"
+                r="13"
+                fill="none"
+                stroke="var(--wq-go)"
+                stroke-width="5"
+                stroke-dasharray="61 81"
+                transform="rotate(-90 20 20)"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span>
+              <span class="wq-cname">Percent</span>
+              <span class="wq-ceq">x% = x ÷ 100</span>
+            </span>
+          </div>
+        </div>
+
+        <h3>Step 2 — Find a runner's sweat rate (unit rate)</h3>
+        <p>
+          During a practice trial, the team's top runner,
+          <strong>Lena</strong>, lost <strong>600 mL</strong> of water in
+          <strong>20 minutes</strong> of hard running. Find her sweat rate
+          <em>per minute</em>, then predict her loss over the full 30-minute
+          race.
+        </p>
+        <div class="wq-dnl" aria-hidden="false">
+          <svg
+            width="520"
+            height="92"
+            viewBox="0 0 520 92"
+            role="img"
+            aria-label="Double number line. Top line shows water from 0 to 600 mL. Bottom line shows time from 0 to 20 minutes."
+          >
+            <line
+              x1="30"
+              y1="30"
+              x2="490"
+              y2="30"
+              stroke="var(--wq-water)"
+              stroke-width="3"
+            />
+            <line
+              x1="30"
+              y1="66"
+              x2="490"
+              y2="66"
+              stroke="var(--wq-track)"
+              stroke-width="3"
+            />
+            <g font-size="12" fill="var(--nt-text,#17212f)">
+              <!-- ticks -->
+              <g stroke="#0b1f33" stroke-width="2">
+                <line x1="30" y1="24" x2="30" y2="72" />
+                <line x1="260" y1="24" x2="260" y2="72" />
+                <line x1="490" y1="24" x2="490" y2="72" />
+              </g>
+              <text x="22" y="18">0 mL</text>
+              <text x="238" y="18">300 mL</text>
+              <text x="466" y="18">600 mL</text>
+              <text x="24" y="86">0 min</text>
+              <text x="246" y="86">10 min</text>
+              <text x="470" y="86">20 min</text>
+            </g>
+          </svg>
+        </div>
+        <div class="wq-example">
+          <p><b>Worked example — Lena's sweat rate:</b></p>
+          <p class="wq-work">
+            Rate = 600 mL ÷ 20 min = <b>30 mL per minute</b><br />
+            Over 30 min: 30 mL/min × 30 min = <b>900 mL</b> lost
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          To get a unit rate, divide the first amount by the second amount: mL ÷
+          minutes. The "per" word tells you to divide.
+          <span class="wq-es"
+            >En español: Para hallar la tasa unitaria, divide la primera
+            cantidad entre la segunda: mL ÷ minutos. La palabra "por" indica
+            dividir.</span
+          >
+        </div>
+
+        <h3>Step 3 — Replace the water in real bottle sizes</h3>
+        <p>
+          A runner should drink back most of the water they lose. The team's
+          bottles hold <strong>0.5 L</strong> each. Convert Lena's
+          <strong>900 mL</strong> loss into liters, then figure out how many
+          0.5-L bottles she needs to refill.
+        </p>
+        <div class="wq-example">
+          <p><b>Worked example — convert mL to L:</b></p>
+          <p class="wq-work">
+            900 mL ÷ 1,000 = <b>0.9 L</b> · 0.9 L ÷ 0.5 L per bottle =
+            <b>1.8 bottles</b> → round up to <b>2 bottles</b>
+          </p>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          One family will bring American 12-fl-oz bottles instead. Convert 12 fl
+          oz to cups (8 fl oz = 1 cup), then reason about whether that bottle
+          holds more or less than the 0.5-L team bottle. (Hint: 1 cup ≈ 237 mL.)
+        </div>
+
+        <h3>Step 4 — Build the family flyer (km ↔ mi)</h3>
+        <p>
+          Many families think in miles, not kilometers. For the flyer, convert
+          the <strong>5 km</strong> race distance into miles using
+          <strong>1 mi ≈ 1.6 km</strong>.
+        </p>
+        <div class="wq-example">
+          <p><b>Worked example — convert km to mi:</b></p>
+          <p class="wq-work">5 km ÷ 1.6 km per mi ≈ <b>3.1 miles</b></p>
+        </div>
+
+        <h3>Step 5 — Fuel goals and the budget (percents)</h3>
+        <p>
+          Each runner needs an energy snack at Station 3. Use percents to finish
+          the plan:
+        </p>
+        <ul>
+          <li>
+            A runner's daily energy goal is <strong>2,000 calories</strong>. The
+            race snack should be about <strong>15%</strong> of that. How many
+            calories is that?
+          </li>
+          <li>
+            Energy gels cost <strong>$2.00 each</strong>. The store gives a
+            <strong>20% bulk discount</strong> when you buy a box of 24. Find
+            the discounted price of one box and check it against the
+            <strong>$90 budget</strong>.
+          </li>
+        </ul>
+        <div class="wq-example">
+          <p><b>Worked example — 15% of 2,000 calories:</b></p>
+          <p class="wq-work">
+            15% = 15 ÷ 100 = 0.15 · 0.15 × 2,000 = <b>300 calories</b>
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          To find a percent of a number, write the percent as a decimal (move
+          the point two places left), then multiply. 20% = 0.20.
+          <span class="wq-es"
+            >En español: Para hallar un porcentaje de un número, escribe el
+            porcentaje como decimal (mueve el punto dos lugares a la izquierda)
+            y multiplica. 20% = 0.20.</span
+          >
+        </div>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-4/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 4 · 3D Rate &amp; Percent Lab</span
+              ><span class="wq-rdesc"
+                >Drag sliders to see rates, percents, and conversions update
+                live.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-4/">
+            <span class="wq-ricon" aria-hidden="true">📐</span>
+            <span
+              ><span class="wq-rtitle">Unit 4 Architect Activity</span
+              ><span class="wq-rdesc"
+                >Practice double number lines and conversion factors step by
+                step.</span
+              ></span
+            >
+          </a>
+          <a href="/reveal-evidence-studio/">
+            <span class="wq-ricon" aria-hidden="true">🔍</span>
+            <span
+              ><span class="wq-rtitle">Reveal Evidence Studio</span
+              ><span class="wq-rdesc"
+                >Write your Claim–Evidence–Reasoning for the hydration
+                plan.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+        <h3>Race-day data · Datos de la carrera</h3>
+        <div class="wq-table-scroll">
+          <table class="wq-data">
+            <thead>
+              <tr>
+                <th>Quantity</th>
+                <th>Value</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Lena's trial loss</td>
+                <td>600 mL in 20 min</td>
+                <td>Use to find sweat rate.</td>
+              </tr>
+              <tr>
+                <td>Race length</td>
+                <td>30 min · 5 km</td>
+                <td>Predict loss; convert to miles.</td>
+              </tr>
+              <tr>
+                <td>Team bottle</td>
+                <td>0.5 L</td>
+                <td>= 500 mL each.</td>
+              </tr>
+              <tr>
+                <td>Daily energy goal</td>
+                <td>2,000 cal</td>
+                <td>Snack ≈ 15% of goal.</td>
+              </tr>
+              <tr>
+                <td>Gel price &amp; deal</td>
+                <td>$2.00 · 20% off box of 24</td>
+                <td>Stay under $90 budget.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <ul>
+          <li>
+            <strong>Rate / Tasa</strong> — a comparison of two different units
+            (mL per minute).
+          </li>
+          <li>
+            <strong>Unit rate / Tasa unitaria</strong> — the amount for exactly
+            one (per 1 minute, per 1 bottle).
+          </li>
+          <li><strong>Percent / Porcentaje</strong> — a part out of 100.</li>
+          <li>
+            <strong>Convert / Convertir</strong> — change a measurement into a
+            different unit (mL → L, km → mi).
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Fuel &amp; Hydration Plan will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Lead Analyst</th>
+                <th>3 · Analyst</th>
+                <th>2 · Trainee</th>
+                <th>1 · Getting started</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rates</td>
+                <td>Sweat rate and prediction both correct with units.</td>
+                <td>Rate correct; small slip in prediction.</td>
+                <td>Set up the rate but computed incorrectly.</td>
+                <td>No usable rate shown.</td>
+              </tr>
+              <tr>
+                <td>Conversions</td>
+                <td>All conversions (mL↔L, km↔mi) correct.</td>
+                <td>Most conversions correct.</td>
+                <td>Some conversions correct.</td>
+                <td>Conversions missing or wrong.</td>
+              </tr>
+              <tr>
+                <td>Percents</td>
+                <td>Snack % and discount both correct.</td>
+                <td>One percent correct.</td>
+                <td>Attempts percents with errors.</td>
+                <td>No percent work shown.</td>
+              </tr>
+              <tr>
+                <td>Budget decision</td>
+                <td>Cost correct; budget choice justified.</td>
+                <td>Cost correct; choice unclear.</td>
+                <td>Cost has a small error.</td>
+                <td>Cost missing or incorrect.</td>
+              </tr>
+              <tr>
+                <td>Units &amp; reasoning</td>
+                <td>Every answer labeled; clear explanation.</td>
+                <td>Most answers labeled and explained.</td>
+                <td>Some labels or reasoning missing.</td>
+                <td>No units or explanation.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Hydration Lab · Race-Day Fuel Plan</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Race-Day Fuel & Hydration Plan</h3>
+          <ul>
+            <li><strong>Sweat rate:</strong> 600 mL ÷ 20 min = <strong>30 mL/min</strong>; over 30 min → 30 × 30 = <strong>900 mL lost</strong>.</li>
+            <li><strong>mL → L → bottles:</strong> 900 mL ÷ 1,000 = 0.9 L; 0.9 L ÷ 0.5 L per bottle = <strong>1.8 bottles</strong>.</li>
+            <li><strong>km → mi:</strong> 5 km ÷ 1.6 km/mi ≈ <strong>3.1 miles</strong>.</li>
+            <li><strong>Percent of fuel goal:</strong> 15% = 0.15; 0.15 × 2,000 = <strong>300 calories</strong>.</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Keep units attached to every number so conversions self-check (L ÷ L/bottle → bottles).</li>
+            <li>Reinforce that a rate and a percent are both "per 1" reasoning.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.RP.A.3b–d</strong>.</p>
+        </div>
+      </details>
+
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
+        <p>
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These match the steps in your plan.
+        </p>
+
+        <!-- Q1 unit rate -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="num"
+          data-answer="30"
+          data-tol="0.5"
+          data-skill="Unit rate"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >Lena lost 600 mL of water in 20 minutes. What is her sweat rate
+              in <strong>mL per minute</strong>?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="240"
+              height="60"
+              viewBox="0 0 240 60"
+              role="img"
+              aria-label="Double number line, 600 mL over 20 minutes"
+            >
+              <line
+                x1="14"
+                y1="22"
+                x2="226"
+                y2="22"
+                stroke="var(--wq-water)"
+                stroke-width="3"
+              />
+              <line
+                x1="14"
+                y1="44"
+                x2="226"
+                y2="44"
+                stroke="var(--wq-track)"
+                stroke-width="3"
+              />
+              <text x="6" y="16" font-size="10">0</text>
+              <text x="196" y="16" font-size="10">600 mL</text>
+              <text x="6" y="58" font-size="10">0</text>
+              <text x="196" y="58" font-size="10">20 min</text>
+            </svg>
+          </div>
+          <label for="q1in" class="sr-only">Sweat rate in mL per minute</label>
+          <input
+            id="q1in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="mL/min"
+          />
+          <div class="wq-hint">Hint / Pista: rate = mL ÷ minutes.</div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2 predict loss -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="900"
+          data-tol="1"
+          data-skill="Apply a rate"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >At 30 mL per minute, how many milliliters will Lena lose during
+              the <strong>30-minute</strong> race?</span
+            >
+          </div>
+          <label for="q2in" class="sr-only">Water lost in 30 minutes</label>
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="mL"
+          />
+          <div class="wq-hint">Hint / Pista: rate × time = 30 × 30.</div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3 mL to L -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="num"
+          data-answer="0.9"
+          data-tol="0.01"
+          data-skill="Convert mL to L"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >Convert that <strong>900 mL</strong> of water into
+              <strong>liters</strong>. (1 L = 1,000 mL)</span
+            >
+          </div>
+          <label for="q3in" class="sr-only">Water lost in liters</label>
+          <input
+            id="q3in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="L"
+          />
+          <div class="wq-hint">Hint / Pista: 900 ÷ 1,000.</div>
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4 km to mi -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="num"
+          data-answer="3.1"
+          data-tol="0.15"
+          data-skill="Convert km to mi"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >For the family flyer, convert the <strong>5 km</strong> race into
+              <strong>miles</strong>. (1 mi ≈ 1.6 km — round to the nearest
+              tenth.)</span
+            >
+          </div>
+          <label for="q4in" class="sr-only">Race distance in miles</label>
+          <input
+            id="q4in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="mi"
+          />
+          <div class="wq-hint">Hint / Pista: 5 ÷ 1.6.</div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5 percent of a number -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="num"
+          data-answer="300"
+          data-tol="1"
+          data-skill="Percent of a number"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >The race snack should be <strong>15%</strong> of a 2,000-calorie
+              daily goal. How many <strong>calories</strong> is that?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 64 64"
+              role="img"
+              aria-label="A circle showing 15 percent shaded"
+            >
+              <circle
+                cx="32"
+                cy="32"
+                r="24"
+                fill="none"
+                stroke="rgba(16,185,129,0.25)"
+                stroke-width="9"
+              />
+              <circle
+                cx="32"
+                cy="32"
+                r="24"
+                fill="none"
+                stroke="var(--wq-go)"
+                stroke-width="9"
+                stroke-dasharray="23 151"
+                transform="rotate(-90 32 32)"
+                stroke-linecap="round"
+              />
+              <text
+                x="32"
+                y="37"
+                font-size="13"
+                text-anchor="middle"
+                font-weight="800"
+                fill="var(--nt-text,#17212f)"
+              >
+                15%
+              </text>
+            </svg>
+          </div>
+          <label for="q5in" class="sr-only">Snack calories</label>
+          <input
+            id="q5in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="calories"
+          />
+          <div class="wq-hint">Hint / Pista: 0.15 × 2,000.</div>
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6 percent discount + budget (radio) -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Percent discount and budget"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >A box of 24 gels normally costs <strong>$48</strong> (24 × $2).
+              With a <strong>20% discount</strong>, what is the box price, and
+              does it fit the <strong>$90 budget</strong>?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="a" /> $9.60 — that is the
+            discount, so the box is free.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="b" /> $48 − (0.20 × $48) = $48
+            − $9.60 = <strong>$38.40</strong>, which fits the budget.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="c" /> $48 + (0.20 × $48) =
+            $57.60, which still fits the budget.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="d" /> $96 — over budget, so
+            cancel the snack.</label
+          >
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did the exact work that real sports scientists, nutritionists, and
+          athletic trainers do: you turned a single practice measurement into a
+          safe, affordable, race-day plan. Lena will lose about
+          <strong>0.9 L</strong> in the 5K (about <strong>3.1 miles</strong>),
+          refill with <strong>2 bottles</strong>, eat a
+          <strong>300-calorie</strong> snack, and your
+          <strong>$38.40 box of gels</strong> keeps the whole team under the $90
+          budget. The Maple Ridge runners are ready!
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              A second runner sweats at 45 mL/min and the race day is hotter.
+              Rebuild his bottle count and snack plan, and check whether the
+              team budget still holds for 12 runners.
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              Which conversion was trickiest, and how did a unit rate or double
+              number line make it easier? Explain in 2–3 sentences. ¿Cuál
+              conversión fue la más difícil y cómo te ayudó una tasa unitaria?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Athletic trainers, dietitians, pharmacists, and chemists all live
+              on rates, percents, and conversions — the exact skills you just
+              used.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
+
+        var ACTIVITY_ID = "webquest-unit-4-hydration-lab";
+        var ACTIVITY_TITLE = "WebQuest · Unit 4 · The Hydration Lab";
+        var STANDARD = "6.RP.3";
+
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
+        }
+
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the rate or conversion and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u4-q" + card.getAttribute("data-q"),
+              skill: card.getAttribute("data-skill") || "Rates & Percents",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
+          });
+        }
+
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Plan approved — the Maple Ridge team is race-ready! ¡Felicidades!"
+                : " Review the items marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              var input = card.querySelector("input.wq-num");
+              if (input) input.value = "";
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

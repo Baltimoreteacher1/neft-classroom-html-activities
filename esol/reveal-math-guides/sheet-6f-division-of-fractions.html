@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>6F Division of Fractions Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>6F | Division of Fractions Study Guide</h1>
+        <div class="guide-meta">
+          Unit 6: Expressions &amp; Equations (Fractions) &bull; Lessons
+          6.1&ndash;6.2 &bull; Standard: 6.NS.1
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Divide</strong> &mdash; to split into equal parts or groups.
+          <span class="spanish">(dividir)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Fraction</strong> &mdash; a part of a whole, written as a/b
+          (numerator over denominator).
+          <span class="spanish">(fracci&oacute;n)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Whole Number</strong> &mdash; a number with no fractional part
+          (0, 1, 2, 3...).
+          <span class="spanish">(n&uacute;mero entero)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Mixed Number</strong> &mdash; a number with a whole part and a
+          fraction part (e.g., 2&frac13;).
+          <span class="spanish">(n&uacute;mero mixto)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Reciprocal</strong> &mdash; the "flip" of a fraction. The
+          reciprocal of 2/3 is 3/2.
+          <span class="spanish">(rec&iacute;proco)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Keep-Change-Flip</strong> &mdash; the method for dividing
+          fractions: Keep the first fraction, Change &divide; to &times;, Flip
+          the second fraction.
+          <span class="spanish">(Mantener-Cambiar-Voltear)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Visual &mdash; How Many 1/3s Fit in 2?</h2>
+        <div class="example-box">
+          <p><strong>2 &divide; 1/3 = ?</strong></p>
+          <p>"How many pieces of size 1/3 fit inside 2 wholes?"</p>
+          <pre style="font-size: 1rem; line-height: 1.4; margin-top: 0.5rem">
+  Whole 1:  [  1/3  |  1/3  |  1/3  ]
+  Whole 2:  [  1/3  |  1/3  |  1/3  ]
+
+  Count: 3 + 3 = 6 pieces!
+  So 2 &divide; 1/3 = 6</pre
+          >
+          <p style="margin-top: 0.5rem">
+            <strong>Using Keep-Change-Flip:</strong><br />
+            2 &divide; 1/3 &rarr; 2 &times; 3/1 = 6 &check;
+          </p>
+        </div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step: Keep-Change-Flip</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> <strong>KEEP</strong> the first
+            number (don't change it). If it's a mixed number, convert to an
+            improper fraction first.
+          </li>
+          <li>
+            <span class="step-num">2</span> <strong>CHANGE</strong> the division
+            sign (&divide;) to multiplication (&times;).
+          </li>
+          <li>
+            <span class="step-num">3</span> <strong>FLIP</strong> the second
+            fraction (use its reciprocal).
+          </li>
+          <li>
+            <span class="step-num">4</span> <strong>Multiply</strong> across:
+            numerator &times; numerator, denominator &times; denominator.
+          </li>
+          <li>
+            <span class="step-num">5</span> <strong>Simplify</strong> if needed.
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Example:</strong> 3/4 &divide; 3<br />
+          Keep: 3/4<br />
+          Change: &divide; becomes &times;<br />
+          Flip: 3 becomes 1/3<br />
+          3/4 &times; 1/3 = 3/12 = <strong>1/4</strong>
+        </div>
+        <div class="example-box">
+          <strong>Example with mixed number:</strong> 2&frac13; &divide; 1/3<br />
+          Convert: 2&frac13; = 7/3<br />
+          Keep: 7/3 &nbsp; Change: &times; &nbsp; Flip: 1/3 becomes 3/1<br />
+          7/3 &times; 3/1 = 21/3 = <strong>7</strong>
+        </div>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Formula Box</h2>
+        <div class="formula-highlight">a/b &divide; c/d = a/b &times; d/c</div>
+        <div class="formula-highlight">KEEP &rarr; CHANGE &rarr; FLIP</div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>Dividing by a fraction makes the answer BIGGER!</strong> 5
+            &divide; 1/2 = 10 (there are 10 halves in 5).
+          </li>
+          <li>
+            <strong>Always convert mixed numbers</strong> to improper fractions
+            BEFORE using Keep-Change-Flip.
+          </li>
+          <li>
+            <strong>Only flip the SECOND fraction,</strong> never the first!
+          </li>
+          <li>
+            <strong>Simplify your answer.</strong> Reduce fractions or convert
+            improper fractions to mixed numbers.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+        <p style="margin-bottom: 0.5rem; color: var(--guide-muted)">
+          Type fractions as a/b (e.g., 1/4). Type whole numbers as just a
+          number.
+        </p>
+
+        <div class="practice-problem">
+          <p><strong>1.</strong> 3/4 &divide; 3 = ?</p>
+          <input type="text" id="q1" placeholder="Type your answer..." />
+          <button
+            class="check-btn"
+            onclick="checkFraction('q1', '1/4', 0.25, 'fb1')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>2.</strong> 5 &divide; 1/2 = ?</p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button
+            class="check-btn"
+            onclick="checkFraction('q2', '10', 10, 'fb2')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>3.</strong> 2&frac13; &divide; 1/3 = ?</p>
+          <input type="text" id="q3" placeholder="Type your answer..." />
+          <button
+            class="check-btn"
+            onclick="checkFraction('q3', '7', 7, 'fb3')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>4.</strong> 4&frac12; &divide; 3/4 = ?</p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button
+            class="check-btn"
+            onclick="checkFraction('q4', '6', 6, 'fb4')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkFraction(inputId, correctStr, correctNum, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "");
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+          return;
+        }
+        // Check exact string match
+        if (val === correctStr) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+          return;
+        }
+        // Try evaluating as fraction
+        var userNum = NaN;
+        if (val.indexOf("/") !== -1) {
+          var parts = val.split("/");
+          if (parts.length === 2) {
+            userNum = parseFloat(parts[0]) / parseFloat(parts[1]);
+          }
+        } else {
+          userNum = parseFloat(val);
+        }
+        if (!isNaN(userNum) && Math.abs(userNum - correctNum) < 0.001) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent =
+            "Not quite. Remember: Keep-Change-Flip! Try again.";
+        }
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

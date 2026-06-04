@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R4 · Lesson 3: Greatest Common Factor (GCF) — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: find the GCF of two numbers by listing factors and by prime factorization, then apply GCF to word problems. Builds toward 6.NS.4." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#1a6fb5 0%, #0f2b3c 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .factor-row { background: var(--teal-light); border-radius: 10px; padding: 10px 14px; margin: 8px 0; font-size: 15px; }
+      .hl { color: var(--green); font-weight: 800; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="phero">
+      <div class="deco">🧩</div>
+      <h1>Greatest Common Factor (GCF)</h1>
+      <p>Find the biggest factor two numbers share — by listing factors or by prime factorization — and use it to solve real-world grouping problems.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R4 · Lesson 3</span>
+        <span class="tag">Builds 6.NS.4</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> 6.NS.4 requires using
+        the GCF to apply the distributive property — for example, writing
+        12 + 18 as 6(2 + 3). You cannot do that step without finding GCF(12, 18) = 6
+        first. GCF is also used to simplify fractions in 6.NS.1.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Finding the GCF</h2></div></div>
+
+        <p>The <strong>Greatest Common Factor (GCF)</strong> of two numbers is the largest factor that both numbers share.</p>
+
+        <p><strong>Method 1 — List the factors of each number, then find the largest match:</strong></p>
+
+        <div class="example">
+          <strong>Example 1 — GCF(12, 18):</strong><br><br>
+          <div class="factor-row">Factors of 12: 1, 2, 3, <span class="hl">4, 6</span>, 12</div>
+          <div class="factor-row">Factors of 18: 1, 2, 3, <span class="hl">6</span>, 9, 18</div>
+          Common factors: 1, 2, 3, 6 — the <strong>greatest</strong> is <span class="hl">6</span>.<br><br>
+          <strong>GCF(12, 18) = 6</strong>
+        </div>
+
+        <div class="example">
+          <strong>Example 2 — GCF(8, 12):</strong><br><br>
+          <div class="factor-row">Factors of 8: 1, 2, <span class="hl">4</span>, 8</div>
+          <div class="factor-row">Factors of 12: 1, 2, 3, <span class="hl">4</span>, 6, 12</div>
+          Common factors: 1, 2, 4 — the greatest is <span class="hl">4</span>.<br><br>
+          <strong>GCF(8, 12) = 4</strong>
+        </div>
+
+        <p><strong>Word problem connection:</strong> The GCF answers "what is the largest equal-group size with none left over?"</p>
+
+        <div class="example">
+          <strong>Example 3 — Word problem:</strong><br>
+          A teacher has 12 pencils and 18 crayons. She wants to make identical supply bags with no items left over, giving each bag the same number of pencils and the same number of crayons. What is the greatest number of bags she can make?<br><br>
+          Answer: GCF(12, 18) = <strong>6</strong> bags. Each bag gets 12÷6 = 2 pencils and 18÷6 = 3 crayons.
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. What is GCF(12, 18)?</p>
+          <div class="opts" data-mc="t1" data-ans="c">
+            <button class="opt" data-v="a">3</button>
+            <button class="opt" data-v="b">4</button>
+            <button class="opt" data-v="c">6</button>
+            <button class="opt" data-v="d">9</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Factors of 12: 1, 2, 3, 4, 6, 12. Factors of 18: 1, 2, 3, 6, 9, 18. The largest number on both lists is 6.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. What is GCF(15, 25)?</p>
+          <input type="number" id="t2" placeholder="?" />
+          <button class="btn" onclick="checkNum('t2', 5)">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>Factors of 15: 1, 3, 5, 15. Factors of 25: 1, 5, 25. Common factors: 1, 5. Greatest is 5.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. What is GCF(8, 12)?</p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 4)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>Factors of 8: 1, 2, 4, 8. Factors of 12: 1, 2, 3, 4, 6, 12. Common factors: 1, 2, 4. Greatest is 4.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. A student has 24 red counters and 36 blue counters. What is the greatest number of equal groups she can make with no counters left over?</p>
+          <input type="number" id="p4" placeholder="?" />
+          <button class="btn" onclick="checkNum('p4', 12)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>Find GCF(24, 36). Factors of 24: 1,2,3,4,6,8,12,24. Factors of 36: 1,2,3,4,6,9,12,18,36. The greatest common factor is 12.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. Which of these is <strong>NOT</strong> a common factor of 12 and 18?</p>
+          <div class="opts" data-mc="p5" data-ans="c">
+            <button class="opt" data-v="a">1</button>
+            <button class="opt" data-v="b">3</button>
+            <button class="opt" data-v="c">4</button>
+            <button class="opt" data-v="d">6</button>
+          </div>
+          <button class="btn" onclick="checkMC('p5')">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>Factors of 18: 1, 2, 3, 6, 9, 18. Is 4 in that list? No — 18 ÷ 4 = 4.5, so 4 is NOT a factor of 18.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. What is GCF(10, 15)?</p>
+          <input type="number" id="x6" placeholder="?" />
+          <button class="btn" onclick="checkNum('x6', 5)">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>Factors of 10: 1, 2, 5, 10. Factors of 15: 1, 3, 5, 15. The greatest common factor is 5.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. A baker has 18 muffins and 24 cookies. She puts them into the largest possible equal groups with no items left over. How many items are in each group?</p>
+          <div class="opts" data-mc="x7" data-ans="b">
+            <button class="opt" data-v="a">3 items</button>
+            <button class="opt" data-v="b">6 items</button>
+            <button class="opt" data-v="c">9 items</button>
+            <button class="opt" data-v="d">18 items</button>
+          </div>
+          <button class="btn" onclick="checkMC('x7')">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>Find GCF(18, 24). Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 24: 1, 2, 3, 4, 6, 8, 12, 24. GCF = 6. The baker can make 6 equal groups, each containing 18÷6 = 3 muffins and 24÷6 = 4 cookies (6 items per group).</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r4/lesson-2/">← Lesson 2: Prime &amp; Composite</a>
+        <a href="/math/remediation/unit-r4/lesson-4/">Next: LCM →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R4 · Lesson 3 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

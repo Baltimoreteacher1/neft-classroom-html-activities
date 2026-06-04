@@ -1,0 +1,1547 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Block Party Planner — Unit 1 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 1 Number Sense culminating project. Plan YOUR real block party using GCF, LCM, decimal operations, and multi-digit division, then compare with a partner and with real cookout costs."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .phero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
+      }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .intro-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--gold);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+
+      .phase {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .phase-num {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .task strong {
+        color: var(--navy);
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--blue);
+        border: 2px solid var(--line);
+      }
+
+      .readout {
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
+
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
+
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
+      @media print {
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
+    <header class="phero">
+      <div class="deco">🎉</div>
+      <h1>Block Party Planner</h1>
+      <p>
+        You are the lead organizer for <strong>your own</strong> block party.
+        Plan it with <em>your real numbers</em>, compare with a partner, then
+        see how your costs stack up against real cookouts across the country.
+      </p>
+      <div class="tags">
+        <span class="tag gold">Unit 1 · Number Sense</span>
+        <span class="tag">6.NS.2</span>
+        <span class="tag">6.NS.3</span>
+        <span class="tag">6.NS.4</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" class="" type="button">
+            🟢 Level 1 (support)
+          </button>
+          <button data-level-btn="level-2" class="" type="button">
+            🔵 Level 2 (challenge)
+          </button>
+        </span>
+        <button onclick="PK.save('u1ProjectA')">💾 Save</button>
+        <button
+          onclick="PK.load('u1ProjectA', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🗺️ Your Mission</h2>
+        <p>
+          Plan a real block party in three steps.
+          <strong>Part 1 (Self):</strong> enter <em>your own</em> guest count,
+          supplies, and budget, and run the number-sense tools.
+          <strong>Part 2 (Peer):</strong> interview a partner and compare plans.
+          <strong>Part 3 (World):</strong> compare your cost-per-guest to real
+          cookouts. Finish the pitch, checklist, and report.
+        </p>
+      </div>
+
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">🎁</span><b>GCF — Greatest Common Factor</b>
+            <p>The biggest number that divides two numbers evenly.</p>
+            <p class="pk-es">
+              MCD — Máximo Común Divisor: el número más grande que divide a dos
+              números sin sobrar.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⏱️</span><b>LCM — Least Common Multiple</b>
+            <p>The smallest number that two numbers both divide into.</p>
+            <p class="pk-es">
+              mcm — mínimo común múltiplo: el número más pequeño en el que caben
+              ambos.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">💵</span><b>Decimal Operations</b>
+            <p>Add or subtract money by lining up the decimal points.</p>
+            <p class="pk-es">
+              Operaciones con decimales: suma o resta alineando el punto
+              decimal.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">➗</span><b>Multi-Digit Division</b>
+            <p>Sharing a big number into equal groups.</p>
+            <p class="pk-es">
+              División de varios dígitos: repartir un número grande en partes
+              iguales.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p>
+              <b>GCF(a, b):</b> biggest shared factor → number of equal groups
+            </p>
+            <p><b>LCM(a, b):</b> first shared multiple → when cycles line up</p>
+            <p><b>Budget left:</b> budget − total spent</p>
+            <p><b>Cost per guest:</b> total cost ÷ number of guests</p>
+            <p class="pk-lvl2">
+              <b>Distributive (6.NS.4):</b> a + b = GCF × (a÷GCF + b÷GCF)
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "The GCF of ___ and ___ is ___, so I can make ___ equal bags."
+            </p>
+            <p>"My cost per guest is $___ because total ÷ guests = ___."</p>
+            <p>"My number is higher / lower than ___ because ___."</p>
+            <p class="pk-es">
+              "El MCD de ___ y ___ es ___, así que puedo hacer ___ bolsas
+              iguales."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <span class="arc-banner">Part 1 · Self — your real plan</span>
+            <div class="skill">GCF · LCM · Decimals · Division · 6.NS.2–4</div>
+            <h2>Plan YOUR Block Party</h2>
+          </div>
+        </div>
+        <p>
+          Enter your <strong>own</strong> real numbers below. Not sure yet?
+          Click <em>Use example numbers</em> to model the math, then change them
+          to fit your party.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <!-- 1a GCF -->
+        <h3 style="margin-top: 8px">🎁 Build identical goodie bags (GCF)</h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: try amounts that share a factor, like 24 and 36.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="g-stickers"
+              >Number of stickers you have</label
+            >
+            <input
+              type="number"
+              id="g-stickers"
+              data-save
+              min="1"
+              placeholder="example: 48"
+              oninput="calcGCF()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="g-bars"
+              >Number of granola bars you have</label
+            >
+            <input
+              type="number"
+              id="g-bars"
+              data-save
+              min="1"
+              placeholder="example: 36"
+              oninput="calcGCF()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcGCF()">
+          Calculate the most bags
+        </button>
+        <div class="readout" id="gcf-out"></div>
+        <div class="pk-lvl2" style="margin-top: 16px">
+          <div class="task">
+            <strong>Level 2 extension (Distributive Property · 6.NS.4):</strong>
+            Rewrite your two supply totals as <code>GCF × (a + b)</code>.
+            Example: 48 + 36 = 12 × (4 + 3). Write yours below.
+          </div>
+          <label class="fld" for="distrib"
+            >Rewrite stickers + bars using your GCF</label
+          >
+          <input
+            type="text"
+            id="distrib"
+            data-save
+            placeholder="example: 48 + 36 = 12 × (4 + 3)"
+          />
+        </div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            List the factors of each number, or use the Euclid method. The GCF
+            is the biggest factor they share. Example: GCF(48, 36) = 12, so 12
+            bags with 4 stickers and 3 bars each.
+          </p>
+        </details>
+
+        <!-- 1b LCM -->
+        <h3 style="margin-top: 24px">⏱️ Sync the entertainment (LCM)</h3>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="l-dj"
+              >Music / hype song plays every (minutes)</label
+            >
+            <input
+              type="number"
+              id="l-dj"
+              data-save
+              min="1"
+              placeholder="example: 6"
+              oninput="calcLCM()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="l-bubble"
+              >Other activity repeats every (minutes)</label
+            >
+            <input
+              type="number"
+              id="l-bubble"
+              data-save
+              min="1"
+              placeholder="example: 8"
+              oninput="calcLCM()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="calcLCM()">
+          Find the next big moment
+        </button>
+        <div class="readout" id="lcm-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            List the multiples of each until they share one. Multiples of 6: 6,
+            12, 18, 24… Multiples of 8: 8, 16, 24… They meet at 24 minutes.
+          </p>
+        </details>
+
+        <!-- 1c Budget -->
+        <h3 style="margin-top: 24px">
+          💵 Track your budget (decimal operations)
+        </h3>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="c-budget">Your total budget ($)</label>
+            <input
+              type="number"
+              id="c-budget"
+              data-save
+              step="0.01"
+              min="0"
+              placeholder="example: 300.00"
+              oninput="calcBudget()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="c-food">Food &amp; drinks ($)</label>
+            <input
+              type="number"
+              id="c-food"
+              data-save
+              step="0.01"
+              min="0"
+              placeholder="example: 124.50"
+              oninput="calcBudget()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="c-decor">Decorations ($)</label>
+            <input
+              type="number"
+              id="c-decor"
+              data-save
+              step="0.01"
+              min="0"
+              placeholder="example: 38.75"
+              oninput="calcBudget()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="c-games">Games &amp; prizes ($)</label>
+            <input
+              type="number"
+              id="c-games"
+              data-save
+              step="0.01"
+              min="0"
+              placeholder="example: 67.20"
+              oninput="calcBudget()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="c-music">Music &amp; supplies ($)</label>
+            <input
+              type="number"
+              id="c-music"
+              data-save
+              step="0.01"
+              min="0"
+              placeholder="example: 45.00"
+              oninput="calcBudget()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcBudget()">
+          Add it up
+        </button>
+        <div class="readout" id="budget-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Line up the decimal points and add the four costs. Then subtract
+            from your budget. Over budget? Trim a category.
+          </p>
+        </details>
+
+        <!-- 1d Division -->
+        <h3 style="margin-top: 24px">➗ Fair price per guest (division)</h3>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="d-total">Total shared cost ($)</label>
+            <input
+              type="number"
+              id="d-total"
+              data-save
+              step="0.01"
+              min="0"
+              placeholder="example: 275.40"
+              oninput="calcPer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="d-guests"
+              >Number of guests you expect</label
+            >
+            <input
+              type="number"
+              id="d-guests"
+              data-save
+              min="1"
+              placeholder="example: 36"
+              oninput="calcPer()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcPer()">
+          Calculate cost per guest
+        </button>
+        <div class="readout" id="per-out"></div>
+
+        <div class="task" style="margin-top: 18px">
+          <strong>Quick division check:</strong> A pack of 144 cups is shared
+          equally among 6 tables. How many cups per table?
+        </div>
+        <label class="fld" for="check-cups">Your answer (cups per table)</label>
+        <input
+          type="number"
+          id="check-cups"
+          data-save
+          placeholder="Type a number"
+        />
+        <button class="btn alt" type="button" onclick="checkCups()">
+          Check answer
+        </button>
+        <div class="feedback" id="check-cupsFb"></div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 worked step: 144 ÷ 6 → think "6 × 20 = 120, then 24 left, 6 ×
+          4 = 24" → 24.
+        </p>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div>
+            <span class="arc-banner">Part 2 · Peer — interview a partner</span>
+            <div class="skill">Compare &amp; reason · 6.NS.3</div>
+            <h2>Interview &amp; Compare</h2>
+          </div>
+        </div>
+        <p>
+          Ask a partner about <strong>their</strong> block party plan and type
+          their numbers in. Then auto-compare your plans.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>"How many bags did you make? What was your GCF?"</p>
+          <p>"What is your cost per guest? How many guests?"</p>
+          <p>"How much budget did you have left?"</p>
+          <p class="pk-es">"¿Cuántas bolsas hiciste? ¿Cuál fue tu MCD?"</p>
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-bags"
+              >Partner: number of goodie bags (GCF)</label
+            >
+            <input
+              type="number"
+              id="p-bags"
+              data-save
+              min="0"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-per">Partner: cost per guest ($)</label>
+            <input
+              type="number"
+              id="p-per"
+              data-save
+              step="0.01"
+              min="0"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-left">Partner: budget left ($)</label>
+            <input
+              type="number"
+              id="p-left"
+              data-save
+              step="0.01"
+              oninput="comparePeer()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare our plans
+        </button>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <label class="fld" for="peerReflect"
+          >Who planned more carefully, and how do you know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My plan has ___ while my partner's has ___, so ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner">Part 3 · World — real cookout costs</span>
+            <div class="skill">Compare to real data · 6.NS.3</div>
+            <h2>How Does Your Cost Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are realistic typical cookout costs per guest in different U.S.
+          cities. Pick a category and see where your number lands.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="costPerGuest">Cost per guest ($)</option>
+              <option value="bags">Goodie bags made</option>
+              <option value="guests">Number of guests</option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your value"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: your cost per guest from Part 1 is a great value to type
+              here.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>City Cookout Sample 🇺🇸</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>City</th>
+                  <th>Cost / guest</th>
+                  <th>Bags</th>
+                  <th>Guests</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Add a pretend extra guest cost and watch the city average change.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="whatIfVal"
+                >New cost-per-guest value to add ($)</label
+              >
+              <input
+                type="number"
+                id="whatIfVal"
+                step="0.01"
+                placeholder="example: 22.00"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter a value to test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is your party cheaper or pricier per guest than the cities? Why might
+          that be?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My cost per guest is ___ the sample average because ___."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 question: If a city's cost per guest is $18.50 and 40
+            guests come, what is the total cost? Show your thinking.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="$18.50 × 40 = ___ because ___"
+          ></textarea>
+        </div>
+        <label class="fld" for="careful"
+          >Careful thinking: why is it tricky to compare party budgets between
+          families or cities?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="It can be unfair to compare because ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Pitch Your Plan to the Council</h2>
+          </div>
+        </div>
+        <p>
+          Write a short pitch (3–5 sentences) that uses your real numbers from
+          above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="In our block party plan, we will make ___ goodie bags because the GCF of our supplies is ___. The music and activity sync every ___ minutes. Our total cost is $___, which leaves $___ in the budget, and each guest's fair share is $___."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I used the GCF to make
+            equal goodie bags with no leftovers.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I used the LCM for when
+            the entertainment syncs up.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> My budget total is at
+            or under my budget.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I divided to find a
+            fair cost per guest and checked my division.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I interviewed a partner
+            and compared our plans.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> I compared my cost per
+            guest to the city sample.
+          </li>
+        </ul>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.downloadText('block-party-plan.txt', 'reportBox')"
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your plan summary.
+        </div>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--navy)">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Factors &amp; Multiples (GCF/LCM)</td>
+            <td>GCF and LCM both correct with reasoning shown</td>
+            <td>Both answers correct</td>
+            <td>One answer correct or partial reasoning</td>
+          </tr>
+          <tr>
+            <td>Decimal Operations</td>
+            <td>Budget accurate to the penny and within budget</td>
+            <td>Budget total is accurate</td>
+            <td>Minor decimal/place-value errors</td>
+          </tr>
+          <tr>
+            <td>Division</td>
+            <td>Cost per guest correct and division check correct</td>
+            <td>Cost per guest correct</td>
+            <td>Attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Compares plans and world data with clear reasoning</td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Pitch clearly justifies every number used</td>
+            <td>Pitch uses most numbers</td>
+            <td>Pitch is unclear or missing numbers</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">
+        Neft Teacher · Unit 1 Culminating Project · Version A ·
+        <span id="yr"></span>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
+
+      /* ---- Unit-specific calculators (kept in page) ---- */
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) {
+          [a, b] = [b, a % b];
+        }
+        return a;
+      }
+      function lcm(a, b) {
+        return Math.abs(a * b) / gcd(a, b);
+      }
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      // running state used by report + world meter
+      const proj = {
+        bags: null,
+        lcm: null,
+        total: null,
+        left: null,
+        per: null,
+      };
+
+      function calcGCF() {
+        const s = num("g-stickers"),
+          b = num("g-bars");
+        if (isNaN(s) || s <= 0 || isNaN(b) || b <= 0) {
+          $("gcf-out").classList.remove("show");
+          proj.bags = null;
+          return;
+        }
+        const g = gcd(s, b);
+        proj.bags = g;
+        show(
+          "gcf-out",
+          '<div class="big">' +
+            g +
+            " goodie bags</div>" +
+            "Each bag gets <strong>" +
+            s / g +
+            " stickers</strong> and <strong>" +
+            b / g +
+            " granola bars</strong>, nothing left over. " +
+            (g === 1
+              ? "⚠️ These share only a factor of 1 — try amounts that share a bigger factor."
+              : "✅ GCF(" + s + ", " + b + ") = " + g + "."),
+        );
+      }
+
+      function calcLCM() {
+        const d = num("l-dj"),
+          b = num("l-bubble");
+        if (isNaN(d) || d <= 0 || isNaN(b) || b <= 0) {
+          $("lcm-out").classList.remove("show");
+          proj.lcm = null;
+          return;
+        }
+        const l = lcm(d, b);
+        proj.lcm = l;
+        show(
+          "lcm-out",
+          '<div class="big">Every ' +
+            l +
+            " minutes</div>" +
+            "The music and activity line up every <strong>" +
+            l +
+            " minutes</strong>. Plan your biggest crowd moment then! LCM(" +
+            d +
+            ", " +
+            b +
+            ") = " +
+            l +
+            ".",
+        );
+      }
+
+      function calcBudget() {
+        const budget = num("c-budget");
+        const rawVals = ["c-food", "c-decor", "c-games", "c-music"].map(num);
+        if (
+          rawVals.some((v) => isNaN(v) || v < 0) ||
+          isNaN(budget) ||
+          budget < 0
+        ) {
+          $("budget-out").classList.remove("show");
+          proj.total = null;
+          proj.left = null;
+          return;
+        }
+        const total = rawVals.reduce((a, c) => a + c, 0);
+        const left = budget - total;
+        proj.total = total;
+        proj.left = left;
+        show(
+          "budget-out",
+          '<div class="big">$' +
+            total.toFixed(2) +
+            " spent</div>" +
+            (left >= 0
+              ? "✅ You have <strong>$" +
+                left.toFixed(2) +
+                "</strong> left of your $" +
+                budget.toFixed(2) +
+                " budget."
+              : "⚠️ You are <strong>$" +
+                Math.abs(left).toFixed(2) +
+                " over budget</strong>. Trim a category."),
+        );
+      }
+
+      function calcPer() {
+        const t = num("d-total"),
+          g = num("d-guests");
+        if (isNaN(t) || t < 0 || isNaN(g) || g <= 0) {
+          $("per-out").classList.remove("show");
+          proj.per = null;
+          return;
+        }
+        const per = t / g;
+        proj.per = per;
+        show(
+          "per-out",
+          '<div class="big">$' +
+            per.toFixed(2) +
+            " per guest</div>" +
+            "$" +
+            t.toFixed(2) +
+            " ÷ " +
+            g +
+            " guests gives a fair share of <strong>$" +
+            per.toFixed(2) +
+            "</strong> each.",
+        );
+      }
+
+      function checkCups() {
+        const ok = PK.checkWork("check-cups", 24, 0);
+        updateProgress();
+        return ok;
+      }
+
+      /* ---- Part 2: peer compare (uses kit) ---- */
+      function comparePeer() {
+        const myBags = proj.bags,
+          myPer = proj.per,
+          myLeft = proj.left;
+        const pBags = num("p-bags"),
+          pPer = num("p-per"),
+          pLeft = num("p-left");
+        const rows = [];
+        if (myBags != null && !isNaN(pBags))
+          rows.push({ label: "Bags", me: myBags, partner: pBags });
+        if (myPer != null && !isNaN(pPer))
+          rows.push({
+            label: "Cost/guest $",
+            me: myPer,
+            partner: pPer,
+            fmt: (x) => Number(x).toFixed(2),
+          });
+        if (myLeft != null && !isNaN(pLeft))
+          rows.push({
+            label: "Budget left $",
+            me: myLeft,
+            partner: pLeft,
+            fmt: (x) => Number(x).toFixed(2),
+          });
+        if (!rows.length) {
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish Part 1 and enter partner numbers to compare.</p>';
+          return;
+        }
+        PK.peerCompare("peerBox", rows);
+        updateProgress();
+      }
+
+      /* ---- Part 3: world dataset + meter ---- */
+      // [city, costPerGuest, bags, guests] — realistic typical U.S. cookout values
+      const world = [
+        ["Atlanta, GA", 14.5, 10, 30],
+        ["Chicago, IL", 19.25, 12, 28],
+        ["Houston, TX", 12.75, 8, 40],
+        ["Denver, CO", 17.0, 9, 24],
+        ["Miami, FL", 21.4, 14, 26],
+        ["Phoenix, AZ", 13.2, 6, 35],
+        ["Seattle, WA", 20.1, 11, 22],
+        ["Detroit, MI", 11.9, 8, 32],
+      ];
+      const wIdx = { costPerGuest: 1, bags: 2, guests: 3 };
+
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              `<tr><td>${r[0]}</td><td>$${r[1].toFixed(2)}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`,
+          )
+          .join("");
+      }
+      function worldSample() {
+        return world.map((r) => r[wIdx[$("worldCat").value]]);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        const labels =
+          $("worldCat").value === "costPerGuest"
+            ? { mean: "City avg $", me: "Me $" }
+            : { mean: "City avg", me: "Me" };
+        PK.worldMeter("worldMeter", worldSample(), my, labels);
+        updateProgress();
+      }
+      function runWhatIf() {
+        const v = parseFloat($("whatIfVal").value);
+        const sample = worldSample();
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
+          return;
+        }
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        PK.whatIf(
+          "whatIfBox",
+          { average: "$" + before.toFixed(2) },
+          { average: "$" + after.toFixed(2) },
+          "Adding a value of $" + v.toFixed(2) + " to the city sample:",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          "g-stickers": 48,
+          "g-bars": 36,
+          "l-dj": 6,
+          "l-bubble": 8,
+          "c-budget": 300,
+          "c-food": 124.5,
+          "c-decor": 38.75,
+          "c-games": 67.2,
+          "c-music": 45.0,
+          "d-total": 275.4,
+          "d-guests": 36,
+          myWorld: "",
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      function recalcAll() {
+        calcGCF();
+        calcLCM();
+        calcBudget();
+        calcPer();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f = (x, d) =>
+          x == null
+            ? "(not finished)"
+            : typeof x === "number"
+              ? x.toFixed(d || 2)
+              : x;
+        return (
+          "BLOCK PARTY PLANNER — MY REPORT\n" +
+          "================================\n\n" +
+          "PART 1: MY PLAN (SELF)\n" +
+          "Goodie bags (GCF): " +
+          (proj.bags == null ? "(not finished)" : proj.bags) +
+          "\n" +
+          "Entertainment syncs every (LCM): " +
+          (proj.lcm == null ? "(not finished)" : proj.lcm + " min") +
+          "\n" +
+          "Total spent: $" +
+          f(proj.total) +
+          "  |  Budget left: $" +
+          f(proj.left) +
+          "\n" +
+          "Cost per guest: $" +
+          f(proj.per) +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "Partner bags: " +
+          ($("p-bags").value || "-") +
+          "  cost/guest: $" +
+          ($("p-per").value || "-") +
+          "  budget left: $" +
+          ($("p-left").value || "-") +
+          "\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "My value vs cities: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n" +
+          "Careful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "PITCH:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["bags", proj.bags],
+          ["lcm_min", proj.lcm],
+          ["total_spent", proj.total],
+          ["budget_left", proj.left],
+          ["cost_per_guest", proj.per],
+          ["partner", $("partnerName").value],
+          ["partner_bags", $("p-bags").value],
+          ["partner_cost_per_guest", $("p-per").value],
+          ["partner_budget_left", $("p-left").value],
+        ];
+        PK.downloadCsv("block-party-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 4
+        const cupsOk = $("check-cupsFb").querySelector(".pk-ok") ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const peer = $("p-bags").value || $("p-per").value ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + cupsOk + checks + peer + wrld + pitch; // max 4+1+6+1+1+1 = 14
+        const pct = Math.min(100, Math.round((total / 14) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills friendly numbers if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          const empty = !$("g-stickers").value && !$("g-bars").value;
+          if (empty) {
+            $("g-stickers").value = 24;
+            $("g-bars").value = 36;
+            calcGCF();
+          }
+        }
+      };
+
+      /* ---- init (runs after deferred kit script is ready) ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u1ProjectA", default: "level-1" });
+        PK.load("u1ProjectA", { after: recalcAll });
+        updateProgress();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

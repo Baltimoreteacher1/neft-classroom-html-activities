@@ -1,0 +1,1903 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="standard" content="6.SP.B.4 · Unit 9" data-standard="6.SP.B.4" data-unit="9" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 20: Data Displays (6.SP.B.4) | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #0f766e;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --soft-red: #fef2f1;
+      }
+      .mission-hero {
+        background: linear-gradient(
+          135deg,
+          #1e2d4d 0%,
+          #23395d 40%,
+          #0f766e 100%
+        );
+        color: #fff;
+        border-radius: var(--radius);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 32px;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin: 0 0 8px;
+        line-height: 1.1;
+      }
+      .hero-eyebrow {
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7dd3c0;
+        margin-bottom: 4px;
+      }
+      .hero-standard {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        margin-top: 8px;
+      }
+      .hero-scenario {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        opacity: 0.92;
+        margin-top: 12px;
+      }
+      .hero-svg {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+      }
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-bar a {
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .nav-bar a:hover {
+        background: var(--soft-teal);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 3vw, 28px);
+      }
+      .card h2 {
+        color: var(--navy);
+        margin-top: 0;
+        font-size: 1.4rem;
+      }
+      .card h3 {
+        color: var(--teal);
+        margin-top: 18px;
+        font-size: 1.1rem;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: start;
+      }
+      .problem-box {
+        background: var(--soft-blue);
+        border-left: 5px solid var(--navy);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 1.08rem;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .language-box {
+        background: #f0faf8;
+        border: 2px solid #a7d8d0;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-top: 16px;
+      }
+      .language-box h3 {
+        margin-top: 0;
+        color: var(--teal);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .vocab-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .sentence-frames {
+        background: var(--soft-gold);
+        padding: 14px;
+        border-radius: 6px;
+        margin-top: 10px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+        font-style: italic;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .rep-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: #fafcff;
+      }
+      .rep-card h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid #b9ddd8;
+      }
+      .role-facilitator {
+        background: #eef6ff;
+      }
+      .role-model {
+        background: #ecf8f6;
+      }
+      .role-checker {
+        background: #fff6df;
+      }
+      .role-reporter {
+        background: #fef2f1;
+      }
+      .role strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .role .role-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .timer-section {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .timer-display {
+        font-size: 3rem;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold);
+      }
+      .timer-label {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .timer-btn {
+        min-height: 40px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .timer-btn.start {
+        background: var(--green);
+        color: #fff;
+      }
+      .timer-btn.pause {
+        background: var(--gold);
+        color: #fff;
+      }
+      .timer-btn.reset {
+        background: var(--surface);
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+      }
+      .phase-header:hover {
+        background: #f8fafb;
+      }
+      .phase-time {
+        background: var(--soft-blue);
+        color: var(--navy);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .phase-name {
+        font-weight: 800;
+        flex: 1;
+      }
+      .phase-body {
+        padding: 0 14px 14px;
+        display: none;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-card.open .phase-arrow {
+        transform: rotate(90deg);
+      }
+      .phase-arrow {
+        transition: transform 0.2s;
+      }
+      .checkpoint {
+        background: var(--soft-green);
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.92rem;
+      }
+      .challenge-box {
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .rubric-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 2px solid #bed4ea;
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        font-size: 1.1rem;
+      }
+      .visual-model {
+        text-align: center;
+        margin: 16px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.95rem;
+      }
+      .data-table th,
+      .data-table td {
+        border: 1px solid var(--line);
+        padding: 6px 10px;
+        text-align: center;
+      }
+      .data-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+        font-weight: 700;
+      }
+      @media print {
+        .nav-bar,
+        .timer-section,
+        .timer-controls,
+        .timer-btn,
+        .no-print {
+          display: none !important;
+        }
+        .card,
+        .mission-hero {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .mission-hero {
+          background: #23395d !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero {
+          grid-template-columns: 1fr;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          max-width: 320px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <main class="page-shell">
+      <nav class="nav-bar" aria-label="Mission navigation">
+        <a href="/math-lab-missions/">Back to All Missions</a>
+        <div>
+          <a href="/math-lab-missions/mission-19/">Prev Mission</a>
+          <a href="/math-lab-missions/mission-21/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <div class="hero-eyebrow">Mission 20 &middot; Unit 8</div>
+          <h1 id="hero-title">Data Displays</h1>
+          <span class="hero-standard">6.SP.B.4 &middot; Unit 9</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Display numerical data in plots on a number line.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
+          <p class="hero-scenario">
+            The PE teacher recorded how many <strong>push-ups</strong> each of
+            the <strong>20 students</strong> in the class completed in one
+            minute. The data is:
+            <strong
+              >8, 12, 15, 10, 22, 14, 18, 11, 9, 16, 20, 13, 15, 17, 12, 14, 19,
+              10, 15, 21</strong
+            >. Your team must display this data three ways: a
+            <strong>dot plot</strong>, a <strong>histogram</strong>, and a
+            <strong>box plot</strong>. Then recommend which display best shows
+            the class performance and why.
+          </p>
+        </div>
+        <svg
+          class="hero-svg"
+          viewBox="0 0 400 430"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Three data displays: dot plot, histogram, and box plot showing push-up data"
+        >
+          <!-- Background -->
+          <rect x="0" y="0" width="400" height="430" rx="12" fill="#f0f4f8" />
+          <!-- Title -->
+          <text
+            x="200"
+            y="24"
+            text-anchor="middle"
+            font-size="14"
+            font-weight="800"
+            fill="#23395d"
+          >
+            Push-Up Data: 3 Displays
+          </text>
+
+          <!-- DOT PLOT (simplified) -->
+          <rect
+            x="15"
+            y="38"
+            width="370"
+            height="110"
+            rx="6"
+            fill="#fff"
+            stroke="#d8dfdc"
+            stroke-width="1"
+          />
+          <text
+            x="200"
+            y="56"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#0f766e"
+          >
+            Dot Plot
+          </text>
+          <!-- Axis -->
+          <line
+            x1="35"
+            y1="120"
+            x2="375"
+            y2="120"
+            stroke="#23395d"
+            stroke-width="1.5"
+          />
+          <!-- Labels at 8,10,12,14,16,18,20,22 -->
+          <text x="50" y="135" text-anchor="middle" font-size="9" fill="#555">
+            8
+          </text>
+          <text x="96" y="135" text-anchor="middle" font-size="9" fill="#555">
+            10
+          </text>
+          <text x="142" y="135" text-anchor="middle" font-size="9" fill="#555">
+            12
+          </text>
+          <text x="188" y="135" text-anchor="middle" font-size="9" fill="#555">
+            14
+          </text>
+          <text x="234" y="135" text-anchor="middle" font-size="9" fill="#555">
+            16
+          </text>
+          <text x="280" y="135" text-anchor="middle" font-size="9" fill="#555">
+            18
+          </text>
+          <text x="326" y="135" text-anchor="middle" font-size="9" fill="#555">
+            20
+          </text>
+          <text x="372" y="135" text-anchor="middle" font-size="9" fill="#555">
+            22
+          </text>
+          <!-- Dots: 8(1),9(1),10(2),11(1),12(2),13(1),14(2),15(3),16(1),17(1),18(1),19(1),20(1),21(1),22(1) -->
+          <circle cx="50" cy="113" r="4" fill="#0f766e" />
+          <circle cx="73" cy="113" r="4" fill="#0f766e" />
+          <circle cx="96" cy="113" r="4" fill="#0f766e" />
+          <circle cx="96" cy="104" r="4" fill="#0f766e" />
+          <circle cx="119" cy="113" r="4" fill="#0f766e" />
+          <circle cx="142" cy="113" r="4" fill="#0f766e" />
+          <circle cx="142" cy="104" r="4" fill="#0f766e" />
+          <circle cx="165" cy="113" r="4" fill="#0f766e" />
+          <circle cx="188" cy="113" r="4" fill="#0f766e" />
+          <circle cx="188" cy="104" r="4" fill="#0f766e" />
+          <circle cx="211" cy="113" r="4" fill="#0f766e" />
+          <circle cx="211" cy="104" r="4" fill="#0f766e" />
+          <circle cx="211" cy="95" r="4" fill="#0f766e" />
+          <circle cx="234" cy="113" r="4" fill="#0f766e" />
+          <circle cx="257" cy="113" r="4" fill="#0f766e" />
+          <circle cx="280" cy="113" r="4" fill="#0f766e" />
+          <circle cx="303" cy="113" r="4" fill="#0f766e" />
+          <circle cx="326" cy="113" r="4" fill="#0f766e" />
+          <circle cx="349" cy="113" r="4" fill="#0f766e" />
+          <circle cx="372" cy="113" r="4" fill="#0f766e" />
+
+          <!-- HISTOGRAM -->
+          <rect
+            x="15"
+            y="155"
+            width="370"
+            height="120"
+            rx="6"
+            fill="#fff"
+            stroke="#d8dfdc"
+            stroke-width="1"
+          />
+          <text
+            x="200"
+            y="173"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#b7791f"
+          >
+            Histogram
+          </text>
+          <!-- Axis -->
+          <line
+            x1="55"
+            y1="255"
+            x2="365"
+            y2="255"
+            stroke="#23395d"
+            stroke-width="1.5"
+          />
+          <line
+            x1="55"
+            y1="185"
+            x2="55"
+            y2="255"
+            stroke="#23395d"
+            stroke-width="1.5"
+          />
+          <!-- Bars: 8-12(6), 13-17(8), 18-22(6) -->
+          <!-- Y-axis: max 8, scale: 8px per unit -->
+          <rect
+            x="70"
+            y="207"
+            width="80"
+            height="48"
+            fill="#b7791f"
+            opacity="0.7"
+            rx="2"
+          />
+          <text
+            x="110"
+            y="200"
+            text-anchor="middle"
+            font-size="10"
+            font-weight="700"
+            fill="#b7791f"
+          >
+            6
+          </text>
+          <rect
+            x="155"
+            y="191"
+            width="80"
+            height="64"
+            fill="#b7791f"
+            opacity="0.85"
+            rx="2"
+          />
+          <text
+            x="195"
+            y="184"
+            text-anchor="middle"
+            font-size="10"
+            font-weight="700"
+            fill="#b7791f"
+          >
+            8
+          </text>
+          <rect
+            x="240"
+            y="207"
+            width="80"
+            height="48"
+            fill="#b7791f"
+            opacity="0.7"
+            rx="2"
+          />
+          <text
+            x="280"
+            y="200"
+            text-anchor="middle"
+            font-size="10"
+            font-weight="700"
+            fill="#b7791f"
+          >
+            6
+          </text>
+          <text x="110" y="270" text-anchor="middle" font-size="9" fill="#555">
+            8-12
+          </text>
+          <text x="195" y="270" text-anchor="middle" font-size="9" fill="#555">
+            13-17
+          </text>
+          <text x="280" y="270" text-anchor="middle" font-size="9" fill="#555">
+            18-22
+          </text>
+
+          <!-- BOX PLOT -->
+          <rect
+            x="15"
+            y="290"
+            width="370"
+            height="120"
+            rx="6"
+            fill="#fff"
+            stroke="#d8dfdc"
+            stroke-width="1"
+          />
+          <text
+            x="200"
+            y="308"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#b42318"
+          >
+            Box Plot
+          </text>
+          <!-- Axis -->
+          <line
+            x1="35"
+            y1="380"
+            x2="375"
+            y2="380"
+            stroke="#23395d"
+            stroke-width="1.5"
+          />
+          <text x="50" y="395" text-anchor="middle" font-size="9" fill="#555">
+            8
+          </text>
+          <text x="96" y="395" text-anchor="middle" font-size="9" fill="#555">
+            10
+          </text>
+          <text x="142" y="395" text-anchor="middle" font-size="9" fill="#555">
+            12
+          </text>
+          <text x="188" y="395" text-anchor="middle" font-size="9" fill="#555">
+            14
+          </text>
+          <text x="234" y="395" text-anchor="middle" font-size="9" fill="#555">
+            16
+          </text>
+          <text x="280" y="395" text-anchor="middle" font-size="9" fill="#555">
+            18
+          </text>
+          <text x="326" y="395" text-anchor="middle" font-size="9" fill="#555">
+            20
+          </text>
+          <text x="372" y="395" text-anchor="middle" font-size="9" fill="#555">
+            22
+          </text>
+          <!-- Min=8, Q1=11, Median=14.5, Q3=18, Max=22 -->
+          <!-- Whisker: min to Q1 -->
+          <line
+            x1="50"
+            y1="350"
+            x2="119"
+            y2="350"
+            stroke="#b42318"
+            stroke-width="2"
+          />
+          <line
+            x1="50"
+            y1="340"
+            x2="50"
+            y2="360"
+            stroke="#b42318"
+            stroke-width="2"
+          />
+          <!-- Box: Q1 to Q3 -->
+          <rect
+            x="119"
+            y="330"
+            width="161"
+            height="40"
+            fill="#fef2f1"
+            stroke="#b42318"
+            stroke-width="2"
+            rx="2"
+          />
+          <!-- Median line at 14.5 -->
+          <line
+            x1="199"
+            y1="330"
+            x2="199"
+            y2="370"
+            stroke="#b42318"
+            stroke-width="3"
+          />
+          <!-- Whisker: Q3 to max -->
+          <line
+            x1="280"
+            y1="350"
+            x2="372"
+            y2="350"
+            stroke="#b42318"
+            stroke-width="2"
+          />
+          <line
+            x1="372"
+            y1="340"
+            x2="372"
+            y2="360"
+            stroke="#b42318"
+            stroke-width="2"
+          />
+          <!-- Labels -->
+          <text
+            x="50"
+            y="325"
+            text-anchor="middle"
+            font-size="8"
+            fill="#b42318"
+          >
+            Min=8
+          </text>
+          <text
+            x="119"
+            y="325"
+            text-anchor="middle"
+            font-size="8"
+            fill="#b42318"
+          >
+            Q1=11
+          </text>
+          <text
+            x="199"
+            y="325"
+            text-anchor="middle"
+            font-size="8"
+            fill="#b42318"
+          >
+            Med=14.5
+          </text>
+          <text
+            x="280"
+            y="325"
+            text-anchor="middle"
+            font-size="8"
+            fill="#b42318"
+          >
+            Q3=18
+          </text>
+          <text
+            x="372"
+            y="325"
+            text-anchor="middle"
+            font-size="8"
+            fill="#b42318"
+          >
+            Max=22
+          </text>
+        </svg>
+      </section>
+
+      <!-- INVESTIGATION -->
+      <section class="card" aria-labelledby="investigation-title">
+        <h2 id="investigation-title">The Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> Display the push-up data (20 values)
+          three ways: <strong>dot plot</strong>,
+          <strong>histogram</strong> (intervals of 5), and
+          <strong>box plot</strong>. For the box plot, find the
+          <strong>minimum, Q1, median, Q3, and maximum</strong>. Then write a
+          recommendation: which display best shows how the class performed, and
+          why?
+        </div>
+
+        <h3>The Data (ordered)</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>1</th>
+              <th>2</th>
+              <th>3</th>
+              <th>4</th>
+              <th>5</th>
+              <th>6</th>
+              <th>7</th>
+              <th>8</th>
+              <th>9</th>
+              <th>10</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Value</strong></td>
+              <td>8</td>
+              <td>9</td>
+              <td>10</td>
+              <td>10</td>
+              <td>11</td>
+              <td>12</td>
+              <td>12</td>
+              <td>13</td>
+              <td>14</td>
+              <td>14</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>11</th>
+              <th>12</th>
+              <th>13</th>
+              <th>14</th>
+              <th>15</th>
+              <th>16</th>
+              <th>17</th>
+              <th>18</th>
+              <th>19</th>
+              <th>20</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Value</strong></td>
+              <td>15</td>
+              <td>15</td>
+              <td>15</td>
+              <td>16</td>
+              <td>17</td>
+              <td>18</td>
+              <td>19</td>
+              <td>20</td>
+              <td>21</td>
+              <td>22</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Visual Model: Three Data Displays Compared</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 620 360"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Side-by-side comparison of dot plot, histogram, and box plot with five-number summary"
+            style="max-width: 620px"
+          >
+            <text
+              x="310"
+              y="20"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Five-Number Summary for the Box Plot
+            </text>
+            <!-- Five number summary boxes -->
+            <rect
+              x="20"
+              y="35"
+              width="100"
+              height="55"
+              rx="6"
+              fill="#edf5ff"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="70"
+              y="53"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Minimum
+            </text>
+            <text
+              x="70"
+              y="78"
+              text-anchor="middle"
+              font-size="24"
+              font-weight="900"
+              fill="#23395d"
+            >
+              8
+            </text>
+
+            <rect
+              x="140"
+              y="35"
+              width="100"
+              height="55"
+              rx="6"
+              fill="#ecf8f6"
+              stroke="#0f766e"
+              stroke-width="1.5"
+            />
+            <text
+              x="190"
+              y="53"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              Q1
+            </text>
+            <text
+              x="190"
+              y="78"
+              text-anchor="middle"
+              font-size="24"
+              font-weight="900"
+              fill="#0f766e"
+            >
+              11
+            </text>
+
+            <rect
+              x="260"
+              y="35"
+              width="100"
+              height="55"
+              rx="6"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text
+              x="310"
+              y="53"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Median
+            </text>
+            <text
+              x="310"
+              y="78"
+              text-anchor="middle"
+              font-size="24"
+              font-weight="900"
+              fill="#b7791f"
+            >
+              14.5
+            </text>
+
+            <rect
+              x="380"
+              y="35"
+              width="100"
+              height="55"
+              rx="6"
+              fill="#ecf8f6"
+              stroke="#0f766e"
+              stroke-width="1.5"
+            />
+            <text
+              x="430"
+              y="53"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              Q3
+            </text>
+            <text
+              x="430"
+              y="78"
+              text-anchor="middle"
+              font-size="24"
+              font-weight="900"
+              fill="#0f766e"
+            >
+              18
+            </text>
+
+            <rect
+              x="500"
+              y="35"
+              width="100"
+              height="55"
+              rx="6"
+              fill="#edf5ff"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="550"
+              y="53"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Maximum
+            </text>
+            <text
+              x="550"
+              y="78"
+              text-anchor="middle"
+              font-size="24"
+              font-weight="900"
+              fill="#23395d"
+            >
+              22
+            </text>
+
+            <!-- How to find them -->
+            <rect
+              x="20"
+              y="105"
+              width="580"
+              height="90"
+              rx="8"
+              fill="#f8f9fa"
+              stroke="#ddd"
+              stroke-width="1"
+            />
+            <text
+              x="30"
+              y="125"
+              font-size="12"
+              font-weight="700"
+              fill="#23395d"
+            >
+              How to find the five-number summary:
+            </text>
+            <text x="30" y="145" font-size="11" fill="#333">
+              1. Order the data from least to greatest (already done above).
+            </text>
+            <text x="30" y="162" font-size="11" fill="#333">
+              2. Median = average of 10th and 11th values = (14 + 15) / 2 = 14.5
+            </text>
+            <text x="30" y="179" font-size="11" fill="#333">
+              3. Q1 = median of lower half (positions 1-10) = average of 5th and
+              6th = (11 + 12) / 2 = 11.5 &#8776; 11
+            </text>
+            <text x="30" y="193" font-size="11" fill="#333">
+              Q3 = median of upper half (positions 11-20) = average of 15th and
+              16th = (17 + 18) / 2 = 17.5 &#8776; 18
+            </text>
+
+            <!-- Comparison chart -->
+            <rect
+              x="20"
+              y="210"
+              width="186"
+              height="140"
+              rx="6"
+              fill="#ecf8f6"
+              stroke="#0f766e"
+              stroke-width="1.5"
+            />
+            <text
+              x="113"
+              y="232"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              Dot Plot
+            </text>
+            <text
+              x="113"
+              y="252"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Shows every data point
+            </text>
+            <text
+              x="113"
+              y="268"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Easy to see clusters
+            </text>
+            <text
+              x="113"
+              y="284"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Best for small data sets
+            </text>
+            <text
+              x="113"
+              y="300"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              See exact values
+            </text>
+            <text
+              x="113"
+              y="320"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              Best for: individual values
+            </text>
+
+            <rect
+              x="217"
+              y="210"
+              width="186"
+              height="140"
+              rx="6"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text
+              x="310"
+              y="232"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Histogram
+            </text>
+            <text
+              x="310"
+              y="252"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Groups data in intervals
+            </text>
+            <text
+              x="310"
+              y="268"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Shows shape of data
+            </text>
+            <text
+              x="310"
+              y="284"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Good for large data sets
+            </text>
+            <text
+              x="310"
+              y="300"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              See distribution pattern
+            </text>
+            <text
+              x="310"
+              y="320"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Best for: overall shape
+            </text>
+
+            <rect
+              x="414"
+              y="210"
+              width="186"
+              height="140"
+              rx="6"
+              fill="#fef2f1"
+              stroke="#b42318"
+              stroke-width="1.5"
+            />
+            <text
+              x="507"
+              y="232"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#b42318"
+            >
+              Box Plot
+            </text>
+            <text
+              x="507"
+              y="252"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Shows 5-number summary
+            </text>
+            <text
+              x="507"
+              y="268"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Easy to compare 2 groups
+            </text>
+            <text
+              x="507"
+              y="284"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Shows spread (IQR)
+            </text>
+            <text
+              x="507"
+              y="300"
+              text-anchor="middle"
+              font-size="11"
+              fill="#333"
+            >
+              Hides individual values
+            </text>
+            <text
+              x="507"
+              y="320"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#b42318"
+            >
+              Best for: comparing groups
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Order the data.</strong> Write all 20 values from least to
+            greatest. Count to make sure you have exactly 20.
+            <em>Guiding question: What is the smallest value? The largest?</em>
+          </li>
+          <li>
+            <strong>Create the dot plot.</strong> Draw a number line from 8 to
+            22. Place one dot above the number for each data point. Stack dots
+            when values repeat.
+            <em
+              >Guiding question: Which value has the most dots? What does that
+              tell us?</em
+            >
+          </li>
+          <li>
+            <strong>Create the histogram.</strong> Make three intervals: 8-12,
+            13-17, 18-22. Count how many values fall in each. Draw bars with
+            heights matching the counts.
+            <em>Guiding question: Which interval has the most students?</em>
+          </li>
+          <li>
+            <strong>Find the five-number summary.</strong> Min = 8. Max = 22.
+            Median = average of 10th and 11th values. Q1 = median of lower half.
+            Q3 = median of upper half.
+            <em
+              >Guiding question: Why do we average two numbers for the median
+              when there are 20 values?</em
+            >
+          </li>
+          <li>
+            <strong>Create the box plot.</strong> Draw a number line. Mark the
+            five values. Draw the box from Q1 to Q3, line at the median,
+            whiskers to min and max.
+            <em
+              >Guiding question: Where does the "middle 50%" of the data
+              live?</em
+            >
+          </li>
+          <li>
+            <strong>Compare and recommend.</strong> Which display best shows
+            class performance? Why?
+            <em
+              >Guiding question: If the PE teacher wants to see how many
+              students did 15+, which display is easiest to read?</em
+            >
+          </li>
+        </ol>
+
+        <div class="language-box">
+          <h3>Language Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-item">
+              <strong>Dot plot</strong><br />
+              A number line with dots above each value. Each dot = one data
+              point.
+            </div>
+            <div class="vocab-item">
+              <strong>Histogram</strong><br />
+              A bar graph that groups data into intervals. Bars touch each
+              other.
+            </div>
+            <div class="vocab-item">
+              <strong>Box plot</strong><br />
+              A display that shows the five-number summary as a box with
+              whiskers.
+            </div>
+            <div class="vocab-item">
+              <strong>Median</strong><br />
+              The middle value when data is ordered. Half the data is above,
+              half below.
+            </div>
+            <div class="vocab-item">
+              <strong>Quartile (Q1, Q3)</strong><br />
+              Values that split data into four equal parts. Q1 = lower quarter.
+              Q3 = upper quarter.
+            </div>
+            <div class="vocab-item">
+              <strong>Interval</strong><br />
+              A range of values grouped together, like 8-12 or 13-17.
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <strong>Sentence Frames:</strong>
+            <p>
+              "The dot plot shows that the most common push-up count is _____
+              because _____."
+            </p>
+            <p>
+              "The histogram shows that the interval _____ has the most
+              students."
+            </p>
+            <p>
+              "The box plot tells me the middle 50% of students did between
+              _____ and _____ push-ups."
+            </p>
+          </div>
+        </div>
+
+        <h3>Multiple Representations</h3>
+        <div class="representations">
+          <div class="rep-card">
+            <h4>Approach 1: Dot Plot (see every value)</h4>
+            <p>
+              Each dot is one student. You can see that 15 push-ups is the most
+              common (3 dots). The spread goes from 8 to 22. Clusters appear
+              around 10-15.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 2: Histogram (see the shape)</h4>
+            <p>
+              Three bars: 8-12 has 6 students, 13-17 has 8 students, 18-22 has 6
+              students. The data is roughly symmetric with the peak in the
+              middle interval.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 3: Box Plot (see the summary)</h4>
+            <p>
+              Min=8, Q1=11, Median=14.5, Q3=18, Max=22. The IQR (Q3-Q1) = 7. The
+              middle 50% of students did between 11 and 18 push-ups. The range
+              is 14.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM ROLES -->
+      <section class="card" aria-labelledby="roles-title">
+        <h2 id="roles-title">Team Roles</h2>
+        <div class="role-grid">
+          <div class="role role-facilitator">
+            <span class="role-icon" aria-hidden="true">&#128218;</span>
+            <strong>Facilitator</strong>
+            Read the push-up data aloud while the team orders it. Assign one
+            display to each partner pair. Keep the team on schedule.
+          </div>
+          <div class="role role-model">
+            <span class="role-icon" aria-hidden="true">&#9999;&#65039;</span>
+            <strong>Model Builder</strong>
+            Draw all three data displays. Use a ruler for the number lines. Make
+            sure all axes are labeled and scaled correctly.
+          </div>
+          <div class="role role-checker">
+            <span class="role-icon" aria-hidden="true">&#128270;</span>
+            <strong>Precision Checker</strong>
+            Count dots on the dot plot (must equal 20). Verify histogram bar
+            heights add to 20. Check the five-number summary calculations.
+          </div>
+          <div class="role role-reporter">
+            <span class="role-icon" aria-hidden="true">&#128221;</span>
+            <strong>Reporter</strong>
+            Prepare the defense: explain what each display shows, state the
+            five-number summary, and present the team's recommendation.
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMER & PHASES -->
+      <div class="two-col">
+        <section class="card" aria-labelledby="phases-title">
+          <h2 id="phases-title">Timed Lab Phases</h2>
+
+          <div class="timer-section no-print">
+            <div class="timer-label" id="activePhaseLabel">Launch Phase</div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">
+              03:00
+            </div>
+            <div class="timer-controls">
+              <button class="timer-btn start" id="startTimer">Start</button>
+              <button class="timer-btn pause" id="pauseTimer">Pause</button>
+              <button class="timer-btn reset" id="resetTimer">Reset</button>
+            </div>
+          </div>
+
+          <div class="phase-cards" id="phaseList">
+            <article class="phase-card open" data-minutes="3">
+              <button class="phase-header" aria-expanded="true">
+                <span class="phase-time">3 min</span>
+                <span class="phase-name">Launch</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Read the PE scenario. Assign roles. Order the 20 data values
+                  from least to greatest.
+                </p>
+                <ul>
+                  <li>How many data points are there?</li>
+                  <li>What is the smallest and largest value?</li>
+                  <li>What do you predict the typical push-up count is?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Data is ordered. Everyone knows min=8 and max=22.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="6">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">6 min</span>
+                <span class="phase-name">Build</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Create the dot plot and histogram. Find the five-number
+                  summary.
+                </p>
+                <ul>
+                  <li>Dot plot: does your total dot count = 20?</li>
+                  <li>Histogram: do your bar heights add to 20?</li>
+                  <li>Five-number: Min, Q1, Median, Q3, Max?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Dot plot + histogram drawn. Five-number summary
+                  calculated.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="5">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">5 min</span>
+                <span class="phase-name">Solve</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Draw the box plot. Compare all three displays. Write your
+                  recommendation.
+                </p>
+                <ul>
+                  <li>Is the box plot box drawn from Q1 to Q3?</li>
+                  <li>Is the median line inside the box?</li>
+                  <li>Which display answers the PE teacher's question best?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: All 3 displays complete. Recommendation written
+                  with reasoning.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="4">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">4 min</span>
+                <span class="phase-name">Defend</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Reporter prepares the defense. Show all three displays and
+                  explain the recommendation.
+                </p>
+                <ul>
+                  <li>"The dot plot shows _____ because _____."</li>
+                  <li>"The histogram shows _____ because _____."</li>
+                  <li>"The box plot shows _____ because _____."</li>
+                  <li>"We recommend _____ because _____."</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Defense explains each display's purpose and states
+                  a clear recommendation.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div>
+          <section class="card" aria-labelledby="challenge-title">
+            <h2 id="challenge-title">Challenge Extensions</h2>
+            <div class="challenge-box">
+              <strong>Extension Problem:</strong> Another PE class had these
+              push-up results: Min=5, Q1=9, Median=12, Q3=15, Max=25. Draw a box
+              plot for this class on the same number line as your class. Compare
+              the two classes: which class is stronger overall? Which class has
+              more spread?
+            </div>
+            <h3>What If?</h3>
+            <ul>
+              <li>
+                What if one student did 45 push-ups? How would that outlier
+                change each display?
+              </li>
+              <li>
+                If you changed the histogram intervals to groups of 3 instead of
+                5, would the shape look different?
+              </li>
+              <li>
+                Which display would you use to compare boys and girls in the
+                same class? Why?
+              </li>
+            </ul>
+            <h3>Real-Life Connections</h3>
+            <p>
+              Data displays appear in weather reports (temperature histograms),
+              sports (player stat box plots), health (BMI dot plots), and
+              business (sales dashboards).
+            </p>
+          </section>
+
+          <section class="card" aria-labelledby="defense-title">
+            <h2 id="defense-title">Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>What is the five-number summary? Name all five values.</li>
+              <li>What does each display show that the others do not?</li>
+              <li>What is the IQR? What does it tell us about the class?</li>
+              <li>Which display do you recommend and why?</li>
+            </ol>
+            <strong>Sentence Starters:</strong>
+            <ul>
+              <li>
+                "The five-number summary is: Min=_____, Q1=_____, Median=_____,
+                Q3=_____, Max=_____."
+              </li>
+              <li>"The dot plot is best for _____ because _____."</li>
+              <li>
+                "The IQR is _____, which means the middle 50% of students
+                _____."
+              </li>
+            </ul>
+            <h3>Rubric</h3>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th>Criteria</th>
+                  <th>Excellent (4)</th>
+                  <th>Proficient (3)</th>
+                  <th>Developing (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Dot plot</td>
+                  <td>All 20 dots correct, labeled axis</td>
+                  <td>Minor dot error, axis present</td>
+                  <td>Plot attempted</td>
+                </tr>
+                <tr>
+                  <td>Histogram</td>
+                  <td>Correct bars with labels and title</td>
+                  <td>Correct bars, partial labels</td>
+                  <td>Bars attempted</td>
+                </tr>
+                <tr>
+                  <td>Box plot</td>
+                  <td>5-number summary correct, box accurate</td>
+                  <td>Minor calculation error</td>
+                  <td>Box attempted</td>
+                </tr>
+                <tr>
+                  <td>Recommendation</td>
+                  <td>Clear choice with display-specific reasoning</td>
+                  <td>Choice with general reasoning</td>
+                  <td>Choice stated only</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </div>
+
+      <!-- EXIT PRODUCT -->
+      <section class="card" aria-labelledby="exit-title">
+        <h2 id="exit-title">Exit Product</h2>
+        <div class="exit-box">
+          <strong>Your team submits:</strong> A Data Display Poster with:
+          <ul>
+            <li>Ordered data list (all 20 values from least to greatest)</li>
+            <li>A dot plot with labeled number line and all 20 dots</li>
+            <li>A histogram with 3 intervals, labeled axes, and title</li>
+            <li>
+              The five-number summary: Min=8, Q1=11, Median=14.5, Q3=18, Max=22
+            </li>
+            <li>A box plot drawn from the five-number summary</li>
+            <li>
+              A written recommendation: which display is best for the PE teacher
+              and why
+            </li>
+          </ul>
+        </div>
+        <h3>Self-Assessment Checklist</h3>
+        <ul class="checklist">
+          <li>I can order a data set from least to greatest.</li>
+          <li>I created a dot plot with the correct number of dots (20).</li>
+          <li>I created a histogram with correct interval counts (6, 8, 6).</li>
+          <li>I found all five values of the five-number summary.</li>
+          <li>
+            I drew a box plot with the box from Q1 to Q3 and whiskers to
+            min/max.
+          </li>
+          <li>I can explain when each display is most useful.</li>
+          <li>I wrote a recommendation with specific reasoning.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var currentPhase = 0,
+          remaining = phases[0].minutes * 60,
+          interval = null;
+        var display = document.getElementById("timerDisplay"),
+          label = document.getElementById("activePhaseLabel");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function upd() {
+          display.textContent = fmt(remaining);
+          label.textContent = phases[currentPhase].name + " Phase";
+        }
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (interval) return;
+            interval = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              upd();
+              if (remaining === 0) {
+                clearInterval(interval);
+                interval = null;
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+          });
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[currentPhase].minutes * 60;
+            upd();
+          });
+        document
+          .getElementById("phaseList")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            var card = h.parentElement,
+              all = document.querySelectorAll(".phase-card"),
+              idx = Array.prototype.indexOf.call(all, card);
+            all.forEach(function (c, i) {
+              c.classList.toggle("open", i === idx);
+              c.querySelector(".phase-header").setAttribute(
+                "aria-expanded",
+                i === idx ? "true" : "false",
+              );
+            });
+            currentPhase = idx;
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[idx].minutes * 60;
+            upd();
+          });
+        upd();
+      })();
+    </script>
+    <script src="../step-flow.js" defer></script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

@@ -1,0 +1,4530 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Sports Data Analyst — Statistics | Level 2 | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ═══════════════════════════════════════════════════════
+   SPORTS DATA ANALYST — Unit 8 Post-Test Project
+   Theme: Bold Red / Blue / Green / White
+   ═══════════════════════════════════════════════════════ */
+      :root {
+        --sp-red: #dc2626;
+        --sp-red-dark: #991b1b;
+        --sp-red-light: #fee2e2;
+        --sp-blue: #2563eb;
+        --sp-blue-light: #dbeafe;
+        --sp-green: #059669;
+        --sp-green-light: #d1fae5;
+        --sp-bg: #f8fafc;
+        --sp-surface: #ffffff;
+        --sp-ink: #0f172a;
+        --sp-muted: #64748b;
+        --sp-line: #e2e8f0;
+        --sp-success: #059669;
+        --sp-success-bg: #d1fae5;
+        --sp-error: #dc2626;
+        --sp-error-bg: #fee2e2;
+        --sp-radius: 16px;
+        --sp-shadow: 0 4px 24px rgba(37, 99, 235, 0.1);
+        --sp-shadow-lg: 0 12px 48px rgba(37, 99, 235, 0.18);
+        --sp-font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--sp-font);
+        color: var(--sp-ink);
+        background: var(--sp-bg);
+        line-height: 1.6;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      @media print {
+        .no-print,
+        .progress-bar-container,
+        .hint-btn,
+        .phase-nav,
+        #confetti-canvas {
+          display: none !important;
+        }
+        .phase-section {
+          break-inside: avoid;
+          border: 1px solid #ccc !important;
+          box-shadow: none !important;
+        }
+        body {
+          background: #fff;
+          font-size: 11pt;
+        }
+      }
+
+      /* ── HEADER ─────────────────────────────────── */
+      .app-header {
+        background: linear-gradient(
+          135deg,
+          var(--sp-red-dark) 0%,
+          var(--sp-red) 35%,
+          var(--sp-blue) 100%
+        );
+        color: #fff;
+        padding: 2.5rem 1.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .app-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 25% 75%,
+            rgba(5, 150, 105, 0.25) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+      .header-content {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 0.35rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .header-title {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+      .header-subtitle {
+        font-size: 1.05rem;
+        opacity: 0.9;
+        max-width: 620px;
+        margin: 0 auto;
+      }
+
+      .sport-decor {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .sp-float {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0.12;
+        animation: floatSp 7s ease-in-out infinite;
+      }
+      .sp-float:nth-child(1) {
+        left: 5%;
+        top: 20%;
+        animation-delay: 0s;
+      }
+      .sp-float:nth-child(2) {
+        left: 18%;
+        top: 65%;
+        animation-delay: 1s;
+        font-size: 2rem;
+      }
+      .sp-float:nth-child(3) {
+        left: 72%;
+        top: 10%;
+        animation-delay: 2s;
+      }
+      .sp-float:nth-child(4) {
+        left: 88%;
+        top: 55%;
+        animation-delay: 0.5s;
+        font-size: 1.8rem;
+      }
+      .sp-float:nth-child(5) {
+        left: 42%;
+        top: 8%;
+        animation-delay: 3.5s;
+      }
+      .sp-float:nth-child(6) {
+        left: 60%;
+        top: 72%;
+        animation-delay: 1.8s;
+        font-size: 2.2rem;
+      }
+      @keyframes floatSp {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-18px) rotate(8deg);
+        }
+      }
+
+      /* ── PROGRESS ───────────────────────────────── */
+      .progress-bar-container {
+        background: var(--sp-surface);
+        border-bottom: 1px solid var(--sp-line);
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+      .progress-inner {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--sp-muted);
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      .progress-track {
+        height: 10px;
+        background: var(--sp-blue-light);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--sp-red), var(--sp-blue));
+        border-radius: 99px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+      }
+      .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .progress-step:hover {
+        transform: translateY(-2px);
+      }
+      .step-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--sp-blue-light);
+        border: 2px solid var(--sp-line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--sp-muted);
+        transition: all 0.3s;
+      }
+      .step-dot.active {
+        background: var(--sp-blue);
+        border-color: var(--sp-blue);
+        color: #fff;
+      }
+      .step-dot.complete {
+        background: var(--sp-success);
+        border-color: var(--sp-success);
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--sp-muted);
+        text-align: center;
+        max-width: 80px;
+      }
+
+      /* ── MAIN ───────────────────────────────────── */
+      .main-container {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      /* ── MODE BAR ───────────────────────────────── */
+      .mode-bar {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: #f1f5f9;
+        border-bottom: 1px solid var(--sp-line);
+      }
+      .mode-btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 999px;
+        border: 2px solid var(--sp-line);
+        background: var(--sp-surface);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .mode-btn:hover {
+        border-color: var(--sp-blue);
+      }
+      .mode-btn.active {
+        background: var(--sp-blue);
+        color: #fff;
+        border-color: var(--sp-blue);
+      }
+
+      /* ── PHASES ──────────────────────────────────── */
+      .phase-section {
+        background: var(--sp-surface);
+        border-radius: var(--sp-radius);
+        box-shadow: var(--sp-shadow);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out both;
+      }
+      .phase-section[hidden] {
+        display: none;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .phase-header {
+        padding: 1.75rem 2rem 1.5rem;
+        border-bottom: 1px solid var(--sp-line);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .phase-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .phase-icon.red {
+        background: var(--sp-red-light);
+        color: var(--sp-red);
+      }
+      .phase-icon.blue {
+        background: var(--sp-blue-light);
+        color: var(--sp-blue);
+      }
+      .phase-icon.green {
+        background: var(--sp-green-light);
+        color: var(--sp-green);
+      }
+      .phase-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+      }
+      .phase-desc {
+        font-size: 0.88rem;
+        color: var(--sp-muted);
+        margin-top: 0.15rem;
+      }
+      .phase-body {
+        padding: 2rem;
+      }
+
+      /* ── TASK CARDS ─────────────────────────────── */
+      .task-card {
+        background: var(--sp-bg);
+        border: 1px solid var(--sp-line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        transition: box-shadow 0.2s;
+      }
+      .task-card:hover {
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+      }
+      .task-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--sp-blue);
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+      .task-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .task-instruction {
+        font-size: 0.92rem;
+        color: var(--sp-muted);
+        margin-bottom: 1rem;
+        line-height: 1.65;
+      }
+
+      .scenario-box {
+        background: linear-gradient(
+          135deg,
+          var(--sp-blue-light),
+          var(--sp-red-light)
+        );
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(37, 99, 235, 0.12);
+      }
+      .scenario-box h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--sp-red-dark);
+      }
+      .scenario-box p {
+        font-size: 0.92rem;
+        line-height: 1.65;
+      }
+
+      /* ── FORMS ──────────────────────────────────── */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+      }
+      .form-sublabel {
+        font-size: 0.78rem;
+        color: var(--sp-muted);
+        font-weight: 400;
+      }
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 2px solid var(--sp-line);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        background: var(--sp-surface);
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--sp-blue);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+      .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .form-input-sm {
+        max-width: 200px;
+      }
+
+      /* ── BUTTONS ────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--sp-blue);
+        color: #fff;
+        border-color: var(--sp-blue);
+      }
+      .btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: var(--sp-red-light);
+        color: var(--sp-red);
+        border-color: var(--sp-red);
+      }
+      .btn-secondary:hover {
+        background: var(--sp-red);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--sp-blue);
+        border-color: var(--sp-line);
+      }
+      .btn-outline:hover {
+        border-color: var(--sp-blue);
+        background: var(--sp-blue-light);
+      }
+      .btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.82rem;
+      }
+      .btn-lg {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+      }
+
+      /* ── TABLE ──────────────────────────────────── */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.88rem;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .data-table th {
+        background: var(--sp-blue);
+        color: #fff;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .data-table td {
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid var(--sp-line);
+      }
+      .data-table tr:nth-child(even) {
+        background: #f1f5f9;
+      }
+
+      /* ── REF CARDS ──────────────────────────────── */
+      .ref-card {
+        background: var(--sp-surface);
+        border: 1px solid var(--sp-line);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+      .ref-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .ref-title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 0.25rem;
+      }
+      .ref-body {
+        font-size: 0.82rem;
+        color: var(--sp-muted);
+        line-height: 1.55;
+      }
+      .ref-code {
+        background: var(--sp-blue-light);
+        color: var(--sp-blue);
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+        font-weight: 700;
+        font-family: "Courier New", monospace;
+        font-size: 0.88rem;
+      }
+
+      /* ── TOOL PANEL ─────────────────────────────── */
+      .tool-panel {
+        background: linear-gradient(135deg, var(--sp-blue-light), #f1f5f9);
+        border: 2px solid rgba(37, 99, 235, 0.12);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .tool-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--sp-blue);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── STAT CALCULATOR ────────────────────────── */
+      .stat-calc {
+        background: var(--sp-surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 2px solid var(--sp-line);
+      }
+      .stat-result {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+      .stat-box {
+        background: var(--sp-bg);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid var(--sp-line);
+      }
+      .stat-box-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--sp-muted);
+        margin-bottom: 0.25rem;
+      }
+      .stat-box-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--sp-blue);
+      }
+
+      /* ── CHART AREA ─────────────────────────────── */
+      .chart-container {
+        background: var(--sp-surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 2px solid var(--sp-line);
+        margin: 1rem 0;
+        text-align: center;
+      }
+      .chart-container canvas {
+        max-width: 100%;
+        border-radius: 8px;
+      }
+
+      /* ── HINT / CHALLENGE / SUPPORT ─────────────── */
+      .hint-container {
+        margin-top: 1rem;
+      }
+      .hint-btn {
+        background: var(--sp-green-light);
+        color: var(--sp-green);
+        border: 1px solid rgba(5, 150, 105, 0.3);
+        border-radius: 8px;
+        padding: 0.4rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+      .hint-btn:hover {
+        background: var(--sp-green);
+        color: #fff;
+      }
+      .hint-content {
+        display: none;
+        margin-top: 0.75rem;
+        padding: 1rem;
+        background: var(--sp-green-light);
+        border-radius: 10px;
+        font-size: 0.88rem;
+        line-height: 1.6;
+      }
+      .challenge-box {
+        display: none;
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        border: 2px solid #d97706;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+      }
+      .support-box {
+        display: none;
+        background: var(--sp-blue-light);
+        border: 2px solid rgba(37, 99, 235, 0.2);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 1rem;
+        font-size: 0.88rem;
+        line-height: 1.65;
+      }
+
+      /* ── SCOREBOARD ─────────────────────────────── */
+      .scoreboard {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        border-radius: 12px;
+        padding: 1.5rem;
+        color: #fff;
+        margin: 1rem 0;
+      }
+      .scoreboard-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        margin-bottom: 0.75rem;
+      }
+      .scoreboard-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.9rem;
+      }
+      .scoreboard-row:last-child {
+        border-bottom: none;
+      }
+
+      /* ── RUBRIC ─────────────────────────────────── */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+      }
+      .rubric-table th {
+        background: var(--sp-blue);
+        color: #fff;
+        padding: 0.6rem;
+        font-size: 0.78rem;
+        text-align: center;
+      }
+      .rubric-table td {
+        padding: 0.6rem;
+        border: 1px solid var(--sp-line);
+        font-size: 0.82rem;
+        vertical-align: top;
+      }
+      .rubric-cell {
+        cursor: pointer;
+        border-radius: 8px;
+        padding: 0.5rem;
+        transition: all 0.2s;
+      }
+      .rubric-cell:hover {
+        background: var(--sp-blue-light);
+      }
+      .rubric-cell.selected {
+        background: var(--sp-blue);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      /* ── BADGES & SCORE ─────────────────────────── */
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin: 1.5rem 0;
+      }
+      .badge {
+        width: 90px;
+        text-align: center;
+        opacity: 0.3;
+        transition: all 0.4s;
+        filter: grayscale(1);
+      }
+      .badge.earned {
+        opacity: 1;
+        filter: none;
+        transform: scale(1.1);
+      }
+      .badge-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.25rem;
+      }
+      .badge-name {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--sp-ink);
+      }
+      .score-display {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--sp-red-dark), var(--sp-blue));
+        border-radius: 16px;
+        color: #fff;
+        margin: 1.5rem 0;
+      }
+      .score-value {
+        font-size: 4rem;
+        font-weight: 800;
+      }
+      .score-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      /* ── CANVAS ─────────────────────────────────── */
+      .canvas-area {
+        border: 2px dashed var(--sp-line);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        text-align: center;
+      }
+      .canvas-area canvas {
+        border-radius: 8px;
+        cursor: crosshair;
+        max-width: 100%;
+        border: 1px solid var(--sp-line);
+      }
+      .canvas-tools {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+      }
+
+      .svg-scene {
+        text-align: center;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: #f1f5f9;
+        border-radius: 14px;
+      }
+      .svg-scene svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .phase-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--sp-line);
+      }
+      #confetti-canvas {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      @media (max-width: 640px) {
+        .phase-body {
+          padding: 1.25rem;
+        }
+        .stat-result {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* ═══ ENHANCEMENT: Visual Polish ═══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.15);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes countUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes badgeBounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.12);
+        }
+      }
+      .task-card {
+        animation: cardEntrance 0.4s ease-out both;
+      }
+      .task-card:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .task-card:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .btn:not(:disabled):hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+      .btn:not(:disabled):active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      .xp-bar-wrap {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: rgba(15, 15, 25, 0.92);
+        backdrop-filter: blur(10px);
+        padding: 6px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-top: 2px solid rgba(37, 99, 235, 0.3);
+        font-family: inherit;
+        transition: transform 0.3s;
+      }
+      .xp-bar-wrap.hidden {
+        transform: translateY(100%);
+      }
+      .xp-level {
+        color: #2563eb;
+        font-weight: 800;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+      .xp-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #2563eb, #dc2626);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .xp-pts {
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+      .xp-toggle {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0 4px;
+      }
+      @media print {
+        .xp-bar-wrap {
+          display: none !important;
+        }
+      }
+
+      .validation-icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-top: 4px;
+        animation: popIn 0.3s ease-out;
+      }
+      .validation-icon.correct {
+        color: #16a34a;
+      }
+      .validation-icon.incorrect {
+        color: #dc2626;
+      }
+
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1.5px solid rgba(37, 99, 235, 0.3);
+        background: rgba(37, 99, 235, 0.04);
+        color: #2563eb;
+        transition: all 0.2s;
+        margin-top: 6px;
+        font-family: inherit;
+      }
+      .example-toggle:hover {
+        background: rgba(37, 99, 235, 0.1);
+      }
+      .example-content {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 14px;
+        background: rgba(37, 99, 235, 0.05);
+        border-left: 3px solid #2563eb;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.85rem;
+        animation: slideInLeft 0.3s ease-out;
+      }
+      .example-content.visible {
+        display: block;
+      }
+
+      .word-bank {
+        margin: 8px 0;
+        padding: 8px 12px;
+        background: rgba(220, 38, 38, 0.04);
+        border: 1px dashed rgba(220, 38, 38, 0.25);
+        border-radius: 8px;
+        font-size: 0.82rem;
+      }
+      .word-bank-label {
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #dc2626;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        display: inline-block;
+        padding: 2px 8px;
+        margin: 2px;
+        background: rgba(220, 38, 38, 0.08);
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .word-chip:hover {
+        background: rgba(220, 38, 38, 0.18);
+        transform: scale(1.05);
+      }
+
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px 32px;
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        animation: popIn 0.5s ease-out;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 4px solid rgba(37, 99, 235, 0.15);
+        border-radius: 20px;
+        margin: 8px;
+        pointer-events: none;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 8px;
+        animation: badgeBounce 2s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+      }
+      .cert-subtitle {
+        font-size: 0.92rem;
+        color: #6b7280;
+        margin-bottom: 16px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2563eb;
+        margin-bottom: 4px;
+      }
+      .cert-score {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2563eb;
+        margin: 8px 0;
+        animation: countUp 0.6s ease-out;
+      }
+      .cert-xp {
+        font-size: 0.88rem;
+        color: #dc2626;
+        font-weight: 600;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .cert-stat {
+        padding: 8px;
+        background: #f8fafc;
+        border-radius: 8px;
+      }
+      .cert-stat-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #2563eb;
+      }
+      .cert-stat-lbl {
+        font-size: 0.7rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 10px;
+        background: #2563eb;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .cert-close:hover {
+        filter: brightness(1.1);
+      }
+      @media print {
+        .certificate-overlay {
+          display: none !important;
+        }
+      }
+    </style>
+  
+    <style id="NEFT-UPGRADE-6-10-css">
+      /* === Neft Teacher readability + help upgrade (units 6-10) === */
+      html { font-size: 18px; }
+      body { line-height: 1.65; }
+      /* Scale up text-bearing elements without touching SVG labels */
+      p, li, td, th, label, input, textarea, select, button,
+      .ref-body, .ref-title, .ref-code, .slot-time, .slot-name,
+      .budget-label, .drag-chip, figcaption, .hint, .hint-content {
+        font-size: 1rem;
+      }
+      p, li, td, th, label, .ref-body { line-height: 1.65; }
+      h1 { line-height: 1.2; }
+      h2, h3, h4 { line-height: 1.3; }
+      /* Never enlarge inside SVG (chart labels stay as authored) */
+      svg, svg * { font-size: revert; }
+
+      /* === Glossary tooltips === */
+      .neft-term {
+        border-bottom: 2px dotted currentColor;
+        cursor: help;
+        position: relative;
+        font-weight: 600;
+      }
+      .neft-term:focus { outline: 3px solid #2563eb; outline-offset: 2px; border-radius: 3px; }
+      .neft-tip {
+        position: absolute;
+        left: 0; bottom: 125%;
+        z-index: 10050;
+        width: max-content;
+        max-width: 280px;
+        background: #1e1b4b;
+        color: #fff;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.15s;
+        pointer-events: none;
+      }
+      .neft-term:hover .neft-tip,
+      .neft-term:focus .neft-tip { opacity: 1; visibility: visible; }
+
+      /* === Level banner === */
+      .neft-level-banner {
+        max-width: 1000px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1.2rem;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      }
+      .neft-level-banner.lvl1 { background: #ecfdf5; color: #065f46; border: 2px solid #34d399; }
+      .neft-level-banner.lvl2 { background: #eef2ff; color: #3730a3; border: 2px solid #818cf8; }
+      .neft-level-banner .nb-icon { font-size: 1.4rem; line-height: 1; }
+
+      /* === Resource panel (Need help?) === */
+      .neft-help-panel {
+        max-width: 1000px;
+        margin: 1.5rem auto;
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      }
+      .neft-help-summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 1rem 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .neft-help-summary::-webkit-details-marker { display: none; }
+      .neft-help-summary:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; }
+      .neft-help-body { padding: 1rem 1.2rem 1.3rem; }
+      .neft-help-body p { margin: 0 0 0.6rem; }
+      .neft-help-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+      .neft-help-links a {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.7rem 0.9rem;
+        background: #f1f5f9;
+        border-radius: 10px;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .neft-help-links a:hover,
+      .neft-help-links a:focus-visible { background: #dbeafe; outline: none; }
+      .neft-glossary-list { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+      .neft-glossary-list li { margin-bottom: 0.35rem; }
+
+      @media (max-width: 600px) {
+        html { font-size: 17px; }
+        .neft-tip { max-width: 220px; }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="neft-level-banner lvl2" role="note">
+      <span class="nb-icon" aria-hidden="true">&#127919;</span>
+      <span><strong>Level 2 — Regular + Enrichment.</strong> Complete the full activity,
+      then push further with the <strong>Challenge</strong> tasks and the
+      <strong>Explain your reasoning</strong> prompts. Tap any <em>underlined word</em> for
+      its meaning and use hints only if you need them.</span>
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ═══════════════════ HEADER ═══════════════════ -->
+    <header class="app-header">
+      <div class="sport-decor">
+        <span class="sp-float">&#9917;</span>
+        <span class="sp-float">&#127936;</span>
+        <span class="sp-float">&#9918;</span>
+        <span class="sp-float">&#127952;</span>
+        <span class="sp-float">&#127947;</span>
+        <span class="sp-float">&#127944;</span>
+      </div>
+      <div class="header-content">
+        <div class="header-badge">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect
+              x="1"
+              y="3"
+              width="14"
+              height="10"
+              rx="2"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <polyline
+              points="1,4 8,9 15,4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+          </svg>
+          Unit 8 Post-Test Project
+        </div>
+        <h1 class="header-title">Sports Data Analyst</h1>
+        <p class="header-subtitle">
+          Analyze real sports data using mean, median, mode, and range. Build
+          charts, spot trends, and present your findings like a pro analyst.
+        </p>
+      </div>
+    </header>
+
+    <!-- ═══════════════════ MODE BAR ═══════════════════ -->
+    <div class="mode-bar no-print">
+      <button
+        class="mode-btn active"
+        onclick="setMode('standard')"
+        id="modeStandard"
+      >
+        &#127947; Standard
+      </button>
+      <button
+        class="mode-btn"
+        onclick="setMode('challenge')"
+        id="modeChallenge"
+      >
+        &#127775; Challenge
+      </button>
+      <button class="mode-btn" onclick="setMode('support')" id="modeSupport">
+        &#128218; Support
+      </button>
+    </div>
+
+    <!-- ═══════════════════ PROGRESS ═══════════════════ -->
+    <div class="progress-bar-container no-print">
+      <div class="progress-inner">
+        <div class="progress-label">
+          <span>Analysis Progress</span><span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step" onclick="goToPhase(1)">
+            <div class="step-dot active" id="dot1">1</div>
+            <div class="step-label">Briefing</div>
+          </div>
+          <div class="progress-step" onclick="goToPhase(2)">
+            <div class="step-dot" id="dot2">2</div>
+            <div class="step-label">Research</div>
+          </div>
+          <div class="progress-step" onclick="goToPhase(3)">
+            <div class="step-dot" id="dot3">3</div>
+            <div class="step-label">Analyze</div>
+          </div>
+          <div class="progress-step" onclick="goToPhase(4)">
+            <div class="step-dot" id="dot4">4</div>
+            <div class="step-label">Build</div>
+          </div>
+          <div class="progress-step" onclick="goToPhase(5)">
+            <div class="step-dot" id="dot5">5</div>
+            <div class="step-label">Present</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <!-- Student Info -->
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        "
+      >
+        <div class="form-group">
+          <label class="form-label">Analyst Name</label
+          ><input
+            type="text"
+            class="form-input"
+            id="studentName"
+            placeholder="Your name"
+            oninput="autoSave()"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team (Period)</label
+          ><input
+            type="text"
+            class="form-input"
+            id="studentPeriod"
+            placeholder="e.g., Period 3"
+            oninput="autoSave()"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label
+          ><input
+            type="date"
+            class="form-input"
+            id="studentDate"
+            oninput="autoSave()"
+          />
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════
+     PHASE 1: BRIEFING
+     ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase1">
+        <div class="phase-header">
+          <div class="phase-icon red">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="3"
+                width="20"
+                height="22"
+                rx="3"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="9"
+                y1="9"
+                x2="19"
+                y2="9"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <line
+                x1="9"
+                y1="13"
+                x2="19"
+                y2="13"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <line
+                x1="9"
+                y1="17"
+                x2="15"
+                y2="17"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 1: Analyst Briefing</div>
+            <div class="phase-desc">
+              Meet your team and learn the statistics tools you'll use.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- SVG: Stadium -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 500 180"
+              width="500"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="500" height="180" rx="12" fill="#1e293b" />
+              <!-- Field -->
+              <rect
+                x="40"
+                y="60"
+                width="420"
+                height="100"
+                rx="4"
+                fill="#166534"
+              />
+              <rect
+                x="50"
+                y="65"
+                width="400"
+                height="90"
+                rx="2"
+                fill="none"
+                stroke="#fff"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <line
+                x1="250"
+                y1="65"
+                x2="250"
+                y2="155"
+                stroke="#fff"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <circle
+                cx="250"
+                cy="110"
+                r="20"
+                fill="none"
+                stroke="#fff"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <!-- Scoreboard -->
+              <rect
+                x="150"
+                y="10"
+                width="200"
+                height="40"
+                rx="6"
+                fill="#0f172a"
+                stroke="#d97706"
+                stroke-width="1"
+              />
+              <text
+                x="200"
+                y="28"
+                text-anchor="middle"
+                fill="#dc2626"
+                font-size="9"
+                font-weight="700"
+              >
+                HOME
+              </text>
+              <text
+                x="200"
+                y="42"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="14"
+                font-weight="800"
+              >
+                DATA
+              </text>
+              <text
+                x="300"
+                y="28"
+                text-anchor="middle"
+                fill="#2563eb"
+                font-size="9"
+                font-weight="700"
+              >
+                AWAY
+              </text>
+              <text
+                x="300"
+                y="42"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="14"
+                font-weight="800"
+              >
+                STATS
+              </text>
+              <text
+                x="250"
+                y="36"
+                text-anchor="middle"
+                fill="#d97706"
+                font-size="16"
+                font-weight="800"
+              >
+                VS
+              </text>
+              <!-- Lights -->
+              <circle cx="80" cy="25" r="8" fill="#fbbf24" opacity="0.3" />
+              <circle cx="80" cy="25" r="4" fill="#fbbf24" opacity="0.6" />
+              <circle cx="420" cy="25" r="8" fill="#fbbf24" opacity="0.3" />
+              <circle cx="420" cy="25" r="4" fill="#fbbf24" opacity="0.6" />
+            </svg>
+          </div>
+
+          <!-- Task 1 -->
+          <div class="task-card">
+            <div class="task-number">1</div>
+            <div class="task-title">Welcome to Sports Analytics HQ</div>
+            <div class="task-instruction">
+              You've been hired as the lead data analyst for a professional
+              sports organization. Your job is to analyze player and team
+              performance data to help the coaching staff make smart decisions.
+            </div>
+            <div class="scenario-box">
+              <h3>&#127947; Your Mission</h3>
+              <p>
+                The coaching staff needs a full statistical report analyzing
+                player performance across the season. You'll calculate
+                <strong>mean, median, mode, and range</strong>, create data
+                displays, and make recommendations based on your analysis. Your
+                report will determine starting lineups and strategy!
+              </p>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >In your own words, why is data analysis important in
+                sports?</label
+              ><textarea
+                class="form-textarea"
+                id="briefing_importance"
+                rows="3"
+                placeholder="Data analysis helps teams because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 2: Vocabulary -->
+          <div class="task-card">
+            <div class="task-number">2</div>
+            <div class="task-title">Statistics Vocabulary Review</div>
+            <div class="task-instruction">
+              Master these statistical measures before analyzing data.
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin: 1rem 0;
+              "
+            >
+              <div class="ref-card">
+                <div class="ref-icon">&#128202;</div>
+                <div>
+                  <div class="ref-title">Mean (Average)</div>
+                  <div class="ref-body">
+                    Add all values, then divide by the count. Data:
+                    <span class="ref-code">3, 5, 7</span> &rarr; Mean = (3+5+7)
+                    / 3 = <span class="ref-code">5</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ref-card">
+                <div class="ref-icon">&#128201;</div>
+                <div>
+                  <div class="ref-title">Median (Middle)</div>
+                  <div class="ref-body">
+                    The middle value when data is ordered. Data:
+                    <span class="ref-code">2, 5, 9</span> &rarr; Median =
+                    <span class="ref-code">5</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ref-card">
+                <div class="ref-icon">&#128200;</div>
+                <div>
+                  <div class="ref-title">Mode (Most Common)</div>
+                  <div class="ref-body">
+                    The value that appears most often. Data:
+                    <span class="ref-code">3, 5, 5, 7</span> &rarr; Mode =
+                    <span class="ref-code">5</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ref-card">
+                <div class="ref-icon">&#128208;</div>
+                <div>
+                  <div class="ref-title">Range (Spread)</div>
+                  <div class="ref-body">
+                    Maximum minus minimum. Data:
+                    <span class="ref-code">2, 5, 9</span> &rarr; Range = 9 - 2 =
+                    <span class="ref-code">7</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Practice: Find the mean, median, mode, and range of:
+                <span class="ref-code">4, 8, 6, 8, 4, 8, 10</span></label
+              >
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label form-sublabel">Mean:</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_mean"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel">Median:</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_median"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel">Mode:</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_mode"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label form-sublabel">Range:</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_range"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_vocab')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_vocab">
+                First order the data: 4, 4, 6, 8, 8, 8, 10. Sum = 48, count = 7,
+                so mean = 48/7. Median is the middle (4th) value. Mode is most
+                frequent. Range = max - min.
+              </div>
+            </div>
+            <div class="support-box" id="support_vocab">
+              <strong>&#128218; Support:</strong> Step 1: Order the data least
+              to greatest. Step 2: Mean = add all then divide by how many. Step
+              3: Median = cross off from both ends until you reach the middle.
+              Step 4: Mode = whichever number appears most. Step 5: Range =
+              biggest - smallest.
+            </div>
+          </div>
+
+          <!-- Task 3: Player Data -->
+          <div class="task-card">
+            <div class="task-number">3</div>
+            <div class="task-title">Meet the Players</div>
+            <div class="task-instruction">
+              Review the performance data for the basketball team's top 8
+              players over the last 10 games.
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Points per Game (last 10)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#127936; Jordan M.</td>
+                  <td>22, 18, 25, 20, 22, 28, 22, 19, 24, 20</td>
+                </tr>
+                <tr>
+                  <td>&#127936; Aisha T.</td>
+                  <td>15, 12, 18, 14, 15, 11, 15, 16, 13, 15</td>
+                </tr>
+                <tr>
+                  <td>&#127936; Carlos R.</td>
+                  <td>30, 8, 25, 12, 28, 10, 32, 14, 26, 15</td>
+                </tr>
+                <tr>
+                  <td>&#127936; Priya K.</td>
+                  <td>16, 17, 15, 18, 16, 17, 16, 15, 17, 16</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="form-group">
+              <label class="form-label"
+                >Just by looking, which player seems most consistent? Which
+                seems most unpredictable?</label
+              ><textarea
+                class="form-textarea"
+                id="briefing_predict"
+                rows="2"
+                placeholder="I think ___ is most consistent because... and ___ is most unpredictable because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <div></div>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(2)">
+              Start Research &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+     PHASE 2: RESEARCH
+     ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase2" hidden>
+        <div class="phase-header">
+          <div class="phase-icon blue">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <line
+                x1="18"
+                y1="18"
+                x2="25"
+                y2="25"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 2: Research &amp; Calculate</div>
+            <div class="phase-desc">
+              Crunch the numbers for each player's statistics.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Statistics Calculator Tool -->
+          <div class="tool-panel">
+            <div class="tool-panel-title">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect
+                  x="1"
+                  y="1"
+                  width="16"
+                  height="16"
+                  rx="3"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="5"
+                  y1="9"
+                  x2="13"
+                  y2="9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="9"
+                  y1="5"
+                  x2="9"
+                  y2="13"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+              Statistics Calculator
+            </div>
+            <div class="stat-calc">
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+                <input
+                  type="text"
+                  class="form-input"
+                  id="calcInput"
+                  placeholder="Enter numbers separated by commas (e.g., 5, 8, 12, 8, 3)"
+                  style="flex: 1; min-width: 200px"
+                />
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="calculateStats()"
+                >
+                  Calculate
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="clearStats()">
+                  Clear
+                </button>
+              </div>
+              <div class="stat-result" id="statResults" style="display: none">
+                <div class="stat-box">
+                  <div class="stat-box-label">Mean</div>
+                  <div class="stat-box-value" id="calcMean">—</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-box-label">Median</div>
+                  <div class="stat-box-value" id="calcMedian">—</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-box-label">Mode</div>
+                  <div class="stat-box-value" id="calcMode">—</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-box-label">Range</div>
+                  <div class="stat-box-value" id="calcRange">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 4: Jordan Analysis -->
+          <div class="task-card">
+            <div class="task-number">4</div>
+            <div class="task-title">Analyze Jordan M.</div>
+            <div class="task-instruction">
+              Jordan's points:
+              <span class="ref-code"
+                >22, 18, 25, 20, 22, 28, 22, 19, 24, 20</span
+              >. Use the calculator or work by hand.
+            </div>
+            <div class="form-group">
+              <label class="form-label">Order the data least to greatest:</label
+              ><input
+                type="text"
+                class="form-input"
+                id="jordan_ordered"
+                placeholder="18, 19, 20, ..."
+                oninput="autoSave()"
+              />
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Mean (show work):</label
+                ><textarea
+                  class="form-textarea"
+                  id="jordan_mean_work"
+                  rows="2"
+                  placeholder="Sum = ___; Count = 10; Mean = ___/10 = ___"
+                  oninput="autoSave()"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mean =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="jordan_mean"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Median =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="jordan_median"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mode =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="jordan_mode"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Range =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="jordan_range"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_jordan')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_jordan">
+                Ordered: 18, 19, 20, 20, 22, 22, 22, 24, 25, 28. Sum = 220. With
+                10 values, median is average of 5th and 6th values.
+              </div>
+            </div>
+            <div class="support-box" id="support_jordan">
+              <strong>&#128218; Support:</strong> Mean:
+              18+19+20+20+22+22+22+24+25+28 = 220. 220 &divide; 10 = 22. Median:
+              average of 22 and 22 = 22. Mode: 22 (appears 3 times). Range:
+              28-18 = 10.
+            </div>
+          </div>
+
+          <!-- Task 5: Aisha Analysis -->
+          <div class="task-card">
+            <div class="task-number">5</div>
+            <div class="task-title">Analyze Aisha T.</div>
+            <div class="task-instruction">
+              Aisha's points:
+              <span class="ref-code"
+                >15, 12, 18, 14, 15, 11, 15, 16, 13, 15</span
+              >
+            </div>
+            <div class="form-group">
+              <label class="form-label">Order the data:</label
+              ><input
+                type="text"
+                class="form-input"
+                id="aisha_ordered"
+                placeholder="11, 12, ..."
+                oninput="autoSave()"
+              />
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Mean =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="aisha_mean"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Median =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="aisha_median"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mode =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="aisha_mode"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Range =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="aisha_range"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Show your work for the mean:</label
+              ><textarea
+                class="form-textarea"
+                id="aisha_mean_work"
+                rows="2"
+                placeholder="Sum = ___; ___/10 = ___"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_aisha')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_aisha">
+                Ordered: 11, 12, 13, 14, 15, 15, 15, 15, 16, 18. Sum = 144. Mean
+                = 14.4. Median = (15+15)/2 = 15. Mode = 15.
+              </div>
+            </div>
+            <div class="support-box" id="support_aisha">
+              <strong>&#128218; Support:</strong> Add all 10 numbers.
+              11+12+13+14+15+15+15+15+16+18 = 144. Divide 144 by 10 = 14.4.
+            </div>
+          </div>
+
+          <!-- Task 6: Carlos Analysis -->
+          <div class="task-card">
+            <div class="task-number">6</div>
+            <div class="task-title">Analyze Carlos R.</div>
+            <div class="task-instruction">
+              Carlos's points:
+              <span class="ref-code"
+                >30, 8, 25, 12, 28, 10, 32, 14, 26, 15</span
+              >
+            </div>
+            <div class="form-group">
+              <label class="form-label">Order the data:</label
+              ><input
+                type="text"
+                class="form-input"
+                id="carlos_ordered"
+                placeholder="8, 10, ..."
+                oninput="autoSave()"
+              />
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Mean =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="carlos_mean"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Median =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="carlos_median"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mode =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="carlos_mode"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Range =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="carlos_range"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Carlos has the highest range. What does this tell you about his
+                consistency?</label
+              ><textarea
+                class="form-textarea"
+                id="carlos_consistency"
+                rows="2"
+                placeholder="A high range means..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_carlos')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_carlos">
+                Ordered: 8, 10, 12, 14, 15, 25, 26, 28, 30, 32. Sum = 200. Mean
+                = 20. Median = (15+25)/2 = 20. No mode (all appear once). Range
+                = 32-8 = 24.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 7: Priya Analysis -->
+          <div class="task-card">
+            <div class="task-number">7</div>
+            <div class="task-title">Analyze Priya K.</div>
+            <div class="task-instruction">
+              Priya's points:
+              <span class="ref-code"
+                >16, 17, 15, 18, 16, 17, 16, 15, 17, 16</span
+              >
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Mean =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="priya_mean"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Median =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="priya_median"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mode =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="priya_mode"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Range =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="priya_range"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Priya has the lowest range. What advantage does this give the
+                coach?</label
+              ><textarea
+                class="form-textarea"
+                id="priya_advantage"
+                rows="2"
+                placeholder="A low range means the coach can predict..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(1)">
+              &#8592; Back to Briefing
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(3)">
+              Continue to Analyze &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+     PHASE 3: ANALYZE
+     ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase3" hidden>
+        <div class="phase-header">
+          <div class="phase-icon green">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="3"
+                y="14"
+                width="4"
+                height="10"
+                rx="1"
+                fill="currentColor"
+                opacity="0.5"
+              />
+              <rect
+                x="9"
+                y="10"
+                width="4"
+                height="14"
+                rx="1"
+                fill="currentColor"
+                opacity="0.7"
+              />
+              <rect
+                x="15"
+                y="6"
+                width="4"
+                height="18"
+                rx="1"
+                fill="currentColor"
+                opacity="0.85"
+              />
+              <rect
+                x="21"
+                y="2"
+                width="4"
+                height="22"
+                rx="1"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">
+              Phase 3: Data Analysis &amp; Comparison
+            </div>
+            <div class="phase-desc">
+              Compare players and build data displays.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- SVG: Comparison Chart -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 500 200"
+              width="500"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="500" height="200" rx="8" fill="#f8fafc" />
+              <text
+                x="250"
+                y="20"
+                text-anchor="middle"
+                fill="#0f172a"
+                font-size="11"
+                font-weight="800"
+              >
+                PLAYER COMPARISON DASHBOARD
+              </text>
+              <!-- Bars for mean scores -->
+              <text
+                x="45"
+                y="55"
+                text-anchor="end"
+                fill="#64748b"
+                font-size="8"
+              >
+                Jordan
+              </text>
+              <rect
+                x="50"
+                y="45"
+                width="220"
+                height="16"
+                rx="3"
+                fill="#dc2626"
+                opacity="0.8"
+              />
+              <text x="275" y="57" fill="#fff" font-size="8" font-weight="700">
+                22.0
+              </text>
+              <text
+                x="45"
+                y="80"
+                text-anchor="end"
+                fill="#64748b"
+                font-size="8"
+              >
+                Aisha
+              </text>
+              <rect
+                x="50"
+                y="70"
+                width="144"
+                height="16"
+                rx="3"
+                fill="#2563eb"
+                opacity="0.8"
+              />
+              <text x="199" y="82" fill="#fff" font-size="8" font-weight="700">
+                14.4
+              </text>
+              <text
+                x="45"
+                y="105"
+                text-anchor="end"
+                fill="#64748b"
+                font-size="8"
+              >
+                Carlos
+              </text>
+              <rect
+                x="50"
+                y="95"
+                width="200"
+                height="16"
+                rx="3"
+                fill="#059669"
+                opacity="0.8"
+              />
+              <text x="255" y="107" fill="#fff" font-size="8" font-weight="700">
+                20.0
+              </text>
+              <text
+                x="45"
+                y="130"
+                text-anchor="end"
+                fill="#64748b"
+                font-size="8"
+              >
+                Priya
+              </text>
+              <rect
+                x="50"
+                y="120"
+                width="163"
+                height="16"
+                rx="3"
+                fill="#d97706"
+                opacity="0.8"
+              />
+              <text x="218" y="132" fill="#fff" font-size="8" font-weight="700">
+                16.3
+              </text>
+              <!-- Axis -->
+              <line
+                x1="50"
+                y1="145"
+                x2="450"
+                y2="145"
+                stroke="#e2e8f0"
+                stroke-width="1"
+              />
+              <text x="50" y="160" fill="#94a3b8" font-size="7">0</text>
+              <text x="150" y="160" fill="#94a3b8" font-size="7">10</text>
+              <text x="250" y="160" fill="#94a3b8" font-size="7">20</text>
+              <text x="350" y="160" fill="#94a3b8" font-size="7">30</text>
+              <text
+                x="250"
+                y="185"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="8"
+                font-weight="600"
+              >
+                Mean Points Per Game
+              </text>
+            </svg>
+          </div>
+
+          <!-- Task 8: Comparison Table -->
+          <div class="task-card">
+            <div class="task-number">8</div>
+            <div class="task-title">Player Comparison Summary</div>
+            <div class="task-instruction">
+              Fill in the comparison table with all your calculated statistics.
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Mean</th>
+                  <th>Median</th>
+                  <th>Mode</th>
+                  <th>Range</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Jordan M.</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_jordan_mean"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_jordan_median"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_jordan_mode"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_jordan_range"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Aisha T.</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_aisha_mean"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_aisha_median"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_aisha_mode"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_aisha_range"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Carlos R.</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_carlos_mean"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_carlos_median"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_carlos_mode"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_carlos_range"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Priya K.</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_priya_mean"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_priya_median"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_priya_mode"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="comp_priya_range"
+                      style="max-width: 70px"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="form-group">
+              <label class="form-label"
+                >Who has the highest mean? What does that tell you?</label
+              ><textarea
+                class="form-textarea"
+                id="comp_highest_mean"
+                rows="2"
+                placeholder="The player with the highest mean is..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Who is the most consistent? Which statistic helped you
+                decide?</label
+              ><textarea
+                class="form-textarea"
+                id="comp_consistent"
+                rows="2"
+                placeholder="The most consistent player is... because the range..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 9: Best Measure -->
+          <div class="task-card">
+            <div class="task-number">9</div>
+            <div class="task-title">Best Measure of Center</div>
+            <div class="task-instruction">
+              Different situations call for different measures. Decide which is
+              best for each scenario.
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >For choosing the starting player with the most overall points,
+                would you use mean, median, or mode? Why?</label
+              ><textarea
+                class="form-textarea"
+                id="best_starter"
+                rows="2"
+                placeholder="I would use ___ because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Carlos scored 8 points in one game but usually scores much
+                higher. Which measure best represents his typical performance:
+                mean or median? Why?</label
+              ><textarea
+                class="form-textarea"
+                id="best_carlos"
+                rows="2"
+                placeholder="For Carlos, ___ is better because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >A shoe company wants to know the most popular shoe size on the
+                team. Which measure should they use?</label
+              ><input
+                type="text"
+                class="form-input form-input-sm"
+                id="best_shoe"
+                placeholder="mean / median / mode"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="challenge-box" id="challenge_best">
+              <strong>&#127775; Challenge:</strong> Create a data set of 7
+              numbers where the mean, median, and mode are all different values.
+              Show your work.<textarea
+                class="form-textarea"
+                id="challenge_best_data"
+                rows="2"
+                placeholder="Data: ___, ___, ___, ___, ___, ___, ___; Mean=___; Median=___; Mode=___"
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 10: Draw Bar Chart -->
+          <div class="task-card">
+            <div class="task-number">10</div>
+            <div class="task-title">Create a Bar Chart</div>
+            <div class="task-instruction">
+              Draw a bar chart comparing the mean points per game for all 4
+              players. Label your axes!
+            </div>
+            <div class="canvas-area">
+              <canvas
+                id="barCanvas"
+                width="700"
+                height="400"
+                style="background: #fff"
+              ></canvas>
+              <div class="canvas-tools">
+                <label style="font-size: 0.82rem; font-weight: 600"
+                  >Color:</label
+                >
+                <input
+                  type="color"
+                  id="barColor"
+                  value="#2563eb"
+                  style="
+                    width: 35px;
+                    height: 30px;
+                    border: none;
+                    cursor: pointer;
+                  "
+                />
+                <label style="font-size: 0.82rem; font-weight: 600"
+                  >Size:</label
+                >
+                <input
+                  type="range"
+                  id="barSize"
+                  min="1"
+                  max="12"
+                  value="3"
+                  style="width: 80px"
+                />
+                <button
+                  class="btn btn-sm btn-outline"
+                  onclick="clearBarCanvas()"
+                >
+                  Clear
+                </button>
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="drawGridLines()"
+                >
+                  Draw Grid
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="downloadBarCanvas()"
+                >
+                  &#128190; Save
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(2)">
+              &#8592; Back to Research
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(4)">
+              Continue to Build &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+     PHASE 4: BUILD
+     ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase4" hidden>
+        <div class="phase-header">
+          <div class="phase-icon red">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8 v6 h5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 4: Build Your Report</div>
+            <div class="phase-desc">
+              Create data displays, write recommendations, and finalize
+              analysis.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- SVG: Trophy -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 300 180"
+              width="300"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="trophyGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fbbf24" />
+                  <stop offset="100%" stop-color="#d97706" />
+                </linearGradient>
+              </defs>
+              <rect
+                x="115"
+                y="20"
+                width="70"
+                height="80"
+                rx="10"
+                fill="url(#trophyGrad)"
+              />
+              <rect
+                x="125"
+                y="30"
+                width="50"
+                height="55"
+                rx="6"
+                fill="none"
+                stroke="#92400e"
+                stroke-width="1"
+                opacity="0.4"
+              />
+              <path
+                d="M115 40 Q80 40 85 70 Q90 90 115 80"
+                fill="#fbbf24"
+                stroke="#d97706"
+                stroke-width="1"
+              />
+              <path
+                d="M185 40 Q220 40 215 70 Q210 90 185 80"
+                fill="#fbbf24"
+                stroke="#d97706"
+                stroke-width="1"
+              />
+              <rect
+                x="135"
+                y="100"
+                width="30"
+                height="15"
+                rx="2"
+                fill="#d97706"
+              />
+              <rect
+                x="120"
+                y="115"
+                width="60"
+                height="12"
+                rx="3"
+                fill="#92400e"
+              />
+              <text
+                x="150"
+                y="65"
+                text-anchor="middle"
+                fill="#92400e"
+                font-size="22"
+                font-weight="800"
+              >
+                &#9733;
+              </text>
+              <text
+                x="150"
+                y="155"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="9"
+                font-weight="700"
+              >
+                MVP ANALYTICS AWARD
+              </text>
+              <text
+                x="150"
+                y="170"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="7"
+                id="trophyName"
+              >
+                Analyst: Your Name
+              </text>
+            </svg>
+          </div>
+
+          <!-- Task 11: Line Plot -->
+          <div class="task-card">
+            <div class="task-number">11</div>
+            <div class="task-title">Create a Dot Plot</div>
+            <div class="task-instruction">
+              Create a dot plot for Aisha's points data. Use the canvas to draw
+              dots above each value on a number line.
+            </div>
+            <div class="canvas-area">
+              <canvas
+                id="dotCanvas"
+                width="700"
+                height="300"
+                style="background: #fff"
+              ></canvas>
+              <div class="canvas-tools">
+                <label style="font-size: 0.82rem; font-weight: 600"
+                  >Color:</label
+                >
+                <input
+                  type="color"
+                  id="dotColor"
+                  value="#dc2626"
+                  style="
+                    width: 35px;
+                    height: 30px;
+                    border: none;
+                    cursor: pointer;
+                  "
+                />
+                <button
+                  class="btn btn-sm btn-outline"
+                  onclick="clearDotCanvas()"
+                >
+                  Clear
+                </button>
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="drawDotPlotGuide()"
+                >
+                  Draw Number Line
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >What does your dot plot show about where most of Aisha's scores
+                cluster?</label
+              ><textarea
+                class="form-textarea"
+                id="dotplot_analysis"
+                rows="2"
+                placeholder="Most of Aisha's scores cluster around..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 12: Outliers -->
+          <div class="task-card">
+            <div class="task-number">12</div>
+            <div class="task-title">Outlier Investigation</div>
+            <div class="task-instruction">
+              An outlier is a data value that's much higher or lower than the
+              rest. Analyze Carlos's data for outliers.
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Does Carlos's data have any outliers? Which values seem far
+                from the rest?</label
+              ><textarea
+                class="form-textarea"
+                id="outlier_identify"
+                rows="2"
+                placeholder="The value ___ seems like an outlier because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >If you removed Carlos's lowest score (8), what would his new
+                mean be? (Sum of remaining 9 values divided by 9)</label
+              ><input
+                type="text"
+                class="form-input form-input-sm"
+                id="outlier_new_mean"
+                placeholder="?"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >How does removing the outlier change the mean? Is the new mean
+                more or less representative?</label
+              ><textarea
+                class="form-textarea"
+                id="outlier_effect"
+                rows="2"
+                placeholder="Removing the outlier changed the mean from ___ to ___. This is more/less representative because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint_outlier')">
+                &#128161; Show Hint
+              </button>
+              <div class="hint-content" id="hint_outlier">
+                Without the 8: 10+12+14+15+25+26+28+30+32 = 192. 192 / 9 = 21.3.
+                Compare to original mean of 20.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 13: Coaching Recommendation -->
+          <div class="task-card">
+            <div class="task-number">13</div>
+            <div class="task-title">Coaching Recommendations</div>
+            <div class="task-instruction">
+              Use your data analysis to make recommendations to the coaching
+              staff.
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Starting lineup recommendation: Who should start and why? Use
+                specific statistics.</label
+              ><textarea
+                class="form-textarea"
+                id="rec_lineup"
+                rows="3"
+                placeholder="I recommend starting ___ because their mean of ___ shows... and their range of ___ means..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >If the team is behind by 20 points with 5 minutes left, who
+                would you put in? Why?</label
+              ><textarea
+                class="form-textarea"
+                id="rec_clutch"
+                rows="2"
+                placeholder="I would put in ___ because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Which player needs the most improvement in consistency? What
+                training do you suggest?</label
+              ><textarea
+                class="form-textarea"
+                id="rec_training"
+                rows="2"
+                placeholder="The player who needs consistency work is... I suggest..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="challenge-box" id="challenge_rec">
+              <strong>&#127775; Challenge:</strong> The team has a salary cap of
+              $500,000. Jordan costs $200,000, Carlos $180,000, Aisha $120,000,
+              Priya $100,000. Which 3 players maximize points per dollar? Show
+              your reasoning.<textarea
+                class="form-textarea"
+                id="challenge_salary"
+                rows="3"
+                placeholder="Points per dollar: Jordan = ___/200000 = ..."
+                oninput="autoSave()"
+                style="margin-top: 0.5rem"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 14: Create Your Data Set -->
+          <div class="task-card">
+            <div class="task-number">14</div>
+            <div class="task-title">Create Your Own Data Set</div>
+            <div class="task-instruction">
+              Invent stats for a 5th player. Design their scoring pattern to
+              have specific statistical properties.
+            </div>
+            <div class="form-group">
+              <label class="form-label">Player name and position:</label
+              ><input
+                type="text"
+                class="form-input"
+                id="new_player_name"
+                placeholder="e.g., Maya L. — Point Guard"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Enter 10 game scores (your player should have a mean between
+                15-25):</label
+              ><input
+                type="text"
+                class="form-input"
+                id="new_player_data"
+                placeholder="e.g., 20, 22, 18, ..."
+                oninput="autoSave()"
+              />
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 0.75rem;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Mean =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="new_mean"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Median =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="new_median"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mode =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="new_mode"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Range =</label
+                ><input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="new_range"
+                  placeholder="?"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >How does your player compare to the other 4?</label
+              ><textarea
+                class="form-textarea"
+                id="new_comparison"
+                rows="2"
+                placeholder="My player is similar to ___ because... but different from ___ because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box" id="support_new_player">
+              <strong>&#128218; Support:</strong> To get a mean of 20 with 10
+              scores, the total must be 200. Pick 10 numbers that add to 200. To
+              have a mode, repeat at least one number.
+            </div>
+          </div>
+
+          <!-- Task 15: Real-World Connection -->
+          <div class="task-card">
+            <div class="task-number">15</div>
+            <div class="task-title">Statistics in the Real World</div>
+            <div class="task-instruction">
+              Statistics are everywhere! Describe how each measure is used
+              outside of sports.
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mean in real life:</label
+              ><textarea
+                class="form-textarea"
+                id="rw_mean"
+                rows="2"
+                placeholder="Example: A student's GPA is a mean of..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Median in real life:</label
+              ><textarea
+                class="form-textarea"
+                id="rw_median"
+                rows="2"
+                placeholder="Example: Median home price is used because..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mode in real life:</label
+              ><textarea
+                class="form-textarea"
+                id="rw_mode"
+                rows="2"
+                placeholder="Example: The most popular pizza topping is..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(3)">
+              &#8592; Back to Analyze
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="goToPhase(5)">
+              Continue to Present &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+     PHASE 5: PRESENT & REFLECT
+     ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase5" hidden>
+        <div class="phase-header">
+          <div class="phase-icon green">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M14 3l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 5: Present &amp; Reflect</div>
+            <div class="phase-desc">
+              Finalize your analysis report and submit your findings.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- SVG: Report Cover -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 400 180"
+              width="400"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="reportGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#991b1b" />
+                  <stop offset="50%" stop-color="#dc2626" />
+                  <stop offset="100%" stop-color="#2563eb" />
+                </linearGradient>
+              </defs>
+              <rect width="400" height="180" rx="16" fill="url(#reportGrad)" />
+              <rect
+                x="8"
+                y="8"
+                width="384"
+                height="164"
+                rx="12"
+                fill="none"
+                stroke="rgba(255,255,255,0.2)"
+                stroke-width="1.5"
+              />
+              <text
+                x="200"
+                y="45"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.6)"
+                font-size="9"
+                font-weight="600"
+                letter-spacing="4"
+              >
+                OFFICIAL STATISTICAL REPORT
+              </text>
+              <text
+                x="200"
+                y="80"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="22"
+                font-weight="900"
+              >
+                SEASON ANALYSIS
+              </text>
+              <text
+                x="200"
+                y="105"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.7)"
+                font-size="10"
+              >
+                Mean | Median | Mode | Range | Data Displays
+              </text>
+              <line
+                x1="100"
+                y1="120"
+                x2="300"
+                y2="120"
+                stroke="rgba(255,255,255,0.3)"
+                stroke-width="1"
+              />
+              <text
+                x="200"
+                y="145"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.8)"
+                font-size="10"
+                font-weight="600"
+                id="reportAnalystName"
+              >
+                Analyst: Your Name
+              </text>
+              <text
+                x="200"
+                y="165"
+                text-anchor="middle"
+                fill="rgba(255,255,255,0.5)"
+                font-size="8"
+              >
+                Sports Data Analytics Division
+              </text>
+            </svg>
+          </div>
+
+          <!-- Task 16: Rubric -->
+          <div class="task-card">
+            <div class="task-number">16</div>
+            <div class="task-title">Self-Assessment Rubric</div>
+            <div class="task-instruction">Rate your skills honestly.</div>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th style="width: 22%">Skill</th>
+                  <th style="width: 19.5%">Beginning (1)</th>
+                  <th style="width: 19.5%">Developing (2)</th>
+                  <th style="width: 19.5%">Proficient (3)</th>
+                  <th style="width: 19.5%">Expert (4)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 600">Calculating Mean</td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('mean', 1, this)"
+                    >
+                      Needed help
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('mean', 2, this)"
+                    >
+                      Some errors
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('mean', 3, this)"
+                    >
+                      Accurate
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('mean', 4, this)"
+                    >
+                      Explained clearly
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 600">Median &amp; Mode</td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('medmode', 1, this)"
+                    >
+                      Confused them
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('medmode', 2, this)"
+                    >
+                      Found with hints
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('medmode', 3, this)"
+                    >
+                      Found independently
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('medmode', 4, this)"
+                    >
+                      Applied to decisions
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 600">Data Displays</td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('displays', 1, this)"
+                    >
+                      Incomplete
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('displays', 2, this)"
+                    >
+                      Basic charts
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('displays', 3, this)"
+                    >
+                      Clear &amp; labeled
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('displays', 4, this)"
+                    >
+                      Professional quality
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 600">Data Interpretation</td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('interpret', 1, this)"
+                    >
+                      No conclusions
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('interpret', 2, this)"
+                    >
+                      Basic observations
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('interpret', 3, this)"
+                    >
+                      Supported by data
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="rubric-cell"
+                      onclick="selectRubric('interpret', 4, this)"
+                    >
+                      Insightful analysis
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Task 17: Reflection -->
+          <div class="task-card">
+            <div class="task-number">17</div>
+            <div class="task-title">Analyst Reflection</div>
+            <div class="form-group">
+              <label class="form-label"
+                >Which statistical measure was hardest for you? How did you
+                overcome it?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect_hard"
+                rows="3"
+                placeholder="The hardest measure was... I overcame it by..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >When is the median a better measure of center than the
+                mean?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect_median_vs_mean"
+                rows="2"
+                placeholder="Median is better when..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >How could you use statistics in your own life outside of
+                school?</label
+              ><textarea
+                class="form-textarea"
+                id="reflect_life"
+                rows="2"
+                placeholder="I could use statistics to..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Task 18: Score -->
+          <div class="task-card">
+            <div class="task-number">18</div>
+            <div class="task-title">Final Score &amp; Badges</div>
+            <div style="text-align: center; margin-bottom: 1.5rem">
+              <button
+                class="btn btn-primary btn-lg"
+                onclick="calculateScore()"
+                style="font-size: 1.1rem"
+              >
+                &#127942; Calculate Final Score
+              </button>
+            <button class="btn btn-primary" onclick="ntDownloadResultsCSV()">
+              &#128202; Download Results (CSV for teacher)
+            </button>
+            </div>
+            <div class="score-display">
+              <div class="score-value" id="scoreValue">—</div>
+              <div class="score-label">out of 100 points</div>
+            </div>
+            <div class="badge-row">
+              <div class="badge" id="badge1">
+                <div class="badge-icon">&#128202;</div>
+                <div class="badge-name">Rookie Analyst</div>
+              </div>
+              <div class="badge" id="badge2">
+                <div class="badge-icon">&#128200;</div>
+                <div class="badge-name">Data Cruncher</div>
+              </div>
+              <div class="badge" id="badge3">
+                <div class="badge-icon">&#128201;</div>
+                <div class="badge-name">Chart Builder</div>
+              </div>
+              <div class="badge" id="badge4">
+                <div class="badge-icon">&#127947;</div>
+                <div class="badge-name">Lead Analyst</div>
+              </div>
+              <div class="badge" id="badge5">
+                <div class="badge-icon">&#127942;</div>
+                <div class="badge-name">MVP Analyst</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="task-card">
+            <div class="task-number">&#10004;</div>
+            <div class="task-title">Submit Your Report</div>
+            <div
+              style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                justify-content: center;
+                margin-top: 1rem;
+              "
+            >
+              <button class="btn btn-primary btn-lg" onclick="printProject()">
+                &#128424; Print
+              </button>
+              <button
+                class="btn btn-secondary btn-lg"
+                onclick="downloadProject()"
+              >
+                &#128190; Download
+              </button>
+              <button
+                class="btn btn-outline btn-lg"
+                onclick="submitToClassroom()"
+              >
+                &#127891; Google Classroom
+              </button>
+            </div>
+          </div>
+
+          <div class="phase-nav">
+            <button class="btn btn-outline" onclick="goToPhase(4)">
+              &#8592; Back to Build
+            </button>
+            <div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- /main-container -->
+
+    <!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+    <script>
+      (function () {
+        "use strict";
+        var STORAGE_KEY = "neft_unit8_sports";
+        var currentPhase = 1,
+          currentMode = "standard";
+        var rubricScores = { mean: 0, medmode: 0, displays: 0, interpret: 0 };
+
+        /* ── Phase Nav ────────────────────────────────── */
+        window.goToPhase = function (n) {
+          document.querySelectorAll(".phase-section").forEach(function (s) {
+            s.hidden = true;
+          });
+          var t = document.getElementById("phase" + n);
+          if (t) {
+            t.hidden = false;
+            currentPhase = n;
+          }
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          autoSave();
+        };
+        function updateProgress() {
+          var pct = Math.round(((currentPhase - 1) / 4) * 100);
+          document.getElementById("progressPct").textContent = pct + "%";
+          document.getElementById("progressFill").style.width = pct + "%";
+          for (var i = 1; i <= 5; i++) {
+            var d = document.getElementById("dot" + i);
+            d.className = "step-dot";
+            if (i < currentPhase) d.classList.add("complete");
+            else if (i === currentPhase) d.classList.add("active");
+          }
+        }
+
+        /* ── Mode ─────────────────────────────────────── */
+        window.setMode = function (mode) {
+          currentMode = mode;
+          document.querySelectorAll(".mode-btn").forEach(function (b) {
+            b.classList.remove("active");
+          });
+          document
+            .getElementById(
+              "mode" + mode.charAt(0).toUpperCase() + mode.slice(1),
+            )
+            .classList.add("active");
+          document.querySelectorAll(".challenge-box").forEach(function (el) {
+            el.style.display = mode === "challenge" ? "block" : "none";
+          });
+          document.querySelectorAll(".support-box").forEach(function (el) {
+            el.style.display = mode === "support" ? "block" : "none";
+          });
+          autoSave();
+        };
+
+        window.toggleHint = function (id) {
+          var el = document.getElementById(id);
+          el.style.display = el.style.display === "block" ? "none" : "block";
+        };
+
+        /* ── Statistics Calculator ─────────────────────── */
+        window.calculateStats = function () {
+          var raw = document.getElementById("calcInput").value;
+          var nums = raw
+            .split(",")
+            .map(function (s) {
+              return parseFloat(s.trim());
+            })
+            .filter(function (n) {
+              return !isNaN(n);
+            });
+          if (nums.length === 0) return;
+          nums.sort(function (a, b) {
+            return a - b;
+          });
+          var sum = nums.reduce(function (a, b) {
+            return a + b;
+          }, 0);
+          var mean = Math.round((sum / nums.length) * 100) / 100;
+          var median;
+          var mid = Math.floor(nums.length / 2);
+          if (nums.length % 2 === 0)
+            median = Math.round(((nums[mid - 1] + nums[mid]) / 2) * 100) / 100;
+          else median = nums[mid];
+          var freq = {};
+          nums.forEach(function (n) {
+            freq[n] = (freq[n] || 0) + 1;
+          });
+          var maxFreq = Math.max.apply(null, Object.values(freq));
+          var modes = Object.keys(freq).filter(function (k) {
+            return freq[k] === maxFreq;
+          });
+          var modeStr = maxFreq === 1 ? "None" : modes.join(", ");
+          var range = nums[nums.length - 1] - nums[0];
+
+          document.getElementById("calcMean").textContent = mean;
+          document.getElementById("calcMedian").textContent = median;
+          document.getElementById("calcMode").textContent = modeStr;
+          document.getElementById("calcRange").textContent = range;
+          document.getElementById("statResults").style.display = "grid";
+        };
+        window.clearStats = function () {
+          document.getElementById("calcInput").value = "";
+          document.getElementById("statResults").style.display = "none";
+        };
+
+        /* ── Canvas: Bar Chart ────────────────────────── */
+        var barCv = document.getElementById("barCanvas");
+        var barCtx = barCv.getContext("2d");
+        var barDrawing = false;
+        barCtx.lineCap = "round";
+        barCtx.lineJoin = "round";
+        function getPos(e, cv) {
+          var r = cv.getBoundingClientRect();
+          var s = e.touches ? e.touches[0] : e;
+          return {
+            x: (s.clientX - r.left) * (cv.width / r.width),
+            y: (s.clientY - r.top) * (cv.height / r.height),
+          };
+        }
+        barCv.addEventListener("mousedown", function (e) {
+          barDrawing = true;
+          barCtx.beginPath();
+          var p = getPos(e, barCv);
+          barCtx.moveTo(p.x, p.y);
+        });
+        barCv.addEventListener("mousemove", function (e) {
+          if (!barDrawing) return;
+          barCtx.strokeStyle = document.getElementById("barColor").value;
+          barCtx.lineWidth = document.getElementById("barSize").value;
+          var p = getPos(e, barCv);
+          barCtx.lineTo(p.x, p.y);
+          barCtx.stroke();
+        });
+        barCv.addEventListener("mouseup", function () {
+          barDrawing = false;
+        });
+        barCv.addEventListener("mouseleave", function () {
+          barDrawing = false;
+        });
+        barCv.addEventListener(
+          "touchstart",
+          function (e) {
+            e.preventDefault();
+            barDrawing = true;
+            barCtx.beginPath();
+            var p = getPos(e, barCv);
+            barCtx.moveTo(p.x, p.y);
+          },
+          { passive: false },
+        );
+        barCv.addEventListener(
+          "touchmove",
+          function (e) {
+            e.preventDefault();
+            if (!barDrawing) return;
+            barCtx.strokeStyle = document.getElementById("barColor").value;
+            barCtx.lineWidth = document.getElementById("barSize").value;
+            var p = getPos(e, barCv);
+            barCtx.lineTo(p.x, p.y);
+            barCtx.stroke();
+          },
+          { passive: false },
+        );
+        barCv.addEventListener("touchend", function () {
+          barDrawing = false;
+        });
+
+        window.clearBarCanvas = function () {
+          barCtx.clearRect(0, 0, barCv.width, barCv.height);
+        };
+        window.drawGridLines = function () {
+          barCtx.strokeStyle = "#e2e8f0";
+          barCtx.lineWidth = 1;
+          for (var i = 0; i <= 30; i += 5) {
+            var y = 380 - i * 12;
+            barCtx.beginPath();
+            barCtx.moveTo(60, y);
+            barCtx.lineTo(680, y);
+            barCtx.stroke();
+            barCtx.fillStyle = "#64748b";
+            barCtx.font = "12px sans-serif";
+            barCtx.fillText(i, 35, y + 4);
+          }
+          barCtx.strokeStyle = "#0f172a";
+          barCtx.lineWidth = 2;
+          barCtx.beginPath();
+          barCtx.moveTo(60, 20);
+          barCtx.lineTo(60, 380);
+          barCtx.lineTo(680, 380);
+          barCtx.stroke();
+          barCtx.fillStyle = "#0f172a";
+          barCtx.font = "bold 13px sans-serif";
+          barCtx.fillText("Jordan", 130, 398);
+          barCtx.fillText("Aisha", 280, 398);
+          barCtx.fillText("Carlos", 420, 398);
+          barCtx.fillText("Priya", 560, 398);
+        };
+        window.downloadBarCanvas = function () {
+          var a = document.createElement("a");
+          a.href = barCv.toDataURL("image/png");
+          a.download = "bar_chart.png";
+          a.click();
+        };
+
+        /* ── Canvas: Dot Plot ──────────────────────────── */
+        var dotCv = document.getElementById("dotCanvas");
+        var dotCtx = dotCv.getContext("2d");
+        var dotDrawing = false;
+        dotCtx.lineCap = "round";
+        dotCv.addEventListener("mousedown", function (e) {
+          dotDrawing = true;
+          dotCtx.beginPath();
+          var p = getPos(e, dotCv);
+          dotCtx.moveTo(p.x, p.y);
+        });
+        dotCv.addEventListener("mousemove", function (e) {
+          if (!dotDrawing) return;
+          dotCtx.strokeStyle = document.getElementById("dotColor").value;
+          dotCtx.lineWidth = 3;
+          var p = getPos(e, dotCv);
+          dotCtx.lineTo(p.x, p.y);
+          dotCtx.stroke();
+        });
+        dotCv.addEventListener("mouseup", function () {
+          dotDrawing = false;
+        });
+        dotCv.addEventListener("mouseleave", function () {
+          dotDrawing = false;
+        });
+        dotCv.addEventListener(
+          "touchstart",
+          function (e) {
+            e.preventDefault();
+            dotDrawing = true;
+            dotCtx.beginPath();
+            var p = getPos(e, dotCv);
+            dotCtx.moveTo(p.x, p.y);
+          },
+          { passive: false },
+        );
+        dotCv.addEventListener(
+          "touchmove",
+          function (e) {
+            e.preventDefault();
+            if (!dotDrawing) return;
+            dotCtx.strokeStyle = document.getElementById("dotColor").value;
+            dotCtx.lineWidth = 3;
+            var p = getPos(e, dotCv);
+            dotCtx.lineTo(p.x, p.y);
+            dotCtx.stroke();
+          },
+          { passive: false },
+        );
+        dotCv.addEventListener("touchend", function () {
+          dotDrawing = false;
+        });
+
+        window.clearDotCanvas = function () {
+          dotCtx.clearRect(0, 0, dotCv.width, dotCv.height);
+        };
+        window.drawDotPlotGuide = function () {
+          dotCtx.strokeStyle = "#0f172a";
+          dotCtx.lineWidth = 2;
+          dotCtx.beginPath();
+          dotCtx.moveTo(40, 220);
+          dotCtx.lineTo(660, 220);
+          dotCtx.stroke();
+          dotCtx.fillStyle = "#0f172a";
+          dotCtx.font = "bold 14px sans-serif";
+          for (var v = 10; v <= 19; v++) {
+            var x = 40 + (v - 10) * 62;
+            dotCtx.beginPath();
+            dotCtx.moveTo(x, 215);
+            dotCtx.lineTo(x, 225);
+            dotCtx.stroke();
+            dotCtx.fillText(v, x - 5, 245);
+          }
+          dotCtx.fillStyle = "#64748b";
+          dotCtx.font = "12px sans-serif";
+          dotCtx.fillText("Aisha's Points Per Game", 250, 280);
+        };
+
+        /* ── Rubric ───────────────────────────────────── */
+        window.selectRubric = function (key, score, el) {
+          rubricScores[key] = score;
+          el.parentElement
+            .querySelectorAll(".rubric-cell")
+            .forEach(function (c) {
+              c.classList.remove("selected");
+            });
+          el.classList.add("selected");
+          autoSave();
+        };
+
+        /* ── Score ────────────────────────────────────── */
+        window.calculateScore = function () {
+          var fields = document.querySelectorAll(
+            'input[type="text"], textarea, select',
+          );
+          var filled = 0;
+          fields.forEach(function (f) {
+            if (f.value && f.value.trim()) filled++;
+          });
+          var score = Math.round((filled / fields.length) * 80);
+          var rt = Object.values(rubricScores).reduce(function (a, b) {
+            return a + b;
+          }, 0);
+          score += Math.round((rt / 16) * 20);
+          score = Math.min(score, 100);
+          document.getElementById("scoreValue").textContent = score;
+
+          if (score >= 20)
+            document.getElementById("badge1").classList.add("earned");
+          if (score >= 40)
+            document.getElementById("badge2").classList.add("earned");
+          if (score >= 60)
+            document.getElementById("badge3").classList.add("earned");
+          if (score >= 80)
+            document.getElementById("badge4").classList.add("earned");
+          if (score >= 95)
+            document.getElementById("badge5").classList.add("earned");
+          if (score >= 70) launchConfetti();
+          autoSave();
+        };
+
+        /* ── Print / Download / Classroom ─────────────── */
+        window.printProject = function () {
+          window.print();
+        };
+        window.downloadProject = function () {
+          var name = document.getElementById("studentName").value || "Analyst";
+          var text =
+            "SPORTS DATA ANALYST — STATISTICS REPORT\n" +
+            "=".repeat(45) +
+            "\n\n";
+          text +=
+            "Analyst: " +
+            name +
+            "\nTeam: " +
+            (document.getElementById("studentPeriod").value || "N/A") +
+            "\n";
+          text +=
+            "Date: " +
+            (document.getElementById("studentDate").value || "N/A") +
+            "\n\n";
+          text +=
+            "Score: " +
+            (document.getElementById("scoreValue").textContent || "N/A") +
+            "/100\n\n";
+          document.querySelectorAll(".task-card").forEach(function (card) {
+            var title = card.querySelector(".task-title");
+            if (title) text += "\n--- " + title.textContent + " ---\n";
+            card.querySelectorAll("input, textarea").forEach(function (f) {
+              if (f.value && f.value.trim()) {
+                var label = f.previousElementSibling
+                  ? f.previousElementSibling.textContent
+                  : f.placeholder || "";
+                text += label.substring(0, 60) + ": " + f.value + "\n";
+              }
+            });
+          });
+          var blob = new Blob([text], { type: "text/plain" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "Sports_Report_" + name.replace(/\s+/g, "_") + ".txt";
+          a.click();
+        };
+        window.submitToClassroom = function () {
+          window.open(
+            "https://classroom.google.com/share?url=" +
+              encodeURIComponent(window.location.href),
+            "_blank",
+          );
+        };
+
+        /* ── Confetti ─────────────────────────────────── */
+        function launchConfetti() {
+          var cv = document.getElementById("confetti-canvas");
+          var cx = cv.getContext("2d");
+          cv.width = window.innerWidth;
+          cv.height = window.innerHeight;
+          var pieces = [],
+            colors = [
+              "#dc2626",
+              "#2563eb",
+              "#059669",
+              "#d97706",
+              "#fbbf24",
+              "#7c3aed",
+            ];
+          for (var i = 0; i < 120; i++) {
+            pieces.push({
+              x: Math.random() * cv.width,
+              y: Math.random() * -cv.height,
+              w: Math.random() * 10 + 5,
+              h: Math.random() * 6 + 3,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              vy: Math.random() * 3 + 2,
+              vx: Math.random() * 2 - 1,
+              rot: Math.random() * 360,
+              vr: Math.random() * 6 - 3,
+            });
+          }
+          var frame = 0;
+          function animate() {
+            if (frame++ > 200) {
+              cx.clearRect(0, 0, cv.width, cv.height);
+              return;
+            }
+            cx.clearRect(0, 0, cv.width, cv.height);
+            pieces.forEach(function (p) {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rot += p.vr;
+              cx.save();
+              cx.translate(p.x, p.y);
+              cx.rotate((p.rot * Math.PI) / 180);
+              cx.fillStyle = p.color;
+              cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              cx.restore();
+            });
+            requestAnimationFrame(animate);
+          }
+          animate();
+        }
+
+        /* ── Auto-Save ────────────────────────────────── */
+        window.autoSave = function () {
+          var data = {
+            phase: currentPhase,
+            mode: currentMode,
+            rubric: rubricScores,
+            fields: {},
+          };
+          document
+            .querySelectorAll("input, textarea, select")
+            .forEach(function (el) {
+              if (el.id) data.fields[el.id] = el.value;
+            });
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          } catch (e) {}
+        };
+        function loadSave() {
+          try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            var data = JSON.parse(raw);
+            if (data.fields)
+              Object.entries(data.fields).forEach(function (p) {
+                var el = document.getElementById(p[0]);
+                if (el) el.value = p[1];
+              });
+            if (data.mode) setMode(data.mode);
+            if (data.rubric) rubricScores = data.rubric;
+            if (data.phase) goToPhase(data.phase);
+          } catch (e) {}
+        }
+
+        /* ── Dynamic Names ────────────────────────────── */
+        document
+          .getElementById("studentName")
+          .addEventListener("input", function () {
+            var n = this.value || "Your Name";
+            var t = document.getElementById("trophyName");
+            if (t) t.textContent = "Analyst: " + n;
+            var r = document.getElementById("reportAnalystName");
+            if (r) r.textContent = "Analyst: " + n;
+          });
+
+        /* ── Init ─────────────────────────────────────── */
+        loadSave();
+        updateProgress();
+        if (!document.getElementById("studentDate").value)
+          document.getElementById("studentDate").value = new Date()
+            .toISOString()
+            .split("T")[0];
+
+        /* ═══════════════════════════════════════════════════
+           ENHANCEMENT MODULE — XP, Sound, Certificate
+           ═══════════════════════════════════════════════════ */
+        var _xp = parseInt(localStorage.getItem("neft_xp_u8_sp") || "0");
+        var _xpPerLevel = 100;
+
+        (function _initEnhancements() {
+          var bar = document.createElement("div");
+          bar.className = "xp-bar-wrap";
+          bar.innerHTML =
+            '<button class="xp-toggle" onclick="this.parentElement.classList.toggle(\'hidden\')" title="Toggle XP bar">&#9660;</button><span class="xp-level" id="xpLevelDisp">LVL 1</span><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><span class="xp-pts" id="xpPtsDisp">0 XP</span>';
+          document.body.appendChild(bar);
+          _updateXPDisplay();
+        })();
+
+        function _addXP(pts, reason) {
+          _xp += pts;
+          try {
+            localStorage.setItem("neft_xp_u8_sp", String(_xp));
+          } catch (e) {}
+          _updateXPDisplay();
+          _playSound("xp");
+          var toast = document.createElement("div");
+          toast.style.cssText =
+            "position:fixed;top:20px;right:20px;z-index:10001;padding:10px 18px;border-radius:10px;background:#2563eb;color:#fff;font-weight:700;font-size:0.88rem;animation:popIn 0.3s ease-out;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2)";
+          toast.textContent = "+" + pts + " XP — " + (reason || "Nice work!");
+          document.body.appendChild(toast);
+          setTimeout(function () {
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.4s";
+          }, 1800);
+          setTimeout(function () {
+            toast.remove();
+          }, 2400);
+        }
+
+        function _updateXPDisplay() {
+          var lvl = document.getElementById("xpLevelDisp");
+          var fill = document.getElementById("xpFill");
+          var pts = document.getElementById("xpPtsDisp");
+          if (!lvl) return;
+          var level = Math.floor(_xp / _xpPerLevel) + 1;
+          lvl.textContent = "LVL " + level;
+          fill.style.width = ((_xp % _xpPerLevel) / _xpPerLevel) * 100 + "%";
+          pts.textContent = _xp + " XP";
+        }
+
+        var _audioCtx = null;
+        function _getAudio() {
+          if (!_audioCtx) {
+            try {
+              _audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          }
+          return _audioCtx;
+        }
+        function _playSound(type) {
+          var ctx = _getAudio();
+          if (!ctx) return;
+          try {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            gain.gain.value = 0.08;
+            if (type === "xp") {
+              osc.frequency.value = 880;
+              osc.type = "sine";
+              gain.gain.setValueAtTime(0.04, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.15,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.15);
+            } else if (type === "phase") {
+              osc.frequency.value = 440;
+              osc.type = "triangle";
+              gain.gain.setValueAtTime(0.06, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.2,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.2);
+            } else if (type === "complete") {
+              [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) {
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.frequency.value = f;
+                o.type = "sine";
+                g.gain.setValueAtTime(0.06, ctx.currentTime + i * 0.15);
+                g.gain.exponentialRampToValueAtTime(
+                  0.001,
+                  ctx.currentTime + i * 0.15 + 0.4,
+                );
+                o.start(ctx.currentTime + i * 0.15);
+                o.stop(ctx.currentTime + i * 0.15 + 0.4);
+              });
+            }
+          } catch (e) {}
+        }
+
+        function _showCertificate(name, score, xpTotal) {
+          var existing = document.getElementById("certOverlay");
+          if (existing) existing.remove();
+          var overlay = document.createElement("div");
+          overlay.id = "certOverlay";
+          overlay.className = "certificate-overlay visible";
+          var level = Math.floor(xpTotal / _xpPerLevel) + 1;
+          var badge =
+            score >= 90
+              ? "\u{1F3C6}"
+              : score >= 70
+                ? "⭐"
+                : score >= 50
+                  ? "\u{1F4AA}"
+                  : "\u{1F331}";
+          var rank =
+            score >= 90
+              ? "Outstanding"
+              : score >= 70
+                ? "Excellent"
+                : score >= 50
+                  ? "Good Work"
+                  : "Keep Growing";
+          overlay.innerHTML =
+            '<div class="certificate-card"><div class="cert-badge">' +
+            badge +
+            '</div><div class="cert-title">Certificate of Completion</div><div class="cert-subtitle">Sports Data Analyst</div><div class="cert-name">' +
+            (name || "Student") +
+            '</div><div class="cert-score">' +
+            score +
+            '/100</div><div class="cert-xp">&#127947; ' +
+            rank +
+            " — Level " +
+            level +
+            " (" +
+            xpTotal +
+            ' XP)</div><div class="cert-stats"><div class="cert-stat"><div class="cert-stat-val">' +
+            level +
+            '</div><div class="cert-stat-lbl">Level</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            xpTotal +
+            '</div><div class="cert-stat-lbl">Total XP</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            score +
+            '%</div><div class="cert-stat-lbl">Score</div></div></div><button class="cert-close" onclick="document.getElementById(\'certOverlay\').classList.remove(\'visible\')">Close</button></div>';
+          document.body.appendChild(overlay);
+          _playSound("complete");
+        }
+
+        var _phasesVisited = {};
+        var _origGTP = window.goToPhase;
+        window.goToPhase = function (n) {
+          _origGTP(n);
+          if (!_phasesVisited[n] && n > 1) {
+            _phasesVisited[n] = true;
+            _addXP(15, "Phase " + n + " started!");
+          }
+          _playSound("phase");
+        };
+
+        var _origCS = window.calculateScore;
+        window.calculateScore = function () {
+          _origCS();
+          var score =
+            parseInt(
+              (document.getElementById("scoreValue") || {}).textContent || "0",
+            ) || 0;
+          var name =
+            (document.getElementById("studentName") || {}).value || "Analyst";
+          _addXP(
+            score >= 90 ? 50 : score >= 70 ? 30 : score >= 50 ? 20 : 10,
+            "Project completed!",
+          );
+          setTimeout(function () {
+            _showCertificate(name, score, _xp);
+          }, 800);
+        };
+
+        var _xpFieldsAwarded = {};
+        document.addEventListener("input", function (e) {
+          var el = e.target;
+          if (el.matches && el.matches('input[type="text"], textarea')) {
+            clearTimeout(window._fxpT);
+            window._fxpT = setTimeout(function () {
+              if (!el.id || _xpFieldsAwarded[el.id]) return;
+              if (el.value && el.value.trim().length >= 3) {
+                _xpFieldsAwarded[el.id] = true;
+                _addXP(2, "Answer entered");
+              }
+            }, 1500);
+          }
+        });
+      })();
+    </script>
+  
+    <details class="neft-help-panel" id="neftHelpPanel">
+      <summary class="neft-help-summary">
+        <span aria-hidden="true">&#128218;</span> Need help? Explore these resources
+      </summary>
+      <div class="neft-help-body">
+        <p>These trusted, free websites can help you review <strong>finding mean, median, mode, range, and reading data displays</strong>.
+        They open in a new tab so you keep your work.</p>
+        <ul class="neft-help-links"><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Khan Academy: Data and statistics</a></li><li><a href="https://www.mathsisfun.com/data/mean-median-mode.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Mean, Median and Mode</a></li><li><a href="https://www.mathsisfun.com/data/data-graph.php" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Showing Data</a></li></ul>
+        
+        <p style="margin-top:1rem"><strong>Key vocabulary:</strong></p>
+        <ul class="neft-glossary-list"><li><strong>mean:</strong> The average: add all values, then divide by how many there are.</li><li><strong>median:</strong> The middle value when the numbers are put in order.</li><li><strong>mode:</strong> The value that appears most often in a data set.</li><li><strong>range:</strong> The difference between the largest and smallest values.</li><li><strong>outlier:</strong> A value much higher or lower than the rest of the data.</li><li><strong>distribution:</strong> How the data is spread out across the values.</li></ul>
+      </div>
+    </details>
+  
+    <script id="NEFT-UPGRADE-6-10-js">
+    (function () {
+      var GLOSS = {"mean": "The average: add all values, then divide by how many there are.", "median": "The middle value when the numbers are put in order.", "mode": "The value that appears most often in a data set.", "range": "The difference between the largest and smallest values.", "outlier": "A value much higher or lower than the rest of the data.", "distribution": "How the data is spread out across the values."};
+      var keys = Object.keys(GLOSS).sort(function (a, b) { return b.length - a.length; });
+      var SKIP = { SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1, OPTION:1, BUTTON:1,
+                   svg:1, SVG:1, CODE:1, A:1, SUMMARY:1, H1:1 };
+      function inSkip(node) {
+        var p = node.parentNode;
+        while (p && p.nodeType === 1) {
+          if (SKIP[p.tagName] || (p.className && String(p.className).indexOf('neft-') === 0)) return true;
+          if (p.classList && p.classList.contains('neft-term')) return true;
+          p = p.parentNode;
+        }
+        return false;
+      }
+      function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+      function wrapTerm(term) {
+        var def = GLOSS[term];
+        var re = new RegExp('\\b(' + esc(term) + ')\\b', 'i');
+        var counted = 0, MAXPER = 1;
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+        var nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(function (node) {
+          if (counted >= MAXPER) return;
+          if (!node.nodeValue || !re.test(node.nodeValue)) return;
+          if (inSkip(node)) return;
+          var m = node.nodeValue.match(re);
+          if (!m) return;
+          var idx = m.index;
+          var before = node.nodeValue.slice(0, idx);
+          var word = node.nodeValue.slice(idx, idx + m[1].length);
+          var after = node.nodeValue.slice(idx + m[1].length);
+          var span = document.createElement('span');
+          span.className = 'neft-term';
+          span.setAttribute('tabindex', '0');
+          span.setAttribute('role', 'button');
+          span.setAttribute('aria-label', word + ': ' + def);
+          span.textContent = word;
+          var tip = document.createElement('span');
+          tip.className = 'neft-tip';
+          tip.setAttribute('role', 'tooltip');
+          tip.textContent = def;
+          span.appendChild(tip);
+          var frag = document.createDocumentFragment();
+          if (before) frag.appendChild(document.createTextNode(before));
+          frag.appendChild(span);
+          if (after) frag.appendChild(document.createTextNode(after));
+          node.parentNode.replaceChild(frag, node);
+          counted++;
+        });
+      }
+      function run() { keys.forEach(wrapTerm); }
+      if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', run);
+      else run();
+    })();
+    </script>
+  
+    <section class="neft-help-panel" aria-label="Level 2 challenge tasks" style="border-color:#818cf8">
+      <div class="neft-help-summary" style="background:#eef2ff;cursor:default">
+        <span aria-hidden="true">&#127919;</span> Challenge &amp; Explain Your Reasoning (Level 2)
+      </div>
+      <div class="neft-help-body">
+        <p>After you finish the main activity, stretch your thinking:</p>
+        <ul style="padding-left:1.2rem;line-height:1.7">
+          <li><strong>Challenge:</strong> Redo one task with larger numbers, or create your own
+          harder version of it for a classmate to solve.</li>
+          <li><strong>Explain your reasoning:</strong> For each answer, write 1&ndash;2 sentences on
+          <em>how</em> you knew which operation or strategy to use.</li>
+          <li><strong>Justify:</strong> Could there be more than one correct approach? Compare two
+          different methods and say which is more efficient and why.</li>
+          <li><strong>Connect:</strong> Where might a real statistics & data professional
+          use this skill? Give one concrete example.</li>
+        </ul>
+        <p style="margin-top:0.8rem;background:#f5f3ff;padding:0.7rem 0.9rem;border-radius:10px">
+          <strong>Aim for precision:</strong> use correct math vocabulary in every explanation.</p>
+      </div>
+    </section>
+  
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      /* nt-results wiring — reuses this game's real completion + self-rating tallies. */
+      function ntResultsTally() {
+        var sel = document.querySelectorAll(
+          '.form-input, .form-textarea, .form-select, input[type=text], textarea, select'
+        );
+        var total = 0, filled = 0, seen = {};
+        sel.forEach(function (el) {
+          if (seen[el]) return; seen[el] = 1;
+          var id = el.id || '';
+          if (/^calc/i.test(id)) return;            // skip calculator helper fields
+          if (/^rubric/i.test(el.name || '')) return;
+          if (el.type === 'radio' || el.type === 'checkbox') return;
+          total++;
+          if (el.value && String(el.value).trim()) filled++;
+        });
+        // Self-rating: radios named rubric* OR selected rubric-cells.
+        var rubric = 0, rubricMax = 0;
+        var radios = {};
+        document.querySelectorAll('input[name^=rubric]').forEach(function (r) {
+          radios[r.name] = Math.max(radios[r.name] || 0, parseInt(r.value, 10) || 0);
+        });
+        var radioNames = Object.keys(radios);
+        if (radioNames.length) {
+          radioNames.forEach(function (n) {
+            rubricMax += radios[n];
+            var c = document.querySelector('input[name="' + n + '"]:checked');
+            if (c) rubric += parseInt(c.value, 10) || 0;
+          });
+        } else {
+          var groups = {};
+          document.querySelectorAll('.rubric-cell').forEach(function (cell) {
+            var m = /selectRubric\(\s*['\"]([^'\"]+)['\"]\s*,\s*(\d+)/.exec(
+              cell.getAttribute('onclick') || ''
+            );
+            if (!m) return;
+            var key = m[1], val = parseInt(m[2], 10) || 0;
+            groups[key] = Math.max(groups[key] || 0, val);
+            if (cell.classList.contains('selected')) {
+              cell._sel = val;
+            }
+          });
+          Object.keys(groups).forEach(function (k) { rubricMax += groups[k]; });
+          document.querySelectorAll('.rubric-cell.selected').forEach(function (cell) {
+            var m = /,\s*(\d+)\s*,/.exec(cell.getAttribute('onclick') || '');
+            if (m) rubric += parseInt(m[1], 10) || 0;
+          });
+        }
+        return { filled: filled, total: total, rubric: rubric, rubricMax: rubricMax };
+      }
+      function ntDownloadResultsCSV() {
+        var nameEl = document.getElementById('studentName');
+        var student = (nameEl && nameEl.value && nameEl.value.trim()) || 'Student';
+        var t = ntResultsTally();
+        var sections = [
+          { name: 'Completion', correct: t.filled, total: t.total }
+        ];
+        if (t.rubricMax > 0)
+          sections.push({ name: 'Self-rating', correct: t.rubric, total: t.rubricMax });
+        NTResults.finish({
+          student: student,
+          assessment: 'Unit 8 Post-Test: Sports Data Analyst',
+          standard: '6.SP',
+        level: '2',
+          sections: sections,
+          correct: t.filled,
+          total: t.total,
+        });
+      }
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

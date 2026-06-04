@@ -1,652 +1,1571 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Quadrant Quest · 6.NS.C.6</title>
-<style>
-  :root{
-    --bg:#060e1c;
-    --surface:#0c1829;
-    --card:#101e33;
-    --card2:#132040;
-    --border:rgba(255,255,255,.09);
-    --border2:rgba(255,255,255,.14);
-    --text:#eef6ff;
-    --muted:#8faec8;
-    --cyan:#22d3ee;
-    --violet:#a78bfa;
-    --green:#34d399;
-    --yellow:#fbbf24;
-    --red:#f87171;
-    --grad:linear-gradient(135deg,var(--cyan),var(--violet));
-    --shadow:0 20px 50px rgba(0,0,0,.45);
-    --r:20px;
-    --r2:14px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{
-    font-family:'Segoe UI',system-ui,Arial,sans-serif;
-    color:var(--text);background:var(--bg);min-height:100vh;overflow-x:hidden;
-    background-image:
-      radial-gradient(ellipse at 10% 0%,rgba(34,211,238,.12) 0%,transparent 45%),
-      radial-gradient(ellipse at 90% 5%,rgba(167,139,250,.14) 0%,transparent 40%),
-      radial-gradient(ellipse at 50% 100%,rgba(52,211,153,.07) 0%,transparent 50%);
-  }
-
-  .app{max-width:1300px;margin:0 auto;padding:20px 16px}
-
-  .header{
-    display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;
-    background:linear-gradient(135deg,var(--card),var(--card2));
-    border:1px solid var(--border2);border-radius:var(--r);
-    box-shadow:var(--shadow);padding:26px 28px;margin-bottom:16px;
-  }
-  .header-left h1{
-    font-size:clamp(1.9rem,3.5vw,2.9rem);font-weight:800;letter-spacing:-.02em;
-    background:var(--grad);-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;background-clip:text;
-    margin-bottom:6px;
-  }
-  .header-left .sub{color:var(--muted);font-size:1rem;line-height:1.55;max-width:60ch}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-  .chip{
-    padding:6px 13px;border-radius:999px;font-size:.82rem;font-weight:700;letter-spacing:.02em;
-    background:rgba(255,255,255,.07);border:1px solid var(--border2);color:var(--muted);
-  }
-  .chip.cyan{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.35);color:var(--cyan)}
-  .chip.violet{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35);color:var(--violet)}
-  .chip.green{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.35);color:var(--green)}
-
-  .stats-bar{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;
-  }
-  .stat-card{
-    background:linear-gradient(160deg,var(--card),var(--card2));
-    border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;
-    box-shadow:0 8px 24px rgba(0,0,0,.3);
-  }
-  .stat-card .lbl{font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-  .stat-card .val{font-size:1.8rem;font-weight:800;margin-top:4px;color:var(--text)}
-  .stat-card.cyan .val{color:var(--cyan)}
-  .stat-card.violet .val{color:var(--violet)}
-  .stat-card.green .val{color:var(--green)}
-  .stat-card.yellow .val{color:var(--yellow)}
-
-  .progress-wrap{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
-    padding:14px 18px;margin-bottom:16px;
-  }
-  .progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .progress-meta span{font-size:.82rem;color:var(--muted);font-weight:600}
-  .progress-track{height:12px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
-  .progress-fill{height:100%;width:0%;border-radius:999px;background:var(--grad);transition:width .4s cubic-bezier(.4,0,.2,1)}
-
-  .main{display:grid;grid-template-columns:1fr 340px;gap:16px}
-
-  .panel{
-    background:linear-gradient(160deg,var(--card),var(--card2));
-    border:1px solid var(--border);border-radius:var(--r);
-    box-shadow:var(--shadow);padding:18px;
-  }
-
-  #gameCanvas{
-    width:100%;max-width:680px;display:block;
-    border-radius:16px;border:2px solid rgba(255,255,255,.1);
-    touch-action:none;cursor:crosshair;
-    box-shadow:0 0 0 1px rgba(34,211,238,.1),0 16px 40px rgba(0,0,0,.4);
-  }
-
-  .prompt-area{margin-top:14px}
-  .mission-label{
-    font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--cyan);margin-bottom:4px;
-  }
-  .mission-title{font-size:1.15rem;font-weight:700;margin-bottom:6px}
-  .mission-desc{color:var(--muted);font-size:.93rem;line-height:1.5}
-
-  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-  .btn{
-    border:none;border-radius:var(--r2);padding:11px 18px;
-    font:700 .9rem 'Segoe UI',system-ui,Arial,sans-serif;
-    cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .15s;
-    letter-spacing:.01em;
-  }
-  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
-  .btn:active{transform:translateY(0)}
-  .btn-primary{background:var(--grad);color:#fff}
-  .btn-secondary{background:rgba(255,255,255,.1);color:var(--text);border:1px solid var(--border2)}
-  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
-
-  .feedback{
-    margin-top:12px;padding:13px 16px;border-radius:var(--r2);
-    font-size:.93rem;line-height:1.5;display:none;
-  }
-  .feedback.good{
-    display:block;
-    background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.35);color:#a7f3d0;
-  }
-  .feedback.bad{
-    display:block;
-    background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#fecaca;
-  }
-
-  .side-title{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-  .mission-list{display:grid;gap:8px}
-  .mission-item{
-    border-radius:var(--r2);padding:12px 14px;
-    background:rgba(255,255,255,.04);border:1px solid var(--border);
-    transition:background .2s,border-color .2s;
-  }
-  .mission-item.active{
-    background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.4);
-  }
-  .mission-item.done{
-    background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.3);
-  }
-  .mission-item-title{font-size:.88rem;font-weight:700;margin-bottom:3px}
-  .mission-item-sub{font-size:.78rem;color:var(--muted)}
-  .mission-item.done .mission-item-title::after{content:' ✓';color:var(--green)}
-
-  .info-box{
-    margin-top:12px;border-radius:var(--r2);padding:13px 15px;
-    background:rgba(255,255,255,.04);border:1px solid var(--border);
-  }
-  .info-box-title{font-size:.82rem;font-weight:700;color:var(--cyan);margin-bottom:6px}
-  .info-box-body{font-size:.82rem;color:var(--muted);line-height:1.55}
-
-  .target-box{
-    margin-top:10px;border-radius:var(--r2);padding:13px 15px;
-    background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);
-  }
-  .target-box-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
-  .target-box-val{font-size:1.05rem;font-weight:700;color:var(--text)}
-
-  .overlay{
-    position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-    background:rgba(4,9,20,.8);backdrop-filter:blur(8px);padding:20px;z-index:30;
-  }
-  .overlay-card{
-    max-width:640px;width:100%;
-    background:linear-gradient(160deg,#14203a,#0e1a2e);
-    border:1px solid rgba(255,255,255,.15);border-radius:24px;
-    box-shadow:0 40px 80px rgba(0,0,0,.6);padding:28px;
-  }
-  .overlay-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin-bottom:6px}
-  .overlay-question{font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:18px}
-  .choices{display:grid;gap:10px}
-  .choice-btn{
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-    border-radius:var(--r2);padding:13px 16px;
-    font:600 .95rem 'Segoe UI',system-ui,Arial,sans-serif;
-    color:var(--text);cursor:pointer;text-align:left;
-    transition:background .15s,border-color .15s,transform .12s;
-  }
-  .choice-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);transform:translateX(3px)}
-  .choice-btn.correct{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.5);color:#a7f3d0;pointer-events:none}
-  .choice-btn.wrong{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.4);color:#fecaca;pointer-events:none}
-
-  .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
-  .piece{position:absolute;width:9px;height:14px;border-radius:3px;animation:fall 1.3s ease-in forwards}
-  @keyframes fall{
-    0%{transform:translateY(-30px) rotate(0deg);opacity:1}
-    100%{transform:translateY(105vh) rotate(540deg);opacity:0}
-  }
-
-  .lives-dots{display:flex;gap:5px;margin-top:4px}
-  .dot{width:10px;height:10px;border-radius:50%;background:var(--red);transition:opacity .3s}
-  .dot.off{opacity:.18}
-
-  @media(max-width:1000px){.main{grid-template-columns:1fr}}
-  @media(max-width:600px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
-  @media print{
-    .overlay,.confetti,.btn-row{display:none!important}
-    body{background:#fff;color:#000}
-    .panel{background:#fff;border:1px solid #ddd;box-shadow:none}
-  }
-</style>
-</head>
-<body>
-<div class="app">
-
-  <header class="header">
-    <div class="header-left">
-      <h1>Quadrant Quest</h1>
-      <p class="sub">Plot points, identify opposites, classify quadrants, and defeat the boss in this four-mission coordinate-plane challenge. Covers 6.NS.C.6 — rational numbers on the coordinate plane.</p>
-      <div class="chips">
-        <span class="chip cyan">4 Missions</span>
-        <span class="chip violet">Adaptive Boss Round</span>
-        <span class="chip green">Touch &amp; Mouse</span>
-        <span class="chip">Instant Feedback</span>
-      </div>
-    </div>
-  </header>
-
-  <div class="stats-bar">
-    <div class="stat-card cyan">
-      <div class="lbl">Level</div>
-      <div class="val" id="levelOut">1</div>
-    </div>
-    <div class="stat-card violet">
-      <div class="lbl">XP</div>
-      <div class="val" id="xpOut">0</div>
-    </div>
-    <div class="stat-card yellow">
-      <div class="lbl">Streak</div>
-      <div class="val" id="streakOut">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="lbl">Lives</div>
-      <div class="val" id="livesOut">3</div>
-      <div class="lives-dots" id="livesDots">
-        <div class="dot" id="d1"></div>
-        <div class="dot" id="d2"></div>
-        <div class="dot" id="d3"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="progress-wrap">
-    <div class="progress-meta">
-      <span id="progressLabel">Mission Progress</span>
-      <span id="progressPct">0%</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-  </div>
-
-  <div class="main">
-    <div class="panel">
-      <canvas id="gameCanvas" width="680" height="680" aria-label="Interactive coordinate plane — click or tap to plot a point"></canvas>
-      <div class="prompt-area">
-        <div class="mission-label" id="missionLabel">Mission 1 of 4</div>
-        <div class="mission-title" id="missionTitle">Mission 1: Plot Patrol</div>
-        <div class="mission-desc" id="missionDesc">Plot the target point shown in the panel on the right. Click or tap the grid.</div>
-        <div class="btn-row">
-          <button class="btn btn-primary" id="startBtn">▶ Start Mission</button>
-          <button class="btn btn-secondary" id="hintBtn">💡 Hint</button>
-          <button class="btn btn-ghost" id="resetBtn">↺ Reset</button>
-        </div>
-        <div class="feedback" id="feedback"></div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="side-title">Missions</div>
-      <div class="mission-list" id="missionList"></div>
-
-      <div class="target-box" id="targetBox">
-        <div class="target-box-label">Current Target</div>
-        <div class="target-box-val" id="targetVal">Press Start Mission to begin.</div>
-      </div>
-
-      <div class="info-box">
-        <div class="info-box-title">How to Play</div>
-        <div class="info-box-body">
-          Use the <strong style="color:var(--text)">sign of x</strong> to move left (−) or right (+) first.<br>
-          Then use the <strong style="color:var(--text)">sign of y</strong> to move down (−) or up (+).<br>
-          Opposites are equal distance from 0 on opposite sides.
-        </div>
-      </div>
-
-      <div class="info-box" style="margin-top:10px">
-        <div class="info-box-title">Quadrant Signs</div>
-        <div class="info-box-body">
-          <strong style="color:var(--cyan)">I</strong> (+, +) &nbsp;
-          <strong style="color:var(--violet)">II</strong> (−, +) &nbsp;
-          <strong style="color:var(--yellow)">III</strong> (−, −) &nbsp;
-          <strong style="color:var(--green)">IV</strong> (+, −)
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="choiceOverlay" role="dialog" aria-modal="true" aria-labelledby="overlayEyebrow">
-  <div class="overlay-card">
-    <div class="overlay-eyebrow" id="overlayEyebrow">Challenge</div>
-    <div class="overlay-question" id="overlayQuestion"></div>
-    <div class="choices" id="overlayChoices"></div>
-    <div class="feedback" id="overlayFeedback" style="margin-top:14px"></div>
-  </div>
-</div>
-
-<div class="confetti" id="confetti"></div>
-
-<script>
-const PLOT_TARGETS=[
-  {x:-4,y:3},{x:5,y:-2},{x:-2,y:-5},{x:4,y:4},
-  {x:-3,y:1},{x:2,y:-6},{x:-5,y:-3},{x:3,y:5}
-];
-const OPPOSITE_ITEMS=[
-  {q:'What is the opposite of −6?',c:['6','−12','0','−6'],a:'6',e:'Opposites are the same distance from 0 on opposite sides. The opposite of −6 is 6.'},
-  {q:'Which ordered pair is the reflection of (3, −2) across both axes?',c:['(−3, 2)','(3, 2)','(−3, −2)','(2, −3)'],a:'(−3, 2)',e:'Reflecting across both axes flips both signs: (3,−2) → (−3, 2).'},
-  {q:'What is the opposite of 4?',c:['−4','4','0','−8'],a:'−4',e:'The opposite of a positive number is the same magnitude with a negative sign.'},
-  {q:'Which point is the opposite of (−5, 0) reflected over the y-axis?',c:['(5, 0)','(0, 5)','(−5, 0)','(5, −5)'],a:'(5, 0)',e:'Reflecting over the y-axis flips only the x-sign: (−5, 0) → (5, 0).'}
-];
-const QUADRANT_ITEMS=[
-  {q:'Which quadrant contains (−5, 2)?',c:['I','II','III','IV'],a:'II',e:'Negative x and positive y → Quadrant II.'},
-  {q:'Which quadrant contains (3, −4)?',c:['I','II','III','IV'],a:'IV',e:'Positive x and negative y → Quadrant IV.'},
-  {q:'Which quadrant contains (−1, −6)?',c:['I','II','III','IV'],a:'III',e:'Both coordinates negative → Quadrant III.'},
-  {q:'A point has positive x and positive y. Which quadrant?',c:['I','II','III','IV'],a:'I',e:'Both signs positive → Quadrant I.'}
-];
-const BOSS_ITEMS=[
-  {q:'A point is 2 units left and 5 units up from the origin. Which point?',c:['(−2, 5)','(2, 5)','(−5, 2)','(2, −5)'],a:'(−2, 5)',e:'Left = negative x; up = positive y → (−2, 5).'},
-  {q:'Which statement about (−4, −2) is true?',c:['In Quadrant III','In Quadrant II','In Quadrant IV','On an axis'],a:'In Quadrant III',e:'Both coordinates are negative → Quadrant III.'},
-  {q:'What is the opposite ordered pair of (−3, 4)?',c:['(3, −4)','(3, 4)','(−3, −4)','(4, −3)'],a:'(3, −4)',e:'Flip both signs to get the opposite point.'},
-  {q:'Which point is in Quadrant I?',c:['(2, 6)','(−2, 6)','(−2, −6)','(2, −6)'],a:'(2, 6)',e:'Quadrant I requires both coordinates positive.'},
-  {q:'Which point lies on the x-axis?',c:['(5, 0)','(0, 5)','(−3, 2)','(−1, −1)'],a:'(5, 0)',e:'Points on the x-axis have y = 0.'},
-  {q:'Which point lies on the y-axis?',c:['(0, −4)','(−4, 0)','(4, 4)','(−4, 4)'],a:'(0, −4)',e:'Points on the y-axis have x = 0.'}
-];
-
-const state={
-  level:1,xp:0,lives:3,streak:0,
-  missionIndex:0,started:false,
-  activeTarget:null,plotted:null,overlayLocked:false,
-  usedPlotTargets:[],
-  missions:[
-    {title:'Plot Patrol',type:'plot',goal:3,done:0,desc:'Plot each target point on the coordinate plane.'},
-    {title:'Opposite Ops',type:'opposite',goal:3,done:0,desc:'Identify the opposite of each number or ordered pair.'},
-    {title:'Quadrant Shield',type:'quadrant',goal:3,done:0,desc:'Name the correct quadrant for each point.'},
-    {title:'Boss Battle',type:'boss',goal:4,done:0,desc:'Mixed challenge: signs, opposites, quadrants, and axes.'}
-  ]
-};
-
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-const C={size:680,center:340,step:48,min:-6,max:6};
-
-const QTINTS=[
-  {x:C.center,y:0,w:C.center,h:C.center,col:'rgba(52,211,153,.06)'},
-  {x:0,y:0,w:C.center,h:C.center,col:'rgba(34,211,238,.06)'},
-  {x:0,y:C.center,w:C.center,h:C.center,col:'rgba(251,191,36,.06)'},
-  {x:C.center,y:C.center,w:C.center,h:C.center,col:'rgba(167,139,250,.06)'}
-];
-
-function drawPlane(opts={}){
-  ctx.clearRect(0,0,C.size,C.size);
-  ctx.fillStyle='#f8faff';ctx.fillRect(0,0,C.size,C.size);
-  QTINTS.forEach(t=>{ctx.fillStyle=t.col;ctx.fillRect(t.x,t.y,t.w,t.h);});
-  for(let i=0;i<=C.size;i+=C.step){
-    ctx.strokeStyle='rgba(15,23,42,.07)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,C.size);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(C.size,i);ctx.stroke();
-  }
-  ctx.strokeStyle='#0f172a';ctx.lineWidth=2.5;
-  ctx.beginPath();ctx.moveTo(C.center,6);ctx.lineTo(C.center,C.size-6);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(6,C.center);ctx.lineTo(C.size-6,C.center);ctx.stroke();
-  function arrow(x1,y1,x2,y2){
-    const a=Math.atan2(y2-y1,x2-x1);
-    ctx.fillStyle='#0f172a';ctx.beginPath();
-    ctx.moveTo(x2,y2);
-    ctx.lineTo(x2-8*Math.cos(a-0.4),y2-8*Math.sin(a-0.4));
-    ctx.lineTo(x2-8*Math.cos(a+0.4),y2-8*Math.sin(a+0.4));
-    ctx.closePath();ctx.fill();
-  }
-  arrow(C.center,C.size-6,C.center,6);
-  arrow(6,C.center,C.size-6,C.center);
-
-  ctx.fillStyle='#334155';ctx.font='600 13px "Segoe UI",system-ui,Arial';ctx.textAlign='center';ctx.textBaseline='middle';
-  for(let v=C.min;v<=C.max;v++){
-    if(v===0) continue;
-    const px=C.center+v*C.step; const py=C.center-v*C.step;
-    ctx.fillText(v,px,C.center+17);
-    ctx.fillText(v,C.center-17,py);
-  }
-  ctx.fillStyle='#0f172a';ctx.font='bold 15px "Segoe UI",system-ui,Arial';
-  ctx.fillText('x',C.size-12,C.center-14);
-  ctx.fillText('y',C.center+14,12);
-
-  if(opts.showQ){
-    ctx.font='bold 20px "Segoe UI",system-ui,Arial';ctx.textAlign='center';
-    ctx.fillStyle='rgba(52,211,153,.55)'; ctx.fillText('I',C.center+C.size*.18,C.center-C.size*.18);
-    ctx.fillStyle='rgba(34,211,238,.55)'; ctx.fillText('II',C.center-C.size*.18,C.center-C.size*.18);
-    ctx.fillStyle='rgba(251,191,36,.55)'; ctx.fillText('III',C.center-C.size*.18,C.center+C.size*.18);
-    ctx.fillStyle='rgba(167,139,250,.55)';ctx.fillText('IV',C.center+C.size*.18,C.center+C.size*.18);
-  }
-
-  if(state.activeTarget && state.missions[state.missionIndex].type==='plot'){
-    const t=state.activeTarget;
-    const tx=C.center+t.x*C.step, ty=C.center-t.y*C.step;
-    ctx.strokeStyle='rgba(34,211,238,.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,5]);
-    ctx.beginPath();ctx.moveTo(tx,0);ctx.lineTo(tx,C.size);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,ty);ctx.lineTo(C.size,ty);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.strokeStyle='rgba(34,211,238,.8)';ctx.lineWidth=2;
-    ctx.beginPath();ctx.arc(tx,ty,14,0,Math.PI*2);ctx.stroke();
-    ctx.strokeStyle='rgba(34,211,238,.4)';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.arc(tx,ty,22,0,Math.PI*2);ctx.stroke();
-  }
-
-  if(state.plotted){
-    const px=C.center+state.plotted.x*C.step, py=C.center-state.plotted.y*C.step;
-    const grad=ctx.createRadialGradient(px,py,0,px,py,13);
-    grad.addColorStop(0,'#a78bfa');grad.addColorStop(1,'#7c3aed');
-    ctx.fillStyle=grad;
-    ctx.beginPath();ctx.arc(px,py,12,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=2;ctx.stroke();
-  }
-}
-
-function updateHUD(){
-  document.getElementById('levelOut').textContent=state.level;
-  document.getElementById('xpOut').textContent=state.xp;
-  document.getElementById('streakOut').textContent=state.streak;
-  document.getElementById('livesOut').textContent=state.lives;
-  for(let i=1;i<=3;i++){
-    const d=document.getElementById('d'+i);
-    if(d) d.classList.toggle('off',i>state.lives);
-  }
-  const total=state.missions.reduce((a,m)=>a+m.goal,0);
-  const done=state.missions.reduce((a,m)=>a+m.done,0);
-  const pct=Math.round((done/total)*100);
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('progressPct').textContent=pct+'%';
-  renderMissionList();
-}
-
-function renderMissionList(){
-  const wrap=document.getElementById('missionList'); wrap.innerHTML='';
-  state.missions.forEach((m,i)=>{
-    const d=document.createElement('div');
-    d.className='mission-item'+(i===state.missionIndex?' active':'')+(m.done>=m.goal?' done':'');
-    d.innerHTML=`<div class="mission-item-title">Mission ${i+1}: ${m.title}</div><div class="mission-item-sub">${m.done}/${m.goal} complete — ${m.desc}</div>`;
-    wrap.appendChild(d);
-  });
-}
-
-function showFB(good,html){
-  const b=document.getElementById('feedback');
-  b.className='feedback '+(good?'good':'bad');b.innerHTML=html;
-}
-function clearFB(){ const b=document.getElementById('feedback');b.className='feedback';b.textContent=''; }
-
-function gainXP(n){
-  state.xp+=n;
-  const threshold=state.level*50;
-  if(state.xp>=threshold){state.level++;state.xp-=threshold;celebrate();}
-}
-
-function celebrate(){
-  const wrap=document.getElementById('confetti'); wrap.innerHTML='';
-  const cols=['#22d3ee','#a78bfa','#34d399','#fbbf24','#f87171','#fff'];
-  for(let i=0;i<40;i++){
-    const p=document.createElement('div');p.className='piece';
-    p.style.left=Math.random()*100+'vw';
-    p.style.background=cols[i%cols.length];
-    p.style.width=(7+Math.random()*7)+'px';
-    p.style.height=(10+Math.random()*10)+'px';
-    p.style.animationDelay=Math.random()*300+'ms';
-    p.style.animationDuration=(900+Math.random()*600)+'ms';
-    wrap.appendChild(p);
-  }
-  setTimeout(()=>wrap.innerHTML='',1600);
-}
-
-function currentM(){ return state.missions[state.missionIndex]; }
-function syncMissionUI(){
-  const m=currentM();
-  document.getElementById('missionLabel').textContent=`Mission ${state.missionIndex+1} of ${state.missions.length}`;
-  document.getElementById('missionTitle').textContent=`Mission ${state.missionIndex+1}: ${m.title}`;
-  document.getElementById('missionDesc').textContent=m.desc;
-}
-
-function advanceMission(){
-  const m=currentM();
-  if(m.done>=m.goal){
-    if(state.missionIndex<state.missions.length-1){
-      state.missionIndex++;state.started=false;state.activeTarget=null;state.plotted=null;
-      drawPlane({showQ:true});
-      showFB(true,`<strong>Mission complete!</strong> Mission ${state.missionIndex+1}: ${currentM().title} is now unlocked.`);
-      celebrate();
-    } else {
-      showFB(true,'<strong>🎉 Quest Complete!</strong> You can plot, classify, and interpret rational-number points on the coordinate plane. Excellent work!');
-      celebrate();
-    }
-  }
-  syncMissionUI(); updateHUD();
-}
-
-function getNextPlotTarget(){
-  const unused=PLOT_TARGETS.filter((_,i)=>!state.usedPlotTargets.includes(i));
-  if(unused.length===0){
-    state.usedPlotTargets=[];
-    return PLOT_TARGETS[Math.floor(Math.random()*PLOT_TARGETS.length)];
-  }
-  const idx=Math.floor(Math.random()*unused.length);
-  const realIdx=PLOT_TARGETS.indexOf(unused[idx]);
-  state.usedPlotTargets.push(realIdx);
-  return unused[idx];
-}
-
-function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
-
-function startMission(){
-  clearFB(); state.started=true;
-  const m=currentM();
-  if(m.type==='plot'){
-    state.activeTarget=getNextPlotTarget(); state.plotted=null;
-    document.getElementById('targetVal').innerHTML=`Plot <strong style="font-size:1.15rem">(${state.activeTarget.x}, ${state.activeTarget.y})</strong>`;
-    drawPlane({showQ:true});
-  } else {
-    document.getElementById('targetVal').textContent='Answer the challenge below.';
-    const bank={opposite:OPPOSITE_ITEMS,quadrant:QUADRANT_ITEMS,boss:BOSS_ITEMS};
-    askChoice(shuffle(bank[m.type])[0]);
-    if(m.type==='quadrant'||m.type==='boss') drawPlane({showQ:true});
-  }
-}
-
-function askChoice(item){
-  if(state.overlayLocked) return;
-  state.overlayLocked=true;
-  document.getElementById('overlayEyebrow').textContent=`Mission ${state.missionIndex+1}: ${currentM().title}`;
-  document.getElementById('overlayQuestion').textContent=item.q;
-  const wrap=document.getElementById('overlayChoices'); wrap.innerHTML='';
-  const fb=document.getElementById('overlayFeedback'); fb.className='feedback'; fb.textContent='';
-  shuffle(item.c).forEach(ch=>{
-    const b=document.createElement('button'); b.className='choice-btn'; b.textContent=ch;
-    b.addEventListener('click',()=>{
-      const good=ch===item.a;
-      wrap.querySelectorAll('.choice-btn').forEach(btn=>{
-        if(btn.textContent===item.a) btn.classList.add('correct');
-        else if(btn===b && !good) btn.classList.add('wrong');
-        btn.style.pointerEvents='none';
-      });
-      fb.className='feedback '+(good?'good':'bad');
-      fb.innerHTML=(good?'<strong>Correct!</strong> ':'<strong>Not yet.</strong> ')+item.e;
-      if(good){ state.streak++; gainXP(currentM().type==='boss'?20:12); currentM().done++; }
-      else { state.streak=0; state.lives--; }
-      updateHUD();
-      setTimeout(()=>{
-        document.getElementById('choiceOverlay').style.display='none';
-        state.overlayLocked=false;
-        if(state.lives<=0){ gameOver(); return; }
-        advanceMission();
-        if(state.started && currentM().type!=='plot'){
-          const bank={opposite:OPPOSITE_ITEMS,quadrant:QUADRANT_ITEMS,boss:BOSS_ITEMS};
-          if(currentM().done<currentM().goal) setTimeout(()=>askChoice(shuffle(bank[currentM().type])[0]),250);
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coordinate Treasure Hunt — 6.NS.C.6</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
-      },1400);
-    });
-    wrap.appendChild(b);
-  });
-  document.getElementById('choiceOverlay').style.display='flex';
-}
+      });
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #051225;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #game-container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // ============================================================
+      //  COORDINATE TREASURE HUNT — 6.NS.C.6
+      //  Number line and coordinate plane navigation
+      // ============================================================
 
-function gameOver(){
-  document.getElementById('overlayEyebrow').textContent='Game Over';
-  document.getElementById('overlayQuestion').textContent='You ran out of lives. Reset and try again — remember: x first, then y. Use sign to choose direction.';
-  const wrap=document.getElementById('overlayChoices'); wrap.innerHTML='';
-  const b=document.createElement('button'); b.className='choice-btn'; b.textContent='↺ Play Again';
-  b.addEventListener('click',resetGame); wrap.appendChild(b);
-  document.getElementById('choiceOverlay').style.display='flex';
-}
+      const W = 800,
+        H = 600;
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function resetGame(){
-  Object.assign(state,{level:1,xp:0,lives:3,streak:0,missionIndex:0,started:false,activeTarget:null,plotted:null,overlayLocked:false,usedPlotTargets:[]});
-  state.missions.forEach(m=>m.done=0);
-  document.getElementById('choiceOverlay').style.display='none';
-  document.getElementById('targetVal').textContent='Press Start Mission to begin.';
-  clearFB(); drawPlane({showQ:true}); syncMissionUI(); updateHUD();
-}
+      function synth(f, d, t = "square", v = 0.1) {
+        try {
+          const o = audioCtx.createOscillator(),
+            g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.frequency.value = f;
+          o.type = t;
+          g.gain.setValueAtTime(v, audioCtx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + d);
+          o.start();
+          o.stop(audioCtx.currentTime + d);
+        } catch (e) {}
+      }
+      function sndMove() {
+        synth(220, 0.04);
+      }
+      function sndTreasure() {
+        [523, 659, 784, 1047].forEach((f, i) =>
+          setTimeout(() => synth(f, 0.12), i * 80),
+        );
+      }
+      function sndCorrect() {
+        synth(523, 0.1);
+        setTimeout(() => synth(784, 0.15), 100);
+      }
+      function sndWrong() {
+        synth(150, 0.3, "sawtooth", 0.12);
+      }
+      function sndWave() {
+        synth(180, 0.15, "sine", 0.06);
+        setTimeout(() => synth(220, 0.15, "sine", 0.06), 100);
+      }
+      function sndLevelUp() {
+        [440, 554, 659, 880].forEach((f, i) =>
+          setTimeout(() => synth(f, 0.1), i * 90),
+        );
+      }
 
-function snapPoint(evt){
-  const rect=canvas.getBoundingClientRect();
-  const cx=evt.touches?evt.touches[0].clientX:evt.clientX;
-  const cy=evt.touches?evt.touches[0].clientY:evt.clientY;
-  const rx=Math.round((cx-rect.left)*(canvas.width/rect.width));
-  const ry=Math.round((cy-rect.top)*(canvas.height/rect.height));
-  return {
-    x:Math.max(C.min,Math.min(C.max,Math.round((rx-C.center)/C.step))),
-    y:Math.max(C.min,Math.min(C.max,Math.round((C.center-ry)/C.step)))
-  };
-}
+      function shuffle(a) {
+        const b = [...a];
+        for (let i = b.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [b[i], b[j]] = [b[j], b[i]];
+        }
+        return b;
+      }
 
-function handlePlot(evt){
-  if(currentM().type!=='plot'||!state.started||!state.activeTarget) return;
-  evt.preventDefault();
-  state.plotted=snapPoint(evt); drawPlane({showQ:true});
-  const good=state.plotted.x===state.activeTarget.x&&state.plotted.y===state.activeTarget.y;
-  if(good){
-    currentM().done++; state.streak++; gainXP(16);
-    showFB(true,`<strong>Correct!</strong> You plotted <strong>(${state.plotted.x}, ${state.plotted.y})</strong> by moving along x first, then y.`);
-    if(currentM().done<currentM().goal){
-      setTimeout(()=>{
-        state.activeTarget=getNextPlotTarget(); state.plotted=null;
-        document.getElementById('targetVal').innerHTML=`Plot <strong style="font-size:1.15rem">(${state.activeTarget.x}, ${state.activeTarget.y})</strong>`;
-        drawPlane({showQ:true}); clearFB();
-      },900);
-    }
-  } else {
-    state.streak=0; state.lives--;
-    showFB(false,`You plotted <strong>(${state.plotted.x}, ${state.plotted.y})</strong>. Check the sign — is x positive (right) or negative (left)? Is y positive (up) or negative (down)?`);
-  }
-  updateHUD();
-  if(state.lives<=0){ gameOver(); return; }
-  advanceMission();
-}
+      // ============================================================
+      // BOOT
+      // ============================================================
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
 
-['click','touchstart'].forEach(t=>canvas.addEventListener(t,handlePlot,{passive:false}));
+          // Ship (top-down)
+          g.fillStyle(0x8b5cf6);
+          g.fillTriangle(10, 0, 0, 20, 20, 20);
+          g.fillStyle(0xc084fc);
+          g.fillTriangle(10, 2, 3, 18, 17, 18);
+          g.generateTexture("ship", 20, 20);
+          g.clear();
 
-document.getElementById('startBtn').addEventListener('click',startMission);
-document.getElementById('hintBtn').addEventListener('click',()=>{
-  const m=currentM();
-  let msg='Use the sign of x first, then the sign of y.';
-  if(m.type==='plot'&&state.activeTarget){
-    const t=state.activeTarget;
-    msg=`Hint: move <strong>${t.x<0?'left':'right'} ${Math.abs(t.x)}</strong> along the x-axis, then <strong>${t.y<0?'down':'up'} ${Math.abs(t.y)}</strong> along the y-axis.`;
-  } else if(m.type==='opposite') msg='Opposites are the same distance from 0 — just flip the sign(s).';
-  else if(m.type==='quadrant') msg='Quadrants: I (+,+), II (−,+), III (−,−), IV (+,−). Check each sign.';
-  else if(m.type==='boss') msg='Boss hint: identify sign patterns, axes points (x=0 or y=0), and opposites.';
-  showFB(true,msg);
-});
-document.getElementById('resetBtn').addEventListener('click',resetGame);
+          // Treasure chest
+          g.fillStyle(0xfbbf24);
+          g.fillRoundedRect(0, 2, 16, 10, 2);
+          g.fillStyle(0xf59e0b);
+          g.fillRoundedRect(0, 0, 16, 6, 2);
+          g.fillStyle(0xffffff);
+          g.fillRect(6, 4, 4, 4);
+          g.generateTexture("treasure", 16, 14);
+          g.clear();
 
-drawPlane({showQ:true}); syncMissionUI(); updateHUD();
-window.resetGame=resetGame;
-</script>
+          // Rock (obstacle)
+          g.fillStyle(0x6b7280);
+          g.fillCircle(8, 8, 8);
+          g.fillStyle(0x4b5563);
+          g.fillCircle(6, 6, 3);
+          g.generateTexture("rock", 16, 16);
+          g.clear();
+
+          // Whirlpool
+          g.fillStyle(0x38bdf8, 0.4);
+          g.fillCircle(12, 12, 12);
+          g.fillStyle(0x0ea5e9, 0.3);
+          g.fillCircle(12, 12, 8);
+          g.fillStyle(0x0284c7, 0.2);
+          g.fillCircle(12, 12, 4);
+          g.generateTexture("whirlpool", 24, 24);
+          g.clear();
+
+          // Map marker
+          g.fillStyle(0xef4444);
+          g.fillCircle(6, 6, 6);
+          g.fillStyle(0xffffff);
+          g.fillCircle(6, 6, 2);
+          g.generateTexture("map_pin", 12, 12);
+          g.clear();
+
+          // Compass rose
+          g.fillStyle(0xfbbf24, 0.8);
+          g.fillTriangle(8, 0, 4, 8, 12, 8);
+          g.fillStyle(0xef4444, 0.8);
+          g.fillTriangle(8, 16, 4, 8, 12, 8);
+          g.generateTexture("compass", 16, 16);
+          g.clear();
+
+          // Coin
+          g.fillStyle(0xfbbf24);
+          g.fillCircle(6, 6, 6);
+          g.fillStyle(0xf59e0b);
+          g.fillCircle(6, 6, 4);
+          g.generateTexture("coin", 12, 12);
+          g.clear();
+
+          // Heart
+          g.fillStyle(0xef4444);
+          g.fillRect(2, 1, 3, 3);
+          g.fillRect(7, 1, 3, 3);
+          g.fillRect(0, 3, 12, 3);
+          g.fillRect(2, 6, 8, 3);
+          g.fillRect(4, 9, 4, 2);
+          g.generateTexture("heart", 12, 11);
+          g.clear();
+
+          // Button
+          g.fillStyle(0x1e293b);
+          g.fillRoundedRect(0, 0, 220, 52, 14);
+          g.lineStyle(2, 0x8b5cf6);
+          g.strokeRoundedRect(0, 0, 220, 52, 14);
+          g.generateTexture("btn", 220, 52);
+          g.clear();
+
+          // Answer btn
+          g.fillStyle(0x0f172a);
+          g.fillRoundedRect(0, 0, 160, 44, 10);
+          g.lineStyle(2, 0x8b5cf6);
+          g.strokeRoundedRect(0, 0, 160, 44, 10);
+          g.generateTexture("ans_btn", 160, 44);
+          g.clear();
+
+          g.fillStyle(0x064e3b);
+          g.fillRoundedRect(0, 0, 160, 44, 10);
+          g.lineStyle(2, 0x4ade80);
+          g.strokeRoundedRect(0, 0, 160, 44, 10);
+          g.generateTexture("ans_ok", 160, 44);
+          g.clear();
+
+          g.fillStyle(0x450a0a);
+          g.fillRoundedRect(0, 0, 160, 44, 10);
+          g.lineStyle(2, 0xf87171);
+          g.strokeRoundedRect(0, 0, 160, 44, 10);
+          g.generateTexture("ans_bad", 160, 44);
+          g.clear();
+
+          // Water tile
+          g.fillStyle(0x0c4a6e);
+          g.fillRect(0, 0, 40, 40);
+          g.fillStyle(0x0e7490, 0.3);
+          g.fillRect(0, 10, 40, 2);
+          g.fillRect(5, 25, 30, 1);
+          g.generateTexture("water", 40, 40);
+          g.clear();
+
+          // Particle
+          g.fillStyle(0xffffff, 0.5);
+          g.fillCircle(2, 2, 2);
+          g.generateTexture("particle", 4, 4);
+          g.clear();
+
+          // Island tile
+          g.fillStyle(0x4ade80, 0.4);
+          g.fillCircle(10, 10, 10);
+          g.generateTexture("island", 20, 20);
+          g.clear();
+
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ============================================================
+      // TITLE
+      // ============================================================
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#051225");
+
+          // Water shimmer bg
+          for (let i = 0; i < 100; i++) {
+            const c = this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 2),
+              Phaser.Math.RND.pick([0x0ea5e9, 0x38bdf8, 0x7dd3fc]),
+              Phaser.Math.FloatBetween(0.03, 0.15),
+            );
+            this.tweens.add({
+              targets: c,
+              alpha: { from: c.alpha, to: 0.02 },
+              duration: Phaser.Math.Between(1000, 3000),
+              yoyo: true,
+              repeat: -1,
+            });
+          }
+
+          this.add
+            .text(W / 2, 80, "COORDINATE", {
+              fontSize: "44px",
+              fontStyle: "bold",
+              color: "#38bdf8",
+              stroke: "#051225",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 135, "TREASURE HUNT", {
+              fontSize: "50px",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              stroke: "#051225",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 180, "6.NS.C.6 — Number Line & Coordinate Plane", {
+              fontSize: "15px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+
+          // Animated ship
+          const ship = this.add.image(W / 2, 280, "ship").setScale(4);
+          this.tweens.add({
+            targets: ship,
+            y: 265,
+            angle: 5,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.InOut",
+          });
+
+          // Floating treasures
+          for (let i = 0; i < 4; i++) {
+            const t = this.add
+              .image(180 + i * 160, 340, "treasure")
+              .setScale(2.5);
+            this.tweens.add({
+              targets: t,
+              y: 330,
+              duration: 800 + i * 150,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.InOut",
+            });
+          }
+
+          // Ship select
+          this.add
+            .text(W / 2, 400, "Choose your ship:", {
+              fontSize: "17px",
+              color: "#e2e8f0",
+            })
+            .setOrigin(0.5);
+          const ships = [
+            { name: "Purple Voyager", tint: 0x8b5cf6 },
+            { name: "Ocean Runner", tint: 0x0ea5e9 },
+            { name: "Gold Seeker", tint: 0xfbbf24 },
+          ];
+          this.selectedShip = 0;
+          this.shipBtns = [];
+          ships.forEach((s, i) => {
+            const x = W / 2 - 180 + i * 180;
+            const bg = this.add
+              .image(x, 455, "btn")
+              .setScale(0.75)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, 455, s.name, {
+                fontSize: "13px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            bg.on("pointerdown", () => {
+              this.selectedShip = i;
+              this.shipBtns.forEach((b, j) =>
+                b.setTint(j === i ? 0x4ade80 : 0xffffff),
+              );
+              synth(400 + i * 120, 0.08);
+            });
+            bg.on("pointerover", () => bg.setScale(0.8));
+            bg.on("pointerout", () => bg.setScale(0.75));
+            this.shipBtns.push(bg);
+          });
+          this.shipBtns[0].setTint(0x4ade80);
+
+          // Start
+          const startBtn = this.add
+            .image(W / 2, 535, "btn")
+            .setScale(1.2)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 535, "SET SAIL!", {
+              fontSize: "22px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: startBtn,
+            scaleX: 1.25,
+            scaleY: 1.25,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.InOut",
+          });
+          startBtn.on("pointerdown", () => {
+            synth(600, 0.1);
+            setTimeout(() => synth(800, 0.15), 80);
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () => {
+              const tints = [0x8b5cf6, 0x0ea5e9, 0xfbbf24];
+              this.scene.start("Game", { shipTint: tints[this.selectedShip] });
+            });
+          });
+
+          this.add
+            .text(
+              W / 2,
+              585,
+              "Arrow keys / WASD / Touch to navigate the coordinate grid",
+              {
+                fontSize: "12px",
+                color: "#64748b",
+              },
+            )
+            .setOrigin(0.5);
+
+          this.cameras.main.fadeIn(500);
+        }
+      }
+
+      // ============================================================
+      // GAME
+      // ============================================================
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+
+        init(data) {
+          this.shipTint = data.shipTint || 0x8b5cf6;
+          this.level = data.level || 1;
+          this.score = 0;
+          this.lives = 3;
+          this.combo = 0;
+          this.maxCombo = 0;
+          this.treasuresFound = 0;
+          this.totalTreasures = 3 + Math.min(this.level, 4);
+          this.qCorrect = 0;
+          this.qTotal = 0;
+          this.canMove = true;
+          this.questionActive = false;
+          this.gridRange = 6; // -6 to 6
+          this.cellSize = 40;
+          this.shipGridX = 0;
+          this.shipGridY = 0;
+          this.moveDelay = 0;
+        }
+
+        create() {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          this.cameras.main.setBackgroundColor("#051225");
+
+          // Grid dimensions
+          const range = this.gridRange;
+          const cs = this.cellSize;
+          const gridW = (range * 2 + 1) * cs;
+          const gridH = (range * 2 + 1) * cs;
+          const ox = W / 2; // origin screen x
+          const oy = H / 2 - 20; // origin screen y
+
+          this.ox = ox;
+          this.oy = oy;
+          this.cs = cs;
+          this.range = range;
+
+          // Draw ocean background
+          for (let gx = -range; gx <= range; gx++) {
+            for (let gy = -range; gy <= range; gy++) {
+              const sx = ox + gx * cs;
+              const sy = oy - gy * cs;
+              const tile = this.add.image(sx, sy, "water").setAlpha(0.3);
+            }
+          }
+
+          // Draw grid lines
+          this.drawGrid();
+
+          // Quadrant labels
+          const qlSize = "14px";
+          const qlAlpha = 0.2;
+          this.add
+            .text(ox + (range * cs) / 2, oy - (range * cs) / 2, "I", {
+              fontSize: qlSize,
+              color: "#4ade80",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+          this.add
+            .text(ox - (range * cs) / 2, oy - (range * cs) / 2, "II", {
+              fontSize: qlSize,
+              color: "#38bdf8",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+          this.add
+            .text(ox - (range * cs) / 2, oy + (range * cs) / 2, "III", {
+              fontSize: qlSize,
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+          this.add
+            .text(ox + (range * cs) / 2, oy + (range * cs) / 2, "IV", {
+              fontSize: qlSize,
+              color: "#c084fc",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+
+          // Place treasures
+          this.treasures = [];
+          this.placeTreasures();
+
+          // Place rocks/obstacles
+          this.rocks = [];
+          this.placeRocks();
+
+          // Place coins (bonus)
+          this.coins = [];
+          this.placeCoins();
+
+          // Ship
+          this.ship = this.add
+            .image(ox, oy, "ship")
+            .setScale(2.2)
+            .setTint(this.shipTint)
+            .setDepth(10);
+
+          // Coordinate label following ship
+          this.coordLabel = this.add
+            .text(ox, oy + 22, "(0, 0)", {
+              fontSize: "12px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(11);
+
+          // HUD
+          this.createHUD();
+
+          // Controls
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+
+          // Touch controls
+          this.createTouchControls();
+
+          // Level intro
+          this.showLevelIntro();
+
+          this.cameras.main.fadeIn(500);
+
+          // Target arrow (points to nearest treasure)
+          this.targetArrow = this.add
+            .image(ox, oy - 30, "compass")
+            .setScale(1.5)
+            .setDepth(12)
+            .setAlpha(0.7);
+        }
+
+        drawGrid() {
+          const g = this.add.graphics();
+          const { ox, oy, cs, range } = this;
+
+          // Grid lines
+          g.lineStyle(1, 0x38bdf8, 0.08);
+          for (let i = -range; i <= range; i++) {
+            g.moveTo(ox + i * cs, oy - range * cs);
+            g.lineTo(ox + i * cs, oy + range * cs);
+            g.moveTo(ox - range * cs, oy + i * cs);
+            g.lineTo(ox + range * cs, oy + i * cs);
+          }
+          g.strokePath();
+
+          // Axes (thicker)
+          g.lineStyle(2, 0x38bdf8, 0.4);
+          g.moveTo(ox - range * cs, oy);
+          g.lineTo(ox + range * cs, oy);
+          g.moveTo(ox, oy - range * cs);
+          g.lineTo(ox, oy + range * cs);
+          g.strokePath();
+
+          // Axis labels
+          for (let i = -range; i <= range; i++) {
+            if (i === 0) continue;
+            // x-axis
+            this.add
+              .text(ox + i * cs, oy + 10, `${i}`, {
+                fontSize: "9px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5, 0);
+            // y-axis
+            this.add
+              .text(ox - 14, oy - i * cs, `${i}`, {
+                fontSize: "9px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+          // Origin
+          this.add.text(ox - 10, oy + 10, "0", {
+            fontSize: "10px",
+            color: "#fbbf24",
+          });
+
+          // Axis names
+          this.add
+            .text(ox + range * cs + 5, oy, "x", {
+              fontSize: "12px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0, 0.5);
+          this.add
+            .text(ox, oy - range * cs - 12, "y", {
+              fontSize: "12px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+        }
+
+        placeTreasures() {
+          const used = new Set();
+          used.add("0,0");
+          for (let i = 0; i < this.totalTreasures; i++) {
+            let gx, gy;
+            do {
+              gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
+              gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
+            } while (used.has(`${gx},${gy}`));
+            used.add(`${gx},${gy}`);
+
+            const sx = this.ox + gx * this.cs;
+            const sy = this.oy - gy * this.cs;
+            const t = this.add
+              .image(sx, sy, "treasure")
+              .setScale(2)
+              .setDepth(5);
+            this.tweens.add({
+              targets: t,
+              y: sy - 5,
+              duration: 800 + i * 100,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.InOut",
+            });
+
+            // Glow
+            const gl = this.add.circle(sx, sy, 12, 0xfbbf24, 0.15).setDepth(4);
+            this.tweens.add({
+              targets: gl,
+              scale: 2,
+              alpha: 0,
+              duration: 1200,
+              repeat: -1,
+            });
+
+            this.treasures.push({ gx, gy, sprite: t, glow: gl, found: false });
+          }
+          this.usedCells = used;
+        }
+
+        placeRocks() {
+          const count = 3 + this.level * 2;
+          for (let i = 0; i < count; i++) {
+            let gx, gy;
+            do {
+              gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
+              gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
+            } while (this.usedCells.has(`${gx},${gy}`));
+            this.usedCells.add(`${gx},${gy}`);
+
+            const sx = this.ox + gx * this.cs;
+            const sy = this.oy - gy * this.cs;
+            this.add
+              .image(sx, sy, "rock")
+              .setScale(2)
+              .setDepth(3)
+              .setAlpha(0.7);
+            this.rocks.push({ gx, gy });
+          }
+        }
+
+        placeCoins() {
+          const count = 5 + this.level * 2;
+          for (let i = 0; i < count; i++) {
+            let gx, gy;
+            do {
+              gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
+              gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
+            } while (this.usedCells.has(`${gx},${gy}`));
+            this.usedCells.add(`${gx},${gy}`);
+
+            const sx = this.ox + gx * this.cs;
+            const sy = this.oy - gy * this.cs;
+            const c = this.add.image(sx, sy, "coin").setScale(1.5).setDepth(4);
+            this.tweens.add({
+              targets: c,
+              y: sy - 4,
+              duration: 500 + i * 80,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.InOut",
+            });
+            this.coins.push({ gx, gy, sprite: c, collected: false });
+          }
+        }
+
+        createHUD() {
+          this.add.rectangle(W / 2, 18, W, 36, 0x0f172a, 0.9).setDepth(100);
+
+          this.scoreText = this.add
+            .text(12, 8, "Score: 0", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setDepth(101);
+
+          this.treasureText = this.add
+            .text(12, 24, `Treasures: 0/${this.totalTreasures}`, {
+              fontSize: "12px",
+              color: "#c084fc",
+            })
+            .setDepth(101);
+
+          this.levelText = this.add
+            .text(W / 2, 8, `Level ${this.level}`, {
+              fontSize: "14px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+
+          this.comboText = this.add
+            .text(W / 2, 24, "", {
+              fontSize: "11px",
+              color: "#4ade80",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+
+          // Hearts
+          this.hearts = [];
+          for (let i = 0; i < 3; i++) {
+            this.hearts.push(
+              this.add
+                .image(W - 50 + i * 18, 18, "heart")
+                .setScale(1.3)
+                .setDepth(101),
+            );
+          }
+
+          // Target display
+          this.targetText = this.add
+            .text(W / 2, H - 14, "Navigate to the treasure coordinates!", {
+              fontSize: "13px",
+              color: "#94a3b8",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(101);
+        }
+
+        createTouchControls() {
+          const a = 0.25,
+            s = 36;
+
+          // D-pad style
+          const bx = 70,
+            by = H - 65;
+          this.tUp = this.add
+            .circle(bx, by - s, s, 0x38bdf8, a)
+            .setDepth(200)
+            .setInteractive();
+          this.add
+            .text(bx, by - s, "^", {
+              fontSize: "22px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(201);
+          this.tDown = this.add
+            .circle(bx, by + s, s, 0x38bdf8, a)
+            .setDepth(200)
+            .setInteractive();
+          this.add
+            .text(bx, by + s, "v", {
+              fontSize: "22px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(201);
+          this.tLeft = this.add
+            .circle(bx - s, by, s, 0x38bdf8, a)
+            .setDepth(200)
+            .setInteractive();
+          this.add
+            .text(bx - s, by, "<", {
+              fontSize: "22px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(201);
+          this.tRight = this.add
+            .circle(bx + s, by, s, 0x38bdf8, a)
+            .setDepth(200)
+            .setInteractive();
+          this.add
+            .text(bx + s, by, ">", {
+              fontSize: "22px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(201);
+
+          this.touchDir = null;
+          const setDir = (d) => () => {
+            this.touchDir = d;
+          };
+          const clearDir = () => {
+            this.touchDir = null;
+          };
+          this.tUp.on("pointerdown", setDir("up"));
+          this.tUp.on("pointerup", clearDir);
+          this.tUp.on("pointerout", clearDir);
+          this.tDown.on("pointerdown", setDir("down"));
+          this.tDown.on("pointerup", clearDir);
+          this.tDown.on("pointerout", clearDir);
+          this.tLeft.on("pointerdown", setDir("left"));
+          this.tLeft.on("pointerup", clearDir);
+          this.tLeft.on("pointerout", clearDir);
+          this.tRight.on("pointerdown", setDir("right"));
+          this.tRight.on("pointerup", clearDir);
+          this.tRight.on("pointerout", clearDir);
+        }
+
+        showLevelIntro() {
+          const ov = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.75)
+            .setDepth(500);
+          const t1 = this.add
+            .text(W / 2, H / 2 - 40, `Level ${this.level}`, {
+              fontSize: "44px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5)
+            .setDepth(501);
+          const t2 = this.add
+            .text(
+              W / 2,
+              H / 2 + 10,
+              `Find ${this.totalTreasures} treasures on the coordinate plane!`,
+              {
+                fontSize: "16px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(501);
+          const t3 = this.add
+            .text(
+              W / 2,
+              H / 2 + 40,
+              "Use coordinates (x, y) to navigate. x = left/right, y = up/down",
+              {
+                fontSize: "13px",
+                color: "#64748b",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(501);
+
+          this.canMove = false;
+          this.tweens.add({
+            targets: [ov, t1, t2, t3],
+            alpha: 0,
+            delay: 2000,
+            duration: 500,
+            onComplete: () => {
+              ov.destroy();
+              t1.destroy();
+              t2.destroy();
+              t3.destroy();
+              this.canMove = true;
+            },
+          });
+        }
+
+        moveShip(dx, dy) {
+          if (!this.canMove || this.questionActive) return;
+          if (this.moveDelay > 0) return;
+
+          const nx = this.shipGridX + dx;
+          const ny = this.shipGridY + dy;
+
+          // Bounds check
+          if (
+            nx < -this.range ||
+            nx > this.range ||
+            ny < -this.range ||
+            ny > this.range
+          )
+            return;
+
+          // Rock check
+          if (this.rocks.some((r) => r.gx === nx && r.gy === ny)) {
+            sndWrong();
+            this.cameras.main.shake(100, 0.005);
+            return;
+          }
+
+          sndMove();
+          this.shipGridX = nx;
+          this.shipGridY = ny;
+          this.moveDelay = 8;
+
+          const sx = this.ox + nx * this.cs;
+          const sy = this.oy - ny * this.cs;
+
+          this.tweens.add({
+            targets: this.ship,
+            x: sx,
+            y: sy,
+            duration: 120,
+            ease: "Power2",
+          });
+          this.coordLabel.setText(`(${nx}, ${ny})`);
+          this.tweens.add({
+            targets: this.coordLabel,
+            x: sx,
+            y: sy + 22,
+            duration: 120,
+          });
+
+          // Rotate ship
+          if (dx > 0) this.ship.setAngle(-90);
+          else if (dx < 0) this.ship.setAngle(90);
+          else if (dy > 0) this.ship.setAngle(0);
+          else if (dy < 0) this.ship.setAngle(180);
+
+          // Check coin
+          const coin = this.coins.find(
+            (c) => !c.collected && c.gx === nx && c.gy === ny,
+          );
+          if (coin) {
+            coin.collected = true;
+            sndTreasure();
+            this.score += 50;
+            const ft = this.add
+              .text(coin.sprite.x, coin.sprite.y - 15, "+50", {
+                fontSize: "14px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setDepth(50);
+            this.tweens.add({
+              targets: ft,
+              y: ft.y - 25,
+              alpha: 0,
+              duration: 600,
+              onComplete: () => ft.destroy(),
+            });
+            coin.sprite.destroy();
+            this.updateHUD();
+          }
+
+          // Check treasure
+          const tr = this.treasures.find(
+            (t) => !t.found && t.gx === nx && t.gy === ny,
+          );
+          if (tr) {
+            tr.found = true;
+            this.treasuresFound++;
+            tr.sprite.destroy();
+            tr.glow.destroy();
+
+            // Treasure found! Ask question
+            this.showTreasureQuestion(tr);
+          }
+
+          // Update target arrow
+          this.updateTargetArrow();
+        }
+
+        updateTargetArrow() {
+          const nearest = this.treasures
+            .filter((t) => !t.found)
+            .sort((a, b) => {
+              const da =
+                Math.abs(a.gx - this.shipGridX) +
+                Math.abs(a.gy - this.shipGridY);
+              const db =
+                Math.abs(b.gx - this.shipGridX) +
+                Math.abs(b.gy - this.shipGridY);
+              return da - db;
+            })[0];
+
+          if (nearest) {
+            const angle = Phaser.Math.Angle.Between(
+              this.shipGridX,
+              this.shipGridY,
+              nearest.gx,
+              nearest.gy,
+            );
+            this.targetArrow.setAngle(Phaser.Math.RadToDeg(angle) + 90);
+            this.targetArrow.setPosition(this.ship.x, this.ship.y - 28);
+            this.targetText.setText(
+              `Nearest treasure: look for (${nearest.gx}, ${nearest.gy})`,
+            );
+          } else {
+            this.targetArrow.setVisible(false);
+          }
+        }
+
+        showTreasureQuestion(treasure) {
+          sndTreasure();
+          this.questionActive = true;
+          this.canMove = false;
+
+          // Particle burst
+          const sx = this.ox + treasure.gx * this.cs;
+          const sy = this.oy - treasure.gy * this.cs;
+          this.add
+            .particles(sx, sy, "particle", {
+              speed: { min: 60, max: 180 },
+              scale: { start: 1.5, end: 0 },
+              lifespan: 600,
+              quantity: 15,
+              tint: 0xfbbf24,
+              emitting: false,
+            })
+            .explode(15);
+
+          // Generate question about coordinates
+          const q = this.genCoordQuestion(treasure);
+          this.showQuestionOverlay(q);
+        }
+
+        genCoordQuestion(treasure) {
+          const type = Phaser.Math.Between(0, 5);
+          const tx = treasure.gx,
+            ty = treasure.gy;
+
+          if (type === 0) {
+            return {
+              q: `You found treasure at (${tx}, ${ty}). Which quadrant is this?`,
+              ans:
+                tx > 0 && ty > 0
+                  ? "I"
+                  : tx < 0 && ty > 0
+                    ? "II"
+                    : tx < 0 && ty < 0
+                      ? "III"
+                      : tx > 0 && ty < 0
+                        ? "IV"
+                        : tx === 0 || ty === 0
+                          ? "Axis"
+                          : "I",
+              opts: shuffle(["I", "II", "III", "IV"]).slice(0, 3),
+            };
+          } else if (type === 1) {
+            return {
+              q: `The treasure is at (${tx}, ${ty}). What is the opposite of the x-coordinate?`,
+              ans: `${-tx}`,
+              opts: shuffle([`${-tx}`, `${tx}`, `${-ty}`]),
+            };
+          } else if (type === 2) {
+            return {
+              q: `Treasure at (${tx}, ${ty}). If you reflect across the y-axis, what is the new x?`,
+              ans: `${-tx}`,
+              opts: shuffle([`${-tx}`, `${tx}`, `${ty}`]),
+            };
+          } else if (type === 3) {
+            return {
+              q: `(${tx}, ${ty}) — Is the y-coordinate positive, negative, or zero?`,
+              ans: ty > 0 ? "Positive" : ty < 0 ? "Negative" : "Zero",
+              opts: shuffle(["Positive", "Negative", "Zero"]),
+            };
+          } else if (type === 4) {
+            const dist = Math.abs(tx) + Math.abs(ty);
+            return {
+              q: `How many steps from the origin (0,0) to (${tx}, ${ty})? (|x|+|y|)`,
+              ans: `${dist}`,
+              opts: shuffle([
+                `${dist}`,
+                `${dist + 2}`,
+                `${Math.abs(dist - 3)}`,
+              ]),
+            };
+          } else {
+            return {
+              q: `At (${tx}, ${ty}), which direction is x from the origin?`,
+              ans: tx > 0 ? "Right" : tx < 0 ? "Left" : "On y-axis",
+              opts: shuffle(["Right", "Left", "On y-axis"]),
+            };
+          }
+        }
+
+        showQuestionOverlay(q) {
+          this.qOverlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
+            .setDepth(600);
+          this.qElements = [];
+
+          const title = this.add
+            .text(W / 2, 110, "TREASURE FOUND!", {
+              fontSize: "24px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.qElements.push(title);
+
+          const qText = this.add
+            .text(W / 2, 200, q.q, {
+              fontSize: "20px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              wordWrap: { width: 600 },
+              align: "center",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.qElements.push(qText);
+
+          // Quadrant reference
+          const ref = this.add
+            .text(W / 2, 150, "I(+,+)  II(-,+)  III(-,-)  IV(+,-)", {
+              fontSize: "12px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.qElements.push(ref);
+
+          const opts = q.opts.includes(q.ans)
+            ? q.opts
+            : shuffle([q.ans, ...q.opts.slice(0, 2)]);
+          const uniqueOpts = [...new Set(opts)].slice(0, 3);
+          while (uniqueOpts.length < 3) uniqueOpts.push("N/A");
+          if (!uniqueOpts.includes(q.ans)) {
+            uniqueOpts[0] = q.ans;
+          }
+
+          shuffle(uniqueOpts).forEach((opt, i) => {
+            const bx = W / 2 - 180 + i * 180;
+            const by = 310;
+            const btn = this.add
+              .image(bx, by, "ans_btn")
+              .setScale(1.1)
+              .setDepth(601)
+              .setInteractive({ useHandCursor: true });
+            const txt = this.add
+              .text(bx, by, opt, {
+                fontSize: "18px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(602);
+            this.qElements.push(btn, txt);
+
+            btn.on("pointerdown", () => {
+              this.qElements.forEach((e) => {
+                if (e.input) e.disableInteractive();
+              });
+              this.qTotal++;
+
+              if (opt === q.ans) {
+                sndCorrect();
+                btn.setTexture("ans_ok");
+                txt.setColor("#4ade80");
+                this.qCorrect++;
+                this.combo++;
+                if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+                const pts = 300 * this.combo;
+                this.score += pts;
+
+                const fb = this.add
+                  .text(W / 2, 380, `Correct! +${pts}`, {
+                    fontSize: "20px",
+                    color: "#4ade80",
+                    fontStyle: "bold",
+                  })
+                  .setOrigin(0.5)
+                  .setDepth(601);
+                this.qElements.push(fb);
+              } else {
+                sndWrong();
+                btn.setTexture("ans_bad");
+                txt.setColor("#f87171");
+                this.combo = 0;
+                this.lives--;
+
+                const fb = this.add
+                  .text(W / 2, 380, `Answer: ${q.ans}`, {
+                    fontSize: "20px",
+                    color: "#f87171",
+                    fontStyle: "bold",
+                  })
+                  .setOrigin(0.5)
+                  .setDepth(601);
+                this.qElements.push(fb);
+              }
+
+              this.updateHUD();
+
+              this.time.delayedCall(1800, () => {
+                this.qElements.forEach((e) => e.destroy());
+                this.qOverlay.destroy();
+                this.questionActive = false;
+                this.canMove = true;
+
+                if (this.lives <= 0) {
+                  this.endGame();
+                  return;
+                }
+                if (this.treasuresFound >= this.totalTreasures)
+                  this.levelComplete();
+              });
+            });
+
+            btn.on("pointerover", () => btn.setScale(1.15));
+            btn.on("pointerout", () => btn.setScale(1.1));
+          });
+        }
+
+        levelComplete() {
+          sndLevelUp();
+          this.canMove = false;
+
+          const ov = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
+            .setDepth(600);
+          this.add
+            .text(W / 2, 130, "ALL TREASURES FOUND!", {
+              fontSize: "36px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          const pct = this.qTotal > 0 ? this.qCorrect / this.qTotal : 0;
+          const stars = pct >= 0.85 ? 3 : pct >= 0.6 ? 2 : 1;
+          this.add
+            .text(W / 2, 190, "★".repeat(stars) + "☆".repeat(3 - stars), {
+              fontSize: "40px",
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          this.add
+            .text(
+              W / 2,
+              240,
+              `Score: ${this.score}  |  Correct: ${this.qCorrect}/${this.qTotal}  |  Combo: ${this.maxCombo}x`,
+              {
+                fontSize: "16px",
+                color: "#e2e8f0",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          // Confetti
+          for (let i = 0; i < 30; i++) {
+            const c = this.add
+              .circle(
+                Phaser.Math.Between(50, W - 50),
+                -10,
+                Phaser.Math.Between(3, 6),
+                Phaser.Math.RND.pick([0x38bdf8, 0xfbbf24, 0x4ade80, 0xc084fc]),
+              )
+              .setDepth(602);
+            this.tweens.add({
+              targets: c,
+              y: H + 20,
+              x: c.x + Phaser.Math.Between(-80, 80),
+              duration: Phaser.Math.Between(1500, 3000),
+            });
+          }
+
+          const nextBtn = this.add
+            .image(W / 2 - 110, 320, "btn")
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 - 110, 320, "Next Level", {
+              fontSize: "16px",
+              color: "#4ade80",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(602);
+          nextBtn.on("pointerdown", () => {
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () =>
+              this.scene.restart({
+                shipTint: this.shipTint,
+                level: this.level + 1,
+              }),
+            );
+          });
+
+          const resBtn = this.add
+            .image(W / 2 + 110, 320, "btn")
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 + 110, 320, "Results", {
+              fontSize: "16px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(602);
+          resBtn.on("pointerdown", () => {
+            this.scene.start("Results", {
+              score: this.score,
+              level: this.level,
+              treasures: this.treasuresFound,
+              qCorrect: this.qCorrect,
+              qTotal: this.qTotal,
+              maxCombo: this.maxCombo,
+              shipTint: this.shipTint,
+            });
+          });
+        }
+
+        endGame() {
+          this.canMove = false;
+          this.cameras.main.shake(400, 0.02);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              level: this.level,
+              treasures: this.treasuresFound,
+              qCorrect: this.qCorrect,
+              qTotal: this.qTotal,
+              maxCombo: this.maxCombo,
+              shipTint: this.shipTint,
+              gameOver: true,
+            });
+          });
+        }
+
+        updateHUD() {
+          this.scoreText.setText(`Score: ${this.score}`);
+          this.treasureText.setText(
+            `Treasures: ${this.treasuresFound}/${this.totalTreasures}`,
+          );
+          if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
+          else this.comboText.setText("");
+          for (let i = 0; i < 3; i++)
+            this.hearts[i].setAlpha(i < this.lives ? 1 : 0.2);
+        }
+
+        update() {
+          if (this.moveDelay > 0) this.moveDelay--;
+
+          // Keyboard
+          if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.left) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.A)
+          )
+            this.moveShip(-1, 0);
+          else if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.right) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.D)
+          )
+            this.moveShip(1, 0);
+          else if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.up) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.W)
+          )
+            this.moveShip(0, 1);
+          else if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.down) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.S)
+          )
+            this.moveShip(0, -1);
+
+          // Touch
+          if (this.touchDir && this.moveDelay <= 0) {
+            if (this.touchDir === "left") this.moveShip(-1, 0);
+            else if (this.touchDir === "right") this.moveShip(1, 0);
+            else if (this.touchDir === "up") this.moveShip(0, 1);
+            else if (this.touchDir === "down") this.moveShip(0, -1);
+          }
+
+          // Water shimmer on ship
+          this.ship.setAlpha(0.95 + Math.sin(this.time.now * 0.003) * 0.05);
+        }
+      }
+
+      // ============================================================
+      // RESULTS
+      // ============================================================
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#051225");
+
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.d.qCorrect,
+                maxScore: this.d.qTotal,
+                problemsCorrect: this.d.qCorrect,
+                problemsAttempted: this.d.qTotal,
+                standard: "6.NS.C.6",
+              });
+          } catch (e) {}
+
+          for (let i = 0; i < 60; i++) {
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 2),
+              Phaser.Math.RND.pick([0x0ea5e9, 0x38bdf8]),
+              Phaser.Math.FloatBetween(0.03, 0.12),
+            );
+          }
+
+          const title = this.d.gameOver ? "GAME OVER" : "VOYAGE COMPLETE";
+          const color = this.d.gameOver ? "#f87171" : "#fbbf24";
+          this.add
+            .text(W / 2, 50, title, {
+              fontSize: "40px",
+              color,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+
+          const stats = [
+            ["Score", this.d.score],
+            ["Level", this.d.level],
+            ["Treasures Found", this.d.treasures],
+            ["Questions Correct", `${this.d.qCorrect}/${this.d.qTotal}`],
+            ["Best Combo", `${this.d.maxCombo}x`],
+            [
+              "Accuracy",
+              this.d.qTotal > 0
+                ? Math.round((this.d.qCorrect / this.d.qTotal) * 100) + "%"
+                : "N/A",
+            ],
+          ];
+
+          stats.forEach((s, i) => {
+            const y = 130 + i * 48;
+            this.add.text(W / 2 - 140, y, s[0], {
+              fontSize: "16px",
+              color: "#94a3b8",
+            });
+            this.add
+              .text(W / 2 + 140, y, `${s[1]}`, {
+                fontSize: "20px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(1, 0);
+            if (i < stats.length - 1)
+              this.add.rectangle(W / 2, y + 36, 320, 1, 0x1e293b);
+          });
+
+          const pct = this.d.qTotal > 0 ? this.d.qCorrect / this.d.qTotal : 0;
+          const stars = pct >= 0.85 ? 3 : pct >= 0.6 ? 2 : 1;
+          this.add
+            .text(W / 2, 440, "★".repeat(stars) + "☆".repeat(3 - stars), {
+              fontSize: "38px",
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(
+              W / 2,
+              490,
+              "Coordinates: (x, y) = (right/left, up/down). Quadrants: I(+,+) II(-,+) III(-,-) IV(+,-)",
+              {
+                fontSize: "11px",
+                color: "#64748b",
+                wordWrap: { width: 600 },
+                align: "center",
+              },
+            )
+            .setOrigin(0.5);
+
+          const playBtn = this.add
+            .image(W / 2 - 120, 545, "btn")
+            .setScale(0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 - 120, 545, "Play Again", {
+              fontSize: "16px",
+              color: "#4ade80",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          playBtn.on("pointerdown", () =>
+            this.scene.start("Game", { shipTint: this.d.shipTint }),
+          );
+
+          const menuBtn = this.add
+            .image(W / 2 + 120, 545, "btn")
+            .setScale(0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 + 120, 545, "Main Menu", {
+              fontSize: "16px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          menuBtn.on("pointerdown", () => this.scene.start("Title"));
+
+          this.cameras.main.fadeIn(500);
+        }
+      }
+
+      // ============================================================
+      // CONFIG
+      // ============================================================
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        input: { activePointers: 3 },
+      };
+
+      new Phaser.Game(config);
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R3 · Lesson 5: Fractions ↔ Decimals ↔ Percents — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: convert between fractions, decimals, and percents. Builds toward Grade 6 number sense (6.NS.3) and ratio work (6.RP)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#2d874b 0%, #0e8a7d 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .conv-table { width: 100%; border-collapse: collapse; margin: 12px 0; text-align: center; font-size: 15px; }
+      .conv-table th, .conv-table td { border: 1px solid var(--line); padding: 10px 8px; }
+      .conv-table th { background: var(--navy); color: #fff; font-size: 13px; }
+      .conv-table td { font-size: 18px; font-weight: 700; }
+      .conv-table td:nth-child(1) { color: var(--blue); }
+      .conv-table td:nth-child(2) { color: var(--teal); }
+      .conv-table td:nth-child(3) { color: var(--coral); }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="phero">
+      <div class="deco">💵</div>
+      <h1>Fractions ↔ Decimals ↔ Percents</h1>
+      <p>Three ways to write the same number. Master the conversions and you will never be confused by a sale sign or a grade again.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R3 · Lesson 5</span>
+        <span class="tag">Builds 6.NS.3</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Grade 6 works with
+        fractions, decimals, and percents all at once (6.NS.3, 6.RP.3c).
+        Understanding that 1/2 = 0.5 = 50% means you can move between forms
+        fluently on any problem — taxes, discounts, test scores, and more.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>The Three Forms</h2></div></div>
+        <p>A fraction, a decimal, and a percent are <strong>three names for the same value</strong>. Here are the most important ones to memorize:</p>
+        <table class="conv-table">
+          <tr><th>Fraction</th><th>Decimal</th><th>Percent</th></tr>
+          <tr><td>1/2</td><td>0.5</td><td>50%</td></tr>
+          <tr><td>1/4</td><td>0.25</td><td>25%</td></tr>
+          <tr><td>3/4</td><td>0.75</td><td>75%</td></tr>
+          <tr><td>1/10</td><td>0.1</td><td>10%</td></tr>
+          <tr><td>1/5</td><td>0.2</td><td>20%</td></tr>
+        </table>
+        <div class="example">
+          <strong>Fraction → Decimal:</strong> Divide the numerator by the denominator.<br>
+          1 ÷ 2 = <strong>0.5</strong> &nbsp;|&nbsp; 1 ÷ 4 = <strong>0.25</strong> &nbsp;|&nbsp; 3 ÷ 4 = <strong>0.75</strong>
+        </div>
+        <div class="example">
+          <strong>Decimal → Percent:</strong> Multiply the decimal by 100 (move the decimal point two places right).<br>
+          0.5 × 100 = <strong>50%</strong> &nbsp;|&nbsp; 0.25 × 100 = <strong>25%</strong> &nbsp;|&nbsp; 0.1 × 100 = <strong>10%</strong>
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. What decimal is equal to <strong>1/2</strong>?</p>
+          <div class="opts" data-mc="t1" data-ans="b">
+            <button class="opt" data-v="a">0.12</button>
+            <button class="opt" data-v="b">0.5</button>
+            <button class="opt" data-v="c">0.2</button>
+            <button class="opt" data-v="d">0.05</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>1/2 means 1 ÷ 2 = 0.5. Half of one dollar is $0.50 — same idea.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. A store has a <strong>25% off</strong> sale. Which fraction shows this discount?</p>
+          <div class="opts" data-mc="t2" data-ans="b">
+            <button class="opt" data-v="a">1/2</button>
+            <button class="opt" data-v="b">1/4</button>
+            <button class="opt" data-v="c">3/4</button>
+            <button class="opt" data-v="d">1/5</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>25% = 25/100 = 1/4. So a 25% discount means you save one quarter of the price.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. Convert <strong>3/4</strong> to a decimal. (Type the decimal, e.g. 0.75)</p>
+          <input type="number" id="p3" placeholder="?" step="0.01" />
+          <button class="btn" onclick="checkNum('p3', 0.75)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>3 ÷ 4 = 0.75. Or: 3/4 = 75/100 = 0.75.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. What percent equals <strong>0.1</strong>?</p>
+          <div class="opts" data-mc="p4" data-ans="b">
+            <button class="opt" data-v="a">1%</button>
+            <button class="opt" data-v="b">10%</button>
+            <button class="opt" data-v="c">100%</button>
+            <button class="opt" data-v="d">0.1%</button>
+          </div>
+          <button class="btn" onclick="checkMC('p4')">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>To convert decimal to percent, multiply by 100: 0.1 × 100 = 10%.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. Which set of three values are all equal to each other?</p>
+          <div class="opts" data-mc="p5" data-ans="c">
+            <button class="opt" data-v="a">1/2 = 0.25 = 25%</button>
+            <button class="opt" data-v="b">3/4 = 0.34 = 34%</button>
+            <button class="opt" data-v="c">3/4 = 0.75 = 75%</button>
+            <button class="opt" data-v="d">1/4 = 0.14 = 14%</button>
+          </div>
+          <button class="btn" onclick="checkMC('p5')">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>3 ÷ 4 = 0.75, and 0.75 × 100 = 75%. So 3/4 = 0.75 = 75% is the correct match.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. A pizza is cut into 4 equal slices and you eat 1 slice. You ate what percent of the pizza?</p>
+          <div class="opts" data-mc="x6" data-ans="b">
+            <button class="opt" data-v="a">50%</button>
+            <button class="opt" data-v="b">25%</button>
+            <button class="opt" data-v="c">75%</button>
+            <button class="opt" data-v="d">10%</button>
+          </div>
+          <button class="btn" onclick="checkMC('x6')">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>1 out of 4 slices = 1/4 = 0.25 = 25%.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. Convert <strong>50%</strong> to a decimal. (Type the decimal)</p>
+          <input type="number" id="x7" placeholder="?" step="0.01" />
+          <button class="btn" onclick="checkNum('x7', 0.5)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>To convert percent to decimal, divide by 100: 50 ÷ 100 = 0.5. Or move the decimal two places left: 50.% → 0.50.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r3/lesson-4/">← Lesson 4: Divide Decimals</a>
+        <a href="/math/remediation/unit-r3/">← Unit R3 Home</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R3 · Lesson 5 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (Math.abs(v - ans) < 0.005) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

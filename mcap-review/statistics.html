@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCAP Review: Statistics &amp; Probability 📊</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --primary: #d0342c;
+        --bg: #f4f5f7;
+        --accent: #d0342c;
+        --text: #1e3a5f;
+        --correct: #16a34a;
+        --wrong: #dc2626;
+        --card-bg: #ffffff;
+        --shadow: 0 2px 8px rgba(30, 58, 95, 0.1);
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .standard-badge {
+        display: inline-block;
+        background: #fef2f2;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 99px;
+        margin-bottom: 16px;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        text-align: center;
+      }
+      .login-screen h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+      .login-screen .emoji-hero {
+        font-size: 3.5rem;
+        margin-bottom: 12px;
+      }
+      .login-screen p {
+        color: #555;
+        margin-bottom: 24px;
+        max-width: 420px;
+      }
+      .login-screen input {
+        padding: 12px 16px;
+        font-size: 1.1rem;
+        border: 2px solid var(--text);
+        border-radius: 8px;
+        width: 280px;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .login-screen input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      /* BUTTONS */
+      .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-accent {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--text);
+        color: var(--text);
+      }
+
+      /* PROGRESS */
+      .progress-bar-wrap {
+        background: #d1d5db;
+        border-radius: 99px;
+        height: 12px;
+        margin: 16px 0 24px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), #f87171);
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px 10px 0 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      /* QUESTION CARD */
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .card-body {
+        padding: 20px;
+      }
+      .q-number {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      /* MC OPTIONS */
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .option-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--primary);
+        background: #fef2f2;
+      }
+      .option-btn.selected {
+        border-color: var(--text);
+        background: #dbeafe;
+      }
+      .option-btn.correct-answer {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .option-btn.wrong-answer {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+
+      /* FILL-IN */
+      .fill-input {
+        padding: 10px 14px;
+        font-size: 1.1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        width: 160px;
+        text-align: center;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct-border {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .fill-input.wrong-border {
+        border-color: var(--wrong);
+        background: #fee2e2;
+      }
+
+      /* FEEDBACK */
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        display: none;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+        display: block;
+      }
+      .feedback.wrong {
+        background: #fee2e2;
+        color: #991b1b;
+        display: block;
+      }
+
+      /* SUMMARY */
+      .summary-screen {
+        display: none;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0 auto 20px;
+        color: #fff;
+      }
+      .score-a {
+        background: var(--correct);
+      }
+      .score-b {
+        background: #f59e0b;
+      }
+      .score-c {
+        background: var(--wrong);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .study-tips {
+        background: #fef2f2;
+        border-left: 4px solid var(--primary);
+        padding: 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 20px;
+      }
+      .study-tips h3 {
+        margin-bottom: 8px;
+      }
+      .study-tips li {
+        margin-bottom: 6px;
+      }
+
+      /* DATA TABLE */
+      .data-table {
+        border-collapse: collapse;
+        margin: 10px 0 16px;
+      }
+      .data-table th,
+      .data-table td {
+        border: 1px solid #d1d5db;
+        padding: 6px 12px;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+      .data-table th {
+        background: #f3f4f6;
+        font-weight: 700;
+      }
+
+      /* DOT PLOT (ascii-style) */
+      .dot-plot {
+        font-family: "Courier New", monospace;
+        font-size: 0.95rem;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 10px 0 16px;
+        white-space: pre;
+        overflow-x: auto;
+      }
+
+      /* FOOTER */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 40px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+
+      .option-btn:focus-visible,
+      .btn:focus-visible,
+      .fill-input:focus-visible,
+      .login-screen input:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px;
+        }
+        .login-screen h1 {
+          font-size: 1.5rem;
+        }
+        .q-text {
+          font-size: 1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="container" id="app">
+      <!-- LOGIN -->
+      <div class="login-screen" id="loginScreen">
+        <div class="emoji-hero" aria-hidden="true">📊</div>
+        <span class="standard-badge">Maryland MCAP · Grade 6 · 6.SP</span>
+        <h1>MCAP Review</h1>
+        <h2 style="color: var(--primary); margin-bottom: 8px">
+          Statistics &amp; Probability
+        </h2>
+        <p>
+          20 problems across 4 sections to help you prepare for the Maryland
+          MCAP. You'll work with statistical questions, measures of center and
+          spread, and data displays. Enter your name to begin.
+        </p>
+        <a class="packet-cta" href="/mcap-review/packets/statistics/" style="display:inline-block;margin:6px 0 20px;padding:10px 16px;background:#1FA6A2;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:.92rem">📘 Study guide &amp; printable Word packets for this domain →</a>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter your name"
+          aria-label="Enter your name"
+          maxlength="30"
+          autocomplete="off"
+        />
+        <br />
+        <button class="btn btn-primary" onclick="startReview()">
+          Start Review <span aria-hidden="true">📊</span>
+        </button>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h2 id="sectionTitle" style="font-size: 1.1rem"></h2>
+          <span id="qCounter" style="font-size: 0.9rem; color: #6b7280"></span>
+        </div>
+        <div
+          class="progress-bar-wrap"
+          id="progressBar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Quiz progress"
+        >
+          <div
+            class="progress-bar-fill"
+            id="progressBarFill"
+            style="width: 0%"
+          ></div>
+        </div>
+        <div id="questionArea"></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">
+            Next &#8594;
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <div style="text-align: center">
+          <div class="emoji-hero" aria-hidden="true">📊</div>
+          <h1>Review Complete!</h1>
+          <p id="summaryName" style="font-size: 1.1rem; color: #6b7280"></p>
+        </div>
+        <div class="score-circle" id="scoreCircle"></div>
+        <div class="card"><div class="card-body" id="sectionScores"></div></div>
+        <div class="study-tips" id="studyTips"></div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn btn-primary" onclick="exportResults()">
+            Export Results 📄
+          </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher) 📊
+          </button>
+          <button class="btn btn-accent" onclick="resetReview()">
+            Try Again 🔄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Neft Teacher &bull; Maryland MCAP &bull; Grade 6 &bull; 6.SP Statistics
+      &amp; Probability
+    </div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <script>
+      const STORAGE_KEY = "mcapStatisticsReview_v1";
+      const SECTIONS = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+      const SECTION_EMOJIS = ["📖", "⚡", "✏️", "🏆"];
+      const TOTAL_Q = 20;
+
+      // ===== QUESTIONS =====
+      const questions = [
+        // ── SECTION 1: VOCABULARY (5 MC) ──
+        {
+          section: 0,
+          type: "mc",
+          text: "A <strong>statistical question</strong> is one that:",
+          choices: [
+            "Always has a single correct answer",
+            "Anticipates variability in the data used to answer it",
+            "Can only be answered with a survey",
+            "Must use percentages",
+          ],
+          answer: 1,
+          explain:
+            'A statistical question anticipates that the data collected to answer it will vary. "How tall are the students in my class?" varies from student to student.',
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "Which value is a <strong>measure of center</strong>?",
+          choices: ["Range", "Mean", "IQR", "MAD"],
+          answer: 1,
+          explain:
+            "Mean (and median and mode) describe the center of a data set. Range, IQR, and MAD describe spread (variability).",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "The <strong>range</strong> of a data set is found by:",
+          choices: [
+            "Subtracting the minimum from the maximum",
+            "Adding all values and dividing by the count",
+            "Finding the middle value",
+            "Subtracting Q1 from Q3",
+          ],
+          answer: 0,
+          explain:
+            "Range = maximum − minimum. It is the simplest measure of how spread out the data is. (Q3 − Q1 is the IQR, not the range.)",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "<strong>MAD</strong> stands for:",
+          choices: [
+            "Most Average Data",
+            "Mean Absolute Deviation",
+            "Median And Distribution",
+            "Maximum Allowed Difference",
+          ],
+          answer: 1,
+          explain:
+            "MAD = Mean Absolute Deviation. It is the average distance each data value is from the mean, and measures variability.",
+        },
+        {
+          section: 0,
+          type: "mc",
+          text: "Which data display shows the <strong>frequency of data within equal intervals</strong> using bars with no gaps?",
+          choices: ["Dot plot", "Box plot", "Histogram", "Line graph"],
+          answer: 2,
+          explain:
+            "A histogram groups data into equal intervals (bins) and uses connected bars to show how many values fall in each interval.",
+        },
+
+        // ── SECTION 2: QUICK CHECK (5 MC) ──
+        {
+          section: 1,
+          type: "mc",
+          text: "Which of the following is a <strong>statistical question</strong>?",
+          choices: [
+            "How tall is the teacher?",
+            "What is 9 × 6?",
+            "How many minutes do students in Grade 6 spend reading each night?",
+            "What time does the bell ring?",
+          ],
+          answer: 2,
+          explain:
+            "Reading times vary from student to student, so the data collected will vary — that makes it a statistical question. The others each have one fixed answer.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Find the <strong>mean</strong> of: 90, 86, 92, 88, 94",
+          choices: ["88", "90", "92", "94"],
+          answer: 1,
+          explain: "Mean = (90 + 86 + 92 + 88 + 94) ÷ 5 = 450 ÷ 5 = 90.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Find the <strong>median</strong> of: 6, 11, 4, 9, 7",
+          choices: ["6", "7", "9", "11"],
+          answer: 1,
+          explain:
+            "Order the data: 4, 6, 7, 9, 11. With 5 values, the middle (3rd) value is 7.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "Find the <strong>mode</strong> of: 5, 8, 8, 3, 5, 8, 2",
+          choices: ["5", "8", "3", "There is no mode"],
+          answer: 1,
+          explain:
+            "The mode is the value that appears most often. 8 appears 3 times, more than any other value.",
+        },
+        {
+          section: 1,
+          type: "mc",
+          text: "On a <strong>box plot</strong>, the box stretches from Q1 to Q3 and shows:",
+          choices: [
+            "The top 25% of the data",
+            "The middle 50% of the data",
+            "Every data value",
+            "Only the median",
+          ],
+          answer: 1,
+          explain:
+            "The box spans from Q1 to Q3, which contains the middle 50% of the data. That width (Q3 − Q1) is the interquartile range (IQR).",
+        },
+
+        // ── SECTION 3: PRACTICE (5 fill-in / numeric) ──
+        {
+          section: 2,
+          type: "fill",
+          text: "A student tracked daily steps for 5 days: 8000, 9000, 7000, 8500, 7500. What is the <strong>mean</strong> number of steps?",
+          answer: "8000",
+          explain:
+            "Mean = (8000 + 9000 + 7000 + 8500 + 7500) ÷ 5 = 40000 ÷ 5 = 8000 steps.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Data set: 2, 4, 6, 8, 10. The mean is 6. Find the <strong>MAD</strong>.",
+          answer: "2.4",
+          altAnswers: ["2.40"],
+          explain:
+            "Deviations from mean 6: |2−6|=4, |4−6|=2, |6−6|=0, |8−6|=2, |10−6|=4. MAD = (4+2+0+2+4) ÷ 5 = 12 ÷ 5 = 2.4.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "Find the <strong>median</strong>: 14, 9, 21, 5, 17, 11. (Put them in order first!)",
+          answer: "12.5",
+          explain:
+            "Ordered: 5, 9, 11, 14, 17, 21. The two middle values are 11 and 14. Median = (11 + 14) ÷ 2 = 12.5.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "A data set has min = 4, Q1 = 11, median = 18, Q3 = 27, max = 40. What is the <strong>IQR</strong> (interquartile range)?",
+          answer: "16",
+          explain: "IQR = Q3 − Q1 = 27 − 11 = 16.",
+        },
+        {
+          section: 2,
+          type: "fill",
+          text: "A data set has minimum 6 and maximum 21. What is the <strong>range</strong>?",
+          answer: "15",
+          explain: "Range = maximum − minimum = 21 − 6 = 15.",
+        },
+
+        // ── SECTION 4: CHALLENGE (5 MC, real-world & displays) ──
+        {
+          section: 3,
+          type: "mc",
+          text: 'A dot plot shows the number of books read by 8 students:<br><div class="dot-plot">      X\nX     X\nX  X  X        X\nX  X  X  X     X\n──────────────────\n1  2  3  4  5  6  7</div>How many books did the most students read (the <strong>mode</strong>)?',
+          choices: ["1 and 3", "2", "5", "7"],
+          answer: 0,
+          explain:
+            "Counting the X's: 1 book has 4 students, 2 books has 1, 3 books has 4, 4 books has 1, 6 books has 2. The tallest stacks are at 1 and 3 (4 students each), so the data is bimodal — the modes are 1 and 3.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "A basketball player's points in 5 games were 12, 18, 15, 9, 21. The coach wants the <strong>mean</strong> points per game. What is it?",
+          choices: ["14", "15", "16", "18"],
+          answer: 1,
+          explain:
+            "Mean = (12 + 18 + 15 + 9 + 21) ÷ 5 = 75 ÷ 5 = 15 points per game.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "Two students' quiz scores are shown. Both have a mean of about 83. Which student's scores are <strong>more spread out</strong> (greater MAD)?<br><table class=\"data-table\"><tr><th>Ann</th><td>85</td><td>80</td><td>90</td><td>82</td><td>88</td></tr><tr><th>Ben</th><td>100</td><td>60</td><td>95</td><td>70</td><td>80</td></tr></table>",
+          choices: [
+            "Ann (MAD = 3.2)",
+            "Ben (MAD = 13.2)",
+            "They are equal",
+            "Cannot be determined",
+          ],
+          answer: 1,
+          explain:
+            "Ann: mean 85, deviations 0+5+5+3+3 = 16, MAD = 3.2. Ben: mean 81, deviations 19+21+14+11+1 = 66, MAD = 13.2. Ben's scores are far more spread out.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: "A box plot of daily high temperatures (°F) shows: min = 60, Q1 = 66, median = 71, Q3 = 78, max = 85. A day with a high of 68°F falls in which part of the data?",
+          choices: [
+            "Below Q1 (coolest 25%)",
+            "Between Q1 and the median (second quarter)",
+            "Between the median and Q3 (third quarter)",
+            "Above Q3 (warmest 25%)",
+          ],
+          answer: 1,
+          explain:
+            "68°F is greater than Q1 (66) but less than the median (71), so it lands in the second quarter of the data.",
+        },
+        {
+          section: 3,
+          type: "mc",
+          text: 'A histogram shows the ages of people at a park:<br><table class="data-table"><tr><th>Age</th><th>0–9</th><th>10–19</th><th>20–29</th><th>30–39</th></tr><tr><th>People</th><td>5</td><td>12</td><td>8</td><td>5</td></tr></table>Which statement is <strong>true</strong>?',
+          choices: [
+            "There are 25 people in total",
+            "The 10–19 interval has the most people",
+            "More people are 30–39 than 20–29",
+            "No one is under 10 years old",
+          ],
+          answer: 1,
+          explain:
+            "The 10–19 interval has 12 people, the highest bar. Total = 5 + 12 + 8 + 5 = 30 (not 25); the 20–29 group (8) is larger than 30–39 (5); and 5 people are under 10.",
+        },
+      ];
+
+      // ===== STATE =====
+      let playerName = "";
+      let currentQ = 0;
+      let answers = new Array(TOTAL_Q).fill(null);
+      let graded = new Array(TOTAL_Q).fill(false);
+
+      // ===== INIT =====
+      function startReview() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (!name) {
+          document.getElementById("nameInput").style.borderColor =
+            "var(--wrong)";
+          return;
+        }
+        playerName = name;
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        loadState();
+        renderQuestion();
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved && saved.name === playerName) {
+            answers = saved.answers || new Array(TOTAL_Q).fill(null);
+            graded = saved.graded || new Array(TOTAL_Q).fill(false);
+            currentQ = saved.currentQ || 0;
+          }
+        } catch (e) {}
+      }
+
+      function saveState() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            name: playerName,
+            answers,
+            graded,
+            currentQ,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+
+      // ===== RENDER =====
+      function renderQuestion() {
+        const q = questions[currentQ];
+        const sIdx = q.section;
+        const qInSection = currentQ - sIdx * 5 + 1;
+        document.getElementById("sectionTitle").textContent =
+          `${SECTION_EMOJIS[sIdx]} ${SECTIONS[sIdx]}`;
+        document.getElementById("qCounter").textContent =
+          `Question ${currentQ + 1} of ${TOTAL_Q}`;
+        const progPct = Math.round(((currentQ + 1) / TOTAL_Q) * 100);
+        document.getElementById("progressBarFill").style.width = `${progPct}%`;
+        const progBar = document.getElementById("progressBar");
+        progBar.setAttribute("aria-valuenow", progPct);
+        progBar.setAttribute(
+          "aria-label",
+          `Question ${currentQ + 1} of ${TOTAL_Q}`,
+        );
+
+        let html = `<div class="card">`;
+        if (qInSection === 1) {
+          html += `<div class="section-header">${SECTION_EMOJIS[sIdx]} Section ${sIdx + 1}: ${SECTIONS[sIdx]}</div>`;
+        }
+        html += `<div class="card-body">`;
+        html += `<div class="q-number">Question ${currentQ + 1}</div>`;
+        html += `<div class="q-text">${q.text}</div>`;
+
+        if (q.type === "mc") {
+          html += `<div class="options">`;
+          const labels = ["A", "B", "C", "D"];
+          q.choices.forEach((ch, i) => {
+            let cls = "option-btn";
+            if (graded[currentQ]) {
+              cls += " locked";
+              if (i === q.answer) cls += " correct-answer";
+              else if (answers[currentQ] === i && i !== q.answer)
+                cls += " wrong-answer";
+            } else if (answers[currentQ] === i) {
+              cls += " selected";
+            }
+            html += `<button class="${cls}" onclick="selectMC(${i})" ${graded[currentQ] ? "disabled" : ""}>${labels[i]}. ${ch}</button>`;
+          });
+          html += `</div>`;
+          if (!graded[currentQ]) {
+            html += `<div style="margin-top:12px;text-align:right;">
+        <button class="btn btn-accent" onclick="submitAnswer()" ${answers[currentQ] === null ? "disabled" : ""} id="submitBtn">Check Answer</button>
+      </div>`;
+          }
+        } else {
+          let val = answers[currentQ] !== null ? answers[currentQ] : "";
+          let inputCls = "fill-input";
+          if (graded[currentQ]) {
+            inputCls += isCorrect(currentQ)
+              ? " correct-border"
+              : " wrong-border";
+          }
+          html += `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <input type="text" class="${inputCls}" id="fillInput" value="${val}" placeholder="Your answer"
+        ${graded[currentQ] ? "disabled" : ""} onkeydown="if(event.key==='Enter')submitAnswer()" oninput="onFillInput(this)">`;
+          if (!graded[currentQ]) {
+            html += `<button class="btn btn-accent" onclick="submitAnswer()" ${answers[currentQ] === null ? "disabled" : ""} id="submitBtn">Check Answer</button>`;
+          }
+          html += `</div>`;
+        }
+
+        // Feedback
+        if (graded[currentQ]) {
+          const ok = isCorrect(currentQ);
+          html += `<div class="feedback ${ok ? "correct" : "wrong"}" role="status" aria-live="polite"><span aria-hidden="true">${ok ? "✅" : "❌"}</span> ${ok ? "Correct!" : "Incorrect."} ${q.explain}</div>`;
+        }
+
+        html += `</div></div>`;
+        document.getElementById("questionArea").innerHTML = html;
+
+        document.getElementById("prevBtn").style.visibility =
+          currentQ === 0 ? "hidden" : "visible";
+        document.getElementById("nextBtn").textContent =
+          currentQ === TOTAL_Q - 1 ? "Finish ✓" : "Next →";
+      }
+
+      function selectMC(idx) {
+        if (graded[currentQ]) return;
+        answers[currentQ] = idx;
+        saveState();
+        renderQuestion();
+      }
+
+      function onFillInput(el) {
+        answers[currentQ] = el.value.trim() || null;
+        const btn = document.getElementById("submitBtn");
+        if (btn) btn.disabled = !el.value.trim();
+        saveState();
+      }
+
+      function submitAnswer() {
+        if (graded[currentQ] || answers[currentQ] === null) return;
+        graded[currentQ] = true;
+        saveState();
+        renderQuestion();
+      }
+
+      function isCorrect(idx) {
+        const q = questions[idx];
+        if (q.type === "mc") return answers[idx] === q.answer;
+        const userAns = String(answers[idx]).trim();
+        if (userAns === String(q.answer)) return true;
+        if (q.altAnswers && q.altAnswers.includes(userAns)) return true;
+        return false;
+      }
+
+      function navigate(dir) {
+        const next = currentQ + dir;
+        if (next < 0) return;
+        if (next >= TOTAL_Q) {
+          const unanswered = graded.filter((g) => !g).length;
+          if (unanswered > 0) {
+            if (
+              !confirm(
+                `You have ${unanswered} unanswered question(s). Finish anyway?`,
+              )
+            )
+              return;
+          }
+          showSummary();
+          return;
+        }
+        currentQ = next;
+        saveState();
+        renderQuestion();
+      }
+
+      // ===== SUMMARY =====
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        document.getElementById("summaryScreen").style.display = "block";
+
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / TOTAL_Q) * 100);
+        document.getElementById("summaryName").textContent =
+          `${playerName} — ${total}/${TOTAL_Q} (${pct}%)`;
+
+        const circle = document.getElementById("scoreCircle");
+        circle.textContent = `${pct}%`;
+        circle.className =
+          "score-circle " +
+          (pct >= 80 ? "score-a" : pct >= 60 ? "score-b" : "score-c");
+
+        let scoresHTML =
+          '<h3 style="margin-bottom:12px;">Section Breakdown</h3>';
+        const sectionResults = [];
+        for (let s = 0; s < 4; s++) {
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            if (graded[i] && isCorrect(i)) correct++;
+          }
+          sectionResults.push(correct);
+          const spct = (correct / 5) * 100;
+          scoresHTML += `<div class="section-score">
+      <span>${SECTION_EMOJIS[s]} ${SECTIONS[s]}</span>
+      <span style="font-weight:700;color:${spct >= 80 ? "var(--correct)" : spct >= 60 ? "#f59e0b" : "var(--wrong)"}">${correct}/5</span>
+    </div>`;
+        }
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+
+        let tips = [];
+        if (sectionResults[0] < 4)
+          tips.push(
+            "Review key vocabulary: statistical question, measures of center (mean, median, mode), measures of spread (range, IQR, MAD), and data displays (dot plot, histogram, box plot).",
+          );
+        if (sectionResults[1] < 4)
+          tips.push(
+            "Practice identifying statistical questions and finding mean, median, and mode quickly.",
+          );
+        if (sectionResults[2] < 4)
+          tips.push(
+            "Practice computing MAD, IQR, range, and median with real data sets — remember to order the data first.",
+          );
+        if (sectionResults[3] < 4)
+          tips.push(
+            "Work on reading dot plots, histograms, and box plots, and comparing data sets using center and spread.",
+          );
+        if (tips.length === 0)
+          tips.push(
+            "Excellent work! You are well prepared for the MCAP Statistics & Probability questions.",
+          );
+
+        let tipsHTML =
+          '<h3>📝 Study Tips</h3><ul style="margin-top:8px;padding-left:20px;">';
+        tips.forEach((t) => (tipsHTML += `<li>${t}</li>`));
+        tipsHTML += "</ul>";
+        document.getElementById("studyTips").innerHTML = tipsHTML;
+
+        saveState();
+      }
+
+      // ===== EXPORT =====
+      function exportResults() {
+        const total = graded
+          .map((g, i) => (g && isCorrect(i) ? 1 : 0))
+          .reduce((a, b) => a + b, 0);
+        const pct = Math.round((total / TOTAL_Q) * 100);
+        let text = `MCAP REVIEW RESULTS — STATISTICS & PROBABILITY (6.SP)\n`;
+        text += `Student: ${playerName}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${total}/${TOTAL_Q} (${pct}%)\n\n`;
+
+        for (let s = 0; s < 4; s++) {
+          text += `--- ${SECTIONS[s]} ---\n`;
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            const q = questions[i];
+            const ok = graded[i] && isCorrect(i);
+            if (ok) correct++;
+            const userAns =
+              q.type === "mc" && answers[i] !== null
+                ? q.choices[answers[i]]
+                : answers[i] || "No answer";
+            const correctAns = q.type === "mc" ? q.choices[q.answer] : q.answer;
+            text += `Q${i + 1}: ${ok ? "✓" : "✗"} | Your answer: ${userAns} | Correct: ${correctAns}\n`;
+          }
+          text += `Section Score: ${correct}/5\n\n`;
+        }
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `MCAP_Statistics_Review_${playerName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      // ===== TEACHER CSV (shared NTResults module) =====
+      function downloadResultsCSV() {
+        const sections = [];
+        let total = 0;
+        for (let s = 0; s < 4; s++) {
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            if (graded[i] && isCorrect(i)) correct++;
+          }
+          sections.push({ name: SECTIONS[s], correct: correct, total: 5 });
+          total += correct;
+        }
+        NTResults.finish({
+          student: playerName,
+          assessment: "MCAP Review — Statistics",
+          standard: "6.SP",
+          sections: sections,
+          correct: total,
+          total: TOTAL_Q,
+        });
+      }
+
+      function resetReview() {
+        if (!confirm("Reset all progress and start over?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        answers = new Array(TOTAL_Q).fill(null);
+        graded = new Array(TOTAL_Q).fill(false);
+        currentQ = 0;
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      document
+        .getElementById("nameInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") startReview();
+        });
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

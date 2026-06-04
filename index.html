@@ -11,6 +11,15 @@
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "/assets/neft-theme.css";
+        document.head.appendChild(link);
+      })();
+    </script>
+    <script src="/assets/neft-theme.js" defer></script>
     <style>
       :root {
         --navy: #12355b;
@@ -22,7 +31,33 @@
         --coral: #d9795d;
         --green: #0fa958;
         --sidebar-w: 260px;
+        --card-bg: #ffffff;
+        --card-border: var(--line);
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        --sidebar-bg: var(--navy);
+        --sidebar-border: rgba(255, 255, 255, 0.1);
+        --sidebar-text: rgba(255, 255, 255, 0.75);
+        --meta-color: #5f6f80;
       }
+
+      :root[data-theme="dark"] {
+        --navy: #fdd663; /* Pastel yellow gold for highlights/headers */
+        --teal: #8ab4f8; /* Pastel blue for active highlights */
+        --amber: #fdd663;
+        --cream: #131314; /* Charcoal background */
+        --ink: #e3e3e3; /* Soft white text */
+        --line: rgba(255, 255, 255, 0.08); /* Muted lines */
+        --coral: #f28b82; /* Pastel red */
+        --green: #81c995; /* Pastel green */
+        --card-bg: #1e1f20; /* Darker card background */
+        --card-border: rgba(255, 255, 255, 0.06);
+        --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+        --sidebar-bg: #1e1f20; /* Dark sidebar */
+        --sidebar-border: rgba(255, 255, 255, 0.06);
+        --sidebar-text: rgba(255, 255, 255, 0.7);
+        --meta-color: #9e9e9e;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -42,7 +77,8 @@
       .sidebar {
         width: var(--sidebar-w);
         min-width: var(--sidebar-w);
-        background: var(--navy);
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--line);
         color: white;
         display: flex;
         flex-direction: column;
@@ -247,8 +283,8 @@
         align-items: center;
         gap: 12px;
         padding: 12px 16px;
-        background: white;
-        border: 1px solid var(--line);
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
         border-radius: 12px;
         text-decoration: none;
         color: var(--ink);
@@ -256,7 +292,7 @@
       }
       .card:hover {
         border-color: var(--teal);
-        box-shadow: 0 4px 12px rgba(31, 166, 162, 0.1);
+        box-shadow: var(--card-shadow);
         transform: translateY(-1px);
       }
       .card .icon {
@@ -277,7 +313,7 @@
       }
       .card .meta {
         font-size: 0.75rem;
-        color: #5f6f80;
+        color: var(--meta-color);
         margin-top: 1px;
       }
       .card .arrow {
@@ -445,6 +481,9 @@
         }
       }
     </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
   </head>
   <body>
     <button
@@ -573,7 +612,7 @@
           <div class="sb-items">
             <a class="sb-item" data-panel="tools"
               ><span class="sb-emoji" aria-hidden="true">📊</span> Teacher Tools
-              <span class="sb-count">7</span></a
+              <span class="sb-count">9</span></a
             >
           </div>
         </div>
@@ -3208,7 +3247,7 @@
             🌍 Featured Projects
           </h3>
           <div class="cards">
-            <a href="./unit-5/unit5worldarchitectureprojet/" class="card"
+            <a href="./unit-5/world-architect-project/" class="card"
               ><div class="icon" style="background: #2563eb">🌍</div>
               <div>
                 <div class="title">World Architect Expedition</div>
@@ -3300,7 +3339,7 @@
               </div>
               <span class="arrow">&rarr;</span></a
             >
-            <a href="./unit-5/5-3envtrapezoidactivity/" class="card"
+            <a href="./unit-5/trapezoid-area-studio-env/" class="card"
               ><div class="icon" style="background: #ea580c">🔶</div>
               <div>
                 <div class="title">Trapezoid Area (ENV)</div>
@@ -3308,7 +3347,7 @@
               </div>
               <span class="arrow">&rarr;</span></a
             >
-            <a href="./unit-5/5-3rvtrapezoid/" class="card"
+            <a href="./unit-5/trapezoid-area-studio-rv/" class="card"
               ><div class="icon" style="background: #ea580c">🔷</div>
               <div>
                 <div class="title">Trapezoid Area (RV)</div>
@@ -3316,7 +3355,7 @@
               </div>
               <span class="arrow">&rarr;</span></a
             >
-            <a href="./unit-5/5-5gemini/" class="card"
+            <a href="./unit-5/volume-scaffold-module/" class="card"
               ><div class="icon" style="background: #0891b2">📦</div>
               <div>
                 <div class="title">Volume of Rectangular Prisms</div>
@@ -3569,6 +3608,29 @@
             <p>Professional hub, data dashboards, and teacher utilities</p>
           </div>
           <div class="cards">
+            <a href="./teacher-tools/post-forms/" class="card"
+              ><div class="icon" style="background: #2563eb">📋</div>
+              <div>
+                <div class="title">Google Forms — Post &amp; Edit</div>
+                <div class="meta">
+                  One page for all Notes / Practice / Quiz forms: post to
+                  Classroom / Canvas, or switch to the Edit tab to edit any
+                  form.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./neft-school-hub/" class="card"
+              ><div class="icon" style="background: #7c3aed">🏫</div>
+              <div>
+                <div class="title">Neft School Hub</div>
+                <div class="meta">
+                  Staff operations dashboard — announcements, tasks, meetings,
+                  messages.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
             <a href="./teacher-tools/" class="card"
               ><div class="icon" style="background: #e11d48">🏠</div>
               <div>
@@ -3925,6 +3987,113 @@
       })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
-</body>
+    <script>
+      document.querySelectorAll('a[target="_blank"]').forEach(function (a) {
+        if (a.dataset.extCued) return;
+        a.dataset.extCued = "1";
+        var n = document.createElement("span");
+        n.textContent = " (opens in new tab)";
+        n.style.cssText =
+          "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0";
+        a.appendChild(n);
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- ════ Calm/professional skin (append-only; overrides by source order) ════
+       Tames the saturated unit-tile rainbow into soft-tinted tiles, adds serif
+       section headings, and gives the dense list more breathing room. No :root
+       token changes (those clashed with hardcoded tile colors). -->
+    <style id="ds-skin">
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display&display=swap");
+
+      body {
+        font-family:
+          "DM Sans",
+          "Outfit",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      /* Elegant serif for the big section titles (card titles are .title — untouched). */
+      .content-header h2,
+      .teach-today h2 {
+        font-family: "DM Serif Display", Georgia, serif;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        font-size: 1.7rem;
+      }
+
+      /* Unit tiles: soft tint + same-hue glyph instead of loud solid fills. */
+      .card .icon {
+        color: #243;
+        box-shadow: none;
+      }
+      .card .icon.u1 {
+        background: #e9eef6;
+        color: #1f3a5f;
+      }
+      .card .icon.u2 {
+        background: #e6f6f3;
+        color: #0f766e;
+      }
+      .card .icon.u3 {
+        background: #fdeee8;
+        color: #b4541f;
+      }
+      .card .icon.u4 {
+        background: #fdf3df;
+        color: #92660f !important;
+      }
+      .card .icon.u5 {
+        background: #e8f7ee;
+        color: #15803d;
+      }
+      .card .icon.u6 {
+        background: #eaf2fd;
+        color: #1f5fbf;
+      }
+      .card .icon.u7 {
+        background: #f1edff;
+        color: #6d28d9;
+      }
+      .card .icon.u8 {
+        background: #fdf0e6;
+        color: #c2410c;
+      }
+      .card .icon.u9 {
+        background: #fdebef;
+        color: #be123c;
+      }
+      .card .icon.u10 {
+        background: #e7f6ef;
+        color: #047857;
+      }
+
+      /* Calmer cards: softer border, gentle hover lift, a touch more air. */
+      .card {
+        border: 1px solid #e7edf4;
+        border-radius: 14px;
+        box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04);
+        transition:
+          box-shadow 0.16s ease,
+          transform 0.16s ease,
+          border-color 0.16s ease;
+      }
+      .card:hover {
+        box-shadow: 0 6px 22px rgba(16, 32, 51, 0.08);
+        border-color: #d7e2ef;
+        transform: translateY(-1px);
+      }
+      .cards {
+        gap: 10px;
+      }
+      .unit-group {
+        margin-bottom: 22px;
+      }
+    </style>
+  </body>
 </html>

@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 6 Study Guide — Number System &amp; Expressions | Neft Teacher
+    </title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f6f7f2;
+        color: #17202a;
+        line-height: 1.6;
+      }
+      .shell {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      .breadcrumb {
+        color: #5b6773;
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+      }
+      .breadcrumb a {
+        color: #0f766e;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 6px;
+      }
+      .subtitle {
+        color: #5b6773;
+        margin-bottom: 28px;
+        font-size: 1.05rem;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #d8dfdc;
+        padding-bottom: 8px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px 8px 0 0;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #5b6773;
+        transition: all 0.15s;
+      }
+      .tab.active {
+        background: #0f766e;
+        color: #fff;
+        border-color: #0f766e;
+      }
+      .tab:hover:not(.active) {
+        background: #eef4f3;
+      }
+      .lesson {
+        display: none;
+        animation: fadeIn 0.3s;
+      }
+      .lesson.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .lesson-header {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-top: 4px solid #0f766e;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(23, 32, 42, 0.08);
+      }
+      .lesson-header h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .lesson-header p {
+        color: #5b6773;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+        color: #0f766e;
+      }
+      .example {
+        background: #eef4f3;
+        border-left: 4px solid #b7791f;
+        padding: 14px 18px;
+        border-radius: 0 8px 8px 0;
+        margin: 12px 0;
+        font-size: 1rem;
+      }
+      .example strong {
+        color: #b7791f;
+      }
+      .number-line {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 12px 0;
+        text-align: center;
+        font-family: monospace;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+      }
+      .quiz h3 {
+        margin-bottom: 12px;
+      }
+      .question {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+      .question p {
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .opt {
+        padding: 10px 14px;
+        border: 2px solid #d8dfdc;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.15s;
+        background: #fff;
+      }
+      .opt:hover {
+        border-color: #0f766e;
+        background: #eef4f3;
+      }
+      .opt.correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+        pointer-events: none;
+      }
+      .opt.wrong {
+        border-color: #dc2626;
+        background: #fef2f2;
+        pointer-events: none;
+      }
+      .feedback {
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .feedback.wrong {
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .score-bar {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .score-bar .label {
+        font-weight: 700;
+        color: #0f766e;
+      }
+      .score-fill {
+        flex: 1;
+        height: 10px;
+        background: #d8dfdc;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .score-fill span {
+        display: block;
+        height: 100%;
+        background: #0f766e;
+        border-radius: 99px;
+        transition: width 0.4s;
+      }
+      .score-text {
+        font-weight: 700;
+        min-width: 50px;
+        text-align: right;
+      }
+      .vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .vocab-card {
+        background: #eef4f3;
+        border: 1px solid rgba(15, 118, 110, 0.18);
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .vocab-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.1);
+      }
+      .vocab-card .term {
+        font-weight: 800;
+        color: #0f766e;
+        font-size: 0.95rem;
+      }
+      .vocab-card .def {
+        color: #5b6773;
+        font-size: 0.85rem;
+        margin-top: 4px;
+        display: none;
+      }
+      .vocab-card.flipped .def {
+        display: block;
+      }
+      .vocab-card.flipped {
+        background: #fff;
+      }
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+      }
+      .nav-btn {
+        padding: 10px 20px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f766e;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .nav-btn:hover {
+        background: #0f766e;
+        color: #fff;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      @media (max-width: 600px) {
+        .tabs {
+          gap: 4px;
+        }
+        .tab {
+          padding: 6px 10px;
+          font-size: 0.8rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+      @media print {
+        body {
+          background: #fff !important;
+          color: #000 !important;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 11pt;
+          line-height: 1.4;
+        }
+        .shell {
+          max-width: 100%;
+          padding: 0;
+        }
+        .breadcrumb,
+        .tabs {
+          display: none !important;
+        }
+        .lesson {
+          display: block !important;
+          page-break-inside: avoid;
+          margin-bottom: 18pt;
+        }
+        .card,
+        .example,
+        .quiz {
+          border: 1pt solid #999;
+          box-shadow: none !important;
+          page-break-inside: avoid;
+        }
+        a[href]::after {
+          content: " (" attr(href) ")";
+          font-size: 9pt;
+          color: #666;
+        }
+        @page {
+          margin: 0.75in;
+        }
+      }
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="shell">
+      <h1>Number System &amp; Expressions</h1>
+      <p class="subtitle">
+        Interactive study guide — Reveal Math Unit 6 · Standards 6.NS &amp; 6.EE
+      </p>
+
+      <div class="tabs" id="tabs"></div>
+
+      <!-- LESSON 1 -->
+      <div class="lesson" data-lesson="1">
+        <div class="lesson-header">
+          <h2>6.1 — Dividing Fractions</h2>
+          <p>
+            Use the Keep-Change-Flip method to divide fractions by fractions and
+            whole numbers. Always convert mixed numbers to improper fractions
+            first.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Keep-Change-Flip</h3>
+          <p>
+            To divide fractions: <strong>Keep</strong> the first fraction,
+            <strong>Change</strong> the division sign to multiplication,
+            <strong>Flip</strong> the second fraction (write its reciprocal).
+          </p>
+          <div class="example">
+            <strong>Example:</strong> 2/3 &divide; 1/4<br />
+            Keep 2/3 &rarr; Change to &times; &rarr; Flip 1/4 to 4/1<br />
+            2/3 &times; 4/1 = 8/3 = 2 2/3
+          </div>
+          <div class="example">
+            <strong>Whole numbers:</strong> 5 &divide; 1/2<br />
+            Write 5 as 5/1 &rarr; Keep 5/1 &times; Flip 2/1 = 10/1 = 10
+          </div>
+          <h3>Mixed Numbers</h3>
+          <p>Convert mixed numbers to improper fractions before dividing.</p>
+          <div class="example">
+            <strong>Example:</strong> 1 1/2 &divide; 3/4<br />
+            Convert: 1 1/2 = 3/2<br />
+            3/2 &times; 4/3 = 12/6 = 2
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>3/4 &divide; 1/2 = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">3/8</div>
+              <div class="opt" data-idx="1">3/2 (or 1 1/2)</div>
+              <div class="opt" data-idx="2">2/3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>6 &divide; 1/3 = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">18</div>
+              <div class="opt" data-idx="1">2</div>
+              <div class="opt" data-idx="2">6/3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>2/5 &divide; 4/5 = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">8/25</div>
+              <div class="opt" data-idx="1">2</div>
+              <div class="opt" data-idx="2">1/2</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 2 -->
+      <div class="lesson" data-lesson="2">
+        <div class="lesson-header">
+          <h2>6.3 — Exponents</h2>
+          <p>
+            Understand base and exponent, evaluate whole-number exponents, and
+            write repeated multiplication using exponential notation.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Base &amp; Exponent</h3>
+          <p>
+            In the expression <strong>b<sup>n</sup></strong
+            >, the <strong>base</strong> (b) is the number being multiplied and
+            the <strong>exponent</strong> (n) tells how many times to multiply
+            it.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> 2<sup>4</sup> = 2 &times; 2 &times; 2
+            &times; 2 = 16
+          </div>
+          <div class="example">
+            <strong>Example:</strong> 5<sup>3</sup> = 5 &times; 5 &times; 5 =
+            125
+          </div>
+          <h3>Special Cases</h3>
+          <p>
+            Any number to the <strong>1st power</strong> is itself: 7<sup
+              >1</sup
+            >
+            = 7<br />
+            Any number to the <strong>0th power</strong> is 1: 9<sup>0</sup> = 1
+          </p>
+          <div class="example">
+            <strong>Writing as exponents:</strong> 3 &times; 3 &times; 3 &times;
+            3 &times; 3 = 3<sup>5</sup>
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="2">
+            <p>What is 3<sup>4</sup>?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">12</div>
+              <div class="opt" data-idx="1">64</div>
+              <div class="opt" data-idx="2">81</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>Write 7 &times; 7 &times; 7 using an exponent.</p>
+            <div class="options">
+              <div class="opt" data-idx="0">7<sup>3</sup></div>
+              <div class="opt" data-idx="1">3<sup>7</sup></div>
+              <div class="opt" data-idx="2">7 &times; 3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>What is 10<sup>0</sup>?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">0</div>
+              <div class="opt" data-idx="1">1</div>
+              <div class="opt" data-idx="2">10</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 3 -->
+      <div class="lesson" data-lesson="3">
+        <div class="lesson-header">
+          <h2>6.4 — Order of Operations (PEMDAS)</h2>
+          <p>
+            Follow the correct order: Parentheses, Exponents, Multiply/Divide
+            (left to right), Add/Subtract (left to right).
+          </p>
+        </div>
+        <div class="card">
+          <h3>PEMDAS</h3>
+          <p>
+            <strong>P</strong> — Parentheses first<br />
+            <strong>E</strong> — Exponents next<br />
+            <strong>M / D</strong> — Multiply and Divide, left to right<br />
+            <strong>A / S</strong> — Add and Subtract, left to right
+          </p>
+          <div class="example">
+            <strong>Example:</strong> 3 + 4 &times; 2<br />
+            Multiply first: 4 &times; 2 = 8<br />
+            Then add: 3 + 8 = <strong>11</strong> (not 14!)
+          </div>
+          <div class="example">
+            <strong>Example:</strong> (6 + 2) &times; 3<sup>2</sup><br />
+            Parentheses: 8 &times; 3<sup>2</sup><br />
+            Exponent: 8 &times; 9<br />
+            Multiply: <strong>72</strong>
+          </div>
+          <div class="example">
+            <strong>Tip:</strong> Multiplication and division are done left to
+            right — not "multiplication before division." Same for addition and
+            subtraction.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>8 + 2 &times; 5 = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">50</div>
+              <div class="opt" data-idx="1">18</div>
+              <div class="opt" data-idx="2">15</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>(3 + 5)<sup>2</sup> = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">64</div>
+              <div class="opt" data-idx="1">34</div>
+              <div class="opt" data-idx="2">16</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>12 &divide; 4 + 2 &times; 3 = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">15</div>
+              <div class="opt" data-idx="1">3</div>
+              <div class="opt" data-idx="2">9</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 4 -->
+      <div class="lesson" data-lesson="4">
+        <div class="lesson-header">
+          <h2>6.5 — Algebraic Expressions</h2>
+          <p>
+            Write expressions from verbal descriptions, evaluate them by
+            substituting values, and apply the distributive property.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Writing Expressions</h3>
+          <p>
+            Translate words into math. "5 more than a number" &rarr;
+            <strong>x + 5</strong>. "Twice a number" &rarr; <strong>2x</strong>.
+          </p>
+          <h3>Evaluating Expressions</h3>
+          <p>Substitute the given value for the variable, then simplify.</p>
+          <div class="example">
+            <strong>Example:</strong> Evaluate 3x + 7 when x = 4<br />
+            3(4) + 7 = 12 + 7 = <strong>19</strong>
+          </div>
+          <h3>Distributive Property</h3>
+          <p>
+            <strong>a(b + c) = ab + ac</strong> — multiply the outside term by
+            each term inside the parentheses.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> 3(x + 2) = 3 &middot; x + 3 &middot; 2 =
+            3x + 6
+          </div>
+          <div class="example">
+            <strong>Example:</strong> 5(2y &minus; 4) = 10y &minus; 20
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="0">
+            <p>Evaluate 2x + 3 when x = 5.</p>
+            <div class="options">
+              <div class="opt" data-idx="0">13</div>
+              <div class="opt" data-idx="1">10</div>
+              <div class="opt" data-idx="2">16</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>Apply the distributive property: 4(x + 3) = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">4x + 3</div>
+              <div class="opt" data-idx="1">x + 12</div>
+              <div class="opt" data-idx="2">4x + 12</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>Which expression means "6 less than a number n"?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">6 &minus; n</div>
+              <div class="opt" data-idx="1">n &minus; 6</div>
+              <div class="opt" data-idx="2">6n</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 5 -->
+      <div class="lesson" data-lesson="5">
+        <div class="lesson-header">
+          <h2>6.6–6.7 — Like Terms, Factors &amp; Multiples</h2>
+          <p>
+            Combine like terms, find the Greatest Common Factor (GCF) and Least
+            Common Multiple (LCM), and use divisibility rules.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Combining Like Terms</h3>
+          <p>
+            <strong>Like terms</strong> have the same variable and exponent. Add
+            or subtract their coefficients.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> 3x + 5x = 8x<br />
+            7y &minus; 2y = 5y<br />
+            4x + 3y &rarr; cannot combine (different variables)
+          </div>
+          <h3>Greatest Common Factor (GCF)</h3>
+          <p>
+            The <strong>GCF</strong> is the largest number that divides evenly
+            into two or more numbers.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> GCF of 12 and 18<br />
+            Factors of 12: 1, 2, 3, 4, 6, 12<br />
+            Factors of 18: 1, 2, 3, 6, 9, 18<br />
+            GCF = <strong>6</strong>
+          </div>
+          <h3>Least Common Multiple (LCM)</h3>
+          <p>
+            The <strong>LCM</strong> is the smallest number that is a multiple
+            of two or more numbers.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> LCM of 4 and 6<br />
+            Multiples of 4: 4, 8, 12, 16, 20…<br />
+            Multiples of 6: 6, 12, 18, 24…<br />
+            LCM = <strong>12</strong>
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="0">
+            <p>Simplify: 6x + 2x</p>
+            <div class="options">
+              <div class="opt" data-idx="0">8x</div>
+              <div class="opt" data-idx="1">12x</div>
+              <div class="opt" data-idx="2">62x</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>What is the GCF of 24 and 36?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">6</div>
+              <div class="opt" data-idx="1">12</div>
+              <div class="opt" data-idx="2">72</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>What is the LCM of 3 and 5?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">1</div>
+              <div class="opt" data-idx="1">8</div>
+              <div class="opt" data-idx="2">15</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="lesson" data-lesson="vocab">
+        <div class="lesson-header">
+          <h2>Vocabulary</h2>
+          <p>Tap a card to reveal the definition.</p>
+        </div>
+        <div class="vocab">
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Fraction</div>
+            <div class="def">
+              A number that represents part of a whole, written as a/b where b
+              is not zero.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Numerator</div>
+            <div class="def">
+              The top number in a fraction; it tells how many parts you have.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Denominator</div>
+            <div class="def">
+              The bottom number in a fraction; it tells how many equal parts the
+              whole is divided into.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Reciprocal</div>
+            <div class="def">
+              The flipped version of a fraction. The reciprocal of a/b is b/a.
+              Example: reciprocal of 3/4 is 4/3.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Exponent</div>
+            <div class="def">
+              A small number written above and to the right of a base that tells
+              how many times to multiply the base by itself.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Base</div>
+            <div class="def">
+              The number that is being multiplied when using an exponent. In
+              5<sup>3</sup>, the base is 5.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Power</div>
+            <div class="def">
+              An expression with a base and an exponent, such as 2<sup>4</sup>
+              (read "2 to the fourth power").
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Order of Operations</div>
+            <div class="def">
+              The set of rules (PEMDAS) that tells the order in which to
+              evaluate a math expression.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">PEMDAS</div>
+            <div class="def">
+              Parentheses, Exponents, Multiplication/Division (left to right),
+              Addition/Subtraction (left to right).
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Variable</div>
+            <div class="def">
+              A letter or symbol that represents an unknown number. Example: x,
+              y, n.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Expression</div>
+            <div class="def">
+              A combination of numbers, variables, and operations (no equal
+              sign). Example: 3x + 5.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Coefficient</div>
+            <div class="def">
+              The number in front of a variable. In 7x, the coefficient is 7.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Term</div>
+            <div class="def">
+              A single number, variable, or number multiplied by a variable. In
+              3x + 5, the terms are 3x and 5.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Like Terms</div>
+            <div class="def">
+              Terms with the same variable raised to the same power. 4x and 9x
+              are like terms; 4x and 4y are not.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Distributive Property</div>
+            <div class="def">
+              a(b + c) = ab + ac. Multiply the factor outside the parentheses by
+              each term inside.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">GCF</div>
+            <div class="def">
+              Greatest Common Factor — the largest number that divides evenly
+              into two or more numbers.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">LCM</div>
+            <div class="def">
+              Least Common Multiple — the smallest number that is a multiple of
+              two or more numbers.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
+        <button class="nav-btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const lessons = document.querySelectorAll(".lesson");
+        const tabsEl = document.getElementById("tabs");
+        const names = [
+          "6.1 Fractions",
+          "6.3 Exponents",
+          "6.4 PEMDAS",
+          "6.5 Expressions",
+          "6.6–6.7 Factors",
+          "Vocabulary",
+        ];
+        let current = 0;
+
+        names.forEach((n, i) => {
+          const t = document.createElement("div");
+          t.className = "tab" + (i === 0 ? " active" : "");
+          t.textContent = n;
+          t.onclick = () => show(i);
+          tabsEl.appendChild(t);
+        });
+
+        function show(idx) {
+          current = idx;
+          lessons.forEach((l, i) => l.classList.toggle("active", i === idx));
+          tabsEl
+            .querySelectorAll(".tab")
+            .forEach((t, i) => t.classList.toggle("active", i === idx));
+          document.getElementById("prevBtn").disabled = idx === 0;
+          document.getElementById("nextBtn").disabled =
+            idx === lessons.length - 1;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.getElementById("prevBtn").onclick = () => {
+          if (current > 0) show(current - 1);
+        };
+        document.getElementById("nextBtn").onclick = () => {
+          if (current < lessons.length - 1) show(current + 1);
+        };
+
+        document.querySelectorAll(".question").forEach((q) => {
+          const correct = parseInt(q.dataset.correct);
+          const fb = q.querySelector(".feedback");
+          q.querySelectorAll(".opt").forEach((opt) => {
+            opt.onclick = () => {
+              const idx = parseInt(opt.dataset.idx);
+              q.querySelectorAll(".opt").forEach(
+                (o) => (o.style.pointerEvents = "none"),
+              );
+              if (idx === correct) {
+                opt.classList.add("correct");
+                fb.textContent = "Correct!";
+                fb.className = "feedback show correct";
+              } else {
+                opt.classList.add("wrong");
+                q.querySelectorAll(".opt")[correct].classList.add("correct");
+                fb.textContent = "Not quite — check the correct answer above.";
+                fb.className = "feedback show wrong";
+              }
+              updateScore(q.closest(".lesson"));
+            };
+          });
+        });
+
+        function updateScore(lesson) {
+          const qs = lesson.querySelectorAll(".question");
+          const answered = lesson.querySelectorAll(".opt.correct").length;
+          const bar = lesson.querySelector(".score-bar");
+          if (!bar) return;
+          const pct = Math.round((answered / qs.length) * 100);
+          bar.querySelector(".score-fill span").style.width = pct + "%";
+          bar.querySelector(".score-text").textContent =
+            answered + "/" + qs.length;
+        }
+
+        show(0);
+      })();
+    </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

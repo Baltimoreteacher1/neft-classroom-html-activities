@@ -1,0 +1,1733 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Package Design Challenge — Unit 10 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 10 Volume &amp; Surface Area culminating project. Measure a real box, compute volume (6.G.2) and surface area from nets (6.G.4), compare with a partner, and compare with real shipping boxes."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .phero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
+      }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .intro-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--gold);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
+      }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .intro-card .scenario {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      .phase {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .phase-num {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .task strong {
+        color: var(--navy);
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+        .grid3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--blue);
+        border: 2px solid var(--line);
+      }
+
+      .readout {
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
+
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
+
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
+      @media print {
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
+    <header class="phero">
+      <div class="deco">📦</div>
+      <h1>Package Design Challenge</h1>
+      <p>
+        You are a packaging engineer.
+        <strong>Measure a real box you own</strong>
+        — a cereal box, a shoebox, a delivery package — and use volume and
+        surface area to spec it out. Then compare with a partner, and finally
+        with real shipping boxes used across the country.
+      </p>
+      <div class="tags">
+        <span class="tag gold">Unit 10 · Volume &amp; Surface Area</span>
+        <span class="tag">6.G.2</span>
+        <span class="tag">6.G.4</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u10ProjectA')">💾 Save</button>
+        <button
+          onclick="PK.load('u10ProjectA', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <h2>📋 Your Mission</h2>
+        <p class="scenario">
+          Design a custom shipping box around a
+          <strong>real object you measure</strong>.
+          <strong>Part 1 (Self):</strong> measure your own box, find its volume,
+          its surface area from the net, and the cardboard cost.
+          <strong>Part 2 (Peer):</strong> compare your box with a partner's —
+          who used less material per cubic unit?
+          <strong>Part 3 (World):</strong> compare your box to real USPS
+          shipping boxes. Finish the spec sheet, checklist, and report.
+        </p>
+      </div>
+
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">🧊</span><b>Volume</b>
+            <p>The amount of space inside a 3-D shape, in cubic units.</p>
+            <p class="pk-es">
+              Volumen: el espacio dentro de una figura 3-D, en unidades cúbicas.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">📐</span><b>Surface Area</b>
+            <p>The total area of all the outside faces, in square units.</p>
+            <p class="pk-es">
+              Área de superficie: el área total de todas las caras exteriores,
+              en unidades cuadradas.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🗺️</span><b>Net</b>
+            <p>A flat pattern that folds up into a 3-D solid.</p>
+            <p class="pk-es">
+              Plantilla (net): un patrón plano que se dobla para formar un
+              sólido 3-D.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">📦</span><b>Rectangular Prism</b>
+            <p>A box shape with 6 rectangular faces.</p>
+            <p class="pk-es">
+              Prisma rectangular: una caja con 6 caras rectangulares.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">📏</span><b>Edge Length</b>
+            <p>How long one side of the box is (l, w, or h).</p>
+            <p class="pk-es">
+              Longitud de arista: lo que mide un lado de la caja (l, w o h).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⬜</span><b>Unit Cube</b>
+            <p>A cube 1 unit on every side; volume = 1 cubic unit.</p>
+            <p class="pk-es">
+              Cubo unitario: un cubo de 1 unidad por lado; volumen = 1 unidad
+              cúbica.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>Volume:</b> V = l × w × h</p>
+            <p><b>Surface Area (closed box):</b> SA = 2(lw + lh + wh)</p>
+            <p><b>Open-top SA (no lid):</b> SA = lw + 2lh + 2wh</p>
+            <p><b>Material cost:</b> cost = SA × cost per square unit</p>
+            <p class="pk-lvl2">
+              <b>Efficiency:</b> material per cube = SA ÷ V (smaller is better)
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "My box is ___ × ___ × ___, so its volume is ___ cubic units."
+            </p>
+            <p>
+              "The surface area is ___ square units, so the cardboard costs
+              $___."
+            </p>
+            <p>
+              "My box uses ___ square units per cube, which is more / less than
+              ___."
+            </p>
+            <p class="pk-es">
+              "Mi caja mide ___ × ___ × ___, así que su volumen es ___ unidades
+              cúbicas."
+            </p>
+          </div>
+        </div>
+        <div
+          class="pk-callout"
+          style="margin-top: 14px; background: var(--gold-light)"
+        >
+          <h3>🔗 Connections</h3>
+          <p>
+            <b>Cross-topic — unit rate:</b> "cost per square unit" is a
+            <em>unit rate</em> (a price for exactly 1 square unit), just like
+            cost per pound or miles per hour from earlier units.
+          </p>
+          <p>
+            <b>Net → 3-D bridge (6.G.4 ↔ area):</b> surface area is just the
+            <em>areas of rectangles</em> from earlier grades, added up. Unfold
+            the box into its flat net, find each rectangle's area, then fold it
+            back.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <span class="arc-banner"
+              >Part 1 · Self — measure your real box</span
+            >
+            <div class="skill">
+              Volume · Fractional edges · Surface area · 6.G.2 · 6.G.4
+            </div>
+            <h2>Spec Out YOUR Real Box</h2>
+          </div>
+        </div>
+        <p>
+          Find a real box at home or school. Use a ruler to measure its length,
+          width, and height (in inches — decimals are fine!). Don't have one
+          handy? Click <em>Use example numbers</em> to model the math.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <label class="fld" for="objName"
+          >What real object / box are you measuring?</label
+        >
+        <input
+          type="text"
+          id="objName"
+          data-save
+          placeholder="example: my cereal box"
+          oninput="recalcAll()"
+        />
+
+        <!-- 1a Volume -->
+        <h3 style="margin-top: 18px">🧊 Box volume (V = l × w × h)</h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: round each measurement to a whole number of inches first.
+        </p>
+        <div class="grid3">
+          <div>
+            <label class="fld" for="v-length">Length (in)</label>
+            <input
+              type="number"
+              id="v-length"
+              data-save
+              min="0.01"
+              step="0.01"
+              placeholder="example: 8"
+              oninput="calcVolume()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="v-width">Width (in)</label>
+            <input
+              type="number"
+              id="v-width"
+              data-save
+              min="0.01"
+              step="0.01"
+              placeholder="example: 5"
+              oninput="calcVolume()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="v-height">Height (in)</label>
+            <input
+              type="number"
+              id="v-height"
+              data-save
+              min="0.01"
+              step="0.01"
+              placeholder="example: 3"
+              oninput="calcVolume()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcVolume()">
+          Calculate volume
+        </button>
+        <div class="readout" id="vol-out"></div>
+
+        <div class="task" style="margin-top: 16px">
+          <strong>Check my work:</strong> Compute the volume of your box
+          yourself, then type it in.
+        </div>
+        <label class="fld" for="check-vol">My volume (cubic units)</label>
+        <input
+          type="number"
+          id="check-vol"
+          data-save
+          placeholder="Type your answer"
+        />
+        <button class="btn alt" type="button" onclick="checkVol()">
+          Check my work
+        </button>
+        <div class="feedback" id="check-volFb"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Multiply all three measurements. For an 8 × 5 × 3 box: 8 × 5 = 40
+            unit cubes on the bottom layer, then 40 × 3 = 120 cubic units total.
+            Fractional edges work too — 2.5 × 1.5 × 3 = 11.25 cubic units.
+          </p>
+        </details>
+
+        <!-- 1b Surface area -->
+        <h3 style="margin-top: 24px">
+          📐 Surface area from the net — SA = 2(lw + lh + wh)
+        </h3>
+        <p style="font-size: 14px; color: var(--muted)">
+          Uses the same length, width, and height you measured above.
+        </p>
+        <button class="btn" type="button" onclick="calcSA()">
+          Calculate surface area
+        </button>
+        <div class="readout" id="sa-out"></div>
+
+        <div class="task" style="margin-top: 16px">
+          <strong>Check my work:</strong> Compute the surface area yourself,
+          then type it in.
+        </div>
+        <label class="fld" for="check-sa">My surface area (square units)</label>
+        <input
+          type="number"
+          id="check-sa"
+          data-save
+          placeholder="Type your answer"
+        />
+        <button class="btn alt" type="button" onclick="checkSA()">
+          Check my work
+        </button>
+        <div class="feedback" id="check-saFb"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Find the three face pairs: top/bottom = 2(l × w), front/back = 2(l ×
+            h), sides = 2(w × h). Add them. For 8 × 5 × 3: 2(40) + 2(24) + 2(15)
+            = 80 + 48 + 30 = 158 square units.
+          </p>
+        </details>
+
+        <!-- 1c cost -->
+        <h3 style="margin-top: 24px">💵 Cardboard cost (cost = SA × rate)</h3>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="cost-rate">Cost per square unit ($)</label>
+            <input
+              type="number"
+              id="cost-rate"
+              data-save
+              min="0.001"
+              step="0.001"
+              placeholder="example: 0.05"
+              oninput="calcCost()"
+            />
+          </div>
+        </div>
+        <button class="btn" type="button" onclick="calcCost()">
+          Calculate material cost
+        </button>
+        <div class="readout" id="cost-out"></div>
+
+        <div class="task" style="margin-top: 16px">
+          <strong>Check my work:</strong> Multiply your surface area by the
+          rate, then type the cost.
+        </div>
+        <label class="fld" for="check-cost">My cardboard cost ($)</label>
+        <input
+          type="number"
+          id="check-cost"
+          data-save
+          step="0.01"
+          placeholder="Type your answer"
+        />
+        <button class="btn alt" type="button" onclick="checkCost()">
+          Check my work
+        </button>
+        <div class="feedback" id="check-costFb"></div>
+
+        <!-- Level 2 optimization -->
+        <div class="pk-lvl2" style="margin-top: 22px">
+          <div class="task">
+            <strong>Level 2 — Minimize cost (optimization):</strong>
+            Keep your volume about the same, but find dimensions that give the
+            <em>smallest surface area</em> (and so the cheapest box). Hint: the
+            closer a box is to a cube, the less material it needs.
+          </div>
+          <div class="grid3">
+            <div>
+              <label class="fld" for="opt-l">New length (in)</label>
+              <input
+                type="number"
+                id="opt-l"
+                data-save
+                min="0.01"
+                step="0.01"
+                placeholder="try a cube-like shape"
+                oninput="calcOpt()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="opt-w">New width (in)</label>
+              <input
+                type="number"
+                id="opt-w"
+                data-save
+                min="0.01"
+                step="0.01"
+                oninput="calcOpt()"
+              />
+            </div>
+            <div>
+              <label class="fld" for="opt-h">New height (in)</label>
+              <input
+                type="number"
+                id="opt-h"
+                data-save
+                min="0.01"
+                step="0.01"
+                oninput="calcOpt()"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="calcOpt()">
+            Compare to my original box
+          </button>
+          <div class="readout" id="opt-out"></div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div>
+            <span class="arc-banner"
+              >Part 2 · Peer — compare with a partner</span
+            >
+            <div class="skill">Compare &amp; reason · 6.G.2 · 6.G.4</div>
+            <h2>Whose Box Is More Efficient?</h2>
+          </div>
+        </div>
+        <p>
+          Ask a partner for <strong>their</strong> box's measurements and type
+          them in. We will compare volume, surface area, and material efficiency
+          (SA ÷ V).
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>
+            "What object did you measure? What were its length, width, and
+            height?"
+          </p>
+          <p>"What was your volume and surface area?"</p>
+          <p>"How many square units of material did you use per cubic unit?"</p>
+          <p class="pk-es">
+            "¿Qué objeto mediste? ¿Cuáles eran su largo, ancho y alto?"
+          </p>
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-obj">Partner: object measured</label>
+            <input
+              type="text"
+              id="p-obj"
+              data-save
+              placeholder="example: shoebox"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-l">Partner: length (in)</label>
+            <input
+              type="number"
+              id="p-l"
+              data-save
+              min="0.01"
+              step="0.01"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-w">Partner: width (in)</label>
+            <input
+              type="number"
+              id="p-w"
+              data-save
+              min="0.01"
+              step="0.01"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-h">Partner: height (in)</label>
+            <input
+              type="number"
+              id="p-h"
+              data-save
+              min="0.01"
+              step="0.01"
+              oninput="comparePeer()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare our boxes
+        </button>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <div
+          id="peerWinner"
+          class="pk-whatif pk-no-print"
+          style="margin-top: 12px; display: none"
+        ></div>
+        <label class="fld" for="peerReflect"
+          >Who used less material per cubic unit, and why?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My box uses ___ square units per cube while my partner's uses ___, so ___ is more efficient because ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner">Part 3 · World — real shipping boxes</span>
+            <div class="skill">Compare to real data · 6.G.2</div>
+            <h2>Your Box vs. Real Shipping Boxes</h2>
+          </div>
+        </div>
+        <p>
+          These are real USPS Priority Mail Flat Rate box sizes (in inches).
+          Pick what to compare and see where your box lands.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="volume">Volume (cubic in)</option>
+              <option value="sa">Surface area (sq in)</option>
+            </select>
+            <label class="fld" for="myWorld">My number</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your value"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: type your box's volume (or surface area) from Part 1.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>USPS Flat-Rate Boxes 🇺🇸</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>Box</th>
+                  <th>l × w × h (in)</th>
+                  <th>Volume</th>
+                  <th>SA</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Change one dimension by +1 inch and watch the surface area and cost
+            change. Which dimension changes the cost the most?
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="whatIfDim">Add 1 inch to…</label>
+              <select id="whatIfDim">
+                <option value="l">Length</option>
+                <option value="w">Width</option>
+                <option value="h">Height</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Fill in your box dimensions in Part 1, then run the test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is your box bigger or smaller than the real boxes? "Bigger volume
+          isn't always better" — when would a smaller box be the smarter
+          choice?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My box's volume is ___ the flat-rate boxes. A smaller box can be better because ___ (less material, lower cost, less wasted space)."
+        ></textarea>
+        <label class="fld" for="careful"
+          >Careful thinking: two boxes can hold the same volume but cost
+          different amounts to build. Why?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="Same volume can cost different amounts because surface area depends on the shape, and a cube-like box has the least surface area, so ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Package Spec Sheet</h2>
+          </div>
+        </div>
+        <p>
+          Write a short spec sheet (3–5 sentences) that uses your real numbers
+          from above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="My box (a ___) measures ___ × ___ × ___ inches. Its volume is ___ cubic units, meaning it holds ___ unit cubes. The surface area is ___ square units (top/bottom + front/back + sides). At $___ per square unit, the cardboard costs $___. This design is a good choice because ___."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Design Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I measured a real box
+            and used V = l × w × h to find its volume.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I found the surface
+            area from the net using SA = 2(lw + lh + wh).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I multiplied surface
+            area by the cost rate to find the material cost.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I compared my box with
+            a partner's, including material per cubic unit.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I compared my box to
+            real shipping boxes.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> My spec sheet explains
+            the design with real numbers.
+          </li>
+        </ul>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.downloadText('package-spec-sheet.txt', 'reportBox')"
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your spec-sheet summary.
+        </div>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--navy)">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Volume (6.G.2)</td>
+            <td>
+              V = l×w×h correct with unit label; unit-cube reasoning explained
+              (incl. fractional edges)
+            </td>
+            <td>Volume correct</td>
+            <td>Formula used but computation error</td>
+          </tr>
+          <tr>
+            <td>Surface Area / Nets (6.G.4)</td>
+            <td>
+              All three face pairs identified and SA = 2(lw+lh+wh) applied
+              correctly
+            </td>
+            <td>Surface area correct</td>
+            <td>One face pair missing or minor error</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>
+              Compares boxes and real data with efficiency (SA ÷ V) reasoning
+            </td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Application / Communication</td>
+            <td>
+              Cost computed correctly; spec sheet justifies design with all
+              numbers and a trade-off
+            </td>
+            <td>Cost correct; spec sheet uses most numbers</td>
+            <td>Attempted; spec sheet unclear or missing numbers</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">
+        Neft Teacher · Unit 10 Culminating Project · Version A ·
+        <span id="yr"></span>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
+      function round2(n) {
+        return Math.round(n * 100) / 100;
+      }
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      // running state used by report, checks, world meter, peer
+      const proj = {
+        obj: "",
+        l: null,
+        w: null,
+        h: null,
+        vol: null,
+        sa: null,
+        rate: null,
+        cost: null,
+      };
+
+      function dims() {
+        const l = num("v-length"),
+          w = num("v-width"),
+          h = num("v-height");
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0)
+          return null;
+        return { l, w, h };
+      }
+
+      function calcVolume() {
+        const d = dims();
+        if (!d) {
+          $("vol-out").classList.remove("show");
+          proj.vol = null;
+          return;
+        }
+        proj.l = d.l;
+        proj.w = d.w;
+        proj.h = d.h;
+        const v = round2(d.l * d.w * d.h);
+        proj.vol = v;
+        const name = ($("objName").value || "your box").trim();
+        const hasFrac = d.l % 1 || d.w % 1 || d.h % 1;
+        show(
+          "vol-out",
+          '<div class="big">' +
+            v +
+            " cubic units</div>" +
+            "V of <strong>" +
+            name +
+            "</strong> = " +
+            d.l +
+            " × " +
+            d.w +
+            " × " +
+            d.h +
+            " = <strong>" +
+            v +
+            " cubic units</strong>. " +
+            "Picture " +
+            round2(d.l * d.w) +
+            " unit cubes on the bottom layer, stacked " +
+            d.h +
+            " layers high. " +
+            (hasFrac
+              ? "(A fractional edge just makes some cubes partial — they still add up to " +
+                v +
+                ".)"
+              : ""),
+        );
+      }
+
+      function calcSA() {
+        const d = dims();
+        if (!d) {
+          $("sa-out").classList.remove("show");
+          proj.sa = null;
+          return;
+        }
+        const lw = round2(d.l * d.w),
+          lh = round2(d.l * d.h),
+          wh = round2(d.w * d.h);
+        const sa = round2(2 * (lw + lh + wh));
+        proj.sa = sa;
+        show(
+          "sa-out",
+          '<div class="big">' +
+            sa +
+            " square units</div>" +
+            "📐 <strong>Three face pairs from the net:</strong><br>" +
+            "&nbsp;&nbsp;Top &amp; Bottom (l × w): 2 × " +
+            lw +
+            " = <strong>" +
+            round2(2 * lw) +
+            "</strong><br>" +
+            "&nbsp;&nbsp;Front &amp; Back (l × h): 2 × " +
+            lh +
+            " = <strong>" +
+            round2(2 * lh) +
+            "</strong><br>" +
+            "&nbsp;&nbsp;Left &amp; Right (w × h): 2 × " +
+            wh +
+            " = <strong>" +
+            round2(2 * wh) +
+            "</strong><br>" +
+            "SA = 2(" +
+            lw +
+            " + " +
+            lh +
+            " + " +
+            wh +
+            ") = <strong>" +
+            sa +
+            " square units</strong>.",
+        );
+      }
+
+      function calcCost() {
+        if (proj.sa == null) calcSA();
+        const rate = num("cost-rate");
+        if (proj.sa == null || isNaN(rate) || rate <= 0) {
+          $("cost-out").classList.remove("show");
+          proj.cost = null;
+          return;
+        }
+        proj.rate = rate;
+        const cost = round2(proj.sa * rate);
+        proj.cost = cost;
+        show(
+          "cost-out",
+          '<div class="big">$' +
+            cost.toFixed(2) +
+            "</div>" +
+            proj.sa +
+            " sq units × $" +
+            rate.toFixed(3) +
+            " per sq unit = <strong>$" +
+            cost.toFixed(2) +
+            "</strong> of cardboard. " +
+            "Remember: $" +
+            rate.toFixed(3) +
+            " per square unit is a <em>unit rate</em>.",
+        );
+      }
+
+      /* ---- Check my work (uses kit) ---- */
+      function checkVol() {
+        if (proj.vol == null) calcVolume();
+        if (proj.vol == null) {
+          $("check-volFb").innerHTML =
+            '<span class="pk-bad">Enter your box dimensions first.</span>';
+          return;
+        }
+        PK.checkWork("check-vol", proj.vol, 0.5);
+        updateProgress();
+      }
+      function checkSA() {
+        if (proj.sa == null) calcSA();
+        if (proj.sa == null) {
+          $("check-saFb").innerHTML =
+            '<span class="pk-bad">Enter your box dimensions first.</span>';
+          return;
+        }
+        PK.checkWork("check-sa", proj.sa, 0.5);
+        updateProgress();
+      }
+      function checkCost() {
+        if (proj.cost == null) calcCost();
+        if (proj.cost == null) {
+          $("check-costFb").innerHTML =
+            '<span class="pk-bad">Enter dimensions and a cost rate first.</span>';
+          return;
+        }
+        PK.checkWork("check-cost", proj.cost, 0.01);
+        updateProgress();
+      }
+
+      /* ---- Level 2 optimization ---- */
+      function calcOpt() {
+        const l = num("opt-l"),
+          w = num("opt-w"),
+          h = num("opt-h");
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          $("opt-out").classList.remove("show");
+          return;
+        }
+        const v = round2(l * w * h);
+        const sa = round2(2 * (l * w + l * h + w * h));
+        let msg =
+          '<div class="big">' +
+          sa +
+          " sq units</div>" +
+          "New box " +
+          l +
+          " × " +
+          w +
+          " × " +
+          h +
+          ": V = <strong>" +
+          v +
+          "</strong>, SA = <strong>" +
+          sa +
+          "</strong>.";
+        if (proj.sa != null && proj.vol != null) {
+          const dv = round2(Math.abs(v - proj.vol));
+          if (sa < proj.sa) {
+            msg +=
+              " ✅ That is <strong>" +
+              round2(proj.sa - sa) +
+              " fewer square units</strong> than your original (SA " +
+              proj.sa +
+              "), at about the same volume (Δvolume = " +
+              dv +
+              "). The more cube-like shape costs less!";
+          } else {
+            msg +=
+              " ⚠️ That uses " +
+              round2(sa - proj.sa) +
+              " <strong>more</strong> square units than your original (SA " +
+              proj.sa +
+              "). Try dimensions closer to a cube.";
+          }
+        }
+        show("opt-out", msg);
+      }
+
+      /* ---- Part 2: peer compare ---- */
+      function comparePeer() {
+        const pl = num("p-l"),
+          pw = num("p-w"),
+          ph = num("p-h");
+        if (proj.vol == null) {
+          calcVolume();
+          calcSA();
+        }
+        if (
+          proj.vol == null ||
+          proj.sa == null ||
+          isNaN(pl) ||
+          isNaN(ph) ||
+          isNaN(pw) ||
+          pl <= 0 ||
+          pw <= 0 ||
+          ph <= 0
+        ) {
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish Part 1 and enter your partner’s length, width, and height to compare.</p>';
+          $("peerWinner").style.display = "none";
+          return;
+        }
+        const pv = round2(pl * pw * ph);
+        const psa = round2(2 * (pl * pw + pl * ph + pw * ph));
+        const myEff = round2(proj.sa / proj.vol);
+        const pEff = round2(psa / pv);
+        PK.peerCompare("peerBox", [
+          { label: "Volume", me: proj.vol, partner: pv },
+          { label: "Surface area", me: proj.sa, partner: psa },
+          {
+            label: "SA ÷ V (per cube)",
+            me: myEff,
+            partner: pEff,
+            fmt: (x) => Number(x).toFixed(2),
+          },
+        ]);
+        const who =
+          myEff < pEff
+            ? "Your box"
+            : pEff < myEff
+              ? "Your partner's box"
+              : "Both boxes equally";
+        $("peerWinner").style.display = "block";
+        $("peerWinner").innerHTML =
+          "<b>" +
+          who +
+          "</b> used less material per cubic unit (lower SA ÷ V is more efficient): you " +
+          myEff.toFixed(2) +
+          " vs. partner " +
+          pEff.toFixed(2) +
+          ".";
+        updateProgress();
+      }
+
+      /* ---- Part 3: world (real USPS flat-rate boxes, inches) ---- */
+      // [name, l, w, h]
+      const world = [
+        ["Small Flat Rate", 8.625, 5.375, 1.625],
+        ["Medium FR (top)", 11, 8.5, 5.5],
+        ["Medium FR (side)", 13.625, 11.875, 3.375],
+        ["Large Flat Rate", 12, 12, 5.5],
+        ["Shoebox (typical)", 13, 7, 5],
+        ["Cereal box (typical)", 12, 8, 2.5],
+      ];
+      function volOf(r) {
+        return round2(r[1] * r[2] * r[3]);
+      }
+      function saOf(r) {
+        return round2(2 * (r[1] * r[2] + r[1] * r[3] + r[2] * r[3]));
+      }
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              "<tr><td>" +
+              r[0] +
+              "</td><td>" +
+              r[1] +
+              " × " +
+              r[2] +
+              " × " +
+              r[3] +
+              "</td><td>" +
+              volOf(r) +
+              "</td><td>" +
+              saOf(r) +
+              "</td></tr>",
+          )
+          .join("");
+      }
+      function worldSample() {
+        const cat = $("worldCat").value;
+        return world.map((r) => (cat === "volume" ? volOf(r) : saOf(r)));
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        const cat = $("worldCat").value;
+        const labels =
+          cat === "volume"
+            ? { mean: "Box avg vol", me: "My vol" }
+            : { mean: "Box avg SA", me: "My SA" };
+        PK.worldMeter("worldMeter", worldSample(), my, labels);
+        updateProgress();
+      }
+      function runWhatIf() {
+        const d = dims();
+        if (!d) {
+          $("whatIfBox").textContent =
+            "Fill in your box dimensions in Part 1 first.";
+          return;
+        }
+        const rate = num("cost-rate");
+        const which = $("whatIfDim").value;
+        const before = { l: d.l, w: d.w, h: d.h };
+        const after = Object.assign({}, before);
+        after[which] = round2(after[which] + 1);
+        const saB = round2(
+          2 * (before.l * before.w + before.l * before.h + before.w * before.h),
+        );
+        const saA = round2(
+          2 * (after.l * after.w + after.l * after.h + after.w * after.h),
+        );
+        const beforeObj = { SA: saB + " sq" };
+        const afterObj = { SA: saA + " sq" };
+        if (!isNaN(rate) && rate > 0) {
+          beforeObj.cost = "$" + round2(saB * rate).toFixed(2);
+          afterObj.cost = "$" + round2(saA * rate).toFixed(2);
+        }
+        PK.whatIf(
+          "whatIfBox",
+          beforeObj,
+          afterObj,
+          "Adding 1 inch to the " +
+            { l: "length", w: "width", h: "height" }[which] +
+            " raises SA by " +
+            round2(saA - saB) +
+            " sq units. (A cube-shaped box keeps SA smallest for a given volume.)",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          objName: "my cereal box (example)",
+          "v-length": 8,
+          "v-width": 5,
+          "v-height": 3,
+          "cost-rate": 0.05,
+          myWorld: "",
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      function recalcAll() {
+        proj.obj = $("objName").value;
+        calcVolume();
+        calcSA();
+        calcCost();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        calcOpt();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f = (x, d) =>
+          x == null
+            ? "(not finished)"
+            : typeof x === "number"
+              ? x.toFixed(d || 2)
+              : x;
+        return (
+          "PACKAGE DESIGN CHALLENGE — MY SPEC SHEET\n" +
+          "========================================\n\n" +
+          "PART 1: MY BOX (SELF)\n" +
+          "Object measured: " +
+          ($("objName").value || "(none)") +
+          "\n" +
+          "Dimensions (l × w × h): " +
+          ($("v-length").value || "-") +
+          " × " +
+          ($("v-width").value || "-") +
+          " × " +
+          ($("v-height").value || "-") +
+          "\n" +
+          "Volume: " +
+          (proj.vol == null ? "(not finished)" : proj.vol + " cubic units") +
+          "\n" +
+          "Surface area: " +
+          (proj.sa == null ? "(not finished)" : proj.sa + " square units") +
+          "\n" +
+          "Cardboard cost: $" +
+          f(proj.cost) +
+          " (at $" +
+          f(proj.rate, 3) +
+          " per sq unit)\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          " — object: " +
+          ($("p-obj").value || "-") +
+          "\n" +
+          "Partner box (l × w × h): " +
+          ($("p-l").value || "-") +
+          " × " +
+          ($("p-w").value || "-") +
+          " × " +
+          ($("p-h").value || "-") +
+          "\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "My value vs real boxes: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n" +
+          "Careful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "SPEC SHEET:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["object", $("objName").value],
+          ["length", $("v-length").value],
+          ["width", $("v-width").value],
+          ["height", $("v-height").value],
+          ["volume", proj.vol],
+          ["surface_area", proj.sa],
+          ["cost_rate", proj.rate],
+          ["material_cost", proj.cost],
+          ["partner", $("partnerName").value],
+          ["partner_l", $("p-l").value],
+          ["partner_w", $("p-w").value],
+          ["partner_h", $("p-h").value],
+        ];
+        PK.downloadCsv("package-design-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // up to 4 (vol, sa, cost, opt)
+        const checks3 =
+          ($("check-volFb").querySelector(".pk-ok") ? 1 : 0) +
+          ($("check-saFb").querySelector(".pk-ok") ? 1 : 0) +
+          ($("check-costFb").querySelector(".pk-ok") ? 1 : 0);
+        const listChecks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // up to 6
+        const peer = $("p-l").value && $("p-w").value && $("p-h").value ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + checks3 + listChecks + peer + wrld + pitch; // max 4+3+6+1+1+1 = 16
+        const pct = Math.min(100, Math.round((total / 16) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills whole-number sample if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          const empty =
+            !$("v-length").value && !$("v-width").value && !$("v-height").value;
+          if (empty) {
+            $("objName").value = "sample box";
+            $("v-length").value = 8;
+            $("v-width").value = 5;
+            $("v-height").value = 3;
+            $("cost-rate").value = 0.05;
+            recalcAll();
+          }
+        }
+      };
+
+      /* ---- init (runs after deferred kit script is ready) ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u10ProjectA", default: "level-1" });
+        PK.load("u10ProjectA", { after: recalcAll });
+        updateProgress();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

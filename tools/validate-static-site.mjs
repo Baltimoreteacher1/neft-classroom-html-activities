@@ -31,18 +31,31 @@ const htmlFiles = walk(root).filter(path => extname(path) === '.html');
 for (const file of htmlFiles) {
   const content = readFileSync(file, 'utf8');
   const rel = file.replace(`${root}/`, '');
-  if (!content.includes('<!DOCTYPE html>')) errors.push(`${rel}: missing <!DOCTYPE html>`);
-  if (!content.includes('<meta name="viewport"')) warnings.push(`${rel}: missing viewport meta tag`);
-  if (!content.includes('<title>')) warnings.push(`${rel}: missing title tag`);
+  if (!/<!doctype html>/i.test(content)) errors.push(`${rel}: missing <!DOCTYPE html>`);
+  // Whitespace/newline-tolerant: many pages format <meta ...> and <title> across lines.
+  if (!/<meta\s[^>]*name=["']viewport["']/i.test(content)) warnings.push(`${rel}: missing viewport meta tag`);
+  if (!/<title[\s>]/i.test(content)) warnings.push(`${rel}: missing title tag`);
+  if (/<html[\s>]/i.test(content) && !/<html\b[^>]*\slang=/i.test(content)) {
+    warnings.push(`${rel}: <html> missing lang attribute (accessibility / ESOL screen readers)`);
+  }
   const hrefs = [...content.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
   const srcs = [...content.matchAll(/src="([^"]+)"/g)].map(match => match[1]);
-  [...hrefs, ...srcs]
+  const rootLinks = [...hrefs, ...srcs]
     .filter(asset => asset.startsWith('/') && !asset.startsWith('//'))
-    .filter(asset => !asset.includes('#') && !asset.includes('?'))
+    .filter(asset => !asset.includes('#') && !asset.includes('?'));
+  rootLinks.forEach(asset => {
+    const normalized = asset.endsWith('/') ? `${asset}index.html` : asset;
+    if (asset.match(/\.(css|js|json|txt|xml|png|jpg|jpeg|webp|svg|ico)$/i) && !existsSync(join(root, normalized))) {
+      warnings.push(`${rel}: linked asset not found: ${asset}`);
+    }
+  });
+  // Navigation integrity: root-absolute page links should resolve to a real page.
+  rootLinks
+    .filter(asset => asset.endsWith('/') || /\.html$/i.test(asset))
     .forEach(asset => {
-      const normalized = asset.endsWith('/') ? `${asset}index.html` : asset;
-      if (asset.match(/\.(css|js|json|txt|xml|png|jpg|jpeg|webp|svg|ico)$/i) && !existsSync(join(root, normalized))) {
-        warnings.push(`${rel}: linked asset not found: ${asset}`);
+      const target = asset.endsWith('/') ? `${asset}index.html` : asset;
+      if (!existsSync(join(root, target))) {
+        warnings.push(`${rel}: navigation link not found: ${asset}`);
       }
     });
 }
@@ -72,7 +85,7 @@ if (warnings.length) {
 
 function walk(dir) {
   return readdirSync(dir).flatMap(name => {
-    if (name === '.git' || name === 'node_modules') return [];
+    if (name === '.git' || name === 'node_modules' || name === 'dist' || name === '.vite') return [];
     const full = join(dir, name);
     return statSync(full).isDirectory() ? walk(full) : [full];
   });

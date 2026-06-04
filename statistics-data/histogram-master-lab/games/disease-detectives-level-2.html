@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📊 Version 2: Histogram Disease Detectives — Regular Student Edition</title>
+  <style>
+    :root{
+      --ink:#172033;
+      --muted:#5f6b7a;
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --panel2:#f0f7ff;
+      --blue:#2454d6;
+      --blue2:#153c9f;
+      --cyan:#16a8c7;
+      --green:#1f9d63;
+      --yellow:#f6c445;
+      --orange:#f4843d;
+      --red:#d94c4c;
+      --purple:#7a4be8;
+      --line:#d9e2ef;
+      --shadow:0 14px 40px rgba(23,32,51,.12);
+      --radius:22px;
+      --font: Calibri, Arial, Helvetica, sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:linear-gradient(180deg,#eef6ff 0%,#f9fbff 46%,#f6f8fb 100%);
+      color:var(--ink);
+      min-height:100vh;
+    }
+    a{color:var(--blue);font-weight:700;text-decoration:none}
+    a:hover{text-decoration:underline}
+    button,input,textarea,select{font-family:var(--font)}
+    .app{
+      max-width:1220px;
+      margin:0 auto;
+      padding:22px;
+    }
+    .hero{
+      position:relative;
+      overflow:hidden;
+      min-height:260px;
+      border-radius:32px;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(22,168,199,.32), transparent 26%),
+        radial-gradient(circle at 86% 26%, rgba(122,75,232,.22), transparent 28%),
+        linear-gradient(135deg,#10265d 0%,#2454d6 55%,#14a7c5 100%);
+      color:#fff;
+      box-shadow:var(--shadow);
+      padding:34px;
+      display:grid;
+      grid-template-columns:1.35fr .65fr;
+      gap:28px;
+      align-items:center;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -80px -120px auto;
+      width:430px;height:430px;border-radius:50%;
+      border:34px solid rgba(255,255,255,.12);
+    }
+    .kicker{
+      display:inline-flex;gap:8px;align-items:center;
+      padding:8px 13px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.25);
+      font-size:14px;
+      font-weight:700;
+      letter-spacing:.02em;
+    }
+    h1{font-size:44px;line-height:1.02;margin:18px 0 12px;letter-spacing:-.03em}
+    .hero p{font-size:19px;line-height:1.45;margin:0;max-width:760px;color:#e9f7ff}
+    .hero-card{
+      position:relative;z-index:2;
+      background:rgba(255,255,255,.13);
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:24px;
+      padding:20px;
+      backdrop-filter:blur(10px);
+    }
+    .hero-card h2{font-size:18px;margin:0 0 12px;color:#fff}
+    .mission-list{display:grid;gap:9px;margin:0;padding:0;list-style:none}
+    .mission-list li{display:flex;gap:9px;align-items:flex-start;color:#eefaff;font-size:15px;line-height:1.25}
+    .dot{width:10px;height:10px;margin-top:4px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.16);flex:0 0 auto}
+    .topbar{
+      position:sticky;top:0;z-index:20;
+      margin:16px 0;
+      border-radius:22px;
+      background:rgba(255,255,255,.91);
+      backdrop-filter:blur(14px);
+      border:1px solid var(--line);
+      box-shadow:0 10px 30px rgba(23,32,51,.08);
+      padding:12px;
+    }
+    .progress-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin-bottom:10px}
+    .progress-shell{height:12px;background:#e7edf6;border-radius:999px;overflow:hidden}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--purple));border-radius:999px;transition:.3s ease}
+    .score-pill{white-space:nowrap;border-radius:999px;padding:8px 12px;background:#eef6ff;border:1px solid #cfdefa;font-weight:800;color:#173d98}
+    .tabs{display:flex;gap:8px;overflow:auto;padding-bottom:2px}
+    .tab-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      color:#24334d;
+      padding:10px 14px;
+      border-radius:14px;
+      font-weight:800;
+      cursor:pointer;
+      min-width:max-content;
+      transition:.18s ease;
+    }
+    .tab-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(23,32,51,.08)}
+    .tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .tab-btn.locked{opacity:.52;cursor:not-allowed;background:#f4f6fa}
+    .tab{display:none;animation:fade .25s ease}
+    .tab.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .grid{display:grid;gap:18px}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow:0 8px 24px rgba(23,32,51,.06);
+    }
+    .panel.soft{background:linear-gradient(180deg,#fff,#f7fbff)}
+    .panel.blue{background:linear-gradient(180deg,#eef6ff,#fff);border-color:#cbdcf9}
+    .panel.green{background:linear-gradient(180deg,#effaf5,#fff);border-color:#d4eadf}
+    .panel.yellow{background:linear-gradient(180deg,#fff8e6,#fff);border-color:#f2dfad}
+    .panel.purple{background:linear-gradient(180deg,#f4f0ff,#fff);border-color:#ded4ff}
+    h2{margin:0 0 12px;font-size:29px;line-height:1.1;letter-spacing:-.02em}
+    h3{margin:0 0 10px;font-size:21px;line-height:1.16}
+    h4{margin:0 0 8px;font-size:17px}
+    p{font-size:17px;line-height:1.45;margin:0 0 12px}
+    .small{font-size:14px;color:var(--muted);line-height:1.35}
+    .tiny{font-size:12px;color:var(--muted)}
+    .lead{font-size:19px;color:#31415d}
+    .directions{
+      display:flex;gap:12px;align-items:flex-start;
+      background:#f5f9ff;
+      border:1px solid #d7e6fd;
+      border-radius:18px;
+      padding:14px;
+      margin:14px 0;
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:7px;
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:800;
+      font-size:13px;
+      color:#173d98;
+      background:#edf5ff;
+      border:1px solid #cfe0fa;
+      margin:0 6px 8px 0;
+    }
+    .badge.green{color:#0c653e;background:#ebfbf3;border-color:#ccebdc}
+    .badge.orange{color:#8a410f;background:#fff4e8;border-color:#f2d3b3}
+    .badge.purple{color:#4d2aa7;background:#f3efff;border-color:#ddd2ff}
+    .btn{
+      border:0;
+      border-radius:14px;
+      background:var(--blue);
+      color:#fff;
+      padding:12px 16px;
+      font-weight:900;
+      font-size:15px;
+      cursor:pointer;
+      box-shadow:0 8px 18px rgba(36,84,214,.22);
+      transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);background:var(--blue2)}
+    .btn.secondary{background:#fff;color:var(--blue);border:1px solid #cbdcf9;box-shadow:none}
+    .btn.ghost{background:#f5f7fb;color:#25334c;border:1px solid var(--line);box-shadow:none}
+    .btn.green{background:var(--green);box-shadow:0 8px 18px rgba(31,157,99,.2)}
+    .btn.orange{background:var(--orange);box-shadow:0 8px 18px rgba(244,132,61,.2)}
+    .btn.danger{background:var(--red);box-shadow:none}
+    .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+    .field{display:grid;gap:6px;margin:10px 0}
+    label{font-weight:900;color:#26354f}
+    input,textarea,select{
+      width:100%;
+      border:1px solid #cfd8e8;
+      border-radius:14px;
+      padding:12px 13px;
+      font-size:16px;
+      background:#fff;
+      color:var(--ink);
+      outline:none;
+      transition:.16s ease;
+    }
+    textarea{min-height:94px;resize:vertical;line-height:1.38}
+    input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(36,84,214,.12)}
+    .radio-grid{display:grid;gap:10px;margin:10px 0}
+    .choice{
+      display:flex;gap:10px;align-items:flex-start;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:16px;
+      padding:13px;
+      cursor:pointer;
+      transition:.16s ease;
+    }
+    .choice:hover{border-color:#aabde7;box-shadow:0 8px 18px rgba(23,32,51,.06)}
+    .choice input{width:auto;margin-top:3px}
+    .feedback{margin-top:10px;border-radius:15px;padding:12px;display:none;font-weight:700;line-height:1.35}
+    .feedback.good{display:block;background:#ecfbf3;color:#075b37;border:1px solid #bde7d0}
+    .feedback.warn{display:block;background:#fff5e8;color:#7e3d0d;border:1px solid #f2d4b3}
+    .feedback.bad{display:block;background:#fff0f0;color:#902626;border:1px solid #efc5c5}
+    .source-card{
+      display:grid;gap:10px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+    }
+    .source-card .icon{
+      width:42px;height:42px;border-radius:14px;
+      display:grid;place-items:center;
+      background:#eef6ff;color:var(--blue);font-weight:900;
+      font-size:22px;
+    }
+    .source-card h3{margin:0;font-size:19px}
+    .source-card p{font-size:15px;color:#516071;margin:0}
+    .stepper{counter-reset:steps;display:grid;gap:12px}
+    .step{
+      counter-increment:steps;
+      position:relative;
+      padding:16px 16px 16px 58px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:18px;
+    }
+    .step::before{
+      content:counter(steps);
+      position:absolute;left:15px;top:15px;
+      width:30px;height:30px;border-radius:50%;
+      display:grid;place-items:center;
+      background:var(--blue);color:#fff;font-weight:900;
+    }
+    .mini-table{width:100%;border-collapse:collapse;font-size:15px;overflow:hidden;border-radius:14px}
+    .mini-table th,.mini-table td{border:1px solid #d8e2ef;padding:9px 10px;text-align:left;vertical-align:top}
+    .mini-table th{background:#eef6ff;color:#173d98;font-weight:900}
+    .mini-table tr:nth-child(even) td{background:#fbfdff}
+    .sort-zone{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+    .dropzone{
+      min-height:170px;
+      border:2px dashed #c6d6ef;
+      background:#fbfdff;
+      border-radius:18px;
+      padding:14px;
+    }
+    .dropzone h4{margin-bottom:10px;color:#24334d}
+    .card-bank{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .data-card{
+      user-select:none;
+      border:1px solid #cfd8e8;
+      background:#fff;
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      font-size:14px;
+      cursor:pointer;
+      box-shadow:0 5px 12px rgba(23,32,51,.05);
+      max-width:280px;
+    }
+    .data-card.selected{outline:3px solid rgba(36,84,214,.18)}
+    .data-card.correct{border-color:#75d39b;background:#edfbf4}
+    .data-card.wrong{border-color:#ee9e9e;background:#fff0f0}
+    .hist-wrap{
+      background:#fff;
+      border:1px solid #d8e2ef;
+      border-radius:18px;
+      padding:14px;
+      overflow:auto;
+    }
+    .hist-title{font-weight:900;margin:0 0 8px;color:#26354f}
+    .histogram{width:100%;min-height:310px;display:block}
+    .axis{stroke:#46556d;stroke-width:2}
+    .gridline{stroke:#e6edf6;stroke-width:1}
+    .bar{fill:#2454d6;opacity:.86;transition:.2s ease}
+    .bar:hover{opacity:1;filter:drop-shadow(0 4px 4px rgba(0,0,0,.18))}
+    .bar-label{font-size:12px;font-weight:800;fill:#25334c}
+    .tick{font-size:12px;fill:#4f5f74}
+    .empty-chart{display:grid;place-items:center;min-height:270px;color:var(--muted);font-weight:800;background:#f7f9fc;border-radius:14px}
+    .word-bank{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .stem{
+      border:1px solid #cfd8e8;
+      background:#fff;
+      padding:8px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:14px;
+    }
+    .stem:hover{background:#eef6ff;border-color:#b7cbed}
+    .rubric{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    .rubric div{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px;font-size:14px;line-height:1.3}
+    .rubric strong{display:block;color:#173d98;margin-bottom:4px}
+    .pillbar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .level-pill{padding:9px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:900;cursor:pointer}
+    .level-pill.active{background:#153c9f;color:#fff;border-color:#153c9f}
+    .lock-note{display:none;margin-top:10px;padding:11px 13px;border-radius:14px;background:#fff8e6;border:1px solid #efd48f;color:#70430b;font-weight:800}
+    .completion-card{border-left:6px solid var(--green);background:#f2fbf6;border-radius:18px;padding:16px;margin-top:14px;display:none}
+    .completion-card.show{display:block}
+    .status-list{display:grid;gap:8px;margin-top:12px}
+    .status-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:14px;background:#f7f9fc;border:1px solid var(--line);font-weight:800}
+    .check{color:var(--green);font-size:20px}.x{color:#a8b0bd;font-size:20px}
+    .callout{
+      border-radius:18px;
+      padding:14px;
+      background:#10265d;
+      color:#fff;
+      margin:14px 0;
+    }
+    .callout p{color:#eaf4ff;margin:0;font-size:16px}
+    .callout strong{color:#fff}
+    .print-sheet{display:none}
+    .footer-actions{position:sticky;bottom:16px;z-index:15;margin-top:22px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:12px;box-shadow:0 12px 34px rgba(23,32,51,.1)}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(15,24,40,.42);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+    .modal{max-width:700px;width:100%;background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.28);padding:24px;border:1px solid var(--line)}
+    .modal-backdrop.show{display:flex}
+    .toast{position:fixed;right:22px;bottom:22px;background:#172033;color:#fff;border-radius:16px;padding:12px 14px;font-weight:800;box-shadow:0 12px 36px rgba(0,0,0,.25);opacity:0;transform:translateY(14px);transition:.25s ease;z-index:80;max-width:360px}
+    .toast.show{opacity:1;transform:none}
+    .source-note{font-size:13px;color:#68758a;border-top:1px solid var(--line);padding-top:12px;margin-top:16px}
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;padding:26px}h1{font-size:36px}.grid.two,.grid.three,.grid.four{grid-template-columns:1fr}.rubric{grid-template-columns:1fr}.sort-zone{grid-template-columns:1fr}.footer-actions{position:static;flex-direction:column;align-items:stretch}.progress-row{grid-template-columns:1fr}.hero p{font-size:17px}
+    }
+    @media print{
+      body{background:#fff}.topbar,.hero,.footer-actions,.btn-row,.modal-backdrop,.toast,.tabs,.no-print{display:none!important}.app{max-width:100%;padding:0}.tab{display:block!important;break-inside:avoid}.panel{box-shadow:none;border:1px solid #999;border-radius:8px;break-inside:avoid;margin-bottom:12px}.print-sheet{display:block}.grid.two,.grid.three,.grid.four{grid-template-columns:1fr 1fr}textarea,input{border:1px solid #555}.hist-wrap{break-inside:avoid}h1{color:#111}.source-note{color:#333}
+    }
+  
+    /* ===================== PUBLISHER UPGRADE CSS ===================== */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Grotesk:wght@700;900&display=swap');
+
+    :root {
+      --font: 'Inter', Calibri, Arial, sans-serif;
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --ink: #0f1b2d;
+      --muted: #536274;
+      --bg: #f0f5ff;
+      --panel: #ffffff;
+      --blue: #2454d6;
+      --blue2: #153c9f;
+      --cyan: #16a8c7;
+      --green: #1a9c5e;
+      --yellow: #f6c445;
+      --orange: #f4843d;
+      --red: #d94c4c;
+      --purple: #7a4be8;
+      --line: #dce5f4;
+      --shadow: 0 20px 60px rgba(15,27,45,.13);
+      --radius: 24px;
+      --glow-blue: 0 0 0 3px rgba(36,84,214,.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: linear-gradient(160deg, #ddeeff 0%, #f0f4ff 40%, #f7f9ff 100%);
+      min-height: 100vh;
+    }
+
+    /* --- App container --- */
+    .app { max-width: 1260px; padding: 28px; }
+
+    /* --- HERO mega upgrade --- */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 300px;
+      border-radius: 36px;
+      background:
+        radial-gradient(circle at 8% 18%, rgba(22,168,199,.38), transparent 24%),
+        radial-gradient(circle at 85% 22%, rgba(122,75,232,.28), transparent 26%),
+        radial-gradient(circle at 50% 90%, rgba(36,84,214,.18), transparent 40%),
+        linear-gradient(135deg, #071a3e 0%, #1a3fa0 45%, #0f8fbf 100%);
+      padding: 42px 44px;
+      box-shadow: 0 30px 80px rgba(10,24,60,.28), 0 0 0 1px rgba(255,255,255,.08);
+    }
+    /* Decorative floating rings */
+    .hero::before {
+      content:'';
+      position:absolute;
+      top:-60px; right:-80px;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      border: 38px solid rgba(255,255,255,.07);
+      pointer-events:none;
+    }
+    .hero::after {
+      content:'';
+      position:absolute;
+      bottom:-100px; right: 80px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      border: 22px solid rgba(255,255,255,.05);
+      pointer-events:none;
+    }
+    /* DNA helix decoration (pure CSS) */
+    .hero-dna {
+      position:absolute;
+      left: -18px; top:0; bottom:0;
+      width:12px;
+      background: repeating-linear-gradient(
+        180deg,
+        rgba(255,255,255,.25) 0px, rgba(255,255,255,.25) 6px,
+        transparent 6px, transparent 18px
+      );
+      border-radius: 6px;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.0;
+      margin: 16px 0 14px;
+      letter-spacing: -.035em;
+    }
+    .hero p { font-size: 18px; line-height: 1.6; color: rgba(220,238,255,.92); }
+
+    .kicker {
+      background: rgba(255,255,255,.12);
+      border: 1.5px solid rgba(255,255,255,.22);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+    }
+
+    /* Buttons upgrade */
+    .btn {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 800;
+      padding: 12px 20px;
+      border-radius: 12px;
+      letter-spacing: .01em;
+      transition: all .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .btn:hover { transform: translateY(-2px) scale(1.02); }
+    .btn:active { transform: translateY(0) scale(.98); }
+    .btn.green {
+      background: linear-gradient(135deg, #1db870, #0f9a54);
+      box-shadow: 0 8px 20px rgba(16,154,84,.35);
+    }
+    .btn.green:hover { background: linear-gradient(135deg, #21cc7a, #13b060); }
+
+    /* Hero card */
+    .hero-card {
+      background: rgba(255,255,255,.1);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: 22px;
+    }
+
+    /* --- TOPBAR upgrade --- */
+    .topbar {
+      border-radius: 20px;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(220,229,244,.8);
+      box-shadow: 0 8px 32px rgba(15,27,60,.08);
+      padding: 14px 16px;
+    }
+    .progress-shell {
+      height: 10px;
+      background: #e2eaf5;
+      border-radius: 999px;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #16c8d4, #2454d6, #9a4be8);
+      border-radius: 999px;
+      position: relative;
+      overflow: visible;
+    }
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -1px; top: 50%;
+      animation: pulse-ring 2s ease-in-out infinite;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #2454d6;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(36,84,214,.4);
+    }
+    .score-pill {
+      background: linear-gradient(135deg, #eef4ff, #f4f0ff);
+      border: 1.5px solid #c8d8f8;
+      font-size: 13px;
+      box-shadow: 0 2px 8px rgba(36,84,214,.08);
+    }
+
+    /* --- Tabs upgrade --- */
+    .tabs { gap: 6px; padding: 4px 2px 2px; }
+    .tab-btn {
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #dce6f4;
+      background: rgba(248,250,255,.9);
+      letter-spacing: .01em;
+      transition: all .18s ease;
+    }
+    .tab-btn:hover { background: #f0f5ff; border-color: #b8cef4; }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #2454d6, #1a3fa0);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(36,84,214,.3);
+    }
+    .tab-btn.locked { opacity: .45; background: #f4f6fb; }
+
+    /* --- Panels upgrade --- */
+    .panel {
+      border-radius: 20px;
+      border: 1.5px solid #dce5f4;
+      box-shadow: 0 6px 24px rgba(15,27,60,.06);
+      transition: box-shadow .2s ease;
+    }
+    .panel:hover { box-shadow: 0 10px 36px rgba(15,27,60,.10); }
+    .panel.blue { background: linear-gradient(160deg, #eaf3ff 0%, #f7faff 100%); border-color: #c6dcf8; }
+    .panel.green { background: linear-gradient(160deg, #eafaf3 0%, #f7fff9 100%); border-color: #b8e8ce; }
+    .panel.yellow { background: linear-gradient(160deg, #fffbec 0%, #fffff9 100%); border-color: #f0dcaa; }
+    .panel.purple { background: linear-gradient(160deg, #f3eeff 0%, #faf7ff 100%); border-color: #d4c8f8; }
+    .panel.soft { background: linear-gradient(160deg, #fafcff 0%, #f6f8fb 100%); }
+
+    /* Typography upgrade */
+    h2 {
+      font-family: var(--font-display);
+      font-size: 26px;
+      letter-spacing: -.025em;
+      color: #0f1b2d;
+    }
+    h3 {
+      font-family: var(--font-display);
+      font-size: 19px;
+      color: #162040;
+    }
+    h4 { font-family: var(--font-display); font-size: 15px; }
+    p { color: #2a3650; }
+    .lead { font-size: 17px; color: #253352; }
+
+    /* Badges upgrade */
+    .badge {
+      font-family: var(--font);
+      font-size: 12px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #edf4ff, #e8f0ff);
+      border: 1.5px solid #c4d8f8;
+    }
+    .badge.green { background: linear-gradient(135deg, #e8faf3, #e0f7ea); border-color: #b0e0c4; }
+    .badge.purple { background: linear-gradient(135deg, #f0eaff, #ebe0ff); border-color: #c8b8f4; }
+    .badge.orange { background: linear-gradient(135deg, #fff2e6, #ffe8d4); border-color: #f0c8a0; }
+
+    /* Directions box */
+    .directions {
+      background: linear-gradient(135deg, #f0f6ff, #eaf2ff);
+      border: 1.5px solid #c8dcf8;
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+    .directions strong { color: #1a3580; }
+
+    /* Form inputs */
+    input, textarea, select {
+      font-family: var(--font);
+      font-size: 15px;
+      border: 1.5px solid #d0daf0;
+      border-radius: 12px;
+      padding: 11px 13px;
+      background: #fafcff;
+      transition: all .2s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #2454d6;
+      background: #fff;
+      box-shadow: var(--glow-blue);
+      outline: none;
+    }
+    label { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: #1a2a45; text-transform: uppercase; }
+
+    /* Choice items (MC questions) */
+    .choice {
+      border: 1.5px solid #dce5f4;
+      border-radius: 14px;
+      padding: 12px 14px;
+      transition: all .18s ease;
+    }
+    .choice:hover { border-color: #8aade8; background: #f5f8ff; box-shadow: 0 4px 16px rgba(36,84,214,.08); }
+
+    /* Source cards */
+    .source-card {
+      border: 1.5px solid #dce5f4;
+      border-radius: 18px;
+      padding: 18px;
+      transition: all .2s ease;
+      background: #fff;
+    }
+    .source-card:hover { border-color: #a0bce8; box-shadow: 0 8px 28px rgba(36,84,214,.1); transform: translateY(-2px); }
+    .source-card .icon {
+      border-radius: 12px;
+      background: linear-gradient(135deg, #deeeff, #e8f2ff);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      color: #1a3fa0;
+    }
+    .source-card h3 { font-size: 15px; }
+    .source-card p { font-size: 13px; color: #4a6080; }
+
+    /* Stepper */
+    .step {
+      border: 1.5px solid #dce5f4;
+      border-radius: 16px;
+      background: #fafcff;
+    }
+    .step::before {
+      background: linear-gradient(135deg, #2454d6, #7a4be8);
+      box-shadow: 0 4px 12px rgba(36,84,214,.3);
+      font-size: 14px;
+    }
+
+    /* Data sort cards */
+    .data-card {
+      border: 1.5px solid #d0daf0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      transition: all .18s ease;
+    }
+    .data-card:hover { border-color: #8aaae0; background: #f4f8ff; box-shadow: 0 4px 14px rgba(36,84,214,.1); }
+    .data-card.selected { outline: 3px solid rgba(36,84,214,.3); background: #edf4ff; }
+    .data-card.correct { border-color: #4dcf8a; background: #edfbf3; box-shadow: 0 0 0 2px rgba(29,184,112,.2); }
+    .data-card.wrong { border-color: #e88a8a; background: #fff0f0; }
+
+    /* Dropzones */
+    .dropzone {
+      border: 2px dashed #b0c8e8;
+      background: linear-gradient(135deg, #f8fbff, #f0f6ff);
+      border-radius: 16px;
+      padding: 16px;
+      transition: all .2s ease;
+    }
+    .dropzone:hover { border-color: #5a90d8; background: #edf4ff; }
+    .dropzone h4 { font-family: var(--font-display); color: #1a3580; }
+
+    /* Histogram bars */
+    .bar { fill: url(#barGrad); }
+    .bar:hover { opacity: 1; filter: drop-shadow(0 4px 8px rgba(36,84,214,.3)); }
+
+    /* Histogram wrapper */
+    .hist-wrap {
+      border: 1.5px solid #d8e4f0;
+      border-radius: 16px;
+      background: linear-gradient(160deg, #fafcff, #f4f8ff);
+    }
+    .hist-title { font-family: var(--font-display); font-size: 14px; color: #1a2a45; }
+
+    /* Feedback banners */
+    .feedback { border-radius: 14px; font-size: 14px; border-width: 1.5px; }
+    .feedback.good { background: linear-gradient(135deg, #e6faf2, #f0fff6); color: #065c38; border-color: #a8e4c4; }
+    .feedback.warn { background: linear-gradient(135deg, #fff8e8, #fffbf0); color: #7a3c0a; border-color: #f0d098; }
+    .feedback.bad { background: linear-gradient(135deg, #fff0f0, #fff4f4); color: #8a2020; border-color: #e8a0a0; }
+
+    /* Word bank stems */
+    .stem {
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1.5px solid #c8d8f0;
+      background: #f4f7ff;
+      transition: all .18s ease;
+      letter-spacing: .01em;
+    }
+    .stem:hover { background: #e4eeff; border-color: #8aacd8; transform: translateY(-1px); }
+
+    /* Rubric upgrade */
+    .rubric div {
+      border: 1.5px solid #dce5f4;
+      border-radius: 14px;
+      background: linear-gradient(160deg, #fafcff, #f6f8fb);
+      padding: 14px;
+      transition: all .2s ease;
+    }
+    .rubric div:hover { border-color: #8ab0e0; box-shadow: 0 4px 14px rgba(36,84,214,.08); transform: translateY(-2px); }
+    .rubric strong { font-family: var(--font-display); font-size: 13px; color: #1a3580; }
+
+    /* Level pills */
+    .level-pill {
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid #dce5f4;
+      border-radius: 12px;
+      padding: 8px 16px;
+      transition: all .18s ease;
+    }
+    .level-pill:hover { background: #f0f4ff; border-color: #a8c0e8; }
+    .level-pill.active {
+      background: linear-gradient(135deg, #153c9f, #2454d6);
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(36,84,214,.28);
+      color: #fff;
+    }
+
+    /* Callout upgrade */
+    .callout {
+      border-radius: 16px;
+      border-left: 4px solid rgba(255,255,255,.3);
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #0a2060, #1a3a90);
+    }
+
+    /* Status items */
+    .status-item {
+      border: 1.5px solid #dce5f4;
+      border-radius: 12px;
+      background: #fafcff;
+      font-size: 14px;
+      transition: all .18s ease;
+    }
+    .status-item:hover { border-color: #a8c0e8; }
+    .check { color: #0f9a5e; font-size: 18px; }
+
+    /* Completion card */
+    .completion-card {
+      border-left: 6px solid #1db870;
+      background: linear-gradient(135deg, #eafaf3, #f0fff8);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 20px rgba(29,184,112,.15);
+    }
+
+    /* Footer actions */
+    .footer-actions {
+      border-radius: 18px;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(220,229,244,.9);
+      box-shadow: 0 16px 48px rgba(15,27,60,.12);
+      padding: 14px 18px;
+    }
+
+    /* Modal */
+    .modal {
+      border-radius: 24px;
+      border: 1.5px solid #dce5f4;
+      box-shadow: 0 32px 80px rgba(0,0,0,.22);
+    }
+    .modal-backdrop { background: rgba(8,16,36,.5); backdrop-filter: blur(6px); }
+
+    /* Toast */
+    .toast {
+      background: linear-gradient(135deg, #0f1b2d, #1a2a45);
+      border-radius: 14px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.3);
+      font-size: 14px;
+      padding: 12px 18px;
+    }
+
+    /* Tab animation */
+    @keyframes fade { from { opacity:0; transform: translateY(12px) scale(.99); } to { opacity:1; transform: none; } }
+    .tab.active { animation: fade .28s cubic-bezier(.4,0,.2,1); }
+
+    /* Mini table */
+    .mini-table { border-radius: 12px; overflow: hidden; }
+    .mini-table th { background: linear-gradient(135deg, #eaf0ff, #e4ecff); color: #1a3580; font-size: 13px; }
+    .mini-table td { font-size: 13px; }
+    .mini-table tr:nth-child(even) td { background: #f8fbff; }
+
+    /* Section dividers via top-level spacing */
+    .tab > *:not(:last-child) { margin-bottom: 0; }
+
+    /* Pill bar */
+    .pillbar { gap: 8px; }
+
+    /* Scrollbar polish */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f0f4ff; }
+    ::-webkit-scrollbar-thumb { background: #b0c8e8; border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7aabe0; }
+
+    /* Grid gap upgrade */
+    .grid { gap: 20px; }
+
+    /* Empty chart state */
+    .empty-chart {
+      background: linear-gradient(135deg, #f4f7ff, #eef4ff);
+      color: #6080a8;
+      border-radius: 12px;
+      font-size: 15px;
+    }
+
+    /* Section top accent bar */
+    .tab-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 0 2px;
+    }
+    .tab-section-header .step-num {
+      width: 32px; height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2454d6, #7a4be8);
+      color: #fff;
+      display: grid; place-items: center;
+      font-weight: 900; font-size: 15px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(36,84,214,.28);
+    }
+    .tab-section-header h2 { margin: 0; font-size: 22px; }
+    .tab-section-header p { margin: 0; font-size: 14px; color: var(--muted); }
+
+    /* source-note */
+    .source-note { font-size: 12px; color: #7090b0; border-top: 1.5px solid #dce5f4; padding-top: 14px; margin-top: 18px; }
+
+    /* Mission list */
+    .mission-list li { font-size: 14px; line-height: 1.4; }
+    .dot { width: 8px; height: 8px; margin-top: 5px; background: rgba(255,255,255,.9); }
+
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      .topbar, .hero, .footer-actions, .btn-row, .modal-backdrop, .toast, .tabs, .no-print { display: none !important; }
+      .panel { box-shadow: none !important; border: 1px solid #bbb !important; break-inside: avoid; margin-bottom: 10px; }
+      .tab { display: block !important; break-inside: avoid; }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero { padding: 28px 22px; }
+      h1 { font-size: 32px; }
+      .app { padding: 14px; }
+    }
+    @keyframes pulse-ring{0%,100%{box-shadow:0 2px 8px rgba(36,84,214,.4)}50%{box-shadow:0 2px 8px rgba(36,84,214,.4),0 0 0 5px rgba(36,84,214,.15)}}
+    @keyframes heroSlide{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+    /* ===================== END PUBLISHER UPGRADE ===================== */
+
+  
+
+/* ===================== VERSION SUPPORT UPGRADE ===================== */
+.version-strip{
+  margin:16px 0 0;
+  border:1.5px solid rgba(36,84,214,.18);
+  background:linear-gradient(135deg,#ffffff,#f1f7ff);
+  border-radius:22px;
+  padding:14px 18px;
+  box-shadow:0 10px 26px rgba(15,27,60,.07);
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+}
+.version-icon{width:44px;height:44px;border-radius:15px;background:linear-gradient(135deg,#2454d6,#7a4be8);display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:0 8px 18px rgba(36,84,214,.22)}
+.version-strip h2{margin:0;font-size:19px;line-height:1.1}
+.version-strip p{margin:2px 0 0;font-size:14px;color:#52627a}
+.version-tag{border-radius:999px;background:#eef5ff;border:1px solid #c7dbf8;color:#163d97;font-weight:900;padding:8px 12px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.quick-help-bar{
+  margin:0 0 16px;
+  border:1.5px solid #d6e4f7;
+  background:rgba(255,255,255,.94);
+  border-radius:18px;
+  padding:12px 14px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  box-shadow:0 8px 22px rgba(15,27,60,.06);
+}
+.quick-help-bar strong{color:#12234b;margin-right:4px}
+.help-chip,.word-help-btn{
+  border:1.5px solid #c8d8f0;
+  background:#f4f8ff;
+  color:#153c9f;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.help-chip:hover,.word-help-btn:hover{background:#e8f1ff;border-color:#8aaee8;transform:translateY(-1px)}
+.support-panel{
+  border:1.5px solid #cfe0f7;
+  background:linear-gradient(135deg,#f7fbff,#eef6ff);
+  border-radius:18px;
+  padding:14px;
+  margin:14px 0;
+}
+.support-panel.esol{background:linear-gradient(135deg,#f7fbff,#eef6ff 58%,#fff8e6);border-color:#cfe0f7}
+.support-panel h3{margin:0 0 8px;font-size:17px;display:flex;align-items:center;gap:8px}
+.support-panel p{font-size:14px;margin:0 0 8px;color:#33445f}
+.visual-mini-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+.visual-mini-card{border:1.5px solid #dae6f5;background:#fff;border-radius:15px;padding:12px;min-height:104px}
+.visual-mini-card .big{font-size:25px;line-height:1;margin-bottom:6px}
+.visual-mini-card strong{display:block;font-size:13px;color:#14264c;margin-bottom:3px}
+.visual-mini-card span{font-size:12px;color:#536274;line-height:1.3;display:block}
+.starter-panel{
+  border:1.5px solid #d9e5f4;
+  background:linear-gradient(135deg,#ffffff,#f6f9ff);
+  border-radius:16px;
+  padding:11px;
+  margin:8px 0 12px;
+}
+.starter-panel.esol{background:linear-gradient(135deg,#ffffff,#f4faff 60%,#fffaf0)}
+.starter-panel-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px;font-size:12px;font-weight:900;color:#1a3580;text-transform:uppercase;letter-spacing:.04em}
+.starter-grid{display:flex;flex-wrap:wrap;gap:7px}
+.starter-btn{
+  border:1.5px solid #cad9ee;
+  background:#fff;
+  color:#172033;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+  line-height:1.15;
+  transition:.16s ease;
+}
+.starter-btn:hover{background:#eef6ff;border-color:#8ab0e8;transform:translateY(-1px)}
+.esol-word-pair{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#fff7e6;border:1px solid #f0d59d;padding:4px 8px;margin:3px 4px 3px 0;font-size:12px;font-weight:800;color:#5f3d0b}
+.field-hint{
+  margin-top:-4px;
+  margin-bottom:8px;
+  font-size:12px;
+  color:#536274;
+  background:#f7faff;
+  border-left:3px solid #8ab0e8;
+  padding:7px 9px;
+  border-radius:0 10px 10px 0;
+}
+.read-card{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:10px;
+  align-items:start;
+  border:1.5px solid #d8e4f4;
+  background:#fff;
+  border-radius:16px;
+  padding:12px;
+  margin-top:10px;
+}
+.read-card .read-icon{width:36px;height:36px;border-radius:12px;background:#eef6ff;display:grid;place-items:center;font-size:18px}
+.read-card strong{display:block;color:#152a56;margin-bottom:2px}
+.read-card span{font-size:13px;color:#52627a;line-height:1.35}
+.pop-help-content{display:grid;gap:11px;margin-top:8px}
+.help-definition{border:1.5px solid #dae5f4;background:#f8fbff;border-radius:16px;padding:13px}
+.help-definition h3{margin:0 0 5px;font-size:17px;color:#153c9f}
+.help-definition p{margin:0 0 6px;font-size:15px;color:#26354f}
+.help-definition .example{background:#fff;border:1px solid #e3ebf5;border-radius:12px;padding:8px 10px;font-size:13px;color:#3f4f66}
+.modal .term-spanish{display:inline-block;margin-top:6px;border-radius:999px;background:#fff7e6;border:1px solid #f0d59d;padding:4px 8px;font-size:12px;font-weight:900;color:#64410d}
+.source-card .look-for{font-size:12px;line-height:1.3;color:#52627a;background:#f7fbff;border:1px solid #e1ebf7;border-radius:12px;padding:9px;margin-top:2px}
+.source-card .source-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px}
+.axis-helper{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+.axis-helper div{border-radius:14px;border:1.5px solid #d8e4f4;background:#fff;padding:11px;font-size:13px;line-height:1.25;color:#3c4c65}
+.axis-helper strong{display:block;color:#14346f;margin-bottom:3px}
+.teacher-print-note{display:none}
+[data-version="regular"] .esol-only{display:none!important}
+[data-version="esol"] .regular-only{display:none!important}
+[data-version="esol"] textarea{min-height:108px}
+[data-version="esol"] .lead{font-size:18px}
+[data-version="esol"] p{line-height:1.55}
+@media (max-width:900px){.version-strip{grid-template-columns:1fr}.version-tag{justify-self:start}.visual-mini-grid{grid-template-columns:1fr 1fr}.axis-helper{grid-template-columns:1fr}}
+@media print{.quick-help-bar,.starter-panel,.help-chip,.word-help-btn,.version-strip{display:none!important}.field-hint{border-left:2px solid #777;background:#fff}.teacher-print-note{display:block}}
+/* ===================== END VERSION SUPPORT UPGRADE ===================== */
+
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body data-version="regular">
+  <div class="app" id="app">
+    <section class="hero"><div class="hero-dna" aria-hidden="true"></div>
+      <div>
+        <span class="kicker">Version 2 • Regular Student Edition • Histograms • Disease Spread</span>
+        <h1 style="animation:heroSlide .6s cubic-bezier(.22,1,.36,1) both">Version 2: Histogram Disease Detectives</h1>
+        <p>Use guided visuals, source links, chart-reading reminders, and academic sentence starters as you explore disease data and build a histogram.</p>
+        <div class="btn-row">
+          <button class="btn green" onclick="startQuest()">Start Mission</button>
+          <button class="btn secondary" onclick="printReport()">Print / Save PDF</button>
+          <button class="btn ghost" onclick="openGuide()">Student Help</button>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <h2>Your mission</h2>
+        <ul class="mission-list">
+          <li><span style="font-size:16px;margin-top:1px">📊</span><span>Tell the difference between a histogram and a bar graph.</span></li>
+          <li><span style="font-size:16px;margin-top:1px">🔍</span><span>Use trusted health data sources to collect information.</span></li>
+          <li><span style="font-size:16px;margin-top:1px">🧪</span><span>Create a histogram using disease-related numbers.</span></li>
+          <li><span style="font-size:16px;margin-top:1px">✍️</span><span>Explain what the shape of the data shows.</span></li>
+        </ul>
+      </aside>
+      <div style="position:absolute;bottom:14px;left:44px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35)" aria-hidden="true">Data Lab • Global Health Series</div>
+    </section>
+
+    <section class="version-strip no-print" aria-label="Version information">
+      <div class="version-icon">📊</div>
+      <div><h2>Version 2: Regular Student Edition</h2><p>A cleaner regular-student version with visuals, guided chart reading, selected pop-ups, and academic sentence starters.</p></div>
+      <div class="version-tag">Version 2</div>
+    </section>
+
+    <nav class="topbar no-print">
+      <div class="progress-row">
+        <div class="progress-shell" aria-label="Progress"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="score-pill" id="scorePill">0 badges earned</div>
+      </div>
+      <div class="tabs" id="tabs"></div>
+    </nav>
+
+    <main>
+      <section class="tab active" data-tab="0" id="tab-0">
+        <div class="grid two">
+          <div class="panel soft">
+            <span class="badge">1 • Mission Setup</span>
+            <h2>Before you investigate</h2>
+            <p class="lead">Scientists use data to look for patterns. Today, you will use histograms to answer questions about disease data.</p>
+            <div class="directions"><strong>Do this first:</strong><span>Type your name, choose your support level, and answer the launch question. Your work saves on this device.</span></div>
+            <div class="field"><label for="studentName">Student name</label><input id="studentName" placeholder="Type your first and last name" oninput="saveState()" /></div>
+            <div class="field"><label for="classSection">Class / Section</label><input id="classSection" placeholder="Example: 601, 602, 603" oninput="saveState()" /></div>
+            <label>Support level</label>
+            <div class="pillbar" id="supportLevels">
+              <button class="level-pill active" data-level="guided" onclick="setSupport('guided')">Guided</button>
+              <button class="level-pill" data-level="regular" onclick="setSupport('regular')">Regular</button>
+              <button class="level-pill" data-level="challenge" onclick="setSupport('challenge')">Challenge</button>
+            </div>
+            <p class="small" id="supportText">Guided mode gives extra hints and sentence starters. Regular mode is recommended for most students.</p>
+          </div>
+          <div class="panel blue">
+            <span class="badge purple">Launch Check</span>
+            <h2>What do you already notice?</h2>
+            <p>Look at this tiny data set of weekly cases from a pretend school outbreak: <strong>2, 3, 6, 10, 14, 9, 4</strong>.</p>
+            <div class="field"><label for="launchNotice">What is one pattern you notice?</label><textarea id="launchNotice" placeholder="I notice that..." oninput="saveState()"></textarea></div>
+            <div class="field"><label for="launchWonder">What is one question you wonder?</label><textarea id="launchWonder" placeholder="I wonder why..." oninput="saveState()"></textarea></div>
+            <button class="btn green" onclick="completeTab(0)">Save Mission Setup</button>
+            <div class="feedback" id="launchFeedback"></div>
+          </div>
+        </div>
+        <div class="panel yellow" style="margin-top:18px">
+          <h3>Math goal</h3>
+          <p><strong>I can</strong> create and interpret histograms by grouping numerical data into intervals and explaining what the distribution shows.</p>
+          <h3>Language goal</h3>
+          <p><strong>I can</strong> use data words such as interval, frequency, cluster, spread, and outlier to explain disease data in complete sentences.</p>
+        </div>
+      </section>
+
+      <section class="tab" data-tab="1" id="tab-1">
+        <div class="panel blue">
+          <span class="badge">2 • Histogram Bootcamp</span>
+          <h2>Histogram or bar graph?</h2>
+          <p class="lead">A histogram groups <strong>numbers</strong> into intervals. A bar graph compares <strong>categories</strong>.</p>
+          <div class="grid two">
+            <div class="callout"><p><strong>Histogram:</strong> “How many countries are in each malaria-rate interval?” Example intervals: 0–49, 50–99, 100–149.</p></div>
+            <div class="callout" style="background:#15452f"><p><strong>Bar graph:</strong> “How many students chose each disease topic?” Example categories: malaria, flu, measles.</p></div>
+          </div>
+          <div class="directions"><strong>Sort:</strong><span>Click each card, then choose where it belongs. When every card is placed, check your work.</span></div>
+          <div class="sort-zone">
+            <div class="dropzone" id="histZone" onclick="placeSelected('histogram')"><h4>Histogram: number intervals</h4></div>
+            <div class="dropzone" id="barZone" onclick="placeSelected('bar')"><h4>Bar graph: categories</h4></div>
+          </div>
+          <div class="card-bank" id="sortBank"></div>
+          <div class="btn-row"><button class="btn" onclick="checkSort()">Check Sort</button><button class="btn ghost" onclick="resetSort()">Reset Cards</button></div>
+          <div class="feedback" id="sortFeedback"></div>
+        </div>
+        <div class="grid two" style="margin-top:18px">
+          <div class="panel">
+            <h3>Quick Check 1</h3>
+            <p>In a histogram, the x-axis usually shows...</p>
+            <div id="q1"></div>
+          </div>
+          <div class="panel">
+            <h3>Quick Check 2</h3>
+            <p>A bar with height 6 over the interval 100–149 means...</p>
+            <div id="q2"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab" data-tab="2" id="tab-2">
+        <div class="panel purple">
+          <span class="badge">3 • Source Hunt</span>
+          <h2>Explore real disease data sources</h2>
+          <p class="lead">Open the links, look for a chart, map, number, or pattern, and record what you find. You do not need to understand every word on the source page.</p>
+          <div class="grid three" id="sourceCards"></div>
+          <div class="source-note">Safety note: This activity is for math and data literacy. It is not medical advice. Use the source pages to practice reading data displays.</div>
+        </div>
+        <div class="panel soft" style="margin-top:18px">
+          <h2>Data collection notebook</h2>
+          <p>Choose at least <strong>two</strong> source cards. For each one, record one number or pattern you found.</p>
+          <div class="grid two">
+            <div class="field"><label for="sourceOne">Source 1 title or topic</label><input id="sourceOne" placeholder="Example: WHO malaria data" oninput="saveState()" /></div>
+            <div class="field"><label for="sourceOneValue">Number or pattern from Source 1</label><input id="sourceOneValue" placeholder="Example: global malaria cases increased from..." oninput="saveState()" /></div>
+            <div class="field"><label for="sourceTwo">Source 2 title or topic</label><input id="sourceTwo" placeholder="Example: CDC epi curve" oninput="saveState()" /></div>
+            <div class="field"><label for="sourceTwoValue">Number or pattern from Source 2</label><input id="sourceTwoValue" placeholder="Example: cases rise quickly then fall..." oninput="saveState()" /></div>
+          </div>
+          <div class="field"><label for="sourceReflection">What did the sources help you understand about disease spread?</label><textarea id="sourceReflection" placeholder="The sources helped me understand that..." oninput="saveState()"></textarea></div>
+          <div class="word-bank" data-target="sourceReflection">
+            <button class="stem" onclick="addStem('sourceReflection','One pattern I noticed was ')" type="button">One pattern I noticed was...</button>
+            <button class="stem" onclick="addStem('sourceReflection','The data surprised me because ')" type="button">The data surprised me because...</button>
+            <button class="stem" onclick="addStem('sourceReflection','A question I still have is ')" type="button">A question I still have is...</button>
+          </div>
+          <button class="btn green" onclick="completeSources()">Save Source Hunt</button>
+          <div class="feedback" id="sourceFeedback"></div>
+        </div>
+      </section>
+
+      <section class="tab" data-tab="3" id="tab-3">
+        <div class="panel blue">
+          <span class="badge">4 • Chart Detective</span>
+          <h2>Interpret histograms like a data detective</h2>
+          <p class="lead">Each histogram below uses a classroom-friendly practice dataset. Your job is to read the intervals, identify the tallest bar, and explain the pattern.</p>
+          <div class="grid two">
+            <div class="hist-wrap">
+              <p class="hist-title">Practice Dataset A: Disease incidence rates for 24 locations</p>
+              <div id="presetHistA"></div>
+              <p class="tiny">Classroom practice data. Values represent cases per 100,000 people.</p>
+            </div>
+            <div class="panel">
+              <h3>Detective Questions A</h3>
+              <div id="q3"></div>
+              <div id="q4" style="margin-top:12px"></div>
+              <div class="field"><label for="detectiveExplainA">Explain the shape of the histogram.</label><textarea id="detectiveExplainA" placeholder="Most locations are... The distribution shows..." oninput="saveState()"></textarea></div>
+              <div class="word-bank">
+                <button class="stem" onclick="addStem('detectiveExplainA','Most of the data are clustered between ')" type="button">Most data are clustered between...</button>
+                <button class="stem" onclick="addStem('detectiveExplainA','The tallest bar means ')" type="button">The tallest bar means...</button>
+                <button class="stem" onclick="addStem('detectiveExplainA','One possible outlier is ')" type="button">One possible outlier is...</button>
+              </div>
+              <button class="btn green" onclick="completeDetectiveA()">Save Detective A</button>
+              <div class="feedback" id="detectiveFeedbackA"></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel green" style="margin-top:18px">
+          <h2>Outbreak curve: disease spread over time</h2>
+          <p>An epidemiologist may use an <strong>epi curve</strong> to show how many cases happened during each time interval, such as each day or week. This is closely related to histogram thinking because the bars show frequency in time intervals.</p>
+          <div class="grid two">
+            <div class="hist-wrap"><p class="hist-title">Practice Dataset B: New cases by week</p><div id="epiCurve"></div></div>
+            <div class="panel">
+              <h3>Detective Questions B</h3>
+              <div id="q5"></div>
+              <div class="field"><label for="epiExplain">What might public health teams want to know from this curve?</label><textarea id="epiExplain" placeholder="They might want to know..." oninput="saveState()"></textarea></div>
+              <div class="word-bank">
+                <button class="stem" onclick="addStem('epiExplain','The peak week appears to be ')" type="button">The peak week appears to be...</button>
+                <button class="stem" onclick="addStem('epiExplain','This could help teams decide ')" type="button">This could help teams decide...</button>
+              </div>
+              <button class="btn green" onclick="completeDetectiveB()">Save Detective B</button>
+              <div class="feedback" id="detectiveFeedbackB"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab" data-tab="4" id="tab-4">
+        <div class="panel purple">
+          <span class="badge">5 • Build Lab</span>
+          <h2>Create your own histogram</h2>
+          <p class="lead">Choose a practice dataset or enter your own disease-related numbers from the source hunt. Then choose intervals and build the histogram.</p>
+          <div class="grid two">
+            <div>
+              <div class="field"><label for="datasetSelect">Choose a dataset</label><select id="datasetSelect" onchange="loadDataset()"></select></div>
+              <div class="field"><label for="dataInput">Numbers for the histogram</label><textarea id="dataInput" placeholder="Type numbers separated by commas, spaces, or new lines. Example: 12, 18, 25, 41" oninput="saveState(); updatePreviewCount();"></textarea></div>
+              <div class="grid three">
+                <div class="field"><label for="binStart">Start</label><input id="binStart" type="number" value="0" oninput="saveState()" /></div>
+                <div class="field"><label for="binWidth">Interval width</label><input id="binWidth" type="number" value="50" min="1" oninput="saveState()" /></div>
+                <div class="field"><label for="binCount">Number of intervals</label><input id="binCount" type="number" value="9" min="2" max="16" oninput="saveState()" /></div>
+              </div>
+              <p class="small" id="previewCount">0 numbers detected.</p>
+              <div class="btn-row"><button class="btn" onclick="buildCustomHistogram()">Build Histogram</button><button class="btn secondary" onclick="useSourceMode()">I collected my own data</button><button class="btn ghost" onclick="clearBuildLab()">Clear</button></div>
+              <div class="feedback" id="buildFeedback"></div>
+            </div>
+            <div class="hist-wrap"><p class="hist-title" id="customTitle">Your histogram will appear here</p><div id="customHist"><div class="empty-chart">Add numbers and click Build Histogram.</div></div></div>
+          </div>
+        </div>
+        <div class="panel soft" style="margin-top:18px">
+          <h2>Analyze your histogram</h2>
+          <div class="grid two">
+            <div class="field"><label for="histQuestion1">Which interval has the highest frequency?</label><input id="histQuestion1" placeholder="Example: 100–149" oninput="saveState()" /></div>
+            <div class="field"><label for="histQuestion2">What does that interval mean in words?</label><input id="histQuestion2" placeholder="Example: That many locations had rates between..." oninput="saveState()" /></div>
+            <div class="field"><label for="histQuestion3">Are the data spread out or clustered? Explain.</label><textarea id="histQuestion3" placeholder="The data are... because..." oninput="saveState()"></textarea></div>
+            <div class="field"><label for="histQuestion4">What is one public-health question someone might ask after seeing this histogram?</label><textarea id="histQuestion4" placeholder="Someone might ask..." oninput="saveState()"></textarea></div>
+          </div>
+          <div class="word-bank">
+            <button class="stem" onclick="addStem('histQuestion3','The data are clustered because ')" type="button">The data are clustered because...</button>
+            <button class="stem" onclick="addStem('histQuestion3','The data are spread out because ')" type="button">The data are spread out because...</button>
+            <button class="stem" onclick="addStem('histQuestion4','A public-health team might ask ')" type="button">A public-health team might ask...</button>
+          </div>
+          <button class="btn green" onclick="completeBuildLab()">Save Build Lab</button>
+          <div class="feedback" id="buildLabFeedback"></div>
+        </div>
+      </section>
+
+      <section class="tab" data-tab="5" id="tab-5">
+        <div class="panel yellow">
+          <span class="badge">6 • Adaptive Challenge</span>
+          <h2>Make decisions with data</h2>
+          <p class="lead">Answer the questions. If you miss one, you will get a hint and a simpler follow-up. If you get it right, you will unlock a challenge prompt.</p>
+          <div class="grid two">
+            <div class="panel">
+              <h3>Scenario: Vaccine planning</h3>
+              <p>A health team sees that most locations are in low intervals, but a few locations are in very high intervals.</p>
+              <div id="q6"></div>
+              <div class="feedback" id="adaptiveFeedback1"></div>
+            </div>
+            <div class="panel">
+              <h3>Scenario: Outbreak timing</h3>
+              <p>An outbreak curve has one tall peak during Week 4 and lower bars before and after.</p>
+              <div id="q7"></div>
+              <div class="feedback" id="adaptiveFeedback2"></div>
+            </div>
+          </div>
+          <div class="panel soft" style="margin-top:18px">
+            <h3>Challenge response</h3>
+            <p id="challengePrompt">After you answer the two adaptive questions, a challenge prompt will appear here.</p>
+            <div class="field"><label for="challengeResponse">Write your response</label><textarea id="challengeResponse" placeholder="My recommendation is... My evidence is..." oninput="saveState()"></textarea></div>
+            <div class="word-bank">
+              <button class="stem" onclick="addStem('challengeResponse','My recommendation is ')" type="button">My recommendation is...</button>
+              <button class="stem" onclick="addStem('challengeResponse','The evidence from the histogram is ')" type="button">The evidence from the histogram is...</button>
+              <button class="stem" onclick="addStem('challengeResponse','However, we need more information about ')" type="button">However, we need more information about...</button>
+            </div>
+            <button class="btn green" onclick="completeAdaptive()">Save Challenge</button>
+            <div class="feedback" id="challengeFeedback"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab" data-tab="6" id="tab-6">
+        <div class="panel green">
+          <span class="badge">7 • Final Report</span>
+          <h2>Publish your data detective report</h2>
+          <p class="lead">Use the evidence you collected to write a final claim. Your report should sound like a data scientist explaining what the histogram shows.</p>
+          <div class="grid two">
+            <div class="field"><label for="finalClaim">Claim: What did your histogram show?</label><textarea id="finalClaim" placeholder="My histogram shows that..." oninput="saveState()"></textarea></div>
+            <div class="field"><label for="finalEvidence">Evidence: What numbers, intervals, or source information support your claim?</label><textarea id="finalEvidence" placeholder="The evidence is..." oninput="saveState()"></textarea></div>
+            <div class="field"><label for="finalReasoning">Reasoning: Why does the evidence matter?</label><textarea id="finalReasoning" placeholder="This matters because..." oninput="saveState()"></textarea></div>
+            <div class="field"><label for="finalQuestion">Next Question: What would you investigate next?</label><textarea id="finalQuestion" placeholder="Next, I would investigate..." oninput="saveState()"></textarea></div>
+          </div>
+          <div class="word-bank">
+            <button class="stem" onclick="addStem('finalClaim','My histogram shows that ')" type="button">My histogram shows that...</button>
+            <button class="stem" onclick="addStem('finalEvidence','One piece of evidence is ')" type="button">One piece of evidence is...</button>
+            <button class="stem" onclick="addStem('finalReasoning','This matters because ')" type="button">This matters because...</button>
+            <button class="stem" onclick="addStem('finalQuestion','A question I still have is ')" type="button">A question I still have is...</button>
+          </div>
+          <div class="rubric">
+            <div><strong>4 • Expert</strong>Clear claim, accurate intervals, strong evidence, and thoughtful next question.</div>
+            <div><strong>3 • Ready</strong>Clear claim with correct evidence and explanation.</div>
+            <div><strong>2 • Almost</strong>Includes a claim, but evidence or explanation needs more detail.</div>
+            <div><strong>1 • Start</strong>Needs a clearer claim and more data evidence.</div>
+          </div>
+          <div class="btn-row"><button class="btn green" onclick="finishQuest()">Finish Report</button><button class="btn secondary" onclick="printReport()">Print / Save PDF</button><button class="btn ghost" onclick="copyReport()">Copy Report Text</button></div>
+          <div class="feedback" id="finalFeedback"></div>
+          <div class="completion-card" id="completionCard"><h3>Mission complete</h3><p>Your data detective report is ready. Use Print / Save PDF to turn in your work.</p></div>
+        </div>
+        <div class="panel soft" style="margin-top:18px">
+          <h2>Completion checklist</h2>
+          <div class="status-list" id="statusList"></div>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer-actions no-print">
+      <div><strong id="footerTitle">Ready to begin?</strong><div class="small" id="footerHint">Complete each tab to unlock the next part.</div></div>
+      <div class="btn-row" style="margin:0"><button class="btn ghost" onclick="previousTab()">Back</button><button class="btn" onclick="nextTab()">Next</button></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeGuide(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+      <h2 id="guideTitle">Student Help</h2>
+      <div class="stepper">
+        <div class="step"><strong>Read the tab directions.</strong><br/>Do not rush. Histograms are new, so focus on what each interval means.</div>
+        <div class="step"><strong>Open source links in a new tab.</strong><br/>Find one useful number, map pattern, or chart trend. You do not need to read the whole website.</div>
+        <div class="step"><strong>Build your histogram.</strong><br/>Use numbers from a preset or from your source hunt. Make sure your interval width is reasonable.</div>
+        <div class="step"><strong>Write like a data detective.</strong><br/>Use words like interval, frequency, cluster, peak, spread, and outlier.</div>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="hideModal()">Got it</button></div>
+    </div>
+  </div>
+
+
+  <div class="modal-backdrop" id="languageHelpBackdrop" onclick="closeLanguageHelp(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="languageHelpTitle">
+      <h2 id="languageHelpTitle">Word Help</h2>
+      <p class="small" id="languageHelpSubtitle">Click a word in the activity when you need a quick explanation.</p>
+      <div class="pop-help-content" id="languageHelpContent"></div>
+      <div class="btn-row"><button class="btn" onclick="hideLanguageHelp()">Got it</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const tabs = [
+      'Setup','Bootcamp','Source Hunt','Chart Detective','Build Lab','Challenge','Final Report'
+    ];
+    const sourceLinks = [
+      {abbr:'WHO', title:'WHO Global Health Observatory', url:'https://www.who.int/data/gho', desc:'Search many health indicators across WHO Member States. Look for a map, chart, or country comparison.'},
+      {abbr:'MAL', title:'WHO Malaria Data', url:'https://www.who.int/data/gho/data/themes/malaria', desc:'Explore global malaria estimates, incidence, deaths, and trends.'},
+      {abbr:'COVID', title:'WHO COVID-19 Dashboard', url:'https://data.who.int/dashboards/covid19/cases', desc:'Look at confirmed cases, deaths, and comparisons by country or region.'},
+      {abbr:'DON', title:'WHO Disease Outbreak News', url:'https://www.who.int/emergencies/disease-outbreak-news', desc:'Read current outbreak updates and notice what information public health teams report.'},
+      {abbr:'CDC', title:'CDC Epi Curve Lesson', url:'https://www.cdc.gov/training/quicklearns/epimode/', desc:'Learn how outbreak curves help scientists infer possible modes of disease spread.'},
+      {abbr:'OWID', title:'Our World in Data Infectious Disease Trends', url:'https://ourworldindata.org/grapher/the-number-of-cases-of-infectious-diseases', desc:'Compare long-term trends for diseases such as malaria, tuberculosis, HIV/AIDS, cholera, and more.'}
+    ];
+    const sortCards = [
+      {text:'Number of countries in each disease-rate interval', type:'histogram'},
+      {text:'Favorite disease topic selected by each student group', type:'bar'},
+      {text:'New cases grouped by week of illness', type:'histogram'},
+      {text:'Number of locations with rates from 0–49, 50–99, and 100–149', type:'histogram'},
+      {text:'Cases compared by disease name: flu, measles, malaria', type:'bar'},
+      {text:'Students’ chosen research sources: WHO, CDC, Our World in Data', type:'bar'}
+    ];
+    const presetDatasets = {
+      'incidence': {
+        label:'Practice A: Incidence rates per 100,000 people',
+        values:[12,18,21,33,45,57,64,72,88,95,103,118,126,138,145,161,178,194,211,227,249,276,318,405],
+        start:0,width:50,count:9
+      },
+      'travel': {
+        label:'Practice C: Days from exposure to symptoms',
+        values:[1,2,2,3,3,3,4,4,4,5,5,5,5,6,6,7,7,8,9,10,11,12,14,15,18,22],
+        start:0,width:3,count:8
+      },
+      'vaccination': {
+        label:'Practice D: Vaccination coverage percentages by location',
+        values:[42,48,51,55,59,61,64,66,70,72,75,78,79,81,83,85,87,89,90,91,92,94,95,96,97,98],
+        start:40,width:10,count:7
+      },
+      'student': {
+        label:'My collected data from source links',
+        values:[],start:0,width:10,count:8
+      }
+    };
+    const epiValues = [1,2,3,7,12,20,16,11,7,4,2,1];
+    const state = {
+      currentTab:0,
+      completed:Array(tabs.length).fill(false),
+      badges:0,
+      support:'guided',
+      answers:{},
+      sortPlacements:{},
+      selectedCard:null,
+      adaptiveCorrect:0,
+      histogramBuilt:false,
+      finished:false
+    };
+    const SUPPORT_VARIANT = 'regular';
+    const STORAGE_KEY = 'histogramDiseaseQuestV2_REGULAR';
+    const VERSION_NAME = 'Version 2: Regular Student Edition';
+
+    
+      // Inject SVG gradient for bars
+      function getSvgDefs(){
+        return `<defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a7be8"/><stop offset="100%" stop-color="#2454d6"/></linearGradient><linearGradient id="barGradEpi" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2dc8a8"/><stop offset="100%" stop-color="#16a8c7"/></linearGradient></defs>`;
+      }
+
+const AudioSynth = {
+  ctx: null,
+  init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+  playTone(freq, type, duration, vol=0.1) {
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + duration);
+  },
+  click() { this.init(); this.playTone(600, 'sine', 0.05, 0.05); },
+  success() { this.init(); this.playTone(800, 'sine', 0.1, 0.1); setTimeout(()=>this.playTone(1200, 'sine', 0.2, 0.1), 100); },
+  error() { this.init(); this.playTone(200, 'sawtooth', 0.2, 0.1); },
+  tada() { 
+    this.init(); 
+    this.playTone(523.25, 'sine', 0.1, 0.1);
+    setTimeout(()=>this.playTone(659.25, 'sine', 0.1, 0.1), 100);
+    setTimeout(()=>this.playTone(783.99, 'sine', 0.4, 0.15), 200);
+  }
+};
+function fireConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'fixed';
+  canvas.style.inset = 0;
+  canvas.style.width = '100vw';
+  canvas.style.height = '100vh';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = 9999;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pieces = Array.from({length: 120}).map(() => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    w: Math.random() * 10 + 5,
+    h: Math.random() * 10 + 5,
+    color: `hsl(${Math.random()*360}, 100%, 60%)`,
+    vy: Math.random() * 4 + 2,
+    vx: Math.random() * 2 - 1,
+    rot: Math.random() * 360,
+    rv: Math.random() * 10 - 5
+  }));
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let active = false;
+    pieces.forEach(p => {
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rot += p.rv;
+      if (p.y < canvas.height) active = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    if (active) requestAnimationFrame(render);
+    else canvas.remove();
+  }
+  render();
+}
+document.addEventListener('click', e => { if(e.target.matches('button, .data-card, .choice, .level-pill, .stem, .help-chip, .tab-btn')) AudioSynth.click(); });
+    function init(){
+      renderTabs();
+      renderSources();
+      renderSortCards();
+      setupQuestions();
+      setupDatasets();
+      loadSaved();
+      renderPresetCharts();
+      updateProgress();
+      updateStatusList();
+      updatePreviewCount();
+    }
+    function renderTabs(){
+      const el=document.getElementById('tabs');
+      el.innerHTML='';
+      tabs.forEach((name,i)=>{
+        const b=document.createElement('button');
+        b.className='tab-btn'+(i===0?' active':'')+(i>0?' locked':'');
+        const icons=['🚀','📚','🔎','🕵️','🔬','💡','📝']; b.innerHTML=`<span style='margin-right:5px'>${icons[i]}</span>${i+1}. ${name}`;
+        b.onclick=()=>goTab(i);
+        el.appendChild(b);
+      });
+    }
+    function renderSources(){
+      document.getElementById('sourceCards').innerHTML=sourceLinks.map(s=>`<article class="source-card"><div class="icon">${s.abbr}</div><h3>${s.title}</h3><p>${s.desc}</p><a class="btn secondary" href="${s.url}" target="_blank" rel="noopener">Open source</a></article>`).join('');
+    }
+    function renderSortCards(){
+      const bank=document.getElementById('sortBank');
+      bank.innerHTML='';
+      const zones={histogram:document.getElementById('histZone'),bar:document.getElementById('barZone')};
+      zones.histogram.innerHTML='<h4>Histogram: number intervals</h4>';
+      zones.bar.innerHTML='<h4>Bar graph: categories</h4>';
+      sortCards.forEach((card,i)=>{
+        const div=document.createElement('div');
+        div.className='data-card';
+        div.textContent=card.text;
+        div.dataset.index=i;
+        const placed=state.sortPlacements[i];
+        if(placed){
+          div.classList.add(placed===card.type?'correct':'wrong');
+          div.onclick=()=>undoCard(i);
+          zones[placed]?.appendChild(div);
+        }else{
+          div.onclick=()=>selectCard(i);
+          bank.appendChild(div);
+        }
+      });
+    }
+    function undoCard(i){
+      delete state.sortPlacements[i];
+      state.selectedCard=null;
+      renderSortCards();
+      saveState();
+      if(typeof AudioSynth!=='undefined')AudioSynth.click();
+    }
+    function setupQuestions(){
+      makeMC('q1','q1',[
+        ['Categories, like disease names','bar'],
+        ['Number intervals, like 0–49 or 50–99','correct'],
+        ['Only pictures or maps','map']
+      ],'Correct. A histogram groups numerical data into intervals.','Try again: look for the answer that uses number ranges or intervals.');
+      makeMC('q2','q2',[
+        ['6 locations had values between 100 and 149','correct'],
+        ['The value is exactly 6 for every location','exact'],
+        ['There are 100–149 different diseases','wrong']
+      ],'Correct. The bar height tells the frequency for that interval.','Hint: the height is the frequency, not the data value itself.');
+      makeMC('q3','q3',[
+        ['0–49','wrong'],['100–149','correct'],['350–399','wrong']
+      ],'Correct. Count the dots/values in each interval; 100–149 has the highest frequency in this practice dataset.','Check the interval with the tallest bar.');
+      makeMC('q4','q4',[
+        ['Most locations are in the exact same rate','wrong'],['The values are spread across many intervals, with one very high value','correct'],['There is no spread at all','wrong']
+      ],'Correct. The data stretch across several intervals, and 405 is much higher than most values.','Look at how far the bars stretch across the x-axis.');
+      makeMC('q5','q5',[
+        ['Week 1','wrong'],['Week 6','correct'],['Week 12','wrong']
+      ],'Correct. Week 6 has the highest bar, so it is the peak week.','Find the tallest bar in the outbreak curve.');
+      makeMC('q6','q6',[
+        ['Ignore the high intervals because most locations are low','wrong'],['Investigate the high-interval locations because they may need extra support','correct'],['Only report the smallest interval','wrong']
+      ],'Correct. A few high values can matter a lot in public health planning.','Hint: think about where resources might be needed most.', true);
+      makeMC('q7','q7',[
+        ['Cases may have increased quickly and then decreased after the peak','correct'],['Every week had the exact same number of cases','wrong'],['There were no cases during Week 4','wrong']
+      ],'Correct. A peak shows the highest frequency during one time interval.','Hint: a peak is the tallest bar.', true);
+    }
+    function makeMC(containerId,key,choices,good,bad,adaptive=false){
+      const el=document.getElementById(containerId);
+      const html = `<div class="radio-grid">${choices.map((c,i)=>`<label class="choice"><input type="radio" name="${key}" value="${c[1]}" onchange="checkMC('${containerId}','${key}','${c[1]}','${good.replace(/'/g,"&#39;")}','${bad.replace(/'/g,"&#39;")}',${adaptive})"><span>${c[0]}</span></label>`).join('')}</div><div class="feedback" id="${containerId}_fb"></div>`;
+      el.innerHTML=html;
+    }
+    function checkMC(containerId,key,value,good,bad,adaptive){
+      const fb=document.getElementById(`${containerId}_fb`);
+      state.answers[key]=value;
+      if(value==='correct'){
+        fb.className='feedback good';fb.textContent=good;
+        if(!state.answers[key+'_earned']){state.answers[key+'_earned']=true; state.badges++;}
+        if(adaptive){state.adaptiveCorrect=Math.max(0,Object.keys(state.answers).filter(k=>['q6','q7'].includes(k)&&state.answers[k]==='correct').length); updateChallengePrompt();}
+      }else{
+        fb.className='feedback warn';fb.textContent=bad + (state.support==='guided'?' Read the x-axis first, then the height of the bar.':'');
+        if(adaptive){showAdaptiveHint(containerId,key)}
+      }
+      saveState(); updateProgress();
+      if(state.answers.q1==='correct'&&state.answers.q2==='correct'&&Object.keys(state.sortPlacements).length===sortCards.length){completeTab(1,true)}
+    }
+    function showAdaptiveHint(containerId,key){
+      const box = key==='q6'?document.getElementById('adaptiveFeedback1'):document.getElementById('adaptiveFeedback2');
+      box.className='feedback warn';
+      box.textContent= key==='q6' ? 'Adaptive hint: Outliers or high intervals may show places that need attention. Pick the choice about investigating the high values.' : 'Adaptive hint: The tallest bar is the peak. Think about what happens before and after the peak.';
+    }
+    function updateChallengePrompt(){
+      const prompt=document.getElementById('challengePrompt');
+      if(state.adaptiveCorrect>=2){
+        prompt.innerHTML='<strong>Unlocked:</strong> You are advising a public-health team. Should they focus only on the most common interval, or should they also investigate unusual high values? Explain using histogram evidence.';
+      }else if(state.adaptiveCorrect===1){
+        prompt.innerHTML='<strong>Almost unlocked:</strong> Answer one more adaptive question correctly to open the full challenge.';
+      }else{
+        prompt.textContent='After you answer the two adaptive questions, a challenge prompt will appear here.';
+      }
+    }
+    function setupDatasets(){
+      const sel=document.getElementById('datasetSelect');
+      sel.innerHTML=Object.keys(presetDatasets).map(k=>`<option value="${k}">${presetDatasets[k].label}</option>`).join('');
+      loadDataset('incidence');
+    }
+    function loadDataset(forceKey){
+      const key=forceKey||document.getElementById('datasetSelect').value;
+      const ds=presetDatasets[key];
+      if(!ds)return;
+      document.getElementById('datasetSelect').value=key;
+      document.getElementById('dataInput').value=ds.values.join(', ');
+      document.getElementById('binStart').value=ds.start;
+      document.getElementById('binWidth').value=ds.width;
+      document.getElementById('binCount').value=ds.count;
+      updatePreviewCount(); saveState();
+    }
+    function useSourceMode(){
+      document.getElementById('datasetSelect').value='student';
+      document.getElementById('dataInput').value='';
+      document.getElementById('binStart').value='0';
+      document.getElementById('binWidth').value='10';
+      document.getElementById('binCount').value='8';
+      updatePreviewCount();
+      showToast('Source mode ready. Type the numbers you collected from the links.');
+    }
+    function parseNumbers(text){
+      return (text.match(/-?\d+(\.\d+)?/g)||[]).map(Number).filter(n=>Number.isFinite(n));
+    }
+    function makeBins(values,start,width,count){
+      const bins=[];
+      for(let i=0;i<count;i++) bins.push({start:start+i*width,end:start+(i+1)*width,count:0,values:[]});
+      values.forEach(v=>{
+        let idx=Math.floor((v-start)/width);
+        if(idx>=0 && idx<count){bins[idx].count++; bins[idx].values.push(v)}
+      });
+      return bins;
+    }
+    function drawHistogram(containerId,bins,title,xLabel='Value interval',yLabel='Frequency'){
+      const container=typeof containerId==='string'?document.getElementById(containerId):containerId;
+      if(!bins||!bins.length){container.innerHTML='<div class="empty-chart">No data yet.</div>';return;}
+      const max=Math.max(1,...bins.map(b=>b.count));
+      const w=760,h=330,ml=58,mr=18,mt=26,mb=74;
+      const cw=w-ml-mr,ch=h-mt-mb;
+      const gap=8;
+      const bw=(cw-gap*(bins.length-1))/bins.length;
+      const yTicks=Math.min(6,max);
+      let svg=`<svg class="histogram" viewBox="0 0 ${w} ${h}" role="img" aria-label="${title}">${getSvgDefs()}`;
+      svg+=`<text x="${w/2}" y="18" text-anchor="middle" font-size="16" font-weight="900" fill="#172033">${title}</text>`;
+      for(let i=0;i<=yTicks;i++){
+        const val=Math.round(max*i/yTicks); const y=mt+ch-(val/max)*ch;
+        svg+=`<line class="gridline" x1="${ml}" y1="${y}" x2="${w-mr}" y2="${y}"/>`;
+        svg+=`<text class="tick" x="${ml-10}" y="${y+4}" text-anchor="end">${val}</text>`;
+      }
+      svg+=`<line class="axis" x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt+ch}"/>`;
+      svg+=`<line class="axis" x1="${ml}" y1="${mt+ch}" x2="${w-mr}" y2="${mt+ch}"/>`;
+      bins.forEach((b,i)=>{
+        const x=ml+i*(bw+gap); const bh=(b.count/max)*ch; const y=mt+ch-bh;
+        const label=`${formatNum(b.start)}–${formatNum(b.end-1)}`;
+        svg+=`<rect class="bar" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="6"><title>${label}: ${b.count}</title></rect>`;
+        svg+=`<text class="bar-label" x="${x+bw/2}" y="${Math.max(y-6,mt+12)}" text-anchor="middle">${b.count}</text>`;
+        svg+=`<text class="tick" x="${x+bw/2}" y="${mt+ch+18}" text-anchor="middle" transform="rotate(-28 ${x+bw/2},${mt+ch+18})">${label}</text>`;
+      });
+      svg+=`<text x="${w/2}" y="${h-8}" text-anchor="middle" font-size="13" font-weight="900" fill="#46556d">${xLabel}</text>`;
+      svg+=`<text x="15" y="${mt+ch/2}" text-anchor="middle" font-size="13" font-weight="900" fill="#46556d" transform="rotate(-90 15,${mt+ch/2})">${yLabel}</text>`;
+      svg+='</svg>';
+      container.innerHTML=svg;
+    }
+    function drawBarChart(containerId,values,title,xPrefix='Week'){
+      const bins=values.map((v,i)=>({start:i+1,end:i+2,count:v,values:[v]}));
+      const container=document.getElementById(containerId);
+      const max=Math.max(1,...values);
+      const w=760,h=330,ml=58,mr=18,mt=26,mb=66,cw=w-ml-mr,ch=h-mt-mb,gap=8,bw=(cw-gap*(values.length-1))/values.length;
+      let svg=`<svg class="histogram" viewBox="0 0 ${w} ${h}" role="img" aria-label="${title}">${getSvgDefs()}<text x="${w/2}" y="18" text-anchor="middle" font-size="16" font-weight="900" fill="#172033">${title}</text>`;
+      const yTicks=5;
+      for(let i=0;i<=yTicks;i++){const val=Math.round(max*i/yTicks);const y=mt+ch-(val/max)*ch;svg+=`<line class="gridline" x1="${ml}" y1="${y}" x2="${w-mr}" y2="${y}"/><text class="tick" x="${ml-10}" y="${y+4}" text-anchor="end">${val}</text>`;}
+      svg+=`<line class="axis" x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt+ch}"/><line class="axis" x1="${ml}" y1="${mt+ch}" x2="${w-mr}" y2="${mt+ch}"/>`;
+      values.forEach((v,i)=>{const x=ml+i*(bw+gap);const bh=(v/max)*ch;const y=mt+ch-bh;svg+=`<rect class="bar" style="fill:url(#barGradEpi)" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="6"><title>${xPrefix} ${i+1}: ${v} cases</title></rect><text class="bar-label" x="${x+bw/2}" y="${Math.max(y-6,mt+12)}" text-anchor="middle">${v}</text><text class="tick" x="${x+bw/2}" y="${mt+ch+20}" text-anchor="middle">${i+1}</text>`;});
+      svg+=`<text x="${w/2}" y="${h-8}" text-anchor="middle" font-size="13" font-weight="900" fill="#46556d">${xPrefix}</text><text x="15" y="${mt+ch/2}" text-anchor="middle" font-size="13" font-weight="900" fill="#46556d" transform="rotate(-90 15,${mt+ch/2})">New cases</text></svg>`;
+      container.innerHTML=svg;
+    }
+    function formatNum(n){return Number.isInteger(n)?String(n):n.toFixed(1)}
+    function renderPresetCharts(){
+      const ds=presetDatasets.incidence;
+      drawHistogram('presetHistA', makeBins(ds.values,ds.start,ds.width,ds.count),'Disease-rate intervals');
+      drawBarChart('epiCurve', epiValues, 'New cases by week', 'Week');
+    }
+    function buildCustomHistogram(){
+      const values=parseNumbers(document.getElementById('dataInput').value);
+      const start=Number(document.getElementById('binStart').value);
+      const width=Number(document.getElementById('binWidth').value);
+      const count=Number(document.getElementById('binCount').value);
+      const fb=document.getElementById('buildFeedback');
+      if(values.length<8){fb.className='feedback warn';fb.textContent='Add at least 8 numbers so the histogram has enough data to show a pattern.';return;}
+      if(!Number.isFinite(start)||!Number.isFinite(width)||!Number.isFinite(count)||width<=0||count<2){fb.className='feedback bad';fb.textContent='Check your interval settings. Width must be greater than 0, and you need at least 2 intervals.';return;}
+      const bins=makeBins(values,start,width,count);
+      const outside=values.length-bins.reduce((s,b)=>s+b.count,0);
+      drawHistogram('customHist',bins,'Your disease data histogram');
+      document.getElementById('customTitle').textContent='Your disease data histogram';
+      state.histogramBuilt=true;
+      fb.className=outside>0?'feedback warn':'feedback good';
+      fb.textContent=outside>0?`Histogram built, but ${outside} value(s) were outside your intervals. Adjust start, width, or number of intervals if needed.`:`Histogram built with ${values.length} values. Now analyze the pattern.`;
+      if(!state.answers.buildBadge){state.answers.buildBadge=true; state.badges++;}
+      saveState(); updateProgress();
+    }
+    function updatePreviewCount(){
+      const el=document.getElementById('previewCount'); if(!el)return;
+      const n=parseNumbers(document.getElementById('dataInput').value||'').length;
+      el.textContent=`${n} number${n===1?'':'s'} detected.`;
+    }
+    function clearBuildLab(){
+      document.getElementById('dataInput').value='';
+      document.getElementById('customHist').innerHTML='<div class="empty-chart">Add numbers and click Build Histogram.</div>';
+      state.histogramBuilt=false; updatePreviewCount(); saveState();
+    }
+    function selectCard(i){
+      state.selectedCard=i;
+      document.querySelectorAll('.data-card').forEach(c=>c.classList.remove('selected'));
+      const card=document.querySelector(`.data-card[data-index="${i}"]`); if(card)card.classList.add('selected');
+    }
+    function placeSelected(zone){
+      if(state.selectedCard===null){showToast('Choose a card first.');return;}
+      const i=state.selectedCard;
+      state.sortPlacements[i]=zone;
+      state.selectedCard=null;
+      renderSortCards(); saveState();
+    }
+    function checkSort(){
+      const fb=document.getElementById('sortFeedback');
+      if(Object.keys(state.sortPlacements).length<sortCards.length){
+        fb.className='feedback warn';
+        fb.textContent='Place every card before checking.';
+        return;
+      }
+      let correct=0;
+      sortCards.forEach((card,i)=>{
+        const ok=state.sortPlacements[i]===card.type;
+        if(ok)correct++;
+      });
+      if(correct===sortCards.length){
+        fb.className='feedback good';
+        fb.textContent='Excellent. You can tell when a display needs number intervals.';
+        if(!state.answers.sortBadge){state.answers.sortBadge=true;state.badges++;}
+        completeTab(1,true);
+      } else {
+        fb.className='feedback warn';
+        fb.textContent=`${correct}/${sortCards.length} correct. Click a card to put it back.`;
+      }
+      renderSortCards(); saveState(); updateProgress();
+    }
+    function resetSort(){state.sortPlacements={};state.selectedCard=null;renderSortCards();document.getElementById('sortFeedback').className='feedback';saveState();}
+    function completeSources(){
+      const needed=['sourceOne','sourceOneValue','sourceTwo','sourceTwoValue','sourceReflection'];
+      if(!validateFields(needed,8,'sourceFeedback'))return;
+      if(!state.answers.sourceBadge){state.answers.sourceBadge=true;state.badges++;}
+      completeTab(2);
+    }
+    function completeDetectiveA(){
+      if(state.answers.q3!=='correct'||state.answers.q4!=='correct'){setFeedback('detectiveFeedbackA','warn','Answer both multiple-choice questions correctly first.');return;}
+      if(!validateFields(['detectiveExplainA'],10,'detectiveFeedbackA'))return;
+      if(!state.answers.detectiveABadge){state.answers.detectiveABadge=true;state.badges++;}
+      setFeedback('detectiveFeedbackA','good','Detective A saved. Strong data readers explain the interval and the pattern.');
+      saveState(); updateProgress();
+    }
+    function completeDetectiveB(){
+      if(state.answers.q3!=='correct'||state.answers.q4!=='correct'||!(document.getElementById('detectiveExplainA').value||'').trim()){
+        setFeedback('detectiveFeedbackB','warn','Finish Detective Questions A first so your chart interpretation is complete.');
+        return;
+      }
+      if(state.answers.q5!=='correct'){setFeedback('detectiveFeedbackB','warn','Answer the peak-week question correctly first.');return;}
+      if(!validateFields(['epiExplain'],10,'detectiveFeedbackB'))return;
+      if(!state.answers.detectiveBBadge){state.answers.detectiveBBadge=true;state.badges++;}
+      completeTab(3);
+    }
+    function completeBuildLab(){
+      if(!state.histogramBuilt){setFeedback('buildLabFeedback','warn','Build your histogram first.');return;}
+      if(!validateFields(['histQuestion1','histQuestion2','histQuestion3','histQuestion4'],5,'buildLabFeedback'))return;
+      if(!state.answers.buildLabBadge){state.answers.buildLabBadge=true;state.badges++;}
+      completeTab(4);
+    }
+    function completeAdaptive(){
+      if(state.answers.q6!=='correct'||state.answers.q7!=='correct'){setFeedback('challengeFeedback','warn','Answer both adaptive questions correctly first.');return;}
+      if(!validateFields(['challengeResponse'],15,'challengeFeedback'))return;
+      if(!state.answers.challengeBadge){state.answers.challengeBadge=true;state.badges++;}
+      completeTab(5);
+    }
+    function finishQuest(){
+      if(!validateFields(['finalClaim','finalEvidence','finalReasoning','finalQuestion'],10,'finalFeedback'))return;
+      state.finished=true; state.completed[6]=true;
+      if(!state.answers.finalBadge){state.answers.finalBadge=true;state.badges++;}
+      document.getElementById('completionCard').classList.add('show');
+      setFeedback('finalFeedback','good','Final report complete. Print or save as PDF to turn it in.');
+      saveState(); updateProgress(); updateStatusList();
+      if(typeof AudioSynth!=='undefined')AudioSynth.tada();
+      if(typeof fireConfetti==='function')fireConfetti();
+    }
+    function validateFields(ids,minWords,fbId){
+      for(const id of ids){
+        const v=(document.getElementById(id).value||'').trim();
+        const words=v.split(/\s+/).filter(Boolean).length;
+        if(!v || words<Math.min(minWords, id.includes('Value')||id.includes('One')||id.includes('Two')?1:minWords)){
+          setFeedback(fbId,'warn',`Please add more detail. Check: ${labelFor(id)}.`);
+          return false;
+        }
+      }
+      return true;
+    }
+    function labelFor(id){const lab=document.querySelector(`label[for="${id}"]`);return lab?lab.textContent:id;}
+    function completeTab(i,silent=false){
+      const launchOk = i!==0 || (document.getElementById('studentName').value||'').trim();
+      if(!launchOk){setFeedback('launchFeedback','warn','Add your name before moving on.');return;}
+      state.completed[i]=true;
+      if(i===0 && !state.answers.setupBadge){state.answers.setupBadge=true;state.badges++;setFeedback('launchFeedback','good','Mission setup saved. Bootcamp is unlocked.');}
+      if(i===2) setFeedback('sourceFeedback','good','Source Hunt saved. You used real-world data sources like a researcher.');
+      if(i===3) setFeedback('detectiveFeedbackB','good','Chart Detective saved. Build Lab is unlocked.');
+      if(i===4) setFeedback('buildLabFeedback','good','Build Lab saved. Adaptive Challenge is unlocked.');
+      if(i===5) setFeedback('challengeFeedback','good','Challenge saved. Final Report is unlocked.');
+      saveState(); updateProgress(); updateStatusList();
+      if(!silent) showToast(`${tabs[i]} complete.`);
+    }
+    function setFeedback(id,type,msg){
+      const el=document.getElementById(id);
+      if(el){el.className='feedback '+type; el.textContent=msg;}
+      if(type==='good'&&typeof AudioSynth!=='undefined')AudioSynth.success();
+      else if((type==='warn'||type==='bad')&&typeof AudioSynth!=='undefined')AudioSynth.error();
+    }
+    function goTab(i){
+      const unlocked = i===0 || state.completed[i-1] || state.completed[i];
+      if(!unlocked){showToast('Complete the previous tab first.');return;}
+      state.currentTab=i;
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.getElementById(`tab-${i}`).classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach((b,idx)=>b.classList.toggle('active',idx===i));
+      updateFooter(); saveState(); window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function nextTab(){const next=Math.min(tabs.length-1,state.currentTab+1);goTab(next)}
+    function previousTab(){const prev=Math.max(0,state.currentTab-1);goTab(prev)}
+    function startQuest(){goTab(0);document.getElementById('studentName').focus();}
+    function updateProgress(){
+      const unlockedTabs=tabs.map((_,i)=>i===0||state.completed[i-1]||state.completed[i]);
+      document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('locked',!unlockedTabs[i]));
+      const pct=Math.round((state.completed.filter(Boolean).length/tabs.length)*100);
+      document.getElementById('progressFill').style.width=pct+'%';
+      document.getElementById('scorePill').innerHTML=`<span style='margin-right:4px'>🏅</span>${state.badges||0} badge${state.badges===1?'':'s'} earned`;
+      updateFooter();
+    }
+    function updateFooter(){
+      document.getElementById('footerTitle').textContent=`Current tab: ${tabs[state.currentTab]}`;
+      const next = state.completed[state.currentTab] ? 'You can move to the next tab.' : 'Complete this tab to unlock the next part.';
+      document.getElementById('footerHint').textContent=next;
+    }
+    function updateStatusList(){
+      const el=document.getElementById('statusList'); if(!el)return;
+      el.innerHTML=tabs.map((t,i)=>`<div class="status-item"><span>${i+1}. ${t}</span><span class="${state.completed[i]?'check':'x'}">${state.completed[i]?'✓':'○'}</span></div>`).join('');
+    }
+    function setSupport(level){
+      state.support=level;
+      document.querySelectorAll('.level-pill').forEach(b=>b.classList.toggle('active',b.dataset.level===level));
+      const text={guided:'Guided mode gives extra sentence starters and hints. You can change this anytime.',regular:'Regular mode keeps normal hints and sentence starters.',challenge:'Challenge mode asks you to explain with more precision and less support.'};
+      document.getElementById('supportText').textContent=text[level]; saveState();
+    }
+    function addStem(id,text){const el=document.getElementById(id);el.value=(el.value||'')+(el.value?' ':'')+text;el.focus();saveState();}
+    function saveState(){
+      const fields=[...document.querySelectorAll('input, textarea, select')].filter(e=>e.id);
+      fields.forEach(e=>state.answers[e.id]=e.value);
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    }
+    function loadSaved(){
+      try{
+        const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+        if(saved){Object.assign(state,saved);}
+      }catch(e){}
+      Object.keys(state.answers||{}).forEach(id=>{const el=document.getElementById(id); if(el && typeof state.answers[id]==='string') el.value=state.answers[id];});
+      setSupport(state.support||'guided');
+      if(state.histogramBuilt){buildCustomHistogram();}
+      updateChallengePrompt();
+      goTab(state.currentTab||0);
+      if(state.finished) document.getElementById('completionCard').classList.add('show');
+    }
+    function printReport(){saveState(); window.print();}
+    function copyReport(){
+      const report = `Version 2: Histogram Disease Detectives Report\nName: ${val('studentName')}\nSection: ${val('classSection')}\n\nClaim: ${val('finalClaim')}\n\nEvidence: ${val('finalEvidence')}\n\nReasoning: ${val('finalReasoning')}\n\nNext Question: ${val('finalQuestion')}\n\nSource 1: ${val('sourceOne')} — ${val('sourceOneValue')}\nSource 2: ${val('sourceTwo')} — ${val('sourceTwoValue')}`;
+      navigator.clipboard?.writeText(report).then(()=>showToast('Report copied.')).catch(()=>showToast('Could not copy automatically. Use Print / Save PDF instead.'));
+    }
+    function val(id){return (document.getElementById(id)?.value||'').trim();}
+    function openGuide(){document.getElementById('modalBackdrop').classList.add('show')}
+    function hideModal(){document.getElementById('modalBackdrop').classList.remove('show')}
+    function closeGuide(e){if(e.target.id==='modalBackdrop')hideModal()}
+    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+
+
+    /* ===================== VERSION SUPPORT UPGRADE JS ===================== */
+    const HELP_TERMS = {
+      interval:{title:'Interval', simple:'A group or range of numbers on the x-axis.', example:'Example: 50–99 means values from 50 up to 99.', spanish:'intervalo / rango'},
+      frequency:{title:'Frequency', simple:'How many data values are in an interval.', example:'If the bar height is 6, the frequency is 6.', spanish:'frecuencia / cuántos'},
+      cluster:{title:'Cluster', simple:'A place where many data values are close together.', example:'If many bars are tall from 100–199, the data cluster there.', spanish:'grupo / concentración'},
+      peak:{title:'Peak', simple:'The tallest bar or highest point.', example:'The peak week is the week with the most new cases.', spanish:'pico / punto más alto'},
+      outlier:{title:'Outlier', simple:'A value that is far away from most of the data.', example:'If most rates are below 200 but one is 405, 405 may be an outlier.', spanish:'valor atípico'},
+      incidence:{title:'Incidence rate', simple:'How often new cases happen in a group of people.', example:'Cases per 100,000 people is a common incidence-rate unit.', spanish:'tasa de casos'},
+      source:{title:'Source', simple:'Where the information came from.', example:'WHO, CDC, and Our World in Data are sources.', spanish:'fuente'},
+      evidence:{title:'Evidence', simple:'Numbers, intervals, or facts that support your answer.', example:'Evidence: the 100–149 interval has the highest frequency.', spanish:'evidencia / prueba'},
+      distribution:{title:'Distribution', simple:'The overall shape or pattern of the data.', example:'The distribution can be clustered, spread out, or have a peak.', spanish:'distribución / patrón'},
+      histogram:{title:'Histogram', simple:'A graph that groups numerical data into intervals.', example:'A histogram can show how many locations are in each disease-rate range.', spanish:'histograma'},
+      epi:{title:'Epi curve', simple:'A graph that shows new cases over time.', example:'An epi curve might show new cases each week.', spanish:'curva epidemiológica'}
+    };
+
+    function applyVersionEnhancements(){
+      document.body.setAttribute('data-version', SUPPORT_VARIANT);
+      addQuickHelpBar();
+      addVisualSupportPanels();
+      addStarterPanels();
+      addFieldHints();
+      enhanceSourceCards();
+      updateGuideForVersion();
+      updatePlaceholdersForVersion();
+      addVersionSpecificCopy();
+    }
+    function addVersionSpecificCopy(){
+      const pill=document.getElementById('scorePill');
+      if(pill && !pill.dataset.versionReady){pill.dataset.versionReady='1';}
+      const bootcamp=document.querySelector('#tab-1 .panel.blue .lead');
+      if(bootcamp && SUPPORT_VARIANT==='esol') bootcamp.innerHTML='A histogram groups <strong>numbers</strong> into intervals. A bar graph compares <strong>categories</strong>. Use the picture clues and word help buttons when the words feel confusing.';
+    }
+    function addQuickHelpBar(){
+      if(document.getElementById('quickHelpBar'))return;
+      const terms = SUPPORT_VARIANT==='esol' ? ['histogram','interval','frequency','cluster','peak','outlier','incidence','evidence'] : ['histogram','interval','frequency','distribution','outlier','evidence'];
+      const html = `<div class="quick-help-bar no-print" id="quickHelpBar"><strong>Need a word?</strong>${terms.map(t=>`<button class="help-chip" type="button" onclick="openMiniHelp('${t}')">${HELP_TERMS[t].title}</button>`).join('')}<button class="word-help-btn" type="button" onclick="openLanguageHelp()">Open full help</button></div>`;
+      const main=document.querySelector('main');
+      if(main) main.insertAdjacentHTML('afterbegin',html);
+    }
+    function addVisualSupportPanels(){
+      const setup=document.querySelector('#tab-0 .panel.yellow');
+      if(setup && !setup.dataset.supported){
+        setup.dataset.supported='1';
+        setup.insertAdjacentHTML('beforeend', `<div class="support-panel ${SUPPORT_VARIANT==='esol'?'esol':''}"><h3>🧭 How to read a histogram</h3><div class="visual-mini-grid"><div class="visual-mini-card"><div class="big">↔️</div><strong>x-axis</strong><span>Shows number intervals, like 0–49.</span></div><div class="visual-mini-card"><div class="big">↕️</div><strong>y-axis</strong><span>Shows frequency: how many.</span></div><div class="visual-mini-card"><div class="big">🏔️</div><strong>Tallest bar</strong><span>Shows the most common interval.</span></div><div class="visual-mini-card"><div class="big">🔎</div><strong>Pattern</strong><span>Look for cluster, spread, peak, or outlier.</span></div></div><div class="esol-only" style="margin-top:10px"><span class="esol-word-pair">interval = intervalo</span><span class="esol-word-pair">frequency = frecuencia</span><span class="esol-word-pair">evidence = evidencia</span><span class="esol-word-pair">source = fuente</span></div></div>`);
+      }
+      const sourcePanel=document.querySelector('#tab-2 .panel.purple');
+      if(sourcePanel && !document.getElementById('sourceReadingHelper')){
+        sourcePanel.insertAdjacentHTML('beforeend', `<div class="support-panel ${SUPPORT_VARIANT==='esol'?'esol':''}" id="sourceReadingHelper"><h3>🌐 Website reading helper</h3><p><strong>You do not need to read every word.</strong> Look for one chart, map, table, number, or repeated pattern.</p><div class="axis-helper"><div><strong>Look for numbers</strong> cases, deaths, rates, percentages</div><div><strong>Look for places</strong> countries, regions, locations</div><div><strong>Look for time</strong> years, weeks, months, trends</div></div><p class="esol-only"><span class="esol-word-pair">cases = casos</span><span class="esol-word-pair">rate = tasa</span><span class="esol-word-pair">country = país</span><span class="esol-word-pair">trend = tendencia</span></p></div>`);
+      }
+      const detective=document.querySelector('#tab-3 .panel.blue .lead');
+      if(detective && !document.getElementById('chartReadHelper')){
+        detective.insertAdjacentHTML('afterend', `<div class="support-panel" id="chartReadHelper"><h3>👀 Read the chart in this order</h3><div class="axis-helper"><div><strong>1. Read x-axis</strong> What intervals do you see?</div><div><strong>2. Read y-axis</strong> What does the bar height count?</div><div><strong>3. Make a claim</strong> What pattern do the bars show?</div></div></div>`);
+      }
+      const build=document.querySelector('#tab-4 .panel.purple .lead');
+      if(build && !document.getElementById('buildStepsHelper')){
+        build.insertAdjacentHTML('afterend', `<div class="support-panel" id="buildStepsHelper"><h3>🧪 Build steps</h3><div class="visual-mini-grid"><div class="visual-mini-card"><div class="big">1️⃣</div><strong>Get numbers</strong><span>Use a practice set or type your own.</span></div><div class="visual-mini-card"><div class="big">2️⃣</div><strong>Choose intervals</strong><span>Pick a start and width.</span></div><div class="visual-mini-card"><div class="big">3️⃣</div><strong>Build</strong><span>Click Build Histogram.</span></div><div class="visual-mini-card"><div class="big">4️⃣</div><strong>Explain</strong><span>Use interval + frequency + pattern.</span></div></div></div>`);
+      }
+    }
+    function addStarterPanels(){
+      const easy = {
+        launchNotice:['I notice ___ .','I see that ___ .','The numbers go ___ .','One thing that changes is ___ .'],
+        launchWonder:['I wonder why ___ .','I want to know ___ .','My question is ___ .'],
+        sourceReflection:['I found a number: ___ .','The source shows ___ .','One pattern is ___ .','This helped me understand ___ .'],
+        detectiveExplainA:['Most locations are in ___ .','The tallest bar is ___ .','This means ___ .','The data are spread out because ___ .'],
+        epiExplain:['The peak week is ___ .','Cases went up when ___ .','Cases went down when ___ .','This helps teams know ___ .'],
+        histQuestion3:['The data are clustered near ___ .','The data are spread out because ___ .','I know this because ___ .'],
+        histQuestion4:['A team might ask ___ .','They may want to know ___ .','Another question is ___ .'],
+        challengeResponse:['My recommendation is ___ .','My evidence is ___ .','The histogram shows ___ .','I still need to know ___ .'],
+        finalClaim:['My histogram shows ___ .','Most values are ___ .','The main pattern is ___ .'],
+        finalEvidence:['My evidence is ___ .','The highest frequency is ___ .','The interval ___ has ___ values.'],
+        finalReasoning:['This matters because ___ .','This tells us ___ .','The evidence supports my claim because ___ .'],
+        finalQuestion:['Next, I would ask ___ .','I still wonder ___ .','I would investigate ___ .']
+      };
+      const regular = {
+        launchNotice:['I notice that ___ .','The data appear to ___ .','One early pattern is ___ .'],
+        launchWonder:['I wonder whether ___ .','A question I have is ___ .'],
+        sourceReflection:['One pattern I found was ___ .','The source helped me understand ___ .','The data surprised me because ___ .'],
+        detectiveExplainA:['Most of the data are clustered between ___ .','The tallest interval suggests ___ .','One possible outlier is ___ .'],
+        epiExplain:['The peak week appears to be ___ .','This could help public-health teams ___ .','The curve suggests ___ .'],
+        histQuestion3:['The data are clustered because ___ .','The data are spread out because ___ .','The distribution shows ___ .'],
+        histQuestion4:['A public-health team might ask ___ .','The next question could be ___ .'],
+        challengeResponse:['My recommendation is ___ .','The evidence from the histogram is ___ .','However, we need more information about ___ .'],
+        finalClaim:['My histogram shows that ___ .','The main distribution pattern is ___ .'],
+        finalEvidence:['One piece of evidence is ___ .','The interval with the highest frequency is ___ .'],
+        finalReasoning:['This matters because ___ .','This evidence supports the claim because ___ .'],
+        finalQuestion:['Next, I would investigate ___ .','A question I still have is ___ .']
+      };
+      const bank = SUPPORT_VARIANT==='esol'?easy:regular;
+      Object.entries(bank).forEach(([id, starters])=>addStarterPanel(id, starters));
+    }
+    function addStarterPanel(id, starters){
+      const el=document.getElementById(id);
+      if(!el || document.getElementById(`${id}_starterPanel`))return;
+      const title=SUPPORT_VARIANT==='esol'?'Easy click-to-insert starters':'Sentence starters';
+      const buttons=starters.map(s=>`<button class="starter-btn" type="button" onclick="addStem('${id}','${safeJs(s)}')">${escapeHtml(s)}</button>`).join('');
+      el.insertAdjacentHTML('afterend', `<div class="starter-panel ${SUPPORT_VARIANT==='esol'?'esol':''}" id="${id}_starterPanel"><div class="starter-panel-title"><span>✍️ ${title}</span><span>${SUPPORT_VARIANT==='esol'?'Click one, then fill in the blanks.':'Click to begin your response.'}</span></div><div class="starter-grid">${buttons}</div></div>`);
+    }
+    function addFieldHints(){
+      const hints = SUPPORT_VARIANT==='esol' ? {
+        sourceOne:'Write the website or topic name. Example: WHO malaria data.',
+        sourceOneValue:'Write one number or pattern you found. You can copy a short number, rate, or year.',
+        sourceTwo:'Choose a second website or topic.',
+        sourceTwoValue:'Write one more number or pattern from your second source.',
+        dataInput:'Only type numbers here. Use commas between numbers.',
+        binWidth:'Interval width means how big each group is. Example: width 50 makes 0–49, 50–99, 100–149.',
+        histQuestion1:'Look for the tallest bar. Then write the interval under that bar.',
+        histQuestion2:'Say what the interval means using words: “locations had rates between…”'
+      } : {
+        dataInput:'Use at least 8 numerical values so the histogram shows a pattern.',
+        binWidth:'Choose an interval width that groups the data clearly without making too many tiny bars.',
+        histQuestion1:'Use the histogram to identify the interval with the tallest bar.'
+      };
+      Object.entries(hints).forEach(([id,text])=>{
+        const el=document.getElementById(id);
+        if(el && !document.getElementById(`${id}_hint`)) el.insertAdjacentHTML('afterend',`<div class="field-hint" id="${id}_hint">${escapeHtml(text)}</div>`);
+      });
+    }
+    function enhanceSourceCards(){
+      document.querySelectorAll('.source-card').forEach((card,idx)=>{
+        if(card.dataset.enhanced)return;
+        card.dataset.enhanced='1';
+        const helper = SUPPORT_VARIANT==='esol' ? 'Look for one number, chart, map, or word that repeats. Do not try to read the whole page.' : 'Look for a chart, map, table, statistic, or trend that could support your histogram analysis.';
+        card.insertAdjacentHTML('beforeend',`<div class="look-for"><strong>Look for:</strong> ${helper}</div><div class="source-actions"><button class="help-chip" type="button" onclick="openMiniHelp('source')">source help</button><button class="help-chip" type="button" onclick="openMiniHelp('incidence')">rate help</button></div>`);
+      });
+    }
+    function updateGuideForVersion(){
+      const guide=document.querySelector('#guideTitle');
+      if(guide) guide.textContent=SUPPORT_VARIANT==='esol'?'Student Help: Extra Support + Visual Edition':'Student Help: Regular Edition';
+      const modal=document.querySelector('#modalBackdrop .modal .stepper');
+      if(modal && !modal.dataset.versionReady){
+        modal.dataset.versionReady='1';
+        modal.insertAdjacentHTML('beforeend', SUPPORT_VARIANT==='esol' ? `<div class="step"><strong>Use the word help.</strong><br/>Click confusing words such as interval, frequency, source, evidence, and peak.</div><div class="step"><strong>Use sentence starters.</strong><br/>Click a starter, then replace the blank line with your own words.</div>` : `<div class="step"><strong>Use the sentence starters only when helpful.</strong><br/>Your final report should include a claim, evidence, reasoning, and next question.</div>`);
+      }
+    }
+    function updatePlaceholdersForVersion(){
+      if(SUPPORT_VARIANT==='esol'){
+        const ph={
+          launchNotice:'I notice ___ .', launchWonder:'I wonder ___ .', sourceReflection:'The sources helped me understand ___ .', detectiveExplainA:'Most locations are in ___ . The tallest bar means ___ .', epiExplain:'The peak week is ___ . This helps teams ___ .', histQuestion3:'The data are clustered/spread out because ___ .', histQuestion4:'A public-health team might ask ___ .', challengeResponse:'My recommendation is ___ . My evidence is ___ .', finalClaim:'My histogram shows ___ .', finalEvidence:'One piece of evidence is ___ .', finalReasoning:'This matters because ___ .', finalQuestion:'Next, I would investigate ___ .'
+        };
+        Object.entries(ph).forEach(([id,text])=>{const el=document.getElementById(id); if(el)el.placeholder=text;});
+      }
+    }
+    function openMiniHelp(term){
+      const info=HELP_TERMS[term]||HELP_TERMS.interval;
+      const extra = SUPPORT_VARIANT==='esol' ? `<span class="term-spanish">Spanish support: ${escapeHtml(info.spanish||'')}</span>` : '';
+      const html=`<div class="help-definition"><h3>${escapeHtml(info.title)}</h3><p>${escapeHtml(info.simple)}</p><div class="example">${escapeHtml(info.example)}</div>${extra}</div>`;
+      document.getElementById('languageHelpTitle').textContent=info.title;
+      document.getElementById('languageHelpSubtitle').textContent=SUPPORT_VARIANT==='esol'?'Quick meaning + example.':'Quick definition and example.';
+      document.getElementById('languageHelpContent').innerHTML=html;
+      document.getElementById('languageHelpBackdrop').classList.add('show');
+    }
+    function openLanguageHelp(){
+      const terms = SUPPORT_VARIANT==='esol' ? ['histogram','interval','frequency','incidence','source','evidence','cluster','peak','outlier','distribution','epi'] : ['histogram','interval','frequency','distribution','cluster','peak','outlier','evidence'];
+      const html=terms.map(t=>{
+        const info=HELP_TERMS[t];
+        const extra=SUPPORT_VARIANT==='esol'?`<span class="term-spanish">${escapeHtml(info.spanish||'')}</span>`:'';
+        return `<div class="help-definition"><h3>${escapeHtml(info.title)}</h3><p>${escapeHtml(info.simple)}</p><div class="example">${escapeHtml(info.example)}</div>${extra}</div>`;
+      }).join('');
+      document.getElementById('languageHelpTitle').textContent=SUPPORT_VARIANT==='esol'?'Word Help':'Word Help';
+      document.getElementById('languageHelpSubtitle').textContent=SUPPORT_VARIANT==='esol'?'Use these words to read sources, charts, and questions.':'Use these words while reading and explaining histograms.';
+      document.getElementById('languageHelpContent').innerHTML=html;
+      document.getElementById('languageHelpBackdrop').classList.add('show');
+    }
+    function hideLanguageHelp(){document.getElementById('languageHelpBackdrop').classList.remove('show')}
+    function closeLanguageHelp(e){if(e.target.id==='languageHelpBackdrop')hideLanguageHelp()}
+    function escapeHtml(str){return String(str).replace(/[&<>'"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));}
+    function safeJs(str){return String(str).replace(/\\/g,'\\\\').replace(/'/g,"&#39;");}
+    /* ===================== END VERSION SUPPORT UPGRADE JS ===================== */
+
+    window.addEventListener('beforeunload',saveState);
+    init();
+    applyVersionEnhancements();
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

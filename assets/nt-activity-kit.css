@@ -1,0 +1,242 @@
+/*!
+ * Neft Teacher — Activity Kit styles (nt-activity-kit.css)
+ * Pairs with nt-activity-kit.js. Light, self-contained, offline-first.
+ */
+
+.ntkit-root {
+  --ntkit-fg: #16243a;
+  --ntkit-muted: #5a6b82;
+  --ntkit-line: #d8e0ec;
+  --ntkit-accent: #2b6cb0;
+  --ntkit-good: #1f9d55;
+  --ntkit-ok: #c08a00;
+  --ntkit-low: #c0392b;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+  color: var(--ntkit-fg);
+}
+
+/* ---- identity bar ---- */
+.ntkit-bar {
+  background: #f3f7fc;
+  border: 1px solid var(--ntkit-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+}
+.ntkit-bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+.ntkit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 200px;
+}
+.ntkit-field--sm {
+  flex: 0 1 140px;
+}
+.ntkit-field > span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ntkit-muted);
+}
+.ntkit-field input {
+  font: inherit;
+  padding: 7px 9px;
+  border: 1px solid var(--ntkit-line);
+  border-radius: 7px;
+  background: #fff;
+}
+.ntkit-field input:focus {
+  outline: 2px solid var(--ntkit-accent);
+  outline-offset: 1px;
+}
+.ntkit-saved {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ntkit-good);
+  min-width: 40px;
+}
+
+/* ---- action buttons ---- */
+.ntkit-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+.ntkit-btn {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--ntkit-accent);
+  background: var(--ntkit-accent);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+.ntkit-btn:hover {
+  filter: brightness(1.06);
+}
+.ntkit-btn:active {
+  transform: translateY(1px);
+}
+.ntkit-btn--alt {
+  background: #fff;
+  color: var(--ntkit-accent);
+}
+
+/* ---- results card ---- */
+.ntkit-card {
+  border: 1px solid var(--ntkit-line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fff;
+}
+.ntkit-tone-good {
+  border-top: 4px solid var(--ntkit-good);
+}
+.ntkit-tone-ok {
+  border-top: 4px solid var(--ntkit-ok);
+}
+.ntkit-tone-low {
+  border-top: 4px solid var(--ntkit-low);
+}
+
+.ntkit-scorehead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.ntkit-score {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+}
+.ntkit-tone-good .ntkit-score {
+  color: var(--ntkit-good);
+}
+.ntkit-tone-ok .ntkit-score {
+  color: var(--ntkit-ok);
+}
+.ntkit-tone-low .ntkit-score {
+  color: var(--ntkit-low);
+}
+.ntkit-acttitle {
+  font-weight: 700;
+}
+.ntkit-standard,
+.ntkit-studentline {
+  font-size: 13px;
+  color: var(--ntkit-muted);
+}
+
+/* ---- per-item list ---- */
+.ntkit-itemlist {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.ntkit-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--ntkit-line);
+}
+.ntkit-mark {
+  font-weight: 800;
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
+  flex: 0 0 22px;
+}
+.ntkit-correct .ntkit-mark {
+  color: var(--ntkit-good);
+}
+.ntkit-wrong .ntkit-mark {
+  color: var(--ntkit-low);
+}
+.ntkit-prompt {
+  font-weight: 600;
+}
+.ntkit-answerline {
+  font-size: 13px;
+  color: var(--ntkit-fg);
+}
+.ntkit-lbl {
+  color: var(--ntkit-muted);
+}
+.ntkit-pts {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ntkit-muted);
+}
+
+/* ---- skill breakdown ---- */
+.ntkit-skills {
+  margin-top: 12px;
+}
+.ntkit-skills h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ntkit-muted);
+}
+.ntkit-skilllist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ntkit-skilllist li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  margin: 4px 0;
+}
+.ntkit-skillname {
+  flex: 0 0 130px;
+}
+.ntkit-skillbar {
+  flex: 1 1 auto;
+  height: 8px;
+  background: #e8eef6;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.ntkit-skillbar > span {
+  display: block;
+  height: 100%;
+  background: var(--ntkit-accent);
+}
+.ntkit-skillpct {
+  flex: 0 0 40px;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* ---- inline-print fallback (when pop-ups blocked) ---- */
+.ntkit-print-only {
+  display: none;
+}
+@media print {
+  body.ntkit-printing > *:not(.ntkit-print-only) {
+    display: none !important;
+  }
+  body.ntkit-printing .ntkit-print-only {
+    display: block !important;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+  }
+}

@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lesson 5-5: Determine the Volume of Rectangular Prisms</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .header h1 {
+        font-size: clamp(22px, 4vw, 30px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .header p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0;
+        max-width: 600px;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      /* Level Toggle */
+      .level-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--card);
+        color: var(--navy);
+        box-shadow: 0 1px 4px rgba(15, 43, 60, 0.12);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--navy);
+      }
+      .level-desc {
+        font-size: 13px;
+        color: var(--faint);
+        margin-left: auto;
+      }
+      .progress-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .progress-track {
+        height: 4px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--teal), var(--blue));
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+
+      /* Main Content */
+      .main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 20px 24px 80px;
+      }
+
+      /* Section Headers */
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 32px 0 16px;
+      }
+      .section-header:first-child {
+        margin-top: 8px;
+      }
+      .section-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .section-icon.warmup {
+        background: var(--gold);
+      }
+      .section-icon.practice {
+        background: var(--blue);
+      }
+      .section-icon.challenge {
+        background: var(--coral);
+      }
+      .section-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0;
+      }
+      .section-header .count {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+
+      /* Question Card */
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: border-color 0.2s;
+      }
+      .q-card.correct {
+        border-color: var(--green);
+      }
+      .q-card.incorrect {
+        border-color: var(--coral);
+      }
+      .q-card.correct .q-status {
+        display: flex;
+      }
+      .q-card.incorrect .q-status-wrong {
+        display: flex;
+      }
+      .q-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.45;
+      }
+      .q-prompt .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+      }
+
+      /* Scaffold (Level 1 only) */
+      .scaffold {
+        background: var(--teal-light);
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #1a5c54;
+        line-height: 1.45;
+        display: none;
+      }
+      .scaffold strong {
+        color: var(--teal);
+      }
+      .scaffold .vocab {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 700;
+        margin: 2px;
+      }
+      body.level-1 .scaffold {
+        display: block;
+      }
+
+      /* Multiple Choice */
+      .mc-options {
+        display: grid;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .mc-btn:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn .letter {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: var(--line);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mc-btn:hover .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn.selected .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .mc-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Fill-in */
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fill-input {
+        width: 100px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .fill-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.12);
+      }
+      .fill-input.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .fill-input.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .fill-text {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      /* True/False & Yes/No */
+      .tf-options {
+        display: flex;
+        gap: 8px;
+      }
+      .tf-btn {
+        flex: 1;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .tf-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .tf-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .tf-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .tf-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+      .tf-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Check Button */
+      .check-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .check-btn:hover {
+        background: #155fa0;
+        transform: translateY(-1px);
+      }
+      .check-btn:active {
+        transform: scale(0.98);
+      }
+      .check-btn:disabled {
+        background: var(--line);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+      }
+
+      /* Feedback */
+      .q-status,
+      .q-status-wrong {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .q-status {
+        background: var(--green-light);
+        color: #1a5c36;
+        border: 1px solid rgba(45, 135, 75, 0.15);
+      }
+      .q-status-wrong {
+        background: var(--coral-light);
+        color: #8a3322;
+        border: 1px solid rgba(196, 90, 60, 0.15);
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* Explain (Level 2 only) */
+      .explain-section {
+        display: none;
+        margin-top: 12px;
+      }
+      body.level-2 .explain-section {
+        display: block;
+      }
+      .explain-prompt {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .explain-input {
+        width: 100%;
+        min-height: 60px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.4;
+      }
+      .explain-input:focus {
+        border-color: var(--blue);
+      }
+
+      /* Sentence frame (Level 1) */
+      .sentence-frame {
+        display: none;
+      }
+      body.level-1 .sentence-frame {
+        display: block;
+      }
+      .sentence-frame p {
+        font-size: 13px;
+        color: var(--teal);
+        font-weight: 600;
+        margin: 6px 0 0;
+        font-style: italic;
+      }
+
+      /* Drag & Drop */
+      .drag-zone {
+        min-height: 52px;
+        border: 2px dashed var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        transition: border-color 0.15s;
+        background: var(--bg);
+      }
+      .drag-zone.over {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .drag-zone.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        border-style: solid;
+      }
+      .drag-zone.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        border-style: solid;
+      }
+      .drag-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: grab;
+        user-select: none;
+        transition: all 0.15s;
+        color: var(--ink);
+      }
+      .drag-item:active {
+        cursor: grabbing;
+        opacity: 0.7;
+      }
+      .drag-item.placed {
+        background: var(--blue-light);
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .drag-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .drop-grid {
+        display: grid;
+        gap: 10px;
+      }
+      .drop-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+      .drop-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      /* Equation Display */
+      .eq-display {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-size: 22px;
+        text-align: center;
+        padding: 14px;
+        background: var(--bg);
+        border-radius: 10px;
+        margin-bottom: 12px;
+        color: var(--navy);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      /* Number Line */
+      .number-line-wrap {
+        margin: 14px 0;
+        padding: 10px 0;
+      }
+      .number-line-svg {
+        width: 100%;
+        height: 60px;
+      }
+
+      /* SVG diagram */
+      .diagram-wrap {
+        text-align: center;
+        margin: 10px 0 14px;
+      }
+      .diagram-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Score Footer */
+      .score-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        padding: 10px 24px;
+      }
+      .score-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .score-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-text span {
+        color: var(--teal);
+      }
+      .reset-btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .reset-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .header {
+          padding: 20px 16px 16px;
+        }
+        .level-bar {
+          padding: 12px 16px;
+        }
+        .main {
+          padding: 16px 16px 80px;
+        }
+        .q-card {
+          padding: 16px;
+        }
+        .drop-row {
+          grid-template-columns: 1fr;
+        }
+        .level-desc {
+          display: none;
+        }
+      }
+
+      /* Print */
+      @media print {
+        .score-bar,
+        .level-bar,
+        .progress-bar {
+          display: none;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    
+      /* ===== Level 0 (most-supported tier) ===== */
+      .level0-support { display:none; }
+      body.level-0 .level0-support {
+        display:block; max-width:860px; margin:14px auto 0; padding:14px 16px;
+        background:#fff7ed; border:1px solid #fdba74; border-radius:12px;
+        font-size:14px; color:#7c2d12; line-height:1.5;
+      }
+      body.level-0 .level0-support h3 { margin:0 0 8px; font-size:15px; color:#9a3412; }
+      body.level-0 .level0-support ul { margin:6px 0 0; padding-left:20px; }
+      body.level-0 .level0-support .l0-frames { margin-top:8px; font-style:italic; }
+      .read-aloud-btn {
+        border:1px solid #fdba74; background:#fff; color:#9a3412; border-radius:8px;
+        padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; margin-left:8px;
+      }
+      .read-aloud-btn:hover { background:#ffedd5; }
+      body:not(.level-0) .read-aloud-btn { display:none; }
+      body.level-0 [class*="hint"] { display:block !important; }
+      body.level-0.reading p, body.level-0.reading li, body.level-0.reading label { cursor:help; }
+
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="level-1">
+    <header class="header">
+      <div class="header-inner">
+        <h1>Determine the Volume of Rectangular Prisms</h1>
+        <p>
+          Calculate the volume of rectangular prisms using V = lwh, including
+          prisms with fractional side lengths.
+        </p>
+        <span class="standard-badge"
+          >6.G.A.2 · Area, Surface Area &amp; Volume</span
+        >
+      </div>
+    </header>
+
+    <div class="level-bar">
+      <span class="level-label">Level</span>
+      <div class="level-toggle">
+        <button class="level-btn" data-level="0">Level 0</button>
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+        <button id="readAloudBtn" class="read-aloud-btn" type="button">🔊 Read aloud</button>
+      </div>
+      <span class="level-desc" id="levelDesc"
+        >Guided practice with vocabulary support</span
+      >
+    </div>
+
+    
+      <div class="level0-support" role="note" aria-label="Level 0 extra support">
+        <h3>🟠 Level 0 — Extra Support</h3>
+        <ul>
+          <li><strong>Watch first:</strong> the worked example and hints are already shown for you.</li>
+          <li><strong>One at a time:</strong> answer one question, check it, then go on.</li>
+          <li><strong>Read aloud:</strong> press 🔊 Read aloud, then click any sentence to hear it.</li>
+        </ul>
+        <div class="l0-frames"><strong>Sentence starters:</strong> “First, I…” · “The answer is… because…” · “I know this because…”</div>
+      </div>
+
+    <div class="progress-bar">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- WARM-UP -->
+      <div class="section-header">
+        <div class="section-icon warmup">W</div>
+        <h2>Warm-Up</h2>
+        <span class="count">2 questions</span>
+      </div>
+
+      <!-- W1 -->
+      <article class="q-card" data-q="w1">
+        <div class="q-num">Warm-Up 1</div>
+        <div class="q-prompt">
+          Which formula gives the <strong>volume</strong> of a rectangular
+          prism?
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong> <span class="vocab">Volume</span> is the
+          amount of space inside a 3-D shape, measured in
+          <span class="vocab">cubic units</span>. A
+          <span class="vocab">rectangular prism</span> has a length, width, and
+          height.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>V = l + w + h</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>V = l × w</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>V = l × w × h</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>V = 2(l + w + h)</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Volume = length × width × height. We multiply all three
+            dimensions to find cubic units.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Not quite. Volume of a rectangular prism = length × width × height
+            (V = lwh). The answer is <strong>C</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- W2 -->
+      <article class="q-card" data-q="w2">
+        <div class="q-num">Warm-Up 2</div>
+        <div class="q-prompt">
+          A rectangular prism has length 5 cm, width 3 cm, and height 2 cm. What
+          is its volume?
+        </div>
+        <div class="scaffold">
+          <strong>Hint:</strong> Use V = l × w × h. Multiply: 5 × 3 × 2 = ?
+        </div>
+        <div class="diagram-wrap">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <polygon
+              points="40,100 140,100 140,40 40,40"
+              fill="#e8f2fc"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <polygon
+              points="140,100 180,75 180,15 140,40"
+              fill="#d0e6f7"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <polygon
+              points="40,40 80,15 180,15 140,40"
+              fill="#bdd9f2"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <text
+              x="90"
+              y="120"
+              font-size="13"
+              fill="#1a2633"
+              font-weight="600"
+            >
+              5 cm
+            </text>
+            <text x="5" y="75" font-size="13" fill="#1a2633" font-weight="600">
+              2 cm
+            </text>
+            <text
+              x="155"
+              y="32"
+              font-size="13"
+              fill="#1a2633"
+              font-weight="600"
+            >
+              3 cm
+            </text>
+          </svg>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>10 cm³</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>15 cm³</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>30 cm³</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>62 cm³</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span>Correct! V = 5 × 3 × 2 = 30 cm³.</span>
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Multiply all three dimensions: V = 5 × 3 × 2 = 30 cm³. The answer
+            is <strong>C</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- PRACTICE -->
+      <div class="section-header">
+        <div class="section-icon practice">P</div>
+        <h2>Practice</h2>
+        <span class="count">5 questions</span>
+      </div>
+
+      <!-- P1 -->
+      <article class="q-card" data-q="p1">
+        <div class="q-num">Practice 1</div>
+        <div class="q-prompt">
+          A box is 8 in. long, 4 in. wide, and 6 in. tall. What is the volume of
+          the box?
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Use V = l × w × h. Substitute: V = 8 × 4 ×
+          6.
+        </div>
+        <div class="fill-row">
+          <span class="fill-text">V =</span>
+          <input
+            class="fill-input"
+            data-answer="192"
+            placeholder="?"
+            aria-label="volume answer"
+          />
+          <span class="fill-text">in.³</span>
+        </div>
+        <button class="check-btn" id="p1-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your work:</div>
+          <textarea
+            class="explain-input"
+            placeholder="V = 8 × 4 × 6 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "I multiplied ___ × ___ × ___ to get ___ cubic
+            inches."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span>Correct! V = 8 × 4 × 6 = 192 in.³</span>
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >V = 8 × 4 × 6. First, 8 × 4 = 32. Then 32 × 6 =
+            <strong>192 in.³</strong></span
+          >
+        </div>
+      </article>
+
+      <!-- P2 -->
+      <article class="q-card" data-q="p2">
+        <div class="q-num">Practice 2</div>
+        <div class="q-prompt">
+          A rectangular prism has dimensions 2½ ft × 3 ft × 4 ft. What is its
+          volume?
+        </div>
+        <div class="scaffold">
+          <strong>Tip:</strong> Write 2½ as an improper fraction or decimal: 2½
+          = 2.5. Then multiply: 2.5 × 3 × 4.
+        </div>
+        <div class="diagram-wrap">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <polygon
+              points="40,110 150,110 150,35 40,35"
+              fill="#e8f2fc"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <polygon
+              points="150,110 190,85 190,10 150,35"
+              fill="#d0e6f7"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <polygon
+              points="40,35 80,10 190,10 150,35"
+              fill="#bdd9f2"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <text
+              x="75"
+              y="130"
+              font-size="13"
+              fill="#1a2633"
+              font-weight="600"
+            >
+              4 ft
+            </text>
+            <text x="3" y="78" font-size="13" fill="#1a2633" font-weight="600">
+              2½ ft
+            </text>
+            <text
+              x="155"
+              y="27"
+              font-size="13"
+              fill="#1a2633"
+              font-weight="600"
+            >
+              3 ft
+            </text>
+          </svg>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>24 ft³</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>30 ft³</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>9½ ft³</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>36 ft³</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your multiplication:</div>
+          <textarea
+            class="explain-input"
+            placeholder="2.5 × 3 = ... then ... × 4 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "I converted 2½ to ___, then multiplied ___ × ___ ×
+            ___ = ___ ft³."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span>Correct! 2.5 × 3 = 7.5, then 7.5 × 4 = 30 ft³.</span>
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Convert 2½ to 2.5. Then 2.5 × 3 = 7.5 and 7.5 × 4 =
+            <strong>30 ft³</strong>. The answer is <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- P3: Drag and Drop -->
+      <article class="q-card" data-q="p3">
+        <div class="q-num">Practice 3</div>
+        <div class="q-prompt">
+          Sort each measurement into the correct category:
+          <strong>area</strong> or <strong>volume</strong>.
+        </div>
+        <div class="scaffold">
+          <strong>Remember:</strong> <span class="vocab">Area</span> is measured
+          in square units (cm², ft²). <span class="vocab">Volume</span> is
+          measured in <span class="vocab">cubic units</span> (cm³, ft³).
+        </div>
+        <div class="drag-bank" id="p3-bank">
+          <div class="drag-item" draggable="true" data-id="d1" data-cat="vol">
+            24 cm³
+          </div>
+          <div class="drag-item" draggable="true" data-id="d2" data-cat="area">
+            15 ft²
+          </div>
+          <div class="drag-item" draggable="true" data-id="d3" data-cat="vol">
+            100 in.³
+          </div>
+          <div class="drag-item" draggable="true" data-id="d4" data-cat="area">
+            36 m²
+          </div>
+          <div class="drag-item" draggable="true" data-id="d5" data-cat="vol">
+            7.5 ft³
+          </div>
+          <div class="drag-item" draggable="true" data-id="d6" data-cat="area">
+            50 cm²
+          </div>
+        </div>
+        <div class="drop-grid">
+          <div class="drop-row">
+            <div class="drop-label">Area (square units)</div>
+            <div class="drag-zone" data-cat="area" id="p3-area"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">Volume (cubic units)</div>
+            <div class="drag-zone" data-cat="vol" id="p3-vol"></div>
+          </div>
+        </div>
+        <button class="check-btn" id="p3-check">Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! Area uses square units (²) and volume uses cubic units
+            (³).</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some items are in the wrong group. Square units (²) = area; cubic
+            units (³) = volume. Try again!</span
+          >
+        </div>
+      </article>
+
+      <!-- P4 -->
+      <article class="q-card" data-q="p4">
+        <div class="q-num">Practice 4</div>
+        <div class="q-prompt">
+          An aquarium is 1½ ft long, 1 ft wide, and 1 ft tall. How many cubic
+          feet of water can it hold?
+        </div>
+        <div class="scaffold">
+          <strong>Real-world connection:</strong> The aquarium is a
+          <span class="vocab">rectangular prism</span>. Use V = l × w × h with
+          the given dimensions. 1½ = 1.5.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>1 ft³</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>1.5 ft³</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>3 ft³</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>3.5 ft³</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="The aquarium holds ... because ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "V = ___ × ___ × ___ = ___ ft³, so the aquarium
+            holds ___ cubic feet of water."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span>Correct! V = 1.5 × 1 × 1 = 1.5 ft³.</span>
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >V = 1.5 × 1 × 1 = <strong>1.5 ft³</strong>. The answer is
+            <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- P5 -->
+      <article class="q-card" data-q="p5">
+        <div class="q-num">Practice 5</div>
+        <div class="q-prompt">
+          How many ½-inch unit cubes fit inside a rectangular prism that is 3
+          in. × 2 in. × 1 in.?
+        </div>
+        <div class="scaffold">
+          <strong>Think about it:</strong> Each edge is divided into ½-inch
+          segments. Along 3 in. you fit 6 cubes, along 2 in. you fit 4 cubes,
+          along 1 in. you fit 2 cubes. Multiply the counts: 6 × 4 × 2.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>6 cubes</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>12 cubes</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>24 cubes</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>48 cubes</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain how you counted:</div>
+          <textarea
+            class="explain-input"
+            placeholder="Along each edge I can fit ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "Along the length I fit ___ cubes, along the width
+            ___ cubes, and along the height ___ cubes. ___ × ___ × ___ = ___
+            cubes."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span>Correct! 6 × 4 × 2 = 48 half-inch cubes fit inside.</span>
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Divide each dimension by ½: 3 ÷ 0.5 = 6, 2 ÷ 0.5 = 4, 1 ÷ 0.5 = 2.
+            Then 6 × 4 × 2 = <strong>48 cubes</strong>. The answer is
+            <strong>D</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- CHALLENGE -->
+      <div class="section-header">
+        <div class="section-icon challenge">&#9733;</div>
+        <h2>Challenge</h2>
+        <span class="count">1 question</span>
+      </div>
+
+      <article class="q-card" data-q="c1">
+        <div class="q-num">Challenge</div>
+        <div class="q-prompt">
+          A shipping box is 2½ ft long, 1½ ft wide, and 2 ft high. A smaller box
+          is 1 ft × 1 ft × 1 ft. What is the maximum number of smaller boxes
+          that fit inside the shipping box?
+        </div>
+        <div class="scaffold">
+          <strong>Think about it:</strong> First find the volume of the shipping
+          box: V = 2.5 × 1.5 × 2. Then think about how the 1 ft³ cubes
+          physically fit along each dimension (you can only fit whole boxes).
+        </div>
+        <div class="diagram-wrap">
+          <svg width="260" height="170" viewBox="0 0 260 170">
+            <polygon
+              points="30,120 160,120 160,40 30,40"
+              fill="#fdf3e0"
+              stroke="#d4952a"
+              stroke-width="2"
+            />
+            <polygon
+              points="160,120 210,90 210,10 160,40"
+              fill="#f5e4c0"
+              stroke="#d4952a"
+              stroke-width="2"
+            />
+            <polygon
+              points="30,40 80,10 210,10 160,40"
+              fill="#eedcad"
+              stroke="#d4952a"
+              stroke-width="2"
+            />
+            <text
+              x="70"
+              y="140"
+              font-size="13"
+              fill="#1a2633"
+              font-weight="600"
+            >
+              2½ ft
+            </text>
+            <text x="0" y="85" font-size="13" fill="#1a2633" font-weight="600">
+              2 ft
+            </text>
+            <text
+              x="170"
+              y="30"
+              font-size="13"
+              fill="#1a2633"
+              font-weight="600"
+            >
+              1½ ft
+            </text>
+            <!-- small cube reference -->
+            <rect
+              x="195"
+              y="120"
+              width="35"
+              height="35"
+              fill="#e8f2fc"
+              stroke="#1a6fb5"
+              stroke-width="1.5"
+              rx="2"
+            />
+            <text
+              x="200"
+              y="142"
+              font-size="10"
+              fill="#1a6fb5"
+              font-weight="700"
+            >
+              1ft³
+            </text>
+          </svg>
+        </div>
+        <div class="fill-row">
+          <span class="fill-text">Maximum boxes =</span>
+          <input
+            class="fill-input"
+            data-answer="4"
+            placeholder="?"
+            aria-label="max boxes"
+          />
+        </div>
+        <button class="check-btn" id="c1-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="I can fit ___ boxes along the length, ___ along the width, and ___ along the height because..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "Along 2½ ft I can fit ___ whole boxes, along 1½ ft
+            I can fit ___ whole box(es), and along 2 ft I can fit ___ whole
+            boxes. ___ × ___ × ___ = ___ boxes."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Along 2½ ft: 2 boxes. Along 1½ ft: 1 box. Along 2 ft: 2
+            boxes. 2 × 1 × 2 = 4 boxes. (The leftover space is wasted.)</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >You can only fit whole boxes. 2½ ft fits 2 boxes, 1½ ft fits 1 box,
+            2 ft fits 2 boxes. 2 × 1 × 2 = <strong>4 boxes</strong>.</span
+          >
+        </div>
+      </article>
+    </main>
+
+    <footer class="score-bar">
+      <div class="score-inner">
+        <span class="score-text"
+          ><span id="scoreCount">0</span> of
+          <span id="scoreTotal">8</span> correct</span
+        >
+        <button class="reset-btn" id="resetBtn">Start Over</button>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const ANSWERS = {
+          w1: "c",
+          w2: "c",
+          p2: "b",
+          p4: "b",
+          p5: "d",
+        };
+
+        let score = 0;
+        let total = 0;
+        const totalQ = 8;
+
+        // Level toggle
+        const levelBtns = document.querySelectorAll(".level-btn");
+        const levelDesc = document.getElementById("levelDesc");
+        const descs = {
+          0: "Step-by-step support with read-aloud and worked examples",
+          1: "Guided practice with vocabulary support",
+          2: "Grade-level practice with explanations",
+        };
+        levelBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            levelBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.body.className = (btn.dataset.level === "0") ? "level-0 level-1" : "level-" + btn.dataset.level;
+            levelDesc.textContent = descs[btn.dataset.level];
+          });
+        });
+
+        function updateProgress() {
+          const pct = Math.round((total / totalQ) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("scoreCount").textContent = score;
+        }
+
+        // MC questions
+        document.querySelectorAll(".mc-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".mc-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".mc-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => {
+              b.classList.add("locked");
+              if (b.dataset.val === ANSWERS[qId]) b.classList.add("is-correct");
+            });
+            if (!correct) selected.classList.add("is-wrong");
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // Fill-in single (P1)
+        const p1Check = document.getElementById("p1-check");
+        if (p1Check) {
+          p1Check.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const inp = card.querySelector(".fill-input");
+            const val = inp.value.trim();
+            const correct = val === inp.dataset.answer;
+            total++;
+            inp.classList.add(correct ? "is-correct" : "is-wrong");
+            inp.readOnly = true;
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+
+        // Drag and Drop (P3)
+        const bank = document.getElementById("p3-bank");
+        const zones = document.querySelectorAll(".drag-zone");
+        let draggedItem = null;
+
+        if (bank) {
+          bank.querySelectorAll(".drag-item").forEach((item) => {
+            item.addEventListener("dragstart", (e) => {
+              draggedItem = item;
+              e.dataTransfer.effectAllowed = "move";
+              setTimeout(() => (item.style.opacity = ".4"), 0);
+            });
+            item.addEventListener("dragend", () => {
+              item.style.opacity = "1";
+              draggedItem = null;
+            });
+            item.addEventListener(
+              "touchstart",
+              (e) => {
+                draggedItem = item;
+              },
+              { passive: true },
+            );
+          });
+
+          zones.forEach((zone) => {
+            zone.addEventListener("dragover", (e) => {
+              e.preventDefault();
+              zone.classList.add("over");
+            });
+            zone.addEventListener("dragleave", () =>
+              zone.classList.remove("over"),
+            );
+            zone.addEventListener("drop", (e) => {
+              e.preventDefault();
+              zone.classList.remove("over");
+              if (draggedItem) {
+                zone.appendChild(draggedItem);
+                draggedItem.classList.add("placed");
+              }
+            });
+            zone.addEventListener("click", (e) => {
+              const item = e.target.closest(".drag-item");
+              if (item) {
+                bank.appendChild(item);
+                item.classList.remove("placed");
+              }
+            });
+          });
+
+          bank.addEventListener("click", (e) => {
+            const item = e.target.closest(".drag-item");
+            if (!item) return;
+            const cat = item.dataset.cat;
+            const targetZone = document.querySelector(
+              `.drag-zone[data-cat="${cat}"]`,
+            );
+            if (targetZone) {
+              targetZone.appendChild(item);
+              item.classList.add("placed");
+            }
+          });
+
+          document
+            .getElementById("p3-check")
+            .addEventListener("click", function () {
+              total++;
+              let allCorrect = true;
+              zones.forEach((zone) => {
+                const cat = zone.dataset.cat;
+                zone.querySelectorAll(".drag-item").forEach((item) => {
+                  if (item.dataset.cat !== cat) allCorrect = false;
+                });
+                if (zone.childElementCount === 0) allCorrect = false;
+              });
+              const card = this.closest(".q-card");
+              if (allCorrect) {
+                score++;
+                card.classList.add("correct");
+              } else {
+                card.classList.add("incorrect");
+              }
+              this.disabled = true;
+              updateProgress();
+            });
+        }
+
+        // Fill-in single (C1)
+        const c1Check = document.getElementById("c1-check");
+        if (c1Check) {
+          c1Check.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const inp = card.querySelector(".fill-input");
+            const val = inp.value.trim();
+            const correct = val === inp.dataset.answer;
+            total++;
+            inp.classList.add(correct ? "is-correct" : "is-wrong");
+            inp.readOnly = true;
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+
+        // Reset
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          score = 0;
+          total = 0;
+          document.querySelectorAll(".q-card").forEach((card) => {
+            card.classList.remove("correct", "incorrect");
+          });
+          document.querySelectorAll(".mc-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".tf-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".fill-input").forEach((inp) => {
+            inp.classList.remove("is-correct", "is-wrong");
+            inp.value = "";
+            inp.readOnly = false;
+          });
+          document.querySelectorAll(".drag-item").forEach((item) => {
+            item.classList.remove("placed");
+            if (bank) bank.appendChild(item);
+          });
+          document.querySelectorAll(".drag-zone").forEach((z) => {
+            z.classList.remove("is-correct", "is-wrong");
+          });
+          document
+            .querySelectorAll(".check-btn")
+            .forEach((b) => (b.disabled = false));
+          document
+            .querySelectorAll(".explain-input")
+            .forEach((t) => (t.value = ""));
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        updateProgress();
+      })();
+    
+        // ===== Level 0 read-aloud (click any text to hear it) =====
+        (function(){
+          var raBtn = document.getElementById("readAloudBtn");
+          if(!raBtn) return;
+          var on = false;
+          function speak(t){ try{ window.speechSynthesis.cancel();
+            var u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.speak(u);}catch(e){} }
+          raBtn.addEventListener("click", function(){
+            on=!on; document.body.classList.toggle("reading", on);
+            raBtn.textContent = on ? "🔊 Tap text to hear" : "🔊 Read aloud";
+            if(!on){ try{window.speechSynthesis.cancel();}catch(e){} }
+          });
+          document.addEventListener("click", function(e){
+            if(!on || !document.body.classList.contains("level-0")) return;
+            if(e.target.closest(".level-bar")) return;
+            var el = e.target.closest("p,li,h1,h2,h3,label,.question,.prompt,.q-text,.scaffold,.sentence-frame");
+            if(el && el.textContent.trim()){ speak(el.textContent.trim()); }
+          }, true);
+        })();
+
+      </script>
+      <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>
