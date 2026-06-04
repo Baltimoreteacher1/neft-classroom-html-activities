@@ -21,6 +21,7 @@
       --shadow: 0 4px 20px rgba(23, 50, 77, 0.08);
       --google-gray: #f1f3f4;
       --google-blue: #1a73e8;
+      --theme-color: #D9795D;
     }
     * { box-sizing: border-box; }
     body {
@@ -194,11 +195,15 @@
       overflow: hidden;
     }
     
-    /* Slide Canvas: Fixed 16:9 Aspect Ratio (960x540) */
+    /* Slide Canvas: Fixed 16:9 Aspect Ratio (960x540) with subtle math grid background */
     .slide-canvas {
       width: 960px;
       height: 540px;
-      background: var(--bg);
+      background-color: var(--bg);
+      background-image: 
+        linear-gradient(rgba(31, 166, 162, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(31, 166, 162, 0.06) 1px, transparent 1px);
+      background-size: 20px 20px;
       border: 1px solid #dadce0;
       box-shadow: 0 10px 30px rgba(23, 50, 77, 0.15);
       border-radius: 8px;
@@ -208,47 +213,85 @@
       position: relative;
       transform-origin: center center;
       flex-shrink: 0;
+      padding: 24px 24px 24px 60px;
     }
     
-    /* Header & Footer bars inside slide */
-    .slide-header {
-      background: var(--navy);
-      color: var(--amber);
-      height: 54px;
+    /* Notebook Spiral Binder Gutter */
+    .notebook-spiral {
+      position: absolute;
+      left: 14px;
+      top: 24px;
+      bottom: 24px;
+      width: 24px;
       display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 20px;
-      font-family: "Outfit", sans-serif;
-      letter-spacing: 0.02em;
-      flex-shrink: 0;
-      border-bottom: 3px solid var(--teal);
+      z-index: 100;
+      pointer-events: none;
     }
-    .slide-footer {
-      background: var(--navy);
-      color: var(--white);
+    .spiral-ring {
+      width: 16px;
       height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      flex-shrink: 0;
+      background: linear-gradient(90deg, #999 0%, #e0e0e0 25%, #fff 50%, #999 75%, #555 100%);
+      border-radius: 8px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.18), -1px 1px 2px rgba(0,0,0,0.15) inset;
+      position: relative;
+    }
+    .spiral-ring::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      top: 8px;
+      width: 10px;
+      height: 16px;
+      background: #1e1e1e;
+      border-radius: 50%;
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+      z-index: -1;
+    }
+    .spiral-ring::after {
+      content: "";
+      position: absolute;
+      right: -8px;
+      top: 8px;
+      width: 10px;
+      height: 16px;
+      background: #1e1e1e;
+      border-radius: 50%;
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+      z-index: -1;
     }
     
-    /* Slide Content Frames */
+    /* Inner Slide Content Frames (No solid colored headers, fully integrated) */
     .slide-body {
       flex: 1;
-      padding: 24px;
       display: none;
-      height: calc(100% - 86px);
+      height: calc(100% - 40px);
       overflow: hidden;
+      margin-top: 10px;
     }
     .slide-body.active {
       display: flex;
       flex-direction: column;
+    }
+    
+    .slide-badge-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .slide-badge {
+      background: var(--theme-color);
+      color: var(--white);
+      font-weight: 800;
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 99px;
+      font-family: "Outfit", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 2px 4px rgba(31, 166, 162, 0.12);
     }
     
     /* Cards and Layout structures */
@@ -271,55 +314,60 @@
     
     h2.card-title {
       font-family: "Outfit", sans-serif;
-      font-size: 18px;
+      font-size: 17px;
       color: var(--navy);
       margin-top: 0;
       margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
+      font-weight: 800;
     }
     
     p.card-desc {
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 13.5px;
+      line-height: 1.5;
       color: var(--body-text);
-      margin: 0 0 16px;
+      margin: 0 0 12px;
     }
     
     /* Notice and Wonder boxes */
     .nw-container {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
     .nw-box {
-      border-radius: 8px;
-      padding: 14px;
+      border-radius: 6px;
+      padding: 16px 12px 12px;
       flex: 1;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(23,50,77,0.06);
+      border: 1px solid #dadce0;
+      margin-top: 10px;
     }
     .nw-box-notice {
-      background: var(--teal-light);
-      border-left: 4px solid var(--teal);
+      background: #F4FAF8;
+      border-color: var(--teal);
     }
     .nw-box-wonder {
-      background: var(--coral);
-      border-left: 4px solid #D9795D;
+      background: #FFF8F6;
+      border-color: #D9795D;
     }
-    .nw-box h4 { margin: 0 0 6px; font-size: 13px; color: var(--navy); font-weight: 700; }
-    .nw-box-stems { font-size: 12px; color: var(--body-text); line-height: 1.5; }
-    .nw-box-stems div { margin-bottom: 4px; }
+    .nw-box h4 { margin: 4px 0 6px; font-size: 12.5px; color: var(--navy); font-weight: 800; }
+    .nw-box-stems { font-size: 11px; color: var(--body-text); line-height: 1.4; }
+    .nw-box-stems div { margin-bottom: 3px; }
     
     .vocab-pill {
       display: inline-block;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       color: var(--teal);
       background: var(--teal-light);
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 99px;
-      margin-right: 6px;
-      margin-top: 6px;
+      margin-right: 5px;
+      margin-top: 5px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -369,7 +417,7 @@
       border: 1.5px dashed var(--teal);
       color: var(--navy);
     }
-    .vocab-card-front h3 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.05em; }
+    .vocab-card-front h3 { margin: 0; font-size: 13.5px; font-weight: 800; letter-spacing: 0.05em; }
     .vocab-card-back {
       background: var(--teal-light);
       border: 1.5px solid var(--teal);
@@ -380,43 +428,55 @@
     }
     .click-hint { font-size: 9px; color: var(--gray); margin-top: 4px; font-weight: 600; }
     
-    /* Concept Instruction Tab Styling */
+    /* File Folder Notebook Concept Tabs */
     .tabs-container {
       display: flex;
-      gap: 4px;
-      margin-bottom: 10px;
-      border-bottom: 2px solid var(--google-gray);
-      padding-bottom: 2px;
+      gap: 6px;
+      margin-bottom: 0px;
+      padding-left: 10px;
+      position: relative;
+      z-index: 10;
     }
     .tab-btn {
-      background: transparent;
-      border: none;
-      font-family: inherit;
+      background: #EBE7DB;
+      border: 1px solid #dadce0;
+      border-bottom: none;
+      font-family: "Outfit", sans-serif;
       font-size: 11px;
       font-weight: 700;
       color: var(--gray);
-      padding: 6px 12px;
+      padding: 8px 16px;
       cursor: pointer;
-      border-radius: 4px 4px 0 0;
+      border-radius: 8px 8px 0 0;
       transition: all 0.2s;
     }
     .tab-btn:hover {
       color: var(--navy);
-      background: rgba(23, 50, 77, 0.05);
+      background: #F1ECE0;
     }
     .tab-btn.active {
-      color: var(--teal);
-      border-bottom: 3.5px solid var(--teal);
-      background: var(--teal-light);
+      color: var(--navy);
+      background: var(--white);
+      border-color: #dadce0;
+      border-bottom: 2px solid var(--white);
+      padding-top: 10px;
+      margin-top: -2px;
+      box-shadow: 0 -2px 10px rgba(23,50,77,0.05);
     }
     .tab-content {
-      background: var(--white);
+      background-color: var(--white);
+      background-image: linear-gradient(rgba(31, 166, 162, 0.06) 1px, transparent 1px);
+      background-size: 100% 22px;
+      background-position: 0 12px;
       border: 1px solid #dadce0;
-      border-radius: 6px;
-      padding: 12px;
-      height: calc(100% - 35px);
+      border-radius: 8px;
+      padding: 20px 20px 20px 24px;
+      height: calc(100% - 32px);
       overflow-y: auto;
       box-shadow: var(--shadow);
+      position: relative;
+      z-index: 5;
+      line-height: 22px !important;
     }
     
     /* Visual Math Container with Canvas Overlay */
@@ -428,6 +488,7 @@
       border: 1.5px solid #dadce0;
       border-radius: 8px;
       overflow: hidden;
+      box-shadow: var(--shadow);
     }
     .canvas-overlay {
       position: absolute;
@@ -439,31 +500,51 @@
       cursor: crosshair;
     }
     
-    /* Drawing Toolbar */
+    /* Drawing Wooden Pencil Tray Toolbar */
     .drawing-toolbar {
       display: flex;
-      gap: 6px;
-      margin-top: 8px;
-      background: var(--google-gray);
-      padding: 4px;
-      border-radius: 6px;
+      gap: 10px;
+      margin-top: 10px;
+      background: linear-gradient(180deg, #e6dfcf 0%, #d8cdb4 100%);
+      border: 1px solid #c2b598;
+      border-bottom: 3px solid #ab9d7f;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+      padding: 6px 12px;
+      border-radius: 8px;
       align-items: center;
+      width: 100%;
     }
-    .tool-btn {
-      background: var(--white);
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 11px;
-      font-weight: 700;
+    .color-picker-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
       cursor: pointer;
-      color: var(--body-text);
+      border: 2px solid var(--white);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      transition: all 0.2s;
     }
-    .tool-btn.active {
-      background: var(--teal);
-      color: var(--white);
-      border-color: var(--teal);
+    .color-picker-dot:hover {
+      transform: scale(1.15);
     }
+    .color-picker-dot.active {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 2px var(--teal);
+    }
+    
+    .size-picker-dot {
+      border-radius: 50%;
+      background: var(--navy);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    .size-picker-dot:hover {
+      transform: scale(1.2);
+    }
+    .size-picker-dot.active {
+      box-shadow: 0 0 0 2px var(--teal);
+    }
+    
     .tool-btn-clear {
       background: #D9795D;
       color: var(--white);
@@ -474,21 +555,18 @@
       font-weight: 700;
       cursor: pointer;
       margin-left: auto;
+      transition: transform 0.1s;
     }
-    .drawing-toolbar select {
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      padding: 3px;
-      font-size: 11px;
-      background: var(--white);
+    .tool-btn-clear:active {
+      transform: scale(0.95);
     }
     
     /* Custom input elements styled as Google Slides text placeholders */
     .slide-input-placeholder {
       border: 1px dashed var(--gray);
       border-radius: 4px;
-      padding: 10px;
-      font-size: 13px;
+      padding: 8px;
+      font-size: 12.5px;
       font-family: inherit;
       background: #FDFDFB;
       color: var(--body-text);
@@ -507,7 +585,238 @@
       background: var(--white);
     }
     
-    /* Fullscreen present mode pacing timer & controls */
+    /* Explore Ruled Index Card with Blue/Red Lines */
+    .index-card {
+      background-color: var(--white);
+      background-image: 
+        linear-gradient(rgba(31, 166, 162, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(217, 121, 93, 0.25) 1px, transparent 1px);
+      background-size: 100% 22px, 100% 100%;
+      background-position: 0 10px, 40px 0;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 16px 16px 16px 52px !important;
+      min-height: 100px;
+      font-family: 'Hanken Grotesk', sans-serif;
+      font-size: 14px;
+      line-height: 22px !important;
+      color: var(--navy);
+      text-align: left;
+      box-shadow: 0 8px 16px rgba(23,50,77,0.08);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    /* Explore Game slide-off animations */
+    @keyframes slideOutLeft {
+      0% { transform: translateX(0) rotate(0); opacity: 1; }
+      100% { transform: translateX(-120px) rotate(-10deg); opacity: 0; }
+    }
+    @keyframes slideOutRight {
+      0% { transform: translateX(0) rotate(0); opacity: 1; }
+      100% { transform: translateX(120px) rotate(10deg); opacity: 0; }
+    }
+    @keyframes slideInNext {
+      0% { transform: translateY(10px) scale(0.95); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .slide-out-left { animation: slideOutLeft 0.3s forwards; }
+    .slide-out-right { animation: slideOutRight 0.3s forwards; }
+    .slide-in-next { animation: slideInNext 0.3s forwards; }
+    
+    /* Progress bar */
+    .sorting-progress-container {
+      width: 100%;
+      height: 5px;
+      background: #E1EAEF;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .sorting-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--teal);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+    
+    /* Sorting Bins */
+    .sorting-bin {
+      border: 2px solid var(--bin-color, var(--teal));
+      background: var(--white);
+      border-radius: 8px 8px 12px 12px;
+      padding: 18px 14px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--navy);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+      flex: 1;
+      min-width: 100px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(23,50,77,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .sorting-bin::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: var(--bin-color, var(--teal));
+    }
+    @keyframes binPulse {
+      0% { transform: translateY(0); box-shadow: 0 4px 8px rgba(23,50,77,0.06); }
+      100% { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(23,50,77,0.12); }
+    }
+    .sorting-bin:hover {
+      animation: binPulse 0.4s forwards;
+      background: var(--white);
+    }
+    
+    /* Clipboard Worked Example layout */
+    .clipboard {
+      background: linear-gradient(135deg, #c5b59a 0%, #ab9a7d 100%);
+      border: 3px solid #8e7d61;
+      border-radius: 8px;
+      padding: 36px 12px 12px 12px;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(23,50,77,0.12);
+    }
+    .clipboard::before {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 20px;
+      background: linear-gradient(180deg, #e6e8ea 0%, #b2b6b9 45%, #7f8c8d 100%);
+      border: 1px solid #7f8c8d;
+      border-radius: 4px;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.8);
+      z-index: 15;
+    }
+    .clipboard::after {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 12px;
+      background: transparent;
+      border: 3px solid #7f8c8d;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      z-index: 14;
+    }
+    .clipboard-rivets {
+      position: absolute;
+      top: 13px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 calc(50% - 32px);
+      z-index: 16;
+      pointer-events: none;
+    }
+    .clipboard-rivet {
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle at 2px 2px, #fff, #999 50%, #444 100%);
+      border-radius: 50%;
+      border: 0.5px solid #555;
+      box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    .clipboard-paper {
+      background: var(--white);
+      border: 1px solid #dadce0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      border-radius: 2px;
+      padding: 12px 0;
+      position: relative;
+    }
+    .worked-step.highlighted {
+      background: linear-gradient(100deg, rgba(242, 193, 91, 0.6) 0%, rgba(242, 193, 91, 0.45) 90%, rgba(242, 193, 91, 0.1) 100%) !important;
+      border-radius: 4px 2px 6px 3px;
+      transform: scale(1.02);
+      transition: all 0.15s ease-in-out;
+      box-shadow: inset 0 -2px 0 rgba(242, 193, 91, 0.2);
+    }
+    
+    /* Realistic sticky notes with random skew and tape effect */
+    .post-it-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      justify-content: center;
+    }
+    .sticky-note {
+      padding: 14px;
+      border-radius: 4px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .post-it-3 {
+      background-color: #FDF1B8;
+      border-left: 3px solid #E4C050;
+    }
+    .post-it-2 {
+      background-color: #D5F3ED;
+      border-left: 3px solid #1FA6A2;
+    }
+    .post-it-1 {
+      background-color: #FCDCD4;
+      border-left: 3px solid #D9795D;
+    }
+    .post-it-title {
+      font-family: "Outfit", sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .sticky-note input[type="text"] {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed rgba(23,50,77,0.25);
+      font-size: 11px;
+      font-family: inherit;
+      color: var(--navy);
+      outline: none;
+      padding: 2px 0;
+    }
+    .sticky-note input[type="text"]::placeholder {
+      color: rgba(23,50,77,0.4);
+      font-style: italic;
+    }
+    .washi-tape {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+      width: 60px;
+      height: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      pointer-events: none;
+      z-index: 15;
+      clip-path: polygon(
+        0% 20%, 5% 0%, 95% 0%, 100% 20%, 97% 40%, 100% 60%, 98% 80%, 100% 100%, 95% 90%, 5% 100%, 0% 80%, 2% 60%, 0% 40%, 2% 20%
+      );
+    }
+    
+    /* Presenter HUD */
     .presenter-hud {
       display: none;
       position: fixed;
@@ -523,12 +832,8 @@
       color: var(--white);
       z-index: 10000;
     }
-    :fullscreen ~ .presenter-hud {
-      display: flex;
-    }
-    :-webkit-full-screen ~ .presenter-hud {
-      display: flex;
-    }
+    :fullscreen ~ .presenter-hud { display: flex; }
+    :-webkit-full-screen ~ .presenter-hud { display: flex; }
     
     .hud-btn {
       background: transparent;
@@ -544,9 +849,7 @@
       justify-content: center;
       transition: background 0.2s;
     }
-    .hud-btn:hover {
-      background: rgba(255,255,255,0.15);
-    }
+    .hud-btn:hover { background: rgba(255,255,255,0.15); }
     .hud-timer {
       font-family: monospace;
       font-size: 14px;
@@ -554,52 +857,29 @@
       padding-left: 14px;
     }
     
-    /* Standard Reflection Post-It notes */
-    .post-it-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-    .post-it {
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(0,0,0,0.05);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .post-it-3 { background: var(--teal-light); }
-    .post-it-2 { background: var(--amber); opacity: 0.85; }
-    .post-it-1 { background: var(--coral); }
-    .post-it-title { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--navy); margin-bottom: 4px; }
-    .post-it input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      outline: none;
-      font-family: inherit;
-      font-size: 12px;
-      border-bottom: 1px dotted rgba(23, 50, 77, 0.2);
-    }
-    
     /* Assessment & Practice Buttons */
     .assess-row {
       display: flex;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
     .assess-btn {
       flex: 1;
-      padding: 8px;
+      padding: 7px;
       border-radius: 6px;
       border: 1.5px solid var(--gray);
       background: var(--white);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
       text-align: center;
-      transition: all 0.2s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .assess-btn:hover {
       background: var(--google-gray);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(23,50,77,0.08);
+      border-color: var(--teal);
     }
     .assess-btn.active {
       border-color: var(--teal);
@@ -618,12 +898,32 @@
     }
     .px-btn {
       flex: none;
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       padding: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+    }
+    
+    /* Subtle watermark style for slides */
+    .slide-watermark {
+      position: absolute;
+      bottom: 12px;
+      left: 24px;
+      right: 24px;
+      font-family: "Outfit", sans-serif;
+      font-size: 8px;
+      font-weight: 800;
+      color: var(--gray);
+      opacity: 0.65;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(23, 50, 77, 0.06);
+      padding-top: 6px;
     }
     
   </style>
@@ -714,24 +1014,37 @@
       <!-- The Presentation Slide -->
       <article class="slide-canvas" id="slide-canvas-element">
       
-        <!-- Inside Slide Header -->
-        <header class="slide-header" id="slide-title-bar">LESSON 9-5 · OBJECTIVES &amp; TOPIC</header>
-        
+        <!-- Notebook Spiral Gutter -->
+        <div class="notebook-spiral">
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+          <div class="spiral-ring"></div>
+        </div>
+      
         <!-- SLIDE 1: OBJECTIVES -->
         <div class="slide-body active" id="slide-1">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+            <span style="font-size:10px; color:var(--gray); font-weight:700; margin-left:auto; font-family:'Outfit';">STANDARD: 6.NS.6b</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Objectives &amp; Targets</h3>
+          
           <div class="slide-card">
-            <h2 class="card-title">🎯 Lesson Objectives</h2>
             <div style="font-size: 16px; line-height: 1.6; display: flex; flex-direction: column; gap: 16px; justify-content: center; height: 100%;">
               <div>
-                <strong style="color:var(--navy); font-size:18px;">Content Objective:</strong>
-                <p style="margin: 6px 0 0; color:var(--body-text); font-size:16px;">I can plot ordered pairs in all four quadrants of the coordinate plane.</p>
+                <strong style="color:var(--navy); font-size:16px; font-family:'Outfit';">Content Objective:</strong>
+                <p style="margin: 4px 0 0; color:var(--body-text); font-size:14.5px; font-weight:600;">I can plot ordered pairs in all four quadrants of the coordinate plane.</p>
               </div>
-              <div style="margin-top:12px;">
-                <strong style="color:var(--navy); font-size:18px;">Language Objective:</strong>
-                <p style="margin: 6px 0 0; color:var(--body-text); font-size:16px;">I can explain my work using the words quadrant, negative coordinate, reflection, and axis.</p>
-              </div>
-              <div style="margin-top:12px; border-top:1px dashed var(--teal); padding-top:12px; font-size:12px; color:var(--gray); font-weight:700;">
-                STANDARD: 6.NS.6b
+              <div style="margin-top:4px;">
+                <strong style="color:var(--navy); font-size:16px; font-family:'Outfit';">Language Objective:</strong>
+                <p style="margin: 4px 0 0; color:var(--body-text); font-size:14.5px; font-weight:600;">I can explain my work using the words quadrant, negative coordinate, reflection, and axis.</p>
               </div>
             </div>
           </div>
@@ -739,29 +1052,36 @@
         
         <!-- SLIDE 2: SCENARIO LAUNCH -->
         <div class="slide-body" id="slide-2">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Scenario Launch</h3>
+          
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📋 Expanding the Treasure Map</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">Captain Vega realized her treasure map only covered one corner of the island! She needs to expand the map in all directions — north, south, east, and west of the base camp at the origin (0, 0). Now clues can have negative coordinates: (-4, 3) means 4 units west and 3 units north. A clue at (2, -5) means 2 units east and 5 units south. Which quadrant is each clue in?</p>
+                <h2 class="card-title" style="font-size:15px; margin-bottom:8px; font-weight:800; color:var(--teal);">📋 Expanding the Treasure Map</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:var(--body-text);">Captain Vega realized her treasure map only covered one corner of the island! She needs to expand the map in all directions — north, south, east, and west of the base camp at the origin (0, 0). Now clues can have negative coordinates: (-4, 3) means 4 units west and 3 units north. A clue at (2, -5) means 2 units east and 5 units south. Which quadrant is each clue in?</p>
               </div>
               <div style="margin-top:auto;">
-                <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Vocabulary Bank (Click to insert):</strong>
-                <div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quadrant</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">ordered pair</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">negative coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">x-axis</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">y-axis</span></div>
+                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Vocabulary Bank:</strong>
+                <div style="margin-top:4px; max-height: 60px; overflow-y: auto;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quadrant</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">ordered pair</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">negative coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">x-axis</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">y-axis</span></div>
               </div>
             </div>
-            <div class="slide-card nw-container">
-              <div class="nw-box nw-box-notice" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div class="slide-card nw-container" style="border:none; background:transparent; box-shadow:none; padding:0;">
+              <div class="nw-box nw-box-notice" style="display:flex; flex-direction:column; justify-content:space-between; transform: rotate(-1deg);">
+                <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(31,166,162,0.3), rgba(31,166,162,0.3) 4px, rgba(255,255,255,0.2) 4px, rgba(255,255,255,0.2) 8px);"></div>
                 <div>
                   <h4>👀 Notice Prompts:</h4>
-                  <div class="nw-box-stems" style="margin-bottom:6px;"><div>🔹 How do you know which quadrant a point is in by looking at the signs of its coordinates?</div><div>🔹 What do negative x-values and negative y-values mean on the map?</div><div>🔹 Where is the point (0, 0) on the expanded map?</div></div>
+                  <div class="nw-box-stems" style="margin-bottom:4px;"><div>🔹 How do you know which quadrant a point is in by looking at the signs of its coordinates?</div><div>🔹 What do negative x-values and negative y-values mean on the map?</div><div>🔹 Where is the point (0, 0) on the expanded map?</div></div>
                 </div>
                 <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type what you notice here..."></textarea>
               </div>
-              <div class="nw-box nw-box-wonder" style="display:flex; flex-direction:column; justify-content:space-between;">
+              <div class="nw-box nw-box-wonder" style="display:flex; flex-direction:column; justify-content:space-between; transform: rotate(1deg);">
+                <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(217,121,93,0.3), rgba(217,121,93,0.3) 4px, rgba(255,255,255,0.2) 4px, rgba(255,255,255,0.2) 8px);"></div>
                 <div>
                   <h4>💭 Wonder Prompts:</h4>
-                  <div class="nw-box-stems" style="margin-bottom:6px;"><div>🔹 Can a point be in more than one quadrant?</div><div>🔹 What quadrant is a point on if one of its coordinates is zero?</div></div>
+                  <div class="nw-box-stems" style="margin-bottom:4px;"><div>🔹 Can a point be in more than one quadrant?</div><div>🔹 What quadrant is a point on if one of its coordinates is zero?</div></div>
                 </div>
                 <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type what you wonder here..."></textarea>
               </div>
@@ -771,16 +1091,21 @@
         
         <!-- SLIDE 3: CONCEPT INTRO & FLOW -->
         <div class="slide-body" id="slide-3">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Concept Introduction</h3>
+          
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">💡 How do you plot points in all four quadrants?</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:12px;">The coordinate plane has four parts called quadrants. A negative coordinate means you move left (for x) or down (for y) from the origin instead of right or up.</p>
+                <h2 class="card-title" style="font-size:15px; margin-bottom:8px; font-weight:800; color:var(--teal);">💡 How do you plot points in all four quadrants?</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">The coordinate plane has four parts called quadrants. A negative coordinate means you move left (for x) or down (for y) from the origin instead of right or up.</p>
               </div>
               
-              <div style="background:var(--teal-light); border:1.5px solid var(--teal); border-radius:8px; padding:12px; margin-top:auto;">
-                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Key Idea:</strong>
-                <p style="margin:4px 0 0; font-size:12.5px; font-weight:700; color:var(--navy); line-height:1.4;">The signs of (x, y) tell you the quadrant: (+,+) is I, (-,+) is II, (-,-) is III, (+,-) is IV.</p>
+              <div style="background:var(--teal-light); border:1.5px solid var(--teal); border-radius:8px; padding:10px; margin-top:auto;">
+                <strong style="font-size:9.5px; color:var(--navy); text-transform:uppercase; letter-spacing:0.02em;">Key Idea:</strong>
+                <p style="margin:2px 0 0; font-size:12px; font-weight:700; color:var(--navy); line-height:1.3;">The signs of (x, y) tell you the quadrant: (+,+) is I, (-,+) is II, (-,-) is III, (+,-) is IV.</p>
               </div>
             </div>
             
@@ -799,12 +1124,16 @@
         
         <!-- SLIDE 4: VOCABULARY CARD GRID -->
         <div class="slide-body" id="slide-4">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Vocabulary</h3>
+          
           <div class="slide-grid-2">
-            <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%;">
-              <h2 class="card-title">📝 Lesson Vocabulary</h2>
-              <p class="card-desc" style="font-size:13px; line-height:1.5;">Click each card to flip and review its definition, Spanish translation, and visual examples. Compare notes with your partner.</p>
-              <div style="background:var(--teal-light); border-radius:8px; padding:12px; font-size:11.5px; color:var(--navy); font-weight:600; line-height:1.4;">
-                💡 Multi-language terms included. Discuss how each concept works in a math sentence!
+            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; height: 100%;">
+              <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin:0;">Click each flashcard on the right to flip and reveal its definition, Spanish translation, and visual examples.</p>
+              <div style="background:var(--teal-light); border-radius:8px; padding:10px; font-size:11px; color:var(--navy); font-weight:700; line-height:1.4;">
+                💡 Differentiated multi-language support. Use these keywords in your team discourse!
               </div>
             </div>
             <div class="vocab-grid">
@@ -879,38 +1208,50 @@
         
         <!-- SLIDE 5: VISUAL MODEL WITH CANVAS OVERLAY -->
         <div class="slide-body" id="slide-5">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Modeling Workspace</h3>
+          
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📐 Modeling Workspace</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.4;">Use the drawing tools to annotate, label axes, partition lines, or write equations directly onto the math model representation.</p>
+                <p class="card-desc" style="font-size:12px; line-height:1.4; margin:0;">Use the drawing tray below to select pen colors, size, or erase. Draw directly on the visual math card to annotate findings.</p>
               </div>
               
-              <!-- Draw Toolbar -->
+              <!-- TpT Stylized Wooden Pencil Tray Toolbar -->
               <div class="drawing-toolbar">
-                <button class="tool-btn active" id="btn-draw" onclick="setDrawingTool('draw')">✏️ Draw</button>
-                <button class="tool-btn" id="btn-erase" onclick="setDrawingTool('erase')">🧽 Erase</button>
-                <select id="select-color" onchange="setDrawingColor(this.value)">
-                  <option value="#17324D">Navy</option>
-                  <option value="#1FA6A2">Teal</option>
-                  <option value="#F2C15B">Amber</option>
-                  <option value="#D9795D">Coral</option>
-                  <option value="#000000">Black</option>
-                </select>
-                <select id="select-size" onchange="setDrawingSize(this.value)">
-                  <option value="2">Thin</option>
-                  <option value="4" selected>Medium</option>
-                  <option value="8">Thick</option>
-                </select>
+                <div style="display:flex; gap:5px; align-items:center;">
+                  <button class="assess-btn px-btn active" id="btn-draw" onclick="setDrawingTool('draw')" title="Pen" style="width:26px; height:26px; font-size:11px;">✏️</button>
+                  <button class="assess-btn px-btn" id="btn-highlighter" onclick="setDrawingTool('highlight')" title="Highlighter" style="width:26px; height:26px; font-size:11px;">🖍️</button>
+                  <button class="assess-btn px-btn" id="btn-erase" onclick="setDrawingTool('erase')" title="Eraser" style="width:26px; height:26px; font-size:11px;">🧽</button>
+                  <button class="assess-btn px-btn" id="btn-undo" onclick="undoLast()" title="Undo" style="width:26px; height:26px; font-size:11px;">↩️</button>
+                </div>
+                
+                <!-- Color Picker Dots -->
+                <div style="display:flex; gap:5px; align-items:center; border-left:1px solid #d3cbb5; padding-left:8px;">
+                  <div class="color-picker-dot active" style="background:#17324D;" onclick="setDrawingColor('#17324D', this)"></div>
+                  <div class="color-picker-dot" style="background:#1FA6A2;" onclick="setDrawingColor('#1FA6A2', this)"></div>
+                  <div class="color-picker-dot" style="background:#F2C15B;" onclick="setDrawingColor('#F2C15B', this)"></div>
+                  <div class="color-picker-dot" style="background:#D9795D;" onclick="setDrawingColor('#D9795D', this)"></div>
+                  <div class="color-picker-dot" style="background:#000000;" onclick="setDrawingColor('#000000', this)"></div>
+                </div>
+                
+                <!-- Size Dots -->
+                <div style="display:flex; gap:6px; align-items:center; border-left:1px solid #d3cbb5; padding-left:8px;">
+                  <div class="size-picker-dot active" style="width:6px; height:6px;" onclick="setDrawingSize(2, this)" title="Thin"></div>
+                  <div class="size-picker-dot" style="width:10px; height:10px;" onclick="setDrawingSize(5, this)" title="Medium"></div>
+                  <div class="size-picker-dot" style="width:14px; height:14px;" onclick="setDrawingSize(10, this)" title="Thick"></div>
+                </div>
+                
                 <button class="tool-btn-clear" onclick="clearDrawingCanvas()">Clear</button>
               </div>
             </div>
+            
             <div class="math-visual-container">
-              <!-- Background SVG visual -->
               <div style="position: absolute; inset: 0; z-index: 1;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="100" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="160" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="220" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="280" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="340" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
               </div>
-              <!-- Transparent overlay canvas for student drawing -->
               <canvas id="math-canvas" width="440" height="240" class="canvas-overlay"></canvas>
             </div>
           </div>
@@ -918,35 +1259,43 @@
         
         <!-- SLIDE 6: INTERACTIVE EXPLORE ACTIVITY -->
         <div class="slide-body" id="slide-6">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Explore Activity</h3>
+          
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">👥 Explore Activity</h2>
-                <p class="card-desc" style="font-size:12.5px; margin-bottom:8px;" id="explore-instructions">Plot each treasure clue on the expanded map and identify which quadrant it falls in.</p>
+                <!-- Progress Container -->
+                <div class="sorting-progress-container">
+                  <div id="sorting-progress-bar" class="sorting-progress-bar"></div>
+                </div>
+                <p class="card-desc" style="font-size:12px; margin-bottom:8px; line-height:1.4;" id="explore-instructions">Plot each treasure clue on the expanded map and identify which quadrant it falls in.</p>
                 
-                <!-- Interactive Sorting Game -->
-                <div id="sorting-game-container" style="background:var(--google-gray); padding:12px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:130px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px;">
-                  <div id="sorting-card" style="background:var(--white); padding:8px 14px; border-radius:6px; border:1.5px solid var(--teal); font-weight:700; font-size:13.5px; color:var(--navy); box-shadow:var(--shadow); width:90%; min-height:48px; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.3;">
-                    <!-- Active Card Text -->
+                <!-- Ruled Lined Index Card Sorting Game -->
+                <div id="sorting-game-container" style="background:var(--google-gray); padding:10px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:120px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px;">
+                  <div id="sorting-card" class="index-card" style="width:95%;">
+                    <!-- Active Index Card Text -->
                   </div>
                   <div id="sorting-buttons" style="display:flex; gap:8px; justify-content:center; width:100%; flex-wrap:wrap;">
-                    <!-- Category buttons loaded dynamically -->
+                    <!-- Category bins loaded dynamically -->
                   </div>
-                  <div id="sorting-feedback" style="font-size:11px; font-weight:700; min-height:16px;"></div>
+                  <div id="sorting-feedback" style="font-size:10px; font-weight:700; min-height:14px;"></div>
                 </div>
               </div>
               
-              <div style="margin-top:6px;">
-                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
-                <div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quadrant</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">positive</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">negative</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">x-coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">y-coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">left</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">right</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">up</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">down</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">origin</span></div>
+              <div style="margin-top:4px;">
+                <strong style="font-size:9.5px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
+                <div style="margin-top:2px; max-height: 45px; overflow-y: auto;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quadrant</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">positive</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">negative</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">x-coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">y-coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">left</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">right</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">up</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">down</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">origin</span></div>
               </div>
             </div>
             
             <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">✍️ Explore Discourse</h2>
-                <p style="font-size:11.5px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.4;">How do the signs of the x- and y-coordinates tell you which quadrant a point is in?</p>
-                <div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>In Quadrant ___, the x-coordinate is ___ and the y-coordinate is ___. I know (-3, -4) is in Quadrant ___ because both coordinates are ___.</div>
+                <h2 class="card-title" style="font-size:14px; margin-bottom:6px; color:var(--navy);">✍️ Explore Discourse</h2>
+                <p style="font-size:11px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">How do the signs of the x- and y-coordinates tell you which quadrant a point is in?</p>
+                <div style="font-size:9.5px; font-style:italic; color:var(--body-text); background:var(--white); padding:4px 6px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>In Quadrant ___, the x-coordinate is ___ and the y-coordinate is ___. I know (-3, -4) is in Quadrant ___ because both coordinates are ___.</div>
               </div>
               <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
             </div>
@@ -955,30 +1304,45 @@
         
         <!-- SLIDE 7: PRACTICE PROBLEM -->
         <div class="slide-body" id="slide-7">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Practice Challenge</h3>
           
       <div class="slide-grid-2">
-        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+        <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; position:relative;">
           <div>
-            <h2 class="card-title" style="color:var(--amber);">⚠️ Find the Quadrant Error</h2>
-            <p class="card-desc" style="font-size:12px; margin-bottom:8px; line-height:1.4;">Analyze the student's work on the right. Which step contains the error, and how would you correct it?</p>
-            <div style="border:1.5px solid #dadce0; border-radius:6px; background:var(--white); overflow:hidden;">
-              <div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+            <div class="slide-badge-row" style="display:flex; align-items:center; margin-bottom:8px;">
+              <span class="slide-badge" style="background:var(--amber); color:var(--navy); font-weight:800; font-size:10px; padding:3px 8px; border-radius:99px; font-family:'Outfit'; text-transform:uppercase; letter-spacing:0.05em; display:inline-flex; align-items:center; gap:4px;">⚠️ ERROR ANALYSIS</span>
+            </div>
+            <h2 class="card-title" style="font-size:16px; margin: 4px 0 6px;">Find the Quadrant Error</h2>
+            <p class="card-desc" style="font-size:11.5px; margin-bottom:8px; line-height:1.4;">Analyze the worked steps on the clipboard. Hover over a step button below to highlight its line, select the incorrect step, and justify your fix.</p>
+            
+            <!-- Clipboard Frame with Wood kraft backboard and paper sheet sheet inside -->
+            <div class="clipboard">
+              <div class="clipboard-rivets">
+                <div class="clipboard-rivet"></div>
+                <div class="clipboard-rivet"></div>
+              </div>
+              <div class="clipboard-paper">
+                <div class="worked-step" id="worked-step-1" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-weight:700; color:var(--navy);">Problem:</span>
-        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">Identify the quadrant for (-3, -5)</span>
-      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">Identify the quadrant for (-3, -5)</span>
+      </div><div class="worked-step" id="worked-step-2" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-weight:700; color:var(--navy);">Student thinking:</span>
-        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">The x is -3, so I go left 3. The y is -5, so I go up 5.</span>
-      </div><div class="worked-step" style="font-size:11px; padding:4px 8px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">The x is -3, so I go left 3. The y is -5, so I go up 5.</span>
+      </div><div class="worked-step" id="worked-step-3" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-weight:700; color:var(--navy);">Student answer:</span>
-        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px;">(-3, -5) is in Quadrant II</span>
+        <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">(-3, -5) is in Quadrant II</span>
       </div>
+              </div>
             </div>
           </div>
           
           <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
             <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
             <div style="display:flex; gap:6px;">
-              <button class="assess-btn px-btn" id="btn-errstep-1" onclick="checkErrorStep(1, 1)">1</button><button class="assess-btn px-btn" id="btn-errstep-2" onclick="checkErrorStep(2, 1)">2</button><button class="assess-btn px-btn" id="btn-errstep-3" onclick="checkErrorStep(3, 1)">3</button>
+              <button class="assess-btn px-btn" id="btn-errstep-1" onmouseover="highlightWorkedStep(1)" onmouseout="clearStepHighlight(1)" onclick="checkErrorStep(1, 1)">1</button><button class="assess-btn px-btn" id="btn-errstep-2" onmouseover="highlightWorkedStep(2)" onmouseout="clearStepHighlight(2)" onclick="checkErrorStep(2, 1)">2</button><button class="assess-btn px-btn" id="btn-errstep-3" onmouseover="highlightWorkedStep(3)" onmouseout="clearStepHighlight(3)" onclick="checkErrorStep(3, 1)">3</button>
             </div>
             <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
           </div>
@@ -990,7 +1354,7 @@
             <textarea id="practice-fix-work" class="slide-input-placeholder" rows="5" placeholder="Explain the error and write the correct calculation steps here..."></textarea>
           </div>
           <button class="btn-present" onclick="revealPracticeSolution()" style="align-self:flex-end; padding:6px 12px; font-size:11px; margin-top:6px;">Reveal Solution</button>
-          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:10px; line-height:1.4; color:var(--body-text); margin-top:6px;">
+          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:10px; line-height:1.4; color:var(--body-text); margin-top:6px; box-shadow:var(--shadow);">
             <strong>Correct Work:</strong> A negative y-coordinate means DOWN, not up. Go left 3 and DOWN 5. The point (-3, -5) is in Quadrant III (both negative), not Quadrant II.
           </div>
         </div>
@@ -1000,22 +1364,27 @@
         
         <!-- SLIDE 8: REAL-WORLD CONNECTION -->
         <div class="slide-body" id="slide-8">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Real-World Connection</h3>
+          
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
               <div>
-                <h2 class="card-title">🌍 Math in the Wild</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">A city uses a coordinate grid to map locations. City Hall is at the origin (0, 0). The library is at (-3, 4), the park is at (5, -2), the school is at (2, 3), and the hospital is at (-4, -1).</p>
+                <h2 class="card-title" style="font-size:15px; margin-bottom:8px; font-weight:800; color:var(--teal);">🌍 Math in the Wild</h2>
+                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:var(--body-text);">A city uses a coordinate grid to map locations. City Hall is at the origin (0, 0). The library is at (-3, 4), the park is at (5, -2), the school is at (2, 3), and the hospital is at (-4, -1).</p>
               </div>
               <div style="margin-top:auto;">
-                <strong style="font-size:10px; color:var(--gray); text-transform:uppercase;">Keyword Bank (Click to insert):</strong>
-                <div style="margin-top:4px;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quadrant</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">positive</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">negative</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">left</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">right</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">above</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">below</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">origin</span></div>
+                <strong style="font-size:9.5px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
+                <div style="margin-top:2px; max-height: 45px; overflow-y: auto;"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quadrant</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">positive</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">negative</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">coordinate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">left</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">right</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">above</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">below</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">origin</span></div>
               </div>
             </div>
             <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height:100%;">
               <div>
-                <h2 class="card-title">✍️ Connection Reasoning</h2>
-                <p style="font-size:12px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">How do four-quadrant coordinates help a city map locations in every direction from the center?</p>
-                <div style="font-size:10px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:8px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>The library is in Quadrant ___ because its x is ___ and its y is ___. The park is in Quadrant ___ because ___. Four-quadrant coordinates help because ___.</div>
+                <h2 class="card-title" style="font-size:14px; margin-bottom:6px; color:var(--navy);">✍️ Connection Reasoning</h2>
+                <p style="font-size:11px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">How do four-quadrant coordinates help a city map locations in every direction from the center?</p>
+                <div style="font-size:9.5px; font-style:italic; color:var(--body-text); background:var(--white); padding:4px 6px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>The library is in Quadrant ___ because its x is ___ and its y is ___. The park is in Quadrant ___ because ___. Four-quadrant coordinates help because ___.</div>
               </div>
               <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection explanation here..."></textarea>
             </div>
@@ -1024,19 +1393,34 @@
         
         <!-- SLIDE 9: REFLECTION & EXIT TICKET -->
         <div class="slide-body" id="slide-9">
+          <div class="slide-badge-row">
+            <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🗺️ TREASURE MAP</span>
+          </div>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Reflection &amp; Exit Ticket</h3>
+          
           <div class="slide-grid-2">
-            <div class="slide-card" style="justify-content:space-between; height: 100%;">
-              <h2 class="card-title">🤔 3-2-1 Reflection</h2>
+            <div class="slide-card" style="justify-content:space-between; height: 100%; border:none; background:transparent; box-shadow:none; padding:0;">
+              <!-- TpT Cozy Overlapping Sticky Notes -->
               <div class="post-it-grid">
-                <div class="post-it post-it-3">
+                <div class="sticky-note post-it-3" style="transform: rotate(-1.5deg);">
+                  <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(242,193,91,0.4), rgba(242,193,91,0.4) 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px);"></div>
                   <div class="post-it-title">3 Things I learned:</div>
-                  <input type="text" id="ref-3-1" placeholder="1. ..." />
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <input type="text" id="ref-3-1" placeholder="1. ..." />
+                    <input type="text" id="ref-3-2" placeholder="2. ..." />
+                    <input type="text" id="ref-3-3" placeholder="3. ..." />
+                  </div>
                 </div>
-                <div class="post-it post-it-2">
+                <div class="sticky-note post-it-2" style="transform: rotate(2deg); margin-top: -5px;">
+                  <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(31,166,162,0.4), rgba(31,166,162,0.4) 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px);"></div>
                   <div class="post-it-title">2 Connections I made:</div>
-                  <input type="text" id="ref-2-1" placeholder="1. ..." />
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <input type="text" id="ref-2-1" placeholder="1. ..." />
+                    <input type="text" id="ref-2-2" placeholder="2. ..." />
+                  </div>
                 </div>
-                <div class="post-it post-it-1">
+                <div class="sticky-note post-it-1" style="transform: rotate(-1deg); margin-top: -5px;">
+                  <div class="washi-tape" style="background: repeating-linear-gradient(45deg, rgba(217,121,93,0.4), rgba(217,121,93,0.4) 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px);"></div>
                   <div class="post-it-title">1 Question I still have:</div>
                   <input type="text" id="ref-1-1" placeholder="1. ..." />
                 </div>
@@ -1045,19 +1429,23 @@
             
             <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title">📝 Exit Ticket</h2>
+                <h2 class="card-title" style="font-size:15px; margin-bottom:4px; font-weight:800; color:var(--navy);">📝 Exit Ticket</h2>
                 
-      <div style="margin-top:6px;">
+      <div style="margin-top:2px;">
         <p style="font-size:11.5px; font-weight:700; margin:0 0 6px; color:var(--navy); line-height:1.3;">A point has a negative x-coordinate and a negative y-coordinate. Which quadrant is it in?</p>
         <div style="margin-top:4px;">
-          <button class="assess-btn exit-btn" id="btn-exit-0" onclick="checkExitTicket(0, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
-        A) Quadrant I
-      </button><button class="assess-btn exit-btn" id="btn-exit-1" onclick="checkExitTicket(1, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
-        B) Quadrant II
-      </button><button class="assess-btn exit-btn" id="btn-exit-2" onclick="checkExitTicket(2, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
-        C) Quadrant III
-      </button><button class="assess-btn exit-btn" id="btn-exit-3" onclick="checkExitTicket(3, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:block; width:100%; font-weight:600; line-height:1.3;">
-        D) Quadrant IV
+          <button class="assess-btn exit-btn" id="btn-exit-0" onclick="checkExitTicket(0, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.3; gap:8px;">
+        <span style="background:var(--google-gray); color:var(--navy); width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:9px;">A</span>
+        <span style="flex:1;">Quadrant I</span>
+      </button><button class="assess-btn exit-btn" id="btn-exit-1" onclick="checkExitTicket(1, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.3; gap:8px;">
+        <span style="background:var(--google-gray); color:var(--navy); width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:9px;">B</span>
+        <span style="flex:1;">Quadrant II</span>
+      </button><button class="assess-btn exit-btn" id="btn-exit-2" onclick="checkExitTicket(2, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.3; gap:8px;">
+        <span style="background:var(--google-gray); color:var(--navy); width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:9px;">C</span>
+        <span style="flex:1;">Quadrant III</span>
+      </button><button class="assess-btn exit-btn" id="btn-exit-3" onclick="checkExitTicket(3, 2)" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.3; gap:8px;">
+        <span style="background:var(--google-gray); color:var(--navy); width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:9px;">D</span>
+        <span style="flex:1;">Quadrant IV</span>
       </button>
         </div>
         <div id="exit-ticket-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
@@ -1065,20 +1453,23 @@
     
               </div>
               
-              <div style="margin-top:6px; border-top: 1px dashed var(--teal); padding-top:6px;">
-                <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
+              <div style="margin-top:4px; border-top: 1px dashed var(--teal); padding-top:4px;">
+                <strong style="font-size:9.5px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
                 <div class="assess-row">
                   <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
-                  <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost There 🧭</button>
-                  <button class="assess-btn" id="btn-help" onclick="setSelfAssessment('help')">Need Help 🆘</button>
+                  <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost 🧭</button>
+                  <button class="assess-btn" id="btn-help" onclick="setSelfAssessment('help')">Help 🆘</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Inside Slide Footer -->
-        <footer class="slide-footer">Neft Teacher · Grade 6 Math · Unit 9 · Lesson 9-5</footer>
+        <!-- Subtle Slide Watermark -->
+        <div class="slide-watermark">
+          <span>Grade 6 Unit 9 · Lesson 9-5</span>
+          <span>STANDARD: 6.NS.6b</span>
+        </div>
         
       </article>
       
@@ -1191,10 +1582,8 @@
         el.classList.toggle('active', (index + 1) === num);
       });
       
-      document.getElementById('slide-title-bar').textContent = slideTitles[num - 1];
       document.getElementById('hud-page-indicator').textContent = num + ' / ' + totalSlides;
       
-      // Delay redraw canvas context
       if (num === 5) {
         setTimeout(resizeSlides, 50);
       }
@@ -1235,10 +1624,10 @@
         }
       });
       
-      let contentHtml = '<h4 style="margin: 0 0 8px 0; color:var(--navy); font-size:13.5px; font-weight:700;">' + data.title + '</h4>';
+      let contentHtml = '<h4 style="margin: 0 0 8px 0; color:var(--navy); font-size:13px; font-weight:800;">' + data.title + '</h4>';
       contentHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 11.5px; line-height: 1.5; color: var(--body-text);">';
       data.lines.forEach(line => {
-        contentHtml += '<li style="margin-bottom: 6px;">' + line + '</li>';
+        contentHtml += '<li style="margin-bottom: 5px;">' + line + '</li>';
       });
       contentHtml += '</ul>';
       
@@ -1247,7 +1636,7 @@
       saveWork();
     }
     
-    // Explore Activity sorting game logic
+    // Explore Activity sorting game logic with index-card stack slide animations
     function initSortingGame() {
       const container = document.getElementById('sorting-game-container');
       if (!container) return;
@@ -1264,10 +1653,16 @@
       const card = document.getElementById('sorting-card');
       const buttonsDiv = document.getElementById('sorting-buttons');
       const feedbackDiv = document.getElementById('sorting-feedback');
+      const progressBar = document.getElementById('sorting-progress-bar');
       if (!card) return;
       
+      // Update progress bar
+      const progressPercent = (currentExploreIdx / exploreItems.length) * 100;
+      if (progressBar) progressBar.style.width = progressPercent + '%';
+      
       if (currentExploreIdx >= exploreItems.length) {
-        card.innerHTML = "🎉 Sorting Complete!";
+        card.innerHTML = "🎉 Sorting Activity Complete!";
+        card.className = "index-card"; // remove animations
         card.style.borderColor = "var(--teal)";
         card.style.background = "var(--teal-light)";
         buttonsDiv.innerHTML = '<button class="assess-btn" onclick="resetSortingGame()" style="max-width:120px; padding:6px; font-size:11px;">Reset Game</button>';
@@ -1278,13 +1673,16 @@
       
       const activeItem = exploreItems[currentExploreIdx];
       card.innerHTML = activeItem.text;
+      card.className = "index-card slide-in-next";
       card.style.borderColor = "var(--teal)";
       card.style.background = "var(--white)";
       feedbackDiv.textContent = "";
       
       let btnsHtml = "";
-      exploreCats.forEach(cat => {
-        btnsHtml += '<button class="assess-btn" onclick="sortActiveItem(\'' + cat.id + '\')" style="font-size:11px; padding:6px 12px; flex:1; min-width:85px; font-weight:700;">' + cat.label + '</button>';
+      const binColors = ['var(--teal)', 'var(--theme-color)', '#D9795D', 'var(--navy)'];
+      exploreCats.forEach((cat, idx) => {
+        const color = binColors[idx % binColors.length];
+        btnsHtml += '<button class="sorting-bin" style="--bin-color: ' + color + ';" onclick="sortActiveItem('' + cat.id + '')">' + cat.label + '</button>';
       });
       buttonsDiv.innerHTML = btnsHtml;
     }
@@ -1292,17 +1690,22 @@
     function sortActiveItem(catId) {
       const activeItem = exploreItems[currentExploreIdx];
       const feedbackDiv = document.getElementById('sorting-feedback');
+      const card = document.getElementById('sorting-card');
       
       studentExploreSorted[activeItem.id] = catId;
       
-      if (activeItem.catId === "" || activeItem.catId === catId) {
+      const isCorrect = (activeItem.catId === "" || activeItem.catId === catId);
+      
+      if (isCorrect) {
         feedbackDiv.textContent = "Correct! ✓";
         feedbackDiv.style.color = "var(--teal)";
-        document.getElementById('sorting-card').style.background = "var(--teal-light)";
+        card.style.background = "var(--teal-light)";
+        card.className = "index-card slide-out-right";
       } else {
-        feedbackDiv.textContent = "Incorrect. Try again! ✕";
+        feedbackDiv.textContent = "Incorrect! ✕";
         feedbackDiv.style.color = "#D9795D";
-        document.getElementById('sorting-card').style.background = "var(--coral)";
+        card.style.background = "var(--coral)";
+        card.className = "index-card slide-out-left";
       }
       
       saveWork();
@@ -1310,7 +1713,7 @@
       setTimeout(() => {
         currentExploreIdx++;
         renderActiveExploreCard();
-      }, 750);
+      }, 450);
     }
     
     function resetSortingGame() {
@@ -1322,7 +1725,17 @@
       saveWork();
     }
     
-    // Practice slide checking
+    // Practice slide checking & dynamic step highlighting
+    function highlightWorkedStep(stepNum) {
+      const line = document.getElementById('worked-step-' + stepNum);
+      if (line) line.classList.add('highlighted');
+    }
+    
+    function clearStepHighlight(stepNum) {
+      const line = document.getElementById('worked-step-' + stepNum);
+      if (line) line.classList.remove('highlighted');
+    }
+    
     function checkErrorStep(selected, correct) {
       studentErrStep = selected;
       const feedback = document.getElementById('error-step-feedback');
@@ -1335,7 +1748,7 @@
       const btn = document.getElementById('btn-errstep-' + selected);
       if (selected === correct) {
         btn.classList.add('correct');
-        feedback.textContent = 'Correct step identified! Click Reveal Solution to see details. ✓';
+        feedback.textContent = 'Correct step identified! Click Reveal Solution to check reasoning. ✓';
         feedback.style.color = 'var(--teal)';
       } else {
         btn.classList.add('incorrect');
@@ -1359,6 +1772,7 @@
       
       document.querySelectorAll('.mc-btn').forEach(btn => {
         btn.classList.remove('correct', 'incorrect');
+        btn.style.borderColor = '';
       });
       
       const btn = document.getElementById('btn-choice-' + selected);
@@ -1538,7 +1952,7 @@
     }
     
     // -----------------------------------------------------------------
-    // HTML5 DRAWING CANVAS SYSTEM
+    // HTML5 DRAWING CANVAS SYSTEM WITH UNDO STACK HISTORY
     // -----------------------------------------------------------------
     const canvas = document.getElementById('math-canvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
@@ -1547,6 +1961,36 @@
     let drawMode = 'draw';
     let drawColor = '#17324D';
     let drawSize = 4;
+    
+    const drawHistory = [];
+    const maxHistory = 15;
+    
+    function saveHistory() {
+      if (!canvas || !ctx) return;
+      if (drawHistory.length >= maxHistory) {
+        drawHistory.shift();
+      }
+      drawHistory.push(canvas.toDataURL());
+    }
+    
+    function undoLast() {
+      if (!canvas || !ctx || drawHistory.length === 0) return;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const prevState = drawHistory.pop();
+      
+      if (drawHistory.length > 0) {
+        const prevImg = new Image();
+        prevImg.src = drawHistory[drawHistory.length - 1];
+        prevImg.onload = () => {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.drawImage(prevImg, 0, 0);
+          saveWork();
+        };
+      } else {
+        saveWork();
+      }
+    }
     
     function getMousePos(e) {
       if (!canvas) return { x: 0, y: 0 };
@@ -1562,6 +2006,7 @@
     
     function startDrawing(e) {
       if (!ctx) return;
+      saveHistory(); // Save state before starting stroke
       drawing = true;
       ctx.beginPath();
       const pos = getMousePos(e);
@@ -1569,20 +2014,33 @@
       e.preventDefault();
     }
     
+    function hexToRgba(hex, alpha) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+    }
+
     function draw(e) {
       if (!drawing || !ctx) return;
       const pos = getMousePos(e);
       
       ctx.lineTo(pos.x, pos.y);
-      ctx.strokeStyle = drawMode === 'erase' ? '#FFFFFF' : drawColor;
-      ctx.lineWidth = drawSize;
-      ctx.lineCap = 'round';
+      ctx.lineCap = drawMode === 'highlight' ? 'square' : 'round';
       ctx.lineJoin = 'round';
       
       if (drawMode === 'erase') {
         ctx.globalCompositeOperation = 'destination-out';
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = drawSize * 2.5;
+      } else if (drawMode === 'highlight') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = hexToRgba(drawColor, 0.45);
+        ctx.lineWidth = drawSize * 3.5;
       } else {
         ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = drawColor;
+        ctx.lineWidth = drawSize;
       }
       
       ctx.stroke();
@@ -1610,24 +2068,33 @@
     function setDrawingTool(mode) {
       drawMode = mode;
       const dBtn = document.getElementById('btn-draw');
+      const hBtn = document.getElementById('btn-highlighter');
       const eBtn = document.getElementById('btn-erase');
       if (dBtn && eBtn) {
         dBtn.classList.toggle('active', mode === 'draw');
+        if (hBtn) hBtn.classList.toggle('active', mode === 'highlight');
         eBtn.classList.toggle('active', mode === 'erase');
       }
     }
     
-    function setDrawingColor(color) {
+    function setDrawingColor(color, el) {
       drawColor = color;
-      setDrawingTool('draw');
+      if (drawMode !== 'highlight') {
+        setDrawingTool('draw');
+      }
+      document.querySelectorAll('.color-picker-dot').forEach(dot => dot.classList.remove('active'));
+      if (el) el.classList.add('active');
     }
     
-    function setDrawingSize(size) {
+    function setDrawingSize(size, el) {
       drawSize = Number(size);
+      document.querySelectorAll('.size-picker-dot').forEach(dot => dot.classList.remove('active'));
+      if (el) el.classList.add('active');
     }
     
     function clearDrawingCanvas() {
       if (ctx && canvas) {
+        saveHistory();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         saveWork();
       }
