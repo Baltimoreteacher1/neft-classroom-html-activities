@@ -823,6 +823,15 @@
 
     // Decide what to show on load: returning student (this browser) vs new.
     _bootstrapSession: function () {
+      // On full-screen interactive games, never auto-open the panel — it would
+      // cover the gameplay. The small floating launcher stays available.
+      var isGame = safe(
+        function () {
+          return /\/games\//.test(location.pathname || "");
+        },
+        "isGame",
+        false,
+      );
       var lastCode = safe(
         function () {
           return localStorage.getItem(
@@ -837,9 +846,9 @@
         var self = this;
         this._loadAndRestore(lastCode, true).then(function (ok) {
           if (ok) showToast(self, "Welcome back — your work was restored.");
-          else openPanel(self); // session vanished; let them choose
+          else if (!isGame) openPanel(self); // session vanished; let them choose
         });
-      } else if (this.cfg.autoStart) {
+      } else if (this.cfg.autoStart && !isGame) {
         openPanel(this); // first visit: show Start New / Continue with Code
       }
     },

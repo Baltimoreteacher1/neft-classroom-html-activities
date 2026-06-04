@@ -469,6 +469,22 @@ export default {
     dialSprite.position.set(0, 3.0, -TRACK_LEN / 2 + 6);
     group.add(dialSprite);
 
+    // The in-world text billboards used to project up over the DOM HUD and
+    // garble the directions. Keep them hidden — the problem + live answer now
+    // read from the crisp engine HUD panel. Also hide the clarity kit's
+    // duplicate objective pill so there is ONE clean problem display.
+    cardSprite.visible = false;
+    dialSprite.visible = false;
+    if (!document.getElementById("u3-hud-fix")) {
+      const hf = document.createElement("style");
+      hf.id = "u3-hud-fix";
+      // Hide the clarity kit's persistent HUD pills (objective/target/level) —
+      // the engine HUD already shows the task, live answer, and level, and the
+      // two HUD strips were overlapping. Keep the "?" help button + overlays.
+      hf.textContent = ".ck-chip{display:none !important;}";
+      document.head.appendChild(hf);
+    }
+
     function disposeSprite(spr) {
       if (!spr) return;
       group.remove(spr);
@@ -551,9 +567,11 @@ export default {
       const objText = isCompare()
         ? `${problem.prompt} ▶ ${readout()}`
         : `${problem.prompt} ▶ You: ${readout()}${tableHint}`;
+      // Single source for the live problem = the engine HUD "Your task" panel.
+      // (We no longer mirror it to the clarity objective pill or the 3D card,
+      // which previously overlapped it into an illegible pile.)
       hud.setObjective(objText);
-      if (clarity) {
-        clarity.setObjective(objText);
+      if (clarity && clarity.setTarget) {
         clarity.setTarget(
           isCompare() ? `Pick the lowest $/L` : `Set: ${readout()}`,
         );
