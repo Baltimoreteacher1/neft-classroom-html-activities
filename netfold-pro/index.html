@@ -555,6 +555,51 @@
         dominant-baseline: middle;
       }
     
+      /* Quest Board list */
+      .quest-board {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .quest-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-sm);
+        padding: 10px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .quest-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(6, 182, 212, 0.3);
+      }
+      .quest-item.active {
+        background: rgba(6, 182, 212, 0.1);
+        border-color: var(--primary);
+      }
+      .quest-item.resolved {
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      .quest-meta strong {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--white);
+      }
+      .quest-meta span {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+      .quest-status {
+        font-size: 1.1rem;
+      }
+    
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -657,6 +702,14 @@
           <div class="formula-math" id="formula-text">SA = 2(lw + lh + wh)</div>
           <div class="formula-steps" id="formula-steps">
             <!-- Calculations go here -->
+          </div>
+        </div>
+
+        <!-- Quests Card -->
+        <div class="card">
+          <h2 id="lbl-quest-log">🛰️ Mission Control</h2>
+          <div class="quest-board" id="netfold-quest-list">
+            <!-- Quests generated dynamically -->
           </div>
         </div>
       </div>
@@ -815,6 +868,53 @@
           square_pyramid: { w: [2, 8], h: [2, 8] },
         },
         defaultRotation: { pitch: 65, yaw: 35 },
+        quests: [
+          {
+            id: 1,
+            title: "🎯 Flat to 3D",
+            titleEs: "🎯 De Plano a 3D",
+            desc: "Fold the rectangular prism completely to 100% progress.",
+            descEs: "Pliegue el prisma rectangular completamente al 100% de progreso.",
+            validator: (state) => state.currentShape === "rectangular_prism" && state.foldPercentage === 100
+          },
+          {
+            id: 2,
+            title: "🚀 Constant Volume",
+            titleEs: "🚀 Volumen Constante",
+            desc: "Construct a triangular prism with Volume = 60 units³ (w=5, h=4, l=6) and fold to 100%.",
+            descEs: "Construya un prisma triangular con Volumen = 60 unidades³ (w=5, h=4, l=6) y pliegue al 100%.",
+            validator: (state) => {
+              if (state.currentShape !== "triangular_prism" || state.foldPercentage !== 100) return false;
+              const vol = 0.5 * state.dimensions.w * state.dimensions.h * state.dimensions.l;
+              return Math.round(vol) === 60;
+            }
+          },
+          {
+            id: 3,
+            title: "📦 Pyramid Surface Area",
+            titleEs: "📦 Área de la Pirámide",
+            desc: "Construct a square pyramid with Surface Area = 96 units² (w=6, h=4) and fold to 100%.",
+            descEs: "Construya una pirámide cuadrada con Área de Superficie = 96 unidades² (w=6, h=4) y pliegue al 100%.",
+            validator: (state) => {
+              if (state.currentShape !== "square_pyramid" || state.foldPercentage !== 100) return false;
+              const w = state.dimensions.w;
+              const h = state.dimensions.h;
+              const slantHeight = Math.sqrt((w / 2) * (w / 2) + h * h);
+              const sa = w * w + 2 * w * slantHeight;
+              return Math.round(sa) === 96;
+            }
+          },
+          {
+            id: 4,
+            title: "🌌 Morphing View",
+            titleEs: "🌌 Vista Rotatoria",
+            desc: "Explore 3D coordinates by rotating any shape at least 90° with fold progress at 100%.",
+            descEs: "Explore coordenadas 3D rotando cualquier figura al menos 90° con progreso al 100%.",
+            validator: (state) => {
+              return state.foldPercentage === 100 && (state.yaw >= 90 || state.yaw === 0);
+            }
+          }
+        ]
       };
 
       // ==========================================
@@ -837,11 +937,14 @@
         yaw: CONFIG.defaultRotation.yaw,
         activeFaceId: null,
         language: "en",
+        activeQuestId: 1,
+        completedQuests: [],
       };
 
       // Translations Map
       const TRANSLATIONS = {
         en: {
+          "quest-log": "🛰️ Mission Control",
           "shape-config": "🔧 Shape Config",
           "fold-control": "🎛️ Fold Controls",
           "fold-progress": "Folding Progress",
@@ -874,9 +977,10 @@
           "right-trans": "cara derecha",
         },
         es: {
-          "shape-config": "🔧 Configuración de Figura",
-          "fold-control": "🎛️ Control de Doblez",
-          "fold-progress": "Progreso de Doblez",
+          "quest-log": "🛰️ Control de Misiones",
+          "shape-config": "🔧 Conf. Figura",
+          "fold-control": "🎛️ Control Pliegue",
+          "fold-progress": "Progreso de Pliegue",
           yaw: "Rotación 3D (Horizontal)",
           formulas: "📐 Fórmulas y Cálculos",
           "canvas-2d": "Espacio de Red Plana 2D",
@@ -909,7 +1013,54 @@
 
       function transitionState(updatedFields) {
         Object.assign(STATE, updatedFields);
+        checkQuests();
         renderUI();
+      }
+
+      function selectQuest(id) {
+        transitionState({ activeQuestId: id });
+      }
+
+      function checkQuests() {
+        if (!CONFIG.quests) return;
+        CONFIG.quests.forEach((q) => {
+          if (q.validator(STATE)) {
+            if (!STATE.completedQuests.includes(q.id)) {
+              STATE.completedQuests.push(q.id);
+              if (typeof AudioSynth !== 'undefined' && AudioSynth.playSuccessChime) {
+                AudioSynth.playSuccessChime();
+              }
+              const title = STATE.language === "en" ? "Quest Completed! 🏆" : "¡Misión Completada! 🏆";
+              const desc = STATE.language === "en" 
+                ? `Successfully solved: "${q.title}". Amazing folding!` 
+                : `Resuelto con éxito: "${q.titleEs}". ¡Pliegue increíble!`;
+              showCustomModal(title, desc, "📦");
+            }
+          }
+        });
+      }
+
+      function renderQuestList() {
+        const container = document.getElementById("netfold-quest-list");
+        if (!container) return;
+        container.innerHTML = "";
+
+        CONFIG.quests.forEach((q) => {
+          const isActive = STATE.activeQuestId === q.id;
+          const isSolved = STATE.completedQuests.includes(q.id);
+          const title = STATE.language === "en" ? q.title : q.titleEs;
+          const desc = STATE.language === "en" ? q.desc : q.descEs;
+
+          container.innerHTML += `
+            <div class="quest-item ${isActive ? "active" : ""} ${isSolved ? "resolved" : ""}" onclick="selectQuest(${q.id})">
+                <div class="quest-meta">
+                    <strong>${title}</strong>
+                    <span>${desc}</span>
+                </div>
+                <span class="quest-status">${isSolved ? "🏆" : "📐"}</span>
+            </div>
+          `;
+        });
       }
 
       // ==========================================
@@ -1403,6 +1554,9 @@
 
       function updateFold(val) {
         const parsedVal = parseInt(val, 10);
+        if (parsedVal !== STATE.foldPercentage) {
+          if (typeof AudioSynth !== 'undefined') AudioSynth.playCrease();
+        }
         document.getElementById("val-fold").innerText = `${parsedVal}%`;
         document.getElementById("fold-progress-fill").style.width =
           `${parsedVal}%`;
@@ -1411,6 +1565,9 @@
 
       function updateYaw(val) {
         const parsedVal = parseInt(val, 10);
+        if (parsedVal !== STATE.yaw) {
+          if (typeof AudioSynth !== 'undefined') AudioSynth.playRotateTick();
+        }
         document.getElementById("val-yaw").innerText = `${parsedVal}°`;
         transitionState({ yaw: parsedVal });
       }
@@ -1440,6 +1597,7 @@
         render2DCanvas();
         render3DCanvas();
         updateESOLHub();
+        renderQuestList();
       }
 
       function renderSliders() {
@@ -1481,6 +1639,7 @@
         document.getElementById("lbl-canvas-2d").innerText = t["canvas-2d"];
         document.getElementById("lbl-canvas-3d").innerText = t["canvas-3d"];
         document.getElementById("lbl-esol-title").innerText = t["esol-title"];
+        document.getElementById("lbl-quest-log").innerText = t["quest-log"];
       }
 
       function renderFormulas() {
@@ -2183,10 +2342,139 @@
           logDiag("✓ Reset state back to defaults.");
 
           logDiag("🎉 ALL TESTS PASSED SUCCESSFULLY!");
+          showCustomModal(
+            STATE.language === "en" ? "Self-Test Passed" : "Autocomprobación Aprobada",
+            STATE.language === "en" ? "6/6 assertions checked successfully! NetFold Pro configuration and math logic are perfectly solid." : "¡6/6 afirmaciones verificadas con éxito! NetFold Pro es completamente sólido.",
+            "⚡"
+          );
         } catch (err) {
           logDiag(`❌ TEST FAILED: ${err.message}`);
           console.error(err);
+          showCustomModal(
+            STATE.language === "en" ? "Self-Test Failed" : "Autocomprobación Fallida",
+            `${STATE.language === "en" ? "An assertion failed during execution" : "Una afirmación falló durante la ejecución"}: ${err.message}`,
+            "❌"
+          );
         }
+      }
+
+      // 1. programmatic Web Audio Crease/Friction Synthesizer
+      const AudioSynth = {
+        ctx: null,
+        lastPlayTime: 0,
+
+        init() {
+          if (this.ctx) return;
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+          } catch (e) {
+            console.warn("Web Audio not supported", e);
+          }
+        },
+
+        playCrease() {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          if (now - this.lastPlayTime < 0.05) return;
+          this.lastPlayTime = now;
+
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(2000, now);
+          osc.frequency.exponentialRampToValueAtTime(100, now + 0.03);
+
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.03);
+        },
+
+        playRotateTick() {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          if (now - this.lastPlayTime < 0.08) return;
+          this.lastPlayTime = now;
+
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(150, now + 0.02);
+
+          gain.gain.setValueAtTime(0.02, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.02);
+        },
+
+        playSuccessChime() {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const now = this.ctx.currentTime;
+          const chords = [261.63, 329.63, 392.00, 523.25, 659.25]; // C major pentatonic
+          chords.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+            gain.gain.setValueAtTime(0, now + idx * 0.08);
+            gain.gain.linearRampToValueAtTime(0.08, now + idx * 0.08 + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.5);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.6);
+          });
+        }
+      };
+
+      // Custom modal open/close helpers
+      function showCustomModal(title, msg, icon = "🏆") {
+        const overlay = document.getElementById("custom-modal-overlay");
+        const card = document.getElementById("custom-modal-card");
+        document.getElementById("custom-modal-title").innerText = title;
+        document.getElementById("custom-modal-message").innerText = msg;
+        document.getElementById("custom-modal-icon").innerText = icon;
+        
+        overlay.style.display = "flex";
+        setTimeout(() => {
+          overlay.style.opacity = "1";
+          card.style.transform = "scale(1)";
+        }, 10);
+      }
+
+      function closeCustomModal() {
+        const overlay = document.getElementById("custom-modal-overlay");
+        const card = document.getElementById("custom-modal-card");
+        overlay.style.opacity = "0";
+        card.style.transform = "scale(0.9)";
+        setTimeout(() => {
+          overlay.style.display = "none";
+        }, 300);
       }
 
       // Initialize App
@@ -2194,6 +2482,16 @@
         renderUI();
       });
     </script>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(8, 10, 19, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--card-bg); border: 2px solid var(--primary); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Quest Complete</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--white); line-height: 1.6; margin-bottom: 24px;">Lab configuration established.</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Close</button>
+        </div>
+    </div>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>

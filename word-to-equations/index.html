@@ -1034,6 +1034,14 @@
         if (leftCorrect && rightCorrect && isBalanced && xCorrect) {
           if (!STATE.completedQuests.includes(currentQuest.id)) {
             STATE.completedQuests.push(currentQuest.id);
+            if (typeof AudioSynth !== 'undefined' && AudioSynth.playSuccessChime) {
+              AudioSynth.playSuccessChime();
+            }
+            const title = STATE.language === "en" ? "Quest Completed! 🏆" : "¡Misión Completada! 🏆";
+            const desc = STATE.language === "en" 
+              ? `Successfully balanced: "${currentQuest.title}". Alchemical solution found!` 
+              : `Balanza en equilibrio: "${currentQuest.titleEs}". ¡Fórmula alquímica resuelta!`;
+            showCustomModal(title, desc, "⚖️");
           }
         }
       }
@@ -1065,6 +1073,9 @@
           rPan[type] += 1;
         }
 
+        if (typeof AudioSynth !== 'undefined' && AudioSynth.playSnapClick) {
+          AudioSynth.playSnapClick();
+        }
         transitionState({ leftPan: lPan, rightPan: rPan });
       }
 
@@ -1344,6 +1355,32 @@
           osc.start(now);
           osc.stop(now + 0.05);
         },
+        playSuccessChime() {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const now = this.ctx.currentTime;
+          // Arpeggio for alchemy balance scale
+          const chords = [293.66, 349.23, 440.00, 587.33]; // D minor/alchemical chord
+          chords.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+
+            gain.gain.setValueAtTime(0, now + idx * 0.09);
+            gain.gain.linearRampToValueAtTime(0.1, now + idx * 0.09 + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.7);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(now + idx * 0.09);
+            osc.stop(now + idx * 0.09 + 0.8);
+          });
+        }
       };
 
       // 2. Touch-Safe Click-to-Place Pan methods
@@ -1507,10 +1544,45 @@
           selectQuest(1);
           logDiag("✓ Restored state variables back to defaults.");
           logDiag("🎉 SYSTEM CHECKS ALL PASSED SUCCESSFULLY!");
+          showCustomModal(
+            STATE.language === "en" ? "Self-Test Passed" : "Autocomprobación Aprobada",
+            STATE.language === "en" ? "6/6 assertions checked successfully! Balance Scale configuration and algebra mathematics are perfectly solid." : "¡6/6 afirmaciones verificadas con éxito! Alchemical Balance Scale es completamente sólido.",
+            "⚡"
+          );
         } catch (err) {
           logDiag(`❌ SYSTEM ERROR: ${err.message}`);
           console.error(err);
+          showCustomModal(
+            STATE.language === "en" ? "Self-Test Failed" : "Autocomprobación Fallida",
+            `${STATE.language === "en" ? "An assertion failed during execution" : "Una afirmación falló durante la ejecución"}: ${err.message}`,
+            "❌"
+          );
         }
+      }
+
+      // Custom modal open/close helpers
+      function showCustomModal(title, msg, icon = "🏆") {
+        const overlay = document.getElementById("custom-modal-overlay");
+        const card = document.getElementById("custom-modal-card");
+        document.getElementById("custom-modal-title").innerText = title;
+        document.getElementById("custom-modal-message").innerText = msg;
+        document.getElementById("custom-modal-icon").innerText = icon;
+        
+        overlay.style.display = "flex";
+        setTimeout(() => {
+          overlay.style.opacity = "1";
+          card.style.transform = "scale(1)";
+        }, 10);
+      }
+
+      function closeCustomModal() {
+        const overlay = document.getElementById("custom-modal-overlay");
+        const card = document.getElementById("custom-modal-card");
+        overlay.style.opacity = "0";
+        card.style.transform = "scale(0.9)";
+        setTimeout(() => {
+          overlay.style.display = "none";
+        }, 300);
       }
 
       // Initialize application on load
@@ -1519,6 +1591,16 @@
         loadJournal();
       });
     </script>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(8, 10, 19, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--card-bg); border: 2px solid var(--primary); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Quest Complete</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--white); line-height: 1.6; margin-bottom: 24px;">Lab configuration established.</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Close</button>
+        </div>
+    </div>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
