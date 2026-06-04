@@ -456,6 +456,42 @@ function renderLaunchVisual(host, visual) {
   }
 }
 
+// Concept teaching block for the Launch phase (opt-in via launch.conceptIntro).
+// Gives students actual instruction/explanation of the concept — not just a
+// hook — and an optional step-by-step "How to" when the lesson is procedural.
+// Shape: { heading, body:[paragraph,...], keyIdea?, howTo?:{ title?, steps:[...] } }
+function renderConceptIntro(host, intro) {
+  if (!intro) return;
+  const card = document.createElement("div");
+  card.className = "card concept-intro";
+  card.style.cssText =
+    "border-left:4px solid var(--teal,#2a9d8f); background:rgba(42,157,143,0.05);";
+  const paras = (
+    Array.isArray(intro.body) ? intro.body : intro.body ? [intro.body] : []
+  )
+    .map(
+      (p) =>
+        `<p style="font-size:1.05rem; line-height:1.65; margin:0 0 var(--sp-3);">${esc(p)}</p>`,
+    )
+    .join("");
+  const keyIdea = intro.keyIdea
+    ? `<div style="margin-top:var(--sp-2); padding:var(--sp-3); background:rgba(233,196,106,0.18); border:1px solid rgba(233,196,106,0.5); border-radius:var(--radius-md,12px);"><strong>💡 Key idea:</strong> ${esc(intro.keyIdea)}</div>`
+    : "";
+  const howTo =
+    intro.howTo && Array.isArray(intro.howTo.steps) && intro.howTo.steps.length
+      ? `<div style="margin-top:var(--sp-4);">
+          <div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2);">🛠️ ${esc(intro.howTo.title || "How to do it")}</div>
+          <ol style="margin:0; padding-left:1.3rem; line-height:1.6;">${intro.howTo.steps
+            .map((s) => `<li style="margin-bottom:var(--sp-2);">${esc(s)}</li>`)
+            .join("")}</ol>
+        </div>`
+      : "";
+  card.innerHTML = `
+    <h4 style="color:var(--teal,#2a9d8f); margin:0 0 var(--sp-3);">📖 ${esc(intro.heading || "Concept Check")}</h4>
+    ${paras}${keyIdea}${howTo}`;
+  host.append(card);
+}
+
 // ── Turn & Talk (non-graded student discussion moments) ──────────────────────
 // A reusable, visually distinct "🗣️ Turn & Talk" block. It is driven by an
 // optional config field `config.turnAndTalk` (array of
@@ -988,6 +1024,9 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   grid.append(noticeCard, wonderCard);
   el.append(grid);
+
+  // After eliciting notice/wonder, teach the concept directly (opt-in).
+  renderConceptIntro(el, cfg.conceptIntro);
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
