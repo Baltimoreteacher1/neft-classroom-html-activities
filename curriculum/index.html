@@ -4170,8 +4170,15 @@
               // Combine activities and projects
               var allActs = lesson.activities.concat(lesson.projects || []);
 
-              // Update Activity select dropdown
+              // Update Activity select dropdown — start on a blank placeholder
+              // so that choosing ANY activity (incl. the first, "Interactive
+              // Lesson") fires a change event and opens it.
               actSelect.innerHTML = "";
+              var actPlaceholder = document.createElement("option");
+              actPlaceholder.value = "";
+              actPlaceholder.textContent = "— Choose an activity —";
+              actPlaceholder.selected = true;
+              actSelect.appendChild(actPlaceholder);
               allActs.forEach(function (act) {
                 var opt = document.createElement("option");
                 opt.value = act.href;
