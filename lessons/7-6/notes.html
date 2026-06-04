@@ -91,33 +91,6 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
-textarea.writeline {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--teal);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--navy);
-  outline: none;
-  padding: 4px 0;
-  resize: vertical;
-  display: block;
-}
-input.writeline {
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--teal);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--navy);
-  outline: none;
-  padding: 2px 0;
-}
-textarea.writeline:focus, input.writeline:focus {
-  border-bottom: 1.5px solid var(--teal);
-  background: rgba(31, 166, 162, 0.02);
-}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
@@ -334,12 +307,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .example{border-left:3px solid #000;}
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
-  textarea.writeline::placeholder, input.writeline::placeholder {
-    color: transparent;
-  }
-  textarea.writeline, input.writeline {
-    border-bottom: 1px solid #000;
-  }
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
@@ -362,6 +329,9 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -484,15 +454,15 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Solve: x − 9 ≤ 3</p>
       <ol class="try-choices" type="A"><li>x ≤ 12</li><li>x ≤ 6</li><li>x ≥ 12</li><li>x = 12</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input type="text" class="writeline" placeholder="Type answer here..." style="flex:1;" /></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Solve: x + 10 ≥ 25</p>
       <ol class="try-choices" type="A"><li>x ≥ 15</li><li>x ≥ 35</li><li>x ≤ 15</li><li>x = 15</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -612,7 +582,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
     <p class="twr-model"><span class="twr-label">Model:</span> Solve is to find the number that makes it true.<span class="twr-es">Resolver es encontrar el número que la hace verdadera.</span></p>
     <p class="twr-frame"><span class="twr-en">Write a kernel sentence about solve. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre resolver. Usa un sujeto y un verbo.</span></p>
-    <textarea class="writeline" rows="2" placeholder="Type your notes or work here..."></textarea>
+    <div class="writeline"></div><div class="writeline"></div>
   </div>
   <div class="twr-block">
     <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
@@ -622,19 +592,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Solve matters in math because ___.</span><span class="twr-es">Resolver importa en matemáticas porque ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Solve matters in math, but ___.</span><span class="twr-es">Resolver importa en matemáticas, pero ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Solve matters in math, so ___.</span><span class="twr-es">Resolver importa en matemáticas, entonces ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div>
   </div>
@@ -645,35 +615,35 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell one true fact about solve.<span class="twr-es">Di un hecho verdadero sobre solve.</span></p>
         <p class="twr-frame"><span class="twr-en">Solve ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Ask a question about solve.<span class="twr-es">Haz una pregunta sobre solve.</span></p>
         <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Show excitement about solve.<span class="twr-es">Muestra entusiasmo sobre solve.</span></p>
         <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell a partner what to do with solve.<span class="twr-es">Dile a un compañero qué hacer con solve.</span></p>
         <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div>
   </div>
   <div class="twr-block">
     <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
     <div class="twr-stems"><p class="twr-frame"><span class="twr-en">The steps are the same because I ___ to ___ the variable.</span><span class="twr-es">Los pasos son iguales porque ___ para ___ la variable.</span></p><p class="twr-frame"><span class="twr-en">The answer is different because an inequality has ___.</span><span class="twr-es">La respuesta es diferente porque una desigualdad tiene ___.</span></p><p class="twr-frame"><span class="twr-en">First I solved by ___, then I graphed ___.</span><span class="twr-es">Primero resolví al ___, luego grafiqué ___.</span></p></div>
-    <textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
   </div>
 </section>
   <section class="section tryit-section">
@@ -682,12 +652,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tryit">
   <p class="tryit-num">1. A rider must be at least 48 inches tall. Which inequality and a valid height fit?</p>
   <ol class="try-choices" type="A"><li>h ≥ 48; 50 inches works</li><li>h &gt; 48; 48 works</li><li>h ≤ 48; 50 works</li><li>h &lt; 48; 48 works</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. Which value is NOT a solution of x ≤ 7?</p>
   <ol class="try-choices" type="A"><li>8</li><li>7</li><li>6</li><li>0</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -695,14 +665,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tryit-num">A detective has a budget of at most $100 for supplies. She already spent $37 on gloves. Write an inequality for the remaining amount r she can spend, solve it, graph it, and name three possible values for r.</p>
     
     <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Inequality: 37 + r ≤ ___. Solving: r ≤ ___ − 37 = ___. Graph: ___ circle at ___, shade ___. Three possible values: ___.</p>
-    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="4" placeholder="Type your notes or work here..."></textarea></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
   </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>
   <p class="reflect-stem">Solve and describe the graph: x + 5 &lt; 11</p>
   <ol class="try-choices" type="A"><li>x &lt; 6; open circle at 6, shade left</li><li>x &lt; 16; open circle at 16, shade left</li><li>x ≤ 6; closed circle at 6, shade left</li><li>x &gt; 6; open circle at 6, shade right</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
@@ -711,5 +681,8 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-6 · Standard 6.EE.5</footer>
 </main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

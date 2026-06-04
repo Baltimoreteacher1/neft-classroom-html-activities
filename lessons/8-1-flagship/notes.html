@@ -91,33 +91,6 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
-textarea.writeline {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--teal);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--navy);
-  outline: none;
-  padding: 4px 0;
-  resize: vertical;
-  display: block;
-}
-input.writeline {
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--teal);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--navy);
-  outline: none;
-  padding: 2px 0;
-}
-textarea.writeline:focus, input.writeline:focus {
-  border-bottom: 1.5px solid var(--teal);
-  background: rgba(31, 166, 162, 0.02);
-}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
@@ -334,12 +307,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .example{border-left:3px solid #000;}
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
-  textarea.writeline::placeholder, input.writeline::placeholder {
-    color: transparent;
-  }
-  textarea.writeline, input.writeline {
-    border-bottom: 1px solid #000;
-  }
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
@@ -362,6 +329,9 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -480,15 +450,15 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which question is NOT a statistical question?</p>
       <ol class="try-choices" type="A"><li>How many innings are in a baseball game?</li><li>How many home runs did each player hit this year?</li><li>How many miles does each runner train per week?</li><li>How tall is each player on the basketball team?</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input type="text" class="writeline" placeholder="Type answer here..." style="flex:1;" /></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Why is 'How many hours of sleep did each student get last night?' a statistical question?</p>
       <ol class="try-choices" type="A"><li>Because different students got different amounts of sleep</li><li>Because it asks about sleep</li><li>Because hours are numbers</li><li>Because the answer is always 8 hours</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -641,7 +611,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
     <p class="twr-model"><span class="twr-label">Model:</span> Statistical Question is a question where the answers will be different for different people.<span class="twr-es">Pregunta estadística es una pregunta cuyas respuestas serán distintas para distintas personas.</span></p>
     <p class="twr-frame"><span class="twr-en">Write a kernel sentence about statistical question. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre pregunta estadística. Usa un sujeto y un verbo.</span></p>
-    <textarea class="writeline" rows="2" placeholder="Type your notes or work here..."></textarea>
+    <div class="writeline"></div><div class="writeline"></div>
   </div>
   <div class="twr-block">
     <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
@@ -651,19 +621,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Statistical Question matters in math because ___.</span><span class="twr-es">Pregunta estadística importa en matemáticas porque ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Statistical Question matters in math, but ___.</span><span class="twr-es">Pregunta estadística importa en matemáticas, pero ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Statistical Question matters in math, so ___.</span><span class="twr-es">Pregunta estadística importa en matemáticas, entonces ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div>
   </div>
@@ -674,35 +644,35 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell one true fact about statistical question.<span class="twr-es">Di un hecho verdadero sobre statistical question.</span></p>
         <p class="twr-frame"><span class="twr-en">Statistical question ___.</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Ask a question about statistical question.<span class="twr-es">Haz una pregunta sobre statistical question.</span></p>
         <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Show excitement about statistical question.<span class="twr-es">Muestra entusiasmo sobre statistical question.</span></p>
         <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell a partner what to do with statistical question.<span class="twr-es">Dile a un compañero qué hacer con statistical question.</span></p>
         <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
+        <div class="writeline"></div>
       </div>
     </div>
   </div>
   <div class="twr-block">
     <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
     <div class="twr-stems"><p class="twr-frame"><span class="twr-en">The question &quot;___&quot; is statistical because ___.</span><span class="twr-es">La pregunta &quot;___&quot; es estadística porque ___.</span></p><p class="twr-frame"><span class="twr-en">The other question is not statistical because it has only ___ answer.</span><span class="twr-es">La otra pregunta no es estadística porque tiene solo ___ respuesta.</span></p><p class="twr-frame"><span class="twr-en">I know it needs data because it asks about ___.</span><span class="twr-es">Sé que necesita datos porque pregunta sobre ___.</span></p></div>
-    <textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
   </div>
 </section>
   <section class="section tryit-section">
@@ -711,12 +681,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tryit">
   <p class="tryit-num">1. A coach asks: &quot;How many hours does each athlete on the track team sleep the night before a meet?&quot; Why is this a statistical question?</p>
   <ol class="try-choices" type="A"><li>Because the answers will vary from athlete to athlete</li><li>Because it is about sports</li><li>Because it has a numerical answer</li><li>Because the coach asked it</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. Match each question with what makes it statistical or not.</p>
   
-  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -724,7 +694,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tryit-num">Write one statistical question and one non-statistical question about your school's cafeteria. Explain why each question is or is not statistical, and describe what the data would look like for the statistical question.</p>
     
     <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Statistical question: ___. This is statistical because ___. The data might look like: ___. Non-statistical question: ___. This is not statistical because ___.</p>
-    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="4" placeholder="Type your notes or work here..."></textarea></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
   </div>
 </section>
   <section class="section reflect">
@@ -735,7 +705,7 @@ B) How many hours does each student in 6th grade exercise per week?
 C) What time does school start?
 D) How many days are in a week?</p>
   <ol class="try-choices" type="A"><li>B) How many hours does each student exercise per week?</li><li>A) How many students are in the school?</li><li>C) What time does school start?</li><li>D) How many days are in a week?</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
@@ -744,5 +714,8 @@ D) How many days are in a week?</p>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-1-flagship · Standard 6.SP.1</footer>
 </main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
 </body>
 </html>

@@ -26,7 +26,7 @@ const slug = (term) =>
     .replace(/[^a-z0-9-]/g, "");
 
 const blankLines = (n) =>
-  `<textarea class="writeline" rows="${n}" placeholder="Type your notes or work here..."></textarea>`;
+  Array.from({ length: n }, () => `<div class="writeline"></div>`).join("");
 
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
@@ -184,7 +184,7 @@ function workedFrame(worked) {
     const blankSteps = Array.from(
       { length: stepCount },
       (_, i) =>
-        `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li>`,
+        `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><span class="writeline"></span></li>`,
     ).join("");
     weDoHtml = `<div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together</span>
@@ -192,7 +192,7 @@ function workedFrame(worked) {
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
       ${choiceOl(weDo.choices)}
       <ol class="wk-steps wk-steps-blank">${blankSteps}</ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input type="text" class="writeline" placeholder="Type answer here..." style="flex:1;" /></p>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>`;
   }
 
@@ -802,33 +802,6 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
-textarea.writeline {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--teal);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--navy);
-  outline: none;
-  padding: 4px 0;
-  resize: vertical;
-  display: block;
-}
-input.writeline {
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--teal);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--navy);
-  outline: none;
-  padding: 2px 0;
-}
-textarea.writeline:focus, input.writeline:focus {
-  border-bottom: 1.5px solid var(--teal);
-  background: rgba(31, 166, 162, 0.02);
-}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
@@ -1045,12 +1018,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .example{border-left:3px solid #000;}
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
-  textarea.writeline::placeholder, input.writeline::placeholder {
-    color: transparent;
-  }
-  textarea.writeline, input.writeline {
-    border-bottom: 1px solid #000;
-  }
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
