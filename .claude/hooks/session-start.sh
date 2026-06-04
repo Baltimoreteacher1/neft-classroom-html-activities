@@ -13,8 +13,10 @@ cd "${CLAUDE_PROJECT_DIR:-.}"
 
 # Install dependencies. Use `npm install` (not `npm ci`) so the cached
 # container state is reused on later runs instead of wiping node_modules.
-# `--no-package-lock` keeps the install from rewriting package-lock.json on
-# resume: this sandbox can run an older npm than the one that generated the
-# committed lockfile, and a rewrite would leave a spurious dirty diff every
-# session. The lockfile stays authoritative in git and in CI (`npm ci`).
-npm install --no-audit --no-fund --no-package-lock
+# Respect package-lock.json during install -- do NOT pass --no-package-lock,
+# which makes npm ignore the lockfile and risks dependency drift. This sandbox
+# can run an older npm than the one that generated the committed lockfile, so
+# the install may rewrite package-lock.json; discard that accidental rewrite so
+# the lockfile stays authoritative in git and no spurious dirty diff is left.
+npm install --no-audit --no-fund
+git restore package-lock.json 2>/dev/null || git checkout -- package-lock.json 2>/dev/null || true
