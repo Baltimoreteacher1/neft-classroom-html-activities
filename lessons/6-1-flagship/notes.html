@@ -263,6 +263,154 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   font-size:14px;font-weight:600;}
 .dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
 .dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+
+/* Leveled display settings */
+.l1-only, .l2-only, .l3-only { display: none !important; }
+.l2-only-block { display: block !important; }
+
+html.level-l1 .l1-only { display: block !important; }
+html.level-l1 span.l1-only { display: inline !important; }
+html.level-l1 div.l1-only-flex { display: flex !important; }
+html.level-l1 .l2-only, html.level-l1 .l3-only, html.level-l1 .l2-only-block { display: none !important; }
+
+html.level-l2 .l2-only { display: block !important; }
+html.level-l2 .l2-only-block { display: block !important; }
+html.level-l2 span.l2-only { display: inline !important; }
+html.level-l2 div.l2-only-flex { display: flex !important; }
+html.level-l2 .l1-only, html.level-l2 .l3-only { display: none !important; }
+
+html.level-l3 .l3-only { display: block !important; }
+html.level-l3 span.l3-only { display: inline !important; }
+html.level-l3 div.l3-only-flex { display: flex !important; }
+html.level-l3 .l1-only, html.level-l3 .l2-only, html.level-l3 .l2-only-block { display: none !important; }
+
+/* Level Selector Styling */
+.level-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pill-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+.pill-btn {
+  position: relative;
+  cursor: pointer;
+}
+.pill-btn input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pill-btn span {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.pill-btn input[type="radio"]:checked + span {
+  background: var(--amber);
+  color: var(--navy);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.pill-btn:hover span {
+  color: #fff;
+}
+.pill-btn input[type="radio"]:checked:hover span {
+  color: var(--navy);
+}
+
+/* Leveled component details */
+.vocab-def-prompt, .notes-step-prompt {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 4px 0 6px;
+}
+.scratchpad {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: #fafbfc;
+  background-image: radial-gradient(var(--line) 1px, transparent 0);
+  background-size: 16px 16px;
+  height: 110px;
+  margin: 10px 0;
+  position: relative;
+}
+.scratchpad-label {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.wk-checkboxes {
+  background: rgba(31, 166, 162, 0.05);
+  border: 1px dashed var(--teal);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+.wk-checkbox-label {
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.wk-checkbox-label input {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Turn & Talk Leveling */
+html.level-l1 .tt-support { display: block !important; }
+html.level-l1 .tt-extend { display: none !important; }
+html.level-l2 .tt-support { display: block !important; }
+html.level-l2 .tt-extend { display: block !important; }
+html.level-l3 .tt-support { display: none !important; }
+html.level-l3 .tt-extend { display: block !important; }
+
+/* Vocab def leveling styling */
+html.level-l1 .vocab-def-l1 { display: block !important; }
+html.level-l1 .vocab-def-l2, html.level-l1 .vocab-def-l3 { display: none !important; }
+html.level-l2 .vocab-def-l2 { display: block !important; }
+html.level-l2 .vocab-def-l1, html.level-l2 .vocab-def-l3 { display: none !important; }
+html.level-l3 .vocab-def-l3 { display: block !important; }
+html.level-l3 .vocab-def-l1, html.level-l3 .vocab-def-l2 { display: none !important; }
+
+/* Notes step body leveling */
+html.level-l1 .notes-step-body-l1 { display: block !important; }
+html.level-l1 .notes-step-body-l2, html.level-l1 .notes-step-body-l3 { display: none !important; }
+html.level-l2 .notes-step-body-l2 { display: block !important; }
+html.level-l2 .notes-step-body-l1, html.level-l2 .notes-step-body-l3 { display: none !important; }
+html.level-l3 .notes-step-body-l3 { display: block !important; }
+html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: none !important; }
+
 @media print{
   @page{
     size:letter;margin:0.7in 0.7in 0.85in;
@@ -275,7 +423,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   }
   body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
+  .topbar,.print-btn,.no-print,.dl-wrap,.level-selector{display:none !important;}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
   .section{margin-bottom:16px;}
   .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
@@ -325,17 +473,52 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .tt-word{background:#fff;color:#000;border:1px solid #000;}
   .tt-listen{color:#222;}
   footer.packet{display:none;}
+  .scratchpad {
+    border: 1px solid #000 !important;
+    background-color: #fff !important;
+    background-image: radial-gradient(#000 1px, transparent 0) !important;
+  }
+  .scratchpad-label {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+  .wk-checkboxes {
+    background: #fff !important;
+    border: 1px dashed #000 !important;
+  }
 }
 </style>
+</style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
-<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
+<script>
+  if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
+  (function() {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    document.documentElement.classList.add('level-' + savedLevel);
+  })();
+</script>
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Notes Packet</span>
+  <div class="level-selector no-print">
+    <span class="selector-label">Leveled Mode:</span>
+    <div class="pill-group">
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l1" onclick="setLevel('l1')" />
+        <span>L1 Support</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l2" onclick="setLevel('l2')" />
+        <span>L2 Standard</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l3" onclick="setLevel('l3')" />
+        <span>L3 Enrichment</span>
+      </label>
+    </div>
+  </div>
   <div style="display:flex;align-items:center;gap:8px;">
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
     <div class="dl-wrap">
@@ -349,6 +532,21 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     </div>
   </div>
 </div>
+<script>
+  function setLevel(lvl) {
+    document.documentElement.classList.remove('level-l1', 'level-l2', 'level-l3');
+    document.documentElement.classList.add('level-' + lvl);
+    localStorage.setItem('notes-level', lvl);
+    const radios = document.querySelectorAll('input[name="notes-level"]');
+    radios.forEach(r => {
+      r.checked = (r.value === lvl);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    setLevel(savedLevel);
+  });
+</script>
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">Unit 6 · Standard 6.EE.1</p>
@@ -364,7 +562,11 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <p class="mission-story">You are the lead sound engineer at Amplitude Studios. Every time you flip a switch on the new mixboard, the volume doubles — that is the power of exponents. The headline act goes on in one hour, and you must master powers before the speakers can be safely dialed in.</p>
 </section>
   <section class="section vocab">
-  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <h2>Key Vocabulary 
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
   <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
   <div class="vocab-grid">
 <div class="vocab-card">
@@ -373,7 +575,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="vocab-caption">In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8</p>
   </div>
   <h3 class="vocab-term">Exponent</h3>
-  <p class="vocab-def">A small number that tells how many times to multiply the number by itself.</p>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">A small number that tells how many times to multiply the number by itself.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
@@ -381,7 +595,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="vocab-caption">In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25</p>
   </div>
   <h3 class="vocab-term">Base</h3>
-  <p class="vocab-def">The number that gets multiplied by itself.</p>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">The number that gets multiplied by itself.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
@@ -389,7 +615,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="vocab-caption">10³ = 10 × 10 × 10 = 1,000 — read as '10 to the third power' or '10 cubed'</p>
   </div>
   <h3 class="vocab-term">Power</h3>
-  <p class="vocab-def">A number written with a base and an exponent, like 2³.</p>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">A number written with a base and an exponent, like 2³.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
@@ -397,7 +635,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="vocab-caption">Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81</p>
   </div>
   <h3 class="vocab-term">Evaluate</h3>
-  <p class="vocab-def">To find the value of an expression.</p>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">To find the value of an expression.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
@@ -405,7 +655,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="vocab-caption">In 3x, the 3 is the coefficient — if x = 4, then 3x = 3 × 4 = 12</p>
   </div>
   <h3 class="vocab-term">Coefficient</h3>
-  <p class="vocab-def">The number in front of a letter, like the 3 in 3x.</p>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">The number in front of a letter, like the 3 in 3x.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
@@ -413,12 +675,28 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="vocab-caption">4x and 2x are like terms (both have x); 4x and 4x² are NOT like terms (different powers)</p>
   </div>
   <h3 class="vocab-term">Like terms</h3>
-  <p class="vocab-def">Terms with the same letter, like 2x and 5x.</p>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">Terms with the same letter, like 2x and 5x.</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
 </div>
   </div>
 </section>
   <section class="section notes">
-  <h2>Key Ideas &amp; Notes</h2>
+  <h2>Key Ideas &amp; Notes
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
   <div class="notes-learning">
       <span class="notes-learning-icon" aria-hidden="true">🎯</span>
       <div>
@@ -429,21 +707,67 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="notes-steps"><div class="notes-step notes-step-1">
       <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
         <h4 class="notes-step-title">Notice</h4></div>
-      <p class="notes-step-text">You're a sound engineer at a music studio.</p>
+      <div class="notes-step-body-l1"><p class="notes-step-text">You're a sound engineer at a music studio.</p></div>
+      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record your observations:</p><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="notes-step-body-l3"><p class="notes-step-prompt">State the math observation you see in the launch:</p><div class="writeline"></div><div class="writeline"></div></div>
     </div><div class="notes-step notes-step-2">
       <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
         <h4 class="notes-step-title">Key idea</h4></div>
-      <p class="notes-step-text">I can write and evaluate numbers in exponent form using a base and a power.</p>
+      <div class="notes-step-body-l1"><p class="notes-step-text">I can write and evaluate numbers in exponent form using a base and a power.</p></div>
+      <div class="notes-step-body-l2"><p class="notes-step-prompt">Record the key idea:</p><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="notes-step-body-l3"><p class="notes-step-prompt">Summarize the key mathematical relationship in full sentences:</p><div class="writeline"></div><div class="writeline"></div></div>
     </div><div class="notes-step notes-step-3">
       <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
         <h4 class="notes-step-title">Words I'll use</h4></div>
-      <div class="notes-word-chips"><span class="notes-word-chip">Exponent</span><span class="notes-word-chip">Base</span><span class="notes-word-chip">Power</span><span class="notes-word-chip">Evaluate</span><span class="notes-word-chip">Coefficient</span><span class="notes-word-chip">Like terms</span></div>
+      <div class="notes-step-body-l1"><div class="notes-word-chips"><span class="notes-word-chip">Exponent</span><span class="notes-word-chip">Base</span><span class="notes-word-chip">Power</span><span class="notes-word-chip">Evaluate</span><span class="notes-word-chip">Coefficient</span><span class="notes-word-chip">Like terms</span></div></div>
+      <div class="notes-step-body-l2"><div class="notes-word-chips"><span class="notes-word-chip">Exponent</span><span class="notes-word-chip">Base</span><span class="notes-word-chip">Power</span><span class="notes-word-chip">Evaluate</span><span class="notes-word-chip">Coefficient</span><span class="notes-word-chip">Like terms</span></div></div>
+      <div class="notes-step-body-l3"><div class="notes-word-chips"><span class="notes-word-chip">Exponent</span><span class="notes-word-chip">Base</span><span class="notes-word-chip">Power</span><span class="notes-word-chip">Evaluate</span><span class="notes-word-chip">Coefficient</span><span class="notes-word-chip">Like terms</span></div>
+         <p class="notes-step-prompt" style="margin-top: 8px;">Write a mathematical explanation using at least two of these terms:</p>
+         <div class="writeline"></div><div class="writeline"></div></div>
     </div></div>
   <div class="think-block">
     <h3>🤔 Think About It</h3>
     <ul class="prompt-list"><li>What happens to the volume each time you flip a switch?</li><li>Why is 2³ equal to 8, not 6?</li><li>How is repeated multiplication different from repeated addition?</li></ul>
   </div>
   <div class="notes-gradual">
+    <div class="l1-only">
+    <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the value of 4³?</p>
+      <ol class="try-choices" type="A"><li>64</li><li>12</li><li>43</li><li>7</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> 4³ = 4 × 4 × 4 = 64.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 64</p>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together (Scaffolded)</span>
+      <p class="notes-gr-cue">Solve this with your class by filling in the missing words or values.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the value of 6²?</p>
+      <ol class="try-choices" type="A"><li>36</li><li>12</li><li>62</li><li>8</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> _____³ = _____ × _____ × _____ = _____.</li></ol>
+      <div class="wk-checkboxes" style="margin-top: 8px;">
+          <span class="wk-anslabel">Check the correct choice:</span>
+          <label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 36</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 12</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 62</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 8</label>
+        </div>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn (Scaffolded)</span>
+      <p class="notes-gr-cue">Try it on your own. Fill in the steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which expression shows 5³ as repeated multiplication?</p>
+      <ol class="try-choices" type="A"><li>5 × 5 × 5</li><li>5 × 3</li><li>5 + 5 + 5</li><li>3 × 3 × 3 × 3 × 3</li></ol>
+      <div class="wk-checkboxes" style="margin-top: 8px; margin-bottom: 8px;">
+          <span class="wk-anslabel">Check the correct choice:</span>
+          <label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 5 × 5 × 5</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 5 × 3</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 5 + 5 + 5</label><label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> 3 × 3 × 3 × 3 × 3</label>
+        </div>
+      <div class="work-space">
+        <span class="ws-label">Fill in your solution path:</span>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
+      </div>
+    </div>
+  </div>
+    <div class="l2-only">
     <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
       <span class="notes-gr-tag">👀 I do — watch</span>
@@ -469,9 +793,41 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
+    <div class="l3-only">
+    <p class="notes-gr-intro">No worked examples. Solve the problems independently, draw visual models, and write justifications.</p>
+    <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--teal);">
+      <span class="notes-gr-tag">🧠 Challenge 1 — Mathematical Modeling</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the value of 4³?</p>
+      <ol class="try-choices" type="A"><li>64</li><li>12</li><li>43</li><li>7</li></ol>
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Formulate a mathematical representation or model for this situation. Explain why your model is appropriate.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--amber);">
+      <span class="notes-gr-tag">🧠 Challenge 2 — Error Analysis & Generalization</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the value of 6²?</p>
+      <ol class="try-choices" type="A"><li>36</li><li>12</li><li>62</li><li>8</li></ol>
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Then, write a rule or generalization that someone could use to solve any problem like this.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
+      <span class="notes-gr-tag">🧠 Challenge 3 — Synthesis & Extension</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which expression shows 5³ as repeated multiplication?</p>
+      <ol class="try-choices" type="A"><li>5 × 5 × 5</li><li>5 × 3</li><li>5 + 5 + 5</li><li>3 × 3 × 3 × 3 × 3</li></ol>
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Create a real-world scenario that matches the operations or logic you used to solve this.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
+  </div>
+  </div>
 </section>
   <section class="section turn-and-talk">
-  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <h2>Turn &amp; Talk — Discussion Points
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
   <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
   <div class="tt-card">
   <span class="tt-phase">Launch</span>
@@ -581,15 +937,20 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </section>
   <section class="section twr">
-  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
-  <p class="level-note">I can explain my work using the words exponent, base, power, and evaluate.</p>
-  <div class="twr-block">
+  <h2>Write About the Math
+    <span class="twr-method l1-only">Level 1 Support</span>
+    <span class="twr-method l2-only">Level 2 Standard</span>
+    <span class="twr-method l3-only">Level 3 Enrichment</span>
+  </h2>
+  <p class="level-note l1-only l2-only-block">I can explain my work using the words exponent, base, power, and evaluate.</p>
+  <div class="l1-only l2-only-block">
+    <div class="twr-block">
     <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
     <p class="twr-model"><span class="twr-label">Model:</span> Exponent is a small number that tells how many times to multiply the number by itself.<span class="twr-es">Exponente es un número pequeño que dice cuántas veces multiplicar el número por sí mismo.</span></p>
     <p class="twr-frame"><span class="twr-en">Write a kernel sentence about exponent. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre exponente. Usa un sujeto y un verbo.</span></p>
     <div class="writeline"></div><div class="writeline"></div>
   </div>
-  <div class="twr-block">
+    <div class="twr-block">
     <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
     <p class="twr-model"><span class="twr-label">Kernel:</span> Exponent matters in math<span class="twr-es">Exponente importa en matemáticas</span></p>
     <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
@@ -613,7 +974,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       </div>
     </div>
   </div>
-  <div class="twr-block">
+    <div class="twr-block">
     <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
     <div class="twr-type-row">
       <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
@@ -645,10 +1006,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       </div>
     </div>
   </div>
-  <div class="twr-block">
+    <div class="twr-block">
     <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
     <div class="twr-stems"><p class="twr-frame"><span class="twr-en">Each number is the one before it times ___, so it is repeated ___.</span><span class="twr-es">Cada número es el anterior por ___, así que es ___ repetida.</span></p><p class="twr-frame"><span class="twr-en">2 times 2 times 2 can be written as 2 to the ___ power.</span><span class="twr-es">2 por 2 por 2 se puede escribir como 2 a la ___ potencia.</span></p><p class="twr-frame"><span class="twr-en">The base is ___ and it is the number being ___.</span><span class="twr-es">La base es ___ y es el número que se está ___.</span></p></div>
     <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+  </div>
+  <div class="l3-only">
+    <div class="twr-block" style="border-left-color: var(--amber);">
+      <h3>Advanced Mathematical Explanation</h3>
+      <p class="sentence-frame"><strong>Writing Prompt:</strong> Write an explanatory paragraph summarizing today's key mathematical concept. Your explanation must include at least one complex sentence using a conjunction (because, since, although, or unless) to justify your mathematical reasoning. Draw models or sketch graphs to support your argument.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Doodle / Diagram / Sketch Area</span></div>
+      <div class="work-space"><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    </div>
   </div>
 </section>
   <section class="section tryit-section">
@@ -681,8 +1051,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 6-1-flagship · Standard 6.EE.1</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

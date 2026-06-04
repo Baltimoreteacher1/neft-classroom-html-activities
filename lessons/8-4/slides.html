@@ -503,16 +503,17 @@
     /* Drawing Wooden Pencil Tray Toolbar */
     .drawing-toolbar {
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      gap: 6px;
       margin-top: 10px;
       background: linear-gradient(180deg, #e6dfcf 0%, #d8cdb4 100%);
       border: 1px solid #c2b598;
       border-bottom: 3px solid #ab9d7f;
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-      padding: 6px 12px;
+      padding: 8px 12px;
       border-radius: 8px;
-      align-items: center;
       width: 100%;
+      box-sizing: border-box;
     }
     .color-picker-dot {
       width: 18px;
@@ -943,9 +944,26 @@
       box-shadow: 0 0 8px rgba(217, 121, 93, 0.25);
     }
     
+    .math-visual-container.tool-interact {
+      border-color: var(--teal);
+      box-shadow: 0 0 8px rgba(31, 166, 162, 0.25);
+    }
+    .math-visual-container.tool-line,
+    .math-visual-container.tool-rect,
+    .math-visual-container.tool-circle,
+    .math-visual-container.tool-stamp {
+      border-color: var(--navy);
+      box-shadow: 0 0 8px rgba(23, 50, 77, 0.25);
+    }
+    
     .canvas-overlay.cursor-draw { cursor: crosshair; }
     .canvas-overlay.cursor-highlight { cursor: cell; }
     .canvas-overlay.cursor-erase { cursor: alias; }
+    .canvas-overlay.cursor-line { cursor: crosshair; }
+    .canvas-overlay.cursor-rect { cursor: crosshair; }
+    .canvas-overlay.cursor-circle { cursor: crosshair; }
+    .canvas-overlay.cursor-stamp { cursor: copy; }
+    .canvas-overlay.cursor-interact { cursor: default; }
 
     /* Paste Flash animations for textareas */
     @keyframes flashPasted {
@@ -1271,32 +1289,51 @@
                 <p class="card-desc" style="font-size:12px; line-height:1.4; margin:0;">Use the drawing tray below to select pen colors, size, or erase. Draw directly on the visual math card to annotate findings.</p>
               </div>
               
-              <!-- TpT Stylized Wooden Pencil Tray Toolbar -->
+              <!-- Upgraded Drawing Wooden Pencil Tray Toolbar with shapes, highlighter, stamps, and interact toggle -->
               <div class="drawing-toolbar">
-                <div style="display:flex; gap:5px; align-items:center;">
+                <!-- Row 1: Mode Toggles & Stamps -->
+                <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+                  <button class="assess-btn px-btn" id="btn-interact" onclick="setDrawingTool('interact')" title="Interact Mode" style="width:26px; height:26px; font-size:11px;">👆</button>
                   <button class="assess-btn px-btn active" id="btn-draw" onclick="setDrawingTool('draw')" title="Pen" style="width:26px; height:26px; font-size:11px;">✏️</button>
-                  <button class="assess-btn px-btn" id="btn-highlighter" onclick="setDrawingTool('highlight')" title="Highlighter" style="width:26px; height:26px; font-size:11px;">🖍️</button>
+                  <button class="assess-btn px-btn" id="btn-highlight" onclick="setDrawingTool('highlight')" title="Highlighter" style="width:26px; height:26px; font-size:11px;">🖍️</button>
+                  <button class="assess-btn px-btn" id="btn-line" onclick="setDrawingTool('line')" title="Straight Line" style="width:26px; height:26px; font-size:11px;">📏</button>
+                  <button class="assess-btn px-btn" id="btn-rect" onclick="setDrawingTool('rect')" title="Rectangle" style="width:26px; height:26px; font-size:11px;">⬜</button>
+                  <button class="assess-btn px-btn" id="btn-circle" onclick="setDrawingTool('circle')" title="Circle" style="width:26px; height:26px; font-size:11px;">⭕</button>
                   <button class="assess-btn px-btn" id="btn-erase" onclick="setDrawingTool('erase')" title="Eraser" style="width:26px; height:26px; font-size:11px;">🧽</button>
-                  <button class="assess-btn px-btn" id="btn-undo" onclick="undoLast()" title="Undo" style="width:26px; height:26px; font-size:11px;">↩️</button>
+                  
+                  <!-- Stamp Picker Group -->
+                  <div style="display:flex; gap:4px; align-items:center; border-left:1px solid #d3cbb5; padding-left:8px;">
+                    <span style="font-size:9px; font-weight:700; color:var(--navy); margin-right:2px;">STAMPS:</span>
+                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-check" onclick="selectStamp('✓', this)" title="Stamp ✓" style="width:24px; height:24px; font-size:11px; padding:0;">✓</button>
+                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-star" onclick="selectStamp('⭐', this)" title="Stamp ⭐" style="width:24px; height:24px; font-size:11px; padding:0;">⭐</button>
+                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-cross" onclick="selectStamp('✕', this)" title="Stamp ✕" style="width:24px; height:24px; font-size:11px; padding:0;">✕</button>
+                    <button class="assess-btn px-btn stamp-btn" id="btn-stamp-smiley" onclick="selectStamp('😊', this)" title="Stamp 😊" style="width:24px; height:24px; font-size:11px; padding:0;">😊</button>
+                  </div>
                 </div>
                 
-                <!-- Color Picker Dots -->
-                <div style="display:flex; gap:5px; align-items:center; border-left:1px solid #d3cbb5; padding-left:8px;">
-                  <div class="color-picker-dot active" style="background:#17324D;" onclick="setDrawingColor('#17324D', this)"></div>
-                  <div class="color-picker-dot" style="background:#1FA6A2;" onclick="setDrawingColor('#1FA6A2', this)"></div>
-                  <div class="color-picker-dot" style="background:#F2C15B;" onclick="setDrawingColor('#F2C15B', this)"></div>
-                  <div class="color-picker-dot" style="background:#D9795D;" onclick="setDrawingColor('#D9795D', this)"></div>
-                  <div class="color-picker-dot" style="background:#000000;" onclick="setDrawingColor('#000000', this)"></div>
+                <!-- Row 2: Colors, Sizes, Actions -->
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:4px; padding-top:4px; border-top:1px dashed #d3cbb5;">
+                  <!-- Color Picker Dots -->
+                  <div style="display:flex; gap:5px; align-items:center;">
+                    <div class="color-picker-dot active" style="background:#17324D;" onclick="setDrawingColor('#17324D', this)" title="Navy"></div>
+                    <div class="color-picker-dot" style="background:#1FA6A2;" onclick="setDrawingColor('#1FA6A2', this)" title="Teal"></div>
+                    <div class="color-picker-dot" style="background:#F2C15B;" onclick="setDrawingColor('#F2C15B', this)" title="Amber"></div>
+                    <div class="color-picker-dot" style="background:#D9795D;" onclick="setDrawingColor('#D9795D', this)" title="Terracotta"></div>
+                    <div class="color-picker-dot" style="background:#000000;" onclick="setDrawingColor('#000000', this)" title="Black"></div>
+                  </div>
+                  
+                  <!-- Size Dots -->
+                  <div style="display:flex; gap:8px; align-items:center; border-left:1px solid #d3cbb5; padding-left:10px;">
+                    <div class="size-picker-dot active" style="width:6px; height:6px;" onclick="setDrawingSize(2, this)" title="Thin"></div>
+                    <div class="size-picker-dot" style="width:10px; height:10px;" onclick="setDrawingSize(5, this)" title="Medium"></div>
+                    <div class="size-picker-dot" style="width:14px; height:14px;" onclick="setDrawingSize(10, this)" title="Thick"></div>
+                  </div>
+                  
+                  <div style="display:flex; gap:5px; margin-left:auto; align-items:center;">
+                    <button class="assess-btn px-btn" id="btn-undo" onclick="undoLast()" title="Undo Last Stroke" style="width:26px; height:26px; font-size:11px; padding:0;">↩️</button>
+                    <button class="tool-btn-clear" onclick="clearDrawingCanvas()" style="height:26px; line-height:24px; padding:0 8px; margin:0;">Clear</button>
+                  </div>
                 </div>
-                
-                <!-- Size Dots -->
-                <div style="display:flex; gap:6px; align-items:center; border-left:1px solid #d3cbb5; padding-left:8px;">
-                  <div class="size-picker-dot active" style="width:6px; height:6px;" onclick="setDrawingSize(2, this)" title="Thin"></div>
-                  <div class="size-picker-dot" style="width:10px; height:10px;" onclick="setDrawingSize(5, this)" title="Medium"></div>
-                  <div class="size-picker-dot" style="width:14px; height:14px;" onclick="setDrawingSize(10, this)" title="Thick"></div>
-                </div>
-                
-                <button class="tool-btn-clear" onclick="clearDrawingCanvas()">Clear</button>
               </div>
             </div>
             
@@ -1974,6 +2011,13 @@
       data.studentPracticeMCIndex = studentPracticeMCIndex;
       data.studentExitChoiceIndex = studentExitChoiceIndex;
       
+      // Save widget state variables
+      data.ratioScale = ratioScale;
+      data.coordPoints = coordPoints;
+      data.activeCoordinateMarker = activeCoordinateMarker;
+      data.balanceLeft = balanceLeft;
+      data.balanceRight = balanceRight;
+      
       localStorage.setItem(storageKey, JSON.stringify(data));
     }
     
@@ -2049,14 +2093,46 @@
               checkExitTicket(data.studentExitChoiceIndex, 0);
             }
           }
+          
+          // Restore widget state variables
+          if (data.ratioScale !== undefined) {
+            ratioScale = data.ratioScale;
+          }
+          if (data.coordPoints !== undefined) {
+            coordPoints = data.coordPoints;
+          }
+          if (data.activeCoordinateMarker !== undefined) {
+            activeCoordinateMarker = data.activeCoordinateMarker;
+            const markerBtnMap = {
+              '🔴': 'btn-marker-dot',
+              '⭐': 'btn-marker-star',
+              '❌': 'btn-marker-cross'
+            };
+            const btnId = markerBtnMap[activeCoordinateMarker];
+            if (btnId) {
+              const el = document.getElementById(btnId);
+              if (el) {
+                document.querySelectorAll('[id^="btn-marker-"]').forEach(btn => btn.classList.remove('active'));
+                el.classList.add('active');
+              }
+            }
+          }
+          if (data.balanceLeft !== undefined) {
+            balanceLeft = data.balanceLeft;
+          }
+          if (data.balanceRight !== undefined) {
+            balanceRight = data.balanceRight;
+          }
         } else {
           switchConceptTab('ido');
           initSortingGame();
         }
+        updateActiveWidget();
       } catch (e) {
         console.error('Failed to load saved work:', e);
         try { switchConceptTab('ido'); } catch(err){}
         try { initSortingGame(); } catch(err){}
+        try { updateActiveWidget(); } catch(err){}
       }
     }
     
@@ -2092,7 +2168,7 @@
     }
     
     // -----------------------------------------------------------------
-    // HTML5 DRAWING CANVAS SYSTEM WITH UNDO STACK HISTORY
+    // HTML5 DRAWING CANVAS SYSTEM WITH UNDO STACK HISTORY & SHAPE TOOLS
     // -----------------------------------------------------------------
     const canvas = document.getElementById('math-canvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
@@ -2100,10 +2176,362 @@
     let drawing = false;
     let drawMode = 'draw';
     let drawColor = '#17324D';
-    let drawSize = 4;
+    let drawSize = 2; // Default to thin
     
     const drawHistory = [];
     const maxHistory = 15;
+    
+    let dragStartPos = null;
+    let dragImageData = null;
+    let activeStamp = '✓';
+    
+    // Interactive Widget state variables
+    let ratioScale = 1;
+    let coordPoints = [];
+    let activeCoordinateMarker = '🔴';
+    let balanceLeft = { x: 1, one: 4 };
+    let balanceRight = { x: 0, one: 12 };
+    
+    // Adjust ratio scale helper
+    function adjustRatioScale(scale) {
+      ratioScale = Number(scale);
+      updateRatioWidget();
+      saveWork();
+    }
+    
+    // Coordinate plane helpers
+    function handleCoordinatePlaneClick(e) {
+      const svg = document.getElementById('coord-plane-svg');
+      if (!svg) return;
+      
+      const rect = svg.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      
+      const rawX = (clickX - 110) / 18;
+      const rawY = (110 - clickY) / 18;
+      
+      const x = Math.round(rawX);
+      const y = Math.round(rawY);
+      
+      if (Math.abs(x) <= 5 && Math.abs(y) <= 5) {
+        const existingIdx = coordPoints.findIndex(pt => pt.x === x && pt.y === y);
+        if (existingIdx !== -1) {
+          coordPoints.splice(existingIdx, 1);
+        } else {
+          coordPoints.push({ x, y, marker: activeCoordinateMarker });
+        }
+        updateCoordinateWidget();
+        saveWork();
+      }
+    }
+    
+    function setCoordinateMarker(marker, el) {
+      activeCoordinateMarker = marker;
+      document.querySelectorAll('[id^="btn-marker-"]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      if (el) el.classList.add('active');
+      saveWork();
+    }
+    
+    function clearCoordinatePoints() {
+      coordPoints = [];
+      updateCoordinateWidget();
+      saveWork();
+    }
+    
+    // Equation balance scale helpers
+    function adjustBalanceLeft(type, delta) {
+      if (type === 'x') {
+        balanceLeft.x = Math.max(0, balanceLeft.x + delta);
+      } else {
+        balanceLeft.one = Math.max(0, balanceLeft.one + delta);
+      }
+      updateBalanceScale();
+      saveWork();
+    }
+    
+    function adjustBalanceRight(type, delta) {
+      if (type === 'x') {
+        balanceRight.x = Math.max(0, balanceRight.x + delta);
+      } else {
+        balanceRight.one = Math.max(0, balanceRight.one + delta);
+      }
+      updateBalanceScale();
+      saveWork();
+    }
+    
+    function updateRatioWidget() {
+      const svgGroup = document.getElementById('ratio-dynamic-content');
+      if (!svgGroup) return;
+      const S = ratioScale;
+      
+      // Update button highlights
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById('btn-scale-' + i);
+        if (btn) {
+          btn.classList.toggle('active', i === S);
+        }
+      }
+      
+      let html = '';
+      
+      // Title
+      html += '<text x="15" y="22" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE TAPE DIAGRAM (Ratio 2 : 3)</text>';
+      
+      // Tape Diagram - Row 1 (Juice: 2 parts)
+      html += '<text x="15" y="52" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Juice</text>';
+      for (let i = 0; i < 2; i++) {
+        const rx = 65 + i * 55;
+        html += '<rect x="' + rx + '" y="38" width="50" height="22" fill="var(--teal-light)" stroke="var(--navy)" stroke-width="1.5" rx="3"/>';
+        html += '<text x="' + (rx + 25) + '" y="53" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
+      }
+      // Bracket and total for Row 1
+      html += '<path d="M 65 32 L 65 28 L 120 28 L 120 32" fill="none" stroke="var(--navy)" stroke-width="1"/>';
+      html += '<text x="180" y="52" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (2 * S) + '</text>';
+      
+      // Tape Diagram - Row 2 (Water: 3 parts)
+      html += '<text x="15" y="87" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">Water</text>';
+      for (let i = 0; i < 3; i++) {
+        const rx = 65 + i * 55;
+        html += '<rect x="' + rx + '" y="73" width="50" height="22" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.5" rx="3"/>';
+        html += '<text x="' + (rx + 25) + '" y="88" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + S + '</text>';
+      }
+      // Bracket and total for Row 2
+      html += '<path d="M 65 67 L 65 63 L 175 63 L 175 67" fill="none" stroke="var(--navy)" stroke-width="1"/>';
+      html += '<text x="235" y="87" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--teal)">Total: ' + (3 * S) + '</text>';
+      
+      // Double Number Line Title
+      html += '<text x="15" y="122" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">DOUBLE NUMBER LINE</text>';
+      
+      // Lines
+      html += '<line x1="65" y1="142" x2="355" y2="142" stroke="var(--navy)" stroke-width="2"/>';
+      html += '<line x1="65" y1="182" x2="355" y2="182" stroke="var(--navy)" stroke-width="2"/>';
+      
+      // Arrows
+      html += '<path d="M 355 142 L 348 138 M 355 142 L 348 146" stroke="var(--navy)" stroke-width="2"/>';
+      html += '<path d="M 355 182 L 348 178 M 355 182 L 348 186" stroke="var(--navy)" stroke-width="2"/>';
+      
+      // Ticks, Connectors, Labels
+      for (let i = 0; i <= 5; i++) {
+        const tx = 65 + i * 52;
+        // Connector (dashed line)
+        html += '<line x1="' + tx + '" y1="142" x2="' + tx + '" y2="182" stroke="var(--gray)" stroke-dasharray="3,3" stroke-width="1"/>';
+        
+        // Ticks
+        html += '<line x1="' + tx + '" y1="138" x2="' + tx + '" y2="146" stroke="var(--navy)" stroke-width="1.5"/>';
+        html += '<line x1="' + tx + '" y1="178" x2="' + tx + '" y2="186" stroke="var(--navy)" stroke-width="1.5"/>';
+        
+        // Values
+        html += '<text x="' + tx + '" y="134" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 2 * S) + '</text>';
+        html += '<text x="' + tx + '" y="196" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)" text-anchor="middle">' + (i * 3 * S) + '</text>';
+      }
+      
+      // Line Labels
+      html += '<text x="362" y="145" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Juice (c)</text>';
+      html += '<text x="362" y="185" font-family="'Outfit', sans-serif" font-size="9" font-weight="bold" fill="var(--navy)">Water (c)</text>';
+      
+      svgGroup.innerHTML = html;
+    }
+    
+    function updateCoordinateWidget() {
+      const svgGroup = document.getElementById('coord-dynamic-content');
+      if (!svgGroup) return;
+      
+      let html = '';
+      
+      // Grid Lines
+      for (let val = -5; val <= 5; val++) {
+        if (val === 0) continue;
+        const px = 110 + val * 18;
+        const py = 110 - val * 18;
+        
+        // Vertical grid line
+        html += '<line x1="' + px + '" y1="10" x2="' + px + '" y2="210" stroke="#f1f3f4" stroke-width="1"/>';
+        // Horizontal grid line
+        html += '<line x1="10" y1="' + py + '" x2="210" y2="' + py + '" stroke="#f1f3f4" stroke-width="1"/>';
+        
+        // Axis Ticks
+        html += '<line x1="' + px + '" y1="107" x2="' + px + '" y2="113" stroke="var(--navy)" stroke-width="1"/>';
+        html += '<line x1="107" y1="' + py + '" x2="113" y2="' + py + '" stroke="var(--navy)" stroke-width="1"/>';
+        
+        // Axis Labels
+        html += '<text x="' + px + '" y="121" font-family="'Outfit', sans-serif" font-size="7" fill="var(--navy)" text-anchor="middle">' + val + '</text>';
+        html += '<text x="99" y="' + (py + 2.5) + '" font-family="'Outfit', sans-serif" font-size="7" fill="var(--navy)" text-anchor="end">' + val + '</text>';
+      }
+      
+      // Main Axes
+      html += '<line x1="10" y1="110" x2="210" y2="110" stroke="var(--navy)" stroke-width="1.5"/>';
+      html += '<line x1="110" y1="10" x2="110" y2="210" stroke="var(--navy)" stroke-width="1.5"/>';
+      
+      // Arrow heads
+      html += '<path d="M 10 110 L 15 107 M 10 110 L 15 113" stroke="var(--navy)" stroke-width="1.5"/>';
+      html += '<path d="M 210 110 L 205 107 M 210 110 L 205 113" stroke="var(--navy)" stroke-width="1.5"/>';
+      html += '<path d="M 110 10 L 107 15 M 110 10 L 113 15" stroke="var(--navy)" stroke-width="1.5"/>';
+      html += '<path d="M 110 210 L 107 205 M 110 210 L 113 205" stroke="var(--navy)" stroke-width="1.5"/>';
+      
+      // Axis Names
+      html += '<text x="214" y="113" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--navy)">x</text>';
+      html += '<text x="110" y="8" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--navy)" text-anchor="middle">y</text>';
+      
+      // Plot Points
+      coordPoints.forEach(pt => {
+        const cx = 110 + pt.x * 18;
+        const cy = 110 - pt.y * 18;
+        html += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="rgba(255,255,255,0.85)"/>';
+        html += '<text x="' + cx + '" y="' + (cy + 3.5) + '" font-family="'Outfit', sans-serif" font-size="10" text-anchor="middle">' + pt.marker + '</text>';
+      });
+      
+      svgGroup.innerHTML = html;
+      
+      // Update coordinate log list
+      const logDiv = document.getElementById('coord-points-log');
+      if (logDiv) {
+        if (coordPoints.length === 0) {
+          logDiv.innerHTML = '<span style="color:var(--gray); font-style:italic;">Click on coordinate plane to plot custom markers...</span>';
+        } else {
+          let logHtml = '<div style="display:flex; flex-direction:column; gap:3px;">';
+          coordPoints.forEach((pt, i) => {
+            logHtml += '<div style="display:flex; justify-content:space-between; align-items:center; background:white; border:1px solid #e1eaef; padding:2px 6px; border-radius:4px;">';
+            logHtml += '<span style="font-weight:bold; color:var(--navy);">Point ' + (i+1) + ': (' + pt.x + ', ' + pt.y + ')</span>';
+            logHtml += '<span>' + pt.marker + '</span>';
+            logHtml += '</div>';
+          });
+          logHtml += '</div>';
+          logDiv.innerHTML = logHtml;
+        }
+      }
+    }
+    
+    function updateBalanceScale() {
+      const svgGroup = document.getElementById('balance-dynamic-content');
+      if (!svgGroup) return;
+      
+      const wl = balanceLeft.x * 8 + balanceLeft.one;
+      const wr = balanceRight.x * 8 + balanceRight.one;
+      const weightDiff = wl - wr;
+      const tiltAngle = Math.max(-15, Math.min(15, -weightDiff * 1.5));
+      const rad = (tiltAngle * Math.PI) / 180;
+      
+      const lx = 220 - 120 * Math.cos(rad);
+      const ly = 90 - 120 * Math.sin(rad);
+      const rx = 220 + 120 * Math.cos(rad);
+      const ry = 90 + 120 * Math.sin(rad);
+      
+      let html = '';
+      
+      // Title
+      html += '<text x="15" y="24" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)">INTERACTIVE PAN BALANCE SCALE (x = 8 units)</text>';
+      
+      // Fulcrum
+      html += '<polygon points="205,170 235,170 220,90" fill="#dadce0" stroke="var(--navy)" stroke-width="1.5"/>';
+      html += '<rect x="120" y="170" width="200" height="10" fill="var(--navy)" rx="3"/>';
+      
+      // Balanced / Unbalanced Banner
+      if (wl === wr) {
+        html += '<rect x="140" y="10" width="160" height="22" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.5" rx="4"/>';
+        html += '<text x="220" y="25" font-family="'Outfit', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">⚖️ BALANCED! (Total: ' + wl + ')</text>';
+      } else {
+        html += '<text x="75" y="24" font-family="'Outfit', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Left: ' + wl + ' units</text>';
+        html += '<text x="365" y="24" font-family="'Outfit', sans-serif" font-size="9.5" font-weight="bold" fill="var(--navy)" text-anchor="middle">Right: ' + wr + ' units</text>';
+      }
+      
+      // Strings Left
+      html += '<line x1="' + lx + '" y1="' + ly + '" x2="' + (lx - 35) + '" y2="' + (ly + 50) + '" stroke="var(--gray)" stroke-width="1"/>';
+      html += '<line x1="' + lx + '" y1="' + ly + '" x2="' + (lx + 35) + '" y2="' + (ly + 50) + '" stroke="var(--gray)" stroke-width="1"/>';
+      
+      // Strings Right
+      html += '<line x1="' + rx + '" y1="' + ry + '" x2="' + (rx - 35) + '" y2="' + (ry + 50) + '" stroke="var(--gray)" stroke-width="1"/>';
+      html += '<line x1="' + rx + '" y1="' + ry + '" x2="' + (rx + 35) + '" y2="' + (ry + 50) + '" stroke="var(--gray)" stroke-width="1"/>';
+      
+      // Pan Plates
+      html += '<rect x="' + (lx - 40) + '" y="' + (ly + 50) + '" width="80" height="6" fill="var(--gray)" stroke="var(--navy)" stroke-width="1.5" rx="2"/>';
+      html += '<rect x="' + (rx - 40) + '" y="' + (ry + 50) + '" width="80" height="6" fill="var(--gray)" stroke="var(--navy)" stroke-width="1.5" rx="2"/>';
+      
+      // Draw Left Blocks
+      let leftBlocksHtml = '';
+      let bx = lx - 32;
+      let by = ly + 50 - 20;
+      for (let i = 0; i < balanceLeft.x; i++) {
+        leftBlocksHtml += '<rect x="' + bx + '" y="' + by + '" width="18" height="20" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.2" rx="2"/>';
+        leftBlocksHtml += '<text x="' + (bx + 9) + '" y="' + (by + 14) + '" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
+        bx += 20;
+        if (bx > lx + 15) {
+          bx = lx - 32;
+          by -= 22;
+        }
+      }
+      let ux = bx;
+      let uy = by + 8;
+      if (ux > lx - 32 && ux + 12 > lx + 35) {
+        ux = lx - 32;
+        uy -= 14;
+      }
+      for (let i = 0; i < balanceLeft.one; i++) {
+        leftBlocksHtml += '<rect x="' + ux + '" y="' + uy + '" width="12" height="12" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.2" rx="1"/>';
+        leftBlocksHtml += '<text x="' + (ux + 6) + '" y="' + (uy + 9) + '" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
+        ux += 14;
+        if (ux > lx + 22) {
+          ux = lx - 32;
+          uy -= 14;
+        }
+      }
+      html += leftBlocksHtml;
+      
+      // Draw Right Blocks
+      let rightBlocksHtml = '';
+      let rbx = rx - 32;
+      let rby = ry + 50 - 20;
+      for (let i = 0; i < balanceRight.x; i++) {
+        rightBlocksHtml += '<rect x="' + rbx + '" y="' + rby + '" width="18" height="20" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.2" rx="2"/>';
+        rightBlocksHtml += '<text x="' + (rbx + 9) + '" y="' + (rby + 14) + '" font-family="'Outfit', sans-serif" font-size="10" font-weight="bold" fill="var(--navy)" text-anchor="middle">x</text>';
+        rbx += 20;
+        if (rbx > rx + 15) {
+          rbx = rx - 32;
+          rby -= 22;
+        }
+      }
+      let rux = rbx;
+      let ruy = rby + 8;
+      if (rux > rx - 32 && rux + 12 > rx + 35) {
+        rux = rx - 32;
+        ruy -= 14;
+      }
+      for (let i = 0; i < balanceRight.one; i++) {
+        rightBlocksHtml += '<rect x="' + rux + '" y="' + ruy + '" width="12" height="12" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="1.2" rx="1"/>';
+        rightBlocksHtml += '<text x="' + (rux + 6) + '" y="' + (ruy + 9) + '" font-family="'Outfit', sans-serif" font-size="8" font-weight="bold" fill="var(--teal)" text-anchor="middle">1</text>';
+        rux += 14;
+        if (rux > rx + 22) {
+          rux = rx - 32;
+          ruy -= 14;
+        }
+      }
+      html += rightBlocksHtml;
+      
+      // Beam Line
+      html += '<line x1="' + lx + '" y1="' + ly + '" x2="' + rx + '" y2="' + ry + '" stroke="var(--navy)" stroke-width="4" stroke-linecap="round"/>';
+      
+      // Center Pivot
+      html += '<circle cx="220" cy="90" r="5" fill="var(--amber)" stroke="var(--navy)" stroke-width="1.5"/>';
+      
+      svgGroup.innerHTML = html;
+    }
+    
+    function updateActiveWidget() {
+      const std = "6.SP.5d".toUpperCase();
+      const isRatio = std.includes('6.RP.1') || std.includes('6.RP.2') || std.includes('6.RP.3');
+      const isCoord = std.includes('6.NS.6') || std.includes('6.NS.8');
+      const isBalance = std.includes('6.EE.5') || std.includes('6.EE.7');
+      
+      if (isRatio) {
+        updateRatioWidget();
+      } else if (isCoord) {
+        updateCoordinateWidget();
+      } else if (isBalance) {
+        updateBalanceScale();
+      }
+    }
     
     function saveHistory() {
       if (!canvas || !ctx) return;
@@ -2148,8 +2576,18 @@
       if (!ctx) return;
       saveHistory(); // Save state before starting stroke
       drawing = true;
-      ctx.beginPath();
       const pos = getMousePos(e);
+      dragStartPos = pos;
+      dragImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      
+      if (drawMode === 'stamp') {
+        drawStamp(pos.x, pos.y);
+        drawing = false;
+        saveWork();
+        return;
+      }
+      
+      ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
       e.preventDefault();
     }
@@ -2165,25 +2603,52 @@
       if (!drawing || !ctx) return;
       const pos = getMousePos(e);
       
-      ctx.lineTo(pos.x, pos.y);
-      ctx.lineCap = drawMode === 'highlight' ? 'square' : 'round';
-      ctx.lineJoin = 'round';
-      
-      if (drawMode === 'erase') {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = drawSize * 2.5;
-      } else if (drawMode === 'highlight') {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = hexToRgba(drawColor, 0.45);
-        ctx.lineWidth = drawSize * 3.5;
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
+      if (drawMode === 'line' || drawMode === 'rect' || drawMode === 'circle') {
+        ctx.putImageData(dragImageData, 0, 0);
+        
+        ctx.beginPath();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.strokeStyle = drawColor;
         ctx.lineWidth = drawSize;
+        ctx.globalCompositeOperation = 'source-over';
+        
+        if (drawMode === 'line') {
+          ctx.moveTo(dragStartPos.x, dragStartPos.y);
+          ctx.lineTo(pos.x, pos.y);
+        } else if (drawMode === 'rect') {
+          const w = pos.x - dragStartPos.x;
+          const h = pos.y - dragStartPos.y;
+          ctx.strokeRect(dragStartPos.x, dragStartPos.y, w, h);
+        } else if (drawMode === 'circle') {
+          const radius = Math.sqrt(Math.pow(pos.x - dragStartPos.x, 2) + Math.pow(pos.y - dragStartPos.y, 2));
+          ctx.arc(dragStartPos.x, dragStartPos.y, radius, 0, 2 * Math.PI);
+        }
+        ctx.stroke();
+      } else {
+        ctx.lineTo(pos.x, pos.y);
+        ctx.lineCap = drawMode === 'highlight' ? 'square' : 'round';
+        ctx.lineJoin = 'round';
+        
+        if (drawMode === 'erase') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = drawSize * 2.5;
+        } else if (drawMode === 'highlight') {
+          ctx.globalCompositeOperation = 'source-over';
+          let hlColor = drawColor;
+          if (drawColor === '#17324D' || drawColor === '#000000') {
+            hlColor = '#FFFF00';
+          }
+          ctx.strokeStyle = hexToRgba(hlColor, 0.4);
+          ctx.lineWidth = drawSize * 3.5;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = drawColor;
+          ctx.lineWidth = drawSize;
+        }
+        ctx.stroke();
       }
-      
-      ctx.stroke();
       e.preventDefault();
     }
     
@@ -2191,6 +2656,8 @@
       if (drawing && ctx) {
         ctx.closePath();
         drawing = false;
+        dragStartPos = null;
+        dragImageData = null;
         saveWork();
       }
     }
@@ -2207,37 +2674,63 @@
     
     function setDrawingTool(mode) {
       drawMode = mode;
-      const dBtn = document.getElementById('btn-draw');
-      const hBtn = document.getElementById('btn-highlighter');
-      const eBtn = document.getElementById('btn-erase');
-      if (dBtn && eBtn) {
-        dBtn.classList.toggle('active', mode === 'draw');
-        if (hBtn) hBtn.classList.toggle('active', mode === 'highlight');
-        eBtn.classList.toggle('active', mode === 'erase');
+      
+      const tools = ['interact', 'draw', 'highlight', 'line', 'rect', 'circle', 'erase', 'stamp'];
+      tools.forEach(t => {
+        const btn = document.getElementById('btn-' + t);
+        if (btn) {
+          btn.classList.toggle('active', mode === t);
+        }
+      });
+      
+      if (mode !== 'stamp') {
+        document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('active'));
       }
       
       const container = document.getElementById('math-visual-container-element');
       const canvasEl = document.getElementById('math-canvas');
       if (container && canvasEl) {
-        container.classList.remove('tool-draw', 'tool-highlight', 'tool-erase');
-        canvasEl.classList.remove('cursor-draw', 'cursor-highlight', 'cursor-erase');
+        container.className = 'math-visual-container';
+        canvasEl.className = 'canvas-overlay';
         
-        if (mode === 'draw') {
-          container.classList.add('tool-draw');
-          canvasEl.classList.add('cursor-draw');
-        } else if (mode === 'highlight') {
-          container.classList.add('tool-highlight');
-          canvasEl.classList.add('cursor-highlight');
-        } else if (mode === 'erase') {
-          container.classList.add('tool-erase');
-          canvasEl.classList.add('cursor-erase');
+        container.classList.add('tool-' + mode);
+        canvasEl.classList.add('cursor-' + mode);
+        
+        if (mode === 'interact') {
+          canvasEl.style.pointerEvents = 'none';
+        } else {
+          canvasEl.style.pointerEvents = 'auto';
         }
       }
     }
     
+    function selectStamp(stampSymbol, el) {
+      activeStamp = stampSymbol;
+      setDrawingTool('stamp');
+      
+      document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('active'));
+      if (el) el.classList.add('active');
+    }
+    
+    function drawStamp(x, y) {
+      if (!ctx) return;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = drawColor;
+      
+      let fontSize = 16;
+      if (drawSize === 2) fontSize = 14;
+      else if (drawSize === 5) fontSize = 24;
+      else if (drawSize === 10) fontSize = 36;
+      
+      ctx.font = fontSize + 'px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(activeStamp, x, y);
+    }
+    
     function setDrawingColor(color, el) {
       drawColor = color;
-      if (drawMode !== 'highlight') {
+      if (drawMode !== 'highlight' && drawMode !== 'stamp' && drawMode !== 'line' && drawMode !== 'rect' && drawMode !== 'circle') {
         setDrawingTool('draw');
       }
       document.querySelectorAll('.color-picker-dot').forEach(dot => dot.classList.remove('active'));

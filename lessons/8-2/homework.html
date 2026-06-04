@@ -1,0 +1,2405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Interactive Homework — Lesson 8-2: Mean, Median, and Mode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #12355b;
+  --navy-light: #18466f;
+  --teal: #1fa6a2;
+  --teal-light: #dff2ee;
+  --amber: #f2c15b;
+  --amber-light: #fef7e0;
+  --cream: #f7f4ec;
+  --coral: #d9795d;
+  --coral-light: #fce6de;
+  --white: #ffffff;
+  --bg: var(--cream);
+  --card: #ffffff;
+  --ink: #21313f;
+  --muted: #5f6f80;
+  --line: #d7e2ed;
+  
+  --success: #0f7c4a;
+  --success-bg: #e6f7ef;
+  --error: #b64e2f;
+  --error-bg: #fef0ec;
+  --hint: #875f00;
+  --hint-bg: #fef7e0;
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-body: "Hanken Grotesk", Calibri, "Segoe UI", system-ui, sans-serif;
+  
+  --shadow: 0 8px 30px rgba(18, 53, 91, 0.05);
+  --shadow-sm: 0 4px 12px rgba(18, 53, 91, 0.02);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  padding-bottom: 120px; /* Space for the sticky bottom bar */
+}
+
+a { color: var(--navy); text-decoration: none; font-weight: 700; }
+a:hover { text-decoration: underline; }
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* Header Styles */
+header.homework-header {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  color: var(--white);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+header.homework-header::after {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(31, 166, 162, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--amber);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.back-link:hover {
+  color: var(--white);
+  text-decoration: none;
+}
+
+.header-meta {
+  font-family: var(--font-display);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-light);
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+header.homework-header h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+}
+
+.objectives-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.objective-row {
+  margin-bottom: 8px;
+  font-size: 14.5px;
+}
+.objective-row:last-child { margin-bottom: 0; }
+.objective-badge {
+  background: var(--amber);
+  color: var(--navy);
+  font-weight: 800;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+/* Cards & Generic Layout */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  color: var(--navy);
+  font-size: 20px;
+  margin: 0 0 16px 0;
+}
+
+/* Vocabulary Flashcards */
+.vocab-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--teal) transparent;
+}
+
+.vocab-container::-webkit-scrollbar {
+  height: 6px;
+}
+.vocab-container::-webkit-scrollbar-thumb {
+  background: var(--teal);
+  border-radius: 3px;
+}
+
+.vocab-card {
+  flex: 0 0 240px;
+  height: 160px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.vocab-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.vocab-card.flipped .vocab-card-inner {
+  transform: rotateY(180deg);
+}
+
+.vocab-card-front, .vocab-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+}
+
+.vocab-card-front {
+  background: var(--white);
+  color: var(--navy);
+}
+
+.vocab-card-front h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.vocab-es {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 13px;
+  margin: 2px 0 0 0;
+}
+
+.vocab-visual-hint {
+  font-size: 12px;
+  background: var(--teal-light);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  margin-top: 10px;
+  text-align: left;
+  border-left: 3px solid var(--teal);
+}
+
+.flip-prompt {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: auto;
+}
+
+.vocab-card-back {
+  background: var(--navy);
+  color: var(--white);
+  transform: rotateY(180deg);
+  justify-content: center;
+  align-items: center;
+}
+
+.vocab-def {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.vocab-def-es {
+  font-size: 12px;
+  color: var(--amber);
+  margin: 6px 0 0 0;
+  font-style: italic;
+}
+
+/* Practice Problem Cards */
+.problem-section {
+  position: relative;
+}
+
+.problem-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--teal-light);
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+}
+
+.problem-number-badge {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--navy);
+  font-size: 18px;
+}
+
+.problem-type-badge {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--teal);
+  background: var(--teal-light);
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+
+.problem-stem {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 18px 0;
+  line-height: 1.45;
+}
+
+/* Custom styled inputs, checkboxes, and select dropdowns */
+.custom-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14.5px;
+  padding: 10px 14px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--ink);
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px var(--teal-light);
+}
+
+.custom-textarea {
+  width: 100%;
+  height: 110px;
+  font-family: inherit;
+  font-size: 14.5px;
+  padding: 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--ink);
+  outline: none;
+  resize: vertical;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px var(--teal-light);
+}
+
+.custom-select {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--ink);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 150px;
+}
+
+.custom-select:focus {
+  border-color: var(--teal);
+}
+
+/* Multiple Choice Custom Radios */
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mc-option-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.mc-option-label:hover {
+  background: var(--cream);
+  border-color: var(--teal);
+}
+
+.mc-option-label input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.mc-option-label input[type="radio"]:checked ~ .custom-radio {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+
+.mc-option-label input[type="radio"]:checked ~ .custom-radio::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--white);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.choice-text {
+  flex: 1;
+}
+
+/* Matching Rows */
+.matching-pairs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.matching-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.matching-term {
+  font-weight: 700;
+  color: var(--navy);
+  flex: 1;
+}
+
+.matching-select-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Drag Sort Layout */
+.drag-sort-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drag-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.drag-column {
+  background: var(--cream);
+  border: 2px dashed var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+}
+
+.drag-column-header {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-align: center;
+  color: var(--navy);
+  margin-bottom: 12px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.drag-column-slots {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 100px;
+}
+
+.drag-source-section {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.drag-source-header {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.drag-source-pile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 60px;
+  align-items: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+}
+
+.drag-card {
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  cursor: grab;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+
+.drag-card:active {
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+.drag-handle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mobile-cat-select {
+  display: none;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  outline: none;
+}
+
+@media (max-width: 600px) {
+  .mobile-cat-select {
+    display: block;
+    margin-left: 6px;
+  }
+}
+
+/* Fill Table */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+}
+
+.fill-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+}
+
+.fill-table th, .fill-table td {
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  text-align: left;
+  font-size: 14.5px;
+}
+
+.fill-table th {
+  background: var(--navy);
+  color: var(--white);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.fill-table tr:nth-child(even) td {
+  background: var(--cream);
+}
+
+.table-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-input {
+  max-width: 180px;
+  padding: 6px 10px;
+}
+
+/* Error Analysis clipboard */
+.clipboard-box {
+  margin-top: 14px;
+  margin-bottom: 18px;
+  background: #f1f4f8;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--line);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.clipboard-top {
+  height: 24px;
+  background: var(--navy-light);
+  position: relative;
+}
+
+.clipboard-top::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+}
+
+.clipboard-paper {
+  background: #fcfdfd;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-image: linear-gradient(#e5ecf4 1px, transparent 1px);
+  background-size: 100% 28px;
+  line-height: 28px;
+}
+
+.worked-step {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.worked-step.highlighted {
+  background-color: var(--amber-light);
+}
+
+.step-badge {
+  background: var(--navy);
+  color: var(--white);
+  font-size: 10.5px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.step-label {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.step-work {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.error-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--cream);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin-top: 16px;
+}
+
+.error-select-row, .error-explain-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.error-select-row label, .error-explain-row label {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+}
+
+/* Open Response Starter Sentence Cards */
+.sentence-frame-card {
+  background: var(--amber-light);
+  border: 1px dashed var(--amber);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sentence-frame-tag {
+  font-weight: 700;
+  color: var(--hint);
+}
+
+.sentence-frame-text {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--navy);
+  cursor: pointer;
+  text-decoration: underline dotted var(--navy);
+}
+
+.sentence-frame-text:hover {
+  color: var(--teal);
+  text-decoration: underline dotted var(--teal);
+}
+
+.click-to-insert-hint {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.open-response-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.word-bank-container {
+  margin-top: 12px;
+}
+
+.word-bank-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.word-bank-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.word-chip {
+  background: var(--teal-light);
+  color: var(--teal);
+  border: 1.5px solid var(--teal);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.word-chip:hover {
+  background: var(--teal);
+  color: var(--white);
+}
+
+/* Feedback Marks & Explanations */
+.feedback-badge {
+  font-size: 16px;
+  font-weight: 800;
+  margin-left: 6px;
+  width: 20px;
+  text-align: center;
+  display: inline-block;
+}
+
+.feedback-badge.success-check::after {
+  content: "✓";
+  color: var(--success);
+}
+
+.feedback-badge.error-cross::after {
+  content: "✕";
+  color: var(--error);
+}
+
+.problem-section.correct {
+  border-color: var(--success);
+  background-image: linear-gradient(rgba(15, 124, 74, 0.02), rgba(15, 124, 74, 0.02));
+}
+
+.problem-section.incorrect {
+  border-color: var(--error);
+  background-image: linear-gradient(rgba(182, 78, 47, 0.02), rgba(182, 78, 47, 0.02));
+}
+
+.explanation-box {
+  margin-top: 14px;
+  background: var(--success-bg);
+  border: 1px solid var(--success);
+  color: var(--success);
+  border-left: 4px solid var(--success);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+}
+
+/* Inputs colored states */
+.custom-input.is-correct, .custom-select.is-correct, .custom-textarea.is-correct {
+  border-color: var(--success) !important;
+  background-color: var(--success-bg) !important;
+}
+
+.custom-input.is-incorrect, .custom-select.is-incorrect, .custom-textarea.is-incorrect {
+  border-color: var(--error) !important;
+  background-color: var(--error-bg) !important;
+}
+
+.mc-option-label.is-correct {
+  border-color: var(--success) !important;
+  background-color: var(--success-bg) !important;
+}
+
+.mc-option-label.is-incorrect {
+  border-color: var(--error) !important;
+  background-color: var(--error-bg) !important;
+}
+
+.drag-card.is-correct {
+  border-color: var(--success) !important;
+  background-color: var(--success-bg) !important;
+}
+
+.drag-card.is-incorrect {
+  border-color: var(--error) !important;
+  background-color: var(--error-bg) !important;
+}
+
+/* Reveal box references */
+.reveal-box {
+  background: var(--success-bg);
+  border: 1px dashed var(--success);
+  color: var(--success);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  margin-top: 10px;
+}
+
+/* Sticky Bottom Bar */
+.bottom-status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1.5px solid var(--line);
+  padding: 16px 24px;
+  z-index: 1000;
+  box-shadow: 0 -10px 30px rgba(18, 53, 91, 0.08);
+}
+
+.status-bar-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sound-toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sound-toggle-btn:hover {
+  background-color: var(--teal-light);
+}
+
+.score-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.score-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14.5px;
+  color: var(--navy);
+  display: flex;
+  justify-content: space-between;
+}
+
+.score-text span {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.progress-bar-outer {
+  height: 10px;
+  background: var(--cream);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--teal), var(--navy));
+  border-radius: 5px;
+  transition: width 0.4s ease-in-out;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14.5px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: var(--navy);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--navy);
+  border: 2px solid var(--line);
+}
+
+.btn-secondary:hover {
+  background: var(--cream);
+  border-color: var(--navy);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
+
+@media (max-width: 550px) {
+  .bottom-status-bar {
+    padding: 12px;
+  }
+  .status-bar-wrapper {
+    gap: 10px;
+  }
+  .action-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .action-buttons button {
+    flex: 1;
+    justify-content: center;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <header class="homework-header">
+    <a href="/curriculum/" class="back-link">⬅ Curriculum Hub</a>
+    <div class="header-meta">Unit 8 · Standard 6.SP.3 · Homework</div>
+    <h1>Mean, Median, and Mode</h1>
+    <div class="objectives-card">
+      <div class="objective-row"><span class="objective-badge">Target</span> <strong>I can find the mean, median, and mode of a data set.</strong></div>
+      <div class="objective-row"><span class="objective-badge">Discuss</span> <strong>I can explain my reasoning using the words mean, median, mode, and outlier.</strong></div>
+    </div>
+  </header>
+
+  
+    <section class="vocab-section card">
+      <h2 class="section-title">🔑 Key Vocabulary</h2>
+      <div class="vocab-container">
+        
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <h3>Mean</h3>
+                  <p class="vocab-es">Media</p>
+                  <div class="vocab-visual-hint">💡 Example: Mean of 2, 4, 6: add them (2+4+6=12), divide by 3 → mean = 4</div>
+                  <div class="flip-prompt">Tap to show definition ➔</div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The average. Add all the numbers, then divide by how many there are.</p>
+                  <p class="vocab-def-es">El promedio. Suma todos los números y divide entre cuántos hay.</p>
+                </div>
+              </div>
+            </div>
+          
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <h3>Median</h3>
+                  <p class="vocab-es">Mediana</p>
+                  <div class="vocab-visual-hint">💡 Example: Data: 1, 3, 5, 7, 9 → the middle (3rd) value is 5, so median = 5</div>
+                  <div class="flip-prompt">Tap to show definition ➔</div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The middle number when you put them in order.</p>
+                  <p class="vocab-def-es">El número del medio cuando los pones en orden.</p>
+                </div>
+              </div>
+            </div>
+          
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <h3>Mode</h3>
+                  <p class="vocab-es">Moda</p>
+                  <div class="vocab-visual-hint">💡 Example: Data: 2, 3, 3, 5, 7 → 3 appears twice (most often), so mode = 3</div>
+                  <div class="flip-prompt">Tap to show definition ➔</div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The number that shows up most often.</p>
+                  <p class="vocab-def-es">El número que aparece más veces.</p>
+                </div>
+              </div>
+            </div>
+          
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <h3>Outlier</h3>
+                  <p class="vocab-es">Valor atípico</p>
+                  <div class="vocab-visual-hint">💡 Example: Data: 10, 12, 11, 13, 50 → 50 is far from the others, so 50 is an outlier</div>
+                  <div class="flip-prompt">Tap to show definition ➔</div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">A number that is much bigger or smaller than the rest.</p>
+                  <p class="vocab-def-es">Un número mucho mayor o menor que los demás.</p>
+                </div>
+              </div>
+            </div>
+          
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <h3>Data distribution</h3>
+                  <p class="vocab-es">Distribución de datos</p>
+                  <div class="vocab-visual-hint">💡 Example: If most values cluster in the center with fewer at the ends, the distribution is symmetric</div>
+                  <div class="flip-prompt">Tap to show definition ➔</div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
+                  <p class="vocab-def-es">Cómo se ven los datos: dónde están y qué tan separados están.</p>
+                </div>
+              </div>
+            </div>
+          
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <h3>Variability</h3>
+                  <p class="vocab-es">Variabilidad</p>
+                  <div class="vocab-visual-hint">💡 Example: 8, 9, 10, 11 has low variability (close together); 2, 10, 25, 40 has high variability (far apart)</div>
+                  <div class="flip-prompt">Tap to show definition ➔</div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">How spread out the numbers are.</p>
+                  <p class="vocab-def-es">Qué tan separados están los números.</p>
+                </div>
+              </div>
+            </div>
+          
+      </div>
+    </section>
+  
+  
+  <main class="problems-container">
+    
+    <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 1</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Find the mean of: 10, 14, 8, 12, 16</p>
+        <div class="mc-options" data-correct="0" data-explanation="Sum = 10 + 14 + 8 + 12 + 16 = 60. Mean = 60 ÷ 5 = 12.">
+          
+            <label class="mc-option-label" id="label_q_0_0">
+              <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_1">
+              <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">14</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_2">
+              <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">10</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_3">
+              <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">60</span>
+            </label>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 2</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Find the median of: 3, 7, 2, 9, 5</p>
+        <div class="mc-options" data-correct="0" data-explanation="Ordered: 2, 3, 5, 7, 9. The middle value is 5.">
+          
+            <label class="mc-option-label" id="label_q_1_0">
+              <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_1_1">
+              <input type="radio" name="q_1" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_1_2">
+              <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_1_3">
+              <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5.2</span>
+            </label>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 3</div>
+        <div class="problem-type-badge">FILL TABLE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Complete the table.</p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Data Set</th><th>Mean</th><th>Median</th><th>Mode</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>5, 8, 8, 10, 14</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_0_1"
+                                   data-correct="9" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_0_2"
+                                   data-correct="8" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_0_3"
+                                   data-correct="8" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>20, 25, 25, 30, 25, 35</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_1_1"
+                                   data-correct="26.67" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_1_2"
+                                   data-correct="25" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_1_3"
+                                   data-correct="25" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>100, 110, 90, 100, 115, 95</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_2_1"
+                                   data-correct="101.67" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_2_2"
+                                   data-correct="100" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_2_table_2_3"
+                                   data-correct="100" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_3" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 4</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Match each measure to its definition.</p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="Mean" data-correct="Sum ÷ Count">
+              <div class="matching-term">Mean</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Max − Min">Max − Min</option><option value="Middle value">Middle value</option><option value="Most frequent">Most frequent</option><option value="Sum ÷ Count">Sum ÷ Count</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Median" data-correct="Middle value">
+              <div class="matching-term">Median</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Max − Min">Max − Min</option><option value="Middle value">Middle value</option><option value="Most frequent">Most frequent</option><option value="Sum ÷ Count">Sum ÷ Count</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Mode" data-correct="Most frequent">
+              <div class="matching-term">Mode</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Max − Min">Max − Min</option><option value="Middle value">Middle value</option><option value="Most frequent">Most frequent</option><option value="Sum ÷ Count">Sum ÷ Count</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Range" data-correct="Max − Min">
+              <div class="matching-term">Range</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Max − Min">Max − Min</option><option value="Middle value">Middle value</option><option value="Most frequent">Most frequent</option><option value="Sum ÷ Count">Sum ÷ Count</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Data set: 4, 6, 6, 8, 10, 12. What is the median?</p>
+        <div class="mc-options" data-correct="0" data-explanation="With 6 values, the median is the average of the 3rd and 4th values: (6 + 8) ÷ 2 = 7.">
+          
+            <label class="mc-option-label" id="label_q_4_0">
+              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_1">
+              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_2">
+              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_3">
+              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7.67</span>
+            </label>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 6</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">What is the mean of 4, 6, 8, 10, 12?</p>
+        <div class="mc-options" data-correct="0" data-explanation="Sum = 40; 40 ÷ 5 = 8.">
+          
+            <label class="mc-option-label" id="label_q_5_0">
+              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_1">
+              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">10</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_2">
+              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">40</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_3">
+              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6</span>
+            </label>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 7</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">What is the median of 3, 7, 9, 12, 15?</p>
+        <div class="mc-options" data-correct="0" data-explanation="The middle value of five ordered numbers is the third one: 9.">
+          
+            <label class="mc-option-label" id="label_q_6_0">
+              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">9</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_1">
+              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_2">
+              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_3">
+              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">46</span>
+            </label>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 8</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">What is the mode of 2, 5, 5, 7, 9, 5?</p>
+        <div class="mc-options" data-correct="0" data-explanation="5 appears most often (three times).">
+          
+            <label class="mc-option-label" id="label_q_7_0">
+              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_7_1">
+              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_7_2">
+              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">2</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_7_3">
+              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">9</span>
+            </label>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 9</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">What is the median of 4, 8, 10, 14?</p>
+        <div class="mc-options" data-correct="0" data-explanation="With four values, average the middle two: (8 + 10) ÷ 2 = 9.">
+          
+            <label class="mc-option-label" id="label_q_8_0">
+              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">9</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_1">
+              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">10</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_2">
+              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_3">
+              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12</span>
+            </label>
+          
+        </div>
+      </div>
+    
+    </section>
+  
+
+    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Problem 10</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Find the Stats Error</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_9_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Data set:</span>
+                <span class="step-work">12, 15, 18, 15, 20</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Find mean:</span>
+                <span class="step-work">Sum = 80, Count = 5, Mean = 80 ÷ 5 = 16</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Find median:</span>
+                <span class="step-work">Ordered: 12, 15, 15, 18, 20 → Median = 15</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Find mode:</span>
+                <span class="step-work">Mode = 18 (the biggest number)</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_9">Which step has the error?</label>
+            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
+            <strong>Correct Work Reference:</strong> Mode = 15 (appears twice, more than any other value). Mode is the most frequent value, not the largest.
+          </div>
+        </div>
+      </div>
+    
+    </section>
+  
+  </main>
+  
+</div>
+
+<!-- Sticky bottom actions bar -->
+<div class="bottom-status-bar">
+  <div class="status-bar-wrapper">
+    <button class="sound-toggle-btn" id="sound_toggle" onclick="toggleSound()" title="Toggle Sound Effects">🔊</button>
+    
+    <div class="score-progress-container">
+      <div class="score-text">
+        Homework Progress: <span id="progress_text">0 / 10 Completed</span>
+      </div>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progress_bar"></div>
+      </div>
+    </div>
+    
+    <div class="action-buttons">
+      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()">Check Answers</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Sound engine
+let soundEnabled = true;
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById("sound_toggle");
+  btn.textContent = soundEnabled ? "🔊" : "🔇";
+  btn.title = soundEnabled ? "Mute Sound Effects" : "Unmute Sound Effects";
+}
+
+function playSuccessArpeggio() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    const now = audioCtx.currentTime;
+    const freqs = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5 major chord
+    freqs.forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(f, now + i * 0.1);
+      
+      gain.gain.setValueAtTime(0.1, now + i * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.3);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start(now + i * 0.1);
+      osc.stop(now + i * 0.1 + 0.35);
+    });
+  } catch (e) {
+    console.error("Audio error:", e);
+  }
+}
+
+function playFailureSound() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    const now = audioCtx.currentTime;
+    const freqs = [180, 140]; // Two low warning blips
+    freqs.forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(f, now + i * 0.12);
+      
+      gain.gain.setValueAtTime(0.08, now + i * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.2);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start(now + i * 0.12);
+      osc.stop(now + i * 0.12 + 0.25);
+    });
+  } catch (e) {
+    console.error("Audio error:", e);
+  }
+}
+
+// Drag & Drop engine
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function handleDragStart(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function handleDrop(ev, probIdx, categoryId) {
+  ev.preventDefault();
+  const cardId = ev.dataTransfer.getData("text");
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  
+  // Check if dropping card belongs to this problem
+  const prefix = "card_" + probIdx + "_";
+  if (!card.id.startsWith(prefix)) return;
+  
+  let targetContainer;
+  if (categoryId) {
+    targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
+  } else {
+    targetContainer = document.getElementById("pile_" + probIdx);
+  }
+  
+  if (targetContainer) {
+    targetContainer.appendChild(card);
+    const select = card.querySelector(".mobile-cat-select");
+    if (select) select.value = categoryId || "";
+    saveState();
+    updateProgress();
+  }
+}
+
+function mobileMoveCard(select, cardId, probIdx) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const categoryId = select.value;
+  let targetContainer;
+  if (categoryId) {
+    targetContainer = document.getElementById("slots_" + probIdx + "_" + categoryId);
+  } else {
+    targetContainer = document.getElementById("pile_" + probIdx);
+  }
+  if (targetContainer) {
+    targetContainer.appendChild(card);
+  }
+}
+
+function resetDragSort(probIdx) {
+  const pile = document.getElementById("pile_" + probIdx);
+  const slots = document.querySelectorAll("[id^='slots_" + probIdx + "_']");
+  slots.forEach(slot => {
+    const cards = Array.from(slot.children);
+    cards.forEach(card => {
+      pile.appendChild(card);
+      const select = card.querySelector(".mobile-cat-select");
+      if (select) select.value = "";
+    });
+  });
+  
+  // Clean all validation classes on items of this problem
+  const allCards = pile.querySelectorAll(".drag-card");
+  allCards.forEach(card => {
+    card.classList.remove("is-correct", "is-incorrect");
+  });
+  
+  const pCard = document.getElementById("problem_" + probIdx);
+  if (pCard) pCard.classList.remove("correct", "incorrect");
+}
+
+// Open Response Word chip inserters
+function insertWord(probIdx, word) {
+  const textarea = document.getElementById("open_response_" + probIdx);
+  if (!textarea) return;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+  const before = text.substring(0, start);
+  const after = text.substring(end, text.length);
+  
+  // Insert word with trailing space
+  textarea.value = before + (start > 0 && text[start - 1] !== " " ? " " : "") + word + " " + after;
+  textarea.focus();
+  
+  // Move cursor after the inserted word
+  const newPos = start + (start > 0 && text[start - 1] !== " " ? 1 : 0) + word.length + 1;
+  textarea.setSelectionRange(newPos, newPos);
+  
+  saveState();
+  updateProgress();
+}
+
+function insertSentenceStarter(probIdx, starter) {
+  const textarea = document.getElementById("open_response_" + probIdx);
+  if (!textarea) return;
+  if (textarea.value.trim() === "") {
+    textarea.value = starter + " ";
+  } else {
+    // Append at end if not empty
+    textarea.value = textarea.value.trim() + " " + starter + " ";
+  }
+  textarea.focus();
+  const len = textarea.value.length;
+  textarea.setSelectionRange(len, len);
+  saveState();
+  updateProgress();
+}
+
+// State Persistence (localStorage)
+const STORAGE_KEY = "hw_state_lesson_" + "8-2";
+
+function saveState() {
+  const state = {
+    inputs: {},
+    dragPositions: {}
+  };
+  
+  // Save text inputs, select dropdowns, textareas, and radios
+  const inputs = document.querySelectorAll(".custom-input, .custom-select, .custom-textarea, input[type='radio']:checked");
+  inputs.forEach(input => {
+    if (input.type === "radio") {
+      state.inputs[input.name] = input.value;
+    } else {
+      state.inputs[input.name || input.id] = input.value;
+    }
+  });
+  
+  // Save drag-sort item locations
+  const dragCards = document.querySelectorAll(".drag-card");
+  dragCards.forEach(card => {
+    const parentContainer = card.parentElement;
+    if (parentContainer) {
+      state.dragPositions[card.id] = parentContainer.id;
+    }
+  });
+  
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const state = JSON.parse(raw);
+    
+    // Restore text inputs, selects, textareas
+    if (state.inputs) {
+      for (const [id, val] of Object.entries(state.inputs)) {
+        const input = document.getElementById(id) || document.querySelector("[name='" + id + "']");
+        if (input) {
+          if (input.type === "radio") {
+            const rad = document.querySelector("input[name='" + id + "'][value='" + val + "']");
+            if (rad) rad.checked = true;
+          } else {
+            input.value = val;
+          }
+        }
+      }
+    }
+    
+    // Restore drag card positions
+    if (state.dragPositions) {
+      for (const [cardId, parentId] of Object.entries(state.dragPositions)) {
+        const card = document.getElementById(cardId);
+        const parent = document.getElementById(parentId);
+        if (card && parent) {
+          parent.appendChild(card);
+          // Sync select dropdown for mobile
+          const select = card.querySelector(".mobile-cat-select");
+          if (select) {
+            // parentId is like slots_0_prime
+            const parts = parentId.split("_");
+            if (parts.length >= 3) {
+              select.value = parts.slice(2).join("_");
+            } else {
+              select.value = "";
+            }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error restoring state:", e);
+  }
+}
+
+// Math normalization for scoring text entries
+function normalizeMath(val) {
+  return String(val || "")
+    .toLowerCase()
+    .trim()
+    .replace(/s+/g, "")          // remove all whitespace
+    .replace(/*/g, "×")          // asterisk to multiplication
+    .replace(/x/g, "×")          // letter x to multiplication
+    .replace(/^2/g, "²")
+    .replace(/^3/g, "³")
+    .replace(/^4/g, "⁴")
+    .replace(/^5/g, "⁵")
+    .replace(/^6/g, "⁶");
+}
+
+function updateProgress() {
+  const problems = document.querySelectorAll(".problem-section");
+  let completedCount = 0;
+  
+  problems.forEach((section, idx) => {
+    const type = section.dataset.problemType;
+    let hasValue = false;
+    
+    if (type === "multiple-choice") {
+      const selected = section.querySelector("input[type='radio']:checked");
+      if (selected) hasValue = true;
+    } else if (type === "matching-game") {
+      const selects = Array.from(section.querySelectorAll(".matching-select"));
+      const answered = selects.filter(s => s.value !== "");
+      if (answered.length > 0) hasValue = true;
+    } else if (type === "drag-sort") {
+      const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
+      if (itemsInColumns.length > 0) hasValue = true;
+    } else if (type === "fill-table") {
+      const inputs = Array.from(section.querySelectorAll(".table-input"));
+      const filled = inputs.filter(i => i.value.trim() !== "");
+      if (filled.length > 0) hasValue = true;
+    } else if (type === "error-analysis") {
+      const sel = section.querySelector(".error-step-select");
+      const txt = section.querySelector(".error-explain-textarea");
+      if ((sel && sel.value !== "") || (txt && txt.value.trim() !== "")) hasValue = true;
+    } else if (type === "open-response") {
+      const txt = section.querySelector(".open-response-textarea");
+      if (txt && txt.value.trim() !== "") hasValue = true;
+    }
+    
+    if (hasValue) completedCount++;
+  });
+  
+  const total = problems.length;
+  const pct = total > 0 ? (completedCount / total) * 100 : 0;
+  document.getElementById("progress_bar").style.width = pct + "%";
+  document.getElementById("progress_text").textContent = completedCount + " / " + total + " Completed";
+}
+
+function checkWorksheet() {
+  const problems = document.querySelectorAll(".problem-section");
+  let correctCount = 0;
+  let hasIncorrect = false;
+  
+  problems.forEach((section, idx) => {
+    const type = section.dataset.problemType;
+    let isProblemCorrect = true;
+    
+    // Clear previous check classes
+    section.classList.remove("correct", "incorrect");
+    const explanationBoxes = section.querySelectorAll(".explanation-box");
+    explanationBoxes.forEach(b => b.remove());
+    
+    if (type === "multiple-choice") {
+      const container = section.querySelector(".mc-options");
+      const selected = container.querySelector("input[type='radio']:checked");
+      const correctIdx = container.dataset.correct;
+      const explanation = container.dataset.explanation;
+      
+      // Reset radio option styles
+      const labels = container.querySelectorAll(".mc-option-label");
+      labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
+      
+      if (!selected) {
+        isProblemCorrect = false;
+      } else {
+        const val = selected.value;
+        if (val === correctIdx) {
+          // Highlight selected label as correct
+          const correctLabel = document.getElementById("label_q_" + idx + "_" + val);
+          if (correctLabel) correctLabel.classList.add("is-correct");
+        } else {
+          isProblemCorrect = false;
+          // Highlight selected label as incorrect
+          const incorrectLabel = document.getElementById("label_q_" + idx + "_" + val);
+          if (incorrectLabel) incorrectLabel.classList.add("is-incorrect");
+          // Highlight correct label as correct
+          const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
+          if (correctLabel) correctLabel.classList.add("is-correct");
+        }
+      }
+      
+      // Append explanation if checked
+      if (selected && explanation) {
+        const expDiv = document.createElement("div");
+        expDiv.className = "explanation-box";
+        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        container.appendChild(expDiv);
+      }
+      
+    } else if (type === "matching-game") {
+      const rows = section.querySelectorAll(".matching-row");
+      
+      rows.forEach(row => {
+        const select = row.querySelector(".matching-select");
+        const correct = row.dataset.correct;
+        const feedbackBadge = row.querySelector(".feedback-badge");
+        
+        select.classList.remove("is-correct", "is-incorrect");
+        feedbackBadge.className = "feedback-badge";
+        
+        if (select.value === "") {
+          isProblemCorrect = false;
+          select.classList.add("is-incorrect");
+          feedbackBadge.classList.add("error-cross");
+        } else if (select.value === correct) {
+          select.classList.add("is-correct");
+          feedbackBadge.classList.add("success-check");
+        } else {
+          isProblemCorrect = false;
+          select.classList.add("is-incorrect");
+          feedbackBadge.classList.add("error-cross");
+        }
+      });
+      
+    } else if (type === "drag-sort") {
+      const dragCards = section.querySelectorAll(".drag-card");
+      
+      dragCards.forEach(card => {
+        card.classList.remove("is-correct", "is-incorrect");
+        const correctCat = card.dataset.correctCategory;
+        const parentCol = card.parentElement;
+        
+        if (parentCol && parentCol.parentElement && parentCol.parentElement.classList.contains("drag-column")) {
+          const actualCat = parentCol.parentElement.dataset.categoryId;
+          if (actualCat === correctCat) {
+            card.classList.add("is-correct");
+          } else {
+            isProblemCorrect = false;
+            card.classList.add("is-incorrect");
+          }
+        } else {
+          // Card still in source pile
+          isProblemCorrect = false;
+          card.classList.add("is-incorrect");
+        }
+      });
+      
+    } else if (type === "fill-table") {
+      const inputs = section.querySelectorAll(".table-input");
+      
+      inputs.forEach(input => {
+        input.classList.remove("is-correct", "is-incorrect");
+        const wrapper = input.parentElement;
+        const feedbackBadge = wrapper.querySelector(".feedback-badge");
+        feedbackBadge.className = "feedback-badge";
+        
+        const correctVal = input.dataset.correct;
+        const studentVal = input.value;
+        
+        if (studentVal.trim() === "") {
+          isProblemCorrect = false;
+          input.classList.add("is-incorrect");
+          feedbackBadge.classList.add("error-cross");
+        } else if (normalizeMath(studentVal) === normalizeMath(correctVal)) {
+          input.classList.add("is-correct");
+          feedbackBadge.classList.add("success-check");
+        } else {
+          isProblemCorrect = false;
+          input.classList.add("is-incorrect");
+          feedbackBadge.classList.add("error-cross");
+        }
+      });
+      
+    } else if (type === "error-analysis") {
+      const select = section.querySelector(".error-step-select");
+      const textarea = section.querySelector(".error-explain-textarea");
+      const revealBox = section.querySelector(".reveal-box");
+      
+      // Clean select and textarea validation states
+      select.classList.remove("is-correct", "is-incorrect");
+      textarea.classList.remove("is-correct", "is-incorrect");
+      
+      const selectBadge = select.parentElement.querySelector(".feedback-badge");
+      const textareaBadge = textarea.parentElement.querySelector(".feedback-badge");
+      selectBadge.className = "feedback-badge";
+      textareaBadge.className = "feedback-badge";
+      
+      const correctStep = select.dataset.correct;
+      
+      // Highlight worked steps inside paper clipboard based on selection
+      const workedSteps = section.querySelectorAll(".worked-step");
+      workedSteps.forEach(s => s.classList.remove("highlighted"));
+      
+      if (select.value !== "") {
+        const stepElement = document.getElementById("step_q_" + idx + "_" + select.value);
+        if (stepElement) stepElement.classList.add("highlighted");
+      }
+      
+      // Check step selection
+      if (select.value === correctStep) {
+        select.classList.add("is-correct");
+        selectBadge.classList.add("success-check");
+      } else {
+        isProblemCorrect = false;
+        select.classList.add("is-incorrect");
+        selectBadge.classList.add("error-cross");
+      }
+      
+      // Check written explanation
+      if (textarea.value.trim().length >= 15) {
+        textarea.classList.add("is-correct");
+        textareaBadge.classList.add("success-check");
+      } else {
+        isProblemCorrect = false;
+        textarea.classList.add("is-incorrect");
+        textareaBadge.classList.add("error-cross");
+      }
+      
+      // Show correct work reference for reinforcement
+      if (revealBox) {
+        revealBox.style.display = "block";
+      }
+      
+    } else if (type === "open-response") {
+      const textarea = section.querySelector(".open-response-textarea");
+      textarea.classList.remove("is-correct", "is-incorrect");
+      const badge = textarea.parentElement.querySelector(".feedback-badge");
+      badge.className = "feedback-badge";
+      
+      const minLen = parseInt(textarea.dataset.minLength) || 15;
+      const text = textarea.value.trim();
+      
+      let keywordsList = [];
+      try {
+        keywordsList = JSON.parse(textarea.dataset.keywords || "[]");
+      } catch (e) {}
+      
+      // Validate length and keywords
+      const hasLength = text.length >= minLen;
+      const matchedKeywords = keywordsList.filter(kw => text.toLowerCase().includes(kw.toLowerCase()));
+      
+      // If keywords list exists, require at least one keyword for green-check self-grading
+      const hasKeywords = keywordsList.length === 0 || matchedKeywords.length > 0;
+      
+      if (hasLength && hasKeywords) {
+        textarea.classList.add("is-correct");
+        badge.classList.add("success-check");
+      } else {
+        isProblemCorrect = false;
+        textarea.classList.add("is-incorrect");
+        badge.classList.add("error-cross");
+        
+        // Add helpful dynamic guidance if they failed checking
+        let msg = "Write a bit more explanation to explain your reasoning.";
+        if (keywordsList.length > 0 && matchedKeywords.length === 0) {
+          msg = "Try adding key vocabulary terms like: " + keywordsList.slice(0, 3).join(", ") + " to strengthen your response.";
+        }
+        
+        const expDiv = document.createElement("div");
+        expDiv.className = "explanation-box";
+        expDiv.style.backgroundColor = "var(--error-bg)";
+        expDiv.style.borderColor = "var(--error)";
+        expDiv.style.color = "var(--error)";
+        expDiv.innerHTML = "<strong>Hint:</strong> " + msg;
+        textarea.parentElement.parentElement.appendChild(expDiv);
+      }
+    }
+    
+    if (isProblemCorrect) {
+      correctCount++;
+      section.classList.add("correct");
+    } else {
+      hasIncorrect = true;
+      section.classList.add("incorrect");
+    }
+  });
+  
+  // Dynamic Score Feedback & Sound Effects
+  const total = problems.length;
+  document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
+  document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
+  
+  if (correctCount === total) {
+    playSuccessArpeggio();
+  } else {
+    playFailureSound();
+  }
+}
+
+function resetWorksheet() {
+  if (confirm("Are you sure you want to reset all your work?")) {
+    localStorage.removeItem(STORAGE_KEY);
+    
+    // Clear normal text inputs, textareas, dropdowns, and radios
+    const textareas = document.querySelectorAll("textarea");
+    textareas.forEach(t => {
+      t.value = "";
+      t.classList.remove("is-correct", "is-incorrect");
+    });
+    
+    const inputs = document.querySelectorAll("input[type='text']");
+    inputs.forEach(i => {
+      i.value = "";
+      i.classList.remove("is-correct", "is-incorrect");
+    });
+    
+    const selects = document.querySelectorAll("select:not(.mobile-cat-select)");
+    selects.forEach(s => {
+      s.value = "";
+      s.classList.remove("is-correct", "is-incorrect");
+    });
+    
+    const radios = document.querySelectorAll("input[type='radio']");
+    radios.forEach(r => r.checked = false);
+    
+    const labels = document.querySelectorAll(".mc-option-label");
+    labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
+    
+    // Clear feedback badges and sections
+    const badges = document.querySelectorAll(".feedback-badge");
+    badges.forEach(b => b.className = "feedback-badge");
+    
+    const sections = document.querySelectorAll(".problem-section");
+    sections.forEach(s => {
+      s.classList.remove("correct", "incorrect");
+      const expBoxes = s.querySelectorAll(".explanation-box");
+      expBoxes.forEach(b => b.remove());
+      
+      const workedSteps = s.querySelectorAll(".worked-step");
+      workedSteps.forEach(ws => ws.classList.remove("highlighted"));
+      
+      const reveal = s.querySelector(".reveal-box");
+      if (reveal) reveal.style.display = "none";
+      
+      const type = s.dataset.problemType;
+      if (type === "drag-sort") {
+        const parts = s.id.split("_");
+        const idx = parts[1];
+        resetDragSort(idx);
+      }
+    });
+    
+    // Save blank state
+    saveState();
+    updateProgress();
+    
+    // Play a reset click sound
+    if (soundEnabled) {
+      try {
+        initAudio();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(200, now);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } catch (e) {}
+    }
+  }
+}
+
+// Initial configuration
+window.onload = function() {
+  loadState();
+  updateProgress();
+  
+  // Set up dragging listeners for mobile touch screen card clicks
+  let selectedDragCard = null;
+  const cards = document.querySelectorAll(".drag-card");
+  
+  cards.forEach(card => {
+    card.addEventListener("click", function(e) {
+      if (e.target.tagName === "SELECT") return; // Let dropdown clicks handle themselves
+      
+      // Toggle select state
+      if (selectedDragCard === this) {
+        this.style.borderColor = "var(--line)";
+        selectedDragCard = null;
+      } else {
+        if (selectedDragCard) {
+          selectedDragCard.style.borderColor = "var(--line)";
+        }
+        selectedDragCard = this;
+        this.style.borderColor = "var(--teal)";
+      }
+    });
+  });
+  
+  const columns = document.querySelectorAll(".drag-column");
+  columns.forEach(col => {
+    col.addEventListener("click", function() {
+      if (selectedDragCard) {
+        const probIdx = selectedDragCard.id.split("_")[1];
+        const targetColId = this.dataset.categoryId;
+        
+        // Ensure the card belongs to this problem
+        if (selectedDragCard.id.startsWith("card_" + probIdx + "_")) {
+          const slots = this.querySelector(".drag-column-slots");
+          slots.appendChild(selectedDragCard);
+          
+          // Update corresponding select
+          const select = selectedDragCard.querySelector(".mobile-cat-select");
+          if (select) select.value = targetColId;
+          
+          selectedDragCard.style.borderColor = "var(--line)";
+          selectedDragCard = null;
+          
+          saveState();
+          updateProgress();
+        }
+      }
+    });
+  });
+};
+</script>
+</body>
+</html>

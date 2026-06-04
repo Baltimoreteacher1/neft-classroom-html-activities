@@ -178,6 +178,9 @@ function lessonResources(id) {
   if (has("lessons", id, "homework.docx")) {
     pills.push(resLink("Homework", `/lessons/${id}/homework.docx`, true));
   }
+  if (has("lessons", id, "homework.html")) {
+    pills.push(resLink("Interactive Homework", `/lessons/${id}/homework.html`, true));
+  }
   pills.push(
     resLink(
       "Google Forms",

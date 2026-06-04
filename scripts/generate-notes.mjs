@@ -28,6 +28,12 @@ const slug = (term) =>
 const blankLines = (n) =>
   Array.from({ length: n }, () => `<div class="writeline"></div>`).join("");
 
+const clozeText = (text) => {
+  return esc(text)
+    .replace(/\b\d+(\.\d+)?\b/g, "_____")
+    .replace(/\b(ratio|fraction|percent|rate|unit rate|variable|equation|coordinate|coordinates|probability|median|mean|mode|range|integer|integers|negative|positive)\b/gi, "_____");
+};
+
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
 // Matches core lessons ("3-2") and flagship lessons ("3-2-flagship").
@@ -76,12 +82,29 @@ function vocabSection(vocab = []) {
     <p class="vocab-caption">${esc(v.visual)}</p>
   </div>
   <h3 class="vocab-term">${esc(v.term)}</h3>
-  <p class="vocab-def">${esc(v.definition)}</p>
+  <div class="vocab-def-l1">
+    <p class="vocab-def">${esc(v.definition)}</p>
+  </div>
+  <div class="vocab-def-l2">
+    <p class="vocab-def-prompt">Write the definition:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
+  <div class="vocab-def-l3">
+    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
+    <div class="writeline"></div>
+    <div class="writeline"></div>
+  </div>
 </div>`;
     })
     .join("\n");
+
   return `<section class="section vocab">
-  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <h2>Key Vocabulary 
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
   <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
   <div class="vocab-grid">
 ${cards}
@@ -142,43 +165,150 @@ function workedFrame(worked) {
   if (!worked || !worked.iDo) {
     // No usable practice items — fall back to a generic guided frame.
     return `<div class="notes-gradual">
-    <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      ${blankLines(1)}
-    </div>
-    <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      ${blankLines(2)}
-    </div>
-    <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      ${blankLines(2)}
-    </div>
-  </div>`;
+      <!-- Fallback Level 1 Support -->
+      <div class="l1-only">
+        <div class="notes-gr-step notes-gr-watch">
+          <span class="notes-gr-tag">👀 Watch</span>
+          <p class="notes-gr-cue">Watch your teacher. Circle key words in the problem.</p>
+          <div class="wk-checkboxes">
+            <label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> I listened and understood</label>
+            <label class="wk-checkbox-label"><input type="checkbox" /> I wrote down the key numbers</label>
+          </div>
+          ${blankLines(1)}
+        </div>
+        <div class="notes-gr-step notes-gr-we">
+          <span class="notes-gr-tag">🤝 We try</span>
+          <p class="notes-gr-cue">Fill in the missing words with your class.</p>
+          <p class="wk-step wk-step-blank">Step 1: First, we identify the ______ elements. Step 2: Then, we calculate the ______.</p>
+          ${blankLines(1)}
+        </div>
+        <div class="notes-gr-step notes-gr-you">
+          <span class="notes-gr-tag">✏️ You try</span>
+          <p class="notes-gr-cue">Choose the correct operation: <label class="wk-checkbox-label" style="margin-left: 8px;"><input type="checkbox" /> Add</label> &nbsp; <label class="wk-checkbox-label"><input type="checkbox" /> Subtract</label> &nbsp; <label class="wk-checkbox-label"><input type="checkbox" /> Multiply</label> &nbsp; <label class="wk-checkbox-label"><input type="checkbox" /> Divide</label></p>
+          ${blankLines(1)}
+        </div>
+      </div>
+
+      <!-- Fallback Level 2 Standard -->
+      <div class="l2-only">
+        <div class="notes-gr-step notes-gr-watch">
+          <span class="notes-gr-tag">👀 Watch</span>
+          <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+          ${blankLines(1)}
+        </div>
+        <div class="notes-gr-step notes-gr-we">
+          <span class="notes-gr-tag">🤝 We try</span>
+          <p class="notes-gr-cue">Solve the next one together as a class.</p>
+          ${blankLines(2)}
+        </div>
+        <div class="notes-gr-step notes-gr-you">
+          <span class="notes-gr-tag">✏️ You try</span>
+          <p class="notes-gr-cue">Now try one on your own.</p>
+          ${blankLines(2)}
+        </div>
+      </div>
+
+      <!-- Fallback Level 3 Enrichment -->
+      <div class="l3-only">
+        <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
+          <span class="notes-gr-tag">🧠 Enrichment Scratchpad</span>
+          <p class="notes-gr-cue">Create your own visual model and write a word problem that fits today's learning objective.</p>
+          <div class="scratchpad"><span class="scratchpad-label">Doodle / Model Space</span></div>
+          <div class="work-space"><span class="ws-label">Write your word problem and explanation:</span>${blankLines(4)}</div>
+        </div>
+      </div>
+    </div>`;
   }
 
   const { iDo, weDo, youDo } = worked;
 
-  const iSteps = iDo.steps
+  // Level 1 Support
+  const iStepsL1 = iDo.steps
     .map(
       (s, i) =>
         `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${esc(s)}</li>`,
     )
     .join("");
-  const iDoHtml = `<div class="notes-gr-step notes-gr-watch">
+  const iDoHtmlL1 = `<div class="notes-gr-step notes-gr-watch">
       <span class="notes-gr-tag">👀 I do — watch</span>
       <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
       ${choiceOl(iDo.choices)}
-      <ol class="wk-steps">${iSteps}</ol>
+      <ol class="wk-steps">${iStepsL1}</ol>
       ${iDo.answer ? `<p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> ${esc(iDo.answer)}</p>` : ""}
     </div>`;
 
-  // We-Do: same problem-then-steps scaffold, but blank for the class to fill.
-  let weDoHtml = "";
+  let weDoHtmlL1 = "";
+  if (weDo) {
+    const clozeSteps = iDo.steps
+      .map(
+        (s, i) =>
+          `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${clozeText(s)}</li>`,
+      )
+      .join("");
+    const checkboxHtml = weDo.choices
+      ? `<div class="wk-checkboxes" style="margin-top: 8px;">
+          <span class="wk-anslabel">Check the correct choice:</span>
+          ${weDo.choices.map((c) => `<label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> ${esc(c)}</label>`).join("")}
+        </div>`
+      : `<p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline" style="flex: 1;"></span></p>`;
+
+    weDoHtmlL1 = `<div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together (Scaffolded)</span>
+      <p class="notes-gr-cue">Solve this with your class by filling in the missing words or values.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
+      ${choiceOl(weDo.choices)}
+      <ol class="wk-steps">${clozeSteps}</ol>
+      ${checkboxHtml}
+    </div>`;
+  }
+
+  let youDoHtmlL1 = "";
+  if (youDo) {
+    const checkboxHtml = youDo.choices
+      ? `<div class="wk-checkboxes" style="margin-top: 8px; margin-bottom: 8px;">
+          <span class="wk-anslabel">Check the correct choice:</span>
+          ${youDo.choices.map((c) => `<label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> ${esc(c)}</label>`).join("")}
+        </div>`
+      : "";
+    youDoHtmlL1 = `<div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn (Scaffolded)</span>
+      <p class="notes-gr-cue">Try it on your own. Fill in the steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
+      ${choiceOl(youDo.choices)}
+      ${checkboxHtml}
+      <div class="work-space">
+        <span class="ws-label">Fill in your solution path:</span>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
+        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <span class="writeline" style="flex:1; height:20px;"></span></div>
+      </div>
+    </div>`;
+  }
+
+  const l1Html = `<div class="l1-only">
+    <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
+    ${iDoHtmlL1}
+    ${weDoHtmlL1}
+    ${youDoHtmlL1}
+  </div>`;
+
+  // Level 2 Standard
+  const iStepsL2 = iDo.steps
+    .map(
+      (s, i) =>
+        `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${esc(s)}</li>`,
+    )
+    .join("");
+  const iDoHtmlL2 = `<div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
+      ${choiceOl(iDo.choices)}
+      <ol class="wk-steps">${iStepsL2}</ol>
+      ${iDo.answer ? `<p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> ${esc(iDo.answer)}</p>` : ""}
+    </div>`;
+
+  let weDoHtmlL2 = "";
   if (weDo) {
     const stepCount = Math.min(Math.max(iDo.steps.length, 2), 3);
     const blankSteps = Array.from(
@@ -186,7 +316,7 @@ function workedFrame(worked) {
       (_, i) =>
         `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><span class="writeline"></span></li>`,
     ).join("");
-    weDoHtml = `<div class="notes-gr-step notes-gr-we">
+    weDoHtmlL2 = `<div class="notes-gr-step notes-gr-we">
       <span class="notes-gr-tag">🤝 We do — together</span>
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
@@ -196,10 +326,9 @@ function workedFrame(worked) {
     </div>`;
   }
 
-  // You-Do: one more problem to try independently.
-  let youDoHtml = "";
+  let youDoHtmlL2 = "";
   if (youDo) {
-    youDoHtml = `<div class="notes-gr-step notes-gr-you">
+    youDoHtmlL2 = `<div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
@@ -208,11 +337,61 @@ function workedFrame(worked) {
     </div>`;
   }
 
-  return `<div class="notes-gradual">
+  const l2Html = `<div class="l2-only">
     <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
-    ${iDoHtml}
-    ${weDoHtml}
-    ${youDoHtml}
+    ${iDoHtmlL2}
+    ${weDoHtmlL2}
+    ${youDoHtmlL2}
+  </div>`;
+
+  // Level 3 Enrichment
+  let iDoHtmlL3 = "";
+  if (iDo) {
+    iDoHtmlL3 = `<div class="notes-gr-step notes-gr-you" style="border-left-color: var(--teal);">
+      <span class="notes-gr-tag">🧠 Challenge 1 — Mathematical Modeling</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
+      ${choiceOl(iDo.choices)}
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Formulate a mathematical representation or model for this situation. Explain why your model is appropriate.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space">${blankLines(3)}</div>
+    </div>`;
+  }
+
+  let weDoHtmlL3 = "";
+  if (weDo) {
+    weDoHtmlL3 = `<div class="notes-gr-step notes-gr-you" style="border-left-color: var(--amber);">
+      <span class="notes-gr-tag">🧠 Challenge 2 — Error Analysis & Generalization</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
+      ${choiceOl(weDo.choices)}
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Then, write a rule or generalization that someone could use to solve any problem like this.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space">${blankLines(3)}</div>
+    </div>`;
+  }
+
+  let youDoHtmlL3 = "";
+  if (youDo) {
+    youDoHtmlL3 = `<div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
+      <span class="notes-gr-tag">🧠 Challenge 3 — Synthesis & Extension</span>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
+      ${choiceOl(youDo.choices)}
+      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Create a real-world scenario that matches the operations or logic you used to solve this.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
+      <div class="work-space">${blankLines(3)}</div>
+    </div>`;
+  }
+
+  const l3Html = `<div class="l3-only">
+    <p class="notes-gr-intro">No worked examples. Solve the problems independently, draw visual models, and write justifications.</p>
+    ${iDoHtmlL3}
+    ${weDoHtmlL3}
+    ${youDoHtmlL3}
+  </div>`;
+
+  return `<div class="notes-gradual">
+    ${l1Html}
+    ${l2Html}
+    ${l3Html}
   </div>`;
 }
 
@@ -253,11 +432,13 @@ function notesSection(cfg = {}, worked = null) {
     (explore.instructions ? explore.instructions.trim() : "") ||
     "Write the main math idea in your own words.";
 
-  const stepCard = (num, icon, title, body) =>
+  const stepCard = (num, icon, title, bodyL1, bodyL2, bodyL3) =>
     `<div class="notes-step notes-step-${num}">
       <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">${icon}</span>
         <h4 class="notes-step-title">${esc(title)}</h4></div>
-      ${body}
+      <div class="notes-step-body-l1">${bodyL1}</div>
+      <div class="notes-step-body-l2">${bodyL2}</div>
+      <div class="notes-step-body-l3">${bodyL3}</div>
     </div>`;
 
   const steps = [
@@ -266,12 +447,16 @@ function notesSection(cfg = {}, worked = null) {
       "1️⃣",
       "Notice",
       `<p class="notes-step-text">${esc(noticeText)}</p>`,
+      `<p class="notes-step-prompt">Record your observations:</p>${blankLines(2)}`,
+      `<p class="notes-step-prompt">State the math observation you see in the launch:</p>${blankLines(2)}`,
     ),
     stepCard(
       2,
       "2️⃣",
       "Key idea",
       `<p class="notes-step-text">${esc(keyIdeaText)}</p>`,
+      `<p class="notes-step-prompt">Record the key idea:</p>${blankLines(2)}`,
+      `<p class="notes-step-prompt">Summarize the key mathematical relationship in full sentences:</p>${blankLines(2)}`,
     ),
   ];
 
@@ -289,6 +474,10 @@ function notesSection(cfg = {}, worked = null) {
         "3️⃣",
         "Words I'll use",
         `<div class="notes-word-chips">${chips}</div>`,
+        `<div class="notes-word-chips">${chips}</div>`,
+        `<div class="notes-word-chips">${chips}</div>
+         <p class="notes-step-prompt" style="margin-top: 8px;">Write a mathematical explanation using at least two of these terms:</p>
+         ${blankLines(2)}`,
       ),
     );
   }
@@ -310,7 +499,11 @@ function notesSection(cfg = {}, worked = null) {
   const gradualHtml = workedFrame(worked);
 
   return `<section class="section notes">
-  <h2>Key Ideas &amp; Notes</h2>
+  <h2>Key Ideas &amp; Notes
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
   ${learningHtml}
   ${stepsHtml}
   ${promptHtml}
@@ -440,7 +633,11 @@ function turnAndTalkSection(cfg) {
   if (!items.length) return "";
   const cards = items.map((it) => turnAndTalkCard(it)).join("\n");
   return `<section class="section turn-and-talk">
-  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <h2>Turn &amp; Talk — Discussion Points
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
   <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
   ${cards}
 </section>`;
@@ -688,16 +885,30 @@ function twrSection(config) {
   </div>`;
 
   return `<section class="section twr">
-  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
-  <p class="level-note">${
+  <h2>Write About the Math
+    <span class="twr-method l1-only">Level 1 Support</span>
+    <span class="twr-method l2-only">Level 2 Standard</span>
+    <span class="twr-method l3-only">Level 3 Enrichment</span>
+  </h2>
+  <p class="level-note l1-only l2-only-block">${
     twr.languageObjective
       ? esc(twr.languageObjective)
       : "Build strong math sentences. Write, then say each sentence out loud."
   }</p>
-  ${kernel}
-  ${expansion}
-  ${types}
-  ${reasoning}
+  <div class="l1-only l2-only-block">
+    ${kernel}
+    ${expansion}
+    ${types}
+    ${reasoning}
+  </div>
+  <div class="l3-only">
+    <div class="twr-block" style="border-left-color: var(--amber);">
+      <h3>Advanced Mathematical Explanation</h3>
+      <p class="sentence-frame"><strong>Writing Prompt:</strong> Write an explanatory paragraph summarizing today's key mathematical concept. Your explanation must include at least one complex sentence using a conjunction (because, since, although, or unless) to justify your mathematical reasoning. Draw models or sketch graphs to support your argument.</p>
+      <div class="scratchpad"><span class="scratchpad-label">Doodle / Diagram / Sketch Area</span></div>
+      <div class="work-space">${blankLines(6)}</div>
+    </div>
+  </div>
 </section>`;
 }
 
@@ -974,6 +1185,154 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   font-size:14px;font-weight:600;}
 .dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
 .dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+
+/* Leveled display settings */
+.l1-only, .l2-only, .l3-only { display: none !important; }
+.l2-only-block { display: block !important; }
+
+html.level-l1 .l1-only { display: block !important; }
+html.level-l1 span.l1-only { display: inline !important; }
+html.level-l1 div.l1-only-flex { display: flex !important; }
+html.level-l1 .l2-only, html.level-l1 .l3-only, html.level-l1 .l2-only-block { display: none !important; }
+
+html.level-l2 .l2-only { display: block !important; }
+html.level-l2 .l2-only-block { display: block !important; }
+html.level-l2 span.l2-only { display: inline !important; }
+html.level-l2 div.l2-only-flex { display: flex !important; }
+html.level-l2 .l1-only, html.level-l2 .l3-only { display: none !important; }
+
+html.level-l3 .l3-only { display: block !important; }
+html.level-l3 span.l3-only { display: inline !important; }
+html.level-l3 div.l3-only-flex { display: flex !important; }
+html.level-l3 .l1-only, html.level-l3 .l2-only, html.level-l3 .l2-only-block { display: none !important; }
+
+/* Level Selector Styling */
+.level-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pill-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+.pill-btn {
+  position: relative;
+  cursor: pointer;
+}
+.pill-btn input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pill-btn span {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.pill-btn input[type="radio"]:checked + span {
+  background: var(--amber);
+  color: var(--navy);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.pill-btn:hover span {
+  color: #fff;
+}
+.pill-btn input[type="radio"]:checked:hover span {
+  color: var(--navy);
+}
+
+/* Leveled component details */
+.vocab-def-prompt, .notes-step-prompt {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 4px 0 6px;
+}
+.scratchpad {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: #fafbfc;
+  background-image: radial-gradient(var(--line) 1px, transparent 0);
+  background-size: 16px 16px;
+  height: 110px;
+  margin: 10px 0;
+  position: relative;
+}
+.scratchpad-label {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.wk-checkboxes {
+  background: rgba(31, 166, 162, 0.05);
+  border: 1px dashed var(--teal);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+.wk-checkbox-label {
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.wk-checkbox-label input {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Turn & Talk Leveling */
+html.level-l1 .tt-support { display: block !important; }
+html.level-l1 .tt-extend { display: none !important; }
+html.level-l2 .tt-support { display: block !important; }
+html.level-l2 .tt-extend { display: block !important; }
+html.level-l3 .tt-support { display: none !important; }
+html.level-l3 .tt-extend { display: block !important; }
+
+/* Vocab def leveling styling */
+html.level-l1 .vocab-def-l1 { display: block !important; }
+html.level-l1 .vocab-def-l2, html.level-l1 .vocab-def-l3 { display: none !important; }
+html.level-l2 .vocab-def-l2 { display: block !important; }
+html.level-l2 .vocab-def-l1, html.level-l2 .vocab-def-l3 { display: none !important; }
+html.level-l3 .vocab-def-l3 { display: block !important; }
+html.level-l3 .vocab-def-l1, html.level-l3 .vocab-def-l2 { display: none !important; }
+
+/* Notes step body leveling */
+html.level-l1 .notes-step-body-l1 { display: block !important; }
+html.level-l1 .notes-step-body-l2, html.level-l1 .notes-step-body-l3 { display: none !important; }
+html.level-l2 .notes-step-body-l2 { display: block !important; }
+html.level-l2 .notes-step-body-l1, html.level-l2 .notes-step-body-l3 { display: none !important; }
+html.level-l3 .notes-step-body-l3 { display: block !important; }
+html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: none !important; }
+
 @media print{
   @page{
     size:letter;margin:0.7in 0.7in 0.85in;
@@ -986,7 +1345,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   }
   body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
+  .topbar,.print-btn,.no-print,.dl-wrap,.level-selector{display:none !important;}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
   .section{margin-bottom:16px;}
   .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
@@ -1036,7 +1395,22 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .tt-word{background:#fff;color:#000;border:1px solid #000;}
   .tt-listen{color:#222;}
   footer.packet{display:none;}
+  .scratchpad {
+    border: 1px solid #000 !important;
+    background-color: #fff !important;
+    background-image: radial-gradient(#000 1px, transparent 0) !important;
+  }
+  .scratchpad-label {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+  .wk-checkboxes {
+    background: #fff !important;
+    border: 1px dashed #000 !important;
+  }
 }
+</style>
 </style>`;
 }
 
@@ -1067,11 +1441,34 @@ function buildPacket(id, cfg, isFlagship) {
 <title>${esc(cfg.title)} — Notes Packet</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
-<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
+<script>
+  if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
+  (function() {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    document.documentElement.classList.add('level-' + savedLevel);
+  })();
+</script>
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Notes Packet</span>
+  <div class="level-selector no-print">
+    <span class="selector-label">Leveled Mode:</span>
+    <div class="pill-group">
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l1" onclick="setLevel('l1')" />
+        <span>L1 Support</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l2" onclick="setLevel('l2')" />
+        <span>L2 Standard</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l3" onclick="setLevel('l3')" />
+        <span>L3 Enrichment</span>
+      </label>
+    </div>
+  </div>
   <div style="display:flex;align-items:center;gap:8px;">
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
     <div class="dl-wrap">
@@ -1085,6 +1482,21 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     </div>
   </div>
 </div>
+<script>
+  function setLevel(lvl) {
+    document.documentElement.classList.remove('level-l1', 'level-l2', 'level-l3');
+    document.documentElement.classList.add('level-' + lvl);
+    localStorage.setItem('notes-level', lvl);
+    const radios = document.querySelectorAll('input[name="notes-level"]');
+    radios.forEach(r => {
+      r.checked = (r.value === lvl);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    setLevel(savedLevel);
+  });
+</script>
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">${[unit, standard].filter(Boolean).join(" · ")}</p>
