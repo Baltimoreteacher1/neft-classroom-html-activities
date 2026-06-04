@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/number-line.svg" alt="Illustration of Rational number: Any number you can write as a fraction. This includes fractions, decimals, and integers." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/number-line.svg" alt="Illustration of Rational number: Any number you can write as a fraction. This includes fractions, decimals, and integers." onerror="this.style.display='none'" />
     <p class="vocab-caption">1/2 = 0.5, -3/4 = -0.75, 6 = 6/1 — all rational numbers</p>
   </div>
   <h3 class="vocab-term">Rational number</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/fraction.svg" alt="Illustration of Fraction: A number that shows part of a whole, like 3/4." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/fraction.svg" alt="Illustration of Fraction: A number that shows part of a whole, like 3/4." onerror="this.style.display='none'" />
     <p class="vocab-caption">3/4 means 3 out of 4 equal parts — like 3 slices of a pizza cut into 4</p>
   </div>
   <h3 class="vocab-term">Fraction</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/decimal.svg" alt="Illustration of Decimal: A number with a dot, like 0.5, that shows a part less than one." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/decimal.svg" alt="Illustration of Decimal: A number with a dot, like 0.5, that shows a part less than one." onerror="this.style.display='none'" />
     <p class="vocab-caption">0.5 = 1/2 (halfway between 0 and 1 on the number line)</p>
   </div>
   <h3 class="vocab-term">Decimal</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/number-line.svg" alt="Illustration of Number line: A straight line with numbers spaced out evenly." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/number-line.svg" alt="Illustration of Number line: A straight line with numbers spaced out evenly." onerror="this.style.display='none'" />
     <p class="vocab-caption">A line with marks at -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2</p>
   </div>
   <h3 class="vocab-term">Number line</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value, just written a different way." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value, just written a different way." onerror="this.style.display='none'" />
     <p class="vocab-caption">1/2 = 0.5 = 2/4 — all name the same point on the number line</p>
   </div>
   <h3 class="vocab-term">Equivalent</h3>
@@ -328,7 +402,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2." onerror="this.style.display='none'" />
     <p class="vocab-caption">..., -3, -2, -1, 0, 1, 2, 3, ...</p>
   </div>
   <h3 class="vocab-term">Integer</h3>
@@ -485,6 +559,42 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 9 Project — Coordinate Plane &amp; Integers in Action</h3>
+      </div>
+      <p class="project-desc">Apply graphing, integers, and the coordinate plane to a real-world capstone challenge for Unit 9.</p>
+      <div class="project-links">
+        <a href="/math/unit-7/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📐</span>
+        <h3 class="project-title">Fraction &amp; Decimal Grid Architect</h3>
+      </div>
+      <p class="project-desc">Place and read fractions and decimals as rational numbers on a grid (6.NS.6).</p>
+      <div class="project-links">
+        <a href="/number-system/grid-architect/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🦘</span>
+        <h3 class="project-title">Number Line Jumper</h3>
+      </div>
+      <p class="project-desc">Locate and order rational numbers along the number line (6.NS.7).</p>
+      <div class="project-links">
+        <a href="/number-system/6-ns-c-3game/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my reasoning using the words rational number, fraction, decimal, and number line.</p>
@@ -591,8 +701,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 9-4 · Standard 6.NS.6</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

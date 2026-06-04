@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/box-plot.svg" alt="Illustration of Box Plot: A graph that shows how data is spread using five key numbers." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/box-plot.svg" alt="Illustration of Box Plot: A graph that shows how data is spread using five key numbers." onerror="this.style.display='none'" />
     <p class="vocab-caption">A box from Q1 to Q3 with a line at the median, and whiskers from min to max</p>
   </div>
   <h3 class="vocab-term">Box Plot</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle number that splits the data in half." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/median.svg" alt="Illustration of Median: The middle number that splits the data in half." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</p>
   </div>
   <h3 class="vocab-term">Median</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/quartile.svg" alt="Illustration of Quartile: Numbers that split the data into four equal parts." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/quartile.svg" alt="Illustration of Quartile: Numbers that split the data into four equal parts." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</p>
   </div>
   <h3 class="vocab-term">Quartile</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/interquartile-range.svg" alt="Illustration of Interquartile Range: The spread of the middle half of the data (Q3 − Q1)." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/interquartile-range.svg" alt="Illustration of Interquartile Range: The spread of the middle half of the data (Q3 − Q1)." onerror="this.style.display='none'" />
     <p class="vocab-caption">If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</p>
   </div>
   <h3 class="vocab-term">Interquartile Range</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
     <p class="vocab-caption">A box plot where the median is centered in the box shows symmetric distribution</p>
   </div>
   <h3 class="vocab-term">Data distribution</h3>
@@ -328,7 +402,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
     <p class="vocab-caption">Small IQR = low variability in the middle 50%. Large IQR = high variability</p>
   </div>
   <h3 class="vocab-term">Variability</h3>
@@ -485,6 +559,42 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: display your collected data with box plots and other graphs.</p>
+      <div class="project-links">
+        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📦</span>
+        <h3 class="project-title">Box Plot Builder</h3>
+      </div>
+      <p class="project-desc">Construct box plots from data and read the five-number summary (6.SP.4).</p>
+      <div class="project-links">
+        <a href="/statistics-data/box-plot-builder/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🕵️</span>
+        <h3 class="project-title">Box Plot Detective</h3>
+      </div>
+      <p class="project-desc">Interpret box plots to compare and analyze data sets.</p>
+      <div class="project-links">
+        <a href="/statistics-data/box-plot-detective/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my box plot using the words box plot, median, quartile, and interquartile range.</p>
@@ -591,8 +701,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-5 · Standard 6.SP.4</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

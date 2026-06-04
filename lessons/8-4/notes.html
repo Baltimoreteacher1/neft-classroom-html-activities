@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/mean.svg" alt="Illustration of Mean: The average. Add all the numbers, then divide by how many there are." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/mean.svg" alt="Illustration of Mean: The average. Add all the numbers, then divide by how many there are." onerror="this.style.display='none'" />
     <p class="vocab-caption">Mean of 10, 20, 30 = (10+20+30) ÷ 3 = 20</p>
   </div>
   <h3 class="vocab-term">Mean</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle number when you put them in order." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/median.svg" alt="Illustration of Median: The middle number when you put them in order." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 5, 8, 12, 15, 20 → median is 12 (the 3rd of 5 values)</p>
   </div>
   <h3 class="vocab-term">Median</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/outlier.svg" alt="Illustration of Outlier: A number that is much bigger or smaller than the rest." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/outlier.svg" alt="Illustration of Outlier: A number that is much bigger or smaller than the rest." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 12, 14, 13, 15, 45 → 45 is far from the cluster, so it is an outlier</p>
   </div>
   <h3 class="vocab-term">Outlier</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Skewed: When most data sits on one side with a tail on the other." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Skewed: When most data sits on one side with a tail on the other." onerror="this.style.display='none'" />
     <p class="vocab-caption">Scores: 5, 6, 7, 8, 8, 35 → most scores are low, but 35 creates a tail to the right (skewed right)</p>
   </div>
   <h3 class="vocab-term">Skewed</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
     <p class="vocab-caption">Symmetric = even on both sides. Skewed = bunched on one side with a tail</p>
   </div>
   <h3 class="vocab-term">Data distribution</h3>
@@ -328,7 +402,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
     <p class="vocab-caption">88, 90, 89, 91 (low variability) vs. 50, 70, 95, 100 (high variability)</p>
   </div>
   <h3 class="vocab-term">Variability</h3>
@@ -485,6 +559,42 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: choose the measure of center and spread that best fits your data's distribution.</p>
+      <div class="project-links">
+        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🕵️</span>
+        <h3 class="project-title">Distribution Detective</h3>
+      </div>
+      <p class="project-desc">Decide which measure of center best describes a data set based on its shape (6.SP.5d).</p>
+      <div class="project-links">
+        <a href="/statistics-data/distribution-detective/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📈</span>
+        <h3 class="project-title">Data Studio Master</h3>
+      </div>
+      <p class="project-desc">Compare mean, median, and spread to pick the most appropriate summary measure.</p>
+      <div class="project-links">
+        <a href="/neft-data-studio/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my choice using the words mean, median, outlier, and skewed.</p>
@@ -591,8 +701,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-4 · Standard 6.SP.5d</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

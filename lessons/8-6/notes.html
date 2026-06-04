@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Histogram: A bar graph that groups data into equal ranges. The bars touch." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Histogram: A bar graph that groups data into equal ranges. The bars touch." onerror="this.style.display='none'" />
     <p class="vocab-caption">Bars side by side: 0-9 pts (3 players), 10-19 pts (8 players), 20-29 pts (4 players)</p>
   </div>
   <h3 class="vocab-term">Histogram</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/frequency.svg" alt="Illustration of Frequency: How many times a value shows up." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/frequency.svg" alt="Illustration of Frequency: How many times a value shows up." onerror="this.style.display='none'" />
     <p class="vocab-caption">If 5 players scored 10-19 points, the frequency for that interval is 5</p>
   </div>
   <h3 class="vocab-term">Frequency</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Interval: A range of numbers used to group data." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Interval: A range of numbers used to group data." onerror="this.style.display='none'" />
     <p class="vocab-caption">0-9, 10-19, 20-29 are intervals of width 10 — each covers 10 values</p>
   </div>
   <h3 class="vocab-term">Interval</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Distribution: How the data is spread out." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Distribution: How the data is spread out." onerror="this.style.display='none'" />
     <p class="vocab-caption">Most data in the middle with fewer at the ends = bell-shaped; most on one side with a tail = skewed</p>
   </div>
   <h3 class="vocab-term">Distribution</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
     <p class="vocab-caption">A histogram that is tallest in the middle and shorter on both sides is symmetric</p>
   </div>
   <h3 class="vocab-term">Data distribution</h3>
@@ -328,7 +402,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data in just 2 intervals = low variability. Data across 6 intervals = high variability</p>
   </div>
   <h3 class="vocab-term">Variability</h3>
@@ -485,6 +559,44 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏀</span>
+        <h3 class="project-title">Histogram Master Lab</h3>
+      </div>
+      <p class="project-desc">Learn, practice, then play full histogram games — including a Bonus Games arcade pack.</p>
+      <div class="project-links">
+        <a href="/statistics-data/histogram-master-lab/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏀</span>
+        <h3 class="project-title">Game Day Data Lab</h3>
+      </div>
+      <p class="project-desc">Build and read histograms with sports data.</p>
+      <div class="project-links">
+        <a href="/statistics-data/histogram-master-lab/games/game-day-data-lab-level-1.html" class="project-link-btn" target="_blank">Level 1 · support + visuals</a>
+<a href="/statistics-data/histogram-master-lab/games/game-day-data-lab-level-2.html" class="project-link-btn" target="_blank">Level 2 · regular</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🔬</span>
+        <h3 class="project-title">Histogram Disease Detectives</h3>
+      </div>
+      <p class="project-desc">Use histograms to investigate data like a scientist.</p>
+      <div class="project-links">
+        <a href="/statistics-data/histogram-master-lab/games/disease-detectives-level-1.html" class="project-link-btn" target="_blank">Level 1 · support + visuals</a>
+<a href="/statistics-data/histogram-master-lab/games/disease-detectives-level-2.html" class="project-link-btn" target="_blank">Level 2 · regular</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my histogram using the words histogram, frequency, interval, and distribution.</p>
@@ -591,8 +703,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-6 · Standard 6.SP.4</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

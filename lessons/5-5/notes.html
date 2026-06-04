@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/composite-figure.svg" alt="Illustration of Composite Figure: A shape made by putting two or more simple shapes together." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/composite-figure.svg" alt="Illustration of Composite Figure: A shape made by putting two or more simple shapes together." onerror="this.style.display='none'" />
     <p class="vocab-caption">An L-shaped room = a 12×8 rectangle joined to a 6×5 rectangle; total area = 96 + 30 = 126 sq ft</p>
   </div>
   <h3 class="vocab-term">Composite Figure</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/subtract.svg" alt="Illustration of Decompose: To break a shape into smaller, simpler shapes." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/subtract.svg" alt="Illustration of Decompose: To break a shape into smaller, simpler shapes." onerror="this.style.display='none'" />
     <p class="vocab-caption">Draw a dashed line across the L-shape to split it into two rectangles — now you can find each area separately</p>
   </div>
   <h3 class="vocab-term">Decompose</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/add.svg" alt="Illustration of Add: Add up the areas of the smaller shapes to get the total." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/add.svg" alt="Illustration of Add: Add up the areas of the smaller shapes to get the total." onerror="this.style.display='none'" />
     <p class="vocab-caption">T-shaped hallway: top rectangle = 30 sq ft, bottom rectangle = 28 sq ft → total = 30 + 28 = 58 sq ft</p>
   </div>
   <h3 class="vocab-term">Add</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/subtract.svg" alt="Illustration of Subtract: Take away the area of a missing piece from a bigger shape." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/subtract.svg" alt="Illustration of Subtract: Take away the area of a missing piece from a bigger shape." onerror="this.style.display='none'" />
     <p class="vocab-caption">A 14×10 pool with a 6×4 cutout: 140 − 24 = 116 sq ft of water surface</p>
   </div>
   <h3 class="vocab-term">Subtract</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/expression.svg" alt="Illustration of Formula: A math rule written with symbols." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/expression.svg" alt="Illustration of Formula: A math rule written with symbols." onerror="this.style.display='none'" />
     <p class="vocab-caption">Rectangle: A = l × w; Triangle: A = ½ × b × h; use the right formula for each piece of a composite figure</p>
   </div>
   <h3 class="vocab-term">Formula</h3>
@@ -454,6 +528,52 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 5 Project — Area in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: apply area of polygons and composite figures to a real design challenge.</p>
+      <div class="project-links">
+        <a href="/math/unit-5/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🛠️</span>
+        <h3 class="project-title">Geometry Prep Studio</h3>
+      </div>
+      <p class="project-desc">Hands-on studio for decomposing and measuring composite figures.</p>
+      <div class="project-links">
+        <a href="/geometry-prep/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🌍</span>
+        <h3 class="project-title">World Architect Geometry Challenge</h3>
+      </div>
+      <p class="project-desc">Design real-world structures using composite-figure area skills.</p>
+      <div class="project-links">
+        <a href="/world-architect-math-project/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🎢</span>
+        <h3 class="project-title">Graphic Novel #2 — Theme Park Engineer</h3>
+      </div>
+      <p class="project-desc">Continue the Area Architect story with triangles, trapezoids, and composite figures.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit5/graphic-novel-2.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my steps using the words composite figure, decompose, add, and subtract.</p>
@@ -560,8 +680,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 5-5 · Standard 6.G.1</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

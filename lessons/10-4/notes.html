@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/surface-area.svg" alt="Illustration of Surface area: The total area of all the flat sides of a solid." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/surface-area.svg" alt="Illustration of Surface area: The total area of all the flat sides of a solid." onerror="this.style.display='none'" />
     <p class="vocab-caption">Paint every outside surface of a box — the total painted area is the surface area</p>
   </div>
   <h3 class="vocab-term">Surface area</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Rectangular prism: A solid box shape with six flat rectangle sides." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/rectangular-prism.svg" alt="Illustration of Rectangular prism: A solid box shape with six flat rectangle sides." onerror="this.style.display='none'" />
     <p class="vocab-caption">A box with 6 flat rectangle sides: top, bottom, front, back, left, right</p>
   </div>
   <h3 class="vocab-term">Rectangular prism</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Triangular prism: A solid with two triangle ends and three flat rectangle sides." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/rectangular-prism.svg" alt="Illustration of Triangular prism: A solid with two triangle ends and three flat rectangle sides." onerror="this.style.display='none'" />
     <p class="vocab-caption">Shaped like a tent or a wedge of cheese — 2 triangle ends + 3 rectangle sides</p>
   </div>
   <h3 class="vocab-term">Triangular prism</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Face: One flat side of a solid shape." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/rectangular-prism.svg" alt="Illustration of Face: One flat side of a solid shape." onerror="this.style.display='none'" />
     <p class="vocab-caption">A triangular prism has 5 faces: 2 triangles + 3 rectangles</p>
   </div>
   <h3 class="vocab-term">Face</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/net.svg" alt="Illustration of Net: A flat shape that folds up into a solid." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/net.svg" alt="Illustration of Net: A flat shape that folds up into a solid." onerror="this.style.display='none'" />
     <p class="vocab-caption">Unfold a triangular prism flat: you see 2 triangles and 3 rectangles side by side</p>
   </div>
   <h3 class="vocab-term">Net</h3>
@@ -328,7 +402,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/surface-area.svg" alt="Illustration of Lateral face: The side faces of a solid, not the top or bottom." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/surface-area.svg" alt="Illustration of Lateral face: The side faces of a solid, not the top or bottom." onerror="this.style.display='none'" />
     <p class="vocab-caption">On a triangular prism, the 3 rectangles that wrap around the sides are lateral faces</p>
   </div>
   <h3 class="vocab-term">Lateral face</h3>
@@ -485,6 +559,52 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 10 Project — Volume &amp; Surface Area in Action</h3>
+      </div>
+      <p class="project-desc">Apply volume and surface area to a real-world capstone challenge for Unit 10.</p>
+      <div class="project-links">
+        <a href="/math/unit-10/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📝</span>
+        <h3 class="project-title">Surface Area Review</h3>
+      </div>
+      <p class="project-desc">Practice finding surface area from nets and 3D figures (6.G.4).</p>
+      <div class="project-links">
+        <a href="/surface-area-review/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📐</span>
+        <h3 class="project-title">Surface Area Packer</h3>
+      </div>
+      <p class="project-desc">Unfold prisms into nets and pack the surface to find total area (6.G.4).</p>
+      <div class="project-links">
+        <a href="/geometry-prep/surface-area-packer/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📖</span>
+        <h3 class="project-title">Unit 10 Graphic Novel — Part 2</h3>
+      </div>
+      <p class="project-desc">Interactive graphic novel continuing the surface area story.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit10/graphic-novel-2.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my work using the words surface area, rectangular prism, triangular prism, and face.</p>
@@ -591,8 +711,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 10-4 · Standard 6.G.4</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

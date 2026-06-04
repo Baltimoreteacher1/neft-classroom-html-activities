@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/inequality.svg" alt="Illustration of Inequality: A math sentence that compares two sides with &lt;, &gt;, ≤, or ≥." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Inequality: A math sentence that compares two sides with &lt;, &gt;, ≤, or ≥." onerror="this.style.display='none'" />
     <p class="vocab-caption">x &gt; 5 means x can be 6, 7, 8, ... — any number greater than 5</p>
   </div>
   <h3 class="vocab-term">Inequality</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/inequality.svg" alt="Illustration of Greater than: The &gt; sign, showing one number is bigger." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Greater than: The &gt; sign, showing one number is bigger." onerror="this.style.display='none'" />
     <p class="vocab-caption">8 &gt; 3 — eight is larger than three</p>
   </div>
   <h3 class="vocab-term">Greater than</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/inequality.svg" alt="Illustration of Less than: The &lt; sign, showing one number is smaller." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Less than: The &lt; sign, showing one number is smaller." onerror="this.style.display='none'" />
     <p class="vocab-caption">2 &lt; 7 — two is smaller than seven</p>
   </div>
   <h3 class="vocab-term">Less than</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/inequality.svg" alt="Illustration of At least / At most: 'At least' means ≥. 'At most' means ≤." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/inequality.svg" alt="Illustration of At least / At most: 'At least' means ≥. 'At most' means ≤." onerror="this.style.display='none'" />
     <p class="vocab-caption">'At least 10 players' → p ≥ 10 (could be 10, 11, 12, ...); 'At most 5 tries' → t ≤ 5 (could be 5, 4, 3, ...)</p>
   </div>
   <h3 class="vocab-term">At least / At most</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/variable.svg" alt="Illustration of Variable: A letter that stands for an unknown number." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/variable.svg" alt="Illustration of Variable: A letter that stands for an unknown number." onerror="this.style.display='none'" />
     <p class="vocab-caption">In x &gt; 5, the letter x stands for any number greater than 5.</p>
   </div>
   <h3 class="vocab-term">Variable</h3>
@@ -328,7 +402,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/cat-number.svg" alt="Illustration of No more than: A phrase meaning less than or equal to (≤)." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/cat-number.svg" alt="Illustration of No more than: A phrase meaning less than or equal to (≤)." onerror="this.style.display='none'" />
     <p class="vocab-caption">&quot;No more than 8 people&quot; means people ≤ 8.</p>
   </div>
   <h3 class="vocab-term">No more than</h3>
@@ -462,6 +536,42 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 7 Project — Equations &amp; Inequalities in Action</h3>
+      </div>
+      <p class="project-desc">Capstone project applying writing and solving equations and inequalities to real situations.</p>
+      <div class="project-links">
+        <a href="/math/unit-8/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🟢</span>
+        <h3 class="project-title">Neon Inequality Gatekeeper</h3>
+      </div>
+      <p class="project-desc">Write inequalities to describe real-world constraints and pass the gate.</p>
+      <div class="project-links">
+        <a href="/expressions-equations/neon-inequality/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📓</span>
+        <h3 class="project-title">Detective Case Files: The Equation Mysteries (Novel #2)</h3>
+      </div>
+      <p class="project-desc">Enrichment graphic novel extending equation reasoning to inequalities.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit7/graphic-novel-2.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my inequality using the words inequality, greater than, less than, and at least / at most.</p>
@@ -568,8 +678,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-4 · Standard 6.EE.8</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

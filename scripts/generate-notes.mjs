@@ -68,7 +68,7 @@ function vocabSection(vocab = []) {
   if (!vocab.length) return "";
   const cards = vocab
     .map((v) => {
-      const imgSrc = resolveVocabImage(v.term, v.image);
+      const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
       const imgAlt = vocabImageAlt(v.term, v.definition);
       return `<div class="vocab-card">
   <div class="vocab-figure">
@@ -85,6 +85,40 @@ function vocabSection(vocab = []) {
   <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
   <div class="vocab-grid">
 ${cards}
+  </div>
+</section>`;
+}
+
+function projectsSection(projects = []) {
+  if (!projects.length) return "";
+  const cards = projects
+    .map((p) => {
+      let linksHtml = "";
+      if (Array.isArray(p.links) && p.links.length > 0) {
+        linksHtml = `<div class="project-links">
+        ${p.links.map((l) => `<a href="${esc(l.href)}" class="project-link-btn" target="_blank">${esc(l.label)}</a>`).join("\n")}
+      </div>`;
+      } else if (p.href) {
+        linksHtml = `<div class="project-links">
+        <a href="${esc(p.href)}" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>`;
+      }
+      return `<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">${esc(p.emoji || "🎯")}</span>
+        <h3 class="project-title">${esc(p.title)}</h3>
+      </div>
+      <p class="project-desc">${esc(p.desc)}</p>
+      ${linksHtml}
+    </div>`;
+    })
+    .join("\n");
+
+  return `<section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    ${cards}
   </div>
 </section>`;
 }
@@ -854,6 +888,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -987,6 +1098,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   ${vocabSection(cfg.vocabulary)}
   ${notesSection(cfg, worked)}
   ${turnAndTalkSection(cfg)}
+  ${projectsSection(cfg.projects)}
   ${twrSection(cfg)}
   ${tryItSection(cfg.practice, usedStems)}
   ${reflectSection(cfg.reflect)}

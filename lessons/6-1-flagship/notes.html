@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -292,7 +366,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/exponent.svg" alt="Illustration of Exponent: A small number that tells how many times to multiply the number by itself." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/exponent.svg" alt="Illustration of Exponent: A small number that tells how many times to multiply the number by itself." onerror="this.style.display='none'" />
     <p class="vocab-caption">In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8</p>
   </div>
   <h3 class="vocab-term">Exponent</h3>
@@ -300,7 +374,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/base.svg" alt="Illustration of Base: The number that gets multiplied by itself." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/base.svg" alt="Illustration of Base: The number that gets multiplied by itself." onerror="this.style.display='none'" />
     <p class="vocab-caption">In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25</p>
   </div>
   <h3 class="vocab-term">Base</h3>
@@ -308,7 +382,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/exponent.svg" alt="Illustration of Power: A number written with a base and an exponent, like 2³." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/exponent.svg" alt="Illustration of Power: A number written with a base and an exponent, like 2³." onerror="this.style.display='none'" />
     <p class="vocab-caption">10³ = 10 × 10 × 10 = 1,000 — read as '10 to the third power' or '10 cubed'</p>
   </div>
   <h3 class="vocab-term">Power</h3>
@@ -316,7 +390,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/expression.svg" alt="Illustration of Evaluate: To find the value of an expression." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/expression.svg" alt="Illustration of Evaluate: To find the value of an expression." onerror="this.style.display='none'" />
     <p class="vocab-caption">Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81</p>
   </div>
   <h3 class="vocab-term">Evaluate</h3>
@@ -324,7 +398,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/coefficient.svg" alt="Illustration of Coefficient: The number in front of a letter, like the 3 in 3x." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/coefficient.svg" alt="Illustration of Coefficient: The number in front of a letter, like the 3 in 3x." onerror="this.style.display='none'" />
     <p class="vocab-caption">In 3x, the 3 is the coefficient — if x = 4, then 3x = 3 × 4 = 12</p>
   </div>
   <h3 class="vocab-term">Coefficient</h3>
@@ -332,7 +406,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/like-terms.svg" alt="Illustration of Like terms: Terms with the same letter, like 2x and 5x." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/like-terms.svg" alt="Illustration of Like terms: Terms with the same letter, like 2x and 5x." onerror="this.style.display='none'" />
     <p class="vocab-caption">4x and 2x are like terms (both have x); 4x and 4x² are NOT like terms (different powers)</p>
   </div>
   <h3 class="vocab-term">Like terms</h3>
@@ -466,6 +540,43 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 6 Project — Expressions in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: apply exponents, expressions, and the distributive property to a real-world project.</p>
+      <div class="project-links">
+        <a href="/math/unit-6/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🎮</span>
+        <h3 class="project-title">Expression Engine</h3>
+      </div>
+      <p class="project-desc">Build, evaluate, and match algebraic expressions in an interactive game.</p>
+      <div class="project-links">
+        <a href="/games/unit6-expression-engine.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📖</span>
+        <h3 class="project-title">Graphic Novel — Festival Producer: Power Up the Show</h3>
+      </div>
+      <p class="project-desc">Read the Unit 6 expressions story; choose your level.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit6/graphic-novel-1.html" class="project-link-btn" target="_blank">Level 1 · support</a>
+<a href="/graphic-novels/unit6/graphic-novel-2.html" class="project-link-btn" target="_blank">Level 2 · enrichment</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my work using the words exponent, base, power, and evaluate.</p>
@@ -567,8 +678,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 6-1-flagship · Standard 6.EE.1</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

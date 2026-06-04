@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -292,7 +366,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/base.svg" alt="Illustration of Base: A side of the triangle you use to find the area." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/base.svg" alt="Illustration of Base: A side of the triangle you use to find the area." onerror="this.style.display='none'" />
     <p class="vocab-caption">If the bottom of a triangle is 10 cm, then b = 10 cm in the formula A = ½ × b × h</p>
   </div>
   <h3 class="vocab-term">Base</h3>
@@ -300,7 +374,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/height.svg" alt="Illustration of Height: The straight-up distance from the base to the top corner." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/height.svg" alt="Illustration of Height: The straight-up distance from the base to the top corner." onerror="this.style.display='none'" />
     <p class="vocab-caption">A dashed vertical line from the top point straight down to the base at a 90° angle</p>
   </div>
   <h3 class="vocab-term">Height</h3>
@@ -308,7 +382,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/area.svg" alt="Illustration of Area: How much space is inside a flat shape." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/area.svg" alt="Illustration of Area: How much space is inside a flat shape." onerror="this.style.display='none'" />
     <p class="vocab-caption">A triangle with b = 8 and h = 6 has area = ½ × 8 × 6 = 24 sq units</p>
   </div>
   <h3 class="vocab-term">Area</h3>
@@ -316,7 +390,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/triangle.svg" alt="Illustration of Perpendicular: Two lines that meet to make a square corner (90 degrees)." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/triangle.svg" alt="Illustration of Perpendicular: Two lines that meet to make a square corner (90 degrees)." onerror="this.style.display='none'" />
     <p class="vocab-caption">The corner of a book or a door frame meets at exactly 90°</p>
   </div>
   <h3 class="vocab-term">Perpendicular</h3>
@@ -324,7 +398,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/composite-figure.svg" alt="Illustration of Composite figure: A shape made by putting two or more simple shapes together." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/composite-figure.svg" alt="Illustration of Composite figure: A shape made by putting two or more simple shapes together." onerror="this.style.display='none'" />
     <p class="vocab-caption">A house shape = a rectangle (walls) + a triangle (roof)</p>
   </div>
   <h3 class="vocab-term">Composite figure</h3>
@@ -332,7 +406,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/expression.svg" alt="Illustration of Formula: A math rule written with symbols." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/expression.svg" alt="Illustration of Formula: A math rule written with symbols." onerror="this.style.display='none'" />
     <p class="vocab-caption">A = ½ × b × h means Area equals one-half times base times height</p>
   </div>
   <h3 class="vocab-term">Formula</h3>
@@ -466,6 +540,42 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 5 Project — Area in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: apply area of polygons and composite figures to a real design challenge.</p>
+      <div class="project-links">
+        <a href="/math/unit-5/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏙️</span>
+        <h3 class="project-title">Area Architect — City Builder</h3>
+      </div>
+      <p class="project-desc">Build a city by calculating areas of parallelograms, triangles, trapezoids, and composite figures.</p>
+      <div class="project-links">
+        <a href="/games/unit5-area-architect.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🎢</span>
+        <h3 class="project-title">Graphic Novel #2 — Theme Park Engineer</h3>
+      </div>
+      <p class="project-desc">Continue the Area Architect story with triangles, trapezoids, and composite figures.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit5/graphic-novel-2.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my steps using the words base, height, area, and perpendicular.</p>
@@ -572,8 +682,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 5-3-flagship · Standard 6.G.1</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

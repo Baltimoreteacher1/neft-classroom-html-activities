@@ -177,6 +177,83 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
 .tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
 .tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -252,9 +329,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -288,7 +362,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Symmetric: Data that looks about the same on the left and right." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Symmetric: Data that looks about the same on the left and right." onerror="this.style.display='none'" />
     <p class="vocab-caption">Heights: 60, 62, 64, 66, 68, 66, 64, 62, 60 — rises and falls evenly like a hill</p>
   </div>
   <h3 class="vocab-term">Symmetric</h3>
@@ -296,7 +370,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Skewed: Data bunched on one side with a tail on the other." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Skewed: Data bunched on one side with a tail on the other." onerror="this.style.display='none'" />
     <p class="vocab-caption">Skewed right: most data low (1,2,2,3,3,3,15) — tail stretches toward the high value</p>
   </div>
   <h3 class="vocab-term">Skewed</h3>
@@ -304,7 +378,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/cluster.svg" alt="Illustration of Cluster: A group of numbers that are close together." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/cluster.svg" alt="Illustration of Cluster: A group of numbers that are close together." onerror="this.style.display='none'" />
     <p class="vocab-caption">Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</p>
   </div>
   <h3 class="vocab-term">Cluster</h3>
@@ -312,7 +386,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Gap: A big empty space where there is no data." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Gap: A big empty space where there is no data." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap</p>
   </div>
   <h3 class="vocab-term">Gap</h3>
@@ -320,7 +394,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
     <p class="vocab-caption">Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</p>
   </div>
   <h3 class="vocab-term">Data distribution</h3>
@@ -328,7 +402,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
+    <img src="../../assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
     <p class="vocab-caption">Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly</p>
   </div>
   <h3 class="vocab-term">Variability</h3>
@@ -485,6 +559,52 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
+  <section class="section projects no-print">
+  <h2>Interactive Unit Projects</h2>
+  <p class="level-note">Apply your math skills in these interactive dashboard games and coding labs.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🏆</span>
+        <h3 class="project-title">Unit 8 Project — Statistics in Action</h3>
+      </div>
+      <p class="project-desc">Capstone: describe the center, spread, and overall shape of your data distribution.</p>
+      <div class="project-links">
+        <a href="/math/statistics/projects/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">🕵️</span>
+        <h3 class="project-title">Distribution Detective</h3>
+      </div>
+      <p class="project-desc">Identify symmetric, skewed, and clustered shapes in data distributions (6.SP.2).</p>
+      <div class="project-links">
+        <a href="/statistics-data/distribution-detective/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📊</span>
+        <h3 class="project-title">Histogram Master Lab</h3>
+      </div>
+      <p class="project-desc">Read histograms to see the shape and spread of a distribution.</p>
+      <div class="project-links">
+        <a href="/statistics-data/histogram-master-lab/" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+<div class="project-card">
+      <div class="project-header">
+        <span class="project-emoji" aria-hidden="true">📖</span>
+        <h3 class="project-title">Unit 8 Graphic Novel</h3>
+      </div>
+      <p class="project-desc">Story-driven comic exploring statistics and data distributions.</p>
+      <div class="project-links">
+        <a href="/graphic-novels/unit8/graphic-novel-1.html" class="project-link-btn project-link-main" target="_blank">Launch Activity</a>
+      </div>
+    </div>
+  </div>
+</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my description using the words symmetric, skewed, cluster, and gap.</p>
@@ -591,8 +711,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-7 · Standard 6.SP.2</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>
