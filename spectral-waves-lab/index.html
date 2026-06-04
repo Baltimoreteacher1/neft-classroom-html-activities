@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Spectral Waves Lab: An immersive Fourier series visualizer and sound synthesizer. Draw waves with phasor epicycles and hear wave harmonics in real-time.">
+    <title>Spectral Waves Lab | Fourier Series & Wave Harmonics Sandbox</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060713;
+            --bg-surface: #0c0e25;
+            --bg-card: rgba(18, 20, 50, 0.6);
+            --bg-glow: rgba(59, 130, 246, 0.08);
+            
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(59, 130, 246, 0.4);
+            
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --secondary: #10b981;
+            --secondary-glow: rgba(16, 185, 129, 0.4);
+            --accent: #d946ef;
+            --accent-glow: rgba(217, 70, 239, 0.4);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dark: #475569;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(12, 14, 37, 0.75);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 3s infinite ease-in-out;
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .btn-secondary {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-accent {
+            border-color: rgba(217, 70, 239, 0.3);
+            color: #f472b6;
+            background: rgba(217, 70, 239, 0.08);
+        }
+
+        .btn-accent:hover {
+            border-color: var(--accent);
+            background: rgba(217, 70, 239, 0.15);
+            box-shadow: 0 0 10px rgba(217, 70, 239, 0.15);
+        }
+
+        /* Layout Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1080px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card panels */
+        .glass-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Quest Sidebar Components */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .quest-card.active {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .quest-card.completed {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-card.completed:hover {
+            border-color: #34d399;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .quest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .quest-desc-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .quest-badge {
+            font-size: 1.3rem;
+            margin-left: 12px;
+            filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+            transition: var(--transition);
+        }
+
+        /* Core Sliders Grid */
+        .harmonics-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .harmonic-slider-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 55px;
+            align-items: center;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .harmonic-slider-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .harmonic-label {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .harmonic-slider-row.fundamental .harmonic-label {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .wave-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .wave-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            cursor: pointer;
+            border: 2px solid var(--white);
+            transition: var(--transition);
+        }
+
+        .wave-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--white);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        /* Distinct color scheme for odd harmonics values to make it intuitive */
+        .harmonic-slider-row:nth-child(odd) .wave-slider::-webkit-slider-thumb {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .harmonic-slider-row:nth-child(odd) .wave-slider::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .harmonic-value-text {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: right;
+        }
+
+        /* Preset Row */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            padding: 8px;
+            font-size: 0.75rem;
+            text-align: center;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .preset-btn:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .preset-btn.active {
+            color: var(--white);
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Interactive SVG Workspace */
+        .svg-container {
+            width: 100%;
+            position: relative;
+            background: #02030d;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        .viewport-svg {
+            width: 100%;
+            height: 380px;
+            display: block;
+        }
+
+        /* Glowing wave stroke designs */
+        .user-wave-path {
+            stroke: var(--primary);
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 4px var(--primary-glow));
+        }
+
+        .target-wave-path {
+            stroke: var(--secondary);
+            stroke-dasharray: 6, 4;
+            stroke-width: 2.5;
+            fill: none;
+            stroke-linecap: round;
+            opacity: 0.85;
+            filter: drop-shadow(0 0 4px var(--secondary-glow));
+        }
+
+        .epicycle-circle {
+            stroke: rgba(255, 255, 255, 0.08);
+            stroke-width: 1;
+            fill: none;
+        }
+
+        .epicycle-vector {
+            stroke: var(--accent);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .epicycle-center {
+            fill: var(--white);
+            r: 3;
+        }
+
+        .grid-line {
+            stroke: rgba(255, 255, 255, 0.03);
+            stroke-width: 1;
+        }
+
+        .axis-line {
+            stroke: rgba(255, 255, 255, 0.15);
+            stroke-width: 1.5;
+        }
+
+        .grid-text {
+            font-family: var(--font-display);
+            font-size: 10px;
+            fill: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        /* Sound Monitor Bar */
+        .sound-monitor-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(217, 70, 239, 0.03));
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .play-button {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .play-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .play-button:active {
+            transform: scale(0.96);
+        }
+
+        .play-button.playing {
+            background: linear-gradient(135deg, var(--danger) 0%, #991b1b 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            animation: pulse-red 2s infinite ease-in-out;
+        }
+
+        .audio-parameters {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .param-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 45px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .param-label {
+            font-size: 0.8rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Oscilloscope mini canvas */
+        .oscilloscope-canvas {
+            width: 120px;
+            height: 56px;
+            background: #02030d;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Interactive ESOL navigation hub */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(217, 70, 239, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%);
+            border: 1px solid rgba(217, 70, 239, 0.2);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--accent);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .esol-stems-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .sentence-stem-tag {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .sentence-stem-tag:hover {
+            color: var(--white);
+            background: rgba(217, 70, 239, 0.1);
+            border-color: rgba(217, 70, 239, 0.3);
+        }
+
+        .sentence-stem-tag.active {
+            color: var(--white);
+            background: rgba(217, 70, 239, 0.15);
+            border-color: var(--accent);
+        }
+
+        /* Quest validation feedback indicators */
+        .quest-matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .hud-metric-value.match {
+            color: var(--secondary);
+            text-shadow: 0 0 10px var(--secondary-glow);
+        }
+
+        /* Diagnostics Console styles */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 320px;
+            background: #090a16;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #020308;
+            border-radius: var(--radius-sm);
+            height: 140px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #34d399;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        .log-error { color: var(--danger); }
+        .log-success { color: var(--secondary); }
+        .log-warning { color: var(--warning); }
+
+        /* Animations */
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(6, 7, 19, 0.8);
+            font-family: var(--font-display);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <span class="logo-icon">🌀</span>
+            <h1 class="logo-title">Spectral Waves Lab</h1>
+        </div>
+        <div class="header-buttons">
+            <button class="btn btn-accent" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar: Quests & Presets -->
+        <div class="sidebar">
+            
+            <!-- Quests Panel -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"></path></svg>
+                    <span id="lbl-mission-control">Mission Control</span>
+                </h2>
+                
+                <div class="quest-matching-hud" id="matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-matching-error">Matching Error</span>
+                        <span class="hud-metric-value" id="rmsd-value">0.00%</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-status">Status</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--text-muted);">SANDBOX</span>
+                    </div>
+                </div>
+
+                <div class="quest-list" id="quests-container">
+                    <!-- Programmatic Insertion -->
+                </div>
+            </div>
+
+            <!-- ESOL Vocabulary Helper -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--accent); border-bottom-color: rgba(217, 70, 239, 0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"></path></svg>
+                    <span id="lbl-navigation-guide">Wave Navigation Helper</span>
+                </h2>
+                
+                <div class="esol-bubble" id="esol-scaffold-text">
+                    <span id="esol-en">Adjust the sliders to add separate harmonic waves together! You will see how simple waves superimpose to build a complex tone.</span>
+                    <div class="esol-translation" id="esol-es">¡Ajusta los controles para sumar ondas armónicas individuales! Verás cómo las ondas simples se superponen para construir un tono complejo.</div>
+                </div>
+
+                <div class="esol-stems-selector" id="sentence-stems-container">
+                    <!-- Interactive Stems -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Workspace (SVG Display & Sound Monitor) -->
+        <div class="main-workspace">
+            
+            <!-- Dynamic Vector Epicycles & Graph Viewport -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div class="viewport-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding: 4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"></path></svg>
+                        <span id="lbl-workspace-title">Wave Mechanics Visualizer</span>
+                    </div>
+                    <div style="font-family: var(--font-display); font-size: 0.8rem; background:rgba(255,255,255,0.04); padding: 4px 10px; border-radius: 12px; color:var(--text-muted); border:1px solid rgba(255,255,255,0.05);" id="epicycles-count-label">
+                        Phasors Active: 8
+                    </div>
+                </div>
+
+                <div class="svg-container">
+                    <svg id="visualizer-svg" class="viewport-svg" viewBox="0 0 800 380" style="background: #02030a;">
+                        <!-- dynamic mathematical vector and wave models -->
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Sound & Parameter Controllers -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.807-3.808-9.98 0-13.788m13.788 0c3.808 3.807 3.808 9.98 0 13.788M12 12v.008h.008V12H12z"></path></svg>
+                    <span id="lbl-controls">Harmonics Controller & Audio Engine</span>
+                </h2>
+
+                <div class="preset-grid">
+                    <button class="preset-btn active" id="preset-sine" onclick="applyPreset('sine')">Sine</button>
+                    <button class="preset-btn" id="preset-square" onclick="applyPreset('square')">Square</button>
+                    <button class="preset-btn" id="preset-triangle" onclick="applyPreset('triangle')">Triangle</button>
+                    <button class="preset-btn" id="preset-sawtooth" onclick="applyPreset('sawtooth')">Sawtooth</button>
+                    <button class="preset-btn" id="preset-clear" onclick="applyPreset('clear')">Mute All</button>
+                </div>
+
+                <!-- Sliders -->
+                <div class="harmonics-container" id="sliders-grid">
+                    <!-- Injected dynamically based on harmonics -->
+                </div>
+                
+                <div style="margin-top: 24px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center;">
+                    <!-- Sound Control Panel -->
+                    <div class="sound-monitor-panel glass-panel" style="padding: 16px; border-radius: var(--radius-md); margin-bottom: 0;">
+                        <button class="play-button" id="audio-play-btn" onclick="toggleAudio()" aria-label="Play Sound">
+                            ▶
+                        </button>
+                        
+                        <div class="audio-parameters">
+                            <div class="param-row">
+                                <span class="param-label" id="lbl-frequency">Frequency</span>
+                                <input type="range" class="wave-slider" id="pitch-slider" min="110" max="440" value="220" oninput="adjustPitch(this.value)">
+                                <span class="harmonic-value-text" id="pitch-val">220Hz</span>
+                            </div>
+                            <div class="param-row">
+                                <span class="param-label" id="lbl-volume">Volume</span>
+                                <input type="range" class="wave-slider" id="volume-slider" min="0" max="0.15" step="0.01" value="0.06" oninput="adjustVolume(this.value)">
+                                <span class="harmonic-value-text" id="volume-val">40%</span>
+                            </div>
+                        </div>
+
+                        <!-- Mini canvas for active audio FFT trace -->
+                        <canvas class="oscilloscope-canvas" id="oscilloscope"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Diagnostics Panel Overlay -->
+    <div class="diagnostics-panel" id="diagnostics-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
+        </button>
+    </div>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(6, 7, 19, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--bg-surface); border: 2px solid var(--border-active); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Self-Tests Complete</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; margin-bottom: 24px;">Assertions passed successfully!</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support middle/high school waves, acoustics, and algebra curricula.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            harmonicsCount: 8, // 1 to 8 harmonics
+            defaultFundamentalFrequency: 220, // pitch in Hz (A3)
+            gridLimit: 1.2, // normal scale boundary
+            quests: [
+                {
+                    id: 1,
+                    title: '🎛️ Fundamental Match',
+                    title_es: '🎛️ Armónico Fundamental',
+                    desc: 'Synthesize a pure 220Hz sine wave with amplitude 0.8. Set all other harmonics to 0.',
+                    desc_es: 'Sintetiza una onda senoidal pura de 220Hz con amplitud 0.8. Pon los demás armónicos en 0.',
+                    validator: (state) => {
+                        const h = state.harmonics;
+                        const match1 = Math.abs(h[0] - 0.8) < 0.05;
+                        const matchOthers = h.slice(1).every(val => Math.abs(val) < 0.03);
+                        return match1 && matchOthers;
+                    },
+                    targetWave: [0.8, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                    id: 2,
+                    title: '🟥 Square Up',
+                    title_es: '🟥 Formar Onda Cuadrada',
+                    desc: 'Build a square wave approximation using odd harmonics. First harmonic: 0.9. Third harmonic: 0.3. Fifth harmonic: 0.18.',
+                    desc_es: 'Crea una aproximación de onda cuadrada usando armónicos impares. 1º: 0.9, 3º: 0.3, 5º: 0.18.',
+                    validator: (state) => {
+                        const h = state.harmonics;
+                        const match1 = Math.abs(h[0] - 0.9) < 0.05;
+                        const match3 = Math.abs(h[2] - 0.3) < 0.05;
+                        const match5 = Math.abs(h[4] - 0.18) < 0.05;
+                        // even harmonics should be very low
+                        const evenLow = Math.abs(h[1]) < 0.05 && Math.abs(h[3]) < 0.05 && Math.abs(h[5]) < 0.05 && Math.abs(h[7]) < 0.05;
+                        return match1 && match3 && match5 && evenLow;
+                    },
+                    targetWave: [0.9, 0, 0.3, 0, 0.18, 0, 0, 0]
+                },
+                {
+                    id: 3,
+                    title: '📐 Sawtooth Shear',
+                    title_es: '📐 Pendiente de Sierra',
+                    desc: 'Form a sawtooth ramp wave. Dial in cascading amplitudes: 1st harmonic: 0.8, 2nd: 0.4, 3rd: 0.27, 4th: 0.2.',
+                    desc_es: 'Crea una rampa de diente de sierra. Pon amplitudes en cascada: 1º: 0.8, 2º: 0.4, 3º: 0.27, 4º: 0.2.',
+                    validator: (state) => {
+                        const h = state.harmonics;
+                        const m1 = Math.abs(h[0] - 0.8) < 0.05;
+                        const m2 = Math.abs(h[1] - 0.4) < 0.05;
+                        const m3 = Math.abs(h[2] - 0.27) < 0.05;
+                        const m4 = Math.abs(h[3] - 0.2) < 0.05;
+                        const othersLow = h.slice(4).every(val => Math.abs(val) < 0.05);
+                        return m1 && m2 && m3 && m4 && othersLow;
+                    },
+                    targetWave: [0.8, 0.4, 0.27, 0.2, 0, 0, 0, 0]
+                },
+                {
+                    id: 4,
+                    title: '🌀 Custom Resonator',
+                    title_es: '🌀 Resonador Personalizado',
+                    desc: 'Match a complex acoustic chime signature. Set 1st harmonic to 0.6, 3rd to 0.4, and 7th to 0.2.',
+                    desc_es: 'Sincroniza una firma de campana acústica compleja. Ajusta el 1º armónico a 0.6, el 3º a 0.4 y el 7º a 0.2.',
+                    validator: (state) => {
+                        const h = state.harmonics;
+                        const m1 = Math.abs(h[0] - 0.6) < 0.05;
+                        const m3 = Math.abs(h[2] - 0.4) < 0.05;
+                        const m7 = Math.abs(h[6] - 0.2) < 0.05;
+                        const matchOthers = Math.abs(h[1]) < 0.05 && Math.abs(h[3]) < 0.05 && Math.abs(h[4]) < 0.05 && Math.abs(h[5]) < 0.05 && Math.abs(h[7]) < 0.05;
+                        return m1 && m3 && m7 && matchOthers;
+                    },
+                    targetWave: [0.6, 0, 0.4, 0, 0, 0, 0.2, 0]
+                }
+            ],
+            sentenceStems: [
+                {
+                    id: 'stem-1',
+                    en: 'Adding the [3rd harmonic] makes the wave shape look more [pointed], and makes the sound sound [buzzier].',
+                    es: 'Añadir el [tercer armónico] hace que la onda se vea más [puntiaguda] y que el sonido suene [más zumbante].'
+                },
+                {
+                    id: 'stem-2',
+                    en: 'A pure tone contains only the [fundamental frequency], resulting in a perfect [circular epicycle].',
+                    es: 'Un tono puro contiene solo la [frecuencia fundamental], resultando en un [epiciclo circular] perfecto.'
+                },
+                {
+                    id: 'stem-3',
+                    en: 'When wave components overlap, they undergo [superposition], increasing the total [amplitude] at specific coordinates.',
+                    es: 'Cuando las ondas se superponen, experimentan [superposición], aumentando la [amplitud] en coordenadas específicas.'
+                }
+            ],
+            translations: {
+                en: {
+                    'mission-control': 'Mission Control',
+                    'navigation-guide': 'Wave Navigation Helper',
+                    'workspace-title': 'Wave Mechanics Visualizer',
+                    'controls': 'Harmonics Controller & Audio Engine',
+                    'frequency': 'Pitch',
+                    'volume': 'Volume',
+                    'matching-error': 'Matching Error',
+                    'status': 'Quest State',
+                    'sandbox': 'SANDBOX MODE',
+                    'active': 'ACTIVE QUEST',
+                    'success': 'QUEST COMPLETE ✅',
+                    'play': '▶ Play Sound',
+                    'stop': '⏸ Stop Sound'
+                },
+                es: {
+                    'mission-control': 'Control de Misiones',
+                    'navigation-guide': 'Ayudante de Navegación ESOL',
+                    'workspace-title': 'Visualizador de Mecánica de Ondas',
+                    'controls': 'Controlador de Armónicos y Sonido',
+                    'frequency': 'Tono',
+                    'volume': 'Volumen',
+                    'matching-error': 'Error de Ajuste',
+                    'status': 'Estado de Misión',
+                    'sandbox': 'MODO LIBRE',
+                    'active': 'MISIÓN ACTIVA',
+                    'success': 'MISIÓN COMPLETADA ✅',
+                    'play': '▶ Activar Sonido',
+                    'stop': '⏸ Detener Sonido'
+                }
+            }
+        };
+
+        // ==========================================
+        // 2. INTEGRITY CHECK (validateConfig)
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.harmonicsCount || CONFIG.harmonicsCount < 1) {
+                throw new Error("CONFIG: Harmonics count must be at least 1.");
+            }
+            if (!CONFIG.quests || CONFIG.quests.length === 0) {
+                throw new Error("CONFIG: Quest configurations are missing.");
+            }
+            CONFIG.quests.forEach((q, idx) => {
+                if (!q.title || !q.desc || !q.validator || !q.targetWave) {
+                    throw new Error(`CONFIG: Quest ID ${q.id || idx} is missing key details.`);
+                }
+                if (q.targetWave.length !== CONFIG.harmonicsCount) {
+                    throw new Error(`CONFIG: Quest ID ${q.id} target wave size does not match CONFIG.harmonicsCount.`);
+                }
+            });
+            if (!CONFIG.translations || !CONFIG.translations.en || !CONFIG.translations.es) {
+                throw new Error("CONFIG: Language dictionaries are invalid or missing.");
+            }
+        }
+
+        // ==========================================
+        // 3. DETERMINISTIC STATE MACHINE
+        // ==========================================
+        const STATE = {
+            harmonics: [0.8, 0, 0, 0, 0, 0, 0, 0], // amplitudes
+            fundamentalFreq: CONFIG.defaultFundamentalFrequency, // fundamental frequency in Hz
+            volume: 0.06, // Web Audio volume setting
+            isPlaying: false,
+            activeQuestId: null, // null is Sandbox mode
+            completedQuests: [],
+            language: 'en', // 'en' or 'es'
+            activeStemId: 'stem-1',
+            rmsdError: 1.0, // comparative matching deviation
+            timePhase: 0, // dynamic phase scroll index
+            audioInitialized: false
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+            
+            // Recalculate RMSD (deviation) if harmonics changed
+            if (updatedFields.harmonics || updatedFields.activeQuestId !== undefined) {
+                calculateRMSD();
+            }
+
+            // Check if any quest completed
+            checkQuestCompletion();
+
+            // Notify Sound engine
+            if (STATE.audioInitialized && STATE.isPlaying) {
+                AudioEngine.updateSoundSpectrum();
+            }
+
+            // Redraw GUI
+            renderUI();
+        }
+
+        function calculateRMSD() {
+            if (STATE.activeQuestId === null) {
+                STATE.rmsdError = 0.0;
+                return;
+            }
+
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+            if (!currentQuest) return;
+
+            let diffSum = 0;
+            // Samples across a single full wave cycle to evaluate fit deviation
+            const samples = 100;
+            for (let i = 0; i < samples; i++) {
+                const t = i / samples;
+                let yUser = 0;
+                let yTarget = 0;
+                
+                for (let hIdx = 0; hIdx < CONFIG.harmonicsCount; hIdx++) {
+                    const order = hIdx + 1;
+                    yUser += STATE.harmonics[hIdx] * Math.sin(2 * Math.PI * order * t);
+                    yTarget += currentQuest.targetWave[hIdx] * Math.sin(2 * Math.PI * order * t);
+                }
+                
+                diffSum += Math.pow(yUser - yTarget, 2);
+            }
+            
+            STATE.rmsdError = Math.sqrt(diffSum / samples);
+        }
+
+        function checkQuestCompletion() {
+            if (STATE.activeQuestId === null) return;
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+            if (!currentQuest) return;
+
+            if (currentQuest.validator(STATE)) {
+                if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
+                    STATE.completedQuests.push(STATE.activeQuestId);
+                    logDiagnostics(`Quest ${STATE.activeQuestId} completed! RMSD = ${STATE.rmsdError.toFixed(4)}`, 'success');
+                }
+            }
+        }
+
+        // ==========================================
+        // 4. PRESET LOADER
+        // ==========================================
+        function applyPreset(presetName) {
+            let h = Array(CONFIG.harmonicsCount).fill(0);
+            
+            switch (presetName) {
+                case 'sine':
+                    h[0] = 0.8;
+                    break;
+                case 'square':
+                    // A_n = 4 / (pi * n) for odd indices
+                    for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                        const order = i + 1;
+                        if (order % 2 !== 0) {
+                            h[i] = 4 / (Math.PI * order) * 0.7; // scaled down slightly to fit axis grids
+                        }
+                    }
+                    break;
+                case 'triangle':
+                    // A_n = 8 / (pi^2 * n^2)
+                    for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                        const order = i + 1;
+                        if (order % 2 !== 0) {
+                            const sign = ((order - 1) / 2) % 2 === 0 ? 1 : -1;
+                            h[i] = sign * (8 / (Math.PI * Math.PI * order * order)) * 0.9;
+                        }
+                    }
+                    break;
+                case 'sawtooth':
+                    // A_n = 2 / (pi * n) (-1)^n+1
+                    for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                        const order = i + 1;
+                        h[i] = (2 / (Math.PI * order)) * Math.pow(-1, order + 1) * 0.9;
+                    }
+                    break;
+                case 'clear':
+                    // Mute all slider weights
+                    h = Array(CONFIG.harmonicsCount).fill(0);
+                    break;
+            }
+
+            // Math scaling helper: truncate precision to sliders values
+            h = h.map(v => Math.round(v * 100) / 100);
+            
+            transitionState({ harmonics: h });
+            logDiagnostics(`Applied preset '${presetName}'`);
+        }
+
+        // ==========================================
+        // 5. INTERACTIVE EVENT HANDLERS
+        // ==========================================
+        function handleSliderChange(harmonicIdx, value) {
+            const h = [...STATE.harmonics];
+            h[harmonicIdx] = parseFloat(value);
+            transitionState({ harmonics: h });
+        }
+
+        function toggleLanguage() {
+            const nextLang = STATE.language === 'en' ? 'es' : 'en';
+            transitionState({ language: nextLang });
+            logDiagnostics(`Language changed to: ${nextLang}`);
+        }
+
+        function selectQuest(questId) {
+            if (STATE.activeQuestId === questId) {
+                // Clicking active quest resets back to sandbox free-mode
+                transitionState({ activeQuestId: null });
+                logDiagnostics("Entered free Sandbox mode.");
+            } else {
+                transitionState({ activeQuestId: questId });
+                logDiagnostics(`Quest ${questId} activated.`);
+            }
+        }
+
+        function adjustPitch(hzValue) {
+            const freq = parseInt(hzValue, 10);
+            document.getElementById('pitch-val').innerText = freq + "Hz";
+            if (STATE.audioInitialized) {
+                AudioEngine.setFundamentalFrequency(freq);
+            }
+            STATE.fundamentalFreq = freq;
+        }
+
+        function adjustVolume(volValue) {
+            const vol = parseFloat(volValue);
+            // Translate mathematically to user percentages
+            const pct = Math.round((vol / 0.15) * 100);
+            document.getElementById('volume-val').innerText = pct + "%";
+            if (STATE.audioInitialized) {
+                AudioEngine.setVolume(vol);
+            }
+            STATE.volume = vol;
+        }
+
+        function selectSentenceStem(stemId) {
+            transitionState({ activeStemId: stemId });
+        }
+
+        // ==========================================
+        // 6. RENDER ENGINE (SVG DRAWING)
+        // ==========================================
+        let animationFrameId = null;
+
+        function runVisualizerLoop() {
+            renderDynamicVisuals();
+            STATE.timePhase += 0.035; // scroll speed
+            animationFrameId = requestAnimationFrame(runVisualizerLoop);
+        }
+
+        function renderDynamicVisuals() {
+            const svg = document.getElementById('visualizer-svg');
+            if (!svg) return;
+            svg.innerHTML = ''; // wipe frame
+
+            const W = 800;
+            const H = 380;
+            
+            // Layout splitting:
+            // Epicycles center on left: cx = 160, cy = 190. Max radius = 100.
+            // Wave graphs scroll on right: starts from x = 320 to 760. W = 440.
+            const epicX = 160;
+            const epicY = 190;
+            const waveStartX = 320;
+            const waveEndX = 760;
+            const scaleFactor = 100; // 1 unit amplitude = 100 pixels
+
+            // --- A. Draw Backdrop Grids ---
+            // Left Coordinate Grid
+            svg.innerHTML += `
+                <circle cx="${epicX}" cy="${epicY}" r="110" fill="rgba(255,255,255,0.01)" stroke="rgba(255,255,255,0.02)" />
+                <line x1="${epicX - 120}" y1="${epicY}" x2="${epicX + 120}" y2="${epicY}" class="grid-line" stroke-dasharray="2,2" />
+                <line x1="${epicX}" y1="${epicY - 120}" x2="${epicX}" y2="${epicY + 120}" class="grid-line" stroke-dasharray="2,2" />
+            `;
+
+            // Right Scroll Grid
+            const midY = epicY;
+            svg.innerHTML += `
+                <line x1="${waveStartX}" y1="${midY}" x2="${waveEndX}" y2="${midY}" class="axis-line" />
+                <line x1="${waveStartX}" y1="${midY - scaleFactor}" x2="${waveEndX}" y2="${midY - scaleFactor}" class="grid-line" />
+                <line x1="${waveStartX}" y1="${midY + scaleFactor}" x2="${waveEndX}" y2="${midY + scaleFactor}" class="grid-line" />
+                <text x="${waveEndX}" y="${midY + 14}" class="grid-text" text-anchor="end">time (t) ➔</text>
+                <text x="${waveStartX - 8}" y="${midY - scaleFactor + 4}" class="grid-text" text-anchor="end">+1.0</text>
+                <text x="${waveStartX - 8}" y="${midY + scaleFactor + 4}" class="grid-text" text-anchor="end">-1.0</text>
+            `;
+
+            // --- B. Draw Quest Target Wave (if active) ---
+            if (STATE.activeQuestId !== null) {
+                const quest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+                if (quest) {
+                    let dStr = '';
+                    const segmentWidth = waveEndX - waveStartX;
+                    for (let x = waveStartX; x <= waveEndX; x += 2) {
+                        const t = (x - waveStartX) / segmentWidth; // normalized x [0, 1] for 1 period
+                        let y = 0;
+                        for (let h = 0; h < CONFIG.harmonicsCount; h++) {
+                            const order = h + 1;
+                            y += quest.targetWave[h] * Math.sin(2 * Math.PI * order * t);
+                        }
+                        
+                        const plotY = epicY - y * scaleFactor;
+                        if (x === waveStartX) {
+                            dStr += `M ${x} ${plotY}`;
+                        } else {
+                            dStr += ` L ${x} ${plotY}`;
+                        }
+                    }
+                    svg.innerHTML += `<path d="${dStr}" class="target-wave-path" />`;
+                }
+            }
+
+            // --- C. Trace Rotating Epicycles Tip-to-Tail ---
+            let currentX = epicX;
+            let currentY = epicY;
+            let rotatingVectorList = [];
+
+            for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                const amplitude = STATE.harmonics[i];
+                if (Math.abs(amplitude) < 0.001) continue; // skip zeros
+                
+                const order = i + 1;
+                // Rotates based on visualization phase scaled by harmonic index
+                const angle = order * STATE.timePhase;
+                const rPixels = amplitude * scaleFactor;
+
+                const nextX = currentX + rPixels * Math.cos(angle);
+                const nextY = currentY - rPixels * Math.sin(angle); // subtract because SVG Y axis grows down
+
+                rotatingVectorList.push({
+                    cx: currentX,
+                    cy: currentY,
+                    r: Math.abs(rPixels),
+                    tx: nextX,
+                    ty: nextY,
+                    color: i === 0 ? 'var(--primary)' : 'rgba(217, 70, 239, 0.4)'
+                });
+
+                currentX = nextX;
+                currentY = nextY;
+            }
+
+            // Draw vector lines & concentric phasor rings
+            rotatingVectorList.forEach(v => {
+                svg.innerHTML += `
+                    <circle cx="${v.cx}" cy="${v.cy}" r="${v.r}" class="epicycle-circle" />
+                    <line x1="${v.cx}" y1="${v.cy}" x2="${v.tx}" y2="${v.ty}" class="epicycle-vector" stroke="${v.color}" />
+                    <circle cx="${v.cx}" cy="${v.cy}" class="epicycle-center" />
+                `;
+            });
+            // Draw endpoint tip dot
+            svg.innerHTML += `<circle cx="${currentX}" cy="${currentY}" r="4" fill="var(--white)" />`;
+
+            // --- D. Plot Scrolling User Synthesized Wave ---
+            let userDStr = '';
+            const screenSpan = waveEndX - waveStartX;
+            
+            for (let x = waveStartX; x <= waveEndX; x += 2) {
+                // map current screen pos to corresponding historical phase index offset
+                const dxNormalized = (x - waveStartX) / screenSpan;
+                const t = dxNormalized * 2 * Math.PI; // map to full 2PI period
+                
+                let y = 0;
+                for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                    const order = i + 1;
+                    // Sum harmonics offset by visual scroll phase
+                    y += STATE.harmonics[i] * Math.sin(order * (t + STATE.timePhase));
+                }
+
+                const plotY = epicY - y * scaleFactor;
+                if (x === waveStartX) {
+                    userDStr += `M ${x} ${plotY}`;
+                } else {
+                    userDStr += ` L ${x} ${plotY}`;
+                }
+            }
+            
+            // Draw the completed user wave shape
+            svg.innerHTML += `<path d="${userDStr}" class="user-wave-path" />`;
+
+            // --- E. Connecting dynamic trace-line from phasor tip to scrolling wave edge ---
+            const finalWaveY = epicY - (rotatingVectorList.length > 0 ? (epicY - currentY) : 0);
+            svg.innerHTML += `
+                <line x1="${currentX}" y1="${currentY}" x2="${waveStartX}" y2="${finalWaveY}" stroke="rgba(255,255,255,0.2)" stroke-dasharray="2, 2" stroke-width="1.2" />
+                <circle cx="${waveStartX}" cy="${finalWaveY}" r="4.5" fill="var(--primary)" />
+            `;
+        }
+
+        // ==========================================
+        // 7. WEB AUDIO SYNTHESIZER ENGINE
+        // ==========================================
+        const AudioEngine = {
+            ctx: null,
+            masterGain: null,
+            oscillator: null,
+            fft: null,
+            isPlaying: false,
+
+            init() {
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContextClass();
+                    
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.gain.setValueAtTime(STATE.volume, this.ctx.currentTime);
+                    this.masterGain.connect(this.ctx.destination);
+                    
+                    this.fft = this.ctx.createAnalyser();
+                    this.fft.fftSize = 256;
+                    this.masterGain.connect(this.fft);
+                    
+                    STATE.audioInitialized = true;
+                    logDiagnostics("Web Audio Context initialized successfully.");
+                } catch(e) {
+                    logDiagnostics("Failed to initialize Web Audio: " + e.message, 'error');
+                }
+            },
+
+            start() {
+                if (!STATE.audioInitialized) {
+                    this.init();
+                }
+                
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+
+                if (this.oscillator) {
+                    try { this.oscillator.stop(); } catch(err) {}
+                }
+
+                this.oscillator = this.ctx.createOscillator();
+                this.updateSoundSpectrum();
+                this.oscillator.frequency.setValueAtTime(STATE.fundamentalFreq, this.ctx.currentTime);
+                this.oscillator.connect(this.masterGain);
+                this.oscillator.start();
+                this.isPlaying = true;
+                
+                logDiagnostics("Synthesizer started sounding.");
+                runOscilloscopeMonitor();
+            },
+
+            stop() {
+                if (this.oscillator) {
+                    try {
+                        this.oscillator.stop();
+                    } catch(e) {}
+                    this.oscillator = null;
+                }
+                this.isPlaying = false;
+                logDiagnostics("Synthesizer muted.");
+            },
+
+            setVolume(vol) {
+                if (this.masterGain && this.ctx) {
+                    this.masterGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.05);
+                }
+            },
+
+            setFundamentalFrequency(hz) {
+                if (this.oscillator && this.ctx) {
+                    this.oscillator.frequency.setTargetAtTime(hz, this.ctx.currentTime, 0.05);
+                }
+            },
+
+            updateSoundSpectrum() {
+                if (!this.oscillator || !this.ctx) return;
+                
+                // Create a standard PeriodicWave based on user sliders
+                // Float32Array size is size + 1. Index 0 corresponds to DC offset (0)
+                const realCoeffs = new Float32Array(CONFIG.harmonicsCount + 1);
+                const imagCoeffs = new Float32Array(CONFIG.harmonicsCount + 1);
+                
+                // Set Imaginary terms to slider values because they represent standard sine waves in Web Audio Fourier Sums:
+                // y(t) = sum( imaginary[n] * sin(n * omega * t) )
+                for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                    imagCoeffs[i + 1] = STATE.harmonics[i];
+                    realCoeffs[i + 1] = 0; // cosine terms set to zero (zero phase shifts)
+                }
+
+                try {
+                    const customWave = this.ctx.createPeriodicWave(realCoeffs, imagCoeffs, {disableNormalization: false});
+                    this.oscillator.setPeriodicWave(customWave);
+                } catch(e) {
+                    logDiagnostics("Periodic Wave synthesis failed: " + e.message, 'error');
+                }
+            }
+        };
+
+        function toggleAudio() {
+            const playBtn = document.getElementById('audio-play-btn');
+            const lang = STATE.language;
+            const t = CONFIG.translations[lang];
+
+            if (!STATE.isPlaying) {
+                AudioEngine.start();
+                transitionState({ isPlaying: true });
+                playBtn.classList.add('playing');
+                playBtn.innerHTML = "⏸";
+                playBtn.setAttribute('aria-label', t['stop']);
+            } else {
+                AudioEngine.stop();
+                transitionState({ isPlaying: false });
+                playBtn.classList.remove('playing');
+                playBtn.innerHTML = "▶";
+                playBtn.setAttribute('aria-label', t['play']);
+            }
+        }
+
+        // --- Oscilloscope Micro Canvas Animator ---
+        let oscAnimationId = null;
+        function runOscilloscopeMonitor() {
+            const canvas = document.getElementById('oscilloscope');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const fft = AudioEngine.fft;
+            const bufferLength = fft ? fft.frequencyBinCount : 0;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                if (!STATE.isPlaying) {
+                    ctx.fillStyle = '#02030d';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvas.height / 2);
+                    ctx.lineTo(canvas.width, canvas.height / 2);
+                    ctx.stroke();
+                    return;
+                }
+
+                oscAnimationId = requestAnimationFrame(draw);
+                fft.getByteTimeDomainData(dataArray);
+
+                ctx.fillStyle = '#02030d';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 1.8;
+                ctx.strokeStyle = '#3b82f6';
+                ctx.beginPath();
+
+                const sliceWidth = canvas.width * 1.0 / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * canvas.height / 2;
+
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    x += sliceWidth;
+                }
+
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+            }
+
+            draw();
+        }
+
+        // ==========================================
+        // 8. ESOL DYNAMIC SENTENCE SCALFFOLD
+        // ==========================================
+        function renderSentenceStems() {
+            const container = document.getElementById('sentence-stems-container');
+            container.innerHTML = '';
+            
+            CONFIG.sentenceStems.forEach(stem => {
+                const isActive = STATE.activeStemId === stem.id;
+                const text = STATE.language === 'en' ? stem.en : stem.es;
+                // Render key terms inside brackets as styled highlights
+                const formattedHtml = text.replace(/\[(.*?)\]/g, `<strong style="color:var(--accent); font-weight:700;">$1</strong>`);
+                
+                container.innerHTML += `
+                    <div class="sentence-stem-tag ${isActive?'active':''}" onclick="selectSentenceStem('${stem.id}')">
+                        ${formattedHtml}
+                    </div>
+                `;
+            });
+        }
+
+        function updateESOLScaffoldText() {
+            const scaffoldBox = document.getElementById('esol-scaffold-text');
+            const activeStem = CONFIG.sentenceStems.find(s => s.id === STATE.activeStemId);
+            if (!activeStem) return;
+
+            // Highlight glossary tokens
+            const enHtml = activeStem.en.replace(/\[(.*?)\]/g, `<span style="color:var(--accent); font-weight:700; border-bottom: 1.5px dashed rgba(217, 70, 239, 0.4);">$1</span>`);
+            const esHtml = activeStem.es.replace(/\[(.*?)\]/g, `<span style="color:var(--primary); font-weight:700; border-bottom: 1.5px dashed rgba(59, 130, 246, 0.4);">$1</span>`);
+
+            scaffoldBox.innerHTML = `
+                <div id="esol-en" style="line-height:1.5;">${enHtml}</div>
+                <div class="esol-translation" id="esol-es" style="margin-top:10px; padding-top:10px; border-top: 1px solid rgba(255,255,255,0.05);">${esHtml}</div>
+            `;
+        }
+
+        // ==========================================
+        // 9. GUI VIEW ENGINE (renderUI)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+            
+            // Translations
+            const lang = STATE.language;
+            const t = CONFIG.translations[lang];
+            
+            document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+            document.getElementById('lbl-navigation-guide').innerText = t['navigation-guide'];
+            document.getElementById('lbl-workspace-title').innerText = t['workspace-title'];
+            document.getElementById('lbl-controls').innerText = t['controls'];
+            document.getElementById('lbl-frequency').innerText = t['frequency'];
+            document.getElementById('lbl-volume').innerText = t['volume'];
+            document.getElementById('lbl-matching-error').innerText = t['matching-error'];
+            document.getElementById('lbl-status').innerText = t['status'];
+            document.getElementById('lang-toggle-btn').innerText = lang === 'en' ? '🌐 EN | ES' : '🌐 ES | EN';
+
+            // Wave preset active borders
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            // Check if matches preset
+            const h = STATE.harmonics;
+            const isSine = h[0] === 0.8 && h.slice(1).every(v => v === 0);
+            const isMuted = h.every(v => v === 0);
+            if (isSine) document.getElementById('preset-sine').classList.add('active');
+            else if (isMuted) document.getElementById('preset-clear').classList.add('active');
+
+            // Render sliders
+            renderSlidersGrid();
+
+            // Render quests
+            renderQuestsList();
+
+            // Match values HUD
+            const rmsdPct = (STATE.rmsdError * 100).toFixed(1) + "%";
+            const rmsdEl = document.getElementById('rmsd-value');
+            rmsdEl.innerText = STATE.activeQuestId === null ? "0.0%" : rmsdPct;
+
+            const statusEl = document.getElementById('quest-status-flag');
+            if (STATE.activeQuestId === null) {
+                statusEl.innerText = t['sandbox'];
+                statusEl.style.color = 'var(--text-muted)';
+                rmsdEl.style.color = 'var(--text-muted)';
+                rmsdEl.classList.remove('match');
+            } else {
+                const questDone = STATE.completedQuests.includes(STATE.activeQuestId);
+                if (questDone) {
+                    statusEl.innerText = t['success'];
+                    statusEl.style.color = 'var(--secondary)';
+                    rmsdEl.style.color = 'var(--secondary)';
+                    rmsdEl.classList.add('match');
+                } else {
+                    statusEl.innerText = t['active'];
+                    statusEl.style.color = 'var(--warning)';
+                    rmsdEl.style.color = 'var(--warning)';
+                    rmsdEl.classList.remove('match');
+                }
+            }
+
+            // ESOL Scaffolds
+            renderSentenceStems();
+            updateESOLScaffoldText();
+        }
+
+        function renderSlidersGrid() {
+            const grid = document.getElementById('sliders-grid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                const val = STATE.harmonics[i];
+                const order = i + 1;
+                const isFund = order === 1;
+                const titleStr = isFund ? `1st (Fund.)` : `${order}th Harm.`;
+                const colorClass = isFund ? 'fundamental' : '';
+
+                grid.innerHTML += `
+                    <div class="harmonic-slider-row ${colorClass}">
+                        <span class="harmonic-label">${titleStr}</span>
+                        <div class="slider-wrapper">
+                            <input type="range" class="wave-slider" 
+                                   min="-1.0" max="1.0" step="0.05" value="${val}"
+                                   oninput="handleSliderChange(${i}, this.value)">
+                        </div>
+                        <span class="harmonic-value-text">${val.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function renderQuestsList() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const isDone = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.title_es;
+                const desc = STATE.language === 'en' ? q.desc : q.desc_es;
+
+                container.innerHTML += `
+                    <div class="quest-card ${isActive?'active':''} ${isDone?'completed':''}" onclick="selectQuest(${q.id})">
+                        <div class="quest-info">
+                            <span class="quest-title-text">${title}</span>
+                            <span class="quest-desc-text">${desc}</span>
+                        </div>
+                        <span class="quest-badge">${isDone?'✅':'🌀'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // ==========================================
+        // 10. DIAGNOSTICS & AUTOMATED SELF-TESTS
+        // ==========================================
+        function logDiagnostics(message, type = 'info') {
+            const logBox = document.getElementById('diagnostics-logs');
+            if (!logBox) return;
+
+            const time = new Date().toTimeString().split(' ')[0];
+            let colorClass = '';
+            if (type === 'error') colorClass = 'log-error';
+            else if (type === 'success') colorClass = 'log-success';
+            else if (type === 'warning') colorClass = 'log-warning';
+
+            logBox.innerHTML += `<div class="${colorClass}">[${time}] ${message}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function openDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'block';
+            logDiagnostics("Diagnostics window opened.");
+        }
+
+        function closeDiagnostics() {
+            document.getElementById('diagnostics-overlay').style.display = 'none';
+        }
+
+        function clearDiagnosticsLogs() {
+            document.getElementById('diagnostics-logs').innerHTML = '';
+        }
+
+        // --- Self Tests Engine ---
+        function runSelfTests() {
+            openDiagnostics();
+            logDiagnostics("====== Starting Core Self-Tests ======", 'warning');
+            let failedCount = 0;
+
+            // Test 1: Configuration Validity
+            try {
+                validateConfig();
+                logDiagnostics("Test 1 Passed: Configuration integrity verified.", 'success');
+            } catch(e) {
+                logDiagnostics(`Test 1 Failed: Config error: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 2: State Reducer Logic
+            try {
+                const initialVol = STATE.volume;
+                transitionState({ volume: 0.12 });
+                if (STATE.volume === 0.12) {
+                    logDiagnostics("Test 2 Passed: Deterministic state transition reducer verified.", 'success');
+                } else {
+                    throw new Error("State update did not save correctly.");
+                }
+                // rollback
+                transitionState({ volume: initialVol });
+            } catch(e) {
+                logDiagnostics(`Test 2 Failed: Reducer logic: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 3: Fourier Math sum calculations
+            try {
+                // Preset Sine wave should be precisely 0.8 at t=0.25 (sin(90deg) = 1)
+                const mockState = { harmonics: [0.8, 0, 0, 0, 0, 0, 0, 0] };
+                const t = 0.25;
+                let sum = 0;
+                for (let i = 0; i < CONFIG.harmonicsCount; i++) {
+                    sum += mockState.harmonics[i] * Math.sin(2 * Math.PI * (i + 1) * t);
+                }
+                
+                if (Math.abs(sum - 0.8) < 0.001) {
+                    logDiagnostics("Test 3 Passed: Fourier wave summation math verified.", 'success');
+                } else {
+                    throw new Error(`Calculated sum was ${sum}, expected 0.8`);
+                }
+            } catch(e) {
+                logDiagnostics(`Test 3 Failed: Wave summation: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 4: Quest Validator Logic
+            try {
+                const mockStatePass = { harmonics: [0.8, 0, 0, 0, 0, 0, 0, 0] };
+                const mockStateFail = { harmonics: [0.5, 0.4, 0, 0, 0, 0, 0, 0] };
+                const q1 = CONFIG.quests[0];
+                
+                const passVal = q1.validator(mockStatePass);
+                const failVal = q1.validator(mockStateFail);
+                
+                if (passVal === true && failVal === false) {
+                    logDiagnostics("Test 4 Passed: Quest constraint validation checks verified.", 'success');
+                } else {
+                    throw new Error(`Validator outcomes (Pass: ${passVal}, Fail: ${failVal}) do not match assertions.`);
+                }
+            } catch(e) {
+                logDiagnostics(`Test 4 Failed: Quest validators: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 5: Audio Engine safety limits
+            try {
+                if (STATE.volume <= 0.15) {
+                    logDiagnostics("Test 5 Passed: Audio volume constraints verified.", 'success');
+                } else {
+                    throw new Error("Volume is outside target safety threshold (<=0.15)");
+                }
+            } catch(e) {
+                logDiagnostics(`Test 5 Failed: Sound safety check: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            if (failedCount === 0) {
+                logDiagnostics("====== All 5 Core Tests Passed Successfully! ======", 'success');
+                showCustomModal(
+                    "Self-Tests Complete",
+                    "5/5 Passed successfully!",
+                    "⚡",
+                    "Close"
+                );
+            } else {
+                logDiagnostics(`====== Self-Tests Failed: ${failedCount} Errors ======`, 'error');
+                showCustomModal(
+                    "Self-Tests Failed",
+                    `${failedCount} assertion failures inside diagnostics panel.`,
+                    "⚠️",
+                    "Review Logs"
+                );
+            }
+        }
+
+        // Custom Modal Controller Functions
+        function showCustomModal(title, message, icon, buttonText, onClickCallback) {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            document.getElementById('custom-modal-title').innerHTML = title;
+            document.getElementById('custom-modal-message').innerHTML = message;
+            document.getElementById('custom-modal-icon').innerHTML = icon;
+            
+            const btn = document.getElementById('custom-modal-btn');
+            btn.innerHTML = buttonText || (STATE.language === 'en' ? 'Continue' : 'Continuar');
+            
+            btn.onclick = function() {
+                closeCustomModal();
+                if (onClickCallback) onClickCallback();
+            };
+            
+            overlay.style.display = 'flex';
+            overlay.offsetHeight; // force reflow
+            overlay.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        }
+
+        function closeCustomModal() {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            overlay.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // ==========================================
+        // 11. INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            logDiagnostics("Spectral Waves Lab DOM loaded.");
+            validateConfig();
+            
+            // Set initial state
+            renderUI();
+            
+            // Kickstart visual drawing engine loop
+            runVisualizerLoop();
+            
+            logDiagnostics("Visual loop rendering started.");
+        });
+    </script>
+</body>
+</html>

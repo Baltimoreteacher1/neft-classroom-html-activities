@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MAD Balance Sandbox: An interactive statistics sandbox. Place weights on a balance scale, locate the mean as center of gravity, and calculate the Mean Absolute Deviation.">
+    <title>MAD Balance Sandbox | Mean Absolute Deviation Visualizer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #06040d;
+            --bg-surface: #0e0a1b;
+            --bg-card: rgba(22, 16, 38, 0.65);
+            --bg-glow: rgba(139, 92, 246, 0.08);
+            
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(139, 92, 246, 0.45);
+            
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --secondary: #ec4899;
+            --secondary-glow: rgba(236, 72, 153, 0.4);
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.4);
+            --danger: #ef4444;
+            --white: #ffffff;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #c084fc;
+            --text-dark: #3b0764;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(139, 92, 246, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.04) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(14, 10, 27, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: pulse-slow 3.5s infinite ease-in-out;
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #4c1d95 100%);
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        }
+
+        .btn-secondary {
+            border-color: rgba(236, 72, 153, 0.3);
+            color: #f472b6;
+            background: rgba(236, 72, 153, 0.08);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            background: rgba(236, 72, 153, 0.15);
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.15);
+        }
+
+        /* Layout Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            gap: 24px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card panels */
+        .glass-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            color: var(--white);
+        }
+
+        .panel-title svg {
+            color: var(--primary);
+        }
+
+        /* Quests checklist sidebar styles */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .quest-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .quest-card.active {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.08);
+            box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.1);
+        }
+
+        .quest-card.completed {
+            border-color: var(--secondary);
+            background: rgba(236, 72, 153, 0.05);
+        }
+
+        .quest-card.completed:hover {
+            border-color: #f472b6;
+            background: rgba(236, 72, 153, 0.08);
+        }
+
+        .quest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .quest-desc-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .quest-badge {
+            font-size: 1.3rem;
+            margin-left: 12px;
+            filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+            transition: var(--transition);
+        }
+
+        .quest-matching-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .hud-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hud-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-metric-value {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* SVG Scale viewport container */
+        .svg-container {
+            width: 100%;
+            position: relative;
+            background: #020106;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .viewport-svg {
+            width: 100%;
+            height: 400px;
+            display: block;
+        }
+
+        /* Balance scale drawing classes */
+        .scale-pivot-stand {
+            fill: #1c1333;
+            stroke: rgba(255,255,255,0.15);
+            stroke-width: 2.0;
+        }
+
+        .scale-beam {
+            stroke: var(--primary);
+            stroke-width: 6.0;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+        }
+
+        .scale-beam-indicator-mark {
+            stroke: rgba(255,255,255,0.2);
+            stroke-width: 1;
+        }
+
+        .scale-tick-line {
+            stroke: rgba(255,255,255,0.4);
+            stroke-width: 1.5;
+        }
+
+        .scale-tick-text {
+            font-family: var(--font-display);
+            font-size: 9px;
+            font-weight: 700;
+            fill: var(--text-muted);
+            text-anchor: middle;
+        }
+
+        .scale-weight-circle {
+            fill: var(--accent);
+            stroke: #020106;
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 6px var(--accent-glow));
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .scale-weight-circle:hover {
+            transform: scale(1.15);
+            filter: brightness(1.2);
+        }
+
+        .scale-weight-stack-text {
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 800;
+            fill: #000;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .scale-mean-pivot-triangle {
+            fill: var(--secondary);
+            stroke: var(--white);
+            stroke-width: 2.0;
+            filter: drop-shadow(0 0 10px var(--secondary-glow));
+        }
+
+        .deviation-arrow-line {
+            stroke: var(--secondary);
+            stroke-width: 2.0;
+            stroke-dasharray: 4, 3;
+            stroke-linecap: round;
+            fill: none;
+        }
+
+        .deviation-metric-text {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            fill: var(--secondary);
+            text-anchor: middle;
+        }
+
+        /* cauldrom formulas dynamic tray */
+        .summing-tray-details {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255,255,255,0.03);
+            text-align: center;
+            color: var(--secondary);
+            letter-spacing: 0.02em;
+            line-height: 1.5;
+        }
+
+        /* Presets Grid */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            padding: 8px;
+            font-size: 0.72rem;
+            text-align: center;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.01);
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .preset-btn:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .preset-btn.active {
+            color: var(--white);
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+        }
+
+        /* Pivot Slider row */
+        .pivot-slider-panel {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.03));
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+        }
+
+        /* ESOL helper scaffolding styles */
+        .esol-panel {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(236, 72, 153, 0.03) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .esol-bubble {
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .esol-translation {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .sentence-builder-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .sentence-select {
+            background: #0d0a1b;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            color: var(--text-main);
+            padding: 6px 10px;
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sentence-select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Diagnostics console panel */
+        .diagnostics-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 330px;
+            background: #090612;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagnostics-log-box {
+            background: #020106;
+            border-radius: var(--radius-sm);
+            height: 140px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 8px 12px;
+            color: #d8b4fe;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            line-height: 1.4;
+        }
+
+        .log-error { color: var(--secondary); }
+        .log-success { color: #22c55e; }
+        .log-warning { color: var(--accent); }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { transform: scale(1.04); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 40px;
+            background: rgba(6, 4, 13, 0.8);
+            font-family: var(--font-display);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <span class="logo-icon">⚖️</span>
+            <h1 class="logo-title">MAD Balance Sandbox</h1>
+        </div>
+        <div class="header-buttons">
+            <button class="btn btn-secondary" id="lang-toggle-btn" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn" onclick="openDiagnostics()">
+                🛠️ Diagnostics
+            </button>
+            <button class="btn btn-primary" id="selftest-btn" onclick="runSelfTests()">
+                ⚡ Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar: Quests & ESOL sentence selector -->
+        <div class="sidebar">
+            
+            <!-- Quests Panel -->
+            <div class="glass-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"></path></svg>
+                    <span id="lbl-mission-control">Balance Quests</span>
+                </h2>
+
+                <div class="quest-matching-hud">
+                    <div class="hud-metric">
+                        <span class="hud-metric-label" id="lbl-recipe-state">Quest Status</span>
+                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--text-muted);">SANDBOX</span>
+                    </div>
+                    <div class="hud-metric" style="text-align: right;">
+                        <span class="hud-metric-label" id="lbl-beam-state">Beam State</span>
+                        <span class="hud-metric-value" id="quest-scale-state" style="color:var(--danger);">TILTED ❌</span>
+                    </div>
+                </div>
+
+                <div class="quest-list" id="quests-container">
+                    <!-- Dynamic quests cards -->
+                </div>
+            </div>
+
+            <!-- ESOL Navigation scaffold -->
+            <div class="glass-panel esol-panel">
+                <h2 class="panel-title" style="color: var(--primary); border-bottom-color: rgba(139, 92, 246, 0.15);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
+                    <span id="lbl-navigation-guide">MAD Scaffolding helper</span>
+                </h2>
+
+                <div class="esol-bubble">
+                    <span id="esol-en">Click on the scale beam to place weights. Slide the support pivot (triangle) until the beam balances. This levels exactly at the Mean!</span>
+                    <div class="esol-translation" id="esol-es">Haz clic en la balanza para colocar pesos. Desliza el pivote de soporte (triángulo) hasta que se equilibre. ¡Esto se alinea exactamente en la Media!</div>
+                </div>
+
+                <div class="sentence-builder-zone">
+                    <span style="font-size:0.75rem; color:var(--primary); font-weight:700; text-transform:uppercase; letter-spacing:0.05em;" id="lbl-builder-title">Descriptive MAD sentence</span>
+                    <p style="font-size:0.85rem; line-height:1.6; margin-top:4px;" id="sentence-frame-rendered">
+                        Select terms to formulate statistics concepts.
+                    </p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;" id="sentence-select-grid">
+                        <!-- populated programmatically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Workspace (SVG Beam simulator & Presets) -->
+        <div class="main-workspace">
+            
+            <!-- SVG Interactive Balance Scales -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div class="viewport-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:4px 8px;">
+                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"></path></svg>
+                        <span id="lbl-workspace-title">Visual Balance Beam Modeling</span>
+                    </div>
+                    <div style="font-family:var(--font-mono); font-size:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:4px 12px; border-radius:12px; color:var(--text-muted); display:flex; gap:16px;">
+                        <span>Mean (&mu;): <b id="stat-mean-hud" style="color:var(--accent);">0.0</b></span>
+                        <span>MAD: <b id="stat-mad-hud" style="color:var(--secondary);">0.0</b></span>
+                    </div>
+                </div>
+
+                <div class="svg-container" id="svg-click-box">
+                    <svg id="scale-svg" class="viewport-svg" viewBox="0 0 800 400">
+                        <!-- Beam coordinates, pivot triangles, weights circle and deviations vectors rendered dynamically -->
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Cauldron summing math details -->
+            <div class="glass-panel" style="padding: 16px;">
+                <div class="summing-tray-details" id="summing-tray-formula">
+                    Place weights on coordinate ticks to start modeling absolute deviations.
+                </div>
+            </div>
+
+            <!-- Cauldron controls and pivot slider -->
+            <div class="glass-panel">
+                
+                <div class="preset-grid">
+                    <button class="preset-btn active" id="preset-sym" onclick="applyPreset('sym')">Symmetrical</button>
+                    <button class="preset-btn" id="preset-low" onclick="applyPreset('low')">Low MAD (1.0)</button>
+                    <button class="preset-btn" id="preset-high" onclick="applyPreset('high')">High MAD (7.5)</button>
+                    <button class="preset-btn" id="preset-clear" onclick="applyPreset('clear')">Clear Beam</button>
+                </div>
+
+                <div class="pivot-slider-panel">
+                    <div class="param-row" style="grid-template-columns:120px 1fr 50px; flex:1; gap:16px;">
+                        <span class="param-label" id="lbl-pivot-slider-title">Slide Support Pivot</span>
+                        <input type="range" class="wave-slider" id="pivot-slider" min="1.0" max="20.0" step="0.1" value="10.0" oninput="adjustPivotX(this.value)">
+                        <span class="slider-value-text" id="pivot-val">10.0</span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="autoBalancePivot()" id="btn-autobalance">
+                        ⚡ Auto-Balance
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Diagnostics panel overlay -->
+    <div class="diagnostics-panel" id="diagnostics-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
+        </div>
+        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
+            Clear Logs
+        </button>
+    </div>
+
+    <!-- Beautiful In-App Notification Modal Overlay -->
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(6, 4, 13, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div id="custom-modal-card" style="background: var(--bg-surface); border: 2px solid var(--border-active); border-radius: var(--radius-lg); padding: 32px; width: min(420px, 90%); text-align: center; box-shadow: var(--shadow); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div id="custom-modal-icon" style="font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
+            <h3 id="custom-modal-title" style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Quest Complete</h3>
+            <p id="custom-modal-message" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; margin-bottom: 24px;">Visual balance established.</p>
+            <button class="btn btn-primary" id="custom-modal-btn" onclick="closeCustomModal()" style="width: 100%; justify-content: center; padding: 12px;">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Statistics expected score ranges.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            maxWeights: 8, // limit to keep layout pristine
+            presets: {
+                sym: [8, 8, 12, 12], // Mean = 10, MAD = 2.0
+                low: [9, 9, 10, 11, 11], // Mean = 10, MAD = 0.8
+                high: [2, 3, 17, 18], // Mean = 10, MAD = 7.5
+                clear: []
+            },
+            quests: [
+                { id: 1, title: '⚖️ Find Balance Point', title_es: '⚖️ Punto de Equilibrio', desc: 'Place exactly 4 weights and slide the support pivot to balance the scale at exactly Mean = 12.', desc_es: 'Coloca exactamente 4 pesos y equilibra la balanza en la Media = 12.' },
+                { id: 2, title: '📦 Low MAD Sandbox', title_es: '📦 Reducir Desviación', desc: 'Place 5 weights. Balance the scale exactly at Mean = 10 with MAD less than 1.5 units (tightly packed data).', desc_es: 'Coloca 5 pesos. Equilibra en la Media = 10 con una MAD menor a 1.5.' },
+                { id: 3, title: '📡 High MAD Sandbox', title_es: '📡 Aumentar Desviación', desc: 'Place 5 weights. Balance the scale exactly at Mean = 10 with MAD greater than 5.0 units (high variability).', desc_es: 'Coloca 5 pesos. Equilibra en la Media = 10 con una MAD mayor a 5.0.' },
+                { id: 4, title: '🌀 Symmetrical Harmony', title_es: '🌀 Armonía Simétrica', desc: 'Set up a symmetrical distribution with 6 weights. Balance the beam at Mean = 12 with MAD exactly equal to 2.5.', desc_es: 'Configura una distribución simétrica de 6 pesos. Equilibra en la Media = 12 con MAD exactamente de 2.5.' }
+            ],
+            sentences: [
+                {
+                    id: 'mad',
+                    label: 'MAD Variability / Variabilidad de la MAD',
+                    options_en: ['further', 'closer', 'increase', 'decrease', 'larger', 'smaller'],
+                    options_es: ['más lejos', 'más cerca', 'aumentan', 'disminuyen', 'mayor', 'menor'],
+                    en: 'When data points are placed {opt1} from the mean, the absolute deviations {opt3}, making the MAD {opt5}.',
+                    es: 'Cuando los datos se colocan {opt1} de la media, las desviaciones absolutas {opt3}, lo que hace que la MAD sea {opt5}.',
+                    solutionIdx: [0, 2, 4] // further, increase, larger
+                }
+            ],
+            translations: {
+                en: {
+                    'mission-control': 'Balance Quests',
+                    'navigation-guide': 'MAD Scaffolding helper',
+                    'workspace-title': 'Visual Balance Beam Modeling',
+                    'pivot-slider-title': 'Slide Support Pivot',
+                    'recipe-state': 'Quest Status',
+                    'beam-state': 'Beam State',
+                    'sandbox': 'SANDBOX PLAY',
+                    'active': 'ACTIVE QUEST ⚖️',
+                    'success': 'SOLVED! 🏆',
+                    'balanced': 'BALANCED ✅',
+                    'tilted': 'TILTED ❌',
+                    'btn-autobalance': '⚡ Auto-Balance'
+                },
+                es: {
+                    'mission-control': 'Misiones de Balanza',
+                    'navigation-guide': 'Ayudante de MAD ESOL',
+                    'workspace-title': 'Modelado Visual de Balanza',
+                    'pivot-slider-title': 'Deslizar Pivote de Soporte',
+                    'recipe-state': 'Estado del Reto',
+                    'beam-state': 'Estado de Balanza',
+                    'sandbox': 'MODO LIBRE CÓSMICO',
+                    'active': 'RETO ACTIVO ⚖️',
+                    'success': '¡RESUELTO! 🏆',
+                    'balanced': 'EQUILIBRADO ✅',
+                    'tilted': 'INCLINADO ❌',
+                    'btn-autobalance': '⚡ Auto-Equilibrar'
+                }
+            }
+        };
+
+        // ==========================================
+        // 2. INTEGRITY CHECK (validateConfig)
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.presets || !CONFIG.presets.sym) {
+                throw new Error("CONFIG: Scale presets are missing.");
+            }
+            if (!CONFIG.quests || CONFIG.quests.length === 0) {
+                throw new Error("CONFIG: Quests balances list is missing.");
+            }
+            if (!CONFIG.translations || !CONFIG.translations.en || !CONFIG.translations.es) {
+                throw new Error("CONFIG: Bilingual translation arrays are missing.");
+            }
+        }
+
+        // ==========================================
+        // 3. DETERMINISTIC STATE MACHINE
+        // ==========================================
+        const STATE = {
+            weights: [8, 8, 12, 12], // coordinate locations (1 to 20) of placed weights
+            pivotX: 10.0, // sliding support pivot coordinate (1 to 20)
+            mean: 10.0, // center of mass
+            mad: 2.0, // mean absolute deviation
+            beamAngle: 0.0, // tilt angle in degrees (-15 to 15)
+            isBalanced: true,
+            
+            activeQuestId: null, // null is Sandbox
+            completedQuests: [],
+            language: 'en',
+            
+            // ESOL guides selections
+            activeSentenceId: 'mad',
+            builderSelections: [0, 0, 0],
+
+            audioInitialized: false
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+
+            // Re-evaluate Mean, MAD, and scale tilt torque
+            calculateStatistics();
+
+            // Notify Sound Engine
+            if (STATE.audioInitialized && STATE.isPlaying) {
+                // optional continuous humming or sliders swept pitch cues
+            }
+
+            // Redraw GUI elements
+            renderUI();
+        }
+
+        function calculateStatistics() {
+            const N = STATE.weights.length;
+            if (N === 0) {
+                STATE.mean = 10.0;
+                STATE.mad = 0.0;
+                STATE.beamAngle = 0.0;
+                STATE.isBalanced = true;
+                return;
+            }
+
+            // A. Calculate Mean = sum(x_i) / N
+            const sum = STATE.weights.reduce((a,b) => a + b, 0);
+            STATE.mean = Math.round((sum / N) * 10) / 10; // decimal rounding
+
+            // B. Calculate MAD = sum(|x_i - mean|) / N
+            const devSum = STATE.weights.reduce((a,b) => a + Math.abs(b - STATE.mean), 0);
+            STATE.mad = Math.round((devSum / N) * 10) / 10;
+
+            // C. Calculate Torque = sum(x_i - pivotX)
+            // If Torque is zero, beam is perfectly balanced (levels horizontally)
+            const torque = STATE.weights.reduce((a,b) => a + (b - STATE.pivotX), 0);
+            
+            // Proportional tilt angle
+            STATE.beamAngle = Math.max(-15, Math.min(15, torque * 1.5));
+            
+            // Scale is balanced when tilt angle is very low (e.g. within 0.1 degree or pivot matches Mean)
+            STATE.isBalanced = Math.abs(STATE.pivotX - STATE.mean) < 0.12;
+            if (STATE.isBalanced) {
+                STATE.beamAngle = 0.0; // lock to horizontal
+            }
+        }
+
+        // ==========================================
+        // 4. BALANCING PHYSICS CONTROLLERS
+        // ==========================================
+        function toggleLanguage() {
+            const next = STATE.language === 'en' ? 'es' : 'en';
+            transitionState({ language: next });
+            logDiagnostics(`Language changed to: ${next}`);
+        }
+
+        function selectQuest(questId) {
+            if (STATE.activeQuestId === questId) {
+                transitionState({ activeQuestId: null });
+                applyPreset('sym');
+                logDiagnostics("Entered free play sandbox.");
+            } else {
+                const quest = CONFIG.quests.find(q => q.id === questId);
+                transitionState({ activeQuestId: questId });
+                
+                // Set default starting weight layout for quests
+                if (questId === 1) applyPreset('clear');
+                else if (questId === 2) applyPreset('high'); // start skewed
+                else if (questId === 3) applyPreset('low');
+                else if (questId === 4) applyPreset('clear');
+
+                logDiagnostics(`Activated quest ${questId}: ${quest.title}`);
+            }
+        }
+
+        function applyPreset(presetName) {
+            const list = CONFIG.presets[presetName];
+            if (!list) return;
+
+            // Cloned weights
+            const w = [...list];
+            w.sort((a,b) => a - b);
+
+            // Compute ideal Mean to place pivot automatically in sandbox
+            let idealPivot = 10.0;
+            if (w.length > 0) {
+                const sum = w.reduce((a,b) => a + b, 0);
+                idealPivot = Math.round((sum / w.length) * 10) / 10;
+            }
+
+            document.getElementById('pivot-slider').value = idealPivot;
+            document.getElementById('pivot-val').innerText = idealPivot;
+
+            transitionState({
+                weights: w,
+                selectedPresetName: presetName,
+                pivotX: idealPivot
+            });
+
+            logDiagnostics(`Loaded preset weight layout: ${presetName}`);
+        }
+
+        function adjustPivotX(val) {
+            const p = parseFloat(val);
+            document.getElementById('pivot-val').innerText = p.toFixed(1);
+
+            const prevBalanced = STATE.isBalanced;
+            transitionState({ pivotX: p });
+
+            // Trigger success chime once balanced levels
+            if (STATE.audioInitialized && STATE.isBalanced && !prevBalanced) {
+                AudioEngine.playSuccessChord();
+                logDiagnostics("Pivot matched center of mass! Scale balanced perfectly.", 'success');
+            } else if (STATE.audioInitialized && !STATE.isBalanced && Math.abs(p - STATE.pivotX) > 0.3) {
+                AudioEngine.playTiltCreak();
+            }
+        }
+
+        function autoBalancePivot() {
+            // Find current Mean and snap pivot to it!
+            const targetPivot = STATE.mean;
+            document.getElementById('pivot-slider').value = targetPivot;
+            document.getElementById('pivot-val').innerText = targetPivot.toFixed(1);
+            
+            transitionState({ pivotX: targetPivot });
+            
+            if (STATE.audioInitialized) {
+                AudioEngine.playSuccessChord();
+            }
+            logDiagnostics(`Auto-Balanced: pivot re-centered at Mean coordinate: ${targetPivot}`, 'success');
+        }
+
+        function addWeightAtCoordinate(tickVal) {
+            if (STATE.weights.length >= CONFIG.maxWeights) {
+                showCustomModal(
+                    STATE.language === 'en' ? "LIMIT REACHED ⚠️" : "LÍMITE ALCANZADO ⚠️",
+                    STATE.language === 'en' ? `Maximum of ${CONFIG.maxWeights} weights permitted to keep visual spacing clean.` : `Se permite un máximo de ${CONFIG.maxWeights} pesos para mantener limpio el espaciado visual.`,
+                    "⚠️",
+                    STATE.language === 'en' ? "Close" : "Cerrar"
+                );
+                return;
+            }
+
+            const w = [...STATE.weights, tickVal];
+            w.sort((a,b) => a - b);
+
+            transitionState({ weights: w });
+            logDiagnostics(`Placed weight at coordinate tick: ${tickVal}`);
+            
+            if (STATE.audioInitialized) {
+                AudioEngine.playPlacePlop();
+            }
+        }
+
+        function removeWeightIndex(idx) {
+            const w = [...STATE.weights];
+            const removed = w.splice(idx, 1);
+            
+            transitionState({ weights: w });
+            logDiagnostics(`Removed weight from coordinate: ${removed}`);
+
+            if (STATE.audioInitialized) {
+                AudioEngine.playPlacePlop();
+            }
+        }
+
+        function setupClickControls() {
+            const svg = document.getElementById('scale-svg');
+            
+            svg.addEventListener('click', (e) => {
+                const rect = svg.getBoundingClientRect();
+                const clickX = ((e.clientX - rect.left) / rect.width) * 800;
+                const clickY = ((e.clientY - rect.top) / rect.height) * 400;
+
+                // Click is active on the scale beam zone: y between 150 and 240
+                if (clickY > 150 && clickY < 230) {
+                    // Map clickX to coordinates ticks (1 to 20)
+                    // Scale ticks span from x=100 to x=700 (W=600)
+                    const spanX = 600;
+                    const normalizedX = (clickX - 100) / spanX; // 0 to 1
+                    
+                    if (normalizedX >= -0.02 && normalizedX <= 1.02) {
+                        const tickVal = Math.max(1, Math.min(20, Math.round(normalizedX * 19 + 1)));
+                        addWeightAtCoordinate(tickVal);
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // 5. GAMIFIED QUEST AUDITING
+        // ==========================================
+        function checkQuests() {
+            if (STATE.activeQuestId === null) return;
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+            if (!currentQuest) return;
+
+            // Audit Quest constraints
+            let isPass = false;
+            
+            if (STATE.activeQuestId === 1) {
+                // Quest 1: Mean = 12, 4 weights, balanced pivot
+                isPass = STATE.mean === 12 && STATE.weights.length === 4 && STATE.isBalanced;
+            } else if (STATE.activeQuestId === 2) {
+                // Quest 2: Mean = 10, 5 weights, MAD < 1.5, balanced pivot
+                isPass = STATE.mean === 10 && STATE.weights.length === 5 && STATE.mad < 1.5 && STATE.isBalanced;
+            } else if (STATE.activeQuestId === 3) {
+                // Quest 3: Mean = 10, 5 weights, MAD > 5.0, balanced pivot
+                isPass = STATE.mean === 10 && STATE.weights.length === 5 && STATE.mad > 5.0 && STATE.isBalanced;
+            } else if (STATE.activeQuestId === 4) {
+                // Quest 4: Symmetrical layout, 6 weights, Mean = 12, MAD = 2.5, balanced pivot
+                if (STATE.mean === 12 && STATE.weights.length === 6 && STATE.mad === 2.5 && STATE.isBalanced) {
+                    // Symmetrical audit: values distance offsets from 12 must mirror
+                    const w = STATE.weights;
+                    const diffs = w.map(val => val - 12);
+                    // Diffs sorted should mirror (e.g. -3, -1, -1, 1, 1, 3)
+                    isPass = (diffs[0] === -diffs[5]) && (diffs[1] === -diffs[4]) && (diffs[2] === -diffs[3]);
+                }
+            }
+
+            if (isPass) {
+                if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
+                    const completed = [...STATE.completedQuests, STATE.activeQuestId];
+                    transitionState({ completedQuests: completed });
+                    
+                    logDiagnostics(`Quest ${STATE.activeQuestId} completed successfully!`, 'success');
+                    if (STATE.audioInitialized) {
+                        AudioEngine.playSuccessChord();
+                    }
+                    showCustomModal(
+                        STATE.language === 'en' ? "QUEST COMPLETED! 🏆" : "¡RETO COMPLETADO! 🏆",
+                        STATE.language === 'en' ? "Visual balance established at target Mean!" : "¡Equilibrio visual establecido en la Media objetivo!",
+                        "🏆",
+                        STATE.language === 'en' ? "Claim Rewards" : "Reclamar Recompensas"
+                    );
+                    transitionState({ activeQuestId: null });
+                }
+            }
+        }
+
+        // ==========================================
+        // 6. ESOL GUIDE BILINGUAL SCAFFOLDING
+        // ==========================================
+        function renderSentenceBuilder() {
+            const container = document.getElementById('sentence-select-grid');
+            container.innerHTML = '';
+
+            const activeSentence = CONFIG.sentences.find(s => s.id === STATE.activeSentenceId);
+            if (!activeSentence) return;
+
+            const opts = STATE.language === 'en' ? activeSentence.options_en : activeSentence.options_es;
+
+            // Render 3 selectors
+            for (let idx = 0; idx < 3; idx++) {
+                const selectId = `esol-select-${idx}`;
+                const activeValIdx = STATE.builderSelections[idx];
+                
+                let optionHtml = '';
+                opts.forEach((optText, oIdx) => {
+                    const isSel = oIdx === activeValIdx ? 'selected' : '';
+                    optionHtml += `<option value="${oIdx}" ${isSel}>${optText}</option>`;
+                });
+
+                container.innerHTML += `
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <span style="font-size:0.65rem; color:var(--text-muted);">Slot ${idx+1}</span>
+                        <select class="sentence-select" id="${selectId}" onchange="handleBuilderSelection(${idx}, this.value)">
+                            ${optionHtml}
+                        </select>
+                    </div>
+                `;
+            }
+
+            updateSentenceFrameText();
+        }
+
+        function handleBuilderSelection(slotIdx, valueIdx) {
+            const selections = [...STATE.builderSelections];
+            selections[slotIdx] = parseInt(valueIdx, 10);
+            STATE.builderSelections = selections;
+            updateSentenceFrameText();
+        }
+
+        function updateSentenceFrameText() {
+            const frameBox = document.getElementById('sentence-frame-rendered');
+            const activeSentence = CONFIG.sentences.find(s => s.id === STATE.activeSentenceId);
+            if (!activeSentence) return;
+
+            const opts = STATE.language === 'en' ? activeSentence.options_en : activeSentence.options_es;
+            const textFormat = STATE.language === 'en' ? activeSentence.en : activeSentence.es;
+            
+            const val1 = opts[STATE.builderSelections[0]];
+            const val2 = opts[STATE.builderSelections[1]];
+            const val3 = opts[STATE.builderSelections[2]];
+
+            const isCorrect = STATE.builderSelections[0] === activeSentence.solutionIdx[0] &&
+                              STATE.builderSelections[1] === activeSentence.solutionIdx[1] &&
+                              STATE.builderSelections[2] === activeSentence.solutionIdx[2];
+
+            const borderHighlight = isCorrect ? '#22c55e' : 'rgba(255,255,255,0.1)';
+            const statusIndicator = isCorrect ? '<span style="color:#22c55e; font-weight:800; font-size:0.8rem; margin-left:8px;">(Correct! ✅)</span>' : '';
+
+            let rendered = textFormat
+                .replace('{opt1}', `<strong style="color:var(--primary); border-bottom:1.5px dashed var(--primary);">${val1}</strong>`)
+                .replace('{opt3}', `<strong style="color:var(--secondary); border-bottom:1.5px dashed var(--secondary);">${val2}</strong>`)
+                .replace('{opt5}', `<strong style="color:var(--accent); border-bottom:1.5px dashed var(--accent);">${val3}</strong>`);
+
+            frameBox.innerHTML = `
+                <div style="border-left: 3px solid ${borderHighlight}; padding-left: 8px; transition:var(--transition)">
+                    ${rendered} ${statusIndicator}
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // 7. WEB AUDIO TILT BENDS (SOUND ENGINE)
+        // ==========================================
+        const AudioEngine = {
+            ctx: null,
+            masterGain: null,
+
+            init() {
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContextClass();
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    this.masterGain.connect(this.ctx.destination);
+                    STATE.audioInitialized = true;
+                } catch(e) {
+                    console.log("AudioContext blocked or unsuited: " + e.message);
+                }
+            },
+
+            playPlacePlop() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.15);
+                } catch(e){}
+            },
+
+            playTiltCreak() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    // Wood scale creak sound effect
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+                    gain.connect(this.masterGain);
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.3);
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.4);
+                } catch(e){}
+            },
+
+            playSuccessChord() {
+                if (!STATE.audioInitialized) this.init();
+                try {
+                    // Melodic ascending chord sweeps
+                    const notes = [261.63, 329.63, 392.00, 523.25]; // C major
+                    notes.forEach((freq, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        gain.gain.setValueAtTime(0.06, this.ctx.currentTime + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.5);
+                        gain.connect(this.masterGain);
+
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+                        osc.connect(gain);
+                        osc.start(this.ctx.currentTime + idx * 0.08);
+                        osc.stop(this.ctx.currentTime + idx * 0.08 + 0.6);
+                    });
+                } catch(e){}
+            }
+        };
+
+        // ==========================================
+        // 8. GUI VIEW ENGINE (renderUI)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+
+            // Translations
+            const lang = STATE.language;
+            const t = CONFIG.translations[lang];
+
+            document.getElementById('lbl-mission-control').innerText = t['mission-control'];
+            document.getElementById('lbl-navigation-guide').innerText = t['navigation-guide'];
+            document.getElementById('lbl-workspace-title').innerText = t['workspace-title'];
+            document.getElementById('lbl-pivot-slider-title').innerText = t['pivot-slider-title'];
+            document.getElementById('lbl-recipe-state').innerText = t['recipe-state'];
+            document.getElementById('lbl-beam-state').innerText = t['beam-state'];
+            document.getElementById('btn-autobalance').innerText = t['btn-autobalance'];
+            document.getElementById('lang-toggle-btn').innerText = lang === 'en' ? '🌐 EN | ES' : '🌐 ES | EN';
+
+            // Preset button border highlightings
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Quests recipes list
+            renderQuestsList();
+
+            // HUD parameters
+            const statusEl = document.getElementById('quest-status-flag');
+            const scaleStateEl = document.getElementById('quest-scale-state');
+
+            if (STATE.activeQuestId === null) {
+                statusEl.innerText = t['sandbox'];
+                statusEl.style.color = 'var(--text-muted)';
+            } else {
+                const questDone = STATE.completedQuests.includes(STATE.activeQuestId);
+                if (questDone) {
+                    statusEl.innerText = t['success'];
+                    statusEl.style.color = '#22c55e';
+                } else {
+                    statusEl.innerText = t['active'];
+                    statusEl.style.color = 'var(--secondary)';
+                }
+            }
+
+            if (STATE.isBalanced) {
+                scaleStateEl.innerText = t['balanced'];
+                scaleStateEl.style.color = '#22c55e';
+                scaleStateEl.style.textShadow = '0 0 10px rgba(34,197,94,0.4)';
+            } else {
+                scaleStateEl.innerText = t['tilted'];
+                scaleStateEl.style.color = 'var(--danger)';
+                scaleStateEl.style.textShadow = 'none';
+            }
+
+            document.getElementById('stat-mean-hud').innerText = STATE.mean.toFixed(1);
+            document.getElementById('stat-mad-hud').innerText = STATE.mad.toFixed(1);
+
+            // ESOL builder zones
+            renderSentenceBuilder();
+
+            // Cauldron dynamic formulas summation text
+            renderCauldronFormulaText();
+
+            // Draw interactive SVG Balance Scale graphics
+            renderBalanceScaleGraphics();
+        }
+
+        function renderQuestsList() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const completed = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.title_es;
+                const desc = STATE.language === 'en' ? q.desc : q.desc_es;
+
+                container.innerHTML += `
+                    <div class="quest-card ${isActive?'active':''} ${completed?'completed':''}" onclick="selectQuest(${q.id})">
+                        <div class="quest-info">
+                            <span class="quest-title-text">${title}</span>
+                            <span class="quest-desc-text">${desc}</span>
+                        </div>
+                        <span class="quest-badge">${completed?'✅':'⚖️'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderCauldronFormulaText() {
+            const formulaBox = document.getElementById('summing-tray-formula');
+            const N = STATE.weights.length;
+
+            if (N === 0) {
+                formulaBox.innerText = "Place weights on coordinate ticks to start modeling absolute deviations.";
+                return;
+            }
+
+            if (!STATE.isBalanced) {
+                formulaBox.innerHTML = `
+                    <span style="color:var(--danger)">Scale tilted! Slide support pivot to the Mean balance coordinate (${STATE.mean.toFixed(1)}) to unlock deviations.</span>
+                `;
+                return;
+            }
+
+            // Generate absolute deviation elements string: sum(|x_i - mean|)
+            const elements = STATE.weights.map(val => `|${val} - ${STATE.mean.toFixed(1)}|`);
+            const values = STATE.weights.map(val => Math.abs(val - STATE.mean));
+            
+            const elementSumStr = elements.join(' + ');
+            const valSumStr = values.join(' + ');
+            const devTotal = values.reduce((a,b) => a + b, 0).toFixed(1);
+
+            formulaBox.innerHTML = `
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Formula: MAD = Sum of Absolute Deviations / Data Count (N)</div>
+                <div>MAD = (${elementSumStr}) / ${N}</div>
+                <div style="margin-top:4px;">MAD = (${valSumStr}) / ${N} = ${devTotal} / ${N} = <b style="color:var(--white); font-size:1.15rem;">${STATE.mad.toFixed(1)}</b></div>
+            `;
+        }
+
+        function renderBalanceScaleGraphics() {
+            const svg = document.getElementById('scale-svg');
+            if (!svg) return;
+            svg.innerHTML = ''; // Wipe
+
+            const W = 800;
+            const H = 400;
+
+            const scaleStartX = 100;
+            const scaleEndX = 700;
+            const scaleSpanX = scaleEndX - scaleStartX; // 600 pixels
+
+            // Mean Pivot (triangle support) coordinate X mapping
+            // Pivots slide from 1 to 20
+            const pivotCoordX = scaleStartX + ((STATE.pivotX - 1) / 19) * scaleSpanX;
+            const pivotStartY = 240;
+
+            // --- A. Draw Stationary Support stand pivot base ---
+            svg.innerHTML += `
+                <!-- Central Stand -->
+                <rect x="${pivotCoordX - 10}" y="${pivotStartY + 20}" width="20" height="90" class="scale-pivot-stand" />
+                <ellipse cx="${pivotCoordX}" cy="${pivotStartY + 110}" rx="40" ry="12" class="scale-pivot-stand" />
+                
+                <!-- Sliding Pivot Triangle -->
+                <polygon points="${pivotCoordX},${pivotStartY} ${pivotCoordX - 18},${pivotStartY + 22} ${pivotCoordX + 18},${pivotStartY + 22}" class="scale-mean-pivot-triangle" />
+                
+                <!-- Decimal Mean line indicator -->
+                <line x1="${pivotCoordX}" y1="40" x2="${pivotCoordX}" y2="340" stroke="rgba(236,72,153,0.15)" stroke-width="1.2" stroke-dasharray="3, 3" />
+                <text x="${pivotCoordX}" y="36" class="scale-tick-text" style="fill:var(--secondary); font-size:8px; font-weight:800;">MEAN PILE</text>
+            `;
+
+            // --- B. Draw Rotational Balance Beam ---
+            // The beam center rotates around pivotCoordX, pivotStartY
+            const angleRad = (STATE.beamAngle * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
+
+            // Function to map a coordinate tick on the beam to rotational space
+            const getBeamRotatedCoords = (coordVal) => {
+                const relativeX = ((coordVal - 1) / 19) * scaleSpanX + scaleStartX - pivotCoordX;
+                const rotX = pivotCoordX + relativeX * cos;
+                const rotY = pivotStartY + relativeX * sin;
+                return { x: rotX, y: rotY };
+            };
+
+            const leftBeamTip = getBeamRotatedCoords(1);
+            const rightBeamTip = getBeamRotatedCoords(20);
+
+            svg.innerHTML += `
+                <!-- Main Beam -->
+                <line x1="${leftBeamTip.x}" y1="${leftBeamTip.y}" x2="${rightBeamTip.x}" y2="${rightBeamTip.y}" class="scale-beam" />
+            `;
+
+            // Draw coordinate tick lines and labels on the beam
+            for (let tick = 1; tick <= 20; tick++) {
+                const pt = getBeamRotatedCoords(tick);
+                
+                // Tick perpendicular offset lines
+                // Rotated normal vector: (-sin, cos)
+                const tickLen = 8;
+                const tickEndX = pt.x - tickLen * sin;
+                const tickEndY = pt.y + tickLen * cos;
+
+                svg.innerHTML += `
+                    <line x1="${pt.x}" y1="${pt.y}" x2="${tickEndX}" y2="${tickEndY}" class="scale-tick-line" />
+                `;
+
+                // Subdivisions labels
+                if (tick === 1 || tick === 20 || tick % 2 === 0) {
+                    const labelX = pt.x - 16 * sin;
+                    const labelY = pt.y + 16 * cos + 3;
+                    svg.innerHTML += `
+                        <text x="${labelX}" y="${labelY}" class="scale-tick-text" transform="rotate(${STATE.beamAngle}, ${pt.x}, ${pt.y})">${tick}</text>
+                    `;
+                }
+            }
+
+            // --- C. Draw Placed Weights ---
+            // Group identical coordinate weights to stack them vertically!
+            const weightCounts = {};
+            STATE.weights.forEach(val => {
+                weightCounts[val] = (weightCounts[val] || 0) + 1;
+            });
+
+            const drawnWeightsList = [];
+            STATE.weights.forEach((val, idx) => {
+                const pt = getBeamRotatedCoords(val);
+                // Stack Y offset: normal vectors grow upwards
+                const stackIndex = drawnWeightsList.filter(w => w.val === val).length;
+                const weightRadius = 13;
+                const offsetDistance = weightRadius * 2 * stackIndex + weightRadius + 4; // stack offsets
+
+                const weightX = pt.x + offsetDistance * sin;
+                const weightY = pt.y - offsetDistance * cos;
+
+                drawnWeightsList.push({ val, x: weightX, y: weightY, idx });
+
+                svg.innerHTML += `
+                    <circle cx="${weightX}" cy="${weightY}" r="${weightRadius}" class="scale-weight-circle" onclick="removeWeightIndex(${idx})" />
+                    <text x="${weightX}" y="${weightY + 3.5}" class="scale-weight-stack-text">${val}</text>
+                `;
+            });
+
+            // --- D. Draw Absolute Deviation Arrows (Only when balanced) ---
+            if (STATE.isBalanced && STATE.weights.length > 0) {
+                drawnWeightsList.forEach(w => {
+                    // Arrow line connects weightX, weightY horizontally to Mean line (pivotCoordX)
+                    const targetX = pivotCoordX;
+                    const targetY = w.y; // horizontal alignment
+
+                    svg.innerHTML += `
+                        <!-- Arrow line -->
+                        <line x1="${w.x}" y1="${w.y}" x2="${targetX}" y2="${targetY}" class="deviation-arrow-line" />
+                        
+                        <!-- Metric Label -->
+                        <rect x="${(w.x + targetX)/2 - 16}" y="${targetY - 14}" width="32" height="10" rx="3" fill="#040209" stroke="rgba(236,72,153,0.2)" stroke-width="0.8" />
+                        <text x="${(w.x + targetX)/2}" y="${targetY - 6}" class="deviation-metric-text">${Math.abs(w.val - STATE.mean)}</text>
+                    `;
+                });
+            }
+        }
+
+        // Custom Modal Controller Functions
+        function showCustomModal(title, message, icon, buttonText, onClickCallback) {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            document.getElementById('custom-modal-title').innerHTML = title;
+            document.getElementById('custom-modal-message').innerHTML = message;
+            document.getElementById('custom-modal-icon').innerHTML = icon;
+            
+            const btn = document.getElementById('custom-modal-btn');
+            btn.innerHTML = buttonText || (STATE.language === 'en' ? 'Continue' : 'Continuar');
+            
+            btn.onclick = function() {
+                closeCustomModal();
+                if (onClickCallback) onClickCallback();
+            };
+            
+            overlay.style.display = 'flex';
+            overlay.offsetHeight; // force reflow
+            overlay.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        }
+
+        function closeCustomModal() {
+            const overlay = document.getElementById('custom-modal-overlay');
+            const card = document.getElementById('custom-modal-card');
+            
+            overlay.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // Automated Self-Test Suite
+        function runSelfTests() {
+            openDiagnostics();
+            logDiagnostics("====== Starting MAD Balance Sandbox Self-Tests ======");
+            let failedCount = 0;
+
+            // Test 1: Configuration is valid
+            try {
+                validateConfig();
+                logDiagnostics("Test 1 Passed: Configuration integrity verified.", 'success');
+            } catch(e) {
+                logDiagnostics(`Test 1 Failed: Config error: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 2: Symmetric Preset Math
+            try {
+                // Preset 'sym' is [8, 8, 12, 12]. Mean must be 10.0, MAD must be 2.0
+                const initialWeights = [...STATE.weights];
+                const initialPivot = STATE.pivotX;
+                
+                applyPreset('sym');
+                if (STATE.mean === 10.0 && STATE.mad === 2.0) {
+                    logDiagnostics(`Test 2 Passed: Symmetrical preset math verified (Mean=${STATE.mean}, MAD=${STATE.mad}).`, 'success');
+                } else {
+                    throw new Error(`Symmetric stats incorrect: Mean=${STATE.mean}, MAD=${STATE.mad}`);
+                }
+                
+                // Restore state
+                transitionState({ weights: initialWeights, pivotX: initialPivot });
+            } catch(e) {
+                logDiagnostics(`Test 2 Failed: Preset statistics: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 3: High MAD Preset Math
+            try {
+                // Preset 'high' is [2, 3, 17, 18]. Mean = 10.0, MAD = 7.5
+                const initialWeights = [...STATE.weights];
+                const initialPivot = STATE.pivotX;
+                
+                applyPreset('high');
+                if (STATE.mean === 10.0 && STATE.mad === 7.5) {
+                    logDiagnostics(`Test 3 Passed: High MAD preset math verified (Mean=${STATE.mean}, MAD=${STATE.mad}).`, 'success');
+                } else {
+                    throw new Error(`High MAD stats incorrect: Mean=${STATE.mean}, MAD=${STATE.mad}`);
+                }
+                
+                // Restore state
+                transitionState({ weights: initialWeights, pivotX: initialPivot });
+            } catch(e) {
+                logDiagnostics(`Test 3 Failed: High MAD statistics: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 4: Low MAD Preset Math
+            try {
+                // Preset 'low' is [9, 9, 10, 11, 11]. Mean = 10.0, MAD = 0.8
+                const initialWeights = [...STATE.weights];
+                const initialPivot = STATE.pivotX;
+                
+                applyPreset('low');
+                if (STATE.mean === 10.0 && STATE.mad === 0.8) {
+                    logDiagnostics(`Test 4 Passed: Low MAD preset math verified (Mean=${STATE.mean}, MAD=${STATE.mad}).`, 'success');
+                } else {
+                    throw new Error(`Low MAD stats incorrect: Mean=${STATE.mean}, MAD=${STATE.mad}`);
+                }
+                
+                // Restore state
+                transitionState({ weights: initialWeights, pivotX: initialPivot });
+            } catch(e) {
+                logDiagnostics(`Test 4 Failed: Low MAD statistics: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            // Test 5: Torque Balancing Physics
+            try {
+                // Symmetric weights around pivot should result in balanced torque (isBalanced === true)
+                const initialWeights = [...STATE.weights];
+                const initialPivot = STATE.pivotX;
+
+                transitionState({ weights: [8, 8, 12, 12], pivotX: 10.0 });
+                if (STATE.isBalanced && STATE.beamAngle === 0.0) {
+                    logDiagnostics("Test 5 Passed: Torque balancing physics verified.", 'success');
+                } else {
+                    throw new Error(`Scale unbalanced under symmetric load: isBalanced=${STATE.isBalanced}, beamAngle=${STATE.beamAngle}`);
+                }
+
+                // Restore state
+                transitionState({ weights: initialWeights, pivotX: initialPivot });
+            } catch(e) {
+                logDiagnostics(`Test 5 Failed: Torque physics check: ${e.message}`, 'error');
+                failedCount++;
+            }
+
+            if (failedCount === 0) {
+                logDiagnostics("====== All 5 MAD Balance Core Tests Passed Successfully! ======", 'success');
+                showCustomModal(
+                    "Self-Tests Complete",
+                    "5/5 Passed successfully!",
+                    "⚡",
+                    "Close"
+                );
+            } else {
+                logDiagnostics(`====== Self-Tests Failed: ${failedCount} Errors ======`, 'error');
+                showCustomModal(
+                    "Self-Tests Failed",
+                    `${failedCount} assertion failures inside diagnostics panel.`,
+                    "⚠️",
+                    "Review Logs"
+                );
+            }
+        }
+
+        // ==========================================
+        // 9. INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            logDiagnostics("MAD balance board dashboard initialized.");
+            validateConfig();
+
+            // Setup click and drag scales
+            setupClickControls();
+
+            // Set default presets
+            applyPreset('sym');
+
+            // Audit checklist
+            setInterval(checkQuests, 500);
+        });
+    </script>
+</body>
+</html>
