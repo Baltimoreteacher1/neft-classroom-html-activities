@@ -387,6 +387,10 @@
       height: 100%;
       perspective: 1000px;
       cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .vocab-card:hover {
+      transform: translateY(-2px);
     }
     .vocab-card-inner {
       position: relative;
@@ -499,6 +503,12 @@
       height: 100%;
       z-index: 5;
       cursor: crosshair;
+    }
+    .canvas-grid-bg {
+      background-size: 20px 20px;
+      background-image: 
+        linear-gradient(to right, rgba(23, 50, 77, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(23, 50, 77, 0.08) 1px, transparent 1px);
     }
     
     /* Drawing Wooden Pencil Tray Toolbar */
@@ -630,7 +640,12 @@
       box-shadow: 0 2px 4px rgba(23,50,77,0.04);
       position: relative;
       min-height: 62px;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .index-card-mini:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(23,50,77,0.08);
+      border-color: var(--teal);
     }
     
     /* Explore Game slide-off animations */
@@ -1222,7 +1237,7 @@
               <div id="vocab-tab-study" class="tab-content" style="flex:1; padding: 10px; line-height: normal !important; background-image: none; height: calc(100% - 32px);">
                 <div class="vocab-grid">
                   
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+      <div class="vocab-card" onclick="this.classList.toggle('flipped'); try{playClickSound();}catch(e){}">
         <div class="vocab-card-inner">
           <div class="vocab-card-front" style="padding: 6px 8px; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
             <h3 style="margin: 0; font-size:13.5px; font-weight:800; color:var(--navy); letter-spacing:0.02em;">VARIABLE</h3>
@@ -1239,7 +1254,7 @@
         </div>
       </div>
     
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+      <div class="vocab-card" onclick="this.classList.toggle('flipped'); try{playClickSound();}catch(e){}">
         <div class="vocab-card-inner">
           <div class="vocab-card-front" style="padding: 6px 8px; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
             <h3 style="margin: 0; font-size:13.5px; font-weight:800; color:var(--navy); letter-spacing:0.02em;">ALGEBRAIC EXPRESSION</h3>
@@ -1256,7 +1271,7 @@
         </div>
       </div>
     
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+      <div class="vocab-card" onclick="this.classList.toggle('flipped'); try{playClickSound();}catch(e){}">
         <div class="vocab-card-inner">
           <div class="vocab-card-front" style="padding: 6px 8px; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
             <h3 style="margin: 0; font-size:13.5px; font-weight:800; color:var(--navy); letter-spacing:0.02em;">COEFFICIENT</h3>
@@ -1273,7 +1288,7 @@
         </div>
       </div>
     
-      <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+      <div class="vocab-card" onclick="this.classList.toggle('flipped'); try{playClickSound();}catch(e){}">
         <div class="vocab-card-inner">
           <div class="vocab-card-front" style="padding: 6px 8px; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
             <h3 style="margin: 0; font-size:13.5px; font-weight:800; color:var(--navy); letter-spacing:0.02em;">CONSTANT</h3>
@@ -1363,6 +1378,7 @@
                   <button class="assess-btn px-btn" id="btn-highlighter" onclick="setDrawingTool('highlight')" title="Highlighter" style="width:26px; height:26px; font-size:11px;">🖍️</button>
                   <button class="assess-btn px-btn" id="btn-erase" onclick="setDrawingTool('erase')" title="Eraser" style="width:26px; height:26px; font-size:11px;">🧽</button>
                   <button class="assess-btn px-btn" id="btn-undo" onclick="undoLast()" title="Undo" style="width:26px; height:26px; font-size:11px;">↩️</button>
+                  <button class="assess-btn px-btn" id="btn-math-grid" onclick="toggleCanvasGrid('math-canvas', this)" title="Toggle Grid" style="width:26px; height:26px; font-size:11px; margin-left:4px;">🌐</button>
                 </div>
                 
                 <!-- Color Picker Dots -->
@@ -1512,6 +1528,7 @@
                 <button class="assess-btn px-btn active" id="btn-pfix-draw" onclick="setCanvasTool('practice-fix-canvas', 'draw')" style="width:20px; height:20px; font-size:10px; padding:0;">✏️</button>
                 <button class="assess-btn px-btn" id="btn-pfix-erase" onclick="setCanvasTool('practice-fix-canvas', 'erase')" style="width:20px; height:20px; font-size:10px; padding:0;">🧽</button>
                 <button class="assess-btn px-btn" id="btn-pfix-undo" onclick="undoCanvas('practice-fix-canvas')" style="width:20px; height:20px; font-size:10px; padding:0;">↩️</button>
+                <button class="assess-btn px-btn" id="btn-pfix-grid" onclick="toggleCanvasGrid('practice-fix-canvas', this)" style="width:20px; height:20px; font-size:10px; padding:0;" title="Toggle Graph Paper Grid">🌐</button>
                 <button class="tool-btn-clear" onclick="clearCanvas('practice-fix-canvas')" style="padding:2px 6px; font-size:9.5px; margin-left:auto; height:20px; line-height:1;">Clear</button>
               </div>
             </div>
@@ -1568,6 +1585,7 @@
                     <button class="assess-btn px-btn active" id="btn-rw-draw" onclick="setCanvasTool('rw-canvas', 'draw')" style="width:20px; height:20px; font-size:10px; padding:0;">✏️</button>
                     <button class="assess-btn px-btn" id="btn-rw-erase" onclick="setCanvasTool('rw-canvas', 'erase')" style="width:20px; height:20px; font-size:10px; padding:0;">🧽</button>
                     <button class="assess-btn px-btn" id="btn-rw-undo" onclick="undoCanvas('rw-canvas')" style="width:20px; height:20px; font-size:10px; padding:0;">↩️</button>
+                    <button class="assess-btn px-btn" id="btn-rw-grid" onclick="toggleCanvasGrid('rw-canvas', this)" style="width:20px; height:20px; font-size:10px; padding:0;" title="Toggle Graph Paper Grid">🌐</button>
                     <button class="tool-btn-clear" onclick="clearCanvas('rw-canvas')" style="padding:2px 6px; font-size:9.5px; margin-left:auto; height:20px; line-height:1;">Clear</button>
                   </div>
                 </div>
@@ -1795,7 +1813,82 @@
       }
     });
     
-    // Concept tabs sequential reveal switcher
+    // Browser synthesized audio arpeggio chime for correct answers and click sounds
+    let audioCtx = null;
+    function playChimeSound() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        const now = audioCtx.currentTime;
+        
+        // Note 1 (E5, 659.25Hz)
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now);
+        gain1.gain.setValueAtTime(0, now);
+        gain1.gain.linearRampToValueAtTime(0.12, now + 0.04);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.35);
+        
+        // Note 2 (A5, 880Hz) with short delay
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880.00, now + 0.1);
+        gain2.gain.setValueAtTime(0, now + 0.1);
+        gain2.gain.linearRampToValueAtTime(0.15, now + 0.14);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now + 0.1);
+        osc2.stop(now + 0.5);
+      } catch (e) {
+        console.warn('Web Audio chime sound failed:', e);
+      }
+    }
+
+    function playClickSound() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.04);
+        
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } catch (e) {}
+    }
+
+    // Toggle background graph grid overlay on sketch pads
+    function toggleCanvasGrid(canvasId, btn) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      canvas.classList.toggle('canvas-grid-bg');
+      if (btn) {
+        btn.classList.toggle('active', canvas.classList.contains('canvas-grid-bg'));
+      }
+      saveWork();
+    }
+
+    // Concept tabs sequential reveal stepper
+    let activeConceptStep = 0;
+    
     function switchConceptTab(tabId) {
       const data = conceptData[tabId];
       if (!data) return;
@@ -1804,15 +1897,93 @@
         const onclickAttr = btn.getAttribute('onclick');
         if (onclickAttr && onclickAttr.includes(tabId)) {
           btn.classList.add('active');
-        } else {
+        } else if (onclickAttr && (onclickAttr.includes('ido') || onclickAttr.includes('wedo') || onclickAttr.includes('youdo'))) {
           btn.classList.remove('active');
         }
       });
       
-      let contentHtml = '<h4 style="margin: 0 0 8px 0; color:var(--navy); font-size:13px; font-weight:800;">' + data.title + '</h4>';
-      contentHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 11.5px; line-height: 1.5; color: var(--body-text);">';
-      data.lines.forEach(line => {
-        contentHtml += '<li style="margin-bottom: 5px;">' + line     // Slide 4 Vocabulary study & match tab switching
+      activeConceptTab = tabId;
+      activeConceptStep = 0;
+      renderConceptStep();
+      saveWork();
+    }
+    
+    function renderConceptStep() {
+      const tabId = activeConceptTab;
+      const data = conceptData[tabId];
+      if (!data) return;
+      
+      const container = document.getElementById('concept-tab-content');
+      if (!container) return;
+      
+      const totalSteps = data.lines.length;
+      const stepIdx = Math.min(activeConceptStep, totalSteps - 1);
+      
+      let html = '<div class="concept-stepper-container" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">';
+      
+      // Header
+      html += '  <div class="stepper-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed var(--line); padding-bottom:6px;">';
+      html += '    <h4 style="margin:0; color:var(--navy); font-size:13.5px; font-weight:800;">' + data.title + '</h4>';
+      html += '    <span style="font-size:11px; font-weight:700; color:var(--gray); font-family:\'Outfit\';">Step ' + (stepIdx + 1) + ' of ' + totalSteps + '</span>';
+      html += '  </div>';
+      
+      // Step Text card
+      html += '  <div class="stepper-body" style="flex:1; display:flex; align-items:center; justify-content:center; padding:12px; background:var(--white); border-radius:6px; border:1px solid #e1eaeef8; box-shadow:0 2px 5px rgba(23,50,77,0.02); min-height:85px; margin-bottom:10px; position:relative;">';
+      html += '    <p style="margin:0; font-size:13px; line-height:1.5; color:var(--navy); font-weight:700; text-align:center;">' + data.lines[stepIdx] + '</p>';
+      html += '  </div>';
+      
+      // Dot Indicators & Controls
+      html += '  <div class="stepper-controls" style="display:flex; justify-content:space-between; align-items:center; margin-top:auto;">';
+      
+      // Prev button
+      const prevDisabled = stepIdx === 0;
+      html += '    <button class="assess-btn" onclick="prevConceptStep()" ' + (prevDisabled ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : 'style="cursor:pointer;"') + ' style="flex:none; width:auto; padding:3px 10px; font-size:11.5px; height:24px; border-radius:4px; font-weight:800; border-color:var(--gray); color:var(--navy);">◀ Back</button>';
+      
+      // Dot indicators
+      html += '    <div style="display:flex; gap:5px; align-items:center;">';
+      for (let i = 0; i < totalSteps; i++) {
+        const dotColor = i === stepIdx ? 'var(--teal)' : 'var(--gray)';
+        const dotSize = i === stepIdx ? '7px' : '5px';
+        html += '      <div style="width:\'' + dotSize + '\'; height:\'' + dotSize + '\'; border-radius:50%; background:\'' + dotColor + '\'; transition:all 0.2s;"></div>';
+      }
+      html += '    </div>';
+      
+      // Next button
+      const isLastStep = stepIdx === totalSteps - 1;
+      const nextText = isLastStep ? 'Done ✓' : 'Next Step ➔';
+      html += '    <button class="assess-btn" onclick="nextConceptStep()" style="flex:none; width:auto; padding:3px 10px; font-size:11.5px; height:24px; border-radius:4px; font-weight:800; border-color:var(--teal); background:var(--teal-light); color:var(--navy); cursor:pointer;">' + nextText + '</button>';
+      
+      html += '  </div>';
+      html += '</div>';
+      
+      container.innerHTML = html;
+    }
+    
+    function prevConceptStep() {
+      if (activeConceptStep > 0) {
+        activeConceptStep--;
+        renderConceptStep();
+        saveWork();
+      }
+    }
+    
+    function nextConceptStep() {
+      const data = conceptData[activeConceptTab];
+      if (!data) return;
+      if (activeConceptStep < data.lines.length - 1) {
+        activeConceptStep++;
+        renderConceptStep();
+      } else {
+        // Switch to the next tab sequentially
+        if (activeConceptTab === 'ido') {
+          switchConceptTab('wedo');
+        } else if (activeConceptTab === 'wedo') {
+          switchConceptTab('youdo');
+        }
+      }
+      saveWork();
+    }
+
     function switchVocabTab(tabId) {
       const studyBtn = document.getElementById('btn-vocab-study');
       const matchBtn = document.getElementById('btn-vocab-match');
@@ -1960,6 +2131,7 @@
       
       if (correctCount === exploreItems.length && exploreItems.length > 0) {
         triggerConfettiCelebration();
+        try { playChimeSound(); } catch (e) {}
       }
     }
     
@@ -2226,10 +2398,12 @@
         btn.classList.add('correct');
         feedback.textContent = 'Correct step identified! Click Reveal Solution to check reasoning. ✓';
         feedback.style.color = 'var(--teal)';
+        try { playChimeSound(); } catch (e) {}
       } else {
         btn.classList.add('incorrect');
         feedback.textContent = 'Incorrect step. Try again! ✕';
         feedback.style.color = '#D9795D';
+        try { playClickSound(); } catch (e) {}
       }
       saveWork();
     }
@@ -2256,12 +2430,14 @@
         btn.classList.add('correct');
         feedback.textContent = 'Correct! Great job. ✓';
         feedback.style.color = 'var(--teal)';
+        try { playChimeSound(); } catch (e) {}
       } else {
         btn.classList.add('incorrect');
         feedback.textContent = 'Incorrect. Review your calculation and try again. ✕';
         feedback.style.color = '#D9795D';
         const correctBtn = document.getElementById('btn-choice-' + correct);
         if (correctBtn) correctBtn.classList.add('correct');
+        try { playClickSound(); } catch (e) {}
       }
       saveWork();
     }
@@ -2281,12 +2457,14 @@
         btn.classList.add('correct');
         feedback.textContent = 'Response recorded. Correct! ✓';
         feedback.style.color = 'var(--teal)';
+        try { playChimeSound(); } catch (e) {}
       } else {
         btn.classList.add('incorrect');
         feedback.textContent = 'Response recorded. ✕';
         feedback.style.color = '#D9795D';
         const correctBtn = document.getElementById('btn-exit-' + correct);
         if (correctBtn) correctBtn.classList.add('correct');
+        try { playClickSound(); } catch (e) {}
       }
       saveWork();
     }
@@ -2315,10 +2493,20 @@
           data.canvases[id] = c.toDataURL();
         }
       });
+
+      // Save all active grid background states
+      data.grids = {};
+      canvasIds.forEach(id => {
+        const c = document.getElementById(id);
+        if (c) {
+          data.grids[id] = c.classList.contains('canvas-grid-bg');
+        }
+      });
       
       data.assessment = activeAssessment;
       
       data.activeConceptTab = activeConceptTab;
+      data.activeConceptStep = activeConceptStep;
       data.currentExploreIdx = currentExploreIdx;
       data.studentExploreSorted = studentExploreSorted;
       data.studentErrStep = studentErrStep;
@@ -2395,11 +2583,40 @@
             setSelfAssessment(data.assessment);
           }
           
-          if (data.activeConceptTab) {
-            switchConceptTab(data.activeConceptTab);
-          } else {
-            switchConceptTab('ido');
+          // Restore all active grid background states
+          if (data.grids) {
+            Object.keys(data.grids).forEach(id => {
+              const canvas = document.getElementById(id);
+              if (canvas && data.grids[id]) {
+                canvas.classList.add('canvas-grid-bg');
+                const btn = document.querySelector('[onclick*="toggleCanvasGrid(\'' + id + '\'"]');
+                if (btn) btn.classList.add('active');
+              }
+            });
           }
+
+          if (data.activeConceptTab) {
+            activeConceptTab = data.activeConceptTab;
+          } else {
+            activeConceptTab = 'ido';
+          }
+          
+          if (data.activeConceptStep !== undefined) {
+            activeConceptStep = data.activeConceptStep;
+          } else {
+            activeConceptStep = 0;
+          }
+          
+          // Update concept tab buttons and render active step
+          document.querySelectorAll('.tab-btn').forEach(btn => {
+            const onclickAttr = btn.getAttribute('onclick');
+            if (onclickAttr && onclickAttr.includes(activeConceptTab)) {
+              btn.classList.add('active');
+            } else if (onclickAttr && (onclickAttr.includes('ido') || onclickAttr.includes('wedo') || onclickAttr.includes('youdo'))) {
+              btn.classList.remove('active');
+            }
+          });
+          renderConceptStep();
           
           if (data.currentExploreIdx !== undefined) {
             currentExploreIdx = data.currentExploreIdx;
@@ -2679,6 +2896,13 @@
       initCanvas('exit-canvas', 'exit-mode-sketch');
       loadWork();
       resizeSlides();
+      
+      // Tactile click sounds for premium experience
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.tab-btn') || e.target.closest('.color-picker-dot') || e.target.closest('.size-picker-dot') || e.target.closest('.tool-btn-clear') || e.target.closest('.assess-btn') || e.target.closest('.vocab-card')) {
+          try { playClickSound(); } catch(err) {}
+        }
+      });
     });
     
   </script>
