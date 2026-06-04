@@ -157,7 +157,7 @@ function lessonResources(id) {
     pills.push(
       resLink(
         "Google Slides",
-        `/lessons/${id}/slides.html`,
+        `https://eduwonderlab.vercel.app/google-slides/?lesson=${encodeURIComponent(id)}`,
         true
       )
     );
