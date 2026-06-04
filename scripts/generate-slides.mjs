@@ -1587,6 +1587,58 @@ function generateSlidesHtml(lessonId, data) {
       padding-top: 6px;
     }
     
+    /* Slide 5 Canvas Active Borders & cursors */
+    .math-visual-container {
+      transition: all 0.25s ease-in-out;
+    }
+    .math-visual-container.tool-draw {
+      border-color: var(--navy);
+      box-shadow: 0 0 8px rgba(23, 50, 77, 0.25);
+    }
+    .math-visual-container.tool-highlight {
+      border-color: var(--amber);
+      box-shadow: 0 0 8px rgba(242, 193, 91, 0.35);
+    }
+    .math-visual-container.tool-erase {
+      border-color: #D9795D;
+      box-shadow: 0 0 8px rgba(217, 121, 93, 0.25);
+    }
+    
+    .canvas-overlay.cursor-draw { cursor: crosshair; }
+    .canvas-overlay.cursor-highlight { cursor: cell; }
+    .canvas-overlay.cursor-erase { cursor: alias; }
+
+    /* Paste Flash animations for textareas */
+    @keyframes flashPasted {
+      0% { outline: 3px solid rgba(31, 166, 162, 0.6); background: rgba(31, 166, 162, 0.08); }
+      100% { outline: 3px solid transparent; background: #FDFDFB; }
+    }
+    .pasted-flash {
+      animation: flashPasted 0.8s ease-out;
+    }
+
+    /* Confetti Particle Overlay */
+    .confetti-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 50;
+    }
+    .confetti-particle {
+      position: absolute;
+      top: -10px;
+      width: 6px;
+      height: 10px;
+      opacity: 0.85;
+      border-radius: 2px;
+      animation: confettiFall 2.5s linear infinite;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(220px) rotate(360deg); }
+    }
+    
   </style>
 </head>
 <body>
@@ -1845,11 +1897,11 @@ function generateSlidesHtml(lessonId, data) {
               </div>
             </div>
             
-            <div class="math-visual-container">
+            <div class="math-visual-container tool-draw" id="math-visual-container-element">
               <div style="position: absolute; inset: 0; z-index: 1;">
                 ${svgVisual}
               </div>
-              <canvas id="math-canvas" width="440" height="240" class="canvas-overlay"></canvas>
+              <canvas id="math-canvas" width="440" height="240" class="canvas-overlay cursor-draw"></canvas>
             </div>
           </div>
         </div>
@@ -1868,17 +1920,29 @@ function generateSlidesHtml(lessonId, data) {
                 <div class="sorting-progress-container">
                   <div id="sorting-progress-bar" class="sorting-progress-bar"></div>
                 </div>
-                <p class="card-desc" style="font-size:12px; margin-bottom:8px; line-height:1.4;" id="explore-instructions">${esc(exploreInstructions)}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <p class="card-desc" style="font-size:12px; margin:0; line-height:1.4;" id="explore-instructions">${esc(exploreInstructions)}</p>
+                  <button class="assess-btn" onclick="resetSortingGame()" style="flex:none; width:auto; padding:2px 6px; font-size:9.5px; height:20px; border-radius:4px; font-weight:800; background:transparent; border-color:var(--gray); color:var(--gray); cursor:pointer;">🔄 Reset</button>
+                </div>
                 
                 <!-- Ruled Lined Index Card Sorting Game -->
-                <div id="sorting-game-container" style="background:var(--google-gray); padding:10px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:120px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px;">
-                  <div id="sorting-card" class="index-card" style="width:95%;">
+                <div id="sorting-game-container" style="background:var(--google-gray); padding:8px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:100px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px; position:relative; overflow:hidden;">
+                  
+                  <!-- Confetti Container -->
+                  <div id="confetti-container" class="confetti-overlay" style="display:none;"></div>
+
+                  <div id="sorting-card" class="index-card" style="width:95%; min-height:55px; padding: 10px 10px 10px 45px !important; font-size:12.5px; line-height:18px !important; background-size: 100% 18px, 100% 100%; background-position: 0 5px, 35px 0;">
                     <!-- Active Index Card Text -->
                   </div>
-                  <div id="sorting-buttons" style="display:flex; gap:8px; justify-content:center; width:100%; flex-wrap:wrap;">
+                  <div id="sorting-buttons" style="display:flex; gap:6px; justify-content:center; width:100%; flex-wrap:wrap;">
                     <!-- Category bins loaded dynamically -->
                   </div>
-                  <div id="sorting-feedback" style="font-size:10px; font-weight:700; min-height:14px;"></div>
+                  <div id="sorting-feedback" style="font-size:10px; font-weight:700; min-height:12px;"></div>
+                </div>
+                
+                <!-- Persistent Open Pocket Folders Audit List -->
+                <div id="sorting-pockets-log" style="display:flex; gap:8px; margin-top:8px; height:105px; overflow:hidden;">
+                  <!-- Bins populated dynamically with scrollable list -->
                 </div>
               </div>
               
@@ -2175,12 +2239,79 @@ function generateSlidesHtml(lessonId, data) {
       renderActiveExploreCard();
     }
     
+    function triggerConfettiCelebration() {
+      const container = document.getElementById('confetti-container');
+      if (!container) return;
+      
+      container.innerHTML = "";
+      container.style.display = "block";
+      
+      const colors = ['#1FA6A2', '#F2C15B', '#D9795D', '#17324D', '#ff6b6b', '#4dadf7'];
+      for (let i = 0; i < 40; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'confetti-particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.animationDelay = Math.random() * 2 + 's';
+        particle.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
+        container.appendChild(particle);
+      }
+      
+      setTimeout(() => {
+        container.style.display = "none";
+        container.innerHTML = "";
+      }, 5000);
+    }
+
+    function updateSortingFolderLists() {
+      const logContainer = document.getElementById('sorting-pockets-log');
+      if (!logContainer) return;
+      
+      let html = "";
+      exploreCats.forEach((cat, idx) => {
+        const colors = ['#1FA6A2', '#D9795D', '#F2C15B', '#17324D'];
+        const color = colors[idx % colors.length];
+        
+        html += '<div class="folder-pocket-column" style="flex:1; display:flex; flex-direction:column; border:1.5px solid ' + color + '; border-radius:6px; background:#fff; overflow:hidden; height:100%;">';
+        html += '  <div class="folder-pocket-header" style="background:' + color + '; color:#fff; font-size:9.5px; font-weight:800; padding:4px 6px; text-transform:uppercase; text-align:center; letter-spacing:0.02em;">' + cat.label + '</div>';
+        html += '  <div class="folder-pocket-list" style="flex:1; overflow-y:auto; padding:4px 6px; font-size:9.5px; line-height:1.2; background-image:linear-gradient(rgba(31,166,162,0.03) 1px, transparent 1px); background-size:100% 16px;">';
+        
+        const sortedItemsInCat = [];
+        exploreItems.forEach(item => {
+          if (studentExploreSorted[item.id] === cat.id) {
+            sortedItemsInCat.push(item);
+          }
+        });
+        
+        if (sortedItemsInCat.length === 0) {
+          html += '    <div style="font-style:italic; color:var(--gray); font-size:8.5px; text-align:center; margin-top:20px;">Empty Folder</div>';
+        } else {
+          sortedItemsInCat.forEach(item => {
+            const isCorrect = (item.catId === "" || item.catId === cat.id);
+            const badge = isCorrect ? '<span style="color:var(--teal); font-weight:bold;">✓</span>' : '<span style="color:#D9795D; font-weight:bold;">✕</span>';
+            const itemBg = isCorrect ? 'rgba(31, 166, 162, 0.05)' : 'rgba(217, 121, 93, 0.05)';
+            html += '    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f3f4; padding:2px 4px; margin-bottom:2px; background:' + itemBg + '; border-radius:3px;">';
+            html += '      <span style="font-weight:700; color:var(--navy);">' + item.text + '</span>';
+            html += '      <span>' + badge + '</span>';
+            html += '    </div>';
+          });
+        }
+        
+        html += '  </div>';
+        html += '</div>';
+      });
+      logContainer.innerHTML = html;
+    }
+
     function renderActiveExploreCard() {
       const card = document.getElementById('sorting-card');
       const buttonsDiv = document.getElementById('sorting-buttons');
       const feedbackDiv = document.getElementById('sorting-feedback');
       const progressBar = document.getElementById('sorting-progress-bar');
       if (!card) return;
+      
+      // Update persistent pocket contents
+      updateSortingFolderLists();
       
       // Update progress bar
       const progressPercent = (currentExploreIdx / exploreItems.length) * 100;
@@ -2191,9 +2322,10 @@ function generateSlidesHtml(lessonId, data) {
         card.className = "index-card"; // remove animations
         card.style.borderColor = "var(--teal)";
         card.style.background = "var(--teal-light)";
-        buttonsDiv.innerHTML = '<button class="assess-btn" onclick="resetSortingGame()" style="max-width:120px; padding:6px; font-size:11px;">Reset Game</button>';
+        buttonsDiv.innerHTML = '<button class="assess-btn" onclick="resetSortingGame()" style="max-width:120px; padding:6px; font-size:11px;">Reset Sort</button>';
         feedbackDiv.textContent = "Great job sorting all items!";
         feedbackDiv.style.color = "var(--teal)";
+        triggerConfettiCelebration();
         return;
       }
       
@@ -2475,6 +2607,11 @@ function generateSlidesHtml(lessonId, data) {
       target.focus();
       target.selectionStart = target.selectionEnd = start + text.length;
       saveWork();
+      
+      // Paste Flash animation
+      target.classList.remove('pasted-flash');
+      void target.offsetWidth; // trigger reflow
+      target.classList.add('pasted-flash');
     }
     
     // -----------------------------------------------------------------
@@ -2600,6 +2737,24 @@ function generateSlidesHtml(lessonId, data) {
         dBtn.classList.toggle('active', mode === 'draw');
         if (hBtn) hBtn.classList.toggle('active', mode === 'highlight');
         eBtn.classList.toggle('active', mode === 'erase');
+      }
+      
+      const container = document.getElementById('math-visual-container-element');
+      const canvasEl = document.getElementById('math-canvas');
+      if (container && canvasEl) {
+        container.classList.remove('tool-draw', 'tool-highlight', 'tool-erase');
+        canvasEl.classList.remove('cursor-draw', 'cursor-highlight', 'cursor-erase');
+        
+        if (mode === 'draw') {
+          container.classList.add('tool-draw');
+          canvasEl.classList.add('cursor-draw');
+        } else if (mode === 'highlight') {
+          container.classList.add('tool-highlight');
+          canvasEl.classList.add('cursor-highlight');
+        } else if (mode === 'erase') {
+          container.classList.add('tool-erase');
+          canvasEl.classList.add('cursor-erase');
+        }
       }
     }
     
