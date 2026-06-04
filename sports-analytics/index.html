@@ -1,1070 +1,1501 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Statistical Quest: Interactive sports analytics dashboard featuring draggable dot plots, dynamic mean balance lines, and a live box and whisker plot."
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Statistical Quest: Interactive sports analytics dashboard featuring draggable dot plots, dynamic mean balance lines, and a live box and whisker plot.">
     <title>Statistical Quest | Sports Analytics Dashboard</title>
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --sports-dark: #05070f;
-        --sports-medium: #0c0f1d;
-        --sports-light: #151930;
-        --primary: #f59e0b; /* Golden Jersey Gold */
-        --primary-glow: rgba(245, 158, 11, 0.4);
-        --secondary: #10b981; /* Emerald Field Green */
-        --secondary-glow: rgba(16, 185, 129, 0.3);
-        --cyan: #06b6d4; /* Stadium Blue */
-        --cyan-glow: rgba(6, 182, 212, 0.3);
-        --danger: #f43f5e;
-        --white: #ffffff;
-        --gray-300: #cbd5e1;
-        --gray-400: #94a3b8;
-        --radius-lg: 24px;
-        --radius-md: 16px;
-        --radius-sm: 8px;
-        --shadow-glow: 0 0 25px rgba(245, 158, 11, 0.15);
-        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        --font-display: "Outfit", sans-serif;
-        --font-main: "Plus Jakarta Sans", sans-serif;
-      }
+        :root {
+            --sports-dark: #131314;
+            --sports-medium: #1e1f20;
+            --sports-light: #2c2d30;
+            --primary: #fdd663; /* Google Pastel Yellow */
+            --primary-glow: rgba(253, 214, 99, 0.15);
+            --secondary: #81c995; /* Google Pastel Green */
+            --secondary-glow: rgba(129, 201, 149, 0.15);
+            --cyan: #8ab4f8; /* Google Pastel Blue */
+            --cyan-glow: rgba(138, 180, 248, 0.15);
+            --danger: #f28b82; /* Google Pastel Red */
+            --white: #e3e3e3;
+            --gray-300: #c4c7c5;
+            --gray-400: #9e9e9e;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --shadow-glow: 0 8px 30px rgba(0, 0, 0, 0.45);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        -webkit-tap-highlight-color: transparent;
-      }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-      body {
-        background-color: var(--sports-dark);
-        color: var(--white);
-        font-family: var(--font-main);
-        min-height: 100vh;
-        overflow-x: hidden;
-        display: flex;
-        flex-direction: column;
-      }
+        body {
+            background-color: var(--sports-dark);
+            color: var(--white);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
 
-      header {
-        background: rgba(12, 15, 29, 0.85);
-        backdrop-filter: blur(14px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 16px 28px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+        header {
+            background: rgba(19, 19, 20, 0.85);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-      .brand span {
-        font-size: 1.8rem;
-      }
+        .brand span {
+            font-size: 1.8rem;
+        }
 
-      .brand h1 {
-        font-family: var(--font-display);
-        font-size: 1.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--white), var(--gray-300));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
+        .brand h1 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white), var(--gray-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-      .header-controls {
-        display: flex;
-        gap: 12px;
-      }
+        .header-controls {
+            display: flex;
+            gap: 12px;
+        }
 
-      .btn {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 0.9rem;
-        padding: 8px 16px;
-        border-radius: var(--radius-sm);
-        border: none;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-      .btn-primary {
-        background: linear-gradient(135deg, var(--primary), #d97706);
-        color: var(--sports-dark);
-        box-shadow: 0 4px 14px var(--primary-glow);
-      }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #f29900);
+            color: #131314;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
 
-      .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(245, 158, 11, 0.55);
-      }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(253, 214, 99, 0.35);
+        }
 
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--white);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-      }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
 
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.12);
-      }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
 
-      .btn-lang {
-        background: rgba(245, 158, 11, 0.15);
-        color: #fde047;
-        border: 1px solid rgba(245, 158, 11, 0.3);
-      }
+        .btn-lang {
+            background: rgba(138, 180, 248, 0.12);
+            color: var(--cyan);
+            border: 1px solid rgba(138, 180, 248, 0.25);
+        }
 
-      .btn-lang:hover {
-        background: rgba(245, 158, 11, 0.25);
-      }
+        .btn-lang:hover {
+            background: rgba(138, 180, 248, 0.2);
+        }
 
-      .app-grid {
-        display: grid;
-        grid-template-columns: 360px 1fr;
-        gap: 24px;
-        max-width: 1280px;
-        width: 100%;
-        margin: 24px auto;
-        padding: 0 24px;
-        flex: 1;
-      }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+            pointer-events: none;
+        }
 
-      @media (max-width: 1024px) {
+        /* Feedback Box Styles */
+        .feedback-box {
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            display: none;
+            font-weight: 500;
+        }
+        .feedback-box.success {
+            display: block;
+            background: rgba(129, 201, 149, 0.1);
+            border: 1px solid rgba(129, 201, 149, 0.3);
+            color: #81c995;
+        }
+        .feedback-box.error {
+            display: block;
+            background: rgba(242, 139, 130, 0.1);
+            border: 1px solid rgba(242, 139, 130, 0.3);
+            color: #f28b82;
+        }
+        .feedback-box.neutral {
+            display: block;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--gray-300);
+        }
+
         .app-grid {
-          grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            max-width: 1280px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
         }
-      }
 
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .card {
-        background: var(--sports-medium);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        box-shadow: var(--shadow-glow);
-        backdrop-filter: blur(10px);
-      }
-
-      .card h2 {
-        font-family: var(--font-display);
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        padding-bottom: 10px;
-      }
-
-      /* Quest Board list */
-      .quest-board {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .quest-item {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: var(--radius-sm);
-        padding: 12px 14px;
-        cursor: pointer;
-        transition: var(--transition);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .quest-item:hover {
-        border-color: var(--primary);
-        background: rgba(245, 158, 11, 0.05);
-      }
-
-      .quest-item.active {
-        border-color: var(--primary);
-        background: rgba(245, 158, 11, 0.1);
-        box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.1);
-      }
-
-      .quest-item.resolved {
-        border-color: var(--secondary);
-        background: rgba(16, 185, 129, 0.05);
-      }
-
-      .quest-meta strong {
-        display: block;
-        font-family: var(--font-display);
-        font-size: 0.9rem;
-        color: var(--white);
-      }
-
-      .quest-meta span {
-        font-size: 0.78rem;
-        color: var(--gray-400);
-      }
-
-      .quest-status {
-        font-size: 1.2rem;
-      }
-
-      .workspace {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .work-card {
-        background: var(--sports-medium);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        box-shadow: var(--shadow-glow);
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        position: relative;
-      }
-
-      .work-card-title {
-        font-family: var(--font-display);
-        font-size: 1.1rem;
-        font-weight: 800;
-        color: var(--gray-300);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .work-card-title svg {
-        color: var(--primary);
-      }
-
-      .svg-viewport {
-        border-radius: var(--radius-md);
-        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
-        width: 100%;
-        touch-action: none;
-      }
-
-      /* Stats Grid Scoreboard */
-      .scoreboard {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-top: 10px;
-      }
-
-      .score-box {
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        border-radius: var(--radius-sm);
-        padding: 14px;
-        text-align: center;
-      }
-
-      .score-box span {
-        display: block;
-        font-size: 0.75rem;
-        color: var(--gray-400);
-        text-transform: uppercase;
-        font-weight: 700;
-        margin-bottom: 4px;
-        letter-spacing: 0.05em;
-      }
-
-      .score-box strong {
-        font-family: var(--font-display);
-        font-size: 1.4rem;
-        color: var(--white);
-      }
-
-      .score-box.highlight strong {
-        color: var(--primary);
-      }
-
-      /* ESOL sentence helper card */
-      .sentence-hub {
-        background: linear-gradient(
-          135deg,
-          rgba(245, 158, 11, 0.08),
-          rgba(16, 185, 129, 0.04)
-        );
-        border: 1px solid rgba(245, 158, 11, 0.18);
-      }
-
-      .bubble-msg {
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: var(--radius-md);
-        padding: 14px;
-        font-size: 0.92rem;
-        border-left: 4px solid var(--primary);
-        margin-top: 10px;
-        line-height: 1.5;
-      }
-
-      .translation-sub {
-        font-style: italic;
-        color: var(--gray-400);
-        font-size: 0.82rem;
-        margin-top: 6px;
-      }
-
-      /* Diagnostics Overlay */
-      .diagnostics-overlay {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        z-index: 1000;
-        width: 300px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        display: none;
-        animation: slideUp 0.3s ease;
-      }
-
-      @keyframes slideUp {
-        from {
-          transform: translateY(100px);
-          opacity: 0;
+        @media (max-width: 1024px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        to {
-          transform: translateY(0);
-          opacity: 1;
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-      }
 
-      .diag-log-container {
-        font-family: monospace;
-        font-size: 0.72rem;
-        background: #000;
-        padding: 8px;
-        border-radius: 4px;
-        height: 120px;
-        overflow-y: auto;
-        color: #10b981;
-        margin: 8px 0;
-      }
+        .card {
+            background: var(--sports-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-glow);
+            backdrop-filter: blur(10px);
+        }
 
-      footer {
-        text-align: center;
-        padding: 24px;
-        color: var(--gray-400);
-        font-size: 0.8rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        margin-top: auto;
-        background: rgba(5, 7, 15, 0.8);
-      }
+        .card h2 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 10px;
+        }
 
-      /* Interactive dot dragging */
-      .svg-score-dot {
-        cursor: grab;
-        transition:
-          r 0.2s,
-          stroke-width 0.2s;
-      }
+        /* Quest Board list */
+        .quest-board {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-      .svg-score-dot:hover {
-        cursor: grab;
-        fill: var(--cyan);
-        r: 9;
-      }
+        .quest-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-      .svg-score-dot:active {
-        cursor: grabbing;
-      }
+        .quest-item:hover {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.05);
+        }
 
-      .axis-label {
-        font-family: var(--font-display);
-        font-weight: 800;
-        font-size: 11px;
-        fill: var(--sports-light);
-      }
+        .quest-item.active {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.1);
+            box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.1);
+        }
 
-      .tick-label {
-        font-family: var(--font-display);
-        font-weight: 600;
-        font-size: 8px;
-        fill: #94a3b8;
-      }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
+        .quest-item.resolved {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-meta strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: var(--white);
+        }
+
+        .quest-meta span {
+            font-size: 0.78rem;
+            color: var(--gray-400);
+        }
+
+        .quest-status {
+            font-size: 1.2rem;
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .work-card {
+            background: var(--sports-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .work-card-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--gray-300);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .work-card-title svg {
+            color: var(--primary);
+        }
+
+        .svg-viewport {
+            border-radius: var(--radius-md);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            touch-action: none;
+        }
+
+        /* Stats Grid Scoreboard */
+        .scoreboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .score-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .score-box span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .score-box strong {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--white);
+        }
+
+        .score-box.highlight strong {
+            color: var(--primary);
+        }
+
+        .score-box:hover {
+            transform: translateY(-2px) scale(1.03);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .score-box.highlight:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 16px var(--primary-glow);
+        }
+
+        /* ESOL sentence helper card */
+        .sentence-hub {
+            background: linear-gradient(135deg, rgba(253, 214, 99, 0.05), rgba(129, 201, 149, 0.03));
+            border: 1px solid rgba(253, 214, 99, 0.15);
+        }
+
+        .bubble-msg {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            font-size: 0.92rem;
+            border-left: 4px solid var(--primary);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .translation-sub {
+            font-style: italic;
+            color: var(--gray-400);
+            font-size: 0.82rem;
+            margin-top: 6px;
+        }
+
+        /* Custom Dropdown Styling */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 8px;
+            background: var(--sports-medium);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            min-width: 160px;
+            z-index: 1000;
+            overflow: hidden;
+            animation: fadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--white);
+            padding: 10px 16px;
+            text-align: left;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--primary);
+        }
+
+        .check-icon {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .check-icon.active {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Quest select trigger btn */
+        .quest-select-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .quest-select-btn:hover {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Glassmorphic Backdrop */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            display: none;
+            animation: fadeInBackdrop 0.25s ease;
+        }
+
+        @keyframes fadeInBackdrop {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Center-Screen Diagnostics Panel */
+        .diagnostics-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 31, 32, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: none;
+            animation: zoomInDiag 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes zoomInDiag {
+            from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .diag-log-container {
+            font-family: monospace;
+            font-size: 0.78rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            height: 200px;
+            overflow-y: auto;
+            color: var(--secondary);
+            margin: 16px 0;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray-400);
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: auto;
+            background: rgba(19, 19, 20, 0.8);
+        }
+
+        /* Interactive dot dragging */
+        .svg-score-dot {
+            cursor: grab;
+            transition: r 0.2s, stroke-width 0.2s;
+        }
+
+        .svg-score-dot:hover {
+            cursor: grab;
+            fill: var(--cyan);
+            r: 9;
+        }
+
+        .svg-score-dot:active {
+            cursor: grabbing;
+        }
+
+        .axis-label {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 11px;
+            fill: var(--white);
+        }
+
+        .tick-label {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 8px;
+            fill: var(--gray-400);
+        }
+    </style>
 </head>
-  <body>
+<body>
+
     <header>
-      <div class="brand">
-        <span>🏀</span>
-        <h1>Statistical Quest</h1>
-      </div>
-      <div class="header-controls">
-        <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
-          🌐 EN | ES
-        </button>
-        <button class="btn btn-secondary" onclick="triggerSelfTest()">
-          ⚡ Run Self-Test
-        </button>
-      </div>
+        <div class="brand">
+            <span>🏀</span>
+            <h1>Statistical Quest</h1>
+        </div>
+        <div class="header-controls">
+            <div class="dropdown" id="lang-dropdown">
+                <button class="btn btn-lang" id="btn-lang-trigger" onclick="toggleLangDropdown(event)">
+                    🌐 <span id="current-lang-label">EN</span> ▾
+                </button>
+                <div class="dropdown-menu" id="lang-dropdown-menu">
+                    <button class="dropdown-item" onclick="setLanguage('en')">
+                        English <span class="check-icon active" id="check-en">✓</span>
+                    </button>
+                    <button class="dropdown-item" onclick="setLanguage('es')">
+                        Español <span class="check-icon" id="check-es">✓</span>
+                    </button>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="triggerSelfTest()">
+                ⚡ Run Self-Test
+            </button>
+        </div>
     </header>
 
     <main class="app-grid">
-      <!-- Sidebar Quest Board -->
-      <div class="sidebar">
-        <!-- Quests Card -->
-        <div class="card">
-          <h2 id="lbl-quest-log">🛰️ Mission Control</h2>
-          <div class="quest-board" id="sports-quest-list">
-            <!-- Quests generated dynamically -->
-          </div>
+        <!-- Sidebar Quest Board -->
+        <div class="sidebar">
+            <!-- Quests Card -->
+            <div class="card">
+                <h2 id="lbl-quest-log">🛰️ Mission Control</h2>
+                <!-- Active Quest Panel -->
+                <div id="active-quest-panel" style="margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.08);">
+                    <!-- Generated dynamically -->
+                </div>
+                <div class="quest-board" id="sports-quest-list">
+                    <!-- Quests generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Stats Table Card -->
+            <div class="card">
+                <h2 id="lbl-statistics">📊 Live Statistics</h2>
+                <div class="scoreboard">
+                    <div class="score-box highlight">
+                        <span id="lbl-mean">Mean (Average)</span>
+                        <strong id="val-mean">0.0</strong>
+                    </div>
+                    <div class="score-box">
+                        <span id="lbl-median">Median</span>
+                        <strong id="val-median">0</strong>
+                    </div>
+                    <div class="score-box">
+                        <span id="lbl-range">Range</span>
+                        <strong id="val-range">0</strong>
+                    </div>
+                    <div class="score-box">
+                        <span id="lbl-mad">MAD</span>
+                        <strong id="val-mad">0.0</strong>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Stats Table Card -->
-        <div class="card">
-          <h2 id="lbl-statistics">📊 Live Statistics</h2>
-          <div class="scoreboard">
-            <div class="score-box highlight">
-              <span id="lbl-mean">Mean (Average)</span>
-              <strong id="val-mean">0.0</strong>
-            </div>
-            <div class="score-box">
-              <span id="lbl-median">Median</span>
-              <strong id="val-median">0</strong>
-            </div>
-            <div class="score-box">
-              <span id="lbl-range">Range</span>
-              <strong id="val-range">0</strong>
-            </div>
-            <div class="score-box">
-              <span id="lbl-mad">MAD</span>
-              <strong id="val-mad">0.0</strong>
-            </div>
-          </div>
-        </div>
-      </div>
+        <!-- Analytical Workbench -->
+        <div class="workspace">
+            <!-- Dot Plot & Box Plot Work Card -->
+            <div class="work-card">
+                <div class="work-card-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span id="lbl-card-workbench">Sports Analytical Dot &amp; Box Plot</span>
+                </div>
 
-      <!-- Analytical Workbench -->
-      <div class="workspace">
-        <!-- Dot Plot & Box Plot Work Card -->
-        <div class="work-card">
-          <div class="work-card-title">
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.5"
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              ></path>
-            </svg>
-            <span id="lbl-card-workbench"
-              >Sports Analytical Dot &amp; Box Plot</span
-            >
-          </div>
-
-          <!-- Programmatic Drag Plot Canvas -->
-          <svg
-            id="svg-analytics"
-            class="svg-viewport"
-            viewBox="0 0 400 250"
-            style="background: white"
-          >
-            <!-- Coordinate elements generated programmatically -->
-          </svg>
-        </div>
-
-        <!-- ESOL Bilingual Helper -->
-        <div class="card sentence-hub">
-          <strong
-            style="
-              font-size: 0.85rem;
-              color: var(--primary);
-              text-transform: uppercase;
-            "
-            id="lbl-esol-title"
-            >Spanish Analysis Helper</strong
-          >
-          <div class="bubble-msg">
-            <span id="esol-starter"
-              >Drag the player score dots on the dot plot to explore changes in
-              sports analytics metrics!</span
-            >
-            <div class="translation-sub" id="esol-starter-trans">
-              ¡Arrastre los puntos de puntaje en el gráfico para ver las
-              métricas!
+                <!-- Programmatic Drag Plot Canvas -->
+                <svg id="svg-analytics" class="svg-viewport" viewBox="0 0 400 250" style="background: var(--sports-medium); border: 1px solid rgba(255,255,255,0.08);">
+                    <!-- Coordinate elements generated programmatically -->
+                </svg>
             </div>
-          </div>
+
+            <!-- ESOL Bilingual Helper -->
+            <div class="card sentence-hub">
+                <strong style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase;" id="lbl-esol-title">ESOL Analysis Helper</strong>
+                <div class="bubble-msg">
+                    <span id="esol-starter">Drag the player score dots on the dot plot to explore changes in sports analytics metrics!</span>
+                    <div class="translation-sub" id="esol-starter-trans">¡Arrastre los puntos de puntaje en el gráfico para ver las métricas!</div>
+                </div>
+            </div>
         </div>
-      </div>
     </main>
+
+    <!-- Diagnostics Backdrop -->
+    <div class="modal-backdrop" id="diag-backdrop" onclick="closeDiagnostics()"></div>
 
     <!-- Diagnostics Panel -->
     <div class="diagnostics-overlay" id="diag-panel">
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          padding-bottom: 4px;
-        "
-      >
-        <strong style="font-family: var(--font-display)">Diagnostics</strong>
-        <button
-          onclick="document.getElementById('diag-panel').style.display = 'none'"
-          style="
-            background: none;
-            border: none;
-            color: var(--danger);
-            font-weight: 800;
-            cursor: pointer;
-          "
-        >
-          X
-        </button>
-      </div>
-      <div class="diag-log-container" id="diag-log"></div>
-      <button
-        class="btn btn-primary"
-        style="width: 100%; font-size: 0.8rem"
-        onclick="document.getElementById('diag-panel').style.display = 'none'"
-      >
-        Close
-      </button>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom:8px;">
+            <strong style="font-family:var(--font-display); font-size: 1.2rem; color: var(--primary);">System Diagnostics</strong>
+            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size: 1.2rem; font-weight:800; cursor:pointer;">×</button>
+        </div>
+        <div class="diag-log-container" id="diag-log"></div>
+        <button class="btn btn-primary" style="width:100%; font-size:0.9rem; justify-content: center;" onclick="closeDiagnostics()">Close Diagnostics</button>
     </div>
 
     <footer>
-      <p>
-        &copy; 2026 Neft Learning Systems. Built locally, completely private.
-        Designed to support Grade 6 Statistics standards expected score ranges.
-      </p>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Statistics standards expected score ranges.</p>
     </footer>
 
     <script>
-      // ==========================================
-      // 1. CONFIGURATION
-      // ==========================================
-      const CONFIG = {
-        colors: {
-          primary: "#f59e0b", // Gold/Mean
-          secondary: "#10b981", // Green/Median
-          cyan: "#06b6d4", // Cyan/Dots
-          stroke: "#1e293b",
-          fill2d: "#ffffff",
-          gridLine: "#f1f5f9",
-          outline: "#94a3b8",
-        },
-        limits: {
-          minVal: 0,
-          maxVal: 20,
-        },
-        quests: [
-          {
-            id: 1,
-            title: "🎯 Equalize the Average",
-            titleEs: "🎯 Igualar el Promedio",
-            desc: "Adjust athlete scores so the Mean score is exactly 10.0.",
-            descEs:
-              "Ajuste los puntajes de modo que el Promedio sea exactamente 10.0.",
-            validator: (state) =>
-              Math.round(state.calculated.mean * 10) / 10 === 10.0,
-          },
-          {
-            id: 2,
-            title: "🚀 Launch an Outlier",
-            titleEs: "🚀 Lanzar un Atípico",
-            desc: "Move player 7 to a score of 20. Note how the Mean rises, but the Median remains stable.",
-            descEs:
-              "Mueva al jugador 7 a 20. Vea cómo el Promedio sube y la Mediana se mantiene estable.",
-            validator: (state) =>
-              state.scores[6] === 20 &&
-              Math.abs(state.calculated.mean - state.calculated.median) >= 2.0,
-          },
-          {
-            id: 3,
-            title: "📦 Minimize the Spread",
-            titleEs: "📦 Minimizar la Dispersión",
-            desc: "Drag player scores close together to reduce the Range to 4 or less.",
-            descEs: "Arrastre los puntajes para reducir el Rango a 4 o menos.",
-            validator: (state) => state.calculated.range <= 4,
-          },
-        ],
-      };
-
-      // ==========================================
-      // 2. CONFIG VALIDATOR
-      // ==========================================
-      function validateConfig() {
-        if (!CONFIG.colors || !CONFIG.quests || !CONFIG.limits) {
-          throw new Error("Statistical Quest: Config validation failed.");
-        }
-      }
-
-      // ==========================================
-      // 3. STATE MACHINE
-      // ==========================================
-      const STATE = {
-        scores: [4, 6, 8, 10, 12, 14, 16], // Initial athlete scores (always 7 elements for clean middle)
-        calculated: { mean: 10.0, median: 10.0, range: 12, mad: 3.42 },
-        activeQuestId: 1,
-        completedQuests: [],
-        activeDotIdx: -1,
-        language: "en",
-      };
-
-      // Translations Map
-      const TRANSLATIONS = {
-        en: {
-          "quest-log": "🛰️ Mission Control",
-          statistics: "📊 Live Statistics",
-          mean: "Mean (Average)",
-          median: "Median",
-          range: "Range",
-          mad: "MAD",
-          "card-workbench": "Sports Analytical Dot & Box Plot",
-          "esol-title": "Spanish Analysis Helper",
-          "starter-default":
-            "Drag score dots along the plot! Standard expected ranges show how data distributes. Mean is the balance point. Median is the middle.",
-          "starter-default-trans":
-            "¡Arrastre los puntos de puntaje! El promedio es el punto de equilibrio y la mediana es el centro.",
-          "sentence-stats":
-            "The dataset of athlete scores has a mean of {mean} and a median of {median}. The spread is defined by a range of {range} and a Mean Absolute Deviation (MAD) of {mad}.",
-          "sentence-stats-trans":
-            "El conjunto de puntajes tiene un promedio de {mean} y una mediana de {median}. El rango de dispersión es de {range} y la desviación media absoluta es de {mad}.",
-        },
-        es: {
-          "quest-log": "🛰️ Control de Misiones",
-          statistics: "📊 Estadísticas en Vivo",
-          mean: "Promedio (Media)",
-          median: "Mediana",
-          range: "Rango",
-          mad: "MAD",
-          "card-workbench": "Gráfico de Caja e Histograma de Puntos",
-          "esol-title": "Ayudante de Análisis en Español",
-          "starter-default":
-            "¡Arrastre los puntos de puntaje! El promedio es el punto de equilibrio y la mediana es el centro.",
-          "starter-default-trans":
-            "Drag score dots along the plot! Standard expected ranges show how data distributes. Mean is the balance point. Median is the middle.",
-          "sentence-stats":
-            "El conjunto de puntajes de los atletas tiene un promedio de {mean} y una mediana de {median}. El rango de dispersión es de {range} y la desviación media absoluta es de {mad}.",
-          "sentence-stats-trans":
-            "The dataset of athlete scores has a mean of {mean} and a median of {median}. The spread is defined by a range of {range} and a Mean Absolute Deviation (MAD) of {mad}.",
-        },
-      };
-
-      function transitionState(updatedFields) {
-        Object.assign(STATE, updatedFields);
-        calculateMetrics();
-        checkQuests();
-        renderUI();
-      }
-
-      // ==========================================
-      // 4. STATISTICAL CALCULATOR
-      // ==========================================
-      function calculateMetrics() {
-        // Sort scores to compute medians & quartiles accurately
-        const sorted = [...STATE.scores].sort((a, b) => a - b);
-
-        // Mean
-        const sum = sorted.reduce((acc, v) => acc + v, 0);
-        const mean = sum / sorted.length;
-
-        // Median (middle element of 7 elements is index 3)
-        const median = sorted[3];
-
-        // Range
-        const min = sorted[0];
-        const max = sorted[6];
-        const range = max - min;
-
-        // Mean Absolute Deviation (MAD)
-        const deviationsSum = sorted.reduce(
-          (acc, v) => acc + Math.abs(v - mean),
-          0,
-        );
-        const mad = deviationsSum / sorted.length;
-
-        STATE.calculated = {
-          mean: Math.round(mean * 10) / 10,
-          median: median,
-          range: range,
-          mad: Math.round(mad * 100) / 100,
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            colors: {
+                primary: '#fdd663',   // Soft Gold/Mean
+                secondary: '#81c995', // Soft Green/Median
+                cyan: '#8ab4f8',      // Soft Blue/Dots
+                stroke: '#e3e3e3',    // Light text color for axis line and borders
+                fill2d: '#1e1f20',    // Surface color
+                gridLine: 'rgba(255, 255, 255, 0.05)', // Delicate dark-gridlines
+                outline: '#9e9e9e'    // Muted Gray
+            },
+            limits: {
+                minVal: 0,
+                maxVal: 20
+            },
+            quests: [
+                {
+                    id: 1,
+                    title: '🎯 Equalize the Average',
+                    titleEs: '🎯 Igualar el Promedio',
+                    desc: 'Adjust athlete scores so the Mean score is exactly 10.0.',
+                    descEs: 'Ajuste los puntajes de modo que el Promedio sea exactamente 10.0.',
+                    validator: (state) => Math.round(state.calculated.mean * 10) / 10 === 10.0
+                },
+                {
+                    id: 2,
+                    title: '🚀 Launch an Outlier',
+                    titleEs: '🚀 Lanzar un Atípico',
+                    desc: 'Move player 7 to a score of 20. Note how the Mean rises, but the Median remains stable.',
+                    descEs: 'Mueva al jugador 7 a 20. Vea cómo el Promedio sube y la Mediana se mantiene estable.',
+                    validator: (state) => state.scores[6] === 20 && Math.abs(state.calculated.mean - state.calculated.median) >= 2.0
+                },
+                {
+                    id: 3,
+                    title: '📦 Minimize the Spread',
+                    titleEs: '📦 Minimizar la Dispersión',
+                    desc: 'Drag player scores close together to reduce the Range to 4 or less.',
+                    descEs: 'Arrastre los puntajes para reducir el Rango a 4 o menos.',
+                    validator: (state) => state.calculated.range <= 4
+                }
+            ]
         };
-      }
 
-      // ==========================================
-      // 5. INTERACTIVE HANDLERS
-      // ==========================================
-      function toggleLanguage() {
-        const nextLang = STATE.language === "en" ? "es" : "en";
-        transitionState({ language: nextLang });
-      }
-
-      function selectQuest(id) {
-        transitionState({ activeQuestId: id });
-      }
-
-      function checkQuests() {
-        CONFIG.quests.forEach((q) => {
-          if (q.validator(STATE)) {
-            if (!STATE.completedQuests.includes(q.id)) {
-              STATE.completedQuests.push(q.id);
+        // ==========================================
+        // 2. CONFIG VALIDATOR
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.colors || !CONFIG.quests || !CONFIG.limits) {
+                throw new Error("Statistical Quest: Config validation failed.");
             }
-          }
-        });
-      }
+        }
 
-      // Dot drag-and-drop operations
-      let isDragging = false;
-      let selectedDotIdx = -1;
-
-      function setupDragEvents() {
-        const svg = document.getElementById("svg-analytics");
-
-        const handleStart = (e) => {
-          const target = e.target;
-          if (target.classList.contains("svg-score-dot")) {
-            isDragging = true;
-            selectedDotIdx = parseInt(target.getAttribute("data-idx"), 10);
-          }
+        // ==========================================
+        // 3. STATE MACHINE
+        // ==========================================
+        const STATE = {
+            scores: [4, 6, 8, 10, 12, 14, 16], // Initial athlete scores (always 7 elements for clean middle)
+            calculated: { mean: 10.0, median: 10.0, range: 12, mad: 3.42 },
+            activeQuestId: 1,
+            completedQuests: [],
+            activeDotIdx: -1,
+            hoveredDotIdx: -1,
+            language: 'en',
+            hasAttempted: false,
+            feedbackType: 'neutral',
+            feedbackMessageEn: '',
+            feedbackMessageEs: ''
         };
 
-        const handleMove = (e) => {
-          if (!isDragging || selectedDotIdx === -1) return;
-
-          const rect = svg.getBoundingClientRect();
-          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-          const xInSvg = ((clientX - rect.left) / rect.width) * 400;
-
-          // Mapping horizontal: tick marks from 0 to 20 along X = 50 to X = 350
-          const startX = 50;
-          const endX = 350;
-          const totalSteps = 20;
-          const stepWidth = (endX - startX) / totalSteps;
-
-          // Find closest score integer step
-          let stepIdx = Math.round((xInSvg - startX) / stepWidth);
-          stepIdx = Math.max(0, Math.min(totalSteps, stepIdx));
-
-          const pts = [...STATE.scores];
-          if (pts[selectedDotIdx] !== stepIdx) {
-            pts[selectedDotIdx] = stepIdx;
-            // Sort scores to preserve order sequence so they represent player 1 to 7 cleanly
-            pts.sort((a, b) => a - b);
-            transitionState({ scores: pts });
-          }
+        // Translations Map
+        const TRANSLATIONS = {
+            en: {
+                'quest-log': '🛰️ Mission Control',
+                'statistics': '📊 Live Statistics',
+                'mean': 'Mean (Average)',
+                'median': 'Median',
+                'range': 'Range',
+                'mad': 'MAD',
+                'card-workbench': 'Sports Analytical Dot & Box Plot',
+                'esol-title': 'ESOL Analysis Helper',
+                'starter-default': 'Drag score dots along the plot! Standard expected ranges show how data distributes. Mean is the balance point. Median is the middle.',
+                'starter-default-trans': '¡Arrastre los puntos de puntaje! El promedio es el punto de equilibrio y la mediana es el centro.',
+                'sentence-stats': 'The dataset of athlete scores has a mean of {mean} and a median of {median}. The spread is defined by a range of {range} and a Mean Absolute Deviation (MAD) of {mad}.',
+                'sentence-stats-trans': 'El conjunto de puntajes tiene un promedio de {mean} y una mediana de {median}. El rango de dispersión es de {range} y la desviación media absoluta es de {mad}.',
+                'btn-check': 'Check Answer',
+                'btn-next': 'Next →',
+                'quest-label': 'Quest {current} of {total}',
+                'quest-complete-title': '🎉 All Quests Completed!',
+                'quest-complete-desc': 'You have successfully finished the Sports Analytics Lab. Great job!',
+                'btn-restart': 'Restart Lab 🔄'
+            },
+            es: {
+                'quest-log': '🛰️ Control de Misiones',
+                'statistics': '📊 Estadísticas en Vivo',
+                'mean': 'Promedio (Media)',
+                'median': 'Mediana',
+                'range': 'Rango',
+                'mad': 'MAD',
+                'card-workbench': 'Gráfico de Caja e Histograma de Puntos',
+                'esol-title': 'Ayudante de Análisis ESOL',
+                'starter-default': '¡Arrastre los puntos de puntaje! El promedio es el punto de equilibrio y la mediana es el centro.',
+                'starter-default-trans': 'Drag score dots along the plot! Standard expected ranges show how data distributes. Mean is the balance point. Median is the middle.',
+                'sentence-stats': 'El conjunto de puntajes de los atletas tiene un promedio de {mean} y una mediana de {median}. El rango de dispersión es de {range} y la desviación media absoluta es de {mad}.',
+                'sentence-stats-trans': 'The dataset of athlete scores has a mean of {mean} and a median of {median}. The spread is defined by a range of {range} and a Mean Absolute Deviation (MAD) of {mad}.',
+                'btn-check': 'Comprobar respuesta',
+                'btn-next': 'Siguiente →',
+                'quest-label': 'Misión {current} de {total}',
+                'quest-complete-title': '🎉 ¡Misiones completadas!',
+                'quest-complete-desc': 'Has completado con éxito el Laboratorio de Análisis Deportivo. ¡Excelente trabajo!',
+                'btn-restart': 'Reiniciar Lab 🔄'
+            }
         };
 
-        const handleEnd = () => {
-          isDragging = false;
-          selectedDotIdx = -1;
-        };
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+            calculateMetrics();
+            checkQuests();
+            renderUI();
+        }
 
-        svg.addEventListener("mousedown", handleStart);
-        svg.addEventListener("mousemove", handleMove);
-        window.addEventListener("mouseup", handleEnd);
+        // ==========================================
+        // 4. STATISTICAL CALCULATOR
+        // ==========================================
+        function calculateMetrics() {
+            // Sort scores to compute medians & quartiles accurately
+            const sorted = [ ...STATE.scores ].sort((a, b) => a - b);
+            
+            // Mean
+            const sum = sorted.reduce((acc, v) => acc + v, 0);
+            const mean = sum / sorted.length;
 
-        svg.addEventListener("touchstart", handleStart);
-        svg.addEventListener("touchmove", handleMove);
-        window.addEventListener("touchend", handleEnd);
-      }
+            // Median (middle element of 7 elements is index 3)
+            const median = sorted[3];
 
-      // ==========================================
-      // 6. RENDER ENGINE (Programmatic SVGs)
-      // ==========================================
-      function renderUI() {
-        validateConfig();
-        renderStaticLabels();
-        renderQuestList();
-        renderScoreboard();
-        renderAnalyticsCanvas();
-        updateESOLHub();
-      }
+            // Range
+            const min = sorted[0];
+            const max = sorted[6];
+            const range = max - min;
 
-      function renderStaticLabels() {
-        const t = TRANSLATIONS[STATE.language];
-        document.getElementById("lbl-quest-log").innerText = t["quest-log"];
-        document.getElementById("lbl-statistics").innerText = t["statistics"];
-        document.getElementById("lbl-mean").innerText = t["mean"];
-        document.getElementById("lbl-median").innerText = t["median"];
-        document.getElementById("lbl-range").innerText = t["range"];
-        document.getElementById("lbl-mad").innerText = t["mad"];
-        document.getElementById("lbl-card-workbench").innerText =
-          t["card-workbench"];
-        document.getElementById("lbl-esol-title").innerText = t["esol-title"];
-      }
+            // Mean Absolute Deviation (MAD)
+            const deviationsSum = sorted.reduce((acc, v) => acc + Math.abs(v - mean), 0);
+            const mad = deviationsSum / sorted.length;
 
-      function renderQuestList() {
-        const container = document.getElementById("sports-quest-list");
-        container.innerHTML = "";
+            STATE.calculated = {
+                mean: Math.round(mean * 10) / 10,
+                median: median,
+                range: range,
+                mad: Math.round(mad * 100) / 100
+            };
+        }
 
-        CONFIG.quests.forEach((q) => {
-          const isActive = STATE.activeQuestId === q.id;
-          const isSolved = STATE.completedQuests.includes(q.id);
-          const title = STATE.language === "en" ? q.title : q.titleEs;
-          const desc = STATE.language === "en" ? q.desc : q.descEs;
+        // ==========================================
+        // 5. INTERACTIVE HANDLERS
+        // ==========================================
+        function toggleLangDropdown(event) {
+            event.stopPropagation();
+            const qMenu = document.getElementById('quest-dropdown-menu');
+            if (qMenu) qMenu.classList.remove('show');
+            const menu = document.getElementById('lang-dropdown-menu');
+            if (menu) menu.classList.toggle('show');
+        }
 
-          container.innerHTML += `
-                    <div class="quest-item ${isActive ? "active" : ""} ${isSolved ? "resolved" : ""}" onclick="selectQuest(${q.id})">
+        function setLanguage(lang) {
+            transitionState({ language: lang });
+            const checkEn = document.getElementById('check-en');
+            const checkEs = document.getElementById('check-es');
+            if (checkEn) checkEn.classList.toggle('active', lang === 'en');
+            if (checkEs) checkEs.classList.toggle('active', lang === 'es');
+            const lbl = document.getElementById('current-lang-label');
+            if (lbl) lbl.innerText = lang.toUpperCase();
+            const menu = document.getElementById('lang-dropdown-menu');
+            if (menu) menu.classList.remove('show');
+        }
+
+        function toggleQuestDropdown(event) {
+            event.stopPropagation();
+            const lMenu = document.getElementById('lang-dropdown-menu');
+            if (lMenu) lMenu.classList.remove('show');
+            const menu = document.getElementById('quest-dropdown-menu');
+            if (menu) menu.classList.toggle('show');
+        }
+
+        function setHoveredDot(idx) {
+            if (STATE.hoveredDotIdx !== idx) {
+                STATE.hoveredDotIdx = idx;
+                renderAnalyticsCanvas();
+            }
+        }
+
+        function closeDiagnostics() {
+            const backdrop = document.getElementById('diag-backdrop');
+            const panel = document.getElementById('diag-panel');
+            if (backdrop) backdrop.style.display = 'none';
+            if (panel) panel.style.display = 'none';
+        }
+
+        function selectQuest(id) {
+            if (STATE.activeQuestId !== id) {
+                const isSolved = STATE.completedQuests.includes(id);
+                transitionState({
+                    activeQuestId: id,
+                    hasAttempted: isSolved,
+                    feedbackType: isSolved ? 'success' : 'neutral',
+                    feedbackMessageEn: isSolved ? "✅ Correct! Excellent work. Click 'Next' to continue." : '',
+                    feedbackMessageEs: isSolved ? "✅ ¡Correcto! Excelente trabajo. Haz clic en 'Siguiente' para continuar." : ''
+                });
+            }
+        }
+
+        function checkQuests() {
+            CONFIG.quests.forEach(q => {
+                if (q.validator(STATE)) {
+                    if (!STATE.completedQuests.includes(q.id)) {
+                        STATE.completedQuests.push(q.id);
+                        if (q.id === STATE.activeQuestId) {
+                            STATE.feedbackType = 'success';
+                            STATE.hasAttempted = true;
+                            STATE.feedbackMessageEn = "✅ Correct! Excellent work. Click 'Next' to continue.";
+                            STATE.feedbackMessageEs = "✅ ¡Correcto! Excelente trabajo. Haz clic en 'Siguiente' para continuar.";
+                        }
+                    }
+                }
+            });
+        }
+
+        function checkActiveQuest() {
+            if (STATE.activeQuestId === null) return;
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+            if (!currentQuest) return;
+
+            const isCorrect = currentQuest.validator(STATE);
+            
+            let completed = [ ...STATE.completedQuests ];
+            if (isCorrect && !completed.includes(STATE.activeQuestId)) {
+                completed.push(STATE.activeQuestId);
+            }
+
+            let fbType = isCorrect ? 'success' : 'error';
+            let msgEn = '';
+            let msgEs = '';
+
+            if (isCorrect) {
+                msgEn = "✅ Correct! Excellent work. Click 'Next' to continue.";
+                msgEs = "✅ ¡Correcto! Excelente trabajo. Haz clic en 'Siguiente' para continuar.";
+            } else {
+                if (STATE.activeQuestId === 1) {
+                    const diff = Math.round((10.0 - STATE.calculated.mean) * 10) / 10;
+                    if (diff > 0) {
+                        msgEn = `❌ Not quite. Mean is ${STATE.calculated.mean.toFixed(1)}. It needs to be 10.0. Hint: Drag some dots to the right to increase the average by ${diff.toFixed(1)}.`;
+                        msgEs = `❌ No del todo. El promedio es ${STATE.calculated.mean.toFixed(1)}. Debe ser 10.0. Consejo: ¡Arrastra algunos puntos a la derecha para aumentar el promedio en ${diff.toFixed(1)}!`;
+                    } else {
+                        msgEn = `❌ Not quite. Mean is ${STATE.calculated.mean.toFixed(1)}. It needs to be 10.0. Hint: Drag some dots to the left to decrease the average by ${Math.abs(diff).toFixed(1)}.`;
+                        msgEs = `❌ No del todo. El promedio es ${STATE.calculated.mean.toFixed(1)}. Debe ser 10.0. Consejo: ¡Arrastra algunos puntos a la izquierda para reducir el promedio en ${Math.abs(diff).toFixed(1)}!`;
+                    }
+                } else if (STATE.activeQuestId === 2) {
+                    const p7Val = STATE.scores[6];
+                    const diff = Math.round(Math.abs(STATE.calculated.mean - STATE.calculated.median) * 10) / 10;
+                    if (p7Val !== 20) {
+                        msgEn = `❌ Not quite. Player 7 is currently at score ${p7Val}. Hint: Drag player 7 (the rightmost dot) all the way to 20!`;
+                        msgEs = `❌ No del todo. El jugador 7 está en ${p7Val}. Consejo: ¡Arrastra al jugador 7 (el punto más a la derecha) hasta el 20!`;
+                    } else {
+                        msgEn = `❌ Player 7 is at 20, but the difference between Mean and Median is only ${diff.toFixed(1)}. Hint: Adjust other dots so they cluster together at a lower value to pull the Median down while Mean stays high (we need a difference of 2.0 or more).`;
+                        msgEs = `❌ El jugador 7 está en 20, pero la diferencia entre el Promedio y la Mediana es solo ${diff.toFixed(1)}. Consejo: Ajusta otros puntos para que se agrupen en un valor más bajo para reducir la Mediana mientras el Promedio sigue alto.`;
+                    }
+                } else if (STATE.activeQuestId === 3) {
+                    msgEn = `❌ Not quite. Your Range is currently ${STATE.calculated.range}. Hint: Drag player scores closer together (e.g. cluster them around 10) to reduce the Range to 4 or less.`;
+                    msgEs = `❌ No del todo. Tu rango es ${STATE.calculated.range}. Consejo: Arrastra los puntos más cerca entre sí (por ejemplo, agrúpalos alrededor de 10) para reducir el rango a 4 o menos.`;
+                }
+            }
+
+            transitionState({
+                completedQuests: completed,
+                hasAttempted: true,
+                feedbackType: fbType,
+                feedbackMessageEn: msgEn,
+                feedbackMessageEs: msgEs
+            });
+        }
+
+        function nextQuest() {
+            if (STATE.activeQuestId === null) return;
+
+            if (STATE.activeQuestId < CONFIG.quests.length) {
+                const nextId = STATE.activeQuestId + 1;
+                const isSolved = STATE.completedQuests.includes(nextId);
+                transitionState({
+                    activeQuestId: nextId,
+                    hasAttempted: isSolved,
+                    feedbackType: isSolved ? 'success' : 'neutral',
+                    feedbackMessageEn: isSolved ? "✅ Correct! Excellent work. Click 'Next' to continue." : '',
+                    feedbackMessageEs: isSolved ? "✅ ¡Correcto! Excelente trabajo. Haz clic en 'Siguiente' para continuar." : ''
+                });
+            } else {
+                transitionState({
+                    activeQuestId: null,
+                    hasAttempted: false,
+                    feedbackType: 'neutral',
+                    feedbackMessageEn: '',
+                    feedbackMessageEs: ''
+                });
+            }
+        }
+
+        function restartLab() {
+            transitionState({
+                scores: [4, 6, 8, 10, 12, 14, 16],
+                activeQuestId: 1,
+                completedQuests: [],
+                hasAttempted: false,
+                feedbackType: 'neutral',
+                feedbackMessageEn: '',
+                feedbackMessageEs: ''
+            });
+        }
+
+        // Dot drag-and-drop operations
+        let isDragging = false;
+        let selectedDotIdx = -1;
+
+        function setupDragEvents() {
+            const svg = document.getElementById('svg-analytics');
+
+            const handleStart = (e) => {
+                const target = e.target;
+                if (target.classList.contains('svg-score-dot')) {
+                    isDragging = true;
+                    selectedDotIdx = parseInt(target.getAttribute('data-idx'), 10);
+                }
+            };
+
+            const handleMove = (e) => {
+                if (!isDragging || selectedDotIdx === -1) return;
+
+                const rect = svg.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const xInSvg = ((clientX - rect.left) / rect.width) * 400;
+
+                // Mapping horizontal: tick marks from 0 to 20 along X = 50 to X = 350
+                const startX = 50;
+                const endX = 350;
+                const totalSteps = 20;
+                const stepWidth = (endX - startX) / totalSteps;
+
+                // Find closest score integer step
+                let stepIdx = Math.round((xInSvg - startX) / stepWidth);
+                stepIdx = Math.max(0, Math.min(totalSteps, stepIdx));
+
+                const pts = [ ...STATE.scores ];
+                if (pts[selectedDotIdx] !== stepIdx) {
+                    pts[selectedDotIdx] = stepIdx;
+                    // Sort scores to preserve order sequence so they represent player 1 to 7 cleanly
+                    pts.sort((a, b) => a - b);
+                    transitionState({ scores: pts });
+                }
+            };
+
+            const handleEnd = () => {
+                isDragging = false;
+                selectedDotIdx = -1;
+            };
+
+            svg.addEventListener('mousedown', handleStart);
+            svg.addEventListener('mousemove', handleMove);
+            window.addEventListener('mouseup', handleEnd);
+
+            svg.addEventListener('touchstart', handleStart);
+            svg.addEventListener('touchmove', handleMove);
+            window.addEventListener('touchend', handleEnd);
+        }
+
+        // ==========================================
+        // 6. RENDER ENGINE (Programmatic SVGs)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+            renderStaticLabels();
+            renderQuestList();
+            renderScoreboard();
+            renderAnalyticsCanvas();
+            updateESOLHub();
+            renderActiveQuestPanel();
+        }
+
+        function renderActiveQuestPanel() {
+            const panel = document.getElementById('active-quest-panel');
+            if (!panel) return;
+
+            const t = TRANSLATIONS[STATE.language];
+            
+            if (STATE.activeQuestId === null) {
+                const titleText = t['quest-complete-title'];
+                const descText = t['quest-complete-desc'];
+                const btnRestartText = t['btn-restart'];
+
+                panel.innerHTML = `
+                    <div style="text-align: center; padding: 8px 0;">
+                        <span style="font-size: 2.2rem; display: block; margin-bottom: 10px;">🏆</span>
+                        <h3 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 800; margin-bottom: 8px; color: var(--primary);">${titleText}</h3>
+                        <p style="font-size: 0.85rem; color: var(--gray-300); margin-bottom: 16px; line-height: 1.4;">${descText}</p>
+                        <button class="btn btn-primary" onclick="restartLab()" style="width: 100%; justify-content: center; padding: 10px 16px;">
+                            ${btnRestartText}
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.activeQuestId);
+            if (!currentQuest) return;
+
+            const totalQuests = CONFIG.quests.length;
+            const currentNum = STATE.activeQuestId;
+            
+            const questTitle = STATE.language === 'en' ? currentQuest.title : currentQuest.titleEs;
+            const questDesc = STATE.language === 'en' ? currentQuest.desc : currentQuest.descEs;
+
+            let label = t['quest-label']
+                .replace('{current}', currentNum)
+                .replace('{total}', totalQuests);
+
+            const isSolved = STATE.completedQuests.includes(STATE.activeQuestId);
+            const statusBadge = isSolved ? '🏆' : '🏀';
+            const nextEnabled = isSolved || STATE.hasAttempted;
+            const feedbackMsg = STATE.language === 'en' ? STATE.feedbackMessageEn : STATE.feedbackMessageEs;
+
+            const questOptionsHtml = CONFIG.quests.map(q => {
+                const isSelected = STATE.activeQuestId === q.id;
+                const isSolved = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.titleEs;
+                return `
+                    <button class="dropdown-item" onclick="selectQuest(${q.id})">
+                        <span>${isSolved ? '🏆' : '🏀'} ${title}</span>
+                        <span class="check-icon ${isSelected ? 'active' : ''}">✓</span>
+                    </button>
+                `;
+            }).join('');
+
+            panel.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span id="quest-number-label" style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">${label}</span>
+                    <span id="quest-status-badge" style="font-size: 0.85rem; font-weight: 700;">${statusBadge}</span>
+                </div>
+                
+                <div class="dropdown" style="margin-bottom: 8px; width: 100%;" id="quest-dropdown-container">
+                    <button class="quest-select-btn" onclick="toggleQuestDropdown(event)">
+                        <span>${questTitle}</span>
+                        <span>▾</span>
+                    </button>
+                    <div class="dropdown-menu" id="quest-dropdown-menu" style="width: 100%; left: 0;">
+                        ${questOptionsHtml}
+                    </div>
+                </div>
+                
+                <p id="active-quest-desc" style="font-size: 0.85rem; color: var(--gray-400); margin-bottom: 12px; line-height: 1.4;">${questDesc}</p>
+                
+                <div id="active-quest-feedback" class="feedback-box ${STATE.feedbackType}" style="display: ${feedbackMsg ? 'block' : 'none'};">
+                    ${feedbackMsg}
+                </div>
+
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <button class="btn btn-primary" id="btn-check-answer" onclick="checkActiveQuest()" style="flex: 1; padding: 8px 12px; font-size: 0.85rem; justify-content: center;">
+                        ${t['btn-check']}
+                    </button>
+                    <button class="btn btn-secondary" id="btn-next-quest" onclick="nextQuest()" style="padding: 8px 12px; font-size: 0.85rem; justify-content: center;" ${nextEnabled ? '' : 'disabled'}>
+                        ${t['btn-next']}
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderStaticLabels() {
+            const t = TRANSLATIONS[STATE.language];
+            document.getElementById('lbl-quest-log').innerText = t['quest-log'];
+            document.getElementById('lbl-statistics').innerText = t['statistics'];
+            document.getElementById('lbl-mean').innerText = t['mean'];
+            document.getElementById('lbl-median').innerText = t['median'];
+            document.getElementById('lbl-range').innerText = t['range'];
+            document.getElementById('lbl-mad').innerText = t['mad'];
+            document.getElementById('lbl-card-workbench').innerText = t['card-workbench'];
+            document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+        }
+
+        function renderQuestList() {
+            const container = document.getElementById('sports-quest-list');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const isSolved = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.titleEs;
+                const desc = STATE.language === 'en' ? q.desc : q.descEs;
+
+                container.innerHTML += `
+                    <div class="quest-item ${isActive?'active':''} ${isSolved?'resolved':''}" onclick="selectQuest(${q.id})">
                         <div class="quest-details">
                             <span class="quest-title">${title}</span>
                             <span class="quest-desc">${desc}</span>
                         </div>
-                        <span class="quest-status">${isSolved ? "🏆" : "🏀"}</span>
+                        <span class="quest-status">${isSolved?'🏆':'🏀'}</span>
                     </div>
                 `;
-        });
-      }
-
-      function renderScoreboard() {
-        document.getElementById("val-mean").innerText =
-          STATE.calculated.mean.toFixed(1);
-        document.getElementById("val-median").innerText =
-          STATE.calculated.median;
-        document.getElementById("val-range").innerText = STATE.calculated.range;
-        document.getElementById("val-mad").innerText =
-          STATE.calculated.mad.toFixed(2);
-      }
-
-      function renderAnalyticsCanvas() {
-        const svg = document.getElementById("svg-analytics");
-        svg.innerHTML = ""; // Clear SVG
-
-        const startX = 50;
-        const endX = 350;
-        const yLine = 120; // Horizontal axis position
-        const totalSteps = 20;
-        const stepWidth = (endX - startX) / totalSteps;
-
-        // Draw clean background grids
-        for (let i = 20; i < 400; i += 20) {
-          svg.innerHTML += `<line x1="${i}" y1="0" x2="${i}" y2="250" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />`;
+            });
         }
 
-        // Draw horizontal coordinate axis
-        svg.innerHTML += `
+        function renderScoreboard() {
+            document.getElementById('val-mean').innerText = STATE.calculated.mean.toFixed(1);
+            document.getElementById('val-median').innerText = STATE.calculated.median;
+            document.getElementById('val-range').innerText = STATE.calculated.range;
+            document.getElementById('val-mad').innerText = STATE.calculated.mad.toFixed(2);
+        }
+
+        function renderAnalyticsCanvas() {
+            const svg = document.getElementById('svg-analytics');
+            if (!svg) return;
+            svg.innerHTML = ''; // Clear SVG
+
+            const startX = 50;
+            const endX = 350;
+            const yLine = 120; // Horizontal axis position
+            const totalSteps = 20;
+            const stepWidth = (endX - startX) / totalSteps;
+
+            // Draw clean background grids
+            for (let i = 20; i < 400; i += 20) {
+                svg.innerHTML += `<line x1="${i}" y1="0" x2="${i}" y2="250" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />`;
+            }
+
+            // Draw horizontal coordinate axis
+            svg.innerHTML += `
                 <line x1="${startX - 20}" y1="${yLine}" x2="${endX + 20}" y2="${yLine}" stroke="${CONFIG.colors.stroke}" stroke-width="2.5" />
                 <path d="M ${endX + 20} ${yLine - 5} L ${endX + 30} ${yLine} L ${endX + 20} ${yLine + 5} Z" fill="${CONFIG.colors.stroke}" />
                 <text x="390" y="${yLine + 12}" class="axis-label" text-anchor="end">Scores</text>
             `;
 
-        // Draw Ticks & Labels on coordinate axis
-        for (let i = 0; i <= totalSteps; i++) {
-          const tickX = startX + i * stepWidth;
-          svg.innerHTML += `
+            // Draw Ticks & Labels on coordinate axis
+            for (let i = 0; i <= totalSteps; i++) {
+                const tickX = startX + i * stepWidth;
+                svg.innerHTML += `
                     <line x1="${tickX}" y1="${yLine - 4}" x2="${tickX}" y2="${yLine + 4}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
                 `;
-          if (i % 2 === 0) {
-            svg.innerHTML += `
+                if (i % 2 === 0) {
+                    svg.innerHTML += `
                         <text x="${tickX}" y="${yLine + 15}" class="tick-label" text-anchor="middle">${i}</text>
                     `;
-          }
-        }
+                }
+            }
 
-        // Draw Mean Balance Indicator gold vertical dashed line
-        const meanX = startX + STATE.calculated.mean * stepWidth;
-        svg.innerHTML += `
+            // Draw Mean Balance Indicator gold vertical dashed line
+            const meanX = startX + STATE.calculated.mean * stepWidth;
+            svg.innerHTML += `
                 <line x1="${meanX}" y1="20" x2="${meanX}" y2="${yLine + 30}" stroke="var(--primary)" stroke-width="2" stroke-dasharray="4, 3" />
                 <rect x="${meanX - 25}" y="8" width="50" height="15" rx="3" fill="var(--sports-dark)" stroke="var(--primary)" stroke-width="1" />
                 <text x="${meanX}" y="18" font-family="var(--font-display)" font-size="8.5" font-weight="950" fill="var(--primary)" text-anchor="middle">Mean: ${STATE.calculated.mean}</text>
             `;
 
-        // Sort scores to plot stacked player dots correctly
-        const sortedScores = [...STATE.scores].sort((a, b) => a - b);
-        const scoreCounts = {};
+            // Sort scores to plot stacked player dots correctly
+            const sortedScores = [ ...STATE.scores ].sort((a, b) => a - b);
+            const scoreCounts = {};
 
-        // Draw Dot Plot player dots
-        sortedScores.forEach((score, idx) => {
-          if (scoreCounts[score] === undefined) scoreCounts[score] = 0;
-          scoreCounts[score] += 1;
+            // Draw Dot Plot player dots
+            sortedScores.forEach((score, idx) => {
+                if (scoreCounts[score] === undefined) scoreCounts[score] = 0;
+                scoreCounts[score] += 1;
 
-          const dotX = startX + score * stepWidth;
-          // Stack dots vertically if they share the same score
-          const dotY = yLine - 10 - (scoreCounts[score] - 1) * 16;
-          const isMedianDot = idx === 3; // exact middle dot of 7 elements is index 3
-          const fillClr = isMedianDot ? "var(--secondary)" : "var(--cyan)";
+                const dotX = startX + score * stepWidth;
+                // Stack dots vertically if they share the same score
+                const dotY = yLine - 10 - (scoreCounts[score] - 1) * 16;
+                const isMedianDot = idx === 3; // exact middle dot of 7 elements is index 3
+                const fillClr = isMedianDot ? 'var(--secondary)' : 'var(--cyan)';
 
-          svg.innerHTML += `
-                    <circle class="svg-score-dot" data-idx="${idx}" cx="${dotX}" cy="${dotY}" r="6.5" fill="${fillClr}" stroke="var(--white)" stroke-width="1.5" />
+                svg.innerHTML += `
+                    <circle class="svg-score-dot" data-idx="${idx}" cx="${dotX}" cy="${dotY}" r="6.5" fill="${fillClr}" stroke="var(--white)" stroke-width="1.5"
+                        onmouseenter="setHoveredDot(${idx})" onmouseleave="setHoveredDot(-1)" />
                 `;
-        });
+            });
 
-        // Draw Box Plot directly below the axis
-        // Box plot y center = 190
-        const yBox = 190;
-        const minScore = sortedScores[0];
-        const maxScore = sortedScores[6];
+            // Draw Floating speech bubble tooltip above hovered or dragged dot
+            const activeTooltipIdx = isDragging ? selectedDotIdx : STATE.hoveredDotIdx;
+            if (activeTooltipIdx !== -1 && activeTooltipIdx < sortedScores.length) {
+                const tooltipScore = sortedScores[activeTooltipIdx];
+                
+                let stackCount = 0;
+                for (let i = 0; i <= activeTooltipIdx; i++) {
+                    if (sortedScores[i] === tooltipScore) {
+                        stackCount++;
+                    }
+                }
+                
+                const toolX = startX + tooltipScore * stepWidth;
+                const toolY = yLine - 10 - (stackCount - 1) * 16;
+                
+                const bubbleW = 34;
+                const bubbleH = 20;
+                const bubbleX = toolX - bubbleW / 2;
+                const bubbleY = toolY - bubbleH - 10;
+                
+                const pathData = `
+                    M ${bubbleX + 4} ${bubbleY}
+                    H ${bubbleX + bubbleW - 4}
+                    A 4 4 0 0 1 ${bubbleX + bubbleW} ${bubbleY + 4}
+                    V ${bubbleY + bubbleH - 4}
+                    A 4 4 0 0 1 ${bubbleX + bubbleW - 4} ${bubbleY + bubbleH}
+                    H ${toolX + 4}
+                    L ${toolX} ${toolY - 3}
+                    L ${toolX - 4} ${bubbleY + bubbleH}
+                    H ${bubbleX + 4}
+                    A 4 4 0 0 1 ${bubbleX} ${bubbleY + bubbleH - 4}
+                    V ${bubbleY + 4}
+                    A 4 4 0 0 1 ${bubbleX + 4} ${bubbleY}
+                    Z
+                `;
+                
+                svg.innerHTML += `
+                    <g pointer-events="none" style="transition: all 0.15s ease;">
+                        <path d="${pathData}" fill="var(--sports-light)" stroke="var(--primary)" stroke-width="1.5" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.5))" />
+                        <text x="${toolX}" y="${bubbleY + 13}" font-family="var(--font-display)" font-size="10" font-weight="800" fill="var(--primary)" text-anchor="middle">
+                            ${tooltipScore}
+                        </text>
+                    </g>
+                `;
+            }
 
-        // Computes Q1 (middle of lower half [idx 0,1,2] -> idx 1) and Q3 (middle of upper half [idx 4,5,6] -> idx 5)
-        const q1Val = sortedScores[1];
-        const q3Val = sortedScores[5];
-        const medianVal = STATE.calculated.median;
+            // Draw Box Plot directly below the axis
+            // Box plot y center = 190
+            const yBox = 190;
+            const minScore = sortedScores[0];
+            const maxScore = sortedScores[6];
+            
+            // Computes Q1 (middle of lower half [idx 0,1,2] -> idx 1) and Q3 (middle of upper half [idx 4,5,6] -> idx 5)
+            const q1Val = sortedScores[1];
+            const q3Val = sortedScores[5];
+            const medianVal = STATE.calculated.median;
 
-        const minX = startX + minScore * stepWidth;
-        const maxX = startX + maxScore * stepWidth;
-        const q1X = startX + q1Val * stepWidth;
-        const q3X = startX + q3Val * stepWidth;
-        const medX = startX + medianVal * stepWidth;
+            const minX = startX + minScore * stepWidth;
+            const maxX = startX + maxScore * stepWidth;
+            const q1X = startX + q1Val * stepWidth;
+            const q3X = startX + q3Val * stepWidth;
+            const medX = startX + medianVal * stepWidth;
 
-        // Draw Whisker lines
-        svg.innerHTML += `
+            // Draw Whisker lines
+            svg.innerHTML += `
                 <line x1="${minX}" y1="${yBox}" x2="${q1X}" y2="${yBox}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
                 <line x1="${q3X}" y1="${yBox}" x2="${maxX}" y2="${yBox}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
                 <line x1="${minX}" y1="${yBox - 8}" x2="${minX}" y2="${yBox + 8}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
                 <line x1="${maxX}" y1="${yBox - 8}" x2="${maxX}" y2="${yBox + 8}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
             `;
 
-        // Draw Quartile Box (Q1 to Q3)
-        svg.innerHTML += `
-                <rect x="${q1X}" y="${yBox - 12}" width="${q3X - q1X}" height="24" fill="rgba(6, 182, 212, 0.08)" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+            // Draw Quartile Box (Q1 to Q3)
+            svg.innerHTML += `
+                <rect x="${q1X}" y="${yBox - 12}" width="${q3X - q1X}" height="24" fill="rgba(138, 180, 248, 0.08)" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
             `;
 
-        // Draw Median line inside Box
-        svg.innerHTML += `
+            // Draw Median line inside Box
+            svg.innerHTML += `
                 <line x1="${medX}" y1="${yBox - 12}" x2="${medX}" y2="${yBox + 12}" stroke="var(--secondary)" stroke-width="3" />
             `;
 
-        // Draw Quartile labels inside box plot
-        svg.innerHTML += `
+            // Draw Quartile labels inside box plot
+            svg.innerHTML += `
                 <text x="${q1X}" y="${yBox + 22}" class="tick-label" text-anchor="middle">Q1: ${q1Val}</text>
                 <text x="${q3X}" y="${yBox + 22}" class="tick-label" text-anchor="middle">Q3: ${q3Val}</text>
             `;
-      }
-
-      function updateESOLHub() {
-        const starter = document.getElementById("esol-starter");
-        const trans = document.getElementById("esol-starter-trans");
-        const lang = STATE.language;
-        const t = TRANSLATIONS[lang];
-
-        const meanStr = STATE.calculated.mean.toFixed(1);
-        const medStr = STATE.calculated.median;
-        const rangeStr = STATE.calculated.range;
-        const madStr = STATE.calculated.mad.toFixed(2);
-
-        let frame = t["sentence-stats"]
-          .replace("{mean}", meanStr)
-          .replace("{median}", medStr)
-          .replace("{range}", rangeStr)
-          .replace("{mad}", madStr);
-
-        let transFrame = t["sentence-stats-trans"]
-          .replace("{mean}", meanStr)
-          .replace("{median}", medStr)
-          .replace("{range}", rangeStr)
-          .replace("{mad}", madStr);
-
-        starter.innerText = frame;
-        trans.innerText = transFrame;
-      }
-
-      // ==========================================
-      // 7. SELF-TEST SUITE & DIAGNOSTICS
-      // ==========================================
-      function logDiag(msg) {
-        const el = document.getElementById("diag-log");
-        el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-        el.scrollTop = el.scrollHeight;
-      }
-
-      function triggerSelfTest() {
-        document.getElementById("diag-panel").style.display = "block";
-        document.getElementById("diag-log").innerHTML = "";
-        logDiag("Initiating Sports Analytics Self-Test...");
-
-        try {
-          // Assert 1: Config is valid
-          validateConfig();
-          logDiag("✓ Config validation successful.");
-
-          // Assert 2: Changing score values recalculates metrics
-          transitionState({ scores: [6, 8, 12, 14, 10, 10, 10] }); // Sorted: 6,8,10,10,10,12,14
-          logDiag(`✓ Loaded scores array [6, 8, 12, 14, 10, 10, 10].`);
-
-          // Assert 3: Mean checking
-          logDiag(
-            `✓ Calculated Mean: expected 10.0. Result: ${STATE.calculated.mean}`,
-          );
-          if (STATE.calculated.mean !== 10.0) {
-            throw new Error(
-              "Assertion failed: Mean calculation is mathematically wrong.",
-            );
-          }
-
-          // Assert 4: Median checking
-          logDiag(
-            `✓ Calculated Median: expected 10. Result: ${STATE.calculated.median}`,
-          );
-          if (STATE.calculated.median !== 10) {
-            throw new Error("Assertion failed: Median calculation failed.");
-          }
-
-          // Assert 5: Box Plot Quartile checking
-          const sorted = [...STATE.scores].sort((a, b) => a - b); // 6, 8, 10, 10, 10, 12, 14
-          const q1 = sorted[1]; // 8
-          const q3 = sorted[5]; // 12
-          logDiag(
-            `✓ Box Plot Quartiles check: expected Q1=8, Q3=12. Result: Q1=${q1}, Q3=${q3}`,
-          );
-          if (q1 !== 8 || q3 !== 12) {
-            throw new Error("Assertion failed: Quartile parsing is incorrect.");
-          }
-
-          // Reset back to original
-          transitionState({ scores: [4, 6, 8, 10, 12, 14, 16] });
-          logDiag("✓ Restored state variables back to defaults.");
-          logDiag("🎉 ALL SPORTS ANALYTIC CHECKS COMPLETED SUCCESSFULLY!");
-        } catch (err) {
-          logDiag(`❌ SYSTEM CHECKS FAIL: ${err.message}`);
-          console.error(err);
         }
-      }
 
-      // Initialize application on load
-      window.addEventListener("DOMContentLoaded", () => {
-        renderUI();
-        setupDragEvents();
-      });
+        function updateESOLHub() {
+            const starter = document.getElementById('esol-starter');
+            const trans = document.getElementById('esol-starter-trans');
+            const lang = STATE.language;
+            const t = TRANSLATIONS[lang];
+
+            const meanStr = STATE.calculated.mean.toFixed(1);
+            const medStr = STATE.calculated.median;
+            const rangeStr = STATE.calculated.range;
+            const madStr = STATE.calculated.mad.toFixed(2);
+
+            let frame = t['sentence-stats']
+                .replace('{mean}', meanStr)
+                .replace('{median}', medStr)
+                .replace('{range}', rangeStr)
+                .replace('{mad}', madStr);
+
+            let transFrame = t['sentence-stats-trans']
+                .replace('{mean}', meanStr)
+                .replace('{median}', medStr)
+                .replace('{range}', rangeStr)
+                .replace('{mad}', madStr);
+
+            starter.innerText = frame;
+            trans.innerText = transFrame;
+        }
+
+        // ==========================================
+        // 7. SELF-TEST SUITE & DIAGNOSTICS
+        // ==========================================
+        function logDiag(msg) {
+            const el = document.getElementById('diag-log');
+            el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function triggerSelfTest() {
+            const backdrop = document.getElementById('diag-backdrop');
+            const panel = document.getElementById('diag-panel');
+            if (backdrop) backdrop.style.display = 'block';
+            if (panel) panel.style.display = 'block';
+            
+            const logEl = document.getElementById('diag-log');
+            if (logEl) logEl.innerHTML = '';
+            logDiag("Initiating Sports Analytics Self-Test...");
+
+            try {
+                // Assert 1: Config is valid
+                validateConfig();
+                logDiag("✓ Config validation successful.");
+
+                // Assert 2: Changing score values recalculates metrics
+                transitionState({ scores: [6, 8, 12, 14, 10, 10, 10] }); // Sorted: 6,8,10,10,10,12,14
+                logDiag(`✓ Loaded scores array [6, 8, 12, 14, 10, 10, 10].`);
+                
+                // Assert 3: Mean checking
+                logDiag(`✓ Calculated Mean: expected 10.0. Result: ${STATE.calculated.mean}`);
+                if (STATE.calculated.mean !== 10.0) {
+                    throw new Error("Assertion failed: Mean calculation is mathematically wrong.");
+                }
+
+                // Assert 4: Median checking
+                logDiag(`✓ Calculated Median: expected 10. Result: ${STATE.calculated.median}`);
+                if (STATE.calculated.median !== 10) {
+                    throw new Error("Assertion failed: Median calculation failed.");
+                }
+
+                // Assert 5: Box Plot Quartile checking
+                const sorted = [ ...STATE.scores ].sort((a, b) => a - b); // 6, 8, 10, 10, 10, 12, 14
+                const q1 = sorted[1]; // 8
+                const q3 = sorted[5]; // 12
+                logDiag(`✓ Box Plot Quartiles check: expected Q1=8, Q3=12. Result: Q1=${q1}, Q3=${q3}`);
+                if (q1 !== 8 || q3 !== 12) {
+                    throw new Error("Assertion failed: Quartile parsing is incorrect.");
+                }
+
+                // Assert 6: Quest Self-Checking & Attempt State
+                selectQuest(1);
+                logDiag("✓ Active quest selection check: selected Quest 1.");
+                transitionState({ scores: [4, 4, 4, 4, 4, 4, 4] }); // Mean = 4.0
+                checkActiveQuest();
+                logDiag(`✓ Quest check invalid case. feedbackType: expected 'error', result '${STATE.feedbackType}'. hasAttempted: expected true, result ${STATE.hasAttempted}.`);
+                if (STATE.feedbackType !== 'error' || STATE.hasAttempted !== true) {
+                    throw new Error("Assertion failed: Quest self-check did not catch invalid setup.");
+                }
+
+                // Check hint generation
+                logDiag(`✓ Hint generation check. Message: "${STATE.feedbackMessageEn}"`);
+                if (!STATE.feedbackMessageEn.includes("Mean is 4")) {
+                    throw new Error("Assertion failed: Quest 1 failed to output correct hint message.");
+                }
+
+                transitionState({ scores: [10, 10, 10, 10, 10, 10, 10] }); // Mean = 10.0
+                checkActiveQuest();
+                logDiag(`✓ Quest check valid case. feedbackType: expected 'success', result '${STATE.feedbackType}'. completedQuests: expected contains 1, result [${STATE.completedQuests}].`);
+                if (STATE.feedbackType !== 'success' || !STATE.completedQuests.includes(1)) {
+                    throw new Error("Assertion failed: Quest self-check did not validate correct setup.");
+                }
+
+                nextQuest();
+                logDiag(`✓ Navigation to Quest 2 check. activeQuestId: expected 2, result ${STATE.activeQuestId}. hasAttempted: expected false, result ${STATE.hasAttempted}.`);
+                if (STATE.activeQuestId !== 2 || STATE.hasAttempted !== false) {
+                    throw new Error("Assertion failed: Navigation to next quest failed.");
+                }
+
+                // Complete all remaining quests
+                STATE.completedQuests = [1, 2, 3];
+                STATE.activeQuestId = 3;
+                nextQuest();
+                logDiag(`✓ Quest completion navigation check. activeQuestId: expected null, result ${STATE.activeQuestId}`);
+                if (STATE.activeQuestId !== null) {
+                    throw new Error("Assertion failed: Quest navigation did not reach end-of-lab completed state.");
+                }
+
+                // Restart lab
+                restartLab();
+                logDiag(`✓ Restart check. activeQuestId: expected 1, result ${STATE.activeQuestId}. completedQuests: expected contains [1] (default scores satisfy Quest 1), result [${STATE.completedQuests}].`);
+                if (STATE.activeQuestId !== 1 || !STATE.completedQuests.includes(1) || STATE.completedQuests.includes(2) || STATE.completedQuests.includes(3)) {
+                    throw new Error("Assertion failed: Restart failed to reset state.");
+                }
+
+                // Assert 7: Language dropdown selection state transitions
+                setLanguage('es');
+                logDiag("✓ Language dropdown check: set to 'es'.");
+                if (STATE.language !== 'es') {
+                    throw new Error("Assertion failed: Language state update failed.");
+                }
+                setLanguage('en');
+
+                // Assert 8: Tooltip hover state rendering
+                setHoveredDot(2);
+                logDiag("✓ Hovered dot check: hovered dot index 2.");
+                if (STATE.hoveredDotIdx !== 2) {
+                    throw new Error("Assertion failed: Hovered dot index tracking failed.");
+                }
+                setHoveredDot(-1);
+
+                // Reset back to original
+                transitionState({ scores: [4, 6, 8, 10, 12, 14, 16] });
+                logDiag("✓ Restored state variables back to defaults.");
+                logDiag("🎉 ALL SPORTS ANALYTIC CHECKS COMPLETED SUCCESSFULLY!");
+            } catch (err) {
+                logDiag(`❌ SYSTEM CHECKS FAIL: ${err.message}`);
+                console.error(err);
+            }
+        }
+
+        // Initialize application on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderUI();
+            setupDragEvents();
+        });
+
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', () => {
+            const lMenu = document.getElementById('lang-dropdown-menu');
+            const qMenu = document.getElementById('quest-dropdown-menu');
+            if (lMenu) lMenu.classList.remove('show');
+            if (qMenu) qMenu.classList.remove('show');
+        });
     </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>
