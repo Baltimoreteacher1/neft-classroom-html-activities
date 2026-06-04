@@ -55,14 +55,33 @@ function setup() {
 }
 
 function getSheet_() {
+  return getSheetNamed_(SHEET_NAME);
+}
+
+/** Get (or create, with headers) any tab by name. */
+function getSheetNamed_(name) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName(SHEET_NAME);
+  var sheet = ss.getSheetByName(name);
   if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
+    sheet = ss.insertSheet(name);
     sheet.appendRow(HEADERS);
     sheet.setFrozenRows(1);
   }
   return sheet;
+}
+
+/**
+ * Turn a free-text class label into a safe, stable tab name. Google tab names
+ * can't contain  : \ / ? * [ ]  and max out at 100 chars. Blank class -> a
+ * single "No Class" catch-all so nothing is lost.
+ */
+function classTabName_(section) {
+  var s = String(section || "")
+    .replace(/[:\\\/\?\*\[\]]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 90);
+  return s ? "Class · " + s : "Class · (none)";
 }
 
 function buildJson_(obj) {
@@ -149,23 +168,33 @@ function doPost(e) {
       rec.section || "",
       Number(rec.progressPercent) || 0,
       stateJson,
-      rec.createdAt || nowIso,
+      // Preserve the original created_at on updates.
+      (existing && existing.values[7]) || rec.createdAt || nowIso,
       nowIso,
     ];
+    // Keep an existing name/section if this save came in blank.
     if (existing) {
-      // Preserve original created_at; keep name/section if new ones are blank.
-      rowVals[7] = existing.values[7] || nowIso;
       if (!rowVals[3]) rowVals[3] = existing.values[3];
       if (!rowVals[4]) rowVals[4] = existing.values[4];
-      sheet
-        .getRange(existing.rowIndex, 1, 1, HEADERS.length)
-        .setValues([rowVals]);
-    } else {
-      sheet.appendRow(rowVals);
     }
+    // 1) Master tab: every student, every class, one row per code.
+    upsertRow_(sheet, existing, rowVals);
+    // 2) Per-class tab: same row mirrored into a tab named for the class, so the
+    //    sheet is automatically organised by class with no manual sorting.
+    var classSheet = getSheetNamed_(classTabName_(rowVals[4]));
+    upsertRow_(classSheet, findRow_(classSheet, code), rowVals);
     return buildJson_({ ok: true, saveCode: code, updatedAt: nowIso });
   } finally {
     lock.releaseLock();
+  }
+}
+
+/** Insert or overwrite the row for a code in a given sheet. */
+function upsertRow_(sheet, existing, rowVals) {
+  if (existing) {
+    sheet.getRange(existing.rowIndex, 1, 1, HEADERS.length).setValues([rowVals]);
+  } else {
+    sheet.appendRow(rowVals);
   }
 }
 

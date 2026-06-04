@@ -37,9 +37,26 @@
   // Guard against double-injection (idempotent across accidental double <script>).
   if (window.NeftSaveResume && window.NeftSaveResume.__loaded) return;
 
-  var ENGINE_VERSION = "1.0.0";
+  var ENGINE_VERSION = "1.1.0";
   var LS_PREFIX = "nsr:"; // localStorage namespace — avoids clashing with the
   // 200+ lessons that already use their own localStorage keys.
+  var IDENTITY_KEY = LS_PREFIX + "identity"; // remembered name + class (this device)
+
+  /* ---------------------------------------------------------------------------
+   * CENTRAL RECORD (teacher backup of every student's code).
+   * ---------------------------------------------------------------------------
+   * Leave endpoint "" and nothing changes: work saves to the student's own
+   * browser only (offline-first, zero regression). Paste your deployed Google
+   * Apps Script Web App URL (ends in /exec) here to turn ON a central record —
+   * then EVERY activity that loads this engine will also mirror each save
+   * (name + class + code + activity + progress) into your Google Sheet, with one
+   * tab per class. See tools/google-apps-script/save-resume-webapp.gs for setup.
+   * A page may still override per-activity via window.NeftSaveResumeConfig.
+   * ------------------------------------------------------------------------ */
+  var CENTRAL_RECORD = {
+    backend: "googleAppsScript",
+    endpoint: "", // <-- paste your Apps Script /exec URL here to enable
+  };
 
   // Unambiguous code alphabet: no 0/O/1/I/L to keep codes student-friendly.
   var CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -101,6 +118,47 @@
         fn.apply(ctx, a);
       }, ms);
     };
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Remembered identity — ask the student for name + class ONCE per device,
+   * then auto-fill it on every later activity so they never retype it (and so
+   * every save lands in the right class on the central record).
+   * Free-text class is lightly normalised (trim + collapse inner whitespace) so
+   * the same student reuses the same label across activities.
+   * ------------------------------------------------------------------------ */
+  function normalizeClass(s) {
+    return String(s || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 40);
+  }
+  function getIdentity() {
+    return safe(
+      function () {
+        var raw = localStorage.getItem(IDENTITY_KEY);
+        return raw ? JSON.parse(raw) : null;
+      },
+      "identity-get",
+      null,
+    );
+  }
+  function setIdentity(name, section) {
+    var id = {
+      name: String(name || "")
+        .trim()
+        .slice(0, 60),
+      section: normalizeClass(section),
+    };
+    safe(function () {
+      localStorage.setItem(IDENTITY_KEY, JSON.stringify(id));
+    }, "identity-set");
+    return id;
+  }
+  function clearIdentity() {
+    safe(function () {
+      localStorage.removeItem(IDENTITY_KEY);
+    }, "identity-clear");
   }
 
   /* ---------------------------------------------------------------------------
@@ -741,13 +799,22 @@
         (document.querySelector("h1") &&
           document.querySelector("h1").textContent.trim()) ||
         autoId;
+      // Backend resolution order: explicit page config > CENTRAL_RECORD (if an
+      // endpoint is pasted in) > localStorage. If CENTRAL_RECORD has no endpoint
+      // we stay on localStorage, so the site behaves exactly as before.
+      var backend = c.backend || null;
+      var endpoint = c.endpoint || null;
+      if (!backend && CENTRAL_RECORD.endpoint) {
+        backend = CENTRAL_RECORD.backend;
+        endpoint = CENTRAL_RECORD.endpoint;
+      }
       return {
         activityId: c.activityId || autoId,
         activityTitle: c.activityTitle || autoTitle,
         activityPrefix: c.activityPrefix || null,
         activityVersion: c.activityVersion || "1",
-        backend: c.backend || "localStorage",
-        endpoint: c.endpoint || null,
+        backend: backend || "localStorage",
+        endpoint: endpoint,
         autoStart: c.autoStart !== false,
         blocking: !!c.blocking, // default non-blocking
       };
@@ -791,14 +858,16 @@
 
     startNew: function (name, section) {
       var code = makeCode(this.cfg);
+      // Remember name + class on this device so future activities auto-fill.
+      var id = setIdentity(name, section);
       this.record = {
         schema: 1,
         saveCode: code,
         activityId: this.cfg.activityId,
         activityTitle: this.cfg.activityTitle,
         activityVersion: this.cfg.activityVersion,
-        studentName: (name || "").trim().slice(0, 60),
-        section: (section || "").trim().slice(0, 40),
+        studentName: id.name,
+        section: id.section,
         url: location.pathname,
         createdAt: now(),
         updatedAt: now(),
@@ -1190,10 +1259,11 @@
       // Intro choices (shown when no active session).
       '<div id="nsr-intro" class="nsr-section">',
       '  <p class="nsr-lead">Starting work you can finish another day? Save it and get a code to come back.</p>',
-      '  <label class="nsr-field"><span>Your initials or name</span>',
-      '    <input type="text" id="nsr-name" autocomplete="off" maxlength="60" placeholder="e.g. J.N."></label>',
-      '  <label class="nsr-field"><span>Class / section</span>',
+      '  <label class="nsr-field"><span>Your first and last name</span>',
+      '    <input type="text" id="nsr-name" autocomplete="off" maxlength="60" placeholder="e.g. Jordan Nguyen"></label>',
+      '  <label class="nsr-field"><span>Your class</span>',
       '    <input type="text" id="nsr-section" autocomplete="off" maxlength="40" placeholder="e.g. Period 3"></label>',
+      '  <p class="nsr-hint" id="nsr-id-hint" hidden></p>',
       '  <button type="button" class="nsr-btn nsr-btn-primary" id="nsr-start">Start new work</button>',
       '  <div class="nsr-or">— or —</div>',
       '  <label class="nsr-field"><span>Continue with a code</span>',
@@ -1215,6 +1285,7 @@
       "  </dl>",
       '  <button type="button" class="nsr-btn nsr-btn-primary" id="nsr-savebtn">Save now</button>',
       '  <button type="button" class="nsr-btn nsr-btn-ghost" id="nsr-switch">Use a different code</button>',
+      '  <button type="button" class="nsr-btn nsr-btn-ghost" id="nsr-switch-student">Not you? Switch student</button>',
       "</div>",
       '<p class="nsr-foot">Your work is saved on this device automatically.</p>',
     ].join("");
@@ -1269,16 +1340,51 @@
       self.reset();
       showIntro(self);
     });
+    // Shared-device path: forget the remembered name/class so the next student
+    // is asked fresh. Also drops this browser's active session.
+    $("#nsr-switch-student").addEventListener("click", function () {
+      clearIdentity();
+      self.reset();
+      $("#nsr-name").value = "";
+      $("#nsr-section").value = "";
+      showIntro(self);
+      prefillIdentity();
+    });
     // Escape closes the panel (does not trap focus — non-modal).
     panel.addEventListener("keydown", function (e) {
       if (e.key === "Escape") closePanel(self);
     });
   }
 
+  // Pre-fill the name/class inputs from this device's remembered identity, so a
+  // returning student never retypes them. Shows a small "saving as…" hint.
+  function prefillIdentity() {
+    if (!ui.panel) return;
+    var id = getIdentity();
+    var nameEl = ui.panel.querySelector("#nsr-name");
+    var secEl = ui.panel.querySelector("#nsr-section");
+    var hint = ui.panel.querySelector("#nsr-id-hint");
+    if (id && nameEl && !nameEl.value) nameEl.value = id.name || "";
+    if (id && secEl && !secEl.value) secEl.value = id.section || "";
+    if (hint) {
+      if (id && (id.name || id.section)) {
+        hint.textContent =
+          "Saving as " +
+          (id.name || "—") +
+          (id.section ? " · " + id.section : "") +
+          ". Not you? Just type over it.";
+        hint.hidden = false;
+      } else {
+        hint.hidden = true;
+      }
+    }
+  }
+
   function showIntro(self) {
     if (!ui.panel) return;
     ui.panel.querySelector("#nsr-intro").hidden = false;
     ui.panel.querySelector("#nsr-active").hidden = true;
+    prefillIdentity();
   }
   function showActive(self) {
     if (!ui.panel) return;
