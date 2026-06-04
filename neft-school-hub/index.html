@@ -1846,7 +1846,13 @@
             </select>
           </div>
           <div class="top-actions">
-            <div id="gamiHUD" class="pill" style="background:#fff4e6; color:#a14716; border-color:#fad5b6;">XP: 0</div>
+            <div
+              id="gamiHUD"
+              class="pill"
+              style="background: #fff4e6; color: #a14716; border-color: #fad5b6"
+            >
+              XP: 0
+            </div>
             <span class="identity" id="identityChip" hidden
               ><span class="who-dot" aria-hidden="true"></span
               ><span id="identityText">—</span></span
@@ -3928,10 +3934,10 @@
          Off by default → the local-storage demo is untouched. Enable with the
          Admin → Backend Mode toggle, or ?api=1 in the URL. ?api=0 disables. */
       const NSH_API_BASE = "https://neft-school-hub-api.neftjd.workers.dev";
-      // Flip to true ONLY once Google sign-in is configured on the Worker.
-      // Until then the live API requires a session it can't issue, so we keep
-      // the Hub in clean local-demo mode regardless of the saved toggle.
-      const API_READY = false;
+      // Google sign-in IS configured on the Worker (2026-06-04) — Live API
+      // available. Still opt-in: local-demo stays default until the Admin →
+      // Backend Mode toggle (or ?api=1) switches a user to the live backend.
+      const API_READY = true;
       const _apiParam = new URLSearchParams(location.search).get("api");
       if (_apiParam === "1") lsSet("nsh:useapi", "1");
       if (_apiParam === "0") localStorage.removeItem("nsh:useapi");
@@ -3940,6 +3946,10 @@
       async function apiReq(method, path, body) {
         const headers = { Accept: "application/json" };
         if (body !== undefined) headers["Content-Type"] = "application/json";
+        // Bearer token (works cross-site on Safari/Chrome where the third-party
+        // session cookie is blocked). Cookie still sent as a fallback.
+        const _tok = lsGet("nsh:token", null);
+        if (_tok) headers["Authorization"] = "Bearer " + _tok;
         const res = await fetch(NSH_API_BASE + path, {
           method,
           headers,
@@ -4191,30 +4201,36 @@
       };
 
       // boot
-      let gamiState = lsGet('nsh:gami', { xp: 0, badges: [] });
+      let gamiState = lsGet("nsh:gami", { xp: 0, badges: [] });
       function checkGami(action, xp) {
         gamiState.xp += xp;
-        const levels = [{t: 50, n: "🏆 Rising Star"}, {t: 150, n: "🌟 Hub Master"}, {t: 300, n: "👑 System Admin"}];
+        const levels = [
+          { t: 50, n: "🏆 Rising Star" },
+          { t: 150, n: "🌟 Hub Master" },
+          { t: 300, n: "👑 System Admin" },
+        ];
         let newBadge = null;
-        for(let l of levels) {
-          if(gamiState.xp >= l.t && !gamiState.badges.includes(l.n)) {
+        for (let l of levels) {
+          if (gamiState.xp >= l.t && !gamiState.badges.includes(l.n)) {
             gamiState.badges.push(l.n);
             newBadge = l.n;
           }
         }
-        lsSet('nsh:gami', gamiState);
-        if(newBadge) setTimeout(() => toast(`Unlocked badge: ${newBadge}!`), 1500);
+        lsSet("nsh:gami", gamiState);
+        if (newBadge)
+          setTimeout(() => toast(`Unlocked badge: ${newBadge}!`), 1500);
         renderGami();
       }
       function renderGami() {
-        const hud = document.getElementById('gamiHUD');
-        if(hud) hud.innerHTML = `XP: ${gamiState.xp} &nbsp;${gamiState.badges.join(' ')}`;
+        const hud = document.getElementById("gamiHUD");
+        if (hud)
+          hud.innerHTML = `XP: ${gamiState.xp} &nbsp;${gamiState.badges.join(" ")}`;
       }
-      document.addEventListener('keydown', (e) => {
-        if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
           e.preventDefault();
-          const s = document.getElementById('globalSearch');
-          if(s) s.focus();
+          const s = document.getElementById("globalSearch");
+          if (s) s.focus();
         }
       });
       init();
@@ -4291,6 +4307,7 @@
       nshSignOut = function () {
         if (USE_API) {
           audit("Sign out");
+          localStorage.removeItem("nsh:token");
           window.location =
             NSH_API_BASE +
             "/auth/logout?redirect=" +
@@ -4300,6 +4317,17 @@
         _nshSignOut();
       };
       window.nshSignOut = nshSignOut;
+
+      // Returning from Google sign-in: the Worker put the session token in the
+      // URL fragment. Store it for Bearer auth, switch to API mode, clean URL.
+      (function captureAuthToken() {
+        const m = location.hash.match(/[#&]nsh_token=([^&]+)/);
+        if (!m) return;
+        lsSet("nsh:token", decodeURIComponent(m[1]));
+        lsSet("nsh:useapi", "1");
+        USE_API = true;
+        history.replaceState(null, "", location.pathname + location.search);
+      })();
 
       nshApplyGateMode();
 
