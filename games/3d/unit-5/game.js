@@ -658,7 +658,7 @@ export default {
 
       const rc = rectFromCells(anchor, cursor);
       if (!rectValid(rc)) {
-        rejectPiece("Block goes outside the gold shape. Try a smaller one.");
+        rejectPiece("That block doesn't fit the blueprint — try again.");
         return;
       }
       const mesh = buildRectMesh(rc);
@@ -732,15 +732,30 @@ export default {
       feel.burst({ x: p.x, y: 0.7, z: p.z }, { color, count: 18, spread: 3.4 });
     }
 
-    function rejectPiece(msg) {
-      if (typeof hud.feedback === "function") hud.feedback(false, msg);
-      else hud.message(msg, { tone: "warn", duration: 2000 });
+    // Reject a misplaced piece. Genuine misplacements cost a life so the
+    // advertised lives/lose system is actually reachable; passing
+    // costLife: false keeps a rejection free (e.g. informational nudges).
+    function rejectPiece(msg, { costLife = true } = {}) {
+      if (costLife && !gameOver) {
+        streak = 0;
+        if (typeof hud.setStreak === "function") hud.setStreak(0);
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+      }
+      const lifeNote =
+        costLife && !gameOver && lives > 0
+          ? ` ${lives} ${lives === 1 ? "try" : "tries"} left.`
+          : "";
+      const fullMsg = msg + lifeNote;
+      if (typeof hud.feedback === "function") hud.feedback(false, fullMsg);
+      else hud.message(fullMsg, { tone: "warn", duration: 2000 });
       feel.sfx("wrong");
       feel.shake(0.18);
-      announce(msg);
+      announce(fullMsg);
       anchor = null;
       refreshGhost();
       updateLive();
+      if (costLife && !gameOver && lives <= 0) loseGame();
     }
 
     function checkWin() {
@@ -875,7 +890,7 @@ export default {
       if (clarity) {
         clarity.setTarget(null);
         clarity.win({
-          titleEn: "Studio complete!",
+          titleEn: "Blueprint complete!",
           badge: "📐",
           stats: `You filled all ${cfg.rounds.length} shapes. Best streak ${bestStreak}. Score saved.`,
         });
@@ -1068,11 +1083,9 @@ export default {
                 "Fija una esquina, luego presiona otra vez para soltar un bloque",
             },
             {
-              key: "Enter",
-              actionEn:
-                "Cancel the corner you set (on triangle rounds, show the area rule)",
-              actionEs:
-                "Cancela la esquina fijada (o muestra la regla del área)",
+              key: "Enter / ✓",
+              actionEn: "Optional: cancel a corner you set",
+              actionEs: "Opcional: cancela una esquina que fijaste",
             },
             {
               key: "Tap / Click",
@@ -1088,7 +1101,7 @@ export default {
             },
           ],
           howToWinEn:
-            "Cover the gold shape so the filled area exactly equals the target — no overflow. Rectangle area = length × width; right triangle = leg × leg ÷ 2. Fill every shape to win.",
+            "Cover the gold shape so the filled area exactly equals the target — no overflow. Rectangle area = length × width; right triangle = leg × leg ÷ 2. On triangle rounds, start exactly on the square (right-angle) corner, then move to the far point and press again. Fill every shape to win.",
           howToWinEs:
             "Cubre la figura dorada hasta igualar el área exacta. Completa todas las figuras para ganar.",
           onStart: beginGameplay,

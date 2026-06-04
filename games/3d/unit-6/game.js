@@ -78,7 +78,7 @@ function makeRounds(level) {
           x: 5,
           expr: [numTok(2), opTok("×"), varTok(), opTok("+"), numTok(3)],
           target: 13,
-          prompt: "Find 2x + 3 when x = 5. Answer: 13.",
+          prompt: "Find 2x + 3 when x = 5.",
           hint: "Multiply first: 2 × 5 = 10. Then add 3 = 13.",
         },
         {
@@ -93,7 +93,7 @@ function makeRounds(level) {
           x: 6,
           expr: [varTok(), opTok("+"), varTok()],
           target: 12,
-          prompt: "Find x + x when x = 6. Answer: 12.",
+          prompt: "Find x + x when x = 6.",
           hint: "x + x is the same as 2x. 6 + 6 = 12.",
         },
         {
@@ -108,7 +108,7 @@ function makeRounds(level) {
           x: 4,
           expr: [numTok(5), opTok("×"), varTok(), opTok("-"), numTok(2)],
           target: 18,
-          prompt: "Find 5x − 2 when x = 4. Answer: 18.",
+          prompt: "Find 5x − 2 when x = 4.",
           hint: "Multiply first: 5 × 4 = 20. Then subtract 2 = 18.",
         },
         {
@@ -123,7 +123,7 @@ function makeRounds(level) {
           x: 2,
           expr: [numTok(4), opTok("×"), varTok(), opTok("+"), numTok(4)],
           target: 12,
-          prompt: "Find 4x + 4 when x = 2. Answer: 12.",
+          prompt: "Find 4x + 4 when x = 2.",
           hint: "Multiply first: 4 × 2 = 8. Then add 4 = 12.",
         },
       ],
@@ -144,7 +144,7 @@ function makeRounds(level) {
           parenTok(")"),
         ],
         target: 18,
-        prompt: "Find 3(x + 2) when x = 4. Answer: 18.",
+        prompt: "Find 3(x + 2) when x = 4.",
         hint: "Parentheses first: 4 + 2 = 6, then 3 × 6 = 18.",
       },
       {
@@ -158,7 +158,7 @@ function makeRounds(level) {
           numTok(3),
           parenTok(")"),
         ],
-        prompt: "Build blocks equal to 2(x + 3) for any x. Answer: 2x + 6.",
+        prompt: "Build blocks equal to 2(x + 3) for any x.",
         hint: "Distribute: 2·x + 2·3 = 2x + 6.",
       },
       {
@@ -173,7 +173,7 @@ function makeRounds(level) {
         x: 3,
         expr: [varTok(), opTok("^"), numTok(2), opTok("+"), numTok(5)],
         target: 14,
-        prompt: "Find x² + 5 when x = 3. Answer: 14.",
+        prompt: "Find x² + 5 when x = 3.",
         hint: "Exponent first: 3² = 9, then + 5 = 14.",
       },
       {
@@ -187,7 +187,7 @@ function makeRounds(level) {
           numTok(1),
           parenTok(")"),
         ],
-        prompt: "Build blocks equal to 4(x − 1) for any x. Answer: 4x − 4.",
+        prompt: "Build blocks equal to 4(x − 1) for any x.",
         hint: "Distribute: 4·x − 4·1 = 4x − 4.",
       },
       {
@@ -204,7 +204,7 @@ function makeRounds(level) {
           varTok(),
         ],
         target: 17,
-        prompt: "Find 2(x + 1) + x when x = 5. Answer: 17.",
+        prompt: "Find 2(x + 1) + x when x = 5.",
         hint: "Parentheses: 5 + 1 = 6, then 2 × 6 = 12, then + 5 = 17.",
       },
       {
@@ -331,7 +331,7 @@ function exprString(tokens) {
     if (spaceBefore && !(t.type === "paren" && t.value === ")")) s += " ";
     s += t.text;
   });
-  return s.replace(/\(\s/g, "(").replace(/\s\)/g, ")").trim() || "( empty )";
+  return s.replace(/\(\s/g, "(").replace(/\s\)/g, ")").trim() || "(build here)";
 }
 
 function spoken(token) {
@@ -687,10 +687,10 @@ export default {
       const str = exprString(currentTokens());
       let text;
       if (round.mode === "equivalent") {
-        text = `${round.prompt}  You built: ${str}. Press Enter.`;
+        text = `${round.prompt}  You built: ${str}. Press Enter (or tap ✓).`;
       } else {
         const v = liveValue();
-        text = `${round.prompt}  You have: ${str} = ${v == null ? "?" : v}. Goal: ${round.target}. Press Enter.`;
+        text = `${round.prompt}  You have: ${str} = ${v == null ? "?" : v}. Goal: ${round.target}. Press Enter (or tap ✓).`;
       }
       hud.setObjective(text);
       if (clarity) clarity.setObjective(text);
@@ -866,9 +866,25 @@ export default {
         return;
       }
 
+      if (round.mode === "build") {
+        if (!toks.some((t) => t.type === "var")) {
+          rejectExpr("Use the variable x in your expression.");
+          return;
+        }
+        if (
+          /exponent/i.test(round.prompt) &&
+          !toks.some((t) => t.type === "op" && t.value === "^")
+        ) {
+          rejectExpr("Use an exponent (^) in your expression.");
+          return;
+        }
+      }
+
       const r = evaluate(toks, round.x);
       if (!r.ok) {
-        rejectExpr("Not finished. Check your blocks and try again.");
+        rejectExpr(
+          "Not finished. Check your blocks and try again. Start with a number or x, not an operation.",
+        );
         return;
       }
       if (r.value === round.target) win("value");
@@ -1133,9 +1149,9 @@ export default {
               actionEs: "Suelta el bloque elegido en la máquina",
             },
             {
-              key: "Enter / ↑",
-              actionEn: "Check — submit your expression",
-              actionEs: "Revisa — envía tu expresión",
+              key: "Enter / ↑ / ✓",
+              actionEn: "Check your expression",
+              actionEs: "Revisa tu expresión",
             },
             {
               key: "↓",

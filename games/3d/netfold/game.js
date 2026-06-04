@@ -64,8 +64,6 @@ function pyramidFaces(b, m) {
 
 // Compact SA string for Level 2.
 function compactWorked(spec) {
-  if (spec.type === "cube") return `SA = ${spec.sa} sq units`;
-  if (spec.type === "prism") return `SA = ${spec.sa} sq units`;
   return `SA = ${spec.sa} sq units`;
 }
 
@@ -87,7 +85,13 @@ function prism(l, w, h) {
   };
 }
 function pyramid(b, m) {
-  // require m > b/2 for a valid apex above center
+  // The slant height must exceed half the base, otherwise the apex cannot sit
+  // above the base center and the triangular faces are degenerate.
+  if (m <= b / 2) {
+    throw new Error(
+      `pyramid(${b}, ${m}): slant m must be greater than b/2 (${b / 2}).`,
+    );
+  }
   const f = pyramidFaces(b, m);
   return { type: "pyramid", b, m, sa: f.sa, faces: f.faces, worked: f.worked };
 }
@@ -352,7 +356,7 @@ export default {
     {
       term: "Fold",
       definition: "To bend a flat net along its edges to build the solid.",
-      emoji: "🙏",
+      emoji: "📦",
     },
     {
       term: "Surface area",
@@ -684,8 +688,11 @@ export default {
 
     function updateCard() {
       const r = cfg.rounds[roundIndex];
+      // Never name the solid type on the pre-fold card — that lets students
+      // word-match instead of reasoning about the fold. Level 1 still gets the
+      // dimensions as scaffold; the solid's NAME is revealed only after folding.
       const namePart = cfg.showName
-        ? `Target: ${solidName(r.target)}`
+        ? `Target: ${targetDimsText(r.target)}`
         : `Target solid`;
       updateLabel(cardLabel, `${namePart}\nWhich net folds into it?`);
     }
@@ -776,7 +783,10 @@ export default {
       if (typeof hud.feedback === "function")
         hud.feedback(true, okMsg, { duration: 2800 });
       else hud.message(okMsg, { tone: "ok", duration: 2800 });
-      updateLabel(cardLabel, `Match!\n${worked}`);
+      updateLabel(
+        cardLabel,
+        `Match! It folds into a ${solidName(r.target)}.\n${worked}`,
+      );
       announce(
         `Correct. That net folds into the ${solidName(r.target)}. Surface area is ${r.target.sa} square units.`,
       );

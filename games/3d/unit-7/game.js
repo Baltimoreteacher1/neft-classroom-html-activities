@@ -70,10 +70,9 @@ function makeLevel(level) {
       { kind: "order", values: [-6, -2, 3, 8], pick: "greatest" },
       { kind: "order", values: [9, -4, -10, 2], pick: "least" },
       {
-        kind: "absDist",
-        a: -4,
-        b: 0,
-        context: "How far is -4 from sea level?",
+        kind: "absolute",
+        value: -4,
+        context: "A diver is 4 m below sea level.",
       },
     ],
   };
@@ -446,8 +445,6 @@ export default {
           // Context describes a real position (e.g. "3 m below sea level").
           // Student must turn it into an integer and dive there.
           return `${round.context} Dive to that integer`;
-        case "absDist":
-          return `${round.context} Dive to that integer`;
         case "compare":
           return `Dive to the ${round.pick} one: ${round.a} or ${round.b}`;
         case "order":
@@ -465,7 +462,6 @@ export default {
         case "opposite":
           return `Dive to the opposite of ${round.value}. Press Space.`;
         case "absolute":
-        case "absDist":
           return `Work out the depth, dive there, then press Space.`;
         case "compare":
           return `Dive to the ${round.pick}: ${round.a} or ${round.b}. Press Space.`;
@@ -484,8 +480,6 @@ export default {
           return -r.value;
         case "absolute":
           return r.value;
-        case "absDist":
-          return r.a; // pilot to the integer; absolute value is the distance
         case "compare":
           return r.pick === "greater" ? Math.max(r.a, r.b) : Math.min(r.a, r.b);
         case "order":
@@ -554,11 +548,12 @@ export default {
           intro = `Find the opposite of ${round.value} and dive there.`;
           break;
         case "absolute":
-        case "absDist":
           intro = `${round.context} Work out the integer and dive to it.`;
           break;
         case "compare":
-          intro = `Which is ${round.pick}, ${round.a} or ${round.b}? Go to it. Higher is greater.`;
+          intro = `Which is ${round.pick}, ${round.a} or ${round.b}? Go to it.${
+            cfg.hints ? " Higher is greater." : ""
+          }`;
           break;
         case "order":
           intro = `Go to the ${round.pick} number: ${round.values.join(", ")}.`;
@@ -683,7 +678,6 @@ export default {
           why = `${targetInt} is the opposite of ${round.value}.`;
           break;
         case "absolute":
-        case "absDist":
           why = `${targetInt} is ${Math.abs(targetInt)} away from 0.`;
           break;
         case "compare":
@@ -866,7 +860,7 @@ export default {
           announce,
           title: "Submarine — Dive the Number Line",
           objectiveEn:
-            "Pilot the submarine up and down the number line to the integer each round asks for, then dock with Space.",
+            "Move the submarine to the number each round asks for, then press Space to dock. Press Enter (or ✓) any time to check your depth and its distance from 0.",
           objectiveEs:
             "Pilotea el submarino por la recta numérica hasta el número entero de cada ronda y atraca con Espacio.",
           standard: "6.NS.C.5–7 · Integers, Opposites & Absolute Value",
@@ -889,7 +883,7 @@ export default {
               actionEs: "Atraca — revisa si llegaste al número correcto",
             },
             {
-              key: "Enter",
+              key: "Enter / ✓",
               actionEn:
                 "Read out your depth and its distance from 0 (absolute value)",
               actionEs:
