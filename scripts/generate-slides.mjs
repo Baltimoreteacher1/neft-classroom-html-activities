@@ -29,8 +29,8 @@ function esc(str) {
 
 // Generate the math SVG diagram for the visual model slide
 function generateMathVisualSvg(lessonId, data) {
-  const width = 320;
-  const height = 220;
+  const width = 440;
+  const height = 240;
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="background:white; border-radius:8px;">`;
   
   // Outer frame
@@ -50,39 +50,39 @@ function generateMathVisualSvg(lessonId, data) {
   
   if (isGeometry) {
     // Area triangle/parallelogram/polygon representation
-    svg += `<polygon points="60,160 160,50 260,160" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="60" y1="175" x2="260" y2="175" stroke="${COLOR_NAVY}" stroke-width="1.5" stroke-dasharray="3,3"/>`;
-    svg += `<text x="140" y="192" font-family="Calibri" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">Base (b)</text>`;
-    svg += `<line x1="160" y1="50" x2="160" y2="160" stroke="${COLOR_AMBER}" stroke-width="1.5" stroke-dasharray="4,4"/>`;
-    svg += `<text x="170" y="105" font-family="Calibri" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">Height (h)</text>`;
+    svg += `<polygon points="80,180 220,50 360,180" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+    svg += `<line x1="80" y1="195" x2="360" y2="195" stroke="${COLOR_NAVY}" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+    svg += `<text x="200" y="212" font-family="Calibri" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">Base (b)</text>`;
+    svg += `<line x1="220" y1="50" x2="220" y2="180" stroke="${COLOR_AMBER}" stroke-width="1.5" stroke-dasharray="4,4"/>`;
+    svg += `<text x="230" y="115" font-family="Calibri" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">Height (h)</text>`;
   } else if (isProportional) {
     // Coordinate grid quadrant representation
-    svg += `<line x1="50" y1="170" x2="270" y2="170" stroke="${COLOR_NAVY}" stroke-width="2"/>`; // X axis
-    svg += `<line x1="60" y1="30" x2="60" y2="180" stroke="${COLOR_NAVY}" stroke-width="2"/>`; // Y axis
+    svg += `<line x1="60" y1="190" x2="380" y2="190" stroke="${COLOR_NAVY}" stroke-width="2"/>`; // X axis
+    svg += `<line x1="80" y1="30" x2="80" y2="200" stroke="${COLOR_NAVY}" stroke-width="2"/>`; // Y axis
     // Axis labels
-    svg += `<text x="240" y="190" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Input (x)</text>`;
-    svg += `<text x="15" y="45" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Output (y)</text>`;
+    svg += `<text x="340" y="210" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Input (x)</text>`;
+    svg += `<text x="25" y="45" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">Output (y)</text>`;
     // Linear plot line
-    svg += `<line x1="60" y1="170" x2="240" y2="60" stroke="${COLOR_AMBER}" stroke-width="3"/>`;
-    svg += `<circle cx="150" cy="115" r="4.5" fill="${COLOR_TEAL}"/>`;
-    svg += `<circle cx="240" cy="60" r="4.5" fill="${COLOR_TEAL}"/>`;
+    svg += `<line x1="80" y1="190" x2="340" y2="60" stroke="${COLOR_AMBER}" stroke-width="3"/>`;
+    svg += `<circle cx="210" cy="125" r="4.5" fill="${COLOR_TEAL}"/>`;
+    svg += `<circle cx="340" cy="60" r="4.5" fill="${COLOR_TEAL}"/>`;
   } else {
     // General Number Line representation
-    svg += `<line x1="30" y1="110" x2="290" y2="110" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+    svg += `<line x1="40" y1="120" x2="400" y2="120" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
     // Arrows
-    svg += `<line x1="30" y1="110" x2="38" y2="104" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="30" y1="110" x2="38" y2="116" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="290" y1="110" x2="282" y2="104" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-    svg += `<line x1="290" y1="110" x2="282" y2="116" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+    svg += `<line x1="40" y1="120" x2="48" y2="114" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+    svg += `<line x1="40" y1="120" x2="48" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+    svg += `<line x1="400" y1="120" x2="392" y2="114" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+    svg += `<line x1="400" y1="120" x2="392" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
     // Ticks and labels
-    const ticks = [70, 110, 150, 190, 230];
+    const ticks = [100, 160, 220, 280, 340];
     const labels = ['-2', '-1', '0', '1', '2'];
     for (let t = 0; t < ticks.length; t++) {
-      svg += `<line x1="${ticks[t]}" y1="102" x2="${ticks[t]}" y2="118" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
-      svg += `<text x="${ticks[t] - 4}" y="136" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">${labels[t]}</text>`;
+      svg += `<line x1="${ticks[t]}" y1="112" x2="${ticks[t]}" y2="128" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+      svg += `<text x="${ticks[t] - 4}" y="146" font-family="Calibri" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">${labels[t]}</text>`;
     }
     // Highlight dot
-    svg += `<circle cx="190" cy="110" r="5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<circle cx="280" cy="120" r="5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
   }
   
   svg += '</svg>';
@@ -112,7 +112,7 @@ function generateSlidesHtml(lessonId, data) {
       wonderStemsHtml = talk.extendStems.map(s => `<div>🔹 ${esc(s.en || s)}</div>`).join('');
     }
     if (talk.wordBank) {
-      vocabBankHtml = talk.wordBank.map(v => `<span class="vocab-pill">${esc(v)}</span>`).join('');
+      vocabBankHtml = talk.wordBank.map(v => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(v)}</span>`).join('');
     }
   }
   
@@ -135,7 +135,7 @@ function generateSlidesHtml(lessonId, data) {
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>${esc(term.toUpperCase())}</h3>
-            <p class="click-hint">Click to see definition ➔</p>
+            <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
             <p>${esc(def)}</p>
@@ -184,8 +184,9 @@ function generateSlidesHtml(lessonId, data) {
       --coral: #FCE6DE;
       --body-text: #24323F;
       --gray: #8A96A3;
-      --shadow: 0 4px 12px rgba(23, 50, 77, 0.08);
+      --shadow: 0 4px 20px rgba(23, 50, 77, 0.08);
       --google-gray: #f1f3f4;
+      --google-blue: #1a73e8;
     }
     * { box-sizing: border-box; }
     body {
@@ -197,6 +198,7 @@ function generateSlidesHtml(lessonId, data) {
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      user-select: none;
     }
     
     /* Google Slides Header Chrome */
@@ -208,6 +210,7 @@ function generateSlidesHtml(lessonId, data) {
       align-items: center;
       justify-content: space-between;
       height: 64px;
+      flex-shrink: 0;
     }
     .g-left {
       display: flex;
@@ -284,15 +287,13 @@ function generateSlidesHtml(lessonId, data) {
       background: var(--navy);
       transform: translateY(-1px);
     }
-    .btn-present:active {
-      transform: translateY(0);
-    }
     
     /* Layout Workspace */
     .workspace {
       flex: 1;
       display: flex;
       overflow: hidden;
+      position: relative;
     }
     
     /* Left Slide Thumbnail Navigation */
@@ -305,6 +306,7 @@ function generateSlidesHtml(lessonId, data) {
       display: flex;
       flex-direction: column;
       gap: 12px;
+      flex-shrink: 0;
     }
     .thumb-card {
       border: 2px solid transparent;
@@ -343,46 +345,51 @@ function generateSlidesHtml(lessonId, data) {
       color: var(--navy);
       text-align: center;
       padding: 6px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
     }
     
     /* Center Presentation Area */
     .presentation-container {
       flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
       position: relative;
+      overflow: hidden;
     }
     
-    /* Slide Canvas */
+    /* Slide Canvas: Fixed 16:9 Aspect Ratio (960x540) */
     .slide-canvas {
-      width: 100%;
-      max-width: 800px;
-      aspect-ratio: 4 / 3;
+      width: 960px;
+      height: 540px;
       background: var(--bg);
       border: 1px solid #dadce0;
       box-shadow: 0 10px 30px rgba(23, 50, 77, 0.15);
-      border-radius: 12px;
+      border-radius: 8px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       position: relative;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-origin: center center;
+      flex-shrink: 0;
     }
     
     /* Header & Footer bars inside slide */
     .slide-header {
       background: var(--navy);
       color: var(--amber);
-      height: 52px;
+      height: 54px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 18px;
+      font-size: 20px;
       font-family: "Outfit", sans-serif;
       letter-spacing: 0.02em;
+      flex-shrink: 0;
+      border-bottom: 3px solid var(--teal);
     }
     .slide-footer {
       background: var(--navy);
@@ -394,7 +401,7 @@ function generateSlidesHtml(lessonId, data) {
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.05em;
-      margin-top: auto;
+      flex-shrink: 0;
     }
     
     /* Slide Content Frames */
@@ -402,32 +409,28 @@ function generateSlidesHtml(lessonId, data) {
       flex: 1;
       padding: 24px;
       display: none;
-      height: calc(100% - 84px);
+      height: calc(100% - 86px);
+      overflow: hidden;
     }
     .slide-body.active {
       display: flex;
       flex-direction: column;
-      animation: fadeIn 0.25s ease-out;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
     }
     
     /* Cards and Layout structures */
     .slide-card {
       background: var(--white);
-      border: 2px solid var(--teal-light);
+      border: 1px solid #e1eaeef8;
       border-radius: 8px;
       padding: 20px;
       box-shadow: var(--shadow);
-      flex: 1;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
     .slide-grid-2 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 14fr 13fr;
       gap: 20px;
       height: 100%;
     }
@@ -459,6 +462,7 @@ function generateSlidesHtml(lessonId, data) {
     .nw-box {
       border-radius: 8px;
       padding: 14px;
+      flex: 1;
     }
     .nw-box-notice {
       background: var(--teal-light);
@@ -482,17 +486,23 @@ function generateSlidesHtml(lessonId, data) {
       border-radius: 99px;
       margin-right: 6px;
       margin-top: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .vocab-pill:hover {
+      background: var(--teal);
+      color: var(--white);
     }
     
     /* Vocab Flip Cards */
     .vocab-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 14px;
+      height: 100%;
     }
     .vocab-card {
-      height: 90px;
+      height: 100%;
       perspective: 1000px;
       cursor: pointer;
     }
@@ -522,13 +532,13 @@ function generateSlidesHtml(lessonId, data) {
     }
     .vocab-card-front {
       background: var(--white);
-      border: 1px solid var(--teal);
+      border: 1.5px dashed var(--teal);
       color: var(--navy);
     }
     .vocab-card-front h3 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.05em; }
     .vocab-card-back {
       background: var(--teal-light);
-      border: 1px solid var(--teal);
+      border: 1.5px solid var(--teal);
       color: var(--body-text);
       transform: rotateY(180deg);
       font-size: 11px;
@@ -547,6 +557,7 @@ function generateSlidesHtml(lessonId, data) {
       font-weight: 700;
       font-size: 12px;
       color: var(--navy);
+      margin-top: auto;
     }
     .flow-box {
       background: var(--white);
@@ -557,111 +568,198 @@ function generateSlidesHtml(lessonId, data) {
     }
     .flow-arrow { color: var(--amber); font-size: 18px; }
     
-    /* Visual Math Container */
+    /* Visual Math Container with Canvas Overlay */
     .math-visual-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: relative;
+      width: 100%;
       height: 100%;
       background: var(--white);
-      border: 1px solid #dadce0;
+      border: 1.5px solid #dadce0;
       border-radius: 8px;
-      padding: 10px;
+      overflow: hidden;
+    }
+    .canvas-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+      cursor: crosshair;
     }
     
-    /* Input Fields for Students */
-    .student-input-area {
+    /* Drawing Toolbar */
+    .drawing-toolbar {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
+      gap: 6px;
       margin-top: 8px;
+      background: var(--google-gray);
+      padding: 4px;
+      border-radius: 6px;
+      align-items: center;
     }
-    .input-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .input-row label {
+    .tool-btn {
+      background: var(--white);
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      padding: 4px 8px;
       font-size: 11px;
       font-weight: 700;
-      color: var(--gray);
-      text-transform: uppercase;
-    }
-    .input-row textarea, .input-row input {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid var(--gray);
-      border-radius: 6px;
-      font-family: inherit;
-      font-size: 13px;
-      background: var(--bg);
+      cursor: pointer;
       color: var(--body-text);
-      resize: none;
     }
-    .input-row textarea:focus, .input-row input:focus {
-      outline: 2px solid var(--teal);
-      border-color: transparent;
+    .tool-btn.active {
+      background: var(--teal);
+      color: var(--white);
+      border-color: var(--teal);
+    }
+    .tool-btn-clear {
+      background: #D9795D;
+      color: var(--white);
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: auto;
+    }
+    .drawing-toolbar select {
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      padding: 3px;
+      font-size: 11px;
       background: var(--white);
     }
     
-    /* Fullscreen Present Mode */
-    .slide-canvas:-webkit-full-screen {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: none !important;
-      aspect-ratio: auto !important;
-      border-radius: 0 !important;
-      border: none !important;
-    }
-    .slide-canvas:fullscreen {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: none !important;
-      aspect-ratio: auto !important;
-      border-radius: 0 !important;
-      border: none !important;
-    }
-    
-    /* Present mode visual adjustments */
-    .slide-canvas:fullscreen .slide-header { height: 70px; font-size: 24px; }
-    .slide-canvas:fullscreen .slide-footer { height: 40px; font-size: 14px; }
-    .slide-canvas:fullscreen .slide-body { padding: 40px; }
-    .slide-canvas:fullscreen h2.card-title { font-size: 22px; }
-    .slide-canvas:fullscreen p.card-desc { font-size: 16px; }
-    
-    /* Presenter Controls Overlay */
-    .presenter-controls {
-      position: absolute;
-      bottom: 24px;
-      background: rgba(23, 50, 77, 0.95);
-      backdrop-filter: blur(8px);
-      border-radius: 99px;
-      padding: 6px 16px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      color: var(--white);
-      z-index: 100;
-      font-weight: 700;
+    /* Custom input elements styled as Google Slides text placeholders */
+    .slide-input-placeholder {
+      border: 1px dashed var(--gray);
+      border-radius: 4px;
+      padding: 10px;
       font-size: 13px;
+      font-family: inherit;
+      background: #FDFDFB;
+      color: var(--body-text);
+      width: 100%;
+      outline: none;
+      resize: none;
+      transition: all 0.2s;
     }
-    .control-btn {
+    .slide-input-placeholder::placeholder {
+      color: var(--gray);
+      font-style: italic;
+    }
+    .slide-input-placeholder:focus {
+      border: 1.5px solid var(--teal);
+      box-shadow: 0 0 0 3px var(--teal-light);
+      background: var(--white);
+    }
+    
+    /* Partner cards */
+    .partner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      height: 100%;
+    }
+    
+    /* Fullscreen present mode pacing timer & controls */
+    .presenter-hud {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(23, 50, 77, 0.95);
+      border-radius: 99px;
+      padding: 8px 24px;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      color: var(--white);
+      z-index: 10000;
+    }
+    :fullscreen ~ .presenter-hud {
+      display: flex;
+    }
+    :-webkit-full-screen ~ .presenter-hud {
+      display: flex;
+    }
+    
+    .hud-btn {
       background: transparent;
       border: none;
       color: var(--white);
       font-size: 16px;
       cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
       transition: background 0.2s;
     }
-    .control-btn:hover { background: rgba(255,255,255,0.15); }
-    .control-btn:active { transform: scale(0.95); }
+    .hud-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    .hud-timer {
+      font-family: monospace;
+      font-size: 14px;
+      border-left: 1px solid rgba(255,255,255,0.3);
+      padding-left: 14px;
+    }
+    
+    /* Standard Reflection Post-It notes */
+    .post-it-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .post-it {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .post-it-3 { background: var(--teal-light); }
+    .post-it-2 { background: var(--amber-light); }
+    .post-it-1 { background: var(--coral); }
+    .post-it-title { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--navy); margin-bottom: 4px; }
+    .post-it input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      font-size: 12px;
+      border-bottom: 1px dotted rgba(23, 50, 77, 0.2);
+    }
+    
+    /* Self-assessment buttons */
+    .assess-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .assess-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1.5px solid var(--gray);
+      background: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .assess-btn.active {
+      border-color: var(--teal);
+      background: var(--teal-light);
+      color: var(--navy);
+    }
     
   </style>
 </head>
@@ -676,7 +774,7 @@ function generateSlidesHtml(lessonId, data) {
         <div class="g-menu-bar">
           <div class="g-menu-item" onclick="window.print()">File</div>
           <div class="g-menu-item" onclick="alert('Student work is automatically saved to local browser storage.')">Edit</div>
-          <div class="g-menu-item" onclick="document.querySelector('.slide-canvas').requestFullscreen()">View</div>
+          <div class="g-menu-item" onclick="enterFullscreen()">View</div>
           <div class="g-menu-item">Format</div>
           <div class="g-menu-item" onclick="alert('Lesson: ${esc(lessonId)} | Unit: ${unit}')">Slide</div>
           <div class="g-menu-item" style="color:var(--teal)">Saved to Browser ✓</div>
@@ -684,7 +782,7 @@ function generateSlidesHtml(lessonId, data) {
       </div>
     </div>
     <div class="g-right">
-      <button class="btn-present" onclick="document.querySelector('.slide-canvas').requestFullscreen()">
+      <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
       </button>
       <div style="width: 36px; height: 36px; background: var(--teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; box-shadow: var(--shadow);">
@@ -749,7 +847,7 @@ function generateSlidesHtml(lessonId, data) {
     <div class="presentation-container">
     
       <!-- The Presentation Slide -->
-      <article class="slide-canvas">
+      <article class="slide-canvas" id="slide-canvas-element">
       
         <!-- Inside Slide Header -->
         <header class="slide-header" id="slide-title-bar">LESSON ${esc(lessonId)} · OBJECTIVES</header>
@@ -758,14 +856,14 @@ function generateSlidesHtml(lessonId, data) {
         <div class="slide-body active" id="slide-1">
           <div class="slide-card">
             <h2 class="card-title">🎯 Lesson Objectives</h2>
-            <div style="font-size: 16px; line-height: 1.6; display: flex; flex-direction: column; gap: 16px;">
+            <div style="font-size: 16px; line-height: 1.6; display: flex; flex-direction: column; gap: 16px; justify-content: center; height: 100%;">
               <div>
-                <strong style="color:var(--navy);">Content Objective:</strong>
-                <p style="margin: 4px 0 0; color:var(--body-text);">${esc(contentObj)}</p>
+                <strong style="color:var(--navy); font-size:18px;">Content Objective:</strong>
+                <p style="margin: 6px 0 0; color:var(--body-text); font-size:16px;">${esc(contentObj)}</p>
               </div>
-              <div>
-                <strong style="color:var(--navy);">Language Objective:</strong>
-                <p style="margin: 4px 0 0; color:var(--body-text);">${esc(langObj)}</p>
+              <div style="margin-top:12px;">
+                <strong style="color:var(--navy); font-size:18px;">Language Objective:</strong>
+                <p style="margin: 6px 0 0; color:var(--body-text); font-size:16px;">${esc(langObj)}</p>
               </div>
             </div>
           </div>
@@ -774,24 +872,30 @@ function generateSlidesHtml(lessonId, data) {
         <!-- SLIDE 2: BE CURIOUS -->
         <div class="slide-body" id="slide-2">
           <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
                 <h2 class="card-title">📋 Scenario Launch</h2>
-                <p class="card-desc" style="font-size:13.5px;">${esc(launchText)}</p>
+                <p class="card-desc" style="font-size:13px; line-height:1.5; margin-bottom:8px;">${esc(launchText)}</p>
               </div>
-              <div>
-                <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Word Bank:</strong>
+              <div style="margin-top:auto;">
+                <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Vocabulary Bank (Click to insert):</strong>
                 <div style="margin-top:4px;">${vocabBankHtml}</div>
               </div>
             </div>
             <div class="slide-card nw-container">
-              <div class="nw-box nw-box-notice">
-                <h4>👀 Things I Notice:</h4>
-                <div class="nw-box-stems">${noticeStemsHtml}</div>
+              <div class="nw-box nw-box-notice" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                  <h4>👀 Things I Notice:</h4>
+                  <div class="nw-box-stems">${noticeStemsHtml}</div>
+                </div>
+                <textarea id="student-notice" class="slide-input-placeholder" rows="2" placeholder="Type your observations here..."></textarea>
               </div>
-              <div class="nw-box nw-box-wonder">
-                <h4>💭 Things I Wonder:</h4>
-                <div class="nw-box-stems">${wonderStemsHtml}</div>
+              <div class="nw-box nw-box-wonder" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                  <h4>💭 Things I Wonder:</h4>
+                  <div class="nw-box-stems">${wonderStemsHtml}</div>
+                </div>
+                <textarea id="student-wonder" class="slide-input-placeholder" rows="2" placeholder="Type your questions here..."></textarea>
               </div>
             </div>
           </div>
@@ -800,9 +904,9 @@ function generateSlidesHtml(lessonId, data) {
         <!-- SLIDE 3: VOCABULARY -->
         <div class="slide-body" id="slide-3">
           <div class="slide-grid-2">
-            <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center;">
+            <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%;">
               <h2 class="card-title">📝 Core Vocabulary</h2>
-              <p class="card-desc">Click each term card to flip and verify its definition and meaning.</p>
+              <p class="card-desc" style="font-size:13px;">Click each card to flip and reveal its visual definition. Verify with your partner before moving on.</p>
               <div class="flow-diagram">
                 <div class="flow-box">INPUT</div>
                 <div class="flow-arrow">➔</div>
@@ -817,15 +921,41 @@ function generateSlidesHtml(lessonId, data) {
           </div>
         </div>
         
-        <!-- SLIDE 4: VISUAL MODEL -->
+        <!-- SLIDE 4: VISUAL MODEL WITH CANVAS OVERLAY -->
         <div class="slide-body" id="slide-4">
           <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:center;">
-              <h2 class="card-title">📐 Visual Modeling</h2>
-              <p class="card-desc">Observe the visual model for this concept. Practice labeling or drawing the components with your partner.</p>
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+              <div>
+                <h2 class="card-title">📐 Visual Modeling Workspace</h2>
+                <p class="card-desc" style="font-size:13px;">Use the drawing tools to label axes, circle key values, or sketch equations directly onto the model grid.</p>
+              </div>
+              
+              <!-- Draw Toolbar -->
+              <div class="drawing-toolbar">
+                <button class="tool-btn active" id="btn-draw" onclick="setDrawingTool('draw')">✏️ Draw</button>
+                <button class="tool-btn" id="btn-erase" onclick="setDrawingTool('erase')">🧽 Erase</button>
+                <select id="select-color" onchange="setDrawingColor(this.value)">
+                  <option value="#17324D">Navy</option>
+                  <option value="#1FA6A2">Teal</option>
+                  <option value="#F2C15B">Amber</option>
+                  <option value="#D9795D">Coral</option>
+                  <option value="#000000">Black</option>
+                </select>
+                <select id="select-size" onchange="setDrawingSize(this.value)">
+                  <option value="2">Thin</option>
+                  <option value="4" selected>Medium</option>
+                  <option value="8">Thick</option>
+                </select>
+                <button class="tool-btn-clear" onclick="clearDrawingCanvas()">Clear</button>
+              </div>
             </div>
             <div class="math-visual-container">
-              ${svgVisual}
+              <!-- Background SVG visual -->
+              <div style="position: absolute; inset: 0; z-index: 1;">
+                ${svgVisual}
+              </div>
+              <!-- Transparent overlay canvas for student drawing -->
+              <canvas id="math-canvas" width="440" height="240" class="canvas-overlay"></canvas>
             </div>
           </div>
         </div>
@@ -833,58 +963,53 @@ function generateSlidesHtml(lessonId, data) {
         <!-- SLIDE 5: GUIDED PRACTICE -->
         <div class="slide-body" id="slide-5">
           <div class="slide-grid-2">
-            <div class="slide-card">
-              <h2 class="card-title">📖 Guided Practice</h2>
-              <p class="card-desc" style="font-size:13.5px;">${esc(guidedText)}</p>
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+              <div>
+                <h2 class="card-title">📖 Guided Practice</h2>
+                <p class="card-desc" style="font-size:13px; line-height:1.5;">${esc(guidedText)}</p>
+              </div>
+              <textarea id="guided-notes-work" class="slide-input-placeholder" rows="3" placeholder="Type your step-by-step math calculations here..."></textarea>
             </div>
-            <div class="slide-card" style="background:var(--teal-light);">
-              <h2 class="card-title">✍️ TWR Sentence Expansion</h2>
-              <div class="nw-box-stems" style="font-size:13px; font-style:italic;">${guidedStemsHtml}</div>
+            <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
+              <div>
+                <h2 class="card-title">✍️ TWR Sentence Expansion</h2>
+                <div class="nw-box-stems" style="font-size:12px; font-style:italic; margin-bottom:12px;">${guidedStemsHtml}</div>
+              </div>
+              <textarea id="guided-sentence-work" class="slide-input-placeholder" rows="3" placeholder="Write your complete reasoning sentence here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 6: INTERACTIVE WORKSHOP A -->
+        <!-- SLIDE 6: INTERACTIVE WORKSHOP A (Partner Work) -->
         <div class="slide-body" id="slide-6">
-          <div class="slide-grid-2">
-            <div class="slide-card">
-              <h2 class="card-title" style="color:var(--teal);">👥 Partner A</h2>
-              <p class="card-desc">Explain how you can approach solving this problem. What steps will you perform first, and what tools will you use?</p>
-              <div class="student-input-area">
-                <div class="input-row">
-                  <label for="work-a">Partner A Work:</label>
-                  <textarea id="work-a" rows="3" placeholder="Type your explanation here..."></textarea>
-                </div>
+          <div class="partner-grid">
+            <div class="slide-card" style="justify-content:space-between;">
+              <div>
+                <h2 class="card-title" style="color:var(--teal);">👥 Partner A</h2>
+                <p class="card-desc" style="font-size:12.5px;">Explain how you can approach solving this problem. What steps will you perform first, and what tools will you use?</p>
               </div>
+              <textarea id="partner-a-work" class="slide-input-placeholder" rows="4" placeholder="Partner A: Type your explanation here..."></textarea>
             </div>
-            <div class="slide-card">
-              <h2 class="card-title">👥 Partner B</h2>
-              <p class="card-desc">Respond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?</p>
-              <div class="student-input-area">
-                <div class="input-row">
-                  <label for="work-b">Partner B Work:</label>
-                  <textarea id="work-b" rows="3" placeholder="Type your response here..."></textarea>
-                </div>
+            <div class="slide-card" style="justify-content:space-between;">
+              <div>
+                <h2 class="card-title">👥 Partner B</h2>
+                <p class="card-desc" style="font-size:12.5px;">Respond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?</p>
               </div>
+              <textarea id="partner-b-work" class="slide-input-placeholder" rows="4" placeholder="Partner B: Type your response here..."></textarea>
             </div>
           </div>
         </div>
         
-        <!-- SLIDE 7: INTERACTIVE WORKSHOP B -->
+        <!-- SLIDE 7: INTERACTIVE WORKSHOP B (Error Analysis) -->
         <div class="slide-body" id="slide-7">
           <div class="slide-grid-2">
             <div class="slide-card">
               <h2 class="card-title" style="color:var(--amber);">⚠️ Incorrect Claim</h2>
-              <p class="card-desc">A student claims that when solving this problem, they should add the values instead of multiplying. Why is this reasoning incorrect?</p>
+              <p class="card-desc" style="font-size:13px; line-height:1.5;">A student claims that when solving this problem, they should add the values instead of multiplying.<br/><br/>Analyze their reasoning. What mistake did they make, and why is adding incorrect in this context?</p>
             </div>
-            <div class="slide-card" style="background:var(--coral);">
+            <div class="slide-card" style="background:var(--coral); justify-content:space-between;">
               <h2 class="card-title">🛠️ Fix & Justify</h2>
-              <div class="student-input-area">
-                <div class="input-row">
-                  <label for="fix-error">Write your correction:</label>
-                  <textarea id="fix-error" rows="4" placeholder="Explain the mistake and show the correct calculations..."></textarea>
-                </div>
-              </div>
+              <textarea id="error-fix-text" class="slide-input-placeholder" rows="6" placeholder="Explain the error clearly and write the correct calculation steps here..."></textarea>
             </div>
           </div>
         </div>
@@ -892,17 +1017,18 @@ function generateSlidesHtml(lessonId, data) {
         <!-- SLIDE 8: REAL-WORLD CONNECTION -->
         <div class="slide-body" id="slide-8">
           <div class="slide-grid-2">
-            <div class="slide-card">
+            <div class="slide-card" style="justify-content:center;">
               <h2 class="card-title">🌍 Math in the Wild</h2>
-              <p class="card-desc">${esc(realWorldText)}</p>
+              <p class="card-desc" style="font-size:13.5px; line-height:1.5;">${esc(realWorldText)}</p>
             </div>
-            <div class="slide-card" style="background:var(--teal-light);">
-              <h2 class="card-title">✍️ Connection Reasoning</h2>
-              <div class="student-input-area">
-                <div class="input-row">
-                  <label for="connect-reasoning">This applies because:</label>
-                  <input type="text" id="connect-reasoning" placeholder="Type your reasoning..." />
-                </div>
+            <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height:100%;">
+              <div>
+                <h2 class="card-title">✍️ Connection Reasoning</h2>
+                <p style="font-size:12px; margin-top:0; color:var(--navy);">Complete the connection statements below:</p>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <input type="text" id="rw-connect-1" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="This math applies to this scenario because..." />
+                <input type="text" id="rw-connect-2" class="slide-input-placeholder" style="padding:6px 10px;" placeholder="I could use this math in real life when..." />
               </div>
             </div>
           </div>
@@ -911,20 +1037,36 @@ function generateSlidesHtml(lessonId, data) {
         <!-- SLIDE 9: REFLECTION -->
         <div class="slide-body" id="slide-9">
           <div class="slide-grid-2">
-            <div class="slide-card">
+            <div class="slide-card" style="justify-content:space-between; height: 100%;">
               <h2 class="card-title">🤔 3-2-1 Reflection</h2>
-              <div style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
-                <div><strong>📝 3 Things I learned:</strong> <input type="text" placeholder="1. ..." /></div>
-                <div><strong>💡 2 Connections I made:</strong> <input type="text" placeholder="1. ..." /></div>
-                <div><strong>❓ 1 Question I still have:</strong> <input type="text" placeholder="1. ..." /></div>
+              <div class="post-it-grid">
+                <div class="post-it post-it-3">
+                  <div class="post-it-title">3 Things I learned:</div>
+                  <input type="text" id="ref-3-1" placeholder="1. ..." />
+                </div>
+                <div class="post-it post-it-2">
+                  <div class="post-it-title">2 Connections I made:</div>
+                  <input type="text" id="ref-2-1" placeholder="1. ..." />
+                </div>
+                <div class="post-it post-it-1">
+                  <div class="post-it-title">1 Question I still have:</div>
+                  <input type="text" id="ref-1-1" placeholder="1. ..." />
+                </div>
               </div>
             </div>
-            <div class="slide-card" style="background:var(--teal-light);">
-              <h2 class="card-title">📝 Exit Ticket</h2>
-              <div class="student-input-area">
-                <div class="input-row">
-                  <label for="exit-ticket-solution">Solution:</label>
-                  <textarea id="exit-ticket-solution" rows="4" placeholder="Record your final solution and reasoning here..."></textarea>
+            <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height: 100%;">
+              <div>
+                <h2 class="card-title">📝 Exit Ticket</h2>
+                <p class="card-desc" style="font-size:12px; margin-bottom:8px;">Record your final answer and explanation to show mastery of this standard.</p>
+                <textarea id="exit-ticket-work" class="slide-input-placeholder" rows="3" placeholder="Type your final answer and explanation here..."></textarea>
+              </div>
+              
+              <div>
+                <strong style="font-size:11px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
+                <div class="assess-row">
+                  <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
+                  <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost There 🧭</button>
+                  <button class="assess-btn" id="btn-help" onclick="setSelfAssessment('help')">Need Help 🆘</button>
                 </div>
               </div>
             </div>
@@ -936,16 +1078,18 @@ function generateSlidesHtml(lessonId, data) {
         
       </article>
       
-      <!-- Presenter Controls -->
-      <div class="presenter-controls">
-        <button class="control-btn" onclick="prevSlide()">◀</button>
-        <span id="control-page-num">1 / 9</span>
-        <button class="control-btn" onclick="nextSlide()">▶</button>
-      </div>
-      
     </div>
     
   </main>
+
+  <!-- Presenter Controls HUD (Visible only when in fullscreen Present Mode) -->
+  <div class="presenter-hud">
+    <button class="hud-btn" onclick="prevSlide()">◀</button>
+    <span id="hud-page-indicator">1 / 9</span>
+    <button class="hud-btn" onclick="nextSlide()">▶</button>
+    <div class="hud-timer" id="hud-timer-display">Pacing: 00:00</div>
+    <button class="hud-btn" onclick="exitFullscreen()" title="Exit Presentation" style="margin-left: 8px;">✕</button>
+  </div>
 
   <script>
     let currentSlide = 1;
@@ -962,6 +1106,51 @@ function generateSlidesHtml(lessonId, data) {
       "REAL-WORLD CONNECTION · MATH IN THE WILD",
       "REFLECTION & EXIT TICKET"
     ];
+    
+    // Timer variable for present mode
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    
+    function startTimer() {
+      secondsElapsed = 0;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        document.getElementById('hud-timer-display').textContent = 'Pacing: ' + mins + ':' + secs;
+      }, 1000);
+    }
+    
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+    
+    function enterFullscreen() {
+      const container = document.getElementById('slide-canvas-element');
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+      }
+    }
+    
+    function exitFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+    
+    // Listen for fullscreen change to start/stop timer and adjust styles
+    document.addEventListener('fullscreenchange', () => {
+      const isFullscreen = document.fullscreenElement !== null;
+      if (isFullscreen) {
+        startTimer();
+      } else {
+        stopTimer();
+      }
+      setTimeout(resizeSlides, 100);
+    });
     
     function goToSlide(num) {
       if (num < 1 || num > totalSlides) return;
@@ -982,8 +1171,8 @@ function generateSlidesHtml(lessonId, data) {
       // Update title text
       document.getElementById('slide-title-bar').textContent = slideTitles[num - 1];
       
-      // Update presenter controls page indicator
-      document.getElementById('control-page-num').textContent = num + ' / ' + totalSlides;
+      // Update HUD page indicators
+      document.getElementById('hud-page-indicator').textContent = num + ' / ' + totalSlides;
     }
     
     function prevSlide() {
@@ -996,6 +1185,9 @@ function generateSlidesHtml(lessonId, data) {
     
     // Wire arrow keys for slide navigation
     document.addEventListener('keydown', function(e) {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+        return; // ignore shortcuts while writing
+      }
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
         nextSlide();
         e.preventDefault();
@@ -1005,16 +1197,32 @@ function generateSlidesHtml(lessonId, data) {
       }
     });
     
-    // Save student work to localStorage
+    // Save/Restore student work
     const storageKey = 'neft_slides_work_${esc(lessonId)}';
-    const inputs = document.querySelectorAll('textarea, input[type="text"]');
     
     function saveWork() {
       const data = {};
-      inputs.forEach((input, index) => {
-        data[input.id || 'input_' + index] = input.value;
+      document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
+        data[input.id || input.placeholder] = input.value;
       });
+      
+      // Save canvas state
+      const canvas = document.getElementById('math-canvas');
+      data.canvasData = canvas.toDataURL();
+      
+      // Save assessment state
+      data.assessment = activeAssessment;
+      
       localStorage.setItem(storageKey, JSON.stringify(data));
+    }
+    
+    let activeAssessment = '';
+    function setSelfAssessment(level) {
+      activeAssessment = level;
+      document.querySelectorAll('.assess-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.id === 'btn-' + level);
+      });
+      saveWork();
     }
     
     function loadWork() {
@@ -1022,21 +1230,170 @@ function generateSlidesHtml(lessonId, data) {
         const saved = localStorage.getItem(storageKey);
         if (saved) {
           const data = JSON.parse(saved);
-          inputs.forEach((input, index) => {
-            const val = data[input.id || 'input_' + index];
+          document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
+            const val = data[input.id || input.placeholder];
             if (val !== undefined) input.value = val;
           });
+          
+          if (data.canvasData) {
+            const img = new Image();
+            img.src = data.canvasData;
+            img.onload = () => {
+              ctx.drawImage(img, 0, 0);
+            };
+          }
+          
+          if (data.assessment) {
+            setSelfAssessment(data.assessment);
+          }
         }
       } catch (e) {
         console.error('Failed to load saved work:', e);
       }
     }
     
-    inputs.forEach(input => {
+    document.querySelectorAll('textarea, input[type="text"]').forEach(input => {
       input.addEventListener('input', saveWork);
     });
     
-    window.addEventListener('load', loadWork);
+    // Insert Word Bank pill text at the cursor position in the active textarea
+    let lastActiveTextarea = null;
+    document.querySelectorAll('textarea').forEach(textarea => {
+      textarea.addEventListener('focus', () => {
+        lastActiveTextarea = textarea;
+      });
+    });
+    
+    function insertAtCursor(text) {
+      const target = lastActiveTextarea || document.getElementById('student-notice');
+      if (!target) return;
+      
+      const start = target.selectionStart;
+      const end = target.selectionEnd;
+      const val = target.value;
+      
+      target.value = val.substring(0, start) + text + val.substring(end);
+      target.focus();
+      target.selectionStart = target.selectionEnd = start + text.length;
+      saveWork();
+    }
+    
+    // -----------------------------------------------------------------
+    // HTML5 DRAWING CANVAS SYSTEM
+    // -----------------------------------------------------------------
+    const canvas = document.getElementById('math-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let drawing = false;
+    let drawMode = 'draw'; // 'draw' or 'erase'
+    let drawColor = '#17324D';
+    let drawSize = 4;
+    
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      // Calculate scaled coords
+      return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+    
+    function startDrawing(e) {
+      drawing = true;
+      ctx.beginPath();
+      const pos = getMousePos(e);
+      ctx.moveTo(pos.x, pos.y);
+      e.preventDefault();
+    }
+    
+    function draw(e) {
+      if (!drawing) return;
+      const pos = getMousePos(e);
+      
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = drawMode === 'erase' ? '#FFFFFF' : drawColor;
+      ctx.lineWidth = drawSize;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      // If erasing, we want to clear the lines cleanly
+      if (drawMode === 'erase') {
+        ctx.globalCompositeOperation = 'destination-out';
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      
+      ctx.stroke();
+      e.preventDefault();
+    }
+    
+    function stopDrawing() {
+      if (drawing) {
+        ctx.closePath();
+        drawing = false;
+        saveWork();
+      }
+    }
+    
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDrawing);
+    
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    window.addEventListener('touchend', stopDrawing);
+    
+    function setDrawingTool(mode) {
+      drawMode = mode;
+      document.getElementById('btn-draw').classList.toggle('active', mode === 'draw');
+      document.getElementById('btn-erase').classList.toggle('active', mode === 'erase');
+    }
+    
+    function setDrawingColor(color) {
+      drawColor = color;
+      setDrawingTool('draw');
+    }
+    
+    function setDrawingSize(size) {
+      drawSize = Number(size);
+    }
+    
+    function clearDrawingCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      saveWork();
+    }
+    
+    // -----------------------------------------------------------------
+    // RESPONSIVE 16:9 VIEWPORT SCALING
+    // -----------------------------------------------------------------
+    function resizeSlides() {
+      const container = document.querySelector('.presentation-container');
+      const canvasEl = document.getElementById('slide-canvas-element');
+      if (!container || !canvasEl) return;
+      
+      const containerWidth = container.clientWidth - 40;
+      const containerHeight = container.clientHeight - 40;
+      
+      // Calculate scales based on fixed dimensions (960x540)
+      const scaleX = containerWidth / 960;
+      const scaleY = containerHeight / 540;
+      let scale = Math.min(scaleX, scaleY);
+      
+      // Bound scaling between 0.3x and 1.5x
+      scale = Math.max(0.3, Math.min(1.5, scale));
+      
+      canvasEl.style.transform = 'scale(' + scale + ')';
+    }
+    
+    window.addEventListener('resize', resizeSlides);
+    window.addEventListener('load', () => {
+      loadWork();
+      resizeSlides();
+    });
+    
   </script>
 
 </body>
@@ -1046,7 +1403,7 @@ function generateSlidesHtml(lessonId, data) {
 
 // Main execution block
 function main() {
-  console.log('Generating interactive Google Slides clones for all lessons...');
+  console.log('Generating high-fidelity slides.html files...');
   const lessons = readdirSync(lessonsDir)
     .filter(d => /^(\d+)-(\d+)(-flagship)?$/.test(d))
     .filter(d => existsSync(join(lessonsDir, d, 'config.json')));
@@ -1066,7 +1423,7 @@ function main() {
     }
   });
   
-  console.log(`Successfully generated slides.html for ${count} lessons.`);
+  console.log(`Successfully generated premium slides.html for ${count} lessons.`);
 }
 
 main();
