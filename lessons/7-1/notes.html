@@ -91,6 +91,33 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+textarea.writeline {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 4px 0;
+  resize: vertical;
+  display: block;
+}
+input.writeline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 2px 0;
+}
+textarea.writeline:focus, input.writeline:focus {
+  border-bottom: 1.5px solid var(--teal);
+  background: rgba(31, 166, 162, 0.02);
+}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
@@ -307,6 +334,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .example{border-left:3px solid #000;}
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
+  textarea.writeline::placeholder, input.writeline::placeholder {
+    color: transparent;
+  }
+  textarea.writeline, input.writeline {
+    border-bottom: 1px solid #000;
+  }
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
@@ -329,9 +362,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -454,15 +484,15 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which equation represents: 'Seven less than a number is 18'?</p>
       <ol class="try-choices" type="A"><li>n − 7 = 18</li><li>7 − n = 18</li><li>n + 7 = 18</li><li>n / 7 = 18</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input type="text" class="writeline" placeholder="Type answer here..." style="flex:1;" /></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which equation represents: 'Three times a number equals 21'?</p>
       <ol class="try-choices" type="A"><li>3n = 21</li><li>n + 3 = 21</li><li>n − 3 = 21</li><li>n / 3 = 21</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
     </div>
   </div>
 </section>
@@ -582,7 +612,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
     <p class="twr-model"><span class="twr-label">Model:</span> Equation is a math sentence with an equal sign showing both sides are the same.<span class="twr-es">Ecuación es una oración matemática con un signo igual que muestra que ambos lados son iguales.</span></p>
     <p class="twr-frame"><span class="twr-en">Write a kernel sentence about equation. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre ecuación. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="2" placeholder="Type your notes or work here..."></textarea>
   </div>
   <div class="twr-block">
     <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
@@ -592,19 +622,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Equation matters in math because ___.</span><span class="twr-es">Ecuación importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Equation matters in math, but ___.</span><span class="twr-es">Ecuación importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Equation matters in math, so ___.</span><span class="twr-es">Ecuación importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
@@ -615,35 +645,35 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell one true fact about equation.<span class="twr-es">Di un hecho verdadero sobre equation.</span></p>
         <p class="twr-frame"><span class="twr-en">Equation ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Ask a question about equation.<span class="twr-es">Haz una pregunta sobre equation.</span></p>
         <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Show excitement about equation.<span class="twr-es">Muestra entusiasmo sobre equation.</span></p>
         <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell a partner what to do with equation.<span class="twr-es">Dile a un compañero qué hacer con equation.</span></p>
         <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
   <div class="twr-block">
     <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
     <div class="twr-stems"><p class="twr-frame"><span class="twr-en">The unknown is ___, so I write the variable ___.</span><span class="twr-es">La incógnita es ___, así que escribo la variable ___.</span></p><p class="twr-frame"><span class="twr-en">My equation is ___ because 'plus 8' means ___ and 'equals 20' means ___.</span><span class="twr-es">Mi ecuación es ___ porque 'más 8' significa ___ y 'es igual a 20' significa ___.</span></p><p class="twr-frame"><span class="twr-en">I put ___ on the left side because ___.</span><span class="twr-es">Puse ___ en el lado izquierdo porque ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea>
   </div>
 </section>
   <section class="section tryit-section">
@@ -652,12 +682,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tryit">
   <p class="tryit-num">1. Which equation represents '3 times a number equals 21'?</p>
   <ol class="try-choices" type="A"><li>3n = 21</li><li>n + 3 = 21</li><li>n/3 = 21</li><li>n − 3 = 21</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. Tickets cost $8 each. Which equation finds the number of tickets t bought for $48?</p>
   <ol class="try-choices" type="A"><li>8t = 48</li><li>t + 8 = 48</li><li>t/8 = 48</li><li>48t = 8</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -665,14 +695,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tryit-num">Write a real-world situation that can be modeled by the equation n / 5 = 9. Explain what n represents and verify your equation makes sense.</p>
     
     <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Situation: ___. In this problem, n represents ___. Check: n = ___ because ___ ÷ 5 = 9.</p>
-    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="4" placeholder="Type your notes or work here..."></textarea></div>
   </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>
   <p class="reflect-stem">Which equation represents: 'A number divided by 6 equals 9'?</p>
   <ol class="try-choices" type="A"><li>n / 6 = 9</li><li>6n = 9</li><li>n − 6 = 9</li><li>n + 6 = 9</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
@@ -681,8 +711,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-1 · Standard 6.EE.6</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

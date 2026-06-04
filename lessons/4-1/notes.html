@@ -91,6 +91,33 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+textarea.writeline {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 4px 0;
+  resize: vertical;
+  display: block;
+}
+input.writeline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 2px 0;
+}
+textarea.writeline:focus, input.writeline:focus {
+  border-bottom: 1.5px solid var(--teal);
+  background: rgba(31, 166, 162, 0.02);
+}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
@@ -307,6 +334,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .example{border-left:3px solid #000;}
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
+  textarea.writeline::placeholder, input.writeline::placeholder {
+    color: transparent;
+  }
+  textarea.writeline, input.writeline {
+    border-bottom: 1px solid #000;
+  }
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
@@ -329,9 +362,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -454,15 +484,15 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p>
       <ol class="try-choices" type="A"><li>30 miles per gallon</li><li>6 miles per gallon</li><li>180 miles per gallon</li><li>36 miles per gallon</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input type="text" class="writeline" placeholder="Type answer here..." style="flex:1;" /></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> A pack of 8 markers costs $6.00. What is the cost per marker?</p>
       <ol class="try-choices" type="A"><li>$0.75</li><li>$0.80</li><li>$1.33</li><li>$0.60</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
     </div>
   </div>
 </section>
@@ -592,7 +622,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
     <p class="twr-model"><span class="twr-label">Model:</span> Rate is a ratio comparing two amounts with different units, like miles per hour.<span class="twr-es">Tasa es una razón que compara dos cantidades con unidades distintas, como millas por hora.</span></p>
     <p class="twr-frame"><span class="twr-en">Write a kernel sentence about rate. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre tasa. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="2" placeholder="Type your notes or work here..."></textarea>
   </div>
   <div class="twr-block">
     <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
@@ -602,19 +632,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Rate matters in math because ___.</span><span class="twr-es">Tasa importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Rate matters in math, but ___.</span><span class="twr-es">Tasa importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Rate matters in math, so ___.</span><span class="twr-es">Tasa importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
@@ -625,35 +655,35 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell one true fact about rate.<span class="twr-es">Di un hecho verdadero sobre rate.</span></p>
         <p class="twr-frame"><span class="twr-en">Rate ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Ask a question about rate.<span class="twr-es">Haz una pregunta sobre rate.</span></p>
         <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Show excitement about rate.<span class="twr-es">Muestra entusiasmo sobre rate.</span></p>
         <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell a partner what to do with rate.<span class="twr-es">Dile a un compañero qué hacer con rate.</span></p>
         <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
   <div class="twr-block">
     <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
     <div class="twr-stems"><p class="twr-frame"><span class="twr-en">Booth ___ looks better because ___.</span><span class="twr-es">El puesto ___ se ve mejor porque ___.</span></p><p class="twr-frame"><span class="twr-en">It is hard to compare because the ___ are different.</span><span class="twr-es">Es difícil comparar porque los/las ___ son diferentes.</span></p><p class="twr-frame"><span class="twr-en">The unit rate is ___ per one ___.</span><span class="twr-es">La tasa unitaria es ___ por un ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea>
   </div>
 </section>
   <section class="section tryit-section">
@@ -662,12 +692,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tryit">
   <p class="tryit-num">1. Which is the better unit rate for typing speed: 240 words in 4 minutes or 300 words in 6 minutes?</p>
   <ol class="try-choices" type="A"><li>240 words in 4 minutes</li><li>300 words in 6 minutes</li><li>They are equal</li><li>Cannot tell</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. A faucet fills 15 liters in 5 minutes. How many liters per minute?</p>
   <ol class="try-choices" type="A"><li>3</li><li>75</li><li>5</li><li>10</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -675,14 +705,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tryit-num">An arcade sells tokens in three packs: 25 tokens for $5, 60 tokens for $10.80, and 100 tokens for $19. A student says the 100-token pack is always the best deal because you get the most tokens. Is the student correct? Find all three unit rates and explain.</p>
     
     <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> The student is ___ because the best deal is the ___ pack with a unit rate of $___ per token.</p>
-    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="4" placeholder="Type your notes or work here..."></textarea></div>
   </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>
   <p class="reflect-stem">A store sells 6 pencils for $1.50 and 10 pencils for $2.80. Which is the better buy?</p>
   <ol class="try-choices" type="A"><li>6 for $1.50 — $0.25 each</li><li>10 for $2.80 — $0.28 each</li><li>They cost the same per pencil</li><li>Not enough information</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
@@ -691,8 +721,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 4-1 · Standard 6.RP.2</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

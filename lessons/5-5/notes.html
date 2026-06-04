@@ -91,6 +91,33 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+textarea.writeline {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 4px 0;
+  resize: vertical;
+  display: block;
+}
+input.writeline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 2px 0;
+}
+textarea.writeline:focus, input.writeline:focus {
+  border-bottom: 1.5px solid var(--teal);
+  background: rgba(31, 166, 162, 0.02);
+}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
@@ -307,6 +334,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .example{border-left:3px solid #000;}
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
+  textarea.writeline::placeholder, input.writeline::placeholder {
+    color: transparent;
+  }
+  textarea.writeline, input.writeline {
+    border-bottom: 1px solid #000;
+  }
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
@@ -329,9 +362,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -446,15 +476,15 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p>
       <ol class="try-choices" type="A"><li>130 sq ft</li><li>150 sq ft</li><li>20 sq ft</li><li>170 sq ft</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 3</span><span class="writeline"></span></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 3</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input type="text" class="writeline" placeholder="Type answer here..." style="flex:1;" /></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Find the area of an L-shape made of a 5×3 rectangle and a 2×4 rectangle.</p>
       <ol class="try-choices" type="A"><li>23 sq units</li><li>15 sq units</li><li>8 sq units</li><li>20 sq units</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
     </div>
   </div>
 </section>
@@ -584,7 +614,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
     <p class="twr-model"><span class="twr-label">Model:</span> Composite Figure is a shape made by putting two or more simple shapes together.<span class="twr-es">Figura compuesta es una figura formada al juntar dos o más figuras simples.</span></p>
     <p class="twr-frame"><span class="twr-en">Write a kernel sentence about composite figure. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre figura compuesta. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="2" placeholder="Type your notes or work here..."></textarea>
   </div>
   <div class="twr-block">
     <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
@@ -594,19 +624,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Composite Figure matters in math because ___.</span><span class="twr-es">Figura compuesta importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Composite Figure matters in math, but ___.</span><span class="twr-es">Figura compuesta importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Composite Figure matters in math, so ___.</span><span class="twr-es">Figura compuesta importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
@@ -617,35 +647,35 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell one true fact about composite figure.<span class="twr-es">Di un hecho verdadero sobre composite figure.</span></p>
         <p class="twr-frame"><span class="twr-en">Composite figure ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Ask a question about composite figure.<span class="twr-es">Haz una pregunta sobre composite figure.</span></p>
         <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Show excitement about composite figure.<span class="twr-es">Muestra entusiasmo sobre composite figure.</span></p>
         <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell a partner what to do with composite figure.<span class="twr-es">Dile a un compañero qué hacer con composite figure.</span></p>
         <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
   <div class="twr-block">
     <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
     <div class="twr-stems"><p class="twr-frame"><span class="twr-en">We decompose the L-shape into ___ because ___.</span><span class="twr-es">Descomponemos la forma de L en ___ porque ___.</span></p><p class="twr-frame"><span class="twr-en">After I split it, I can find each area using ___.</span><span class="twr-es">Después de dividirla, puedo hallar cada área usando ___.</span></p><p class="twr-frame"><span class="twr-en">I broke the figure into ___.</span><span class="twr-es">Dividí la figura en ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea>
   </div>
 </section>
   <section class="section tryit-section">
@@ -654,12 +684,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tryit">
   <p class="tryit-num">1. What is the best first step to find the area of a composite figure?</p>
   <ol class="try-choices" type="A"><li>Break it into simple shapes like rectangles and triangles</li><li>Measure only one side</li><li>Add all the side lengths</li><li>Multiply the two longest sides</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. A garden is a 12×5 rectangle plus a triangle with base 12 and height 4 on top. What is the total area?</p>
   <ol class="try-choices" type="A"><li>84 sq units</li><li>60 sq units</li><li>24 sq units</li><li>72 sq units</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -667,14 +697,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tryit-num">A T-shaped room can be decomposed in two different ways. Show both ways and prove they give the same total area. Use a T-shape where the top is 14 ft × 4 ft and the stem is 6 ft × 10 ft.</p>
     
     <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Way 1: I split it into ___ and ___. Areas: ___ + ___ = ___. Way 2: I used a ___ rectangle and subtracted ___. Areas: ___ − ___ = ___. Both give ___ sq ft.</p>
-    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="4" placeholder="Type your notes or work here..."></textarea></div>
   </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>
   <p class="reflect-stem">A composite figure is made of a 9 ft x 7 ft rectangle and a 3 ft x 4 ft rectangle joined together. What is the total area?</p>
   <ol class="try-choices" type="A"><li>75 sq ft</li><li>63 sq ft</li><li>12 sq ft</li><li>75 ft</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
@@ -683,8 +713,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 5-5 · Standard 6.G.1</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

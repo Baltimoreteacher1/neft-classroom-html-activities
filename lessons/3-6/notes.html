@@ -91,6 +91,33 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
   text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+textarea.writeline {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 4px 0;
+  resize: vertical;
+  display: block;
+}
+input.writeline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--teal);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--navy);
+  outline: none;
+  padding: 2px 0;
+}
+textarea.writeline:focus, input.writeline:focus {
+  border-bottom: 1.5px solid var(--teal);
+  background: rgba(31, 166, 162, 0.02);
+}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
   padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
@@ -307,6 +334,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .example{border-left:3px solid #000;}
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
+  textarea.writeline::placeholder, input.writeline::placeholder {
+    color: transparent;
+  }
+  textarea.writeline, input.writeline {
+    border-bottom: 1px solid #000;
+  }
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
@@ -329,9 +362,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
 <script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -446,15 +476,15 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> Are the ratios 6:9 and 2:3 equivalent?</p>
       <ol class="try-choices" type="A"><li>Yes, both simplify to 2:3</li><li>No, 6 ≠ 2</li><li>Yes, because 6 + 9 = 15</li><li>No, because 9 - 6 ≠ 3 - 2</li></ol>
-      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><input type="text" class="writeline" placeholder="Type step here..." style="flex:1;" /></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input type="text" class="writeline" placeholder="Type answer here..." style="flex:1;" /></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
       <span class="notes-gr-tag">✏️ You do — your turn</span>
       <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
       <p class="wk-problem"><span class="wk-plabel">Problem:</span> If 3 pounds of apples cost $6, how much do 7 pounds cost?</p>
       <ol class="try-choices" type="A"><li>$14</li><li>$13</li><li>$10</li><li>$21</li></ol>
-      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+      <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
     </div>
   </div>
 </section>
@@ -574,7 +604,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
     <p class="twr-model"><span class="twr-label">Model:</span> Scale is to multiply or divide both parts of a ratio by the same number.<span class="twr-es">Escalar es multiplicar o dividir ambas partes de una razón por el mismo número.</span></p>
     <p class="twr-frame"><span class="twr-en">Write a kernel sentence about scale. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre escalar. Usa un sujeto y un verbo.</span></p>
-    <div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="2" placeholder="Type your notes or work here..."></textarea>
   </div>
   <div class="twr-block">
     <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
@@ -584,19 +614,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Scale matters in math because ___.</span><span class="twr-es">Escalar importa en matemáticas porque ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Scale matters in math, but ___.</span><span class="twr-es">Escalar importa en matemáticas, pero ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-exp-row">
       <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
       <div class="twr-exp-lines">
         <p class="twr-frame"><span class="twr-en">Scale matters in math, so ___.</span><span class="twr-es">Escalar importa en matemáticas, entonces ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
@@ -607,35 +637,35 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell one true fact about scale.<span class="twr-es">Di un hecho verdadero sobre scale.</span></p>
         <p class="twr-frame"><span class="twr-en">Scale ___.</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Ask a question about scale.<span class="twr-es">Haz una pregunta sobre scale.</span></p>
         <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Show excitement about scale.<span class="twr-es">Muestra entusiasmo sobre scale.</span></p>
         <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div><div class="twr-type-row">
       <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
       <div class="twr-exp-lines">
         <p class="twr-hint">Tell a partner what to do with scale.<span class="twr-es">Dile a un compañero qué hacer con scale.</span></p>
         <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
-        <div class="writeline"></div>
+        <textarea class="writeline" rows="1" placeholder="Type your notes or work here..."></textarea>
       </div>
     </div>
   </div>
   <div class="twr-block">
     <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
     <div class="twr-stems"><p class="twr-frame"><span class="twr-en">120 guests is ___ times bigger than 8 because 120 divided by 8 equals ___.</span><span class="twr-es">120 invitados es ___ veces más que 8 porque 120 entre 8 es ___.</span></p><p class="twr-frame"><span class="twr-en">So I scale by ___, which keeps the recipe in ___.</span><span class="twr-es">Entonces escalo por ___, lo que mantiene la receta en ___.</span></p><p class="twr-frame"><span class="twr-en">I reasoned that 4:7 and 12:21 are ___ because ___.</span><span class="twr-es">Razoné que 4:7 y 12:21 son ___ porque ___.</span></p></div>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+    <textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea>
   </div>
 </section>
   <section class="section tryit-section">
@@ -644,12 +674,12 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tryit">
   <p class="tryit-num">1. A map scale is 1 inch = 25 miles. Two cities are 4.5 inches apart. How far apart in real life?</p>
   <ol class="try-choices" type="A"><li>112.5 miles</li><li>100 miles</li><li>125 miles</li><li>29.5 miles</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
 <div class="tryit">
   <p class="tryit-num">2. A printer prints 24 pages in 3 minutes. How many pages in 7 minutes?</p>
   <ol class="try-choices" type="A"><li>56</li><li>48</li><li>63</li><li>21</li></ol>
-  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
@@ -657,14 +687,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tryit-num">A recipe serves 6 people and uses 4 cups of rice. You need to serve 15 people. Show two different methods to find how much rice you need: (1) using a scale factor and (2) using a unit rate.</p>
     
     
-    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+    <div class="work-space"><span class="ws-label">Show your work:</span><textarea class="writeline" rows="4" placeholder="Type your notes or work here..."></textarea></div>
   </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>
   <p class="reflect-stem">A recipe calls for 6 cups of flour for every 15 cookies. How many cups of flour are needed to make 45 cookies?</p>
   <ol class="try-choices" type="A"><li>18</li><li>12</li><li>24</li><li>21</li></ol>
-  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  <div class="work-space"><span class="ws-label">Your answer:</span><textarea class="writeline" rows="3" placeholder="Type your notes or work here..."></textarea></div>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
@@ -673,8 +703,5 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 3-6 · Standard 6.RP.3</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

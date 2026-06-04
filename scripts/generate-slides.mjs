@@ -357,6 +357,125 @@ function generateMathVisualSvg(lessonId, data) {
   return svg;
 }
 
+// Generate high-fidelity vocabulary SVG diagram based on term
+function generateVocabularyVisualSvg(term) {
+  const t = String(term || '').toLowerCase().trim();
+  const width = 110;
+  const height = 65;
+  
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="background:white; border-radius:4px; display:block; margin:2px auto; border:1px solid #e1eaef; flex-shrink:0;">`;
+  
+  if (t.includes('prime number')) {
+    svg += `<text x="55" y="12" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">PRIME: 7</text>`;
+    for (let i = 0; i < 7; i++) {
+      svg += `<circle cx="${10 + i * 15}" cy="32" r="3.5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    }
+    svg += `<text x="55" y="54" font-family="Hanken Grotesk, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Only 1 row of 7</text>`;
+  } else if (t.includes('composite number')) {
+    svg += `<text x="55" y="12" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">COMPOSITE: 12</text>`;
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 4; c++) {
+        svg += `<circle cx="${28 + c * 18}" cy="${24 + r * 11}" r="3" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+      }
+    }
+    svg += `<text x="55" y="60" font-family="Hanken Grotesk, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Grid: 3 × 4</text>`;
+  } else if (t.includes('factor tree') || t.includes('prime factorization')) {
+    svg += `<line x1="55" y1="12" x2="35" y2="30" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<line x1="55" y1="12" x2="75" y2="30" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<line x1="75" y1="30" x2="60" y2="48" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<line x1="75" y1="30" x2="90" y2="48" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    
+    svg += `<circle cx="55" cy="12" r="6" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<text x="55" y="15" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">12</text>`;
+    
+    svg += `<circle cx="35" cy="30" r="6" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<text x="35" y="33" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">2</text>`;
+    
+    svg += `<circle cx="75" cy="30" r="6" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<text x="75" y="33" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">6</text>`;
+    
+    svg += `<circle cx="60" cy="48" r="6" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<text x="60" y="51" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">2</text>`;
+    
+    svg += `<circle cx="90" cy="48" r="6" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<text x="90" y="51" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">3</text>`;
+  } else if (t.includes('exponent')) {
+    svg += `<text x="30" y="44" font-family="Outfit, sans-serif" font-size="28" fill="${COLOR_NAVY}" font-weight="bold">5</text>`;
+    svg += `<text x="48" y="24" font-family="Outfit, sans-serif" font-size="16" fill="${COLOR_AMBER}" font-weight="bold">3</text>`;
+    svg += `<text x="72" y="24" font-family="Outfit" font-size="7" fill="${COLOR_NAVY}">Exponent</text>`;
+    svg += `<text x="72" y="44" font-family="Outfit" font-size="7" fill="${COLOR_NAVY}">Base</text>`;
+    svg += `<path d="M70,22 L58,22" stroke="${COLOR_NAVY}" stroke-width="0.8" marker-end="url(#arrow)"/>`;
+    svg += `<path d="M70,42 L48,42" stroke="${COLOR_NAVY}" stroke-width="0.8" marker-end="url(#arrow)"/>`;
+    svg += `<defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${COLOR_NAVY}"/></marker></defs>`;
+  } else if (t.includes('ratio')) {
+    svg += `<text x="55" y="12" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">Ratio 2:3</text>`;
+    svg += `<circle cx="25" cy="32" r="5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<circle cx="38" cy="32" r="5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<rect x="52" y="26" width="11" height="11" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<rect x="67" y="26" width="11" height="11" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<rect x="82" y="26" width="11" height="11" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+  } else if (t.includes('rate') || t.includes('unit rate')) {
+    svg += `<rect x="10" y="10" width="90" height="32" fill="white" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<line x1="10" y1="26" x2="100" y2="26" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<line x1="55" y1="10" x2="55" y2="42" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<text x="32" y="20" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">Miles</text>`;
+    svg += `<text x="77" y="20" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">Hours</text>`;
+    svg += `<text x="32" y="36" font-family="Outfit" font-size="7" fill="${COLOR_TEAL}" font-weight="bold" text-anchor="middle">60</text>`;
+    svg += `<text x="77" y="36" font-family="Outfit" font-size="7" fill="${COLOR_TEAL}" font-weight="bold" text-anchor="middle">1</text>`;
+    svg += `<text x="55" y="55" font-family="Hanken Grotesk, sans-serif" font-size="6.5" fill="${COLOR_NAVY}" text-anchor="middle">60 mph (Unit Rate)</text>`;
+  } else if (t.includes('percent')) {
+    svg += `<text x="25" y="36" font-family="Outfit, sans-serif" font-size="14" fill="${COLOR_TEAL}" font-weight="bold" text-anchor="middle">25%</text>`;
+    svg += `<g transform="translate(56, 10)">`;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        const fill = (r === 0) ? COLOR_TEAL_LIGHT : 'white';
+        svg += `<rect x="${c * 10}" y="${r * 10}" width="10" height="10" fill="${fill}" stroke="${COLOR_NAVY}" stroke-width="0.7"/>`;
+      }
+    }
+    svg += `</g>`;
+    svg += `<text x="55" y="58" font-family="Hanken Grotesk, sans-serif" font-size="6.5" fill="${COLOR_NAVY}" text-anchor="middle">25 out of 100</text>`;
+  } else if (t.includes('coordinate') || t.includes('quadrant')) {
+    svg += `<line x1="10" y1="50" x2="100" y2="50" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<line x1="20" y1="8" x2="20" y2="58" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<line x1="20" y1="50" x2="90" y2="15" stroke="${COLOR_AMBER}" stroke-width="1.5"/>`;
+    svg += `<circle cx="62" cy="29" r="2.5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<text x="70" y="27" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" font-weight="bold">(x, y)</text>`;
+  } else if (t.includes('variable') || t.includes('equation')) {
+    svg += `<text x="55" y="10" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${t.includes('equation') ? 'x + 2 = 5' : 'Variable: x'}</text>`;
+    svg += `<line x1="55" y1="16" x2="55" y2="46" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+    svg += `<line x1="40" y1="46" x2="70" y2="46" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+    svg += `<line x1="25" y1="22" x2="85" y2="22" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
+    svg += `<line x1="25" y1="22" x2="25" y2="34" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<line x1="15" y1="34" x2="35" y2="34" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+    svg += `<rect x="20" y="27" width="10" height="7" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<text x="25" y="33" font-family="Outfit" font-weight="bold" font-size="6" fill="${COLOR_NAVY}" text-anchor="middle">x</text>`;
+    svg += `<line x1="85" y1="22" x2="85" y2="34" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<line x1="75" y1="34" x2="95" y2="34" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
+    svg += `<circle cx="82" cy="31" r="2.5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+    svg += `<circle cx="88" cy="31" r="2.5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="0.8"/>`;
+  } else if (t.includes('inequality')) {
+    svg += `<text x="55" y="12" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">x &gt; 3</text>`;
+    svg += `<line x1="10" y1="34" x2="100" y2="34" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    for (let i = 0; i < 5; i++) {
+      svg += `<line x1="${20 + i * 17}" y1="31" x2="${20 + i * 17}" y2="37" stroke="${COLOR_NAVY}" stroke-width="0.7"/>`;
+      svg += `<text x="${20 + i * 17}" y="47" font-family="Outfit" font-size="6" fill="${COLOR_NAVY}" text-anchor="middle">${i + 1}</text>`;
+    }
+    svg += `<circle cx="54" cy="34" r="3" fill="white" stroke="${COLOR_TEAL}" stroke-width="1.5"/>`;
+    svg += `<line x1="57" y1="34" x2="96" y2="34" stroke="${COLOR_TEAL}" stroke-width="2"/>`;
+    svg += `<path d="M96,34 L92,31 L92,37 z" fill="${COLOR_TEAL}"/>`;
+  } else {
+    // Default abstract geometry icon
+    svg += `<circle cx="55" cy="32" r="20" fill="none" stroke="${COLOR_TEAL_LIGHT}" stroke-width="4" opacity="0.6"/>`;
+    svg += `<polygon points="55,16 68,44 42,44" fill="none" stroke="${COLOR_TEAL}" stroke-width="1"/>`;
+    svg += `<line x1="30" y1="32" x2="80" y2="32" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
+    svg += `<circle cx="55" cy="32" r="3" fill="${COLOR_NAVY}"/>`;
+    svg += `<text x="55" y="58" font-family="Outfit" font-size="6.5" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">Math Visual</text>`;
+  }
+  
+  svg += `</svg>`;
+  return svg;
+}
+
 // Generate the self-contained slides HTML
 function generateSlidesHtml(lessonId, data) {
   const title = `Lesson ${lessonId}: ${data.title || 'Math Lesson'}`;
@@ -411,21 +530,55 @@ function generateSlidesHtml(lessonId, data) {
     vocabCardsHtml += `
       <div class="vocab-card" onclick="this.classList.toggle('flipped')">
         <div class="vocab-card-inner">
-          <div class="vocab-card-front">
-            <h3>${esc(term.toUpperCase())}</h3>
-            ${termEs ? `<p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">${esc(termEs)}</p>` : ''}
-            <p class="click-hint">Click to flip ➔</p>
+          <div class="vocab-card-front" style="padding: 6px 8px; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+            <h3 style="margin: 0; font-size:13.5px; font-weight:800; color:var(--navy); letter-spacing:0.02em;">${esc(term.toUpperCase())}</h3>
+            ${termEs ? `<p style="font-size:10px; color:var(--gray); font-style:italic; margin: 1px 0 2px;">${esc(termEs)}</p>` : ''}
+            ${generateVocabularyVisualSvg(term)}
+            <p class="click-hint" style="margin: 2px 0 0; font-size:8.5px; font-weight:700; color:var(--gray); text-transform:uppercase;">Click to flip ➔</p>
           </div>
-          <div class="vocab-card-back">
-            <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">${esc(definition)}</p>
-            ${definitionEs ? `<p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">${esc(definitionEs)}</p>` : ''}
-            ${visual ? `<div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> ${esc(visual)}</div>` : ''}
-            ${cloze ? `<div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 ${esc(cloze)}</div>` : ''}
+          <div class="vocab-card-back" style="padding: 10px; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+            <p style="font-weight:800; margin:0 0 4px; color:var(--navy); font-size:13px; line-height:1.3;">${esc(definition)}</p>
+            ${definitionEs ? `<p style="font-size:11px; color:var(--gray); margin:0 0 6px; font-style:italic; line-height:1.25;">${esc(definitionEs)}</p>` : ''}
+            ${visual ? `<div style="border-top: 1.5px dashed var(--teal); padding-top:4px; font-size:10px; font-style:italic; color:var(--body-text); text-align:left; margin-top:auto;"><strong>Ex:</strong> ${esc(visual)}</div>` : ''}
+            ${cloze ? `<div style="margin-top:4px; font-size:10px; background:var(--white); padding:3.5px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 ${esc(cloze)}</div>` : ''}
           </div>
         </div>
       </div>
     `;
   });
+
+  let vocabMatcherHtml = '';
+  const matcherCount = Math.min(4, vocabList.length);
+  if (matcherCount > 0) {
+    vocabMatcherHtml += `<div class="vocab-matcher-container" style="display:flex; flex-direction:column; gap:8px; height:100%; justify-content:center;">`;
+    
+    let optionsHtml = `<option value="">-- Choose Term --</option>`;
+    vocabList.slice(0, matcherCount).forEach(v => {
+      optionsHtml += `<option value="${esc(v.term.toLowerCase())}">${esc(v.term)}</option>`;
+    });
+    
+    vocabList.slice(0, matcherCount).forEach((v, idx) => {
+      const promptText = v.cloze ? v.cloze.replace(/___+/g, '______') : v.definition;
+      
+      vocabMatcherHtml += `
+        <div class="vocab-matcher-row" style="display:flex; justify-content:space-between; align-items:center; background:var(--white); border:1px solid #e1eaeef8; padding:6px 12px; border-radius:6px; font-size:13.5px; line-height:1.35; gap:10px; box-shadow:0 1px 3px rgba(23,50,77,0.02);">
+          <div style="flex:1; font-weight:600; color:var(--body-text); text-align:left;">${esc(promptText)}</div>
+          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+            <select class="vocab-matcher-select" id="vocab-select-${idx}" data-correct="${esc(v.term.toLowerCase())}" onchange="checkVocabMatch(${idx})" style="padding:4px 8px; border-radius:4px; border:1px solid var(--gray); font-family:inherit; font-size:12.5px; background:var(--bg); font-weight:700; outline:none; transition:all 0.2s; max-width: 140px;">
+              ${optionsHtml}
+            </select>
+            <span id="vocab-feedback-${idx}" style="font-size:15px; font-weight:bold; width:12px; text-align:center;"></span>
+          </div>
+        </div>
+      `;
+    });
+    
+    vocabMatcherHtml += `
+      <div id="vocab-matcher-score" style="font-size:13.5px; font-weight:800; text-align:center; color:var(--teal); margin-top:4px;">0 / ${matcherCount} Matched Correctly</div>
+    </div>`;
+  } else {
+    vocabMatcherHtml = `<div style="font-style:italic; color:var(--gray); text-align:center; margin-top:40px; font-size:14px;">No vocabulary items defined.</div>`;
+  }
   
   // Slide 6 Explore Game Bindings
   const explore = data.explore || {};
@@ -505,7 +658,7 @@ function generateSlidesHtml(lessonId, data) {
     
     let exampleStepsHtml = '';
     workedExample.forEach((step, idx) => {
-      exampleStepsHtml += `<div class="worked-step" id="worked-step-${idx + 1}" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
+      exampleStepsHtml += `<div class="worked-step" id="worked-step-${idx + 1}" style="font-size:13.5px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-weight:700; color:var(--navy);">${esc(step.label)}:</span>
         <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">${esc(step.work)}</span>
       </div>`;
@@ -515,14 +668,13 @@ function generateSlidesHtml(lessonId, data) {
       <div class="slide-grid-2">
         <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; position:relative;">
           <div>
-            <div class="slide-badge-row" style="display:flex; align-items:center; margin-bottom:8px;">
-              <span class="slide-badge" style="background:var(--amber); color:var(--navy); font-weight:800; font-size:10px; padding:3px 8px; border-radius:99px; font-family:'Outfit'; text-transform:uppercase; letter-spacing:0.05em; display:inline-flex; align-items:center; gap:4px;">⚠️ ERROR ANALYSIS</span>
+            <div class="slide-badge-row" style="display:flex; align-items:center; margin-bottom:6px;">
+              <span class="slide-badge" style="background:var(--amber); color:var(--navy); font-weight:800; font-size:12px; padding:3px 8px; border-radius:99px; font-family:'Outfit'; text-transform:uppercase; letter-spacing:0.05em; display:inline-flex; align-items:center; gap:4px;">⚠️ ERROR ANALYSIS</span>
             </div>
-            <h2 class="card-title" style="font-size:16px; margin: 4px 0 6px;">${esc(pTitle)}</h2>
-            <p class="card-desc" style="font-size:11.5px; margin-bottom:8px; line-height:1.4;">Analyze the worked steps on the clipboard. Hover over a step button below to highlight its line, select the incorrect step, and justify your fix.</p>
+            <h2 class="card-title" style="font-size:20px; margin: 4px 0 6px;">${esc(pTitle)}</h2>
+            <p class="card-desc" style="font-size:14.5px; margin-bottom:8px; line-height:1.45;">Analyze the worked steps. Select the incorrect step below, and write or sketch your correction.</p>
             
-            <!-- Clipboard Frame with Wood kraft backboard and paper sheet sheet inside -->
-            <div class="clipboard">
+            <div class="clipboard" style="padding-top:28px; margin-top:4px;">
               <div class="clipboard-rivets">
                 <div class="clipboard-rivet"></div>
                 <div class="clipboard-rivet"></div>
@@ -534,21 +686,43 @@ function generateSlidesHtml(lessonId, data) {
           </div>
           
           <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
-            <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
+            <strong style="font-size:12px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
             <div style="display:flex; gap:6px;">
-              ${workedExample.map((s, idx) => `<button class="assess-btn px-btn" id="btn-errstep-${idx + 1}" onmouseover="highlightWorkedStep(${idx + 1})" onmouseout="clearStepHighlight(${idx + 1})" onclick="checkErrorStep(${idx + 1}, ${errorStep})">${idx + 1}</button>`).join('')}
+              ${workedExample.map((s, idx) => `<button class="assess-btn px-btn" id="btn-errstep-${idx + 1}" onmouseover="highlightWorkedStep(${idx + 1})" onmouseout="clearStepHighlight(${idx + 1})" onclick="checkErrorStep(${idx + 1}, ${errorStep})" style="font-size:14px; width:28px; height:28px;">${idx + 1}</button>`).join('')}
             </div>
-            <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+            <div id="error-step-feedback" style="font-size:13px; font-weight:700; min-height:14px; margin-top:2px;"></div>
           </div>
         </div>
         
         <div class="slide-card" style="background:var(--coral); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-          <div>
-            <h2 class="card-title">🛠️ Fix & Justify</h2>
-            <textarea id="practice-fix-work" class="slide-input-placeholder" rows="5" placeholder="Explain the error and write the correct calculation steps here..."></textarea>
+          <div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-shrink:0;">
+              <h2 class="card-title" style="font-size:22px; margin:0; color:var(--navy);">🛠️ Fix &amp; Justify</h2>
+              <div class="tabs-container" style="margin:0; gap:2px; height:22px; padding-left:0;">
+                <button class="tab-btn active" id="btn-pfix-write" onclick="switchPfixMode('write')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Write</button>
+                <button class="tab-btn" id="btn-pfix-sketch" onclick="switchPfixMode('sketch')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Sketch</button>
+              </div>
+            </div>
+            
+            <div id="pfix-mode-write" style="display:block; flex:1; height:calc(100% - 30px);">
+              <textarea id="practice-fix-work" class="slide-input-placeholder" rows="5" placeholder="Explain the error and write the correct calculation steps here..." style="height:100%; font-size:15px;"></textarea>
+            </div>
+            
+            <div id="pfix-mode-sketch" style="display:none; flex:1; flex-direction:column; justify-content:space-between; height:calc(100% - 30px);">
+              <div class="math-visual-container" style="flex:1; min-height:110px; border:1.5px dashed var(--navy); border-radius:6px; background:white; position:relative;">
+                <canvas id="practice-fix-canvas" width="400" height="130" style="width:100%; height:100%; cursor:crosshair;"></canvas>
+              </div>
+              <div style="display:flex; gap:6px; margin-top:4px; align-items:center; flex-shrink:0;">
+                <button class="assess-btn px-btn active" id="btn-pfix-draw" onclick="setCanvasTool('practice-fix-canvas', 'draw')" style="width:20px; height:20px; font-size:10px; padding:0;">✏️</button>
+                <button class="assess-btn px-btn" id="btn-pfix-erase" onclick="setCanvasTool('practice-fix-canvas', 'erase')" style="width:20px; height:20px; font-size:10px; padding:0;">🧽</button>
+                <button class="assess-btn px-btn" id="btn-pfix-undo" onclick="undoCanvas('practice-fix-canvas')" style="width:20px; height:20px; font-size:10px; padding:0;">↩️</button>
+                <button class="tool-btn-clear" onclick="clearCanvas('practice-fix-canvas')" style="padding:2px 6px; font-size:9.5px; margin-left:auto; height:20px; line-height:1;">Clear</button>
+              </div>
+            </div>
           </div>
-          <button class="btn-present" onclick="revealPracticeSolution()" style="align-self:flex-end; padding:6px 12px; font-size:11px; margin-top:6px;">Reveal Solution</button>
-          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:10px; line-height:1.4; color:var(--body-text); margin-top:6px; box-shadow:var(--shadow);">
+          
+          <button class="btn-present" onclick="revealPracticeSolution()" style="align-self:flex-end; padding:6px 12px; font-size:12px; margin-top:6px; flex-shrink:0;">Reveal Solution</button>
+          <div id="practice-solution-box" style="display:none; background:var(--white); border:1px solid #D9795D; border-radius:6px; padding:6px 10px; font-size:12.5px; line-height:1.4; color:var(--body-text); margin-top:6px; box-shadow:var(--shadow); flex-shrink:0;">
             <strong>Correct Work:</strong> ${esc(correctWork)}
           </div>
         </div>
@@ -561,8 +735,8 @@ function generateSlidesHtml(lessonId, data) {
     
     let choicesHtml = '';
     choices.forEach((choice, idx) => {
-      choicesHtml += `<button class="assess-btn mc-btn" id="btn-choice-${idx}" onclick="checkMCQuestion(${idx}, ${correctIndex})" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">${String.fromCharCode(65 + idx)}</span>
+      choicesHtml += `<button class="assess-btn mc-btn" id="btn-choice-${idx}" onclick="checkMCQuestion(${idx}, ${correctIndex})" style="text-align:left; padding:8px 12px; font-size:14px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
+        <span style="background:var(--google-gray); color:var(--navy); width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px;">${String.fromCharCode(65 + idx)}</span>
         <span style="flex:1;">${esc(choice)}</span>
       </button>`;
     });
@@ -571,22 +745,43 @@ function generateSlidesHtml(lessonId, data) {
       <div class="slide-grid-2">
         <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
           <div>
-            <div class="slide-badge-row" style="display:flex; align-items:center; margin-bottom:8px;">
-              <span class="slide-badge" style="background:var(--teal); color:var(--white); font-weight:800; font-size:10px; padding:3px 8px; border-radius:99px; font-family:'Outfit'; text-transform:uppercase; letter-spacing:0.05em; display:inline-flex; align-items:center; gap:4px;">📝 PRACTICE CHALLENGE</span>
+            <div class="slide-badge-row" style="display:flex; align-items:center; margin-bottom:6px;">
+              <span class="slide-badge" style="background:var(--teal); color:var(--white); font-weight:800; font-size:12px; padding:3px 8px; border-radius:99px; font-family:'Outfit'; text-transform:uppercase; letter-spacing:0.05em; display:inline-flex; align-items:center; gap:4px;">📝 PRACTICE CHALLENGE</span>
             </div>
-            <p class="card-desc" style="font-size:13px; font-weight:700; line-height:1.4; margin-bottom:12px; color:var(--navy);">${esc(stem)}</p>
+            <p class="card-desc" style="font-size:16px; font-weight:700; line-height:1.4; margin-bottom:12px; color:var(--navy);">${esc(stem)}</p>
             <div style="margin-top:10px;">
               ${choicesHtml}
             </div>
           </div>
-          <div id="mc-question-feedback" style="font-size:11px; font-weight:700; min-height:16px;"></div>
+          <div id="mc-question-feedback" style="font-size:13.5px; font-weight:700; min-height:16px;"></div>
         </div>
         
         <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-          <div>
-            <h2 class="card-title">✍️ Work & Justification</h2>
-            <p style="font-size:11.5px; margin-top:0; color:var(--navy); line-height:1.4;">Use this workspace to calculate the answer or explain why your selected choice is correct.</p>
-            <textarea id="practice-mc-work" class="slide-input-placeholder" rows="6" placeholder="Type your calculation steps or reasoning here..."></textarea>
+          <div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-shrink:0;">
+              <h2 class="card-title" style="font-size:22px; margin:0; color:var(--navy);">✍️ Work &amp; Justify</h2>
+              <div class="tabs-container" style="margin:0; gap:2px; height:22px; padding-left:0;">
+                <button class="tab-btn active" id="btn-pmc-write" onclick="switchPmcMode('write')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Write</button>
+                <button class="tab-btn" id="btn-pmc-sketch" onclick="switchPmcMode('sketch')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Sketch</button>
+              </div>
+            </div>
+            <p style="font-size:13px; margin-top:0; color:var(--navy); line-height:1.4; flex-shrink:0;">Use this workspace to calculate or explain your thinking.</p>
+            
+            <div id="pmc-mode-write" style="display:block; flex:1; height:calc(100% - 30px);">
+              <textarea id="practice-mc-work" class="slide-input-placeholder" rows="6" placeholder="Type your calculation steps or reasoning here..." style="height:100%; font-size:15px;"></textarea>
+            </div>
+            
+            <div id="pmc-mode-sketch" style="display:none; flex:1; flex-direction:column; justify-content:space-between; height:calc(100% - 30px);">
+              <div class="math-visual-container" style="flex:1; min-height:110px; border:1.5px dashed var(--navy); border-radius:6px; background:white; position:relative;">
+                <canvas id="practice-mc-canvas" width="400" height="130" style="width:100%; height:100%; cursor:crosshair;"></canvas>
+              </div>
+              <div style="display:flex; gap:6px; margin-top:4px; align-items:center; flex-shrink:0;">
+                <button class="assess-btn px-btn active" id="btn-pmc-draw" onclick="setCanvasTool('practice-mc-canvas', 'draw')" style="width:20px; height:20px; font-size:10px; padding:0;">✏️</button>
+                <button class="assess-btn px-btn" id="btn-pmc-erase" onclick="setCanvasTool('practice-mc-canvas', 'erase')" style="width:20px; height:20px; font-size:10px; padding:0;">🧽</button>
+                <button class="assess-btn px-btn" id="btn-pmc-undo" onclick="undoCanvas('practice-mc-canvas')" style="width:20px; height:20px; font-size:10px; padding:0;">↩️</button>
+                <button class="tool-btn-clear" onclick="clearCanvas('practice-mc-canvas')" style="padding:2px 6px; font-size:9.5px; margin-left:auto; height:20px; line-height:1;">Clear</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -596,16 +791,37 @@ function generateSlidesHtml(lessonId, data) {
       <div class="slide-grid-2">
         <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
           <div>
-            <h2 class="card-title">📖 Practice Activity</h2>
-            <p class="card-desc" style="font-size:13px; line-height:1.5;">Apply what you have learned to solve this math challenge. Make sure to double check your calculations with your partner.</p>
+            <h2 class="card-title" style="font-size:22px;">📖 Practice Activity</h2>
+            <p class="card-desc" style="font-size:15px; line-height:1.5;">Apply what you have learned to solve this math challenge. Double check calculations with your partner.</p>
           </div>
-          <textarea id="practice-generic-work" class="slide-input-placeholder" rows="6" placeholder="Type your step-by-step calculations here..."></textarea>
+          <textarea id="practice-generic-work" class="slide-input-placeholder" rows="6" placeholder="Type your step-by-step calculations here..." style="font-size:15px;"></textarea>
         </div>
         <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-          <div>
-            <h2 class="card-title">✍️ Reasoning & Check</h2>
-            <p style="font-size:12px; margin-top:0; color:var(--navy);">Write a sentence explaining why your answer makes sense in this mathematical context.</p>
-            <textarea id="practice-generic-reasoning" class="slide-input-placeholder" rows="6" placeholder="Explain your mathematical logic here..."></textarea>
+          <div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-shrink:0;">
+              <h2 class="card-title" style="font-size:22px; margin:0; color:var(--navy);">✍️ Reasoning &amp; Check</h2>
+              <div class="tabs-container" style="margin:0; gap:2px; height:22px; padding-left:0;">
+                <button class="tab-btn active" id="btn-pgen-write" onclick="switchPgenMode('write')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Write</button>
+                <button class="tab-btn" id="btn-pgen-sketch" onclick="switchPgenMode('sketch')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Sketch</button>
+              </div>
+            </div>
+            <p style="font-size:13.5px; margin-top:0; color:var(--navy); line-height:1.4; flex-shrink:0;">Write a sentence explaining why your answer makes sense.</p>
+            
+            <div id="pgen-mode-write" style="display:block; flex:1; height:calc(100% - 30px);">
+              <textarea id="practice-generic-reasoning" class="slide-input-placeholder" rows="6" placeholder="Explain your mathematical logic here..." style="height:100%; font-size:15px;"></textarea>
+            </div>
+            
+            <div id="pgen-mode-sketch" style="display:none; flex:1; flex-direction:column; justify-content:space-between; height:calc(100% - 30px);">
+              <div class="math-visual-container" style="flex:1; min-height:110px; border:1.5px dashed var(--navy); border-radius:6px; background:white; position:relative;">
+                <canvas id="practice-gen-canvas" width="400" height="130" style="width:100%; height:100%; cursor:crosshair;"></canvas>
+              </div>
+              <div style="display:flex; gap:6px; margin-top:4px; align-items:center; flex-shrink:0;">
+                <button class="assess-btn px-btn active" id="btn-pgen-draw" onclick="setCanvasTool('practice-gen-canvas', 'draw')" style="width:20px; height:20px; font-size:10px; padding:0;">✏️</button>
+                <button class="assess-btn px-btn" id="btn-pgen-erase" onclick="setCanvasTool('practice-gen-canvas', 'erase')" style="width:20px; height:20px; font-size:10px; padding:0;">🧽</button>
+                <button class="assess-btn px-btn" id="btn-pgen-undo" onclick="undoCanvas('practice-gen-canvas')" style="width:20px; height:20px; font-size:10px; padding:0;">↩️</button>
+                <button class="tool-btn-clear" onclick="clearCanvas('practice-gen-canvas')" style="padding:2px 6px; font-size:9.5px; margin-left:auto; height:20px; line-height:1;">Clear</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -634,25 +850,46 @@ function generateSlidesHtml(lessonId, data) {
   if (exitChoices && exitChoices.length > 0) {
     let exitChoicesHtml = '';
     exitChoices.forEach((choice, idx) => {
-      exitChoicesHtml += `<button class="assess-btn exit-btn" id="btn-exit-${idx}" onclick="checkExitTicket(${idx}, ${exitCorrectIndex})" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.3; gap:8px;">
-        <span style="background:var(--google-gray); color:var(--navy); width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:9px;">${String.fromCharCode(65 + idx)}</span>
+      exitChoicesHtml += `<button class="assess-btn exit-btn" id="btn-exit-${idx}" onclick="checkExitTicket(${idx}, ${exitCorrectIndex})" style="text-align:left; padding:6px 12px; font-size:14.5px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.35; gap:10px;">
+        <span style="background:var(--google-gray); color:var(--navy); width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px;">${String.fromCharCode(65 + idx)}</span>
         <span style="flex:1;">${esc(choice)}</span>
       </button>`;
     });
     exitTicketHtml = `
       <div style="margin-top:2px;">
-        <p style="font-size:11.5px; font-weight:700; margin:0 0 6px; color:var(--navy); line-height:1.3;">${esc(exitStem)}</p>
-        <div style="margin-top:4px;">
+        <p style="font-size:15px; font-weight:700; margin:0 0 8px; color:var(--navy); line-height:1.4;">${esc(exitStem)}</p>
+        <div style="margin-top:6px;">
           ${exitChoicesHtml}
         </div>
-        <div id="exit-ticket-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
+        <div id="exit-ticket-feedback" style="font-size:13.5px; font-weight:700; min-height:14px; margin-top:2px;"></div>
       </div>
     `;
   } else {
     exitTicketHtml = `
-      <div>
-        <p style="font-size:12px; margin-bottom:6px; line-height:1.4; font-weight:700; color:var(--navy);">${esc(exitStem)}</p>
-        <textarea id="exit-ticket-text-work" class="slide-input-placeholder" rows="4" placeholder="Type your final answer and explanation here..."></textarea>
+      <div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-shrink:0;">
+          <p style="font-size:14.5px; margin:0; font-weight:700; color:var(--navy); line-height:1.35; flex:1; text-align:left;">${esc(exitStem)}</p>
+          <div class="tabs-container" style="margin:0; gap:2px; height:22px; padding-left:0; flex-shrink:0;">
+            <button class="tab-btn active" id="btn-exit-write" onclick="switchExitMode('write')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Write</button>
+            <button class="tab-btn" id="btn-exit-sketch" onclick="switchExitMode('sketch')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Sketch</button>
+          </div>
+        </div>
+        
+        <div id="exit-mode-write" style="display:block; flex:1; height:calc(100% - 30px);">
+          <textarea id="exit-ticket-text-work" class="slide-input-placeholder" rows="4" placeholder="Type your final answer and explanation here..." style="height:100%; font-size:15px;"></textarea>
+        </div>
+        
+        <div id="exit-mode-sketch" style="display:none; flex:1; flex-direction:column; justify-content:space-between; height:calc(100% - 30px);">
+          <div class="math-visual-container" style="flex:1; min-height:110px; border:1.5px dashed var(--navy); border-radius:6px; background:white; position:relative;">
+            <canvas id="exit-canvas" width="400" height="130" style="width:100%; height:100%; cursor:crosshair;"></canvas>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:4px; align-items:center; flex-shrink:0;">
+            <button class="assess-btn px-btn active" id="btn-exit-draw" onclick="setCanvasTool('exit-canvas', 'draw')" style="width:20px; height:20px; font-size:10px; padding:0;">✏️</button>
+            <button class="assess-btn px-btn" id="btn-exit-erase" onclick="setCanvasTool('exit-canvas', 'erase')" style="width:20px; height:20px; font-size:10px; padding:0;">🧽</button>
+            <button class="assess-btn px-btn" id="btn-exit-undo" onclick="undoCanvas('exit-canvas')" style="width:20px; height:20px; font-size:10px; padding:0;">↩️</button>
+            <button class="tool-btn-clear" onclick="clearCanvas('exit-canvas')" style="padding:2px 6px; font-size:9.5px; margin-left:auto; height:20px; line-height:1;">Clear</button>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -732,7 +969,7 @@ function generateSlidesHtml(lessonId, data) {
     }
     .g-doc-title {
       font-weight: 700;
-      font-size: 15px;
+      font-size: 18px;
       color: var(--navy);
       margin: 0;
       display: flex;
@@ -742,7 +979,7 @@ function generateSlidesHtml(lessonId, data) {
     .g-doc-title span {
       background: var(--teal-light);
       color: var(--teal);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 800;
       padding: 2px 6px;
       border-radius: 99px;
@@ -946,7 +1183,7 @@ function generateSlidesHtml(lessonId, data) {
       background: var(--theme-color);
       color: var(--white);
       font-weight: 800;
-      font-size: 9px;
+      font-size: 11px;
       padding: 3px 8px;
       border-radius: 99px;
       font-family: "Outfit", sans-serif;
@@ -1078,16 +1315,16 @@ function generateSlidesHtml(lessonId, data) {
       border: 1.5px dashed var(--teal);
       color: var(--navy);
     }
-    .vocab-card-front h3 { margin: 0; font-size: 13.5px; font-weight: 800; letter-spacing: 0.05em; }
+    .vocab-card-front h3 { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: 0.05em; }
     .vocab-card-back {
       background: var(--teal-light);
       border: 1.5px solid var(--teal);
       color: var(--body-text);
       transform: rotateY(180deg);
-      font-size: 11px;
+      font-size: 13.5px;
       line-height: 1.4;
     }
-    .click-hint { font-size: 9px; color: var(--gray); margin-top: 4px; font-weight: 600; }
+    .click-hint { font-size: 11px; color: var(--gray); margin-top: 4px; font-weight: 600; }
     
     /* File Folder Notebook Concept Tabs */
     .tabs-container {
@@ -1103,7 +1340,7 @@ function generateSlidesHtml(lessonId, data) {
       border: 1px solid #dadce0;
       border-bottom: none;
       font-family: "Outfit", sans-serif;
-      font-size: 11px;
+      font-size: 13.5px;
       font-weight: 700;
       color: var(--gray);
       padding: 8px 16px;
@@ -1137,7 +1374,8 @@ function generateSlidesHtml(lessonId, data) {
       box-shadow: var(--shadow);
       position: relative;
       z-index: 5;
-      line-height: 22px !important;
+      font-size: 14.5px;
+      line-height: 1.5 !important;
     }
     
     /* Visual Math Container with Canvas Overlay */
@@ -1227,7 +1465,7 @@ function generateSlidesHtml(lessonId, data) {
       border: 1px dashed var(--gray);
       border-radius: 4px;
       padding: 8px;
-      font-size: 12.5px;
+      font-size: 15px;
       font-family: inherit;
       background: #FDFDFB;
       color: var(--body-text);
@@ -1259,8 +1497,8 @@ function generateSlidesHtml(lessonId, data) {
       padding: 16px 16px 16px 52px !important;
       min-height: 100px;
       font-family: 'Hanken Grotesk', sans-serif;
-      font-size: 14px;
-      line-height: 22px !important;
+      font-size: 16px;
+      line-height: 24px !important;
       color: var(--navy);
       text-align: left;
       box-shadow: 0 8px 16px rgba(23,50,77,0.08);
@@ -1269,6 +1507,28 @@ function generateSlidesHtml(lessonId, data) {
       align-items: center;
       justify-content: flex-start;
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    .index-card-mini {
+      background-color: var(--white);
+      background-image: 
+        linear-gradient(rgba(31, 166, 162, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(217, 121, 93, 0.15) 1px, transparent 1px);
+      background-size: 100% 16px, 100% 100%;
+      background-position: 0 4px, 25px 0;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 6px 8px 6px 32px !important;
+      font-size: 12.5px;
+      line-height: 1.3;
+      color: var(--navy);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(23,50,77,0.04);
+      position: relative;
+      min-height: 62px;
+      transition: all 0.2s ease;
     }
     
     /* Explore Game slide-off animations */
@@ -1442,7 +1702,7 @@ function generateSlidesHtml(lessonId, data) {
     }
     .post-it-title {
       font-family: "Outfit", sans-serif;
-      font-size: 11px;
+      font-size: 13.5px;
       font-weight: 800;
       color: var(--navy);
       margin-bottom: 6px;
@@ -1452,7 +1712,7 @@ function generateSlidesHtml(lessonId, data) {
       background: transparent;
       border: none;
       border-bottom: 1px dashed rgba(23,50,77,0.25);
-      font-size: 11px;
+      font-size: 13.5px;
       font-family: inherit;
       color: var(--navy);
       outline: none;
@@ -1530,7 +1790,7 @@ function generateSlidesHtml(lessonId, data) {
       border-radius: 6px;
       border: 1.5px solid var(--gray);
       background: var(--white);
-      font-size: 11.5px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
       text-align: center;
@@ -1747,7 +2007,7 @@ function generateSlidesHtml(lessonId, data) {
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
             <span style="font-size:10px; color:var(--gray); font-weight:700; margin-left:auto; font-family:'Outfit';">STANDARD: ${esc(standard)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Objectives &amp; Targets</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Objectives &amp; Targets</h3>
           
           <div class="slide-card">
             <div style="font-size: 16px; line-height: 1.6; display: flex; flex-direction: column; gap: 16px; justify-content: center; height: 100%;">
@@ -1768,7 +2028,7 @@ function generateSlidesHtml(lessonId, data) {
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Scenario Launch</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Scenario Launch</h3>
           
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
@@ -1807,7 +2067,7 @@ function generateSlidesHtml(lessonId, data) {
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Concept Introduction</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Concept Introduction</h3>
           
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
@@ -1835,22 +2095,38 @@ function generateSlidesHtml(lessonId, data) {
           </div>
         </div>
         
-        <!-- SLIDE 4: VOCABULARY CARD GRID -->
+        <!-- SLIDE 4: VOCABULARY CARD GRID & MATCHER -->
         <div class="slide-body" id="slide-4">
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Vocabulary</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Vocabulary</h3>
           
           <div class="slide-grid-2">
-            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; height: 100%;">
-              <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin:0;">Click each flashcard on the right to flip and reveal its definition, Spanish translation, and visual examples.</p>
-              <div style="background:var(--teal-light); border-radius:8px; padding:10px; font-size:11px; color:var(--navy); font-weight:700; line-height:1.4;">
-                💡 Differentiated multi-language support. Use these keywords in your team discourse!
+            <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%;">
+              <p class="card-desc" style="font-size:16px; line-height:1.6; margin:0;">Master the vocabulary keys. Flip the flashcards to see Spanish translations and visual diagrams, or play the matcher game!</p>
+              <div style="background:var(--teal-light); border-radius:8px; padding:12px; font-size:14px; color:var(--navy); font-weight:700; line-height:1.5; border: 1.5px solid var(--teal);">
+                💡 Tip: Use these core vocabulary terms during your partner work and team explanations!
               </div>
             </div>
-            <div class="vocab-grid">
-              ${vocabCardsHtml}
+            
+            <div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+              <div class="tabs-container" style="flex-shrink:0;">
+                <button class="tab-btn active" id="btn-vocab-study" onclick="switchVocabTab('study')">Study Cards</button>
+                <button class="tab-btn" id="btn-vocab-match" onclick="switchVocabTab('match')">Vocab Matcher</button>
+              </div>
+              
+              <!-- Study Cards Tab Panel -->
+              <div id="vocab-tab-study" class="tab-content" style="flex:1; padding: 10px; line-height: normal !important; background-image: none; height: calc(100% - 32px);">
+                <div class="vocab-grid">
+                  ${vocabCardsHtml}
+                </div>
+              </div>
+              
+              <!-- Matcher Tab Panel -->
+              <div id="vocab-tab-match" class="tab-content" style="flex:1; padding: 10px; line-height: normal !important; background-image: none; display: none; height: calc(100% - 32px);">
+                ${vocabMatcherHtml}
+              </div>
             </div>
           </div>
         </div>
@@ -1860,7 +2136,7 @@ function generateSlidesHtml(lessonId, data) {
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Modeling Workspace</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Visual Modeling Workspace</h3>
           
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
@@ -1911,52 +2187,46 @@ function generateSlidesHtml(lessonId, data) {
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Explore Activity</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 6px 0 10px; letter-spacing:-0.02em;">Explore Activity</h3>
           
           <div class="slide-grid-2">
-            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
-              <div>
+            <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; overflow:hidden;">
+              <div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
                 <!-- Progress Container -->
-                <div class="sorting-progress-container">
-                  <div id="sorting-progress-bar" class="sorting-progress-bar"></div>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                  <p class="card-desc" style="font-size:12px; margin:0; line-height:1.4;" id="explore-instructions">${esc(exploreInstructions)}</p>
-                  <button class="assess-btn" onclick="resetSortingGame()" style="flex:none; width:auto; padding:2px 6px; font-size:9.5px; height:20px; border-radius:4px; font-weight:800; background:transparent; border-color:var(--gray); color:var(--gray); cursor:pointer;">🔄 Reset</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-shrink:0;">
+                  <div style="flex:1;">
+                    <div style="font-size:13.5px; font-weight:800; color:var(--navy); margin-bottom:2px;" id="explore-progress-text">0 / ${normalizedItems.length} Sorted Correctly</div>
+                    <div class="sorting-progress-container" style="margin-bottom:0; height:6px;">
+                      <div id="sorting-progress-bar" class="sorting-progress-bar"></div>
+                    </div>
+                  </div>
+                  <button class="assess-btn" onclick="resetSortingGame()" style="flex:none; width:auto; padding:3px 10px; font-size:12px; height:24px; border-radius:4px; font-weight:800; background:transparent; border-color:var(--gray); color:var(--gray); cursor:pointer; margin-left:12px;">🔄 Reset All</button>
                 </div>
                 
-                <!-- Ruled Lined Index Card Sorting Game -->
-                <div id="sorting-game-container" style="background:var(--google-gray); padding:8px; border-radius:8px; border:1px solid #dadce0; text-align:center; min-height:100px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px; position:relative; overflow:hidden;">
-                  
+                <p class="card-desc" style="font-size:14px; margin:0 0 8px; line-height:1.4; flex-shrink:0;" id="explore-instructions">${esc(exploreInstructions)}</p>
+                
+                <!-- Grid of Mini Index Cards -->
+                <div id="explore-grid-container" style="flex:1; overflow-y:auto; padding:6px; background:var(--google-gray); border-radius:6px; border:1px solid #dadce0; position:relative;">
                   <!-- Confetti Container -->
                   <div id="confetti-container" class="confetti-overlay" style="display:none;"></div>
-
-                  <div id="sorting-card" class="index-card" style="width:95%; min-height:55px; padding: 10px 10px 10px 45px !important; font-size:12.5px; line-height:18px !important; background-size: 100% 18px, 100% 100%; background-position: 0 5px, 35px 0;">
-                    <!-- Active Index Card Text -->
+                  
+                  <div id="explore-cards-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <!-- Populated dynamically with mini index cards -->
                   </div>
-                  <div id="sorting-buttons" style="display:flex; gap:6px; justify-content:center; width:100%; flex-wrap:wrap;">
-                    <!-- Category bins loaded dynamically -->
-                  </div>
-                  <div id="sorting-feedback" style="font-size:10px; font-weight:700; min-height:12px;"></div>
-                </div>
-                
-                <!-- Persistent Open Pocket Folders Audit List -->
-                <div id="sorting-pockets-log" style="display:flex; gap:8px; margin-top:8px; height:105px; overflow:hidden;">
-                  <!-- Bins populated dynamically with scrollable list -->
                 </div>
               </div>
               
-              <div style="margin-top:4px;">
-                <strong style="font-size:9.5px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
+              <div style="margin-top:6px; flex-shrink:0;">
+                <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
                 <div style="margin-top:2px; max-height: 45px; overflow-y: auto;">${exploreVocabBankHtml}</div>
               </div>
             </div>
             
             <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title" style="font-size:14px; margin-bottom:6px; color:var(--navy);">✍️ Explore Discourse</h2>
-                <p style="font-size:11px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">${esc(discoursePrompt)}</p>
-                ${discourseFrame ? `<div style="font-size:9.5px; font-style:italic; color:var(--body-text); background:var(--white); padding:4px 6px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>${esc(discourseFrame)}</div>` : ''}
+                <h2 class="card-title" style="font-size:22px; margin-bottom:6px; color:var(--navy);">✍️ Explore Discourse</h2>
+                <p style="font-size:14.5px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.4;">${esc(discoursePrompt)}</p>
+                ${discourseFrame ? `<div style="font-size:12px; font-style:italic; color:var(--body-text); background:var(--white); padding:6px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.35;"><strong>Sentence Starter:</strong><br/>${esc(discourseFrame)}</div>` : ''}
               </div>
               <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
             </div>
@@ -1968,7 +2238,7 @@ function generateSlidesHtml(lessonId, data) {
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Practice Challenge</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Practice Challenge</h3>
           ${practiceHtml}
         </div>
         
@@ -1977,26 +2247,47 @@ function generateSlidesHtml(lessonId, data) {
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Real-World Connection</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Real-World Connection</h3>
           
           <div class="slide-grid-2">
             <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
               <div>
-                <h2 class="card-title" style="font-size:15px; margin-bottom:8px; font-weight:800; color:var(--teal);">🌍 Math in the Wild</h2>
-                <p class="card-desc" style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:var(--body-text);">${esc(connectScenario)}</p>
+                <h2 class="card-title" style="font-size:22px; margin-bottom:8px; font-weight:800; color:var(--teal);">🌍 Math in the Wild</h2>
+                <p class="card-desc" style="font-size:15px; line-height:1.5; margin-bottom:8px; color:var(--body-text);">${esc(connectScenario)}</p>
               </div>
               <div style="margin-top:auto;">
-                <strong style="font-size:9.5px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
+                <strong style="font-size:11px; color:var(--gray); text-transform:uppercase;">Keyword Bank:</strong>
                 <div style="margin-top:2px; max-height: 45px; overflow-y: auto;">${connectVocabBankHtml}</div>
               </div>
             </div>
             <div class="slide-card" style="background:var(--teal-light); display:flex; flex-direction:column; justify-content:space-between; height:100%;">
-              <div>
-                <h2 class="card-title" style="font-size:14px; margin-bottom:6px; color:var(--navy);">✍️ Connection Reasoning</h2>
-                <p style="font-size:11px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.3;">${esc(connectPrompt)}</p>
-                ${connectFrame ? `<div style="font-size:9.5px; font-style:italic; color:var(--body-text); background:var(--white); padding:4px 6px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.3;"><strong>Sentence Starter:</strong><br/>${esc(connectFrame)}</div>` : ''}
+              <div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-shrink:0;">
+                  <h2 class="card-title" style="font-size:22px; margin:0; color:var(--navy);">✍️ Connection Reasoning</h2>
+                  <div class="tabs-container" style="margin:0; gap:2px; height:22px; padding-left:0;">
+                    <button class="tab-btn active" id="btn-rw-write" onclick="switchRwMode('write')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Write</button>
+                    <button class="tab-btn" id="btn-rw-sketch" onclick="switchRwMode('sketch')" style="padding:2px 8px; font-size:9.5px; height:22px; border-radius:4px 4px 0 0;">Sketch</button>
+                  </div>
+                </div>
+                <p style="font-size:14.5px; margin-top:0; color:var(--navy); font-weight:600; line-height:1.35; flex-shrink:0;">${esc(connectPrompt)}</p>
+                ${connectFrame ? `<div style="font-size:12px; font-style:italic; color:var(--body-text); background:var(--white); padding:5px 8px; border-radius:4px; border:1px solid #e1eaeef8; margin-bottom:6px; line-height:1.35; flex-shrink:0;"><strong>Sentence Starter:</strong><br/>${esc(connectFrame)}</div>` : ''}
+                
+                <div id="rw-mode-write" style="display:block; flex:1; height:calc(100% - 30px);">
+                  <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection explanation here..." style="height:100%; font-size:15px;"></textarea>
+                </div>
+                
+                <div id="rw-mode-sketch" style="display:none; flex:1; flex-direction:column; justify-content:space-between; height:calc(100% - 30px);">
+                  <div class="math-visual-container" style="flex:1; min-height:110px; border:1.5px dashed var(--navy); border-radius:6px; background:white; position:relative;">
+                    <canvas id="rw-canvas" width="400" height="130" style="width:100%; height:100%; cursor:crosshair;"></canvas>
+                  </div>
+                  <div style="display:flex; gap:6px; margin-top:4px; align-items:center; flex-shrink:0;">
+                    <button class="assess-btn px-btn active" id="btn-rw-draw" onclick="setCanvasTool('rw-canvas', 'draw')" style="width:20px; height:20px; font-size:10px; padding:0;">✏️</button>
+                    <button class="assess-btn px-btn" id="btn-rw-erase" onclick="setCanvasTool('rw-canvas', 'erase')" style="width:20px; height:20px; font-size:10px; padding:0;">🧽</button>
+                    <button class="assess-btn px-btn" id="btn-rw-undo" onclick="undoCanvas('rw-canvas')" style="width:20px; height:20px; font-size:10px; padding:0;">↩️</button>
+                    <button class="tool-btn-clear" onclick="clearCanvas('rw-canvas')" style="padding:2px 6px; font-size:9.5px; margin-left:auto; height:20px; line-height:1;">Clear</button>
+                  </div>
+                </div>
               </div>
-              <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection explanation here..."></textarea>
             </div>
           </div>
         </div>
@@ -2006,7 +2297,7 @@ function generateSlidesHtml(lessonId, data) {
           <div class="slide-badge-row">
             <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
           </div>
-          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:24px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Reflection &amp; Exit Ticket</h3>
+          <h3 class="slide-main-title" style="font-family:'Outfit'; font-size:28px; color:var(--navy); font-weight:800; margin: 8px 0 12px; letter-spacing:-0.02em;">Reflection &amp; Exit Ticket</h3>
           
           <div class="slide-grid-2">
             <div class="slide-card" style="justify-content:space-between; height: 100%; border:none; background:transparent; box-shadow:none; padding:0;">
@@ -2039,12 +2330,12 @@ function generateSlidesHtml(lessonId, data) {
             
             <div class="slide-card" style="background:var(--teal-light); justify-content:space-between; height: 100%;">
               <div>
-                <h2 class="card-title" style="font-size:15px; margin-bottom:4px; font-weight:800; color:var(--navy);">📝 Exit Ticket</h2>
+                <h2 class="card-title" style="font-size:22px; margin-bottom:4px; font-weight:800; color:var(--navy);">📝 Exit Ticket</h2>
                 ${exitTicketHtml}
               </div>
               
               <div style="margin-top:4px; border-top: 1px dashed var(--teal); padding-top:4px;">
-                <strong style="font-size:9.5px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
+                <strong style="font-size:12px; color:var(--navy); text-transform:uppercase;">Self-Assessment:</strong>
                 <div class="assess-row">
                   <button class="assess-btn" id="btn-gotit" onclick="setSelfAssessment('gotit')">Got it! 👍</button>
                   <button class="assess-btn" id="btn-getting" onclick="setSelfAssessment('getting')">Almost 🧭</button>
@@ -2217,26 +2508,155 @@ function generateSlidesHtml(lessonId, data) {
       let contentHtml = '<h4 style="margin: 0 0 8px 0; color:var(--navy); font-size:13px; font-weight:800;">' + data.title + '</h4>';
       contentHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 11.5px; line-height: 1.5; color: var(--body-text);">';
       data.lines.forEach(line => {
-        contentHtml += '<li style="margin-bottom: 5px;">' + line + '</li>';
-      });
-      contentHtml += '</ul>';
+        contentHtml += '<li style="margin-bottom: 5px;">' + line     // Slide 4 Vocabulary study & match tab switching
+    function switchVocabTab(tabId) {
+      const studyBtn = document.getElementById('btn-vocab-study');
+      const matchBtn = document.getElementById('btn-vocab-match');
+      if (studyBtn && matchBtn) {
+        studyBtn.classList.toggle('active', tabId === 'study');
+        matchBtn.classList.toggle('active', tabId === 'match');
+      }
       
-      document.getElementById('concept-tab-content').innerHTML = contentHtml;
-      activeConceptTab = tabId;
+      const studyTab = document.getElementById('vocab-tab-study');
+      const matchTab = document.getElementById('vocab-tab-match');
+      if (studyTab) studyTab.style.display = tabId === 'study' ? 'block' : 'none';
+      if (matchTab) matchTab.style.display = tabId === 'match' ? 'block' : 'none';
+      
+      if (tabId === 'study') {
+        document.querySelectorAll('.vocab-card').forEach(card => card.classList.remove('flipped'));
+      }
       saveWork();
     }
     
-    // Explore Activity sorting game logic with index-card stack slide animations
-    function initSortingGame() {
-      const container = document.getElementById('sorting-game-container');
-      if (!container) return;
+    function checkVocabMatch(idx) {
+      const select = document.getElementById('vocab-select-' + idx);
+      const feedback = document.getElementById('vocab-feedback-' + idx);
+      if (!select || !feedback) return;
       
-      if (exploreItems.length === 0) {
-        container.innerHTML = '<div style="font-size:12px; font-style:italic; color:var(--gray);">No sorting items defined for this explore activity.</div>';
-        return;
+      const val = select.value.toLowerCase().trim();
+      const correct = select.getAttribute('data-correct').toLowerCase().trim();
+      
+      if (val === "") {
+        feedback.textContent = "";
+        select.style.borderColor = "var(--gray)";
+        select.style.background = "var(--bg)";
+      } else if (val === correct) {
+        feedback.textContent = "✓";
+        feedback.style.color = "var(--teal)";
+        select.style.borderColor = "var(--teal)";
+        select.style.background = "var(--teal-light)";
+      } else {
+        feedback.textContent = "✕";
+        feedback.style.color = "#D9795D";
+        select.style.borderColor = "#D9795D";
+        select.style.background = "var(--coral)";
       }
       
-      renderActiveExploreCard();
+      updateVocabScore();
+      saveWork();
+    }
+    
+    function updateVocabScore() {
+      const selects = document.querySelectorAll('.vocab-matcher-select');
+      let score = 0;
+      selects.forEach(select => {
+        const val = select.value.toLowerCase().trim();
+        const correct = select.getAttribute('data-correct').toLowerCase().trim();
+        if (val === correct && val !== "") {
+          score++;
+        }
+      });
+      const scoreDiv = document.getElementById('vocab-matcher-score');
+      if (scoreDiv) {
+        scoreDiv.textContent = score + ' / ' + selects.length + ' Matched Correctly';
+      }
+    }
+
+    // Slide 6 Explore Card Grid rendering & selection logic
+    function initSortingGame() {
+      renderExploreGrid();
+    }
+    
+    function renderExploreGrid() {
+      const grid = document.getElementById('explore-cards-grid');
+      if (!grid) return;
+      
+      let html = "";
+      exploreItems.forEach((item) => {
+        const selectedCat = studentExploreSorted[item.id];
+        
+        let cardStyle = "border: 1px solid #dadce0; background: var(--white);";
+        let badgeHtml = "";
+        
+        if (selectedCat !== undefined) {
+          const isCorrect = (item.catId === "" || item.catId === selectedCat);
+          if (isCorrect) {
+            cardStyle = "border: 1.5px solid var(--teal); background: var(--teal-light);";
+            badgeHtml = '<span style="color:var(--teal); font-weight:800; font-size:14px; position:absolute; right:8px; top:6px;">✓</span>';
+          } else {
+            cardStyle = "border: 1.5px solid #D9795D; background: var(--coral);";
+            badgeHtml = '<span style="color:#D9795D; font-weight:800; font-size:14px; position:absolute; right:8px; top:6px;">✕</span>';
+          }
+        }
+        
+        html += '<div class="index-card-mini" style="' + cardStyle + ' position:relative; padding: 8px 24px 8px 12px; display:flex; flex-direction:column; justify-content:space-between; border-radius:6px; min-height:68px; box-shadow:0 2px 4px rgba(23,50,77,0.03);">';
+        html += badgeHtml;
+        html += '  <div style="font-weight:700; font-size:12.5px; color:var(--navy); line-height:1.25; margin-bottom:4px; text-align:left;">' + item.text + '</div>';
+        
+        // Pills container
+        html += '  <div style="display:flex; gap:4px; margin-top:auto; flex-wrap:wrap;">';
+        exploreCats.forEach((cat, cIdx) => {
+          const isThisSelected = (selectedCat === cat.id);
+          const activeColors = ['var(--teal)', '#D9795D', 'var(--amber)', 'var(--navy)'];
+          const activeBgColors = ['var(--teal-light)', 'var(--coral)', '#FDF1B8', '#f1f3f4'];
+          const activeColor = activeColors[cIdx % activeColors.length];
+          const activeBgColor = activeBgColors[cIdx % activeBgColors.length];
+          
+          let pillStyle = "padding:2px 6px; font-size:9px; font-weight:800; border-radius:4px; border:1px solid #c2b598; background:#F1ECE0; color:var(--navy); cursor:pointer; transition:all 0.15s;";
+          if (isThisSelected) {
+            pillStyle = "padding:2px 6px; font-size:9px; font-weight:800; border-radius:4px; border:1.5px solid " + activeColor + "; background:" + activeBgColor + "; color:" + activeColor + "; cursor:pointer; transition:all 0.15s;";
+          }
+          
+          html += '    <button style="' + pillStyle + '" onclick="selectExploreItemCategory(' + item.id + ', \\\'' + cat.id + '\\\')">' + cat.label + '</button>';
+        });
+        html += '  </div>';
+        html += '</div>';
+      });
+      
+      grid.innerHTML = html;
+      updateExploreProgress();
+    }
+    
+    function selectExploreItemCategory(itemId, catId) {
+      studentExploreSorted[itemId] = catId;
+      saveWork();
+      renderExploreGrid();
+    }
+    
+    function updateExploreProgress() {
+      let correctCount = 0;
+      exploreItems.forEach(item => {
+        const sorted = studentExploreSorted[item.id];
+        if (sorted !== undefined) {
+          const isCorrect = (item.catId === "" || item.catId === sorted);
+          if (isCorrect) correctCount++;
+        }
+      });
+      
+      const progressText = document.getElementById('explore-progress-text');
+      if (progressText) {
+        progressText.textContent = correctCount + ' / ' + exploreItems.length + ' Sorted Correctly';
+      }
+      
+      const progressBar = document.getElementById('sorting-progress-bar');
+      if (progressBar) {
+        const pct = exploreItems.length > 0 ? (correctCount / exploreItems.length) * 100 : 0;
+        progressBar.style.width = pct + '%';
+      }
+      
+      if (correctCount === exploreItems.length && exploreItems.length > 0) {
+        triggerConfettiCelebration();
+      }
     }
     
     function triggerConfettiCelebration() {
@@ -2262,125 +2682,219 @@ function generateSlidesHtml(lessonId, data) {
         container.innerHTML = "";
       }, 5000);
     }
-
-    function updateSortingFolderLists() {
-      const logContainer = document.getElementById('sorting-pockets-log');
-      if (!logContainer) return;
-      
-      let html = "";
-      exploreCats.forEach((cat, idx) => {
-        const colors = ['#1FA6A2', '#D9795D', '#F2C15B', '#17324D'];
-        const color = colors[idx % colors.length];
-        
-        html += '<div class="folder-pocket-column" style="flex:1; display:flex; flex-direction:column; border:1.5px solid ' + color + '; border-radius:6px; background:#fff; overflow:hidden; height:100%;">';
-        html += '  <div class="folder-pocket-header" style="background:' + color + '; color:#fff; font-size:9.5px; font-weight:800; padding:4px 6px; text-transform:uppercase; text-align:center; letter-spacing:0.02em;">' + cat.label + '</div>';
-        html += '  <div class="folder-pocket-list" style="flex:1; overflow-y:auto; padding:4px 6px; font-size:9.5px; line-height:1.2; background-image:linear-gradient(rgba(31,166,162,0.03) 1px, transparent 1px); background-size:100% 16px;">';
-        
-        const sortedItemsInCat = [];
-        exploreItems.forEach(item => {
-          if (studentExploreSorted[item.id] === cat.id) {
-            sortedItemsInCat.push(item);
-          }
-        });
-        
-        if (sortedItemsInCat.length === 0) {
-          html += '    <div style="font-style:italic; color:var(--gray); font-size:8.5px; text-align:center; margin-top:20px;">Empty Folder</div>';
-        } else {
-          sortedItemsInCat.forEach(item => {
-            const isCorrect = (item.catId === "" || item.catId === cat.id);
-            const badge = isCorrect ? '<span style="color:var(--teal); font-weight:bold;">✓</span>' : '<span style="color:#D9795D; font-weight:bold;">✕</span>';
-            const itemBg = isCorrect ? 'rgba(31, 166, 162, 0.05)' : 'rgba(217, 121, 93, 0.05)';
-            html += '    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f3f4; padding:2px 4px; margin-bottom:2px; background:' + itemBg + '; border-radius:3px;">';
-            html += '      <span style="font-weight:700; color:var(--navy);">' + item.text + '</span>';
-            html += '      <span>' + badge + '</span>';
-            html += '    </div>';
-          });
-        }
-        
-        html += '  </div>';
-        html += '</div>';
-      });
-      logContainer.innerHTML = html;
-    }
-
-    function renderActiveExploreCard() {
-      const card = document.getElementById('sorting-card');
-      const buttonsDiv = document.getElementById('sorting-buttons');
-      const feedbackDiv = document.getElementById('sorting-feedback');
-      const progressBar = document.getElementById('sorting-progress-bar');
-      if (!card) return;
-      
-      // Update persistent pocket contents
-      updateSortingFolderLists();
-      
-      // Update progress bar
-      const progressPercent = (currentExploreIdx / exploreItems.length) * 100;
-      if (progressBar) progressBar.style.width = progressPercent + '%';
-      
-      if (currentExploreIdx >= exploreItems.length) {
-        card.innerHTML = "🎉 Sorting Activity Complete!";
-        card.className = "index-card"; // remove animations
-        card.style.borderColor = "var(--teal)";
-        card.style.background = "var(--teal-light)";
-        buttonsDiv.innerHTML = '<button class="assess-btn" onclick="resetSortingGame()" style="max-width:120px; padding:6px; font-size:11px;">Reset Sort</button>';
-        feedbackDiv.textContent = "Great job sorting all items!";
-        feedbackDiv.style.color = "var(--teal)";
-        triggerConfettiCelebration();
-        return;
-      }
-      
-      const activeItem = exploreItems[currentExploreIdx];
-      card.innerHTML = activeItem.text;
-      card.className = "index-card slide-in-next";
-      card.style.borderColor = "var(--teal)";
-      card.style.background = "var(--white)";
-      feedbackDiv.textContent = "";
-      
-      let btnsHtml = "";
-      const binColors = ['var(--teal)', 'var(--theme-color)', '#D9795D', 'var(--navy)'];
-      exploreCats.forEach((cat, idx) => {
-        const color = binColors[idx % binColors.length];
-        btnsHtml += '<button class="sorting-bin" style="--bin-color: ' + color + ';" onclick="sortActiveItem(\\\'' + cat.id + '\\\')">' + cat.label + '</button>';
-      });
-      buttonsDiv.innerHTML = btnsHtml;
-    }
-    
-    function sortActiveItem(catId) {
-      const activeItem = exploreItems[currentExploreIdx];
-      const feedbackDiv = document.getElementById('sorting-feedback');
-      const card = document.getElementById('sorting-card');
-      
-      studentExploreSorted[activeItem.id] = catId;
-      
-      const isCorrect = (activeItem.catId === "" || activeItem.catId === catId);
-      
-      if (isCorrect) {
-        feedbackDiv.textContent = "Correct! ✓";
-        feedbackDiv.style.color = "var(--teal)";
-        card.style.background = "var(--teal-light)";
-        card.className = "index-card slide-out-right";
-      } else {
-        feedbackDiv.textContent = "Incorrect! ✕";
-        feedbackDiv.style.color = "#D9795D";
-        card.style.background = "var(--coral)";
-        card.className = "index-card slide-out-left";
-      }
-      
-      saveWork();
-      
-      setTimeout(() => {
-        currentExploreIdx++;
-        renderActiveExploreCard();
-      }, 450);
-    }
     
     function resetSortingGame() {
-      currentExploreIdx = 0;
       exploreItems.forEach(item => {
         delete studentExploreSorted[item.id];
       });
-      renderActiveExploreCard();
       saveWork();
+      renderExploreGrid();
+    }
+    
+    // Toggles for Solve / Sketch panels (Slide 7, 8, 9)
+    function switchPfixMode(mode) {
+      const wBtn = document.getElementById('btn-pfix-write');
+      const sBtn = document.getElementById('btn-pfix-sketch');
+      if (wBtn && sBtn) {
+        wBtn.classList.toggle('active', mode === 'write');
+        sBtn.classList.toggle('active', mode === 'sketch');
+      }
+      const wPanel = document.getElementById('pfix-mode-write');
+      const sPanel = document.getElementById('pfix-mode-sketch');
+      if (wPanel) wPanel.style.display = mode === 'write' ? 'block' : 'none';
+      if (sPanel) sPanel.style.display = mode === 'sketch' ? 'flex' : 'none';
+      saveWork();
+    }
+    
+    function switchPmcMode(mode) {
+      const wBtn = document.getElementById('btn-pmc-write');
+      const sBtn = document.getElementById('btn-pmc-sketch');
+      if (wBtn && sBtn) {
+        wBtn.classList.toggle('active', mode === 'write');
+        sBtn.classList.toggle('active', mode === 'sketch');
+      }
+      const wPanel = document.getElementById('pmc-mode-write');
+      const sPanel = document.getElementById('pmc-mode-sketch');
+      if (wPanel) wPanel.style.display = mode === 'write' ? 'block' : 'none';
+      if (sPanel) sPanel.style.display = mode === 'sketch' ? 'flex' : 'none';
+      saveWork();
+    }
+    
+    function switchPgenMode(mode) {
+      const wBtn = document.getElementById('btn-pgen-write');
+      const sBtn = document.getElementById('btn-pgen-sketch');
+      if (wBtn && sBtn) {
+        wBtn.classList.toggle('active', mode === 'write');
+        sBtn.classList.toggle('active', mode === 'sketch');
+      }
+      const wPanel = document.getElementById('pgen-mode-write');
+      const sPanel = document.getElementById('pgen-mode-sketch');
+      if (wPanel) wPanel.style.display = mode === 'write' ? 'block' : 'none';
+      if (sPanel) sPanel.style.display = mode === 'sketch' ? 'flex' : 'none';
+      saveWork();
+    }
+    
+    function switchRwMode(mode) {
+      const wBtn = document.getElementById('btn-rw-write');
+      const sBtn = document.getElementById('btn-rw-sketch');
+      if (wBtn && sBtn) {
+        wBtn.classList.toggle('active', mode === 'write');
+        sBtn.classList.toggle('active', mode === 'sketch');
+      }
+      const wPanel = document.getElementById('rw-mode-write');
+      const sPanel = document.getElementById('rw-mode-sketch');
+      if (wPanel) wPanel.style.display = mode === 'write' ? 'block' : 'none';
+      if (sPanel) sPanel.style.display = mode === 'sketch' ? 'flex' : 'none';
+      saveWork();
+    }
+    
+    function switchExitMode(mode) {
+      const wBtn = document.getElementById('btn-exit-write');
+      const sBtn = document.getElementById('btn-exit-sketch');
+      if (wBtn && sBtn) {
+        wBtn.classList.toggle('active', mode === 'write');
+        sBtn.classList.toggle('active', mode === 'sketch');
+      }
+      const wPanel = document.getElementById('exit-mode-write');
+      const sPanel = document.getElementById('exit-mode-sketch');
+      if (wPanel) wPanel.style.display = mode === 'write' ? 'block' : 'none';
+      if (sPanel) sPanel.style.display = mode === 'sketch' ? 'flex' : 'none';
+      saveWork();
+    }
+
+    // Generic secondary canvases registry & helpers
+    const canvases = {};
+
+    function initCanvas(canvasId, containerId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      canvases[canvasId] = {
+        canvas: canvas,
+        ctx: ctx,
+        drawing: false,
+        mode: 'draw',
+        color: '#17324D',
+        size: 4,
+        history: [],
+        maxHistory: 15
+      };
+      
+      function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+      
+      function saveHistory() {
+        const state = canvases[canvasId];
+        if (state.history.length >= state.maxHistory) {
+          state.history.shift();
+        }
+        state.history.push(canvas.toDataURL());
+      }
+      
+      function startDrawing(e) {
+        const state = canvases[canvasId];
+        saveHistory();
+        state.drawing = true;
+        ctx.beginPath();
+        const pos = getMousePos(e);
+        ctx.moveTo(pos.x, pos.y);
+        e.preventDefault();
+      }
+      
+      function draw(e) {
+        const state = canvases[canvasId];
+        if (!state.drawing) return;
+        const pos = getMousePos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        if (state.mode === 'erase') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = state.size * 2.5;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = state.color;
+          ctx.lineWidth = state.size;
+        }
+        
+        ctx.stroke();
+        e.preventDefault();
+      }
+      
+      function stopDrawing() {
+        const state = canvases[canvasId];
+        if (state.drawing) {
+          ctx.closePath();
+          state.drawing = false;
+          saveWork();
+        }
+      }
+      
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDrawing);
+      
+      canvas.addEventListener('touchstart', startDrawing, { passive: false });
+      canvas.addEventListener('touchmove', draw, { passive: false });
+      window.addEventListener('touchend', stopDrawing);
+      
+      canvases[canvasId].setTool = function(tool) {
+        const state = canvases[canvasId];
+        state.mode = tool;
+        const toolbar = canvas.parentElement.nextElementSibling;
+        if (toolbar) {
+          const drawBtn = toolbar.querySelector('[id$="-draw"]');
+          const eraseBtn = toolbar.querySelector('[id$="-erase"]');
+          if (drawBtn && eraseBtn) {
+            drawBtn.classList.toggle('active', tool === 'draw');
+            eraseBtn.classList.toggle('active', tool === 'erase');
+          }
+        }
+      };
+      
+      canvases[canvasId].undo = function() {
+        const state = canvases[canvasId];
+        if (state.history.length === 0) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const prevState = state.history.pop();
+        if (state.history.length > 0) {
+          const prevImg = new Image();
+          prevImg.src = state.history[state.history.length - 1];
+          prevImg.onload = () => {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.drawImage(prevImg, 0, 0);
+            saveWork();
+          };
+        } else {
+          saveWork();
+        }
+      };
+      
+      canvases[canvasId].clear = function() {
+        saveHistory();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        saveWork();
+      };
+    }
+
+    function setCanvasTool(canvasId, tool) {
+      if (canvases[canvasId]) canvases[canvasId].setTool(tool);
+    }
+    function undoCanvas(canvasId) {
+      if (canvases[canvasId]) canvases[canvasId].undo();
+    }
+    function clearCanvas(canvasId) {
+      if (canvases[canvasId]) canvases[canvasId].clear();
     }
     
     // Practice slide checking & dynamic step highlighting
@@ -2478,14 +2992,25 @@ function generateSlidesHtml(lessonId, data) {
     
     function saveWork() {
       const data = {};
-      document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
-        data[input.id || input.placeholder] = input.value;
+      document.querySelectorAll('textarea, input[type="text"], select').forEach((input) => {
+        const key = input.id || input.placeholder;
+        if (key) data[key] = input.value;
       });
       
       const canvas = document.getElementById('math-canvas');
       if (canvas) {
         data.canvasData = canvas.toDataURL();
       }
+      
+      // Save all active canvas drawings
+      data.canvases = {};
+      const canvasIds = ['math-canvas', 'practice-fix-canvas', 'practice-mc-canvas', 'practice-gen-canvas', 'rw-canvas', 'exit-canvas'];
+      canvasIds.forEach(id => {
+        const c = document.getElementById(id);
+        if (c) {
+          data.canvases[id] = c.toDataURL();
+        }
+      });
       
       data.assessment = activeAssessment;
       
@@ -2496,6 +3021,13 @@ function generateSlidesHtml(lessonId, data) {
       data.solutionRevealed = solutionRevealed;
       data.studentPracticeMCIndex = studentPracticeMCIndex;
       data.studentExitChoiceIndex = studentExitChoiceIndex;
+      
+      data.pfixMode = document.getElementById('btn-pfix-sketch')?.classList.contains('active') ? 'sketch' : 'write';
+      data.pmcMode = document.getElementById('btn-pmc-sketch')?.classList.contains('active') ? 'sketch' : 'write';
+      data.pgenMode = document.getElementById('btn-pgen-sketch')?.classList.contains('active') ? 'sketch' : 'write';
+      data.rwMode = document.getElementById('btn-rw-sketch')?.classList.contains('active') ? 'sketch' : 'write';
+      data.exitMode = document.getElementById('btn-exit-sketch')?.classList.contains('active') ? 'sketch' : 'write';
+      data.vocabTab = document.getElementById('btn-vocab-match')?.classList.contains('active') ? 'match' : 'study';
       
       localStorage.setItem(storageKey, JSON.stringify(data));
     }
@@ -2514,9 +3046,18 @@ function generateSlidesHtml(lessonId, data) {
         const saved = localStorage.getItem(storageKey);
         if (saved) {
           const data = JSON.parse(saved);
-          document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
-            const val = data[input.id || input.placeholder];
-            if (val !== undefined) input.value = val;
+          document.querySelectorAll('textarea, input[type="text"], select').forEach((input) => {
+            const key = input.id || input.placeholder;
+            if (key) {
+              const val = data[key];
+              if (val !== undefined) {
+                input.value = val;
+                if (input.id && input.id.startsWith('vocab-select-')) {
+                  const idx = parseInt(input.id.replace('vocab-select-', ''));
+                  checkVocabMatch(idx);
+                }
+              }
+            }
           });
           
           if (data.canvasData) {
@@ -2528,6 +3069,22 @@ function generateSlidesHtml(lessonId, data) {
                 ctx.drawImage(img, 0, 0);
               };
             }
+          }
+          
+          // Restore all secondary canvases
+          if (data.canvases) {
+            Object.keys(data.canvases).forEach(id => {
+              const canvas = document.getElementById(id);
+              if (canvas && data.canvases[id]) {
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.src = data.canvases[id];
+                img.onload = () => {
+                  ctx.clearRect(0, 0, canvas.width, canvas.height);
+                  ctx.drawImage(img, 0, 0);
+                };
+              }
+            });
           }
           
           if (data.assessment) {
@@ -2547,6 +3104,13 @@ function generateSlidesHtml(lessonId, data) {
             Object.assign(studentExploreSorted, data.studentExploreSorted);
           }
           initSortingGame();
+          
+          if (data.pfixMode) switchPfixMode(data.pfixMode);
+          if (data.pmcMode) switchPmcMode(data.pmcMode);
+          if (data.pgenMode) switchPgenMode(data.pgenMode);
+          if (data.rwMode) switchRwMode(data.rwMode);
+          if (data.exitMode) switchExitMode(data.exitMode);
+          if (data.vocabTab) switchVocabTab(data.vocabTab);
           
           if (data.studentErrStep !== undefined && data.studentErrStep !== -1) {
             const errCheckBtn = document.getElementById('btn-errstep-1');
@@ -2583,8 +3147,9 @@ function generateSlidesHtml(lessonId, data) {
       }
     }
     
-    document.querySelectorAll('textarea, input[type="text"]').forEach(input => {
+    document.querySelectorAll('textarea, input[type="text"], select').forEach(input => {
       input.addEventListener('input', saveWork);
+      input.addEventListener('change', saveWork);
     });
     
     // Insert Word Bank pill text at the cursor position
@@ -2803,6 +3368,11 @@ function generateSlidesHtml(lessonId, data) {
     
     window.addEventListener('resize', resizeSlides);
     window.addEventListener('load', () => {
+      initCanvas('practice-fix-canvas', 'pfix-mode-sketch');
+      initCanvas('practice-mc-canvas', 'pmc-mode-sketch');
+      initCanvas('practice-gen-canvas', 'pgen-mode-sketch');
+      initCanvas('rw-canvas', 'rw-mode-sketch');
+      initCanvas('exit-canvas', 'exit-mode-sketch');
       loadWork();
       resizeSlides();
     });
