@@ -1823,7 +1823,7 @@
             <input
               id="globalSearch"
               type="search"
-              placeholder="Search tasks, messages, links, meetings…"
+              placeholder="Search tasks, messages, links, meetings… (Cmd+K)"
               aria-label="Search the hub"
             />
             <select id="roleSelect" aria-label="Role view">
@@ -1846,6 +1846,7 @@
             </select>
           </div>
           <div class="top-actions">
+            <div id="gamiHUD" class="pill" style="background:#fff4e6; color:#a14716; border-color:#fad5b6;">XP: 0</div>
             <span class="identity" id="identityChip" hidden
               ><span class="who-dot" aria-hidden="true"></span
               ><span id="identityText">—</span></span
@@ -1999,6 +2000,7 @@
         grade: "Grade 6",
         meetingFilter: "all",
         requestFilter: "all",
+        xp: 0,
       };
 
       const navItems = [
@@ -2629,6 +2631,12 @@
         },
       ];
 
+      function checkGami(msg, xp) {
+        state.xp += xp;
+        document.getElementById("gamiHUD").textContent = `XP: ${state.xp}`;
+        toast(`${msg}! +${xp} XP.`);
+      }
+
       function esc(s) {
         return String(s ?? "").replace(
           /[&<>"']/g,
@@ -2714,6 +2722,12 @@
         document
           .getElementById("globalSearch")
           .addEventListener("input", () => renderAll());
+        document.addEventListener("keydown", (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+            e.preventDefault();
+            document.getElementById("globalSearch").focus();
+          }
+        });
         renderAll();
       }
       function showPage(id) {
@@ -3075,6 +3089,7 @@
         input.value = "";
         renderTeams();
         toast("Message added to demo team room.");
+        checkGami("Send Message", 2);
       }
       function teamTaskPanel(team) {
         const arr = tasks.filter((t) => t.team === team);
@@ -3385,6 +3400,7 @@
         closeModal();
         renderAll();
         toast("Task added to prototype.");
+        checkGami("Add Task", 10);
       }
       function announcementForm() {
         return `<div class="form-grid"><div class="field full"><label>Title</label><input id="f_a_title" placeholder="Announcement title"/></div><div class="field"><label>Type</label><select id="f_a_type"><option>Reminder</option><option>Urgent</option><option>Info</option><option>Operations</option><option>Celebration</option></select></div><div class="field"><label>Team</label><select id="f_a_team"><option>All</option>${teams.map((t) => `<option>${t.name}</option>`).join("")}</select></div><div class="field"><label>Owner</label><input id="f_a_owner" placeholder="Admin Team"/></div><div class="field"><label>Priority</label><select id="f_a_priority"><option>medium</option><option>high</option><option>low</option></select></div><div class="field full"><label>Message</label><textarea id="f_a_body" rows="4" placeholder="Keep it short and staff-friendly."></textarea></div><div class="full"><button class="btn primary" onclick="saveAnnouncement()">Post Announcement</button></div></div>`;
@@ -3405,6 +3421,7 @@
         closeModal();
         renderAll();
         toast("Announcement posted.");
+        checkGami("Post Announcement", 15);
       }
       function linkForm() {
         return `<div class="form-grid"><div class="field full"><label>Link title</label><input id="f_l_title"/></div><div class="field"><label>Category</label><input id="f_l_cat" placeholder="Operations"/></div><div class="field"><label>Icon</label><input id="f_l_icon" placeholder="OPS" maxlength="4"/></div><div class="field full"><label>Description</label><textarea id="f_l_desc" rows="3"></textarea></div><div class="field full"><label>URL</label><input id="f_l_url" placeholder="https://…"/></div><div class="full"><button class="btn primary" onclick="saveLink()">Save Link</button></div></div>`;
@@ -3420,6 +3437,7 @@
         closeModal();
         renderAll();
         toast("Quick link added.");
+        checkGami("Add Link", 5);
       }
       function meetingForm() {
         return `<div class="form-grid"><div class="field full"><label>Meeting title</label><input id="f_m_title"/></div><div class="field"><label>Team</label><select id="f_m_team">${teams.map((t) => `<option>${t.name}</option>`).join("")}</select></div><div class="field"><label>Owner</label><input id="f_m_owner"/></div><div class="field"><label>Time</label><input id="f_m_time" placeholder="Tomorrow 10:05 AM"/></div><div class="field"><label>Status</label><select id="f_m_status"><option>Agenda Ready</option><option>Needs Prep</option><option>Needs Data</option><option>Recurring</option></select></div><div class="field full"><label>Notes</label><textarea id="f_m_notes" rows="3"></textarea></div><div class="full"><button class="btn primary" onclick="saveMeeting()">Save Meeting</button></div></div>`;
@@ -3437,6 +3455,7 @@
         closeModal();
         renderAll();
         toast("Meeting added.");
+        checkGami("Add Meeting", 5);
       }
       function requestForm() {
         return `<div class="form-grid"><div class="field"><label>Type</label><select id="f_r_type"><option>Translation</option><option>Coverage</option><option>Data Import</option><option>Facilities</option><option>Family Contact</option><option>Operations</option></select></div><div class="field"><label>From</label><input id="f_r_from" placeholder="Grade 6 Team"/></div><div class="field"><label>Owner</label><input id="f_r_owner" placeholder="AP Office"/></div><div class="field"><label>Due</label><input id="f_r_due" placeholder="Today"/></div><div class="field full"><label>Details</label><textarea id="f_r_details" rows="3"></textarea></div><div class="full"><button class="btn primary" onclick="saveRequest()">Save Request</button></div></div>`;
@@ -3454,6 +3473,7 @@
         closeModal();
         renderAll();
         toast("Request added.");
+        checkGami("Add Request", 10);
       }
       function coverageForm() {
         return `<div class="notice">In a live version, this form could route to AP/office staff and optionally notify available staff. This prototype keeps it as a demo workflow.</div><br/>${requestForm().replace("Save Request", "Save Coverage Request")}`;
@@ -4171,7 +4191,34 @@
       };
 
       // boot
+      let gamiState = lsGet('nsh:gami', { xp: 0, badges: [] });
+      function checkGami(action, xp) {
+        gamiState.xp += xp;
+        const levels = [{t: 50, n: "🏆 Rising Star"}, {t: 150, n: "🌟 Hub Master"}, {t: 300, n: "👑 System Admin"}];
+        let newBadge = null;
+        for(let l of levels) {
+          if(gamiState.xp >= l.t && !gamiState.badges.includes(l.n)) {
+            gamiState.badges.push(l.n);
+            newBadge = l.n;
+          }
+        }
+        lsSet('nsh:gami', gamiState);
+        if(newBadge) setTimeout(() => toast(`Unlocked badge: ${newBadge}!`), 1500);
+        renderGami();
+      }
+      function renderGami() {
+        const hud = document.getElementById('gamiHUD');
+        if(hud) hud.innerHTML = `XP: ${gamiState.xp} &nbsp;${gamiState.badges.join(' ')}`;
+      }
+      document.addEventListener('keydown', (e) => {
+        if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          const s = document.getElementById('globalSearch');
+          if(s) s.focus();
+        }
+      });
       init();
+      renderGami();
 
       // ── Google Sign-In (API mode) ─────────────────────────────────────────
       // Redirect the browser to the Worker's /auth/login, which runs the Google

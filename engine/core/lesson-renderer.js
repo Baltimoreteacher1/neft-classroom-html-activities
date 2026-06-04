@@ -457,16 +457,29 @@ function renderLaunchVisual(host, visual) {
 }
 
 // Concept teaching block for the Launch phase (opt-in via launch.conceptIntro).
-// Gives students actual instruction/explanation of the concept — not just a
-// hook — and an optional step-by-step "How to" when the lesson is procedural.
-// Shape: { heading, body:[paragraph,...], keyIdea?, howTo?:{ title?, steps:[...] } }
+// Actually TEACHES the concept using gradual release: I do (teacher models a
+// worked example) → We do (guided practice together) → You do (student tries).
+// Shape: {
+//   heading, intro,                       // title + 1–2 sentence plain definition
+//   keyIdea?,                             // optional highlighted takeaway
+//   iDo:  { title?, lines:[...] },        // modeling — worked example, real numbers
+//   weDo: { title?, lines:[...] },        // guided — questions worked together
+//   youDo:{ title?, lines:[...] }         // independent — primes the next phase
+// }
+// Legacy fields (body[], howTo.steps[]) still render for older configs.
 function renderConceptIntro(host, intro) {
   if (!intro) return;
   const card = document.createElement("div");
   card.className = "card concept-intro";
   card.style.cssText =
     "border-left:4px solid var(--teal,#2a9d8f); background:rgba(42,157,143,0.05);";
-  const paras = (
+
+  const introP = intro.intro
+    ? `<p style="font-size:1.1rem; line-height:1.65; margin:0 0 var(--sp-4); font-weight:500;">${esc(intro.intro)}</p>`
+    : "";
+
+  // Legacy plain paragraphs (older configs that used body[]).
+  const legacyParas = (
     Array.isArray(intro.body) ? intro.body : intro.body ? [intro.body] : []
   )
     .map(
@@ -474,9 +487,46 @@ function renderConceptIntro(host, intro) {
         `<p style="font-size:1.05rem; line-height:1.65; margin:0 0 var(--sp-3);">${esc(p)}</p>`,
     )
     .join("");
-  const keyIdea = intro.keyIdea
-    ? `<div style="margin-top:var(--sp-2); padding:var(--sp-3); background:rgba(233,196,106,0.18); border:1px solid rgba(233,196,106,0.5); border-radius:var(--radius-md,12px);"><strong>💡 Key idea:</strong> ${esc(intro.keyIdea)}</div>`
-    : "";
+
+  // One gradual-release stage as a labeled, color-coded panel.
+  const stage = (data, badge, label, accent, tint) => {
+    if (!data) return "";
+    const lines = (Array.isArray(data.lines) ? data.lines : [data.lines])
+      .filter(Boolean)
+      .map(
+        (l) =>
+          `<li style="margin-bottom:var(--sp-2); line-height:1.6;">${esc(l)}</li>`,
+      )
+      .join("");
+    return `<div style="margin-top:var(--sp-3); padding:var(--sp-3) var(--sp-4); background:${tint}; border:1px solid ${accent}; border-radius:var(--radius-md,12px);">
+        <div style="margin-bottom:var(--sp-2);"><span style="display:inline-block; padding:2px 10px; border-radius:999px; background:${accent}; color:#fff; font-weight:800; font-size:0.78rem; letter-spacing:0.03em;">${badge}</span> <strong style="color:var(--navy,#264653);">${esc(data.title || label)}</strong></div>
+        <ol style="margin:0; padding-left:1.3rem;">${lines}</ol>
+      </div>`;
+  };
+
+  const iDo = stage(
+    intro.iDo,
+    "I DO",
+    "Watch me",
+    "var(--teal,#2a9d8f)",
+    "rgba(42,157,143,0.08)",
+  );
+  const weDo = stage(
+    intro.weDo,
+    "WE DO",
+    "Let's try together",
+    "var(--gold,#d4952a)",
+    "rgba(233,196,106,0.14)",
+  );
+  const youDo = stage(
+    intro.youDo,
+    "YOU DO",
+    "Your turn",
+    "var(--coral,#e07a5f)",
+    "rgba(224,122,95,0.08)",
+  );
+
+  // Legacy how-to (older configs).
   const howTo =
     intro.howTo && Array.isArray(intro.howTo.steps) && intro.howTo.steps.length
       ? `<div style="margin-top:var(--sp-4);">
@@ -486,9 +536,14 @@ function renderConceptIntro(host, intro) {
             .join("")}</ol>
         </div>`
       : "";
+
+  const keyIdea = intro.keyIdea
+    ? `<div style="margin-top:var(--sp-3); padding:var(--sp-3); background:rgba(233,196,106,0.18); border:1px solid rgba(233,196,106,0.5); border-radius:var(--radius-md,12px);"><strong>💡 Key idea:</strong> ${esc(intro.keyIdea)}</div>`
+    : "";
+
   card.innerHTML = `
-    <h4 style="color:var(--teal,#2a9d8f); margin:0 0 var(--sp-3);">📖 ${esc(intro.heading || "Concept Check")}</h4>
-    ${paras}${keyIdea}${howTo}`;
+    <h4 style="color:var(--teal,#2a9d8f); margin:0 0 var(--sp-3);">📖 ${esc(intro.heading || "Let's learn it")}</h4>
+    ${introP}${legacyParas}${keyIdea}${iDo}${weDo}${youDo}${howTo}`;
   host.append(card);
 }
 
