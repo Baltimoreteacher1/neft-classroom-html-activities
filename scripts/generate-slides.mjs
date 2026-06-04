@@ -2208,7 +2208,7 @@ function generateSlidesHtml(lessonId, data) {
       const binColors = ['var(--teal)', 'var(--theme-color)', '#D9795D', 'var(--navy)'];
       exploreCats.forEach((cat, idx) => {
         const color = binColors[idx % binColors.length];
-        btnsHtml += '<button class="sorting-bin" style="--bin-color: ' + color + ';" onclick="sortActiveItem(\'' + cat.id + '\')">' + cat.label + '</button>';
+        btnsHtml += '<button class="sorting-bin" style="--bin-color: ' + color + ';" onclick="sortActiveItem(\\\'' + cat.id + '\\\')">' + cat.label + '</button>';
       });
       buttonsDiv.innerHTML = btnsHtml;
     }
