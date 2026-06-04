@@ -6,9 +6,11 @@
     <title>Smoothie Bar Designer — Unit 3 Culminating Project</title>
     <meta
       name="description"
-      content="Unit 3 Ratios &amp; Rates culminating project. Design a smoothie bar menu using ratios, equivalent ratios, unit rates, and better-buy comparisons."
+      content="Unit 3 Ratios &amp; Rates culminating project. Start from YOUR real home recipe, compare with a partner using equivalent ratios, then compare your unit price to real per-cup ingredient prices around the world."
     />
     <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
     <style>
       :root {
         --navy: #0f2b3c;
@@ -22,6 +24,7 @@
         --coral-light: #fdeee9;
         --green: #2d874b;
         --green-light: #e6f4eb;
+        --purple: #7c2d8a;
         --ink: #1a2633;
         --muted: #5e6e7e;
         --line: #e2e7ec;
@@ -31,7 +34,9 @@
         --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
         --font: "Segoe UI", system-ui, -apple-system, sans-serif;
       }
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         font-family: var(--font);
@@ -39,7 +44,11 @@
         background: var(--bg);
         line-height: 1.55;
       }
-      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
 
       .phero {
         background: linear-gradient(135deg, #7c2d8a 0%, #d4952a 100%);
@@ -49,123 +58,402 @@
         position: relative;
         overflow: hidden;
       }
-      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
       .phero h1 {
         font-size: clamp(26px, 5vw, 40px);
         margin: 10px 0 8px;
         letter-spacing: -0.02em;
       }
-      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
-      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-      .tag {
-        background: rgba(255,255,255,.14);
-        border: 1px solid rgba(255,255,255,.25);
-        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
       }
-      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
 
-      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
-      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
 
       .intro-card {
-        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
-        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--gold);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
       }
-      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
-      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
 
       .phase {
-        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
       }
-      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
       .phase-num {
-        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
-        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
-        display: flex; align-items: center; justify-content: center;
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--purple);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
-      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
-      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
-      .phase h2 { margin: 0; font-size: 21px; }
-      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-      .phase > p { color: var(--muted); }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--purple);
+        background: #f6e8f8;
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
 
       .task {
-        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
       }
-      .task strong { color: var(--navy); }
+      .task strong {
+        color: var(--navy);
+      }
 
-      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
-      input[type="number"], input[type="text"], select, textarea {
-        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
-        font-family: inherit; font-size: 15px; background: #fff;
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
       }
-      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
-      textarea { resize: vertical; min-height: 80px; }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      input[type="number"],
+      input[type="text"],
+      input[type="url"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--purple);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
       .btn {
-        background: #7c2d8a; color: #fff; border: none; border-radius: 10px;
-        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
         margin-top: 14px;
       }
-      .btn:hover { filter: brightness(1.08); }
-      .btn.alt { background: var(--teal); }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--purple);
+        border: 2px solid var(--line);
+      }
 
       .readout {
-        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
-        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
       }
-      .readout.show { display: block; }
-      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
-      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
-      .feedback.ok { color: var(--green); }
-      .feedback.no { color: var(--coral); }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
 
-      .hintbox { margin-top: 12px; }
-      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
-      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
 
-      .ratio-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15px; }
-      .ratio-table th, .ratio-table td { border: 1px solid var(--line); padding: 10px 14px; text-align: center; }
-      .ratio-table th { background: #7c2d8a; color: #fff; font-size: 13px; }
-      .ratio-table td:first-child { font-weight: 700; background: var(--gold-light); }
+      .ratio-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 15px;
+      }
+      .ratio-table th,
+      .ratio-table td {
+        border: 1px solid var(--line);
+        padding: 10px 14px;
+        text-align: center;
+      }
+      .ratio-table th {
+        background: var(--purple);
+        color: #fff;
+        font-size: 13px;
+      }
+      .ratio-table td:first-child {
+        font-weight: 700;
+        background: var(--gold-light);
+      }
 
-      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
-      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
-      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
-      .rubric td:first-child { font-weight: 700; width: 30%; }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
 
-      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
-      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
-      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
 
-      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
-      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
-      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, #7c2d8a, var(--gold)); transition: width .4s; }
-      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--purple), var(--gold));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
 
-      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
-      .printbtn { background: var(--navy); }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
       @media print {
-        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
-        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
-        body { background: #fff; }
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
-  <body>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
     <header class="phero">
       <div class="deco">🥤</div>
       <h1>Smoothie Bar Designer</h1>
-      <p>You are opening a school smoothie bar! Use ratios and rates to write your recipes, scale them up for a crowd, find the best prices, and design your menu board.</p>
+      <p>
+        Start with a <strong>real recipe from your own kitchen</strong>. Turn it
+        into a ratio, scale it, and price it. Then compare your recipe with a
+        partner using <em>equivalent ratios</em>, and see how your cost per cup
+        stacks up against real ingredient prices around the world.
+      </p>
       <div class="tags">
         <span class="tag gold">Unit 3 · Ratios &amp; Rates</span>
         <span class="tag">6.RP.1</span>
@@ -173,314 +461,1199 @@
         <span class="tag">6.RP.3</span>
         <span class="tag">Version A · Design &amp; Build</span>
       </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u3ProjectA')">💾 Save</button>
+        <button
+          onclick="PK.load('u3ProjectA', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
     </header>
 
     <div class="wrap">
-
       <div class="progress-wrap">
-        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
-        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
       </div>
 
       <div class="intro-card">
         <h2>🗺️ Your Mission</h2>
-        <p class="scenario">
-          The school store has approved your smoothie bar idea! To launch it, you need to
-          <strong>write a ratio recipe</strong>, scale it for bigger batches with an
-          <strong>equivalent ratio table</strong>, calculate a <strong>unit rate</strong> so
-          you can price your smoothies fairly, and find the <strong>better buy</strong>
-          on ingredients. Fill in every calculator, hit the buttons, check off your list,
-          and write your menu board reflection. Then print it for the store manager.
+        <p>
+          Build a smoothie bar in three steps using ratios and rates.
+          <strong>Part 1 (Self):</strong> bring in a real recipe from home — the
+          real cups of fruit vs. yogurt or milk you use — and run the ratio
+          tools. <strong>Part 2 (Peer):</strong> interview a partner about
+          <em>their</em> recipe and compare with equivalent ratios.
+          <strong>Part 3 (World):</strong> compare your cost per cup to real
+          ingredient prices across stores and countries. Finish the menu pitch,
+          checklist, and report.
         </p>
       </div>
 
-      <!-- PHASE 1 -->
-      <section class="phase" data-phase>
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">⚖️</span><b>Ratio</b>
+            <p>
+              A compare of two amounts, like 6 cups fruit to 4 cups yogurt
+              (6:4).
+            </p>
+            <p class="pk-es">
+              Razón: una comparación de dos cantidades, como 6 tazas de fruta
+              por 4 de yogur (6:4).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🟰</span><b>Equivalent Ratio</b>
+            <p>
+              The same ratio made bigger or smaller by × the same number. 6:4 =
+              12:8.
+            </p>
+            <p class="pk-es">
+              Razón equivalente: la misma razón al multiplicar ambas partes por
+              el mismo número. 6:4 = 12:8.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">1️⃣</span><b>Unit Rate</b>
+            <p>
+              How much for just ONE: total ÷ quantity, like dollars per 1 cup.
+            </p>
+            <p class="pk-es">
+              Tasa unitaria: cuánto por UNO solo: total ÷ cantidad, como dólares
+              por 1 taza.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🛒</span><b>Better Buy</b>
+            <p>
+              The pack with the LOWER price per cup (lower unit price wins).
+            </p>
+            <p class="pk-es">
+              Mejor compra: el paquete con MENOR precio por taza (gana el menor
+              precio unitario).
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>Ratio:</b> a : b (fruit : yogurt)</p>
+            <p>
+              <b>Equivalent ratio:</b> multiply both parts by the same factor
+            </p>
+            <p><b>Unit rate:</b> total ÷ quantity</p>
+            <p><b>Better buy:</b> price ÷ number of cups → smaller is better</p>
+            <p class="pk-lvl2">
+              <b>Rate as data (preview):</b> mean of the per-cup prices = (sum
+              of prices) ÷ (how many)
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "My recipe ratio is ___ : ___, which simplifies to ___ : ___."
+            </p>
+            <p>"My cost per cup is $___ because price ÷ cups = ___."</p>
+            <p>"My unit price is higher / lower than ___ because ___."</p>
+            <p class="pk-es">
+              "Mi razón es ___ : ___, que se simplifica a ___ : ___."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
         <div class="phase-head">
           <div class="phase-num">1</div>
           <div>
-            <div class="skill">Writing &amp; Simplifying Ratios · 6.RP.1</div>
-            <h2>Write Your Smoothie Recipe Ratio</h2>
+            <span class="arc-banner">Part 1 · Self — your real recipe</span>
+            <div class="skill">
+              Ratios · Equivalent ratios · Unit rate · 6.RP.1–3
+            </div>
+            <h2>Build YOUR Smoothie Recipe</h2>
           </div>
         </div>
-        <p>Every smoothie starts as a ratio. Choose how many cups of fruit and cups of yogurt go into one batch. The calculator will show your ratio in all three forms and simplify it.</p>
-        <div class="task">
-          <strong>Your recipe:</strong> Choose the number of cups of fruit and cups of yogurt for one batch. Pick values that share a common factor so you can see simplification work (e.g., 4 and 6, or 6 and 9).
-        </div>
+        <p>
+          Use a <strong>real recipe from your own kitchen</strong>. Ask at home:
+          how many cups of fruit and how many cups of yogurt or milk do you use?
+          Not sure yet? Click <em>Use example numbers</em> to model the math,
+          then change them to your real recipe.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <!-- 1a Ratio -->
+        <h3 style="margin-top: 8px">⚖️ Write your recipe ratio (6.RP.1)</h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: pick amounts that share a factor, like 4 and 6, so you
+          can see simplifying work. The fruit box is pre-filled to get you
+          started.
+        </p>
         <div class="grid2">
           <div>
-            <label class="fld" for="r-fruit">Cups of fruit</label>
-            <input type="number" id="r-fruit" value="6" min="1" max="50" />
+            <label class="fld" for="r-fruit"
+              >Cups of fruit (from your real recipe)</label
+            >
+            <input
+              type="number"
+              id="r-fruit"
+              data-save
+              min="1"
+              max="50"
+              placeholder="example: 6"
+              oninput="calcRatio()"
+            />
           </div>
           <div>
-            <label class="fld" for="r-yogurt">Cups of yogurt</label>
-            <input type="number" id="r-yogurt" value="4" min="1" max="50" />
+            <label class="fld" for="r-yogurt">Cups of yogurt or milk</label>
+            <input
+              type="number"
+              id="r-yogurt"
+              data-save
+              min="1"
+              max="50"
+              placeholder="example: 4"
+              oninput="calcRatio()"
+            />
           </div>
         </div>
-        <button class="btn" onclick="calcRatio()">Show my ratio in all 3 forms</button>
+        <button class="btn" type="button" onclick="calcRatio()">
+          Show my ratio in all 3 forms
+        </button>
         <div class="readout" id="ratio-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>A ratio compares two quantities. If you have 6 cups of fruit and 4 cups of yogurt, you can write it as <strong>6:4</strong>, <strong>6 to 4</strong>, or <strong>6/4</strong>. To simplify, divide both numbers by their GCF. GCF(6, 4) = 2, so the simplified ratio is <strong>3:2</strong>.</p>
+          <p>
+            A ratio compares two quantities. 6 cups of fruit and 4 cups of
+            yogurt can be written <strong>6:4</strong>, <strong>6 to 4</strong>,
+            or <strong>6/4</strong>. To simplify, divide both by their GCF.
+            GCF(6, 4) = 2, so 6:4 simplifies to <strong>3:2</strong>.
+          </p>
         </details>
-      </section>
 
-      <!-- PHASE 2 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">2</div>
-          <div>
-            <div class="skill">Equivalent Ratios &amp; Ratio Tables · 6.RP.3</div>
-            <h2>Scale Up Your Recipe</h2>
-          </div>
-        </div>
-        <p>Your recipe ratio is just one batch. Build an equivalent ratio table showing 1×, 2×, and 3× the recipe so you can serve more smoothies without changing the taste.</p>
-        <div class="task">
-          <strong>Enter your base recipe amounts</strong> (you can use the same values from Phase 1, or try new ones). Then generate the table.
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="t-fruit">Base cups of fruit (1×)</label>
-            <input type="number" id="t-fruit" value="6" min="1" max="50" />
-          </div>
-          <div>
-            <label class="fld" for="t-yogurt">Base cups of yogurt (1×)</label>
-            <input type="number" id="t-yogurt" value="4" min="1" max="50" />
-          </div>
-        </div>
-        <button class="btn alt" onclick="calcTable()">Build ratio table</button>
+        <!-- 1b Ratio table -->
+        <h3 style="margin-top: 24px">🟰 Scale it up — ratio table (6.RP.3)</h3>
+        <p style="font-size: 14px; color: var(--muted)">
+          Your recipe is one batch. Build an equivalent ratio table for 1×, 2×,
+          and 3× so you can serve a crowd without changing the taste. It uses
+          your recipe numbers from above.
+        </p>
+        <button class="btn alt" type="button" onclick="calcTable()">
+          Build ratio table
+        </button>
         <div class="readout" id="table-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>To build equivalent ratios, multiply both parts of the ratio by the same number. If your base is 6:4, then 2× = 12:8 and 3× = 18:12. All three ratios are equivalent because they all simplify to 3:2. The taste stays the same!</p>
+          <p>
+            Multiply both parts by the same number. Base 6:4 → 2× = 12:8 → 3× =
+            18:12. All three are equivalent because they all simplify to 3:2.
+          </p>
         </details>
-      </section>
 
-      <!-- PHASE 3 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">3</div>
-          <div>
-            <div class="skill">Unit Rate &amp; Better Buy · 6.RP.2 · 6.RP.3</div>
-            <h2>Price Your Smoothies Fairly</h2>
-          </div>
-        </div>
-        <p>Find the <strong>unit rate</strong> (cost per smoothie) so you can set a fair price. Then use unit rates to compare two ingredient packs and decide which is the <strong>better buy</strong>.</p>
-
-        <div class="task"><strong>Part A — Unit Rate:</strong> How much does it cost to make a batch, and how many smoothies does one batch make?</div>
+        <!-- 1c Unit rate -->
+        <h3 style="margin-top: 24px">
+          1️⃣ Price one smoothie — unit rate (6.RP.2)
+        </h3>
         <div class="grid2">
           <div>
-            <label class="fld" for="u-cost">Total cost for the batch ($)</label>
-            <input type="number" id="u-cost" value="9.00" step="0.01" min="0.01" />
+            <label class="fld" for="u-cost"
+              >Total cost to make one batch ($)</label
+            >
+            <input
+              type="number"
+              id="u-cost"
+              data-save
+              step="0.01"
+              min="0.01"
+              placeholder="example: 9.00"
+              oninput="calcUnitRate()"
+            />
           </div>
           <div>
-            <label class="fld" for="u-smoothies">Smoothies per batch</label>
-            <input type="number" id="u-smoothies" value="3" min="1" />
+            <label class="fld" for="u-smoothies"
+              >Smoothies one batch makes</label
+            >
+            <input
+              type="number"
+              id="u-smoothies"
+              data-save
+              min="1"
+              placeholder="example: 3"
+              oninput="calcUnitRate()"
+            />
           </div>
         </div>
-        <button class="btn" onclick="calcUnitRate()">Calculate cost per smoothie</button>
+        <button class="btn" type="button" onclick="calcUnitRate()">
+          Calculate cost per smoothie
+        </button>
         <div class="readout" id="unit-out"></div>
 
-        <div class="task" style="margin-top:18px;"><strong>Part B — Better Buy:</strong> Compare two yogurt packs. Which one costs less per cup?</div>
+        <!-- 1d Better buy -->
+        <h3 style="margin-top: 24px">
+          🛒 Smart shopping — better buy (6.RP.3)
+        </h3>
+        <p style="font-size: 14px; color: var(--muted)">
+          Compare two packs of the same ingredient. Which costs less per cup?
+        </p>
         <div class="grid2">
           <div>
             <label class="fld" for="b-price1">Pack A: total price ($)</label>
-            <input type="number" id="b-price1" value="4.50" step="0.01" min="0.01" />
+            <input
+              type="number"
+              id="b-price1"
+              data-save
+              step="0.01"
+              min="0.01"
+              placeholder="example: 4.50"
+              oninput="calcBetterBuy()"
+            />
           </div>
           <div>
             <label class="fld" for="b-cups1">Pack A: number of cups</label>
-            <input type="number" id="b-cups1" value="3" min="1" />
+            <input
+              type="number"
+              id="b-cups1"
+              data-save
+              min="1"
+              placeholder="example: 3"
+              oninput="calcBetterBuy()"
+            />
           </div>
           <div>
             <label class="fld" for="b-price2">Pack B: total price ($)</label>
-            <input type="number" id="b-price2" value="7.20" step="0.01" min="0.01" />
+            <input
+              type="number"
+              id="b-price2"
+              data-save
+              step="0.01"
+              min="0.01"
+              placeholder="example: 7.20"
+              oninput="calcBetterBuy()"
+            />
           </div>
           <div>
             <label class="fld" for="b-cups2">Pack B: number of cups</label>
-            <input type="number" id="b-cups2" value="6" min="1" />
+            <input
+              type="number"
+              id="b-cups2"
+              data-save
+              min="1"
+              placeholder="example: 6"
+              oninput="calcBetterBuy()"
+            />
           </div>
         </div>
-        <button class="btn alt" onclick="calcBetterBuy()">Find the better buy</button>
+        <button class="btn alt" type="button" onclick="calcBetterBuy()">
+          Find the better buy
+        </button>
         <div class="readout" id="buy-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>A unit rate has a denominator of 1. To find cost per smoothie, divide total cost ÷ number of smoothies: $9.00 ÷ 3 = <strong>$3.00 per smoothie</strong>. For the better buy, find cost per cup for each pack: $4.50 ÷ 3 = $1.50/cup vs. $7.20 ÷ 6 = $1.20/cup. The lower unit price is the better buy.</p>
+          <p>
+            Unit rate has a denominator of 1. Cost per smoothie = total ÷
+            smoothies ($9.00 ÷ 3 = $3.00). Better buy = price ÷ cups for each
+            pack: $4.50 ÷ 3 = $1.50/cup vs $7.20 ÷ 6 = $1.20/cup. Lower unit
+            price wins.
+          </p>
         </details>
+
+        <!-- 1e quick self-check -->
+        <div class="task" style="margin-top: 18px">
+          <strong>Quick ratio check:</strong> Simplify the ratio 12:18. Write it
+          as A:B.
+        </div>
+        <label class="fld" for="check-ratio"
+          >Your simplified ratio (e.g., 2:3)</label
+        >
+        <input type="text" id="check-ratio" data-save placeholder="e.g., 2:3" />
+        <button class="btn alt" type="button" onclick="checkRatioFn()">
+          Check answer
+        </button>
+        <div class="feedback" id="check-ratioFb"></div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 worked step: GCF(12, 18) = 6 → 12 ÷ 6 = 2 and 18 ÷ 6 = 3 →
+          2:3.
+        </p>
       </section>
 
-      <!-- PHASE 4 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">4</div>
-          <div>
-            <div class="skill">Ratio Reasoning &amp; Quick Check · 6.RP.1 · 6.RP.3</div>
-            <h2>Menu Board Decision &amp; Quick Check</h2>
-          </div>
-        </div>
-        <p>Choose which smoothie flavor ratio to feature on your menu board. Then check your ratio skills with a known-answer problem.</p>
-
-        <div class="task">
-          <strong>Menu Board Decision:</strong> Pick the flavor mix that you would feature. Which ratio of fruit to yogurt looks best for your menu?
-        </div>
-        <label class="fld" for="flavor-choice">My featured smoothie ratio is (e.g., 3:2 fruit to yogurt)</label>
-        <input type="text" id="flavor-choice" placeholder="e.g., 3:2 fruit to yogurt" />
-        <label class="fld" for="flavor-reason">Why did you choose this ratio? (What does it say about the flavor?)</label>
-        <input type="text" id="flavor-reason" placeholder="e.g., More fruit means a sweeter, fruitier taste..." />
-
-        <div class="task" style="margin-top:18px;">
-          <strong>Quick check:</strong> Simplify the ratio 12:18. What is the simplified form?
-          <br /><em>(Hint: divide both numbers by their GCF.)</em>
-        </div>
-        <label class="fld" for="check-ratio">Your simplified ratio (write as A:B)</label>
-        <input type="text" id="check-ratio" placeholder="e.g., 2:3" />
-        <button class="btn alt" onclick="checkRatio()">Check answer</button>
-        <div class="feedback" id="ratio-fb"></div>
-      </section>
-
-      <!-- DELIVERABLE -->
+      <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--green);">★</div>
+          <div class="phase-num" style="background: var(--teal)">2</div>
           <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write Your Menu Board Reflection</h2>
+            <span class="arc-banner">Part 2 · Peer — interview a partner</span>
+            <div class="skill">Compare with equivalent ratios · 6.RP.3</div>
+            <h2>Interview &amp; Compare Recipes</h2>
           </div>
         </div>
-        <p>Write a 3–5 sentence reflection explaining your smoothie bar decisions. Use your real ratio, table, and unit rate numbers from above.</p>
-        <textarea id="pitch" placeholder="My smoothie recipe uses a ratio of ___ cups of fruit to ___ cups of yogurt, which simplifies to ___. To serve more customers, I can scale up to ___ cups of fruit and ___ cups of yogurt for a double batch. Each smoothie costs $___ to make (unit rate). I chose the ___ yogurt pack because it costs $___ per cup, which is the better buy. My featured menu smoothie has the ratio ___ because ___..."></textarea>
+        <p>
+          Ask a partner about <strong>their</strong> real recipe and type in
+          their cups of fruit and yogurt. We scale both recipes to a common base
+          (the same cups of yogurt) using <em>equivalent ratios</em> so you can
+          compare fruit fairly.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>"What is your recipe ratio of fruit to yogurt?"</p>
+          <p>"What is your cost per cup of yogurt?"</p>
+          <p>"How fruity is your smoothie compared to mine?"</p>
+          <p class="pk-es">"¿Cuál es tu razón de fruta a yogur?"</p>
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-common"
+              >Common base — scale both to this many cups of yogurt</label
+            >
+            <input
+              type="number"
+              id="p-common"
+              data-save
+              min="1"
+              value="12"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-fruit">Partner: cups of fruit</label>
+            <input
+              type="number"
+              id="p-fruit"
+              data-save
+              min="1"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-yogurt">Partner: cups of yogurt</label>
+            <input
+              type="number"
+              id="p-yogurt"
+              data-save
+              min="1"
+              oninput="comparePeer()"
+            />
+          </div>
+        </div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare with equivalent ratios
+        </button>
+        <div class="readout" id="peer-out"></div>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <label class="fld" for="peerReflect"
+          >Whose smoothie is fruitier at the same cups of yogurt, and how do you
+          know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="At ___ cups of yogurt, my recipe has ___ cups of fruit and my partner's has ___, so ___."
+        ></textarea>
+      </section>
 
-        <h3 style="margin:22px 0 6px;">Smoothie Bar Checklist</h3>
+      <!-- ===================== PART 3 — WORLD ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner"
+              >Part 3 · World — real ingredient prices</span
+            >
+            <div class="skill">Unit rate vs the world · 6.RP.2 · 6.RP.3</div>
+            <h2>How Does Your Price Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are realistic per-cup prices for a smoothie ingredient at stores
+          in different cities and countries. Pick the ingredient, type your unit
+          price, and see where you land versus the global average.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat"
+              >Compare against (per-cup price)</label
+            >
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="1">Strawberries ($/cup)</option>
+              <option value="2">Yogurt ($/cup)</option>
+              <option value="3">Banana ($/cup)</option>
+            </select>
+            <label class="fld" for="myWorld">My unit price ($/cup)</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your $/cup"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: your better-buy unit price from Part 1 is a great value to
+              type here.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>Store Price Sample 🌍</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>Store / City</th>
+                  <th>Strawberry $/cup</th>
+                  <th>Yogurt $/cup</th>
+                  <th>Banana $/cup</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+            <p style="font-size: 13px; color: var(--muted)">
+              👀 Spot the bad buy: one store is far above the others. Find it in
+              the What-If Lab below.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Add one more cup at a new price (or a high "bad buy" price) and
+            watch the average per-cup price change. This is rate-as-data.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="whatIfVal"
+                >New per-cup price to add ($)</label
+              >
+              <input
+                type="number"
+                id="whatIfVal"
+                step="0.01"
+                placeholder="example: 5.00"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter a value to test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is your ingredient cheaper or pricier per cup than the world average?
+          Why might that be?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My unit price is ___ the world average because ___."
+        ></textarea>
+
+        <div class="pk-lvl2">
+          <div class="task" style="margin-top: 4px">
+            <strong>Level 2 — Rate-as-data (preview of statistics):</strong> The
+            store prices are a small data set. Find the <em>mean</em> per-cup
+            price for your chosen ingredient, then spot the
+            <em>outlier</em> (the "bad buy"). Explain how one outlier pulls the
+            mean up.
+          </div>
+          <label class="fld" for="worldMean"
+            >Mean per-cup price you computed ($)</label
+          >
+          <input
+            type="number"
+            id="worldMean"
+            data-save
+            step="0.01"
+            placeholder="sum of prices ÷ how many"
+          />
+          <label class="fld" for="worldOutlier"
+            >Which store is the outlier, and how does it change the mean?</label
+          >
+          <textarea
+            id="worldOutlier"
+            data-save
+            placeholder="The outlier is ___ at $___ per cup. It pulls the mean UP because ___."
+          ></textarea>
+        </div>
+
+        <label class="fld" for="careful"
+          >Careful thinking: why can it be unfair to compare ingredient prices
+          between countries?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="It can be unfair to compare because ___ (shipping, season, money, store size...)."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Pitch Your Menu Board</h2>
+          </div>
+        </div>
+        <p>
+          Write a short pitch (3–5 sentences) using your real numbers from
+          above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="My real recipe uses a ratio of ___ cups of fruit to ___ cups of yogurt, which simplifies to ___. For a triple batch I need ___ cups of fruit and ___ cups of yogurt. Each smoothie costs $___ to make (unit rate), and the better-buy pack costs $___ per cup. My ingredient is cheaper / pricier than the world average of $___ per cup because ___."
+        ></textarea>
+
+        <h3 style="margin: 22px 0 6px">Smoothie Bar Checklist</h3>
         <ul class="checklist" id="checklist">
-          <li><input type="checkbox" /> I wrote my ratio in all 3 forms (a:b, a to b, a/b) and simplified it.</li>
-          <li><input type="checkbox" /> I built an equivalent ratio table for 1×, 2×, and 3× batches.</li>
-          <li><input type="checkbox" /> I found the unit rate (cost per smoothie) for my recipe.</li>
-          <li><input type="checkbox" /> I compared two packs using unit prices to find the better buy.</li>
-          <li><input type="checkbox" /> I wrote a reflection that uses my real ratio and rate numbers.</li>
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I wrote my real recipe
+            ratio in all 3 forms and simplified it.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I built an equivalent
+            ratio table for 1×, 2×, and 3× batches.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I found the unit rate
+            (cost per smoothie).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I compared two packs by
+            unit price to find the better buy.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I interviewed a partner
+            and compared recipes with equivalent ratios.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> I compared my unit
+            price to the world store sample.
+          </li>
         </ul>
-        <button class="btn printbtn" onclick="window.print()">🖨️ Print my menu board plan</button>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.downloadText('smoothie-bar-plan.txt', 'reportBox')"
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your menu summary.
+        </div>
       </section>
 
       <!-- RUBRIC -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div class="phase-num" style="background: var(--navy)">✓</div>
           <div>
             <div class="skill">How You Are Scored</div>
             <h2>Project Rubric</h2>
           </div>
         </div>
         <table class="rubric">
-          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
-          <tr><td>Writing &amp; Simplifying Ratios</td><td>All 3 forms correct; simplified using GCF with reasoning shown</td><td>All 3 forms correct; simplified correctly</td><td>Ratio written but simplification incomplete or one form missing</td></tr>
-          <tr><td>Equivalent Ratios / Table</td><td>All table rows correct; explains how ratios stay equivalent</td><td>All table rows correct</td><td>One or two rows correct; pattern partially shown</td></tr>
-          <tr><td>Unit Rate &amp; Better Buy</td><td>Unit rate correct; better buy identified with both unit prices compared</td><td>Unit rate correct; better buy correct</td><td>Unit rate attempted; better buy missing or incorrect</td></tr>
-          <tr><td>Communication</td><td>Reflection clearly justifies every number and decision</td><td>Reflection uses most numbers and gives a clear decision</td><td>Reflection is unclear or missing key numbers</td></tr>
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Writing &amp; Simplifying Ratios (6.RP.1)</td>
+            <td>
+              All 3 forms correct; simplified using GCF with reasoning shown
+            </td>
+            <td>All 3 forms correct; simplified correctly</td>
+            <td>
+              Ratio written but simplification incomplete or one form missing
+            </td>
+          </tr>
+          <tr>
+            <td>Equivalent Ratios / Table (6.RP.3)</td>
+            <td>All table rows correct; explains why ratios stay equivalent</td>
+            <td>All table rows correct</td>
+            <td>One or two rows correct; pattern partially shown</td>
+          </tr>
+          <tr>
+            <td>Unit Rate &amp; Better Buy (6.RP.2–3)</td>
+            <td>
+              Unit rate correct; better buy identified with both unit prices
+              compared
+            </td>
+            <td>Unit rate correct; better buy correct</td>
+            <td>Unit rate attempted; better buy missing or incorrect</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Compares recipes and world data with clear ratio reasoning</td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Pitch clearly justifies every number used</td>
+            <td>Pitch uses most numbers</td>
+            <td>Pitch is unclear or missing numbers</td>
+          </tr>
         </table>
       </section>
 
-      <p class="footer">Neft Teacher · Unit 3 Culminating Project · Version A · <span id="yr"></span></p>
+      <p class="footer">
+        Neft Teacher · Unit 3 Culminating Project · Version A ·
+        <span id="yr"></span>
+      </p>
     </div>
 
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
 
-      function gcd(a, b) { a = Math.abs(Math.round(a)); b = Math.abs(Math.round(b)); while (b) { [a, b] = [b, a % b]; } return a || 1; }
-      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
-
-      function calcRatio() {
-        const f = +document.getElementById("r-fruit").value;
-        const y = +document.getElementById("r-yogurt").value;
-        if (isNaN(f) || f <= 0 || isNaN(y) || y <= 0) { show("ratio-out", "<p>⚠️ Please enter valid positive numbers for both fruit and yogurt cups.</p>"); return; }
-        const g = gcd(f, y);
-        const sf = f / g;
-        const sy = y / g;
-        const simplified = (g === 1) ? "already in simplest form" : sf + ":" + sy + " (divide both by GCF = " + g + ")";
-        show("ratio-out",
-          '<div class="big">' + f + ':' + y + '</div>' +
-          '<strong>Three forms of your ratio:</strong><br>' +
-          '&bull; Colon form: <strong>' + f + ':' + y + '</strong><br>' +
-          '&bull; Word form: <strong>' + f + ' to ' + y + '</strong><br>' +
-          '&bull; Fraction form: <strong>' + f + '/' + y + '</strong><br><br>' +
-          '<strong>Simplified:</strong> ' + simplified + '<br>' +
-          'For every <strong>' + sf + ' cup(s) of fruit</strong> you use <strong>' + sy + ' cup(s) of yogurt</strong>. ✅');
-      }
-
-      function calcTable() {
-        const f = +document.getElementById("t-fruit").value;
-        const y = +document.getElementById("t-yogurt").value;
-        if (isNaN(f) || f <= 0 || isNaN(y) || y <= 0) { show("table-out", "<p>⚠️ Please enter valid positive numbers for both base amounts.</p>"); return; }
-        let rows = "";
-        for (let x = 1; x <= 3; x++) {
-          rows += "<tr><td>" + x + "&times; batch</td><td>" + (f * x) + " cups</td><td>" + (y * x) + " cups</td></tr>";
+      /* ---- Unit-specific calculators (kept in page) ---- */
+      function gcd(a, b) {
+        a = Math.abs(Math.round(a));
+        b = Math.abs(Math.round(b));
+        while (b) {
+          [a, b] = [b, a % b];
         }
-        show("table-out",
-          '<div class="big">3 Equivalent Ratios</div>' +
-          '<table class="ratio-table" style="margin-top:10px;">' +
-          '<tr><th>Batch Size</th><th>Fruit (cups)</th><th>Yogurt (cups)</th></tr>' +
-          rows +
-          '</table>' +
-          '<br>All three rows are <strong>equivalent ratios</strong> because each is multiplied by the same scale factor. The recipe stays the same! ✅');
+        return a || 1;
       }
-
-      function calcUnitRate() {
-        const cost = +document.getElementById("u-cost").value;
-        const sm = +document.getElementById("u-smoothies").value;
-        if (isNaN(cost) || cost <= 0 || isNaN(sm) || sm <= 0) { show("unit-out", "<p>⚠️ Please enter a valid positive cost and a positive number of smoothies.</p>"); return; }
-        const rate = cost / sm;
-        show("unit-out",
-          '<div class="big">$' + rate.toFixed(2) + ' per smoothie</div>' +
-          'Unit rate: $' + cost.toFixed(2) + ' &divide; ' + sm + ' smoothies = <strong>$' + rate.toFixed(2) + ' per smoothie</strong>. ' +
-          'Set your selling price above $' + rate.toFixed(2) + ' to make a profit. ✅');
-      }
-
-      function calcBetterBuy() {
-        const p1 = +document.getElementById("b-price1").value;
-        const c1 = +document.getElementById("b-cups1").value;
-        const p2 = +document.getElementById("b-price2").value;
-        const c2 = +document.getElementById("b-cups2").value;
-        if (isNaN(p1) || p1 <= 0 || isNaN(c1) || c1 <= 0 || isNaN(p2) || p2 <= 0 || isNaN(c2) || c2 <= 0) { show("buy-out", "<p>⚠️ Please enter valid positive prices and cup counts for both packs.</p>"); return; }
-        const r1 = p1 / c1;
-        const r2 = p2 / c2;
-        const winner = r1 < r2 ? "Pack A" : r2 < r1 ? "Pack B" : "Both packs cost the same per cup";
-        const diff = Math.abs(r1 - r2);
-        show("buy-out",
-          '<div class="big">' + winner + (r1 === r2 ? "" : " is the better buy") + '</div>' +
-          'Pack A: $' + p1.toFixed(2) + ' &divide; ' + c1 + ' cups = <strong>$' + r1.toFixed(2) + '/cup</strong><br>' +
-          'Pack B: $' + p2.toFixed(2) + ' &divide; ' + c2 + ' cups = <strong>$' + r2.toFixed(2) + '/cup</strong><br>' +
-          (r1 === r2 ? 'Both have the same unit price. Either is fine!' :
-            winner + ' saves you <strong>$' + diff.toFixed(2) + ' per cup</strong>. ✅'));
-      }
-
-      function checkRatio() {
-        const v = document.getElementById("check-ratio").value.trim().replace(/\s+/g, "");
-        const fb = document.getElementById("ratio-fb");
-        // Accept 2:3 — GCF(12,18)=6, 12/6=2, 18/6=3
-        if (v === "2:3") {
-          fb.textContent = "✅ Correct! GCF(12, 18) = 6. Divide both: 12÷6 = 2 and 18÷6 = 3. Simplified ratio is 2:3.";
-          fb.className = "feedback ok";
-        } else {
-          fb.textContent = "❌ Not yet. Find the GCF of 12 and 18, then divide both numbers by it.";
-          fb.className = "feedback no";
-        }
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
         updateProgress();
       }
 
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // max 4
-        const ratioOk = document.getElementById("ratio-fb").classList.contains("ok") ? 1 : 0;
-        const checks = document.querySelectorAll('#checklist input:checked').length; // max 5
-        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
-        const total = readouts + ratioOk + checks + pitch; // max 4+1+5+1 = 11
-        const pct = Math.min(100, Math.round((total / 11) * 100));
-        document.getElementById("pfill").style.width = pct + "%";
-        document.getElementById("pct").textContent = pct;
+      // running state used by report + world
+      const proj = {
+        fruit: null,
+        yogurt: null,
+        sf: null,
+        sy: null,
+        per: null,
+        buy: null,
+      };
+
+      function calcRatio() {
+        const f = num("r-fruit"),
+          y = num("r-yogurt");
+        if (isNaN(f) || f <= 0 || isNaN(y) || y <= 0) {
+          $("ratio-out").classList.remove("show");
+          proj.fruit = proj.yogurt = proj.sf = proj.sy = null;
+          return;
+        }
+        const g = gcd(f, y),
+          sf = f / g,
+          sy = y / g;
+        proj.fruit = f;
+        proj.yogurt = y;
+        proj.sf = sf;
+        proj.sy = sy;
+        const simplified =
+          g === 1
+            ? "already in simplest form"
+            : sf + ":" + sy + " (divide both by GCF = " + g + ")";
+        show(
+          "ratio-out",
+          '<div class="big">' +
+            f +
+            ":" +
+            y +
+            "</div>" +
+            "<strong>Three forms of your ratio:</strong><br>" +
+            "&bull; Colon form: <strong>" +
+            f +
+            ":" +
+            y +
+            "</strong><br>" +
+            "&bull; Word form: <strong>" +
+            f +
+            " to " +
+            y +
+            "</strong><br>" +
+            "&bull; Fraction form: <strong>" +
+            f +
+            "/" +
+            y +
+            "</strong><br><br>" +
+            "<strong>Simplified:</strong> " +
+            simplified +
+            "<br>" +
+            "For every <strong>" +
+            sf +
+            " cup(s) of fruit</strong> you use <strong>" +
+            sy +
+            " cup(s) of yogurt</strong>. ✅",
+        );
+        calcTable();
       }
-      document.getElementById("checklist").addEventListener("change", updateProgress);
-      document.getElementById("pitch").addEventListener("input", updateProgress);
+
+      function calcTable() {
+        const f = num("r-fruit"),
+          y = num("r-yogurt");
+        if (isNaN(f) || f <= 0 || isNaN(y) || y <= 0) {
+          $("table-out").classList.remove("show");
+          return;
+        }
+        let rows = "";
+        for (let x = 1; x <= 3; x++) {
+          rows +=
+            "<tr><td>" +
+            x +
+            "&times; batch</td><td>" +
+            f * x +
+            " cups</td><td>" +
+            y * x +
+            " cups</td></tr>";
+        }
+        show(
+          "table-out",
+          '<div class="big">3 Equivalent Ratios</div>' +
+            '<table class="ratio-table" style="margin-top:10px;">' +
+            "<tr><th>Batch Size</th><th>Fruit (cups)</th><th>Yogurt (cups)</th></tr>" +
+            rows +
+            "</table>" +
+            "<br>All three rows are <strong>equivalent ratios</strong> because each part is multiplied by the same factor. The taste stays the same! ✅",
+        );
+      }
+
+      function calcUnitRate() {
+        const cost = num("u-cost"),
+          sm = num("u-smoothies");
+        if (isNaN(cost) || cost <= 0 || isNaN(sm) || sm <= 0) {
+          $("unit-out").classList.remove("show");
+          proj.per = null;
+          return;
+        }
+        const rate = cost / sm;
+        proj.per = rate;
+        show(
+          "unit-out",
+          '<div class="big">$' +
+            rate.toFixed(2) +
+            " per smoothie</div>" +
+            "Unit rate: $" +
+            cost.toFixed(2) +
+            " &divide; " +
+            sm +
+            " smoothies = <strong>$" +
+            rate.toFixed(2) +
+            " per smoothie</strong>. " +
+            "Set your selling price above $" +
+            rate.toFixed(2) +
+            " to make a profit. ✅",
+        );
+      }
+
+      function calcBetterBuy() {
+        const p1 = num("b-price1"),
+          c1 = num("b-cups1"),
+          p2 = num("b-price2"),
+          c2 = num("b-cups2");
+        if (
+          isNaN(p1) ||
+          p1 <= 0 ||
+          isNaN(c1) ||
+          c1 <= 0 ||
+          isNaN(p2) ||
+          p2 <= 0 ||
+          isNaN(c2) ||
+          c2 <= 0
+        ) {
+          $("buy-out").classList.remove("show");
+          proj.buy = null;
+          return;
+        }
+        const r1 = p1 / c1,
+          r2 = p2 / c2;
+        const winner =
+          r1 < r2
+            ? "Pack A"
+            : r2 < r1
+              ? "Pack B"
+              : "Both packs cost the same per cup";
+        proj.buy = Math.min(r1, r2);
+        const diff = Math.abs(r1 - r2);
+        show(
+          "buy-out",
+          '<div class="big">' +
+            winner +
+            (r1 === r2 ? "" : " is the better buy") +
+            "</div>" +
+            "Pack A: $" +
+            p1.toFixed(2) +
+            " &divide; " +
+            c1 +
+            " cups = <strong>$" +
+            r1.toFixed(2) +
+            "/cup</strong><br>" +
+            "Pack B: $" +
+            p2.toFixed(2) +
+            " &divide; " +
+            c2 +
+            " cups = <strong>$" +
+            r2.toFixed(2) +
+            "/cup</strong><br>" +
+            (r1 === r2
+              ? "Both have the same unit price. Either is fine!"
+              : winner +
+                " saves you <strong>$" +
+                diff.toFixed(2) +
+                " per cup</strong>. ✅"),
+        );
+      }
+
+      function checkRatioFn() {
+        const ok = PK.checkWork("check-ratio", "2:3", 0);
+        if ($("check-ratioFb") && $("check-ratio").value.trim() && ok) {
+          $("check-ratioFb").innerHTML =
+            '<span class="pk-ok">✅ Correct! GCF(12, 18) = 6 → 12÷6 = 2 and 18÷6 = 3 → 2:3.</span>';
+        }
+        updateProgress();
+        return ok;
+      }
+
+      /* ---- Part 2: peer compare with equivalent ratios ---- */
+      function comparePeer() {
+        const myF = proj.fruit,
+          myY = proj.yogurt;
+        const pF = num("p-fruit"),
+          pY = num("p-yogurt");
+        const base = num("p-common");
+        if (
+          myF == null ||
+          myY == null ||
+          isNaN(pF) ||
+          pF <= 0 ||
+          isNaN(pY) ||
+          pY <= 0 ||
+          isNaN(base) ||
+          base <= 0
+        ) {
+          $("peer-out").classList.remove("show");
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish your recipe in Part 1, then enter your partner’s recipe and a common base.</p>';
+          return;
+        }
+        // scale each recipe to the same cups of yogurt = base
+        const myFruitAtBase = (myF / myY) * base;
+        const pFruitAtBase = (pF / pY) * base;
+        const lead =
+          myFruitAtBase > pFruitAtBase
+            ? "Your smoothie"
+            : pFruitAtBase > myFruitAtBase
+              ? "Your partner’s smoothie"
+              : "Both smoothies (tie)";
+        show(
+          "peer-out",
+          '<div class="big">At ' +
+            base +
+            " cups of yogurt</div>" +
+            "You: " +
+            myF +
+            ":" +
+            myY +
+            " &rarr; <strong>" +
+            myFruitAtBase.toFixed(1) +
+            " cups fruit</strong> per " +
+            base +
+            " cups yogurt<br>" +
+            "Partner: " +
+            pF +
+            ":" +
+            pY +
+            " &rarr; <strong>" +
+            pFruitAtBase.toFixed(1) +
+            " cups fruit</strong> per " +
+            base +
+            " cups yogurt<br><br>" +
+            lead +
+            " is fruitier at the same amount of yogurt. ✅",
+        );
+        PK.peerCompare("peerBox", [
+          {
+            label: "Fruit @ base",
+            me: myFruitAtBase,
+            partner: pFruitAtBase,
+            fmt: (x) => Number(x).toFixed(1),
+          },
+        ]);
+        updateProgress();
+      }
+
+      /* ---- Part 3: world dataset + meter ---- */
+      // [store/city, strawberry $/cup, yogurt $/cup, banana $/cup] — realistic, with one "bad buy" outlier
+      const world = [
+        ["Walmart, USA", 1.45, 0.95, 0.35],
+        ["Aldi, Germany", 1.2, 0.8, 0.3],
+        ["Tesco, UK", 1.65, 1.1, 0.4],
+        ["Loblaws, Canada", 1.75, 1.2, 0.45],
+        ["Coles, Australia", 1.9, 1.25, 0.5],
+        ["Soriana, Mexico", 1.1, 0.85, 0.28],
+        ["FairPrice, Singapore", 2.1, 1.4, 0.55],
+        ["Airport kiosk (bad buy)", 4.5, 3.2, 1.6],
+      ];
+
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              `<tr><td>${r[0]}</td><td>$${r[1].toFixed(2)}</td><td>$${r[2].toFixed(2)}</td><td>$${r[3].toFixed(2)}</td></tr>`,
+          )
+          .join("");
+      }
+      function worldSample() {
+        const idx = parseInt($("worldCat").value, 10);
+        return world.map((r) => r[idx]);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        PK.worldMeter("worldMeter", worldSample(), my, {
+          mean: "World avg $",
+          me: "Me $",
+        });
+        updateProgress();
+      }
+      function runWhatIf() {
+        const v = parseFloat($("whatIfVal").value);
+        const sample = worldSample();
+        if (isNaN(v)) {
+          $("whatIfBox").textContent = "Enter a number first.";
+          return;
+        }
+        const before = PK.mean(sample);
+        const after = PK.mean(sample.concat([v]));
+        PK.whatIf(
+          "whatIfBox",
+          { average: "$" + before.toFixed(2) },
+          { average: "$" + after.toFixed(2) },
+          "Adding one more cup at $" + v.toFixed(2) + " to the world sample:",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          "r-fruit": 6,
+          "r-yogurt": 4,
+          "u-cost": 9.0,
+          "u-smoothies": 3,
+          "b-price1": 4.5,
+          "b-cups1": 3,
+          "b-price2": 7.2,
+          "b-cups2": 6,
+          "p-fruit": 5,
+          "p-yogurt": 5,
+          "p-common": 12,
+          myWorld: "",
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        recalcAll();
+      }
+
+      function recalcAll() {
+        calcRatio();
+        calcUnitRate();
+        calcBetterBuy();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f = (x, d) =>
+          x == null
+            ? "(not finished)"
+            : typeof x === "number"
+              ? x.toFixed(d || 2)
+              : x;
+        return (
+          "SMOOTHIE BAR DESIGNER — MY REPORT\n" +
+          "=================================\n\n" +
+          "PART 1: MY RECIPE (SELF)\n" +
+          "Recipe ratio: " +
+          (proj.fruit == null
+            ? "(not finished)"
+            : proj.fruit + ":" + proj.yogurt) +
+          (proj.sf == null
+            ? ""
+            : "  (simplifies to " + proj.sf + ":" + proj.sy + ")") +
+          "\n" +
+          "Cost per smoothie (unit rate): $" +
+          f(proj.per) +
+          "\n" +
+          "Better-buy unit price: $" +
+          f(proj.buy) +
+          "/cup\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "Partner recipe: " +
+          ($("p-fruit").value || "-") +
+          " cups fruit : " +
+          ($("p-yogurt").value || "-") +
+          " cups yogurt\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "My unit price vs world: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n" +
+          "Careful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "MENU PITCH:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["recipe_fruit", proj.fruit],
+          ["recipe_yogurt", proj.yogurt],
+          ["simplified", proj.sf == null ? "" : proj.sf + ":" + proj.sy],
+          ["cost_per_smoothie", proj.per],
+          ["better_buy_per_cup", proj.buy],
+          ["partner", $("partnerName").value],
+          ["partner_fruit", $("p-fruit").value],
+          ["partner_yogurt", $("p-yogurt").value],
+        ];
+        PK.downloadCsv("smoothie-bar-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 5 (ratio, table, unit, buy, peer)
+        const ratioOk = $("check-ratioFb").querySelector(".pk-ok") ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + ratioOk + checks + wrld + pitch; // max 5+1+6+1+1 = 14
+        const pct = Math.min(100, Math.round((total / 14) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      $("checklist").addEventListener("change", updateProgress);
+      $("pitch").addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills one part if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          if (!$("r-fruit").value) {
+            $("r-fruit").value = 6;
+            calcRatio();
+          }
+        }
+      };
+
+      /* ---- init (runs after deferred kit script is ready) ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u3ProjectA", default: "level-1" });
+        PK.load("u3ProjectA", { after: recalcAll });
+        updateProgress();
+      });
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

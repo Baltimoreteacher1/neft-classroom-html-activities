@@ -6,9 +6,11 @@
     <title>Streaming Channel Growth Lab — Unit 9 Culminating Project</title>
     <meta
       name="description"
-      content="Unit 9 Two-Variable Relationships culminating project. Design a streaming channel growth model using dependent/independent variables, equations y = kx, tables, and graphs."
+      content="Unit 9 Two-Variable Relationships culminating project. Design a streaming channel YOU would run using independent/dependent variables, the equation y = kx, tables, graphs, then compare with a classmate and real creator-growth benchmarks."
     />
     <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
     <style>
       :root {
         --navy: #0f2b3c;
@@ -31,7 +33,9 @@
         --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
         --font: "Segoe UI", system-ui, -apple-system, sans-serif;
       }
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         font-family: var(--font);
@@ -39,7 +43,11 @@
         background: var(--bg);
         line-height: 1.55;
       }
-      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
 
       .phero {
         background: linear-gradient(135deg, #1a3a6b 0%, #1a6fb5 100%);
@@ -49,479 +57,1675 @@
         position: relative;
         overflow: hidden;
       }
-      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
       .phero h1 {
         font-size: clamp(26px, 5vw, 40px);
         margin: 10px 0 8px;
         letter-spacing: -0.02em;
       }
-      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
-      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-      .tag {
-        background: rgba(255,255,255,.14);
-        border: 1px solid rgba(255,255,255,.25);
-        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
       }
-      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
 
-      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
-      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
 
       .intro-card {
-        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
-        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--gold);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
       }
-      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
-      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
 
       .phase {
-        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
       }
-      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
       .phase-num {
-        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
-        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
-        display: flex; align-items: center; justify-content: center;
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
-      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
-      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
-      .phase h2 { margin: 0; font-size: 21px; }
-      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-      .phase > p { color: var(--muted); }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
 
       .task {
-        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
       }
-      .task strong { color: var(--navy); }
+      .task strong {
+        color: var(--navy);
+      }
 
-      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
-      input[type="number"], input[type="text"], select, textarea {
-        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
-        font-family: inherit; font-size: 15px; background: #fff;
+      .xtopic {
+        background: var(--gold-light);
+        border: 1px solid #f0d48a;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 16px 0;
+        font-size: 14px;
       }
-      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
-      textarea { resize: vertical; min-height: 80px; }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      .xtopic strong {
+        color: #8a5a00;
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
       .btn {
-        background: var(--blue); color: #fff; border: none; border-radius: 10px;
-        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
         margin-top: 14px;
       }
-      .btn:hover { filter: brightness(1.08); }
-      .btn.alt { background: var(--teal); }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--blue);
+        border: 2px solid var(--line);
+      }
 
       .readout {
-        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
-        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
       }
-      .readout.show { display: block; }
-      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
-      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
-      .feedback.ok { color: var(--green); }
-      .feedback.no { color: var(--coral); }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
 
-      .hintbox { margin-top: 12px; }
-      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
-      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
 
-      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
-      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
-      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
-      .rubric td:first-child { font-weight: 700; width: 30%; }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
 
-      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
-      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
-      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
 
-      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
-      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
-      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
-      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
 
-      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
-      .printbtn { background: var(--navy); }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
 
-      table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; }
-      table.data-table th, table.data-table td { border: 1px solid var(--line); padding: 9px 14px; text-align: center; }
-      table.data-table th { background: var(--blue-light); font-weight: 700; color: var(--navy); }
-      table.data-table tr:nth-child(even) td { background: #f3f8fd; }
+      table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 15px;
+      }
+      table.data-table th,
+      table.data-table td {
+        border: 1px solid var(--line);
+        padding: 9px 14px;
+        text-align: center;
+      }
+      table.data-table th {
+        background: var(--blue-light);
+        font-weight: 700;
+        color: var(--navy);
+      }
+      table.data-table tr:nth-child(even) td {
+        background: #f3f8fd;
+      }
 
-      svg.linegraph { display: block; margin: 16px auto 0; max-width: 100%; }
+      svg.linegraph {
+        display: block;
+        margin: 16px auto 0;
+        max-width: 100%;
+      }
+
+      .showwork-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      @media (max-width: 560px) {
+        .showwork-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .showwork-cell {
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .showwork-cell .q {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--navy);
+      }
 
       @media print {
-        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
-        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
-        body { background: #fff; }
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
-  <body>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
     <header class="phero">
       <div class="deco">📈</div>
       <h1>Streaming Channel Growth Lab</h1>
-      <p>You are launching a streaming channel. Use two-variable relationships to model your subscriber growth, build a data table, read a graph, and write an equation that tells the whole story.</p>
+      <p>
+        Design a streaming channel <strong>you</strong> would really run. Pick a
+        topic, research a realistic growth rate <em>k</em>, model it with
+        <em>y = kx</em>, then compare with a classmate and with real creator
+        growth benchmarks.
+      </p>
       <div class="tags">
         <span class="tag gold">Unit 9 · Two-Variable Relationships</span>
         <span class="tag">6.EE.9</span>
         <span class="tag">Version A · Design &amp; Build</span>
       </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u9ProjectA')">💾 Save</button>
+        <button
+          onclick="PK.load('u9ProjectA', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
     </header>
 
     <div class="wrap">
-
       <div class="progress-wrap">
-        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
-        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
       </div>
 
       <div class="intro-card">
         <h2>🎯 Your Mission</h2>
-        <p class="scenario">
-          Your streaming channel gains the same number of subscribers every week — a perfect proportional relationship.
-          Work through four phases: identify your variables, write the equation <strong>y = kx</strong>, build a
-          data table, read the graph for specific values, and compare two channels to decide which grows faster.
-          Fill in every section, hit <em>Calculate</em> or <em>Check</em>, and finish the checklist and growth
-          report at the end. Then print your report.
+        <p>
+          Model the growth of your own streaming channel in three steps.
+          <strong>Part 1 (Self):</strong> choose a channel you would actually
+          run, research a realistic weekly growth rate <em>k</em>, and run the
+          equation, table, and graph tools.
+          <strong>Part 2 (Peer):</strong> interview a classmate for their
+          channel's <em>k</em> and auto-compare whose line is steeper.
+          <strong>Part 3 (World):</strong> compare your <em>k</em> to real
+          creator-growth benchmarks, run the What-If Lab, and write your growth
+          report.
         </p>
       </div>
 
-      <!-- PHASE 1 -->
-      <section class="phase" data-phase>
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">🎮</span><b>Independent variable (x)</b>
+            <p>The input you control. Here it is the number of weeks.</p>
+            <p class="pk-es">
+              Variable independiente (x): la entrada que tú controlas. Aquí es
+              el número de semanas.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">📊</span><b>Dependent variable (y)</b>
+            <p>The output that depends on x. Here it is total subscribers.</p>
+            <p class="pk-es">
+              Variable dependiente (y): el resultado que depende de x. Aquí es
+              el total de suscriptores.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⚡</span
+            ><b>Constant of proportionality (k)</b>
+            <p>
+              The fixed number you multiply x by. New subscribers each week.
+            </p>
+            <p class="pk-es">
+              Constante de proporcionalidad (k): el número fijo por el que
+              multiplicas x. Suscriptores nuevos por semana.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">📐</span><b>Rate of change</b>
+            <p>How much y goes up each time x goes up by 1. It equals k.</p>
+            <p class="pk-es">
+              Tasa de cambio: cuánto sube y cada vez que x sube en 1. Es igual a
+              k.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🎯</span><b>Origin (0, 0)</b>
+            <p>Where a proportional line starts. At week 0, subscribers = 0.</p>
+            <p class="pk-es">
+              Origen (0, 0): donde empieza una recta proporcional. En la semana
+              0, suscriptores = 0.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>The equation:</b> y = kx</p>
+            <p><b>Find y when you know x:</b> y = k × x</p>
+            <p><b>Find x when you know y:</b> x = y ÷ k</p>
+            <p><b>Steepness of the line:</b> = k (bigger k → steeper)</p>
+            <p class="pk-lvl2">
+              <b>Level 2 — with a one-time fee:</b> y = kx + b (no longer
+              proportional)
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "My independent variable is ___ and my dependent variable is ___."
+            </p>
+            <p>
+              "My k is ___ subscribers per week, so my equation is y = ___x."
+            </p>
+            <p>"At week ___, I will have ___ subscribers because ___."</p>
+            <p class="pk-es">
+              "Mi variable independiente es ___ y mi variable dependiente es
+              ___. Mi k es ___, así que mi ecuación es y = ___x."
+            </p>
+          </div>
+        </div>
+        <div class="xtopic">
+          <strong>Cross-topic connection:</strong> Your <em>k</em> is a
+          <b>unit rate</b> — the same idea you used in Units 3 and 4 (like miles
+          per hour or dollars per item). And each row of your table is an
+          <b>ordered pair (x, y)</b> you can plot on the coordinate plane from
+          Unit 7.
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
         <div class="phase-head">
           <div class="phase-num">1</div>
           <div>
-            <div class="skill">Independent &amp; Dependent Variables · 6.EE.9</div>
-            <h2>Identify Your Variables</h2>
+            <span class="arc-banner"
+              >Part 1 · Self — a channel YOU would run</span
+            >
+            <div class="skill">
+              Variables · Equation · Table · Graph · 6.EE.9
+            </div>
+            <h2>Design YOUR Channel</h2>
           </div>
         </div>
-        <p>Every relationship has two variables. One you control (independent); the other depends on it (dependent). Set your channel's weekly growth rate and let the equation appear.</p>
-        <div class="task">
-          <strong>Think it through:</strong> Time (weeks) is the <em>independent variable</em> — you choose how many weeks to watch. Subscribers is the <em>dependent variable</em> — the number of subscribers depends on how many weeks have passed.
-        </div>
+        <p>
+          Pick a channel you would actually run and research a realistic weekly
+          growth rate. Not sure yet? Click <em>Use example numbers</em> to model
+          the math, then change them to fit your channel.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="k-rate">Growth rate k (new subscribers per week)</label>
-            <input type="number" id="k-rate" value="50" min="1" max="10000" />
+            <label class="fld" for="topic">Your channel topic</label>
+            <input
+              type="text"
+              id="topic"
+              data-save
+              placeholder="example: skateboarding tricks"
+            />
           </div>
           <div>
-            <label class="fld" for="start-subs">Starting subscribers (week 0)</label>
-            <input type="number" id="start-subs" value="0" min="0" readonly style="background:#f0f4f8;color:var(--muted);" />
+            <label class="fld" for="k-rate"
+              >Your researched growth rate k (new subscribers per week)</label
+            >
+            <input
+              type="number"
+              id="k-rate"
+              data-save
+              min="1"
+              max="100000"
+              placeholder="example: 12"
+              oninput="calcEquation()"
+            />
           </div>
         </div>
-        <button class="btn" onclick="calcEquation()">Write my equation</button>
+        <label class="fld" for="kwhy"
+          >Why this k? Justify it with your research.</label
+        >
+        <textarea
+          id="kwhy"
+          data-save
+          placeholder="I chose k = ___ because real channels about ___ gain about ___ subscribers a week when they post ___ times..."
+        ></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: pick a friendly k like 10, 20, or 25 to keep the table
+          easy.
+        </p>
+
+        <!-- 1a equation -->
+        <h3 style="margin-top: 20px">✍️ Write your equation (y = kx)</h3>
+        <button class="btn" type="button" onclick="calcEquation()">
+          Write my equation
+        </button>
         <div class="readout" id="eq-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>The independent variable x = weeks. The dependent variable y = total subscribers. If you gain the same amount every week, that constant rate is k. The equation is y = kx — multiply k times the number of weeks to get the total subscribers.</p>
+          <p>
+            The independent variable x = weeks. The dependent variable y = total
+            subscribers. If you gain the same amount every week, that constant
+            rate is k. The equation is y = kx — multiply k times the number of
+            weeks to get the total subscribers.
+          </p>
         </details>
-      </section>
 
-      <!-- PHASE 2 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">2</div>
-          <div>
-            <div class="skill">Tables of Values · 6.EE.9</div>
-            <h2>Build Your Data Table</h2>
-          </div>
-        </div>
-        <p>A table of values shows the relationship between x and y at specific inputs. Generate your table for weeks 0 through 5 using your growth rate from Phase 1.</p>
+        <!-- 1b table -->
+        <h3 style="margin-top: 24px">📊 Build your data table (weeks 0–5)</h3>
         <div class="task">
-          <strong>Remember:</strong> y = kx means you multiply your growth rate by each x value. At x = 0, y is always 0 (no weeks, no growth yet).
+          <strong>Remember:</strong> y = kx means you multiply your growth rate
+          by each x value. At x = 0, y is always 0 (no weeks, no growth yet) —
+          that is the origin.
         </div>
-        <button class="btn alt" onclick="calcTable()">Generate my table</button>
+        <button class="btn alt" type="button" onclick="calcTable()">
+          Generate my table
+        </button>
         <div class="readout" id="table-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>Fill in the equation for each row. If k = 50: week 0 → 50×0 = 0; week 1 → 50×1 = 50; week 2 → 50×2 = 100, and so on. The y values increase by k each time — that is what makes it proportional.</p>
+          <p>
+            Fill in the equation for each row. If k = 12: week 0 → 12×0 = 0;
+            week 1 → 12×1 = 12; week 2 → 12×2 = 24, and so on. The y values
+            increase by k each time — that is what makes it proportional. Each
+            row is an ordered pair (x, y) you can plot.
+          </p>
         </details>
-      </section>
 
-      <!-- PHASE 3 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">3</div>
-          <div>
-            <div class="skill">Reading the Graph · 6.EE.9</div>
-            <h2>Read Specific Values &amp; View the Graph</h2>
-          </div>
-        </div>
-        <p>Use your equation to answer targeted questions — find y when you know x, and work backwards to find x when you know y.</p>
+        <!-- 1c graph + readings -->
+        <h3 style="margin-top: 24px">📈 Read your graph</h3>
+        <p style="color: var(--muted)">
+          Use your equation to find y when you know x, and to work backwards to
+          find x when you know y.
+        </p>
         <div class="grid2">
           <div>
-            <label class="fld" for="find-x">Find subscribers at week (enter x)</label>
-            <input type="number" id="find-x" value="7" min="0" />
+            <label class="fld" for="find-x"
+              >Find subscribers at week (enter x)</label
+            >
+            <input
+              type="number"
+              id="find-x"
+              data-save
+              min="0"
+              placeholder="example: 7"
+              oninput="calcGraph()"
+            />
           </div>
           <div>
-            <label class="fld" for="find-y">Find the week when subscribers = (enter y)</label>
-            <input type="number" id="find-y" value="300" min="0" />
+            <label class="fld" for="find-y"
+              >Find the week when subscribers = (enter y)</label
+            >
+            <input
+              type="number"
+              id="find-y"
+              data-save
+              min="0"
+              placeholder="example: 300"
+              oninput="calcGraph()"
+            />
           </div>
         </div>
-        <button class="btn" onclick="calcGraph()">Calculate &amp; show graph</button>
+        <button class="btn" type="button" onclick="calcGraph()">
+          Calculate &amp; show graph
+        </button>
         <div class="readout" id="graph-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>To find y: substitute x into y = kx and multiply. To find x: divide y by k (x = y ÷ k). On the graph, the line passes through the origin (0, 0) and goes up steeply if k is large.</p>
+          <p>
+            To find y: substitute x into y = kx and multiply. To find x: divide
+            y by k (x = y ÷ k). On the graph, the line passes through the origin
+            (0, 0) and goes up steeply if k is large.
+          </p>
         </details>
+
+        <!-- 1d show-your-work grid -->
+        <h3 style="margin-top: 24px">🧮 Show Your Work</h3>
+        <p style="color: var(--muted)">
+          Use <em>your own</em> k to answer all three. Each box is checked
+          against your equation.
+        </p>
+        <div class="showwork-grid">
+          <div class="showwork-cell">
+            <div class="q">1. Find y when x = 3 &nbsp;(y = k × 3)</div>
+            <label class="fld" for="sw-y3">Subscribers at week 3</label>
+            <input type="number" id="sw-y3" data-save placeholder="type y" />
+            <button class="btn alt" type="button" onclick="checkSwY3()">
+              Check
+            </button>
+            <div class="pk-fb" id="sw-y3Fb"></div>
+          </div>
+          <div class="showwork-cell">
+            <div class="q" id="sw-xq">2. Find x when y = (your target)</div>
+            <label class="fld" for="sw-target">Target subscribers (y)</label>
+            <input
+              type="number"
+              id="sw-target"
+              data-save
+              placeholder="example: 240"
+              oninput="updateSwTargetLabel()"
+            />
+            <label class="fld" for="sw-x">Weeks to reach it (x = y ÷ k)</label>
+            <input
+              type="number"
+              id="sw-x"
+              data-save
+              placeholder="type x"
+              step="0.01"
+            />
+            <button class="btn alt" type="button" onclick="checkSwX()">
+              Check
+            </button>
+            <div class="pk-fb" id="sw-xFb"></div>
+          </div>
+          <div class="showwork-cell">
+            <div class="q">3. 12-month total &nbsp;(y = k × 52 weeks)</div>
+            <label class="fld" for="sw-year">Subscribers after 52 weeks</label>
+            <input
+              type="number"
+              id="sw-year"
+              data-save
+              placeholder="type total"
+            />
+            <button class="btn alt" type="button" onclick="checkSwYear()">
+              Check
+            </button>
+            <div class="pk-fb" id="sw-yearFb"></div>
+          </div>
+        </div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 worked step for box 1: if k = 12 → 12 × 3 = 36. Each box uses
+          your own k, so check your equation first.
+        </p>
       </section>
 
-      <!-- PHASE 4 -->
-      <section class="phase" data-phase>
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
         <div class="phase-head">
-          <div class="phase-num">4</div>
+          <div class="phase-num" style="background: var(--teal)">2</div>
           <div>
-            <div class="skill">Compare Relationships · 6.EE.9</div>
+            <span class="arc-banner"
+              >Part 2 · Peer — interview a classmate</span
+            >
+            <div class="skill">Compare relationships · 6.EE.9</div>
             <h2>Channel Showdown</h2>
           </div>
         </div>
-        <p>Compare your channel against a rival channel. Enter both growth rates and a number of weeks, then see which channel wins — and by how much.</p>
+        <p>
+          Ask a classmate for <strong>their</strong> channel's growth rate k.
+          Type it in to auto-compare whose line is steeper and who has more
+          subscribers at a chosen week.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>
+            "What is your channel about, and what is your k (subs per week)?"
+          </p>
+          <p>"At week ___, how many subscribers does your equation predict?"</p>
+          <p>"Whose line is steeper — and why does a bigger k mean steeper?"</p>
+          <p class="pk-es">
+            "¿De qué trata tu canal y cuál es tu k (suscriptores por semana)?"
+          </p>
+        </div>
         <div class="grid2">
           <div>
-            <label class="fld" for="ch-a">Your channel growth rate (k)</label>
-            <input type="number" id="ch-a" value="50" min="1" />
+            <label class="fld" for="ch-a">Your growth rate k (subs/week)</label>
+            <input
+              type="number"
+              id="ch-a"
+              data-save
+              min="1"
+              placeholder="example: 12"
+              oninput="calcCompare()"
+            />
           </div>
           <div>
-            <label class="fld" for="ch-b">Rival channel growth rate (k)</label>
-            <input type="number" id="ch-b" value="35" min="1" />
+            <label class="fld" for="partnerName"
+              >Classmate name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
+          </div>
+          <div>
+            <label class="fld" for="ch-b"
+              >Classmate growth rate k (subs/week)</label
+            >
+            <input
+              type="number"
+              id="ch-b"
+              data-save
+              min="1"
+              placeholder="example: 8"
+              oninput="calcCompare()"
+            />
           </div>
           <div>
             <label class="fld" for="ch-weeks">Compare at week (x)</label>
-            <input type="number" id="ch-weeks" value="10" min="1" />
+            <input
+              type="number"
+              id="ch-weeks"
+              data-save
+              min="1"
+              placeholder="example: 10"
+              oninput="calcCompare()"
+            />
           </div>
         </div>
-        <button class="btn" onclick="calcCompare()">Compare channels</button>
+        <button class="btn alt" type="button" onclick="calcCompare()">
+          Compare our channels
+        </button>
         <div class="readout" id="compare-out"></div>
-
-        <div class="task" style="margin-top:18px;">
-          <strong>Quick check:</strong> If y = 30x, what is y when x = 4?
-        </div>
-        <label class="fld" for="check-quick">Your answer (subscribers)</label>
-        <input type="number" id="check-quick" placeholder="Type a number" />
-        <button class="btn alt" onclick="checkQuick()">Check answer</button>
-        <div class="feedback" id="quick-fb"></div>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <label class="fld" for="peerReflect"
+          >Whose line is steeper, and who has more subscribers at that week? How
+          do you know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My k is ___ and my classmate's k is ___, so my line is steeper / flatter. At week ___ I have ___ and they have ___, because ___."
+        ></textarea>
       </section>
 
-      <!-- DELIVERABLE -->
+      <!-- ===================== PART 3 — WORLD ===================== -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--green);">★</div>
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner"
+              >Part 3 · World — real creator benchmarks</span
+            >
+            <div class="skill">Compare to real data · 6.EE.9</div>
+            <h2>How Does Your k Compare?</h2>
+          </div>
+        </div>
+        <p>
+          These are realistic typical weekly subscriber gains for channels at
+          different sizes. Pick a tier and see where your <em>k</em> lands.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldCat">Compare against</label>
+            <select id="worldCat" data-save onchange="worldGo()">
+              <option value="k">Weekly growth rate k (subs/week)</option>
+            </select>
+            <label class="fld" for="myWorld">My growth rate k</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your k"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: use the same k you researched in Part 1.
+            </p>
+            <div id="worldMeter"></div>
+          </div>
+          <div>
+            <h3>Creator Growth Benchmarks 🌐</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>Channel tier</th>
+                  <th>Typical k (subs/week)</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Add a viral week (a big one-time subscriber spike) and watch your
+            week-10 prediction change.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="whatIfVal"
+                >Viral week bonus subscribers (one-time)</label
+              >
+              <input type="number" id="whatIfVal" placeholder="example: 500" />
+            </div>
+            <div>
+              <label class="fld" for="whatIfWk">Predict at week</label>
+              <input type="number" id="whatIfWk" value="10" min="1" />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter a bonus to test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is your k above or below the benchmark for your tier? Why might that
+          be?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="My k is ___ the benchmark average because ___."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 — find when two lines are equal: Your channel is y = kx
+            with a 0 head start. A friend starts with a one-time 200-subscriber
+            boost, so their equation is y = kx + 200 (the same k). Are these
+            still proportional? Will your lines ever be equal? Explain.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="y = kx + 200 is NOT proportional because it does not pass through (0,0). The two lines are parallel (same k), so they ___."
+          ></textarea>
+        </div>
+        <label class="fld" for="careful"
+          >Careful thinking: why is it tricky to compare growth rates between
+          different kinds of channels?</label
+        >
+        <textarea
+          id="careful"
+          data-save
+          placeholder="It can be unfair to compare because ___."
+        ></textarea>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
           <div>
             <div class="skill">Final Deliverable</div>
             <h2>Write Your Growth Report</h2>
           </div>
         </div>
-        <p>Write a 3–5 sentence growth report that uses your equation, table values, and graph readings. Explain which variable is independent, which is dependent, and what your equation predicts.</p>
-        <textarea id="pitch" placeholder="My channel's independent variable is ___ (weeks) and my dependent variable is ___ (subscribers). My equation is y = ___x, which means I gain ___ subscribers every week. After ___ weeks I will have ___ subscribers. My channel grows faster / slower than the rival because ___..."></textarea>
+        <p>
+          Write a short growth report (3–5 sentences) that uses your real
+          numbers from above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="My channel is about ___. My independent variable is weeks (x) and my dependent variable is subscribers (y). My equation is y = ___x, which means I gain ___ subscribers every week. After ___ weeks I will have ___ subscribers. My channel grows faster / slower than my classmate's because ___."
+        ></textarea>
 
-        <h3 style="margin:22px 0 6px;">Growth Report Checklist</h3>
+        <h3 style="margin: 22px 0 6px">Growth Report Checklist</h3>
         <ul class="checklist" id="checklist">
-          <li><input type="checkbox" /> I identified the independent variable (weeks, x) and dependent variable (subscribers, y).</li>
-          <li><input type="checkbox" /> I wrote the equation y = kx using my growth rate k.</li>
-          <li><input type="checkbox" /> I completed the data table for weeks 0 through 5.</li>
-          <li><input type="checkbox" /> I used the equation to find y given x, and x given y.</li>
-          <li><input type="checkbox" /> My growth report explains the relationship clearly with real numbers.</li>
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I named the independent
+            variable (weeks, x) and dependent variable (subscribers, y).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I wrote y = kx using a
+            researched k and justified why I picked that k.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I built the data table
+            for weeks 0–5 and read the graph.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I finished the
+            show-your-work grid (y at x=3, x at my target, 12-month total).
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I interviewed a
+            classmate and compared whose line is steeper.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> I compared my k to the
+            creator benchmarks.
+          </li>
         </ul>
-        <button class="btn printbtn" onclick="window.print()">🖨️ Print my report</button>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="
+                PK.downloadText('channel-growth-report.txt', 'reportBox')
+              "
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your growth summary.
+        </div>
       </section>
 
       <!-- RUBRIC -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div class="phase-num" style="background: var(--navy)">✓</div>
           <div>
             <div class="skill">How You Are Scored</div>
             <h2>Project Rubric</h2>
           </div>
         </div>
         <table class="rubric">
-          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
-          <tr><td>Identifying Variables</td><td>Independent and dependent variables named correctly with clear reasoning</td><td>Both variables correctly identified</td><td>One variable correct or labels swapped</td></tr>
-          <tr><td>Writing the Equation</td><td>Equation y = kx written and k explained in context</td><td>Equation is correct</td><td>Equation has minor error or k not justified</td></tr>
-          <tr><td>Table &amp; Graph</td><td>All table values correct; graph readings (y given x, x given y) both accurate</td><td>Table correct; at least one graph reading correct</td><td>Table partially correct or graph reading attempted</td></tr>
-          <tr><td>Communication</td><td>Growth report uses all numbers and clearly explains the relationship</td><td>Report uses most numbers</td><td>Report unclear or missing key numbers</td></tr>
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Identifying Variables</td>
+            <td>
+              Independent and dependent variables named correctly with clear
+              reasoning
+            </td>
+            <td>Both variables correctly identified</td>
+            <td>One variable correct or labels swapped</td>
+          </tr>
+          <tr>
+            <td>Writing the Equation</td>
+            <td>y = kx written and a researched k justified in context</td>
+            <td>Equation is correct</td>
+            <td>Equation has a minor error or k not justified</td>
+          </tr>
+          <tr>
+            <td>Table, Graph &amp; Show Your Work</td>
+            <td>
+              Table correct; both graph readings and all three work-grid answers
+              accurate
+            </td>
+            <td>
+              Table correct; at least one reading and most work-grid answers
+              correct
+            </td>
+            <td>Table partially correct or some work attempted</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>
+              Compares classmate and benchmark with clear reasoning about
+              steepness
+            </td>
+            <td>Comparisons present and mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Report clearly justifies every number used</td>
+            <td>Report uses most numbers</td>
+            <td>Report is unclear or missing numbers</td>
+          </tr>
         </table>
       </section>
 
-      <p class="footer">Neft Teacher · Unit 9 Culminating Project · Version A · <span id="yr"></span></p>
+      <p class="footer">
+        Neft Teacher · Unit 9 Culminating Project · Version A ·
+        <span id="yr"></span>
+      </p>
     </div>
 
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
 
       function show(id, html) {
-        const el = document.getElementById(id);
+        const el = $(id);
         el.innerHTML = html;
         el.classList.add("show");
         updateProgress();
       }
+      function hide(id) {
+        const el = $(id);
+        if (el) el.classList.remove("show");
+      }
+
+      // running state used by report, peer compare, show-your-work, world meter
+      const proj = { k: null, y3: null, year: null };
 
       function getK() {
-        return Math.max(1, +document.getElementById("k-rate").value || 50);
+        const k = num("k-rate");
+        return !isNaN(k) && k > 0 ? k : null;
       }
 
+      /* ---- Part 1a: equation ---- */
       function calcEquation() {
-        const kRaw = +document.getElementById("k-rate").value;
-        if (isNaN(kRaw) || kRaw <= 0) {
-          show("eq-out", "<p>⚠️ Please enter a valid positive growth rate.</p>");
+        const k = getK();
+        proj.k = k;
+        if (k == null) {
+          hide("eq-out");
           return;
         }
-        const k = getK();
-        show("eq-out",
-          '<div class="big">y = ' + k + 'x</div>' +
-          '<strong>Independent variable (x):</strong> weeks &nbsp;|&nbsp; <strong>Dependent variable (y):</strong> subscribers<br>' +
-          'Every week that passes, your channel gains <strong>' + k + ' subscribers</strong>. ' +
-          'After x weeks your total is y = ' + k + ' &times; x.');
+        show(
+          "eq-out",
+          '<div class="big">y = ' +
+            k +
+            "x</div>" +
+            "<strong>Independent variable (x):</strong> weeks &nbsp;|&nbsp; <strong>Dependent variable (y):</strong> subscribers<br>" +
+            "Every week your channel gains <strong>" +
+            k +
+            " subscribers</strong>. After x weeks your total is y = " +
+            k +
+            " &times; x.",
+        );
+        // refresh dependent sections
+        calcTable();
+        calcGraph();
       }
 
+      /* ---- Part 1b: table ---- */
       function calcTable() {
-        const kRaw = +document.getElementById("k-rate").value;
-        if (isNaN(kRaw) || kRaw <= 0) {
-          show("table-out", "<p>⚠️ Please enter a valid positive growth rate first.</p>");
+        const k = getK();
+        if (k == null) {
+          hide("table-out");
           return;
         }
-        const k = getK();
-        let rows = '';
+        let rows = "";
         for (let x = 0; x <= 5; x++) {
           const y = k * x;
-          rows += '<tr><td>' + x + '</td><td>y = ' + k + ' &times; ' + x + '</td><td><strong>' + y + '</strong></td></tr>';
+          rows +=
+            "<tr><td>" +
+            x +
+            "</td><td>y = " +
+            k +
+            " &times; " +
+            x +
+            "</td><td><strong>" +
+            y +
+            "</strong></td></tr>";
         }
-        show("table-out",
-          '<table class="data-table">' +
-          '<tr><th>Weeks (x)</th><th>Equation</th><th>Subscribers (y)</th></tr>' +
-          rows +
-          '</table>' +
-          '<p style="margin:10px 0 0;font-size:13px;color:var(--muted);">&#x2705; Each y value increases by <strong>' + k + '</strong> — the constant rate of change.</p>');
+        show(
+          "table-out",
+          '<table class="data-table"><tr><th>Weeks (x)</th><th>Equation</th><th>Subscribers (y)</th></tr>' +
+            rows +
+            "</table>" +
+            '<p style="margin:10px 0 0;font-size:13px;color:var(--muted);">&#x2705; Each y value increases by <strong>' +
+            k +
+            "</strong> — the constant rate of change. Each row is an ordered pair (x, y).</p>",
+        );
       }
 
+      /* ---- Part 1c: graph + readings ---- */
       function calcGraph() {
-        const kRaw = +document.getElementById("k-rate").value;
-        const xRaw = +document.getElementById("find-x").value;
-        const yRaw = +document.getElementById("find-y").value;
-        if (isNaN(kRaw) || kRaw <= 0) {
-          show("graph-out", "<p>⚠️ Please enter a valid positive growth rate first.</p>");
-          return;
-        }
-        if (document.getElementById("find-x").value.trim() === "" || isNaN(xRaw) || xRaw < 0 ||
-            document.getElementById("find-y").value.trim() === "" || isNaN(yRaw) || yRaw < 0) {
-          show("graph-out", "<p>⚠️ Please enter valid non-negative values for week and subscriber count.</p>");
-          return;
-        }
         const k = getK();
-        const xVal = Math.max(0, +document.getElementById("find-x").value || 0);
-        const yVal = Math.max(0, +document.getElementById("find-y").value || 0);
-        const yResult = k * xVal;
-        const xResult = k > 0 ? yVal / k : 0;
-
-        // Build a simple SVG line graph for weeks 0–8
-        const W = 340, H = 200, padL = 50, padB = 36, padT = 14, padR = 20;
-        const maxX = 8, maxY = k * maxX;
-        function px(x) { return padL + (x / maxX) * (W - padL - padR); }
-        function py(y) { return H - padB - (y / maxY) * (H - padB - padT); }
-
-        let pts = '';
-        for (let x = 0; x <= maxX; x++) { pts += px(x) + ',' + py(k * x) + ' '; }
-
-        // x-axis labels
-        let xLabels = '', yLabels = '';
-        for (let x = 0; x <= maxX; x += 2) {
-          xLabels += '<text x="' + px(x) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="11" fill="#5e6e7e">' + x + '</text>';
+        if (k == null) {
+          hide("graph-out");
+          return;
         }
-        // y-axis labels (5 marks)
+        const xVal = num("find-x");
+        const yVal = num("find-y");
+        if (isNaN(xVal) || xVal < 0 || isNaN(yVal) || yVal < 0) {
+          hide("graph-out");
+          return;
+        }
+        const yResult = k * xVal;
+        const xResult = yVal / k;
+
+        const W = 340,
+          H = 200,
+          padL = 50,
+          padB = 36,
+          padT = 14,
+          padR = 20;
+        const maxX = 8,
+          maxY = k * maxX;
+        function px(x) {
+          return padL + (x / maxX) * (W - padL - padR);
+        }
+        function py(y) {
+          return H - padB - (y / maxY) * (H - padB - padT);
+        }
+        let pts = "";
+        for (let x = 0; x <= maxX; x++) {
+          pts += px(x) + "," + py(k * x) + " ";
+        }
+        let xLabels = "",
+          yLabels = "";
+        for (let x = 0; x <= maxX; x += 2) {
+          xLabels +=
+            '<text x="' +
+            px(x) +
+            '" y="' +
+            (H - 10) +
+            '" text-anchor="middle" font-size="11" fill="#5e6e7e">' +
+            x +
+            "</text>";
+        }
         for (let i = 0; i <= 4; i++) {
           const yv = Math.round((maxY / 4) * i);
-          yLabels += '<text x="' + (padL - 6) + '" y="' + (py(yv) + 4) + '" text-anchor="end" font-size="11" fill="#5e6e7e">' + yv + '</text>';
-          yLabels += '<line x1="' + padL + '" y1="' + py(yv) + '" x2="' + (W - padR) + '" y2="' + py(yv) + '" stroke="#e2e7ec" stroke-width="1"/>';
+          yLabels +=
+            '<text x="' +
+            (padL - 6) +
+            '" y="' +
+            (py(yv) + 4) +
+            '" text-anchor="end" font-size="11" fill="#5e6e7e">' +
+            yv +
+            "</text>";
+          yLabels +=
+            '<line x1="' +
+            padL +
+            '" y1="' +
+            py(yv) +
+            '" x2="' +
+            (W - padR) +
+            '" y2="' +
+            py(yv) +
+            '" stroke="#e2e7ec" stroke-width="1"/>';
         }
-
-        // Highlight xVal point
         const hx = Math.min(xVal, maxX);
         const hy = k * hx;
-        const dotHtml = '<circle cx="' + px(hx) + '" cy="' + py(hy) + '" r="5" fill="var(--coral)"/>';
-
-        const svg = '<svg class="linegraph" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg">' +
+        const dotHtml =
+          '<circle cx="' +
+          px(hx) +
+          '" cy="' +
+          py(hy) +
+          '" r="5" fill="var(--coral)"/>';
+        const svg =
+          '<svg class="linegraph" viewBox="0 0 ' +
+          W +
+          " " +
+          H +
+          '" width="' +
+          W +
+          '" height="' +
+          H +
+          '" xmlns="http://www.w3.org/2000/svg">' +
           yLabels +
-          '<polyline points="' + pts.trim() + '" fill="none" stroke="var(--blue)" stroke-width="2.5"/>' +
+          '<polyline points="' +
+          pts.trim() +
+          '" fill="none" stroke="var(--blue)" stroke-width="2.5"/>' +
           dotHtml +
           xLabels +
-          '<text x="' + (W / 2) + '" y="' + (H - 1) + '" text-anchor="middle" font-size="11" fill="#5e6e7e">Weeks (x)</text>' +
-          '<text x="12" y="' + (H / 2) + '" text-anchor="middle" font-size="11" fill="#5e6e7e" transform="rotate(-90,12,' + (H / 2) + ')">Subscribers (y)</text>' +
-          '</svg>';
+          '<text x="' +
+          W / 2 +
+          '" y="' +
+          (H - 1) +
+          '" text-anchor="middle" font-size="11" fill="#5e6e7e">Weeks (x)</text>' +
+          '<text x="12" y="' +
+          H / 2 +
+          '" text-anchor="middle" font-size="11" fill="#5e6e7e" transform="rotate(-90,12,' +
+          H / 2 +
+          ')">Subscribers (y)</text>' +
+          "</svg>";
 
-        show("graph-out",
-          '<div class="big">Week ' + xVal + ' &rarr; ' + yResult + ' subscribers</div>' +
-          'Using y = ' + k + 'x: &nbsp; y = ' + k + ' &times; ' + xVal + ' = <strong>' + yResult + '</strong><br>' +
-          'To reach <strong>' + yVal + ' subscribers</strong>: x = ' + yVal + ' &divide; ' + k + ' = <strong>' + xResult.toFixed(2) + ' weeks</strong>' +
-          svg);
+        show(
+          "graph-out",
+          '<div class="big">Week ' +
+            xVal +
+            " &rarr; " +
+            yResult +
+            " subscribers</div>" +
+            "Using y = " +
+            k +
+            "x: &nbsp; y = " +
+            k +
+            " &times; " +
+            xVal +
+            " = <strong>" +
+            yResult +
+            "</strong><br>" +
+            "To reach <strong>" +
+            yVal +
+            " subscribers</strong>: x = " +
+            yVal +
+            " &divide; " +
+            k +
+            " = <strong>" +
+            xResult.toFixed(2) +
+            " weeks</strong>" +
+            svg,
+        );
       }
 
-      function calcCompare() {
-        const kaRaw = +document.getElementById("ch-a").value;
-        const kbRaw = +document.getElementById("ch-b").value;
-        const wRaw  = +document.getElementById("ch-weeks").value;
-        if (isNaN(kaRaw) || isNaN(kbRaw) || isNaN(wRaw) || kaRaw <= 0 || kbRaw <= 0 || wRaw <= 0) {
-          show("compare-out", "<p>⚠️ Please enter valid positive numbers for both growth rates and weeks.</p>");
-          return;
-        }
-        const ka = Math.max(1, +document.getElementById("ch-a").value || 50);
-        const kb = Math.max(1, +document.getElementById("ch-b").value || 35);
-        const w  = Math.max(1, +document.getElementById("ch-weeks").value || 10);
-        const ya = ka * w;
-        const yb = kb * w;
-        const diff = Math.abs(ya - yb);
-        const winner = ya > yb ? 'Your channel' : ya < yb ? 'The rival channel' : 'Both channels are tied';
-        show("compare-out",
-          '<div class="big">' + winner + (ya !== yb ? ' wins!' : '') + '</div>' +
-          'At week ' + w + ':<br>' +
-          'Your channel &nbsp;(k = ' + ka + '): &nbsp;y = ' + ka + ' &times; ' + w + ' = <strong>' + ya + ' subscribers</strong><br>' +
-          'Rival channel (k = ' + kb + '): &nbsp;y = ' + kb + ' &times; ' + w + ' = <strong>' + yb + ' subscribers</strong><br>' +
-          (ya !== yb ? winner + ' leads by <strong>' + diff + ' subscribers</strong>. The higher k value means a steeper line on the graph.' : 'Both equations have the same k, so the lines overlap.'));
+      /* ---- Part 1d: show-your-work grid (each uses your own k) ---- */
+      function updateSwTargetLabel() {
+        const t = num("sw-target");
+        $("sw-xq").textContent =
+          "2. Find x when y = " + (isNaN(t) ? "(your target)" : t);
       }
-
-      function checkQuick() {
-        const v = +document.getElementById("check-quick").value;
-        const fb = document.getElementById("quick-fb");
-        if (document.getElementById("check-quick").value.trim() === "" || isNaN(v)) {
-          fb.textContent = "⚠️ Please enter a number.";
-          fb.className = "feedback no";
+      function checkSwY3() {
+        const k = getK();
+        if (k == null) {
+          $("sw-y3Fb").innerHTML =
+            '<span class="pk-bad">Enter your growth rate k in Part 1 first.</span>';
           return;
         }
-        if (v === 120) {
-          fb.textContent = "✅ Correct! y = 30 × 4 = 120 subscribers.";
-          fb.className = "feedback ok";
-        } else {
-          fb.textContent = "❌ Not yet. Substitute x = 4 into y = 30x: 30 × 4 = ?";
-          fb.className = "feedback no";
+        PK.checkWork("sw-y3", k * 3, 0);
+        updateProgress();
+      }
+      function checkSwX() {
+        const k = getK();
+        const t = num("sw-target");
+        if (k == null || isNaN(t)) {
+          $("sw-xFb").innerHTML =
+            '<span class="pk-bad">Enter k (Part 1) and a target y first.</span>';
+          return;
         }
+        PK.checkWork("sw-x", t / k, 0.05);
+        updateProgress();
+      }
+      function checkSwYear() {
+        const k = getK();
+        if (k == null) {
+          $("sw-yearFb").innerHTML =
+            '<span class="pk-bad">Enter your growth rate k in Part 1 first.</span>';
+          return;
+        }
+        proj.year = k * 52;
+        PK.checkWork("sw-year", k * 52, 0);
         updateProgress();
       }
 
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length;
-        const quickOk = document.getElementById("quick-fb").classList.contains("ok") ? 1 : 0;
-        const checks  = document.querySelectorAll('#checklist input:checked').length;
-        const pitch   = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
-        // max: 4 readouts + 1 quick check + 5 checklist + 1 pitch = 11
-        const total = readouts + quickOk + checks + pitch;
-        const pct = Math.min(100, Math.round((total / 11) * 100));
-        document.getElementById("pfill").style.width = pct + "%";
-        document.getElementById("pct").textContent = pct;
+      /* ---- Part 2: peer compare (uses calcCompare + kit cards) ---- */
+      function calcCompare() {
+        const ka = num("ch-a"),
+          kb = num("ch-b"),
+          w = num("ch-weeks");
+        if (
+          isNaN(ka) ||
+          isNaN(kb) ||
+          isNaN(w) ||
+          ka <= 0 ||
+          kb <= 0 ||
+          w <= 0
+        ) {
+          hide("compare-out");
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Enter both growth rates and a week to compare.</p>';
+          return;
+        }
+        const ya = ka * w,
+          yb = kb * w;
+        const diff = Math.abs(ya - yb);
+        const name = $("partnerName").value || "Classmate";
+        const winner =
+          ya > yb
+            ? "Your channel"
+            : ya < yb
+              ? name + "'s channel"
+              : "Both channels are tied";
+        show(
+          "compare-out",
+          '<div class="big">' +
+            winner +
+            (ya !== yb ? " is ahead!" : "") +
+            "</div>" +
+            "At week " +
+            w +
+            ":<br>You (k = " +
+            ka +
+            "): y = " +
+            ka +
+            " &times; " +
+            w +
+            " = <strong>" +
+            ya +
+            " subscribers</strong><br>" +
+            name +
+            " (k = " +
+            kb +
+            "): y = " +
+            kb +
+            " &times; " +
+            w +
+            " = <strong>" +
+            yb +
+            " subscribers</strong><br>" +
+            (ya !== yb
+              ? winner +
+                " leads by <strong>" +
+                diff +
+                " subscribers</strong>. A higher k means a <strong>steeper</strong> line."
+              : "Same k, so the lines overlap."),
+        );
+        PK.peerCompare("peerBox", [
+          { label: "Growth rate k", me: ka, partner: kb },
+          { label: "Subs at week " + w, me: ya, partner: yb },
+        ]);
+        updateProgress();
       }
 
-      document.getElementById("checklist").addEventListener("change", updateProgress);
-      document.getElementById("pitch").addEventListener("input", updateProgress);
+      /* ---- Part 3: world dataset + meter ---- */
+      // [tier, typical weekly k] — realistic creator-growth benchmarks
+      const world = [
+        ["Brand-new channel (0–1k subs)", 5],
+        ["Growing channel (1k–10k)", 25],
+        ["Established (10k–100k)", 120],
+        ["Large channel (100k–500k)", 600],
+        ["Major creator (500k–1M)", 1500],
+        ["Top-tier (1M+)", 4000],
+      ];
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map((r) => "<tr><td>" + r[0] + "</td><td>" + r[1] + "</td></tr>")
+          .join("");
+      }
+      function worldSample() {
+        return world.map((r) => r[1]);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        PK.worldMeter("worldMeter", worldSample(), my, {
+          mean: "Benchmark avg",
+          me: "My k",
+        });
+        updateProgress();
+      }
+      function runWhatIf() {
+        const k = getK();
+        const bonus = parseFloat($("whatIfVal").value);
+        const wk = Math.max(1, parseFloat($("whatIfWk").value) || 10);
+        if (k == null || isNaN(bonus)) {
+          $("whatIfBox").textContent =
+            "Enter your growth rate k (Part 1) and a viral-week bonus first.";
+          return;
+        }
+        const before = k * wk;
+        const after = k * wk + bonus;
+        PK.whatIf(
+          "whatIfBox",
+          { ["Week " + wk + " subscribers"]: before },
+          { ["Week " + wk + " subscribers"]: after },
+          "Adding a one-time viral-week bonus of " +
+            bonus +
+            " subscribers (note: y = kx + " +
+            bonus +
+            " is no longer proportional):",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          topic: "skateboarding tricks",
+          "k-rate": 12,
+          "find-x": 7,
+          "find-y": 300,
+          "sw-target": 240,
+          "ch-a": 12,
+          "ch-b": 8,
+          "ch-weeks": 10,
+          myWorld: 12,
+        };
+        Object.entries(ex).forEach(([key, v]) => {
+          if ($(key)) $(key).value = v;
+        });
+        updateSwTargetLabel();
+        recalcAll();
+      }
+
+      function recalcAll() {
+        calcEquation();
+        calcTable();
+        calcGraph();
+        calcCompare();
+        renderWorld();
+        worldGo();
+        updateSwTargetLabel();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const k = getK();
+        const f = (x) => (x == null || isNaN(x) ? "(not finished)" : x);
+        const topic = $("topic").value || "(no topic)";
+        const w = num("ch-weeks");
+        const ka = num("ch-a"),
+          kb = num("ch-b");
+        return (
+          "STREAMING CHANNEL GROWTH — MY REPORT\n" +
+          "====================================\n\n" +
+          "PART 1: MY CHANNEL (SELF)\n" +
+          "Topic: " +
+          topic +
+          "\n" +
+          "Equation: y = " +
+          f(k) +
+          "x  (k = subscribers per week)\n" +
+          "Why this k: " +
+          ($("kwhy").value || "(not written)") +
+          "\n" +
+          "Subscribers at week 3: " +
+          (k == null ? "-" : k * 3) +
+          "\n" +
+          "12-month total (52 weeks): " +
+          (k == null ? "-" : k * 52) +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Classmate: " +
+          ($("partnerName").value || "(none)") +
+          "\n" +
+          "My k: " +
+          ($("ch-a").value || "-") +
+          "  |  Classmate k: " +
+          ($("ch-b").value || "-") +
+          (!isNaN(ka) && !isNaN(kb) && !isNaN(w)
+            ? "\nAt week " + w + ": me = " + ka * w + ", classmate = " + kb * w
+            : "") +
+          "\nReflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "My k vs benchmarks: " +
+          ($("worldReflect").value || "(not written)") +
+          "\nCareful thinking: " +
+          ($("careful").value || "(not written)") +
+          "\n\n" +
+          "GROWTH REPORT:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const k = getK();
+        const rows = [
+          ["field", "value"],
+          ["topic", $("topic").value],
+          ["k_subs_per_week", k],
+          ["subs_week_3", k == null ? "" : k * 3],
+          ["subs_52_weeks", k == null ? "" : k * 52],
+          ["my_k", $("ch-a").value],
+          ["classmate", $("partnerName").value],
+          ["classmate_k", $("ch-b").value],
+          ["compare_week", $("ch-weeks").value],
+        ];
+        PK.downloadCsv("channel-growth-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 3 (eq, table, graph)
+        const swOk = document.querySelectorAll(
+          "#sw-y3Fb .pk-ok, #sw-xFb .pk-ok, #sw-yearFb .pk-ok",
+        ).length; // max 3
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // max 6
+        const peer = $("ch-b").value ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + swOk + checks + peer + wrld + pitch; // max 3+3+6+1+1+1 = 15
+        const pct = Math.min(100, Math.round((total / 15) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills a friendly k if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          if (!$("k-rate").value) {
+            $("k-rate").value = 10;
+            calcEquation();
+          }
+        }
+      };
+
+      /* ---- init (runs after deferred kit script is ready) ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        updateSwTargetLabel();
+        PK.initLevel({ storageKey: "u9ProjectA", default: "level-1" });
+        PK.load("u9ProjectA", { after: recalcAll });
+        updateProgress();
+      });
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

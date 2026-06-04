@@ -1,0 +1,212 @@
+/* ==========================================================================
+   Neft Teacher — Projects Kit (shared)
+   Reusable styles for "Stats of My Life"-standard culminating projects.
+   Self → Peer → World arc, Visual Math Notes, Formula Bank, Sentence Frames,
+   self-check, peer compare cards, world meter, what-if lab, report/export,
+   EN/ES toggle, Level 1 / Level 2 tiers.
+   Vanilla CSS, zero dependencies. Reference as /shared/projects/projects-kit.css
+   ========================================================================== */
+
+.pk {
+  --pk-blue: #0369a1;
+  --pk-blue2: #e0f2fe;
+  --pk-teal: #0f766e;
+  --pk-green: #16a34a;
+  --pk-amber: #f59e0b;
+  --pk-red: #dc2626;
+  --pk-ink: #172033;
+  --pk-muted: #64748b;
+  --pk-line: #dbe4ee;
+  --pk-card: #fff;
+  --pk-soft: #f1f5f9;
+  --pk-radius: 20px;
+  --pk-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* ---- Visual Math Notes vocab grid ---- */
+.pk-vocab {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+.pk-vocab .pk-term {
+  border: 2px solid #e6eef6;
+  border-radius: 18px;
+  padding: 18px;
+  background: #fff;
+  text-align: center;
+}
+.pk-vocab .pk-term .pk-icon {
+  font-size: 2.1rem;
+  line-height: 1;
+}
+.pk-vocab .pk-term b {
+  display: block;
+  color: var(--pk-blue);
+  font-size: 1.12rem;
+  margin: 0.35rem 0;
+}
+.pk-vocab .pk-term p {
+  margin: 0.3rem 0 0;
+  font-size: 0.95rem;
+}
+
+/* ---- Callouts: Formula Bank, Sentence Frames ---- */
+.pk-callout {
+  background: var(--pk-blue2);
+  border: 0;
+  border-radius: 18px;
+  padding: 18px 20px;
+}
+.pk-callout h3 {
+  margin: 0 0 8px;
+}
+.pk-callout p {
+  margin: 4px 0;
+}
+
+/* ---- EN/ES toggle ---- */
+.pk-es {
+  display: none;
+}
+.pk-show-es .pk-es {
+  display: block;
+  color: var(--pk-blue);
+  font-style: italic;
+  border-left: 4px solid var(--pk-blue2);
+  padding-left: 9px;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+/* ---- Self-check feedback ---- */
+.pk-ok {
+  color: var(--pk-green);
+  font-weight: 900;
+}
+.pk-bad {
+  color: var(--pk-red);
+  font-weight: 900;
+}
+.pk-fb {
+  min-height: 20px;
+  font-weight: 800;
+  margin-top: 8px;
+}
+
+/* ---- Stat / compare cards ---- */
+.pk-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.pk-stat {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 15px;
+  text-align: center;
+}
+.pk-stat small {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pk-muted);
+  font-weight: 900;
+  font-size: 0.72rem;
+}
+.pk-stat b {
+  font-size: 1.5rem;
+}
+
+/* ---- World meter ---- */
+.pk-meter {
+  position: relative;
+  height: 24px;
+  background: #dbeafe;
+  border-radius: 999px;
+  margin: 48px 8px 20px;
+}
+.pk-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pk-blue), var(--pk-teal));
+}
+.pk-mark {
+  position: absolute;
+  top: -34px;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-align: center;
+}
+.pk-mark span {
+  display: block;
+  background: #172033;
+  color: #fff;
+  padding: 3px 7px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+.pk-mark:after {
+  content: "";
+  display: block;
+  width: 3px;
+  height: 38px;
+  background: #172033;
+  margin: auto;
+}
+.pk-mark.pk-me span {
+  background: var(--pk-green);
+}
+.pk-mark.pk-me:after {
+  background: var(--pk-green);
+}
+
+/* ---- Report box ---- */
+.pk-report {
+  white-space: pre-wrap;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  min-height: 200px;
+}
+
+/* ---- Level 1 / Level 2 tier toggle ----
+   Default: show neither tier-only block until a level is chosen, but show
+   shared content. Pages set body class .pk-level-1 / .pk-level-2. */
+.pk-lvl1,
+.pk-lvl2 {
+  display: none;
+}
+.pk-level-1 .pk-lvl1 {
+  display: block;
+}
+.pk-level-2 .pk-lvl2 {
+  display: block;
+}
+.pk-level-toggle {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pk-level-toggle button[aria-pressed="true"] {
+  outline: 3px solid var(--pk-amber);
+}
+
+/* ---- What-If lab readout ---- */
+.pk-whatif {
+  background: var(--pk-soft);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+}
+
+@media print {
+  .pk-no-print {
+    display: none !important;
+  }
+}
