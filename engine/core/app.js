@@ -59,10 +59,10 @@ function upsertLinkRel(rel, href) {
   el.setAttribute("href", href);
 }
 
-// Per-lesson Google Forms card (opt-in via config.googleForms). Shows the three
-// student forms (Notes / Practice / Quiz) and, collapsed, a teacher link to the
-// editable forms in Google Drive. Editing is gated by Google auth, so the
-// teacher link is safe to ship on the public lesson page.
+// Per-lesson Google Forms card (opt-in via config.googleForms). Shows ONLY the
+// three student forms (Notes / Practice / Quiz). Teacher edit links are
+// intentionally NOT rendered here — the student lesson page must not expose any
+// teacher-facing Drive/edit links (teacherEditFolder is ignored).
 function formsCardHtml(config) {
   const gf = config.googleForms;
   if (!gf || !gf.student) return "";
@@ -71,9 +71,6 @@ function formsCardHtml(config) {
     href
       ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:700;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
       : "";
-  const teacher = gf.teacherEditFolder
-    ? `<details style="margin-top:10px;"><summary style="cursor:pointer; font-weight:600; color:var(--blue,#1a6fb5);">For teachers</summary><a href="${gf.teacherEditFolder}" target="_blank" rel="noopener" style="display:inline-block; margin-top:6px; color:var(--blue,#1a6fb5); font-weight:700; text-decoration:none;">✏️ Edit these forms in Google Drive &rarr;</a></details>`
-    : "";
   return `
       <div class="identity-forms" style="background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
         <div style="font-weight:800; margin-bottom:8px;">📋 Lesson Forms</div>
@@ -82,7 +79,6 @@ function formsCardHtml(config) {
           ${link(s.practice, "Practice", "✏️")}
           ${link(s.quiz, "Quiz", "✅")}
         </div>
-        ${teacher}
       </div>`;
 }
 
