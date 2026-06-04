@@ -3,31 +3,64 @@ import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
-// Unit 7 — Submarine: Dive the Number Line
-// Standard: 6.NS.C.5–7 (integers, opposites, absolute value, comparing/ordering)
-// Theme: pilot a deep-sea submarine along a vertical number line where 0 is
-// sea level, positives are above the surface, negatives are below.
-// Level 1 = scaffolded (smaller range, hints). Level 2 = enrichment (larger
-// range, multi-step compare/order). 6–8 rounds per level.
+// Unit 7 — SUBMARINE: DEEP DIVE  (CCSS 6.NS.C.5–7)
+// REAL-TIME UNDERWATER RUNNER on a VERTICAL number line. The submarine
+// auto-travels forward; the whole sea (kelp, bubbles, depth markers) scrolls
+// toward the camera for a true sense of motion. The player drives the sub
+// UP/DOWN in real time along the number line (0 = sea level at the middle,
+// positives above, negatives below).
+//
+// Collectible TOKENS and hazard MINES stream toward the sub at specific
+// integer depths. Each round the HUD "Your task" panel poses a goal:
+//   "Grab -4" · "Grab the OPPOSITE of 3" · "Grab |x| = 4 from the surface" ·
+//   "Dive to the GREATER of -2 and 4" · "Grab the LEAST of -4, 1, 5".
+// The player must COMPUTE the correct depth and be there when the token
+// arrives. Grab the right token → points + combo + boost. Touch a wrong-number
+// mine (or miss/grab the wrong one) → damage, screen shake, lose a life.
+// Clear every goal → surface and win.
+//
+// The integer math is reused verbatim from the existing round bank so the
+// curriculum stays exact; computeTarget() derives the one correct depth and
+// decoy depths are drawn from the round's own numbers and near-misses.
 // ============================================================================
 
 const COLORS = {
-  sky: 0x0b3d66,
   water: 0x1f6f9c,
   waterDeep: 0x0a2c4a,
   surface: 0xbfe6ff,
   sub: 0xf2c15b,
   subTrim: 0xd9795d,
   glass: 0x9fe6ff,
-  target: 0x4aa978,
-  targetBad: 0xb64e2f,
+  token: 0x4aa978,
+  tokenEdge: 0xbdf3d6,
+  mine: 0xb64e2f,
+  mineEdge: 0xffb39c,
   tick: 0xbfe6ff,
   tickZero: 0xffffff,
   spine: 0x4fb6e0,
+  bubble: 0xcdeeff,
+  kelp: 0x2f7d5c,
+  good: 0x4aa978,
+  bad: 0xd9795d,
 };
 
-const UNIT = 0.62; // world units per integer step on the number line
+const UNIT = 0.62; // world units per integer step (vertical)
 
+// World layout. The sub sits at a fixed x/z and only moves in y (its depth on
+// the number line). Tokens/mines/scenery spawn far ahead at -z and scroll
+// toward +z (toward the camera) to fake forward travel.
+const SUB_X = 0; // sub's fixed lateral position
+const SUB_Z = 5.5; // sub's fixed forward position (near camera)
+const SPAWN_Z = -34; // where tokens/scenery appear far ahead
+const DESPAWN_Z = 11; // past the camera → recycle
+const GRAB_Z = SUB_Z; // a streamer is "at" the sub when its z reaches here
+const GRAB_REACH = UNIT * 0.62; // vertical tolerance to grab/collide
+const GRAB_Z_REACH = 1.3; // forward tolerance around the sub plane
+
+// ---- Round bank (6.NS.C.5–7) — reused verbatim from the prior build --------
+// Every target is an exact integer (computeTarget verifies the math). Level 1 =
+// scaffolded (smaller range, hints). Level 2 = enrichment (wider range,
+// multi-step compare/order).
 function makeLevel(level) {
   if (level === 1) {
     return {
@@ -76,6 +109,28 @@ function makeLevel(level) {
       },
     ],
   };
+}
+
+// The ONE correct depth for a round. (opposite of n = -n; |n| = distance from
+// 0 = n itself for the "absolute" rounds where the context names the position;
+// greater = max; least/min = lowest value on the line.)
+function computeTarget(r) {
+  switch (r.kind) {
+    case "move":
+      return r.target;
+    case "opposite":
+      return -r.value;
+    case "absolute":
+      return r.value;
+    case "compare":
+      return r.pick === "greater" ? Math.max(r.a, r.b) : Math.min(r.a, r.b);
+    case "order":
+      return r.pick === "greatest"
+        ? Math.max(...r.values)
+        : Math.min(...r.values);
+    default:
+      return 0;
+  }
 }
 
 export default {
@@ -132,192 +187,179 @@ export default {
     const RANGE_MIN = cfg.min;
     const RANGE_MAX = cfg.max;
     const reduced = feel.reducedMotion;
+    const subColor = level === 2 ? COLORS.subTrim : COLORS.sub;
 
-    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
-    // Mount element is the same positioned container that hosts the canvas.
     const clarityMount = renderer.domElement.parentElement || document.body;
     let clarity = null;
 
     const yFor = (n) => n * UNIT;
+    const columnTopY = yFor(RANGE_MAX) + UNIT;
+    const columnBotY = yFor(RANGE_MIN) - UNIT;
+    const columnMidY = (yFor(RANGE_MAX) + yFor(RANGE_MIN)) / 2;
+    const columnHeight = (RANGE_MAX - RANGE_MIN) * UNIT + UNIT * 2;
 
+    // ---- Scene root ---------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
 
     const disposables = [];
-    const track = (obj) => {
-      if (obj.geometry) disposables.push(obj.geometry);
-      if (obj.material) disposables.push(obj.material);
-      return obj;
+    const mk = (g, m) => {
+      disposables.push(g, m);
+      return new THREE.Mesh(g, m);
     };
 
-    const columnHeight = (RANGE_MAX - RANGE_MIN) * UNIT + UNIT * 2;
-    const columnTopY = yFor(RANGE_MAX) + UNIT;
-    const columnMidY = (yFor(RANGE_MAX) + yFor(RANGE_MIN)) / 2;
+    // ---- Tuning (Level 2 = faster scroll, tighter spacing) ------------------
+    const BASE_SPEED = level === 2 ? 12 : 9; // z-units / sec scroll = forward speed
+    const MAX_SPEED = level === 2 ? 20 : 15;
+    const VERT_SPEED = level === 2 ? 9.5 : 8; // sub vertical units / sec
+    const START_LIVES = level === 2 ? 4 : 6;
 
-    // ---- Stage floor (receives shadows) -------------------------------------
-    const floorGeo = new THREE.CircleGeometry(9, 48);
-    const floor = new THREE.Mesh(
-      floorGeo,
-      new THREE.MeshStandardMaterial({
-        color: COLORS.waterDeep,
-        roughness: 0.95,
-        metalness: 0.05,
-      }),
-    );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = yFor(RANGE_MIN) - UNIT * 1.4;
-    floor.receiveShadow = true;
-    track(floor);
-    group.add(floor);
-
-    // ---- Water column (PBR glassy volume) -----------------------------------
-    const waterGeo = new RoundedBoxGeometry(3.0, columnHeight, 3.0, 4, 0.25);
-    const water = new THREE.Mesh(
-      waterGeo,
-      new THREE.MeshPhysicalMaterial({
-        color: COLORS.water,
-        transparent: true,
-        opacity: 0.28,
-        roughness: 0.12,
-        metalness: 0.0,
-        transmission: 0.6,
-        thickness: 1.5,
-        ior: 1.33,
-      }),
-    );
-    water.position.y = columnMidY;
-    track(water);
-    group.add(water);
-
-    // Surface slab at 0 — glows so bloom catches it.
-    const surfGeo = new RoundedBoxGeometry(3.4, 0.08, 3.4, 3, 0.04);
-    const surface = new THREE.Mesh(
-      surfGeo,
-      new THREE.MeshStandardMaterial({
-        color: COLORS.surface,
-        transparent: true,
-        opacity: 0.6,
-        roughness: 0.2,
-        emissive: COLORS.surface,
-        emissiveIntensity: 0.5,
-      }),
-    );
-    surface.position.y = 0;
-    track(surface);
-    group.add(surface);
-
-    // Seabed block below the lowest integer.
-    const bedGeo = new RoundedBoxGeometry(3.8, 0.5, 3.8, 3, 0.12);
-    const bed = new THREE.Mesh(
-      bedGeo,
-      new THREE.MeshStandardMaterial({ color: COLORS.waterDeep, roughness: 1 }),
-    );
-    bed.position.y = yFor(RANGE_MIN) - UNIT;
-    bed.receiveShadow = true;
-    bed.castShadow = true;
-    track(bed);
-    group.add(bed);
-
-    // ---- Number-line spine + ticks + labels ---------------------------------
+    // ---- Side number-line spine + ticks + integer labels --------------------
+    // A vertical glowing spine to the left, a tick + dark chip label at every
+    // integer. These scroll WITH the world (depth markers streaming past).
     const spineGeo = new RoundedBoxGeometry(0.07, columnHeight, 0.07, 2, 0.03);
-    const spine = new THREE.Mesh(
-      spineGeo,
-      new THREE.MeshStandardMaterial({
-        color: COLORS.spine,
-        emissive: COLORS.spine,
-        emissiveIntensity: 0.35,
-        roughness: 0.4,
-        metalness: 0.3,
-      }),
-    );
-    spine.position.set(-1.5, columnMidY, 0);
-    track(spine);
+    const spineMat = new THREE.MeshStandardMaterial({
+      color: COLORS.spine,
+      emissive: COLORS.spine,
+      emissiveIntensity: 0.4,
+      roughness: 0.4,
+      metalness: 0.3,
+    });
+    const spine = mk(spineGeo, spineMat);
+    spine.position.set(-2.4, columnMidY, SUB_Z);
     group.add(spine);
 
     const tickGeo = new RoundedBoxGeometry(0.5, 0.06, 0.06, 2, 0.02);
-    const zeroTickGeo = new RoundedBoxGeometry(0.78, 0.08, 0.08, 2, 0.03);
+    const zeroTickGeo = new RoundedBoxGeometry(0.85, 0.09, 0.09, 2, 0.03);
     disposables.push(tickGeo, zeroTickGeo);
+    const tickMat = new THREE.MeshStandardMaterial({
+      color: COLORS.tick,
+      roughness: 0.5,
+    });
+    const zeroMat = new THREE.MeshStandardMaterial({
+      color: COLORS.tickZero,
+      emissive: COLORS.tickZero,
+      emissiveIntensity: 0.6,
+      roughness: 0.5,
+    });
+    disposables.push(tickMat, zeroMat);
 
     const lineLabels = [];
     for (let n = RANGE_MIN; n <= RANGE_MAX; n++) {
       const isZero = n === 0;
       const tick = new THREE.Mesh(
         isZero ? zeroTickGeo : tickGeo,
-        new THREE.MeshStandardMaterial({
-          color: isZero ? COLORS.tickZero : COLORS.tick,
-          emissive: isZero ? COLORS.tickZero : 0x000000,
-          emissiveIntensity: isZero ? 0.6 : 0,
-          roughness: 0.5,
-        }),
+        isZero ? zeroMat : tickMat,
       );
-      tick.position.set(-1.5, yFor(n), 0);
-      tick.castShadow = true;
-      track(tick);
+      tick.position.set(-2.4, yFor(n), SUB_Z);
       group.add(tick);
 
-      const label = makeLabel(String(n), {
+      const label = makeLabel(isZero ? "0  sea level" : String(n), {
         THREE,
         color: isZero ? "#ffffff" : "#eaf6ff",
-        // Dark high-contrast chip so every integer reads clearly against water.
         background: isZero ? "rgba(20,60,100,0.95)" : "rgba(11,28,48,0.92)",
-        fontSize: isZero ? 96 : 84,
-        scale: isZero ? 1.1 : 0.95,
+        fontSize: isZero ? 80 : 74,
+        scale: isZero ? 0.85 : 0.8,
       });
-      label.position.set(-2.55, yFor(n), 0);
+      label.position.set(-3.3, yFor(n), SUB_Z);
+      label.userData.intN = n; // base depth, so we can keep them readable
       lineLabels.push(label);
       group.add(label);
     }
 
-    const seaLabel = makeLabel("0 = sea level", {
-      THREE,
-      color: "#ffffff",
-      background: "rgba(15,34,56,0.92)",
-      fontSize: 56,
-      scale: 0.72,
-    });
-    seaLabel.position.set(1.2, 0.0, 1.8);
-    group.add(seaLabel);
-
-    // ---- Big live depth read-out that rides next to the submarine ----------
-    const depthLabel = makeLabel("0", {
-      THREE,
-      color: "#ffe08a",
-      background: "rgba(11,28,48,0.95)",
-      fontSize: 110,
-      scale: 1.05,
-    });
-    depthLabel.position.set(1.7, yFor(0), 0);
-    group.add(depthLabel);
-
-    // ---- Floating 3D problem card (always shows the question) ---------------
-    const cardLabel = makeLabel("...", {
-      THREE,
-      color: "#ffffff",
-      background: "rgba(11,40,66,0.95)",
-      fontSize: 72,
-      scale: 0.82,
-      maxWidth: 1280,
-    });
-    cardLabel.position.set(0, columnTopY + 1.4, 0);
-    group.add(cardLabel);
-    // Hidden: the engine HUD "Your task" panel already shows the full problem.
-    // This high-floating card projected over the HUD and garbled the directions.
-    cardLabel.visible = false;
-
-    // ---- Submarine (rounded, PBR, casts shadow) -----------------------------
-    const subGroup = new THREE.Group();
-
-    const hull = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.36, 0.78, 6, 14),
+    // Surface slab glow at depth 0 (rides with the world plane at SUB depth).
+    const surface = mk(
+      new RoundedBoxGeometry(7.5, 0.08, 4.0, 3, 0.04),
       new THREE.MeshStandardMaterial({
-        color: COLORS.sub,
+        color: COLORS.surface,
+        transparent: true,
+        opacity: 0.4,
+        roughness: 0.2,
+        emissive: COLORS.surface,
+        emissiveIntensity: 0.5,
+      }),
+    );
+    surface.position.set(0, 0, SUB_Z - 4);
+    group.add(surface);
+
+    // Seabed glow band beneath the lowest integer.
+    const seabed = mk(
+      new RoundedBoxGeometry(8.5, 0.4, 5.0, 3, 0.12),
+      new THREE.MeshStandardMaterial({
+        color: COLORS.waterDeep,
+        emissive: COLORS.waterDeep,
+        emissiveIntensity: 0.2,
+        roughness: 1,
+      }),
+    );
+    seabed.position.set(0, columnBotY - UNIT, SUB_Z - 4);
+    group.add(seabed);
+
+    // ---- Scrolling kelp (THE speed cue) -------------------------------------
+    // Stalks far behind the play plane that march toward the camera and wrap,
+    // selling continuous forward motion at all times.
+    const kelpMat = new THREE.MeshStandardMaterial({
+      color: COLORS.kelp,
+      emissive: COLORS.kelp,
+      emissiveIntensity: 0.25,
+      roughness: 0.8,
+    });
+    disposables.push(kelpMat);
+    const kelpGeo = new THREE.CylinderGeometry(0.06, 0.14, 3.4, 7);
+    disposables.push(kelpGeo);
+    const KELP_SPAN = 44;
+    const kelp = [];
+    for (let i = 0; i < 22; i++) {
+      const k = new THREE.Mesh(kelpGeo, kelpMat);
+      const side = i % 2 === 0 ? -1 : 1;
+      k.position.set(
+        side * (2.6 + Math.random() * 2.4),
+        columnBotY + 1.4 + Math.random() * 0.6,
+        SUB_Z - 2 - Math.random() * KELP_SPAN,
+      );
+      k.userData.phase = Math.random() * Math.PI * 2;
+      k.userData.baseX = k.position.x;
+      group.add(k);
+      kelp.push(k);
+    }
+
+    // ---- Scrolling bubble columns (extra motion + life) ---------------------
+    const bubbleMat = new THREE.PointsMaterial({
+      color: COLORS.bubble,
+      size: 0.12,
+      transparent: true,
+      opacity: 0.55,
+      depthWrite: false,
+    });
+    disposables.push(bubbleMat);
+    const BUBBLE_N = reduced ? 60 : 150;
+    const bubbleGeo = new THREE.BufferGeometry();
+    const bubblePos = new Float32Array(BUBBLE_N * 3);
+    for (let i = 0; i < BUBBLE_N; i++) {
+      bubblePos[i * 3] = (Math.random() - 0.5) * 9;
+      bubblePos[i * 3 + 1] = columnBotY + Math.random() * (columnHeight + 2);
+      bubblePos[i * 3 + 2] = SUB_Z - Math.random() * KELP_SPAN;
+    }
+    bubbleGeo.setAttribute("position", new THREE.BufferAttribute(bubblePos, 3));
+    disposables.push(bubbleGeo);
+    const bubbles = new THREE.Points(bubbleGeo, bubbleMat);
+    group.add(bubbles);
+
+    // ---- Submarine (rounded PBR, fixed at SUB_X / SUB_Z, moves only in y) ---
+    const subGroup = new THREE.Group();
+    const hull = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.36, 0.82, 6, 14),
+      new THREE.MeshStandardMaterial({
+        color: subColor,
         roughness: 0.35,
         metalness: 0.45,
+        emissive: subColor,
+        emissiveIntensity: 0.15,
       }),
     );
     hull.rotation.z = Math.PI / 2;
     hull.castShadow = true;
-    track(hull);
+    disposables.push(hull.geometry, hull.material);
     subGroup.add(hull);
 
     const tower = new THREE.Mesh(
@@ -329,80 +371,147 @@ export default {
       }),
     );
     tower.position.y = 0.36;
-    tower.castShadow = true;
-    track(tower);
+    disposables.push(tower.geometry, tower.material);
     subGroup.add(tower);
 
-    const fin = new THREE.Mesh(
-      new RoundedBoxGeometry(0.5, 0.18, 0.06, 2, 0.03),
-      new THREE.MeshStandardMaterial({
-        color: COLORS.subTrim,
-        roughness: 0.5,
-        metalness: 0.3,
-      }),
-    );
-    fin.position.set(-0.5, 0, 0);
-    fin.castShadow = true;
-    track(fin);
-    subGroup.add(fin);
-
-    // Glowing porthead light — bloom makes it pop.
+    // Forward-facing porthead light (bloom catches it) — points "ahead" (-z).
     const portMat = new THREE.MeshPhysicalMaterial({
       color: COLORS.glass,
       emissive: COLORS.glass,
-      emissiveIntensity: 0.9,
+      emissiveIntensity: 0.95,
       roughness: 0.05,
       metalness: 0,
       transmission: 0.4,
       ior: 1.4,
     });
+    disposables.push(portMat);
     const port = new THREE.Mesh(
       new THREE.SphereGeometry(0.16, 16, 12),
       portMat,
     );
-    port.position.set(0.52, 0, 0);
-    track(port);
+    port.position.set(0, 0, -0.55);
+    disposables.push(port.geometry);
     subGroup.add(port);
 
-    subGroup.position.set(0, yFor(0), 0);
+    // Tail fin behind the sub.
+    const fin = new THREE.Mesh(
+      new RoundedBoxGeometry(0.06, 0.5, 0.18, 2, 0.03),
+      new THREE.MeshStandardMaterial({ color: COLORS.subTrim, roughness: 0.5 }),
+    );
+    fin.position.set(0, 0, 0.55);
+    disposables.push(fin.geometry, fin.material);
+    subGroup.add(fin);
+
+    subGroup.position.set(SUB_X, yFor(0), SUB_Z);
     subGroup.scale.setScalar(0.001); // spawn-pop on start
     group.add(subGroup);
 
-    // ---- Target band the sub must reach -------------------------------------
-    const markerGeo = new RoundedBoxGeometry(1.25, UNIT * 0.55, 1.25, 3, 0.1);
-    disposables.push(markerGeo);
-    const markerMat = new THREE.MeshStandardMaterial({
-      color: COLORS.target,
-      transparent: true,
-      opacity: 0.4,
-      roughness: 0.3,
-      emissive: COLORS.target,
-      emissiveIntensity: 0.7,
+    // Live depth read-out riding beside the sub.
+    const depthLabel = makeLabel("0", {
+      THREE,
+      color: "#ffe08a",
+      background: "rgba(11,28,48,0.95)",
+      fontSize: 96,
+      scale: 0.9,
     });
-    const marker = new THREE.Mesh(markerGeo, markerMat);
-    track(marker);
-    marker.visible = false;
-    group.add(marker);
+    depthLabel.position.set(SUB_X + 1.1, yFor(0), SUB_Z);
+    group.add(depthLabel);
 
-    // ---- Round state --------------------------------------------------------
-    let pos = 0;
+    // ---- Streamer pool (tokens + mines) -------------------------------------
+    // A streamer is a labeled disc at an integer depth that scrolls toward the
+    // sub. token=collectible (correct answer green), mine=hazard (red). We pool
+    // a handful and recycle them as a "wave" for each round.
+    const STREAMER_POOL = 6;
+    const streamers = [];
+    const tokenGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.16, 18);
+    const mineGeo = new THREE.IcosahedronGeometry(0.42, 0);
+    disposables.push(tokenGeo, mineGeo);
+
+    function makeStreamer() {
+      const obj = new THREE.Group();
+      const tokenMat = new THREE.MeshStandardMaterial({
+        color: COLORS.token,
+        emissive: COLORS.token,
+        emissiveIntensity: 0.55,
+        roughness: 0.3,
+        metalness: 0.2,
+      });
+      const mineMat = new THREE.MeshStandardMaterial({
+        color: COLORS.mine,
+        emissive: COLORS.mine,
+        emissiveIntensity: 0.5,
+        roughness: 0.4,
+        metalness: 0.2,
+      });
+      disposables.push(tokenMat, mineMat);
+      const tokenMesh = new THREE.Mesh(tokenGeo, tokenMat);
+      tokenMesh.rotation.x = Math.PI / 2; // face the camera like a coin
+      const mineMesh = new THREE.Mesh(mineGeo, mineMat);
+      obj.add(tokenMesh);
+      obj.add(mineMesh);
+      const label = makeLabel("0", {
+        THREE,
+        color: "#ffffff",
+        background: "rgba(11,28,48,0.0)",
+        border: null,
+        fontSize: 88,
+        scale: 0.9,
+      });
+      label.position.set(0, 0, 0.3);
+      obj.add(label);
+      obj.visible = false;
+      group.add(obj);
+      const s = {
+        obj,
+        tokenMesh,
+        mineMesh,
+        tokenMat,
+        mineMat,
+        label,
+        kind: "token", // "token" | "mine"
+        value: 0,
+        depth: 0,
+        correct: false,
+        active: false,
+        resolved: false,
+      };
+      streamers.push(s);
+      return s;
+    }
+    for (let i = 0; i < STREAMER_POOL; i++) makeStreamer();
+
+    function disposeSprite(spr) {
+      if (!spr) return;
+      if (spr.parent) spr.parent.remove(spr);
+      if (spr.material) {
+        if (spr.material.map) spr.material.map.dispose();
+        spr.material.dispose();
+      }
+    }
+
+    // ---- Game state ---------------------------------------------------------
+    let subDepthY = yFor(0); // continuous sub y (px), snapped to integer for math
     let round = null;
     let roundIndex = 0;
     let targetInt = null;
-    let solved = false;
-    let started = false;
+    let speed = BASE_SPEED;
+    let boostT = 0;
+    let flash = null; // { color, t }
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
-    // Forgiving stakes: a pool of dives. A wrong dock costs one. Run out and the
-    // mission fails (lose screen) — but Level 1 gets more cushion than Level 2.
-    const START_LIVES = level === 2 ? 4 : 6;
     let lives = START_LIVES;
+    let started = false;
     let gameOver = false;
+    let surfacing = false; // win cinematic — sub rises to surface
+    let roundCleared = false; // current goal token grabbed, waiting to advance
+    let traveled = 0; // scroll distance accumulated this round
+    let nextWaveDist = 6; // distance before this round's wave spawns
+    let waveSpawned = false; // a wave for the current goal is in flight / passed
+
     let unbindFrame = null;
     let unbindPress = null;
     let unbindTap = null;
-
     const timers = [];
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
@@ -410,240 +519,173 @@ export default {
       return id;
     };
 
-    function depthWord(n) {
-      if (n > 0) return `${n} (${Math.abs(n)} above sea level)`;
-      if (n < 0) return `${n} (${Math.abs(n)} below sea level)`;
-      return "0 (at sea level)";
+    // Current depth as an integer (the sub's number-line position).
+    function subInt() {
+      return Math.round(subDepthY / UNIT);
     }
 
-    function setSubY(n, animate) {
-      const toY = yFor(n);
-      depthLabel.position.y = toY;
-      updateLabel(depthLabel, String(n));
-      if (animate && !reduced) {
-        const fromY = subGroup.position.y;
-        feel.tween({
-          from: 0,
-          to: 1,
-          duration: 0.22,
-          onUpdate: (t) => {
-            subGroup.position.y = fromY + (toY - fromY) * t;
-          },
-        });
-      } else {
-        subGroup.position.y = toY;
-      }
-    }
-
-    function cardText() {
+    // ---- Task text (the goal for the current round) -------------------------
+    function taskText() {
       if (!round) return "Pilot the submarine";
       switch (round.kind) {
         case "move":
-          // "move" rounds literally name the depth to reach — that's the task,
-          // not a derived answer, so showing the target here is fine.
-          return `Dive the sub to ${round.target}`;
+          return `Grab the token at ${round.target}`;
         case "opposite":
-          return `Dive to the opposite of ${round.value}`;
+          return `Grab the OPPOSITE of ${round.value}`;
         case "absolute":
-          // Context describes a real position (e.g. "3 m below sea level").
-          // Student must turn it into an integer and dive there.
-          return `${round.context} Dive to that integer`;
+          return `${round.context} Grab that integer`;
         case "compare":
-          return `Dive to the ${round.pick} one: ${round.a} or ${round.b}`;
+          return `Grab the ${round.pick.toUpperCase()} of ${round.a} and ${round.b}`;
         case "order":
-          return `Dive to the ${round.pick}: ${round.values.join(", ")}`;
+          return `Grab the ${round.pick.toUpperCase()} of ${round.values.join(", ")}`;
         default:
-          return "Move the sub";
+          return "Grab the right token";
       }
     }
 
-    function roundObjective() {
-      if (!round) return "Pilot the submarine";
+    function announceTask() {
+      if (!round) return;
+      let intro;
       switch (round.kind) {
         case "move":
-          return `Dive to ${round.target}. Press Space.`;
+          intro = `Dive to ${round.target} and grab the token there.`;
+          break;
         case "opposite":
-          return `Dive to the opposite of ${round.value}. Press Space.`;
+          intro = `Find the opposite of ${round.value} and grab that token.`;
+          break;
         case "absolute":
-          return `Work out the depth, dive there, then press Space.`;
+          intro = `${round.context} Work out the integer and grab that token.`;
+          break;
         case "compare":
-          return `Dive to the ${round.pick}: ${round.a} or ${round.b}. Press Space.`;
+          intro = `Which is ${round.pick}, ${round.a} or ${round.b}? Grab it.${
+            cfg.hints ? " Higher on the line is greater." : ""
+          }`;
+          break;
         case "order":
-          return `Dive to the ${round.pick}: ${round.values.join(", ")}. Press Space.`;
+          intro = `Grab the ${round.pick} number: ${round.values.join(", ")}.`;
+          break;
         default:
-          return "Move the sub.";
+          intro = "Grab the right token.";
       }
-    }
-
-    function computeTarget(r) {
-      switch (r.kind) {
-        case "move":
-          return r.target;
-        case "opposite":
-          return -r.value;
-        case "absolute":
-          return r.value;
-        case "compare":
-          return r.pick === "greater" ? Math.max(r.a, r.b) : Math.min(r.a, r.b);
-        case "order":
-          return r.pick === "greatest"
-            ? Math.max(...r.values)
-            : Math.min(...r.values);
-        default:
-          return 0;
-      }
+      announce(`Round ${roundIndex + 1}. ${intro}`);
     }
 
     function updateHud() {
-      const text = `${roundObjective()} (You are at ${pos}.)`;
+      const text = `${taskText()}  ·  you are at ${subInt()}`;
       hud.setObjective(text);
       if (clarity) clarity.setObjective(text);
     }
 
-    function startRound() {
-      solved = false;
-      round = cfg.rounds[roundIndex];
-      targetInt = computeTarget(round);
-      pos = 0;
-      setSubY(0, false);
+    // ---- Decoy depths -------------------------------------------------------
+    // Pull plausible-but-wrong integers from the round's own numbers and near
+    // misses (off-by-one, sign flip). Never equal the correct target.
+    function decoyDepths(correct) {
+      const cands = [];
+      const push = (v) => {
+        if (!Number.isInteger(v)) return;
+        if (v < RANGE_MIN || v > RANGE_MAX) return;
+        if (v === correct) return;
+        if (cands.includes(v)) return;
+        cands.push(v);
+      };
+      // Round-specific wrong numbers (the OTHER value / a sign trap).
+      if (round.kind === "opposite") push(round.value); // forgot to negate
+      if (round.kind === "absolute") push(-round.value); // wrong sign
+      if (round.kind === "compare") {
+        push(round.a);
+        push(round.b);
+      }
+      if (round.kind === "order") round.values.forEach(push);
+      // Generic near-misses.
+      push(-correct);
+      push(correct + 1);
+      push(correct - 1);
+      push(correct + 2);
+      push(correct - 2);
+      return cands;
+    }
 
-      // updateLabel sets the sprite scale from the text's canvas aspect.
-      updateLabel(cardLabel, cardText());
-      // Scale-pop the card by tweening its parent-relative scale multiplier
-      // without corrupting the aspect ratio set by updateLabel.
-      if (!reduced) {
-        const base = cardLabel.scale.clone();
-        feel.tween({
-          from: 0,
-          to: 1,
-          duration: 0.3,
-          onUpdate: (t) => {
-            const m = 1 + Math.sin(t * Math.PI) * 0.16;
-            cardLabel.scale.set(base.x * m, base.y * m, 1);
-          },
-          onComplete: () => cardLabel.scale.copy(base),
-        });
+    // ---- Spawn the wave of streamers for the current round ------------------
+    // One token carries the CORRECT integer; the rest are mines at decoy
+    // depths. They share a z so the player meets them as a single "gate" and
+    // must already be at the right depth.
+    function spawnWave() {
+      const decoys = decoyDepths(targetInt);
+      // Choose up to 3 distinct decoy depths.
+      const chosen = [];
+      for (const d of decoys) {
+        if (chosen.length >= 3) break;
+        chosen.push(d);
+      }
+      // Build the list: 1 correct token + N mines.
+      const layout = [{ value: targetInt, kind: "token", correct: true }];
+      for (const d of chosen) {
+        layout.push({ value: d, kind: "mine", correct: false });
       }
 
-      // Only "move" rounds name a literal depth, so only those show the target
-      // marker. Derived rounds (opposite / absolute / compare / order) hide it
-      // so the student must work the destination out instead of seeing it.
-      const showMarker = round.kind === "move";
-      marker.position.set(0, yFor(targetInt), 0);
-      markerMat.color.setHex(COLORS.target);
-      markerMat.emissive.setHex(COLORS.target);
-      marker.visible = showMarker;
-
-      if (clarity) {
-        clarity.setObjective(`Round ${roundIndex + 1} of ${cfg.rounds.length}`);
-        clarity.setTarget(showMarker ? `Dive to ${round.target}` : cardText());
+      layout.forEach((spec, i) => {
+        const s = streamers[i];
+        if (!s) return;
+        s.value = spec.value;
+        s.depth = spec.value;
+        s.kind = spec.kind;
+        s.correct = spec.correct;
+        s.active = true;
+        s.resolved = false;
+        s.obj.visible = true;
+        s.obj.position.set(0, yFor(spec.value), SPAWN_Z);
+        s.tokenMesh.visible = spec.kind === "token";
+        s.mineMesh.visible = spec.kind === "mine";
+        // Tokens show the number plainly; mines too (they must read each label
+        // and steer AWAY from the wrong ones).
+        updateLabel(s.label, String(spec.value));
+      });
+      // Park unused pool slots.
+      for (let i = layout.length; i < streamers.length; i++) {
+        streamers[i].active = false;
+        streamers[i].obj.visible = false;
       }
+      waveSpawned = true;
+    }
 
-      if (typeof hud.setProgress === "function")
-        hud.setProgress(roundIndex, cfg.rounds.length);
-
-      let intro;
-      switch (round.kind) {
-        case "move":
-          intro = `Dive the sub to ${round.target}.`;
-          break;
-        case "opposite":
-          intro = `Find the opposite of ${round.value} and dive there.`;
-          break;
-        case "absolute":
-          intro = `${round.context} Work out the integer and dive to it.`;
-          break;
-        case "compare":
-          intro = `Which is ${round.pick}, ${round.a} or ${round.b}? Go to it.${
-            cfg.hints ? " Higher is greater." : ""
-          }`;
-          break;
-        case "order":
-          intro = `Go to the ${round.pick} number: ${round.values.join(", ")}.`;
-          break;
-        default:
-          intro = `Move the sub.`;
-      }
-      announce(intro);
-      caption(cardText());
-      updateHud();
-      feel.sfx("select");
-
-      hud.message("Up/Down to move. Space when you arrive.", {
-        tone: "info",
-        duration: cfg.hints ? 3000 : 2200,
+    function clearWave() {
+      streamers.forEach((s) => {
+        s.active = false;
+        s.resolved = true;
+        s.obj.visible = false;
       });
     }
 
-    function move(dir) {
-      if (solved || !started || gameOver) return;
-      const next = Math.max(RANGE_MIN, Math.min(RANGE_MAX, pos + dir));
-      if (next === pos) {
-        feel.sfx("wrong");
-        feel.shake(0.08, 0.18);
-        return;
-      }
-      pos = next;
-      setSubY(pos, true);
-      feel.sfx(dir > 0 ? "add" : "remove");
-      feel.burst(
-        { x: 0, y: yFor(pos), z: 0 },
-        {
-          color: COLORS.surface,
-          count: 8,
-          spread: 0.5,
-          size: 0.07,
-          life: 0.45,
-        },
-      );
-      announce(`You are at ${pos}.`);
+    // ---- Round lifecycle ----------------------------------------------------
+    function startRound() {
+      round = cfg.rounds[roundIndex];
+      targetInt = computeTarget(round);
+      roundCleared = false;
+      traveled = 0;
+      nextWaveDist = 6;
+      waveSpawned = false;
+      clearWave();
       updateHud();
-    }
-
-    function readOut() {
-      if (!started) return;
-      const av = Math.abs(pos);
-      const msg = `You are at ${pos}. It is ${av} away from 0.`;
-      caption(msg);
-      announce(msg);
-      feel.sfx("pop");
-      hud.message(`|${pos}| = ${av}`, { tone: "info", duration: 1800 });
-      later(() => caption(cardText()), 1800);
-    }
-
-    function confirmArrival() {
-      if (solved || !started || gameOver) return;
-      if (pos !== targetInt) {
-        feel.sfx("wrong");
-        feel.shake(0.16, 0.3);
-        markerMat.color.setHex(COLORS.targetBad);
-        markerMat.emissive.setHex(COLORS.targetBad);
-        later(() => {
-          markerMat.color.setHex(COLORS.target);
-          markerMat.emissive.setHex(COLORS.target);
-        }, 500);
-        streak = 0;
-        if (typeof hud.setStreak === "function") hud.setStreak(0);
-        lives = Math.max(0, lives - 1);
-        if (typeof hud.setLives === "function") hud.setLives(lives);
-        if (lives <= 0) {
-          loseGame();
-          return;
-        }
-        // Forgiving Level-1 hint nudges direction without naming the answer.
-        const dir =
-          targetInt > pos ? "Rise toward 0 / go higher" : "Dive lower";
-        const hint = ` ${dir}.`;
-        const msg = `Not yet. You are at ${pos}.${cfg.hints ? hint : ""} ${
-          lives
-        } ${lives === 1 ? "dive" : "dives"} left.`;
-        if (typeof hud.feedback === "function") hud.feedback(false, msg);
-        else hud.message(msg, { tone: "warn", duration: 2400 });
-        announce(msg);
-        return;
+      announceTask();
+      caption(taskText());
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
+      if (clarity) {
+        clarity.setTarget(taskText());
       }
+      if (cfg.hints) {
+        hud.message("Up/Down to set your depth. Catch the green token!", {
+          tone: "info",
+          duration: 2600,
+        });
+      }
+      feel.sfx("select");
+    }
 
-      solved = true;
+    function onGrabCorrect(s) {
+      if (roundCleared) return;
+      roundCleared = true;
+      s.resolved = true;
       solvedCount += 1;
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
@@ -657,23 +699,16 @@ export default {
         absolute: Math.abs(targetInt),
       });
 
+      // Boost forward speed (sense of acceleration), flash + particles.
+      speed = Math.min(MAX_SPEED, speed + 2.5 + Math.min(streak, 4) * 0.4);
+      boostT = 0.6;
+      flash = { color: COLORS.good, t: 0.35 };
       feel.sfx("correct");
-      feel.shake(0.3, 0.35);
+      if (!reduced) feel.shake(0.16, 0.25);
       feel.burst(
-        { x: 0, y: yFor(targetInt), z: 0 },
-        { color: COLORS.target, count: 36, spread: 1.6 },
+        { x: SUB_X, y: subGroup.position.y, z: SUB_Z },
+        { color: COLORS.tokenEdge, count: reduced ? 0 : 30, spread: 2.2 },
       );
-      // Victory scale-pop on the sub.
-      if (!reduced) {
-        feel.tween({
-          from: 0,
-          to: 1,
-          duration: 0.35,
-          onUpdate: (t) =>
-            subGroup.scale.setScalar(1 + Math.sin(t * Math.PI) * 0.18),
-          onComplete: () => subGroup.scale.setScalar(1),
-        });
-      }
 
       let why;
       switch (round.kind) {
@@ -690,80 +725,305 @@ export default {
           why = `${targetInt} is the ${round.pick} of ${round.values.join(", ")}.`;
           break;
         default:
-          why = `You reached ${depthWord(targetInt)}.`;
+          why = `You grabbed ${targetInt}.`;
       }
-      const okMsg = `Docked! ${why} +${pts}`;
       if (typeof hud.feedback === "function")
-        hud.feedback(true, okMsg, { duration: 2600 });
-      else hud.message(okMsg, { tone: "ok", duration: 2600 });
+        hud.feedback(true, `Token grabbed! ${why} +${pts}`, { duration: 2400 });
       announce(`Correct! ${why} +${pts} points.`);
+      caption(why);
 
+      // Despawn this wave shortly and advance (or surface to win).
+      later(() => clearWave(), 250);
       later(() => {
         if (roundIndex < cfg.rounds.length - 1) {
           roundIndex += 1;
           startRound();
         } else {
-          finish();
+          beginSurface();
         }
-      }, 2600);
+      }, 1400);
     }
 
-    function loseGame() {
-      gameOver = true;
-      marker.visible = false;
+    function damage(reason) {
+      streak = 0;
+      if (typeof hud.setStreak === "function") hud.setStreak(0);
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      speed = Math.max(BASE_SPEED, speed - 2.5);
+      flash = { color: COLORS.bad, t: 0.4 };
       feel.sfx("wrong");
-      const msg = `Out of dives! You reached ${solvedCount} of ${cfg.rounds.length} depths.`;
-      hud.setObjective(msg);
-      announce(`Mission over. ${msg} Press Play Again to retry.`);
-      if (clarity) {
-        clarity.setTarget(null);
-        clarity.lose({
-          titleEn: "Out of dives!",
-          badge: "🌊",
-          stats: `${msg} Tip: read each round carefully and use the depth read-out (Enter) before you dock.`,
-        });
+      if (!reduced) feel.shake(0.32, 0.35);
+      feel.burst(
+        { x: SUB_X, y: subGroup.position.y, z: SUB_Z },
+        { color: COLORS.bad, count: reduced ? 0 : 22, spread: 2.0 },
+      );
+      const msg =
+        lives > 0
+          ? `${reason} ${lives} ${lives === 1 ? "life" : "lives"} left.`
+          : reason;
+      if (typeof hud.feedback === "function") hud.feedback(false, msg);
+      else hud.message(msg, { tone: "warn", duration: 2200 });
+      announce(msg);
+      if (lives <= 0) loseGame();
+    }
+
+    // A wrong streamer reached the sub plane.
+    function onHitMine(s) {
+      s.resolved = true;
+      s.obj.visible = false;
+      // Once the goal token is grabbed, the round is won — don't punish a mine
+      // that brushes past during the short advance window.
+      if (roundCleared || gameOver) return;
+      damage(`Mine! ${s.value} is not it.`);
+    }
+
+    // The whole wave passed without the correct token being grabbed.
+    function onMissedWave() {
+      if (roundCleared || gameOver) return;
+      damage("Missed the token!");
+      // Re-arm: respawn the same goal's wave so the round is still winnable.
+      if (!gameOver) {
+        traveled = 0;
+        nextWaveDist = 4;
       }
     }
 
-    function finish() {
-      marker.visible = false;
-      updateLabel(cardLabel, "All depths reached!");
+    // ---- Real-time vertical movement ---------------------------------------
+    // Held-state polling (smooth continuous dive) + crisp single-step presses.
+    function moveStep(dir) {
+      const nextInt = Math.max(RANGE_MIN, Math.min(RANGE_MAX, subInt() + dir));
+      subDepthY = yFor(nextInt);
+      feel.sfx(dir > 0 ? "add" : "remove");
+    }
+
+    function readOut() {
+      if (!started) return;
+      const n = subInt();
+      const av = Math.abs(n);
+      const msg = `You are at ${n}. It is ${av} away from 0.`;
+      caption(msg);
+      announce(msg);
+      feel.sfx("pop");
+      hud.message(`|${n}| = ${av}`, { tone: "info", duration: 1800 });
+      later(() => caption(taskText()), 1800);
+    }
+
+    // ---- Win / lose ---------------------------------------------------------
+    function beginSurface() {
+      surfacing = true;
+      clearWave();
+      hud.setObjective("All tokens collected — surface! 🌊");
+      announce("All tokens collected. Surfacing!");
+      if (clarity) clarity.setTarget(null);
+    }
+
+    function winGame() {
+      gameOver = true;
       hud.setProgress(cfg.rounds.length, cfg.rounds.length);
       hud.setObjective(
-        `All depths reached — ${solvedCount} of ${cfg.rounds.length}, best streak ${bestStreak}. Great piloting, Captain!`,
+        `Surfaced! ${solvedCount} of ${cfg.rounds.length} tokens, best streak ${bestStreak}. Great diving, Captain!`,
       );
-      hud.message("All rounds complete!", { tone: "ok", duration: 0 });
+      hud.message("Mission complete!", { tone: "ok", duration: 0 });
       feel.sfx("fanfare");
-      announce(
-        `All rounds complete. You reached ${solvedCount} depths with a best streak of ${bestStreak}. Great piloting, Captain.`,
-      );
-      // Celebration confetti rising from sea level.
       if (!reduced) {
         [0, 200, 400].forEach((ms) =>
           later(
             () =>
               feel.burst(
-                { x: 0, y: 0, z: 0 },
-                { color: COLORS.target, count: 40, spread: 3.0, life: 1.4 },
+                { x: 0, y: 0.2, z: SUB_Z - 1 },
+                { color: COLORS.token, count: 40, spread: 3.0, life: 1.4 },
               ),
             ms,
           ),
         );
+        feel.shake(0.3, 0.4);
       }
+      announce(
+        `Mission complete! You grabbed ${solvedCount} of ${cfg.rounds.length} tokens with a best streak of ${bestStreak}.`,
+      );
       if (clarity) {
         clarity.setTarget(null);
         clarity.win({
-          titleEn: "All depths reached!",
+          titleEn: "Surfaced — mission complete!",
           badge: "🤿",
-          stats: `You reached ${solvedCount} of ${cfg.rounds.length} depths. Best streak: ${bestStreak}. Score saved.`,
+          stats: `You grabbed ${solvedCount} of ${cfg.rounds.length} tokens. Best streak: ${bestStreak}. Score saved.`,
         });
       }
     }
 
-    // ---- Animated camera intro ----------------------------------------------
+    function loseGame() {
+      gameOver = true;
+      clearWave();
+      feel.sfx("wrong");
+      const msg = `Hull breached! You grabbed ${solvedCount} of ${cfg.rounds.length} tokens.`;
+      hud.setObjective(msg);
+      announce(`Mission over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Hull breached!",
+          badge: "🌊",
+          stats: `${msg} Tip: work out the depth FIRST (opposite of n = -n; |n| = distance from 0; greater = higher on the line), then steer there before the wave arrives.`,
+        });
+      }
+    }
+
+    // ---- Per-frame real-time loop ------------------------------------------
+    function frame(dt, t) {
+      const playing = started && !gameOver;
+      const d = Math.min(dt, 0.05); // clamp tab-switch hiccups
+
+      // Ease speed back to base when not boosting.
+      if (playing && !surfacing) {
+        if (boostT > 0) boostT = Math.max(0, boostT - d);
+        else speed += (BASE_SPEED - speed) * Math.min(1, d * 1.2);
+      }
+      const scroll = playing ? speed * d : BASE_SPEED * 0.25 * d; // idle drift
+
+      // ---- Continuous vertical control (held keys / d-pad) ------------------
+      if (playing && !surfacing) {
+        const dir = (input.state.up ? 1 : 0) - (input.state.down ? 1 : 0);
+        if (dir !== 0) {
+          subDepthY += dir * VERT_SPEED * UNIT * d;
+          subDepthY = Math.max(
+            yFor(RANGE_MIN),
+            Math.min(yFor(RANGE_MAX), subDepthY),
+          );
+        }
+      }
+
+      // Smooth the visible sub toward its depth; depth read-out tracks it.
+      const subY =
+        subGroup.position.y +
+        (subDepthY - subGroup.position.y) * Math.min(1, d * 14);
+      subGroup.position.y = subY;
+      depthLabel.position.y = subY;
+      updateLabel(depthLabel, String(subInt()));
+      // Pitch the nose toward travel direction + gentle bob.
+      if (!reduced) {
+        const vy = subDepthY - subY;
+        subGroup.rotation.x = -vy * 0.6;
+        subGroup.position.x = SUB_X + Math.sin(t * 1.6) * 0.04;
+        portMat.emissiveIntensity = 0.7 + Math.sin(t * 3) * 0.25;
+      }
+
+      // ---- Scroll the world toward the camera (forward motion) -------------
+      if (scroll > 0) {
+        for (const k of kelp) {
+          k.position.z += scroll;
+          if (k.position.z > DESPAWN_Z) {
+            k.position.z -= KELP_SPAN;
+            k.position.y = columnBotY + 1.4 + Math.random() * 0.6;
+          }
+          if (!reduced)
+            k.position.x =
+              k.userData.baseX + Math.sin(t * 1.2 + k.userData.phase) * 0.18;
+        }
+        // Bubbles drift up + scroll forward.
+        const bp = bubbleGeo.attributes.position.array;
+        for (let i = 0; i < BUBBLE_N; i++) {
+          bp[i * 3 + 2] += scroll;
+          bp[i * 3 + 1] += d * 0.6;
+          if (bp[i * 3 + 2] > DESPAWN_Z) bp[i * 3 + 2] -= KELP_SPAN;
+          if (bp[i * 3 + 1] > columnTopY + 1) bp[i * 3 + 1] = columnBotY;
+        }
+        bubbleGeo.attributes.position.needsUpdate = true;
+      }
+
+      // ---- Wave logic: spawn, scroll streamers, resolve grabs/hits ----------
+      if (playing && !surfacing) {
+        traveled += scroll;
+        // Spawn this round's single wave once we've traveled far enough.
+        if (!roundCleared && !waveSpawned && traveled >= nextWaveDist) {
+          spawnWave();
+        }
+
+        let activeRemain = false;
+        for (const s of streamers) {
+          if (!s.active) continue;
+          s.obj.position.z += scroll;
+          // Spin mines for menace; bob tokens.
+          if (!reduced) {
+            if (s.kind === "mine") s.mineMesh.rotation.y += d * 2.2;
+            else s.tokenMesh.rotation.z += d * 1.4;
+          }
+          // Live "in-range" cue: brighten the streamer at the sub's depth.
+          const dy = Math.abs(s.obj.position.y - subY);
+          const near = dy < GRAB_REACH * 1.6;
+          const mat = s.kind === "token" ? s.tokenMat : s.mineMat;
+          mat.emissiveIntensity = near ? 0.95 : s.kind === "token" ? 0.55 : 0.5;
+
+          // Collision window: streamer crossing the sub's z plane.
+          if (
+            !s.resolved &&
+            s.obj.position.z >= GRAB_Z - GRAB_Z_REACH &&
+            s.obj.position.z <= GRAB_Z + GRAB_Z_REACH &&
+            dy < GRAB_REACH
+          ) {
+            s.resolved = true;
+            if (s.correct) {
+              s.obj.visible = false;
+              onGrabCorrect(s);
+            } else {
+              onHitMine(s);
+            }
+          }
+
+          // Passed the sub (recycle the slot).
+          if (s.obj.position.z > DESPAWN_Z) {
+            s.active = false;
+            s.obj.visible = false;
+          } else {
+            activeRemain = true;
+          }
+        }
+
+        // The wave spawned, fully passed, and the correct token was never
+        // grabbed → a miss. Damage once and re-arm with a fresh wave so the
+        // round stays winnable.
+        if (waveSpawned && !roundCleared && !activeRemain) {
+          waveSpawned = false;
+          onMissedWave();
+        }
+      }
+
+      // ---- Surface (win cinematic): sub rises to 0 then wins ---------------
+      if (playing && surfacing) {
+        const toY = yFor(0);
+        subDepthY += (toY - subDepthY) * Math.min(1, d * 3);
+        if (Math.abs(subDepthY - toY) < 0.02) {
+          subDepthY = toY;
+          surfacing = false;
+          winGame();
+        }
+      }
+
+      // Keep integer labels facing readable (sprites already billboard).
+      // ---- Screen flash (green grab / red hit) via surface glow pulse -------
+      if (flash) {
+        flash.t = Math.max(0, flash.t - d);
+        const k = flash.t / 0.4;
+        surface.material.emissiveIntensity = 0.4 + k * 0.7;
+        surface.material.emissive.lerpColors(
+          new THREE.Color(COLORS.surface),
+          new THREE.Color(flash.color),
+          k,
+        );
+        if (flash.t <= 0) {
+          flash = null;
+          surface.material.emissive.set(COLORS.surface);
+          surface.material.emissiveIntensity = 0.5;
+        }
+      } else if (!reduced) {
+        surface.material.emissiveIntensity = 0.4 + Math.sin(t * 2) * 0.12;
+        spineMat.emissiveIntensity = 0.35 + Math.sin(t * 3) * 0.12;
+      }
+    }
+
+    // ---- Camera intro -------------------------------------------------------
     function cameraIntro(onDone) {
-      const target = new THREE.Vector3(0, columnMidY, 0);
-      const endPos = new THREE.Vector3(4.4, columnMidY + 1.3, 6.6);
+      const target = new THREE.Vector3(0, columnMidY, SUB_Z - 3);
+      const endPos = new THREE.Vector3(0.4, columnMidY + 1.2, SUB_Z + 7.5);
       if (reduced) {
         camera.position.copy(endPos);
         camera.lookAt(target);
@@ -771,15 +1031,15 @@ export default {
         onDone();
         return;
       }
-      const startPos = new THREE.Vector3(8.5, columnTopY + 3, 10.5);
+      const startPos = new THREE.Vector3(6.5, columnTopY + 3, SUB_Z + 11);
       camera.position.copy(startPos);
       camera.lookAt(target);
       feel.tween({
         from: 0,
         to: 1,
-        duration: 1.4,
-        onUpdate: (t) => {
-          camera.position.lerpVectors(startPos, endPos, t);
+        duration: 1.3,
+        onUpdate: (tt) => {
+          camera.position.lerpVectors(startPos, endPos, tt);
           camera.lookAt(target);
         },
         onComplete: () => {
@@ -789,23 +1049,23 @@ export default {
       });
     }
 
-    // Begin the actual round loop + input binding only after the student
-    // presses Start in the clarity overlay. Single entry point for first play
-    // and (via page reload) for Play Again. The camera intro + spawn-pop and
-    // idle animation run immediately behind the overlay; only the interactive
-    // round loop and input wait for Start.
     function beginGameplay() {
       started = true;
       lives = START_LIVES;
       gameOver = false;
+      surfacing = false;
+      speed = BASE_SPEED;
+      subDepthY = yFor(0);
       if (typeof hud.setLives === "function") hud.setLives(lives);
-      // Spawn-pop the submarine in.
+      if (typeof hud.setStreak === "function") hud.setStreak(0);
+      hud.setLevel(level === 2 ? "Level 2" : "Level 1");
+
       if (!reduced) {
         feel.tween({
           from: 0,
           to: 1,
           duration: 0.4,
-          onUpdate: (t) => subGroup.scale.setScalar(t),
+          onUpdate: (tt) => subGroup.scale.setScalar(tt),
           onComplete: () => subGroup.scale.setScalar(1),
         });
       } else {
@@ -813,22 +1073,20 @@ export default {
       }
       feel.sfx("pop");
 
+      // Crisp single-step presses (keyboard taps + touch d-pad). Held movement
+      // is handled continuously in frame() via input.state.up/down.
       unbindPress = input.onPress((name) => {
-        if (name === "up") move(1);
-        else if (name === "down") move(-1);
-        else if (name === "action") confirmArrival();
+        if (!started || gameOver) return;
+        if (name === "up") moveStep(1);
+        else if (name === "down") moveStep(-1);
         else if (name === "confirm") readOut();
       });
 
+      // Tap above/below the sub to nudge depth (mobile + mouse).
       unbindTap = input.onTap(() => {
-        if (solved || !started) return;
-        const hits = input.raycast(camera, [marker, subGroup], true);
-        if (hits.length) {
-          confirmArrival();
-          return;
-        }
+        if (!started || gameOver || surfacing) return;
         const ny = input.state.ndc ? input.state.ndc.y : 0;
-        move(ny >= 0 ? 1 : -1);
+        moveStep(ny >= 0 ? 1 : -1);
       });
 
       roundIndex = 0;
@@ -837,67 +1095,41 @@ export default {
 
     return {
       start() {
-        // Camera intro runs immediately, behind the start overlay.
         cameraIntro(() => {});
 
-        if (!reduced) {
-          unbindFrame = onFrame((dt, t) => {
-            // Gentle sub bob (only when settled, never overrides a tween).
-            subGroup.position.x = Math.sin(t * 1.4) * 0.05;
-            subGroup.rotation.z = Math.sin(t * 1.1) * 0.04;
-            // Target marker pulse.
-            const s = 1 + Math.sin(t * 3) * 0.1;
-            marker.scale.set(s, 1, s);
-            markerMat.emissiveIntensity = 0.5 + Math.sin(t * 3) * 0.25;
-            // Drifting surface shimmer.
-            surface.material.emissiveIntensity = 0.4 + Math.sin(t * 2) * 0.15;
-            // Glowing porthead breathes.
-            portMat.emissiveIntensity = 0.7 + Math.sin(t * 2.5) * 0.3;
-          });
-        }
+        // The frame loop runs immediately (idle drift + scenery behind the
+        // overlay); gameplay logic gates on `started` until Start is pressed.
+        unbindFrame = onFrame(frame);
 
-        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
-        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
         clarity = initClarity({
           mount: clarityMount,
           announce,
-          title: "Submarine — Dive the Number Line",
+          title: "Submarine — Deep Dive the Number Line",
           objectiveEn:
-            "Move the submarine to the number each round asks for, then press Space to dock. Press Enter (or ✓) any time to check your depth and its distance from 0.",
+            "Your sub dives forward on its own. Read the task at the top, then move the sub UP or DOWN with the arrows so you are at the right depth when the green token streams in. Grab the correct number; dodge the red mines.",
           objectiveEs:
-            "Pilotea el submarino por la recta numérica hasta el número entero de cada ronda y atraca con Espacio.",
+            "Tu submarino avanza solo. Lee la tarea de arriba y mueve el submarino ARRIBA o ABAJO para estar a la profundidad correcta cuando llegue la ficha verde. Atrapa el número correcto y esquiva las minas rojas.",
           standard: "6.NS.C.5–7 · Integers, Opposites & Absolute Value",
           controls: [
             {
               key: "↑ / W",
-              actionEn:
-                "Rise — move the sub up the number line (toward positives)",
+              actionEn: "Rise — move the sub up toward the positives",
               actionEs: "Sube — mueve el submarino hacia los positivos",
             },
             {
               key: "↓ / S",
-              actionEn:
-                "Dive — move the sub down the number line (toward negatives)",
+              actionEn: "Dive — move the sub down toward the negatives",
               actionEs: "Baja — mueve el submarino hacia los negativos",
             },
             {
-              key: "Space",
-              actionEn: "Dock — check if you reached the target integer",
-              actionEs: "Atraca — revisa si llegaste al número correcto",
-            },
-            {
               key: "Enter / ✓",
-              actionEn:
-                "Read out your depth and its distance from 0 (absolute value)",
-              actionEs:
-                "Di tu profundidad y su distancia desde 0 (valor absoluto)",
+              actionEn: "Read out your depth and its distance from 0",
+              actionEs: "Di tu profundidad y su distancia desde 0",
             },
             {
-              key: "Tap",
-              actionEn:
-                "Tap the green target band to dock, or tap above/below the sub to move it",
-              actionEs:
-                "Toca la banda verde para atracar, o toca arriba/abajo para mover el submarino",
+              key: "Tap / d-pad",
+              actionEn: "Tap above or below the sub (or use the d-pad) to move",
+              actionEs: "Toca arriba o abajo (o usa la cruceta) para mover",
             },
             {
               key: "?",
@@ -906,15 +1138,16 @@ export default {
             },
           ],
           howToWinEn:
-            "Each round names a target — a number to dive to, an opposite, an absolute value, or the greater/least of a set. Move to that integer and press Space to dock. Dock all rounds to win. A 3+ streak earns bonus points!",
+            "Each round names a target — a number, an opposite, an absolute value, or the greater/least of a set. Work out the depth, be there when the wave arrives, and grab the GREEN token. Red mines cost a life. Grab every token to surface and win. A 3+ streak earns bonus points!",
           howToWinEs:
-            "Llega al número entero de cada ronda y atraca con Espacio. Completa todas las rondas para ganar.",
+            "Cada ronda nombra un objetivo. Calcula la profundidad, llega a tiempo y atrapa la ficha verde. Las minas rojas cuestan una vida. Atrapa todas para ganar.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });
       },
 
       dispose() {
+        started = false;
         if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
@@ -922,15 +1155,14 @@ export default {
         timers.forEach(clearTimeout);
         timers.length = 0;
         scene.remove(group);
-        disposables.forEach((d) => d.dispose && d.dispose());
-        // makeLabel sprites: dispose their textures + materials.
-        const sprites = [cardLabel, seaLabel, depthLabel, ...lineLabels];
-        sprites.forEach((sp) => {
-          if (sp.material) {
-            if (sp.material.map) sp.material.map.dispose();
-            sp.material.dispose();
-          }
-        });
+        disposables.forEach((dp) => dp.dispose && dp.dispose());
+        // Dispose all label sprites (textures + materials).
+        const sprites = [
+          depthLabel,
+          ...lineLabels,
+          ...streamers.map((s) => s.label),
+        ];
+        sprites.forEach(disposeSprite);
       },
     };
   },
