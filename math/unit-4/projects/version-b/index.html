@@ -6,9 +6,11 @@
     <title>Smart Shopper Showdown — Unit 4 Culminating Project</title>
     <meta
       name="description"
-      content="Unit 4 Rates, Percents, and Unit Rates culminating project. Compare unit prices, evaluate percent discounts, calculate tips, and convert measurement units."
+      content="Unit 4 Rates &amp; Percents culminating project. Compare two REAL packages by unit price, convert a real product-label measurement, compare with a partner, then test against national grocery unit prices and tip norms."
     />
     <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
     <style>
       :root {
         --navy: #0f3b2c;
@@ -31,7 +33,9 @@
         --shadow: 0 4px 18px rgba(15, 59, 44, 0.1);
         --font: "Segoe UI", system-ui, -apple-system, sans-serif;
       }
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         font-family: var(--font);
@@ -39,7 +43,11 @@
         background: var(--bg);
         line-height: 1.55;
       }
-      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
 
       .phero {
         background: linear-gradient(135deg, #0f3b2c 0%, #0e8a7d 100%);
@@ -49,119 +57,383 @@
         position: relative;
         overflow: hidden;
       }
-      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
       .phero h1 {
         font-size: clamp(26px, 5vw, 40px);
         margin: 10px 0 8px;
         letter-spacing: -0.02em;
       }
-      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
-      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-      .tag {
-        background: rgba(255,255,255,.14);
-        border: 1px solid rgba(255,255,255,.25);
-        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
       }
-      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
 
-      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
-      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
 
       .intro-card {
-        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--teal);
-        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--teal);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
       }
-      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
-      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .intro-card .scenario {
+        font-size: 16px;
+        color: var(--ink);
+      }
 
       .phase {
-        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
       }
-      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
       .phase-num {
-        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
-        background: var(--teal); color: #fff; font-weight: 800; font-size: 20px;
-        display: flex; align-items: center; justify-content: center;
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
-      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
-      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
-      .phase h2 { margin: 0; font-size: 21px; }
-      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-      .phase > p { color: var(--muted); }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--teal);
+        background: var(--teal-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
 
       .task {
-        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
       }
-      .task strong { color: var(--navy); }
+      .task strong {
+        color: var(--navy);
+      }
 
-      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
-      input[type="number"], input[type="text"], select, textarea {
-        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
-        font-family: inherit; font-size: 15px; background: #fff;
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
       }
-      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal); }
-      textarea { resize: vertical; min-height: 80px; }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2,
+        .grid3 {
+          grid-template-columns: 1fr;
+        }
+      }
 
       .btn {
-        background: var(--teal); color: #fff; border: none; border-radius: 10px;
-        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        background: var(--teal);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
         margin-top: 14px;
       }
-      .btn:hover { filter: brightness(1.08); }
-      .btn.alt { background: var(--blue); }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--blue);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--teal);
+        border: 2px solid var(--line);
+      }
 
       .readout {
-        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
-        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
       }
-      .readout.show { display: block; }
-      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
-      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
-      .feedback.ok { color: var(--green); }
-      .feedback.no { color: var(--coral); }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
 
-      .hintbox { margin-top: 12px; }
-      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
-      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
 
-      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
-      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
-      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
-      .rubric td:first-child { font-weight: 700; width: 30%; }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
 
-      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
-      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
-      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
 
-      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
-      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
-      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
-      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
 
-      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
-      .printbtn { background: var(--navy); }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
       @media print {
-        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
-        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
-        body { background: #fff; }
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
-  <body>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
     <header class="phero">
       <div class="deco">🛒</div>
       <h1>Smart Shopper Showdown</h1>
-      <p>You are on a mission to stretch every dollar! Compare unit prices, hunt for the best percent-off deal, calculate a restaurant tip, and convert between measurement units — all with real-world rate math.</p>
+      <p>
+        Stretch every dollar with <em>real prices</em>. Compare two real
+        packages you could actually buy by unit price, convert a measurement off
+        a real product label, compare with a partner, then test against national
+        grocery prices and tip norms.
+      </p>
       <div class="tags">
         <span class="tag gold">Unit 4 · Percents &amp; Rates</span>
         <span class="tag">6.RP.2</span>
@@ -170,390 +442,1224 @@
         <span class="tag">6.RP.3d</span>
         <span class="tag">Version B · Real-World Investigation</span>
       </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u4ProjectB')">💾 Save</button>
+        <button
+          onclick="PK.load('u4ProjectB', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
     </header>
 
     <div class="wrap">
-
       <div class="progress-wrap">
-        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
-        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
       </div>
 
       <div class="intro-card">
         <h2>🧾 Your Mission</h2>
         <p class="scenario">
-          You have a grocery list and a limited budget. Your job is to be the <strong>smartest shopper</strong>
-          in the store. Compare package sizes by unit price to find the best buy, figure out which store's
-          sale saves you the most, compute a fair tip at a restaurant, and use rate reasoning to convert
-          measurement units. Fill in every phase, check your answers, and finish with a shopping verdict.
+          Be the smartest shopper in three steps.
+          <strong>Part 1 (Self):</strong> enter two real packages you could buy
+          (real prices and sizes), find the better buy by unit price, and
+          convert a real product-label measurement.
+          <strong>Part 2 (Peer):</strong> swap a real product with a partner and
+          decide whose pick is the better buy.
+          <strong>Part 3 (World):</strong> compare your unit price to national
+          grocery averages and tip norms. Finish with a shopping verdict and
+          report.
         </p>
       </div>
 
-      <!-- PHASE 1 -->
-      <section class="phase" data-phase>
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">⚖️</span><b>Unit Rate</b>
+            <p>
+              A rate for ONE — like dollars per 1 ounce or miles per 1 hour.
+            </p>
+            <p class="pk-es">
+              Tasa unitaria: una tasa para UNO — dólares por 1 onza o millas por
+              1 hora.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🏷️</span><b>Unit Price</b>
+            <p>
+              Price for one unit: total price ÷ number of units. Lower wins.
+            </p>
+            <p class="pk-es">
+              Precio unitario: precio total ÷ número de unidades. Gana el más
+              bajo.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">💲</span><b>Percent of a Number</b>
+            <p>A part out of 100. Find it with: number × (percent ÷ 100).</p>
+            <p class="pk-es">
+              Porcentaje de un número: una parte de 100. Número × (porcentaje ÷
+              100).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🔻</span><b>Discount</b>
+            <p>The amount you SUBTRACT from a price during a sale.</p>
+            <p class="pk-es">
+              Descuento: la cantidad que RESTAS del precio en una oferta.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🍽️</span><b>Tip</b>
+            <p>A percent of the bill you give the server for service.</p>
+            <p class="pk-es">
+              Propina: un porcentaje de la cuenta que das al mesero por el
+              servicio.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🔁</span><b>Conversion Factor</b>
+            <p>A rate written as a fraction used to change units.</p>
+            <p class="pk-es">
+              Factor de conversión: una tasa escrita como fracción para cambiar
+              unidades.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>Unit price:</b> total price ÷ number of units</p>
+            <p><b>Better buy:</b> the package with the LOWER unit price</p>
+            <p>
+              <b>Tip amount:</b> bill × (tip% ÷ 100) · <b>Total:</b> bill + tip
+            </p>
+            <p><b>Convert:</b> value × (to-unit / from-unit) — units cancel</p>
+            <p class="pk-lvl2">
+              <b>Stacked deal:</b> price × (1 − disc%) , then compare unit
+              prices
+            </p>
+            <p class="pk-lvl2">
+              <b>Percent decrease:</b> (old − new) ÷ old × 100
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>"Package ___ costs $___ per unit, so the better buy is ___."</p>
+            <p>"A ___% tip on $___ is $___, making the total $___."</p>
+            <p>"I converted ___ ___ to ___ ___ using a rate."</p>
+            <p>"My unit price is higher / lower than ___ because ___."</p>
+            <p class="pk-es">
+              "El paquete ___ cuesta $___ por unidad, así que la mejor compra es
+              ___."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
         <div class="phase-head">
           <div class="phase-num">1</div>
           <div>
-            <div class="skill">Unit Price · 6.RP.2 · 6.RP.3b</div>
-            <h2>Find the Better Buy</h2>
+            <span class="arc-banner">Part 1 · Self — your real cart</span>
+            <div class="skill">
+              Unit Price · Conversion · 6.RP.2 · 6.RP.3b · 6.RP.3d
+            </div>
+            <h2>Find YOUR Better Buy</h2>
           </div>
         </div>
-        <p>Compare two package sizes of the same product by computing the <strong>price per unit</strong> for each. The lower unit price is the better buy!</p>
-        <div class="task">
-          <strong>Formula:</strong> Unit price = Total price ÷ Number of units.<br />
-          Compare the two unit prices. The smaller one wins!
-        </div>
-        <div style="margin-top:16px;">
-          <strong>Package A</strong>
-          <div class="grid2" style="margin-top:8px;">
+        <p>
+          Enter <strong>two real packages</strong> of the same product you could
+          actually buy. Not sure yet? Click <em>Use example numbers</em>, then
+          change them to fit real products.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
+        <label class="fld" for="product"
+          >Product you are comparing (real)</label
+        >
+        <input
+          type="text"
+          id="product"
+          data-save
+          placeholder="example: granola bars"
+          oninput="updateProgress()"
+        />
+
+        <div style="margin-top: 14px">
+          <strong>Package A (real price &amp; size)</strong>
+          <div class="grid2" style="margin-top: 8px">
             <div>
               <label class="fld" for="a-price">Price ($)</label>
-              <input type="number" id="a-price" value="3.60" step="0.01" min="0.01" />
+              <input
+                type="number"
+                id="a-price"
+                data-save
+                step="0.01"
+                min="0.01"
+                placeholder="example: 3.60"
+                oninput="calcUnitPrice()"
+              />
             </div>
             <div>
-              <label class="fld" for="a-units">Number of units (oz, items, etc.)</label>
-              <input type="number" id="a-units" value="12" step="1" min="1" />
+              <label class="fld" for="a-units"
+                >Number of units (oz, count, etc.)</label
+              >
+              <input
+                type="number"
+                id="a-units"
+                data-save
+                step="0.01"
+                min="0.01"
+                placeholder="example: 12"
+                oninput="calcUnitPrice()"
+              />
             </div>
           </div>
         </div>
-        <div style="margin-top:12px;">
-          <strong>Package B</strong>
-          <div class="grid2" style="margin-top:8px;">
+        <div style="margin-top: 12px">
+          <strong>Package B (real price &amp; size)</strong>
+          <div class="grid2" style="margin-top: 8px">
             <div>
               <label class="fld" for="b-price">Price ($)</label>
-              <input type="number" id="b-price" value="5.25" step="0.01" min="0.01" />
+              <input
+                type="number"
+                id="b-price"
+                data-save
+                step="0.01"
+                min="0.01"
+                placeholder="example: 5.25"
+                oninput="calcUnitPrice()"
+              />
             </div>
             <div>
               <label class="fld" for="b-units">Number of units</label>
-              <input type="number" id="b-units" value="20" step="1" min="1" />
+              <input
+                type="number"
+                id="b-units"
+                data-save
+                step="0.01"
+                min="0.01"
+                placeholder="example: 20"
+                oninput="calcUnitPrice()"
+              />
             </div>
           </div>
         </div>
-        <button class="btn" onclick="calcUnitPrice()">Find the better buy</button>
+        <button class="btn" type="button" onclick="calcUnitPrice()">
+          Find the better buy
+        </button>
         <div class="readout" id="unit-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>Package A: $3.60 ÷ 12 = $0.30 per unit.
-          Package B: $5.25 ÷ 20 = $0.2625 per unit.
-          Package B has the lower unit price, so it is the better buy even though the package costs more!</p>
+          <p>
+            Unit price = total price ÷ number of units. Example: $3.60 ÷ 12 =
+            $0.30 per unit; $5.25 ÷ 20 = $0.2625 per unit. The smaller unit
+            price is the better buy.
+          </p>
         </details>
-      </section>
 
-      <!-- PHASE 2 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">2</div>
+        <!-- self-check unit price -->
+        <div class="task" style="margin-top: 18px">
+          <strong>Self-check:</strong> Type Package A's unit price (price ÷
+          units). The tool checks it.
+        </div>
+        <label class="fld" for="check-unitA"
+          >Package A unit price ($ per unit)</label
+        >
+        <input
+          type="number"
+          id="check-unitA"
+          data-save
+          step="0.0001"
+          placeholder="Type your answer"
+        />
+        <button class="btn alt" type="button" onclick="checkUnitA()">
+          Check my answer
+        </button>
+        <div class="pk-fb feedback" id="check-unitAFb"></div>
+
+        <!-- conversion from a real label -->
+        <h3 style="margin-top: 24px">
+          🔁 Convert a real product-label measurement
+        </h3>
+        <p style="font-size: 14px; color: var(--muted)">
+          Read a measurement off a real label (a snack's net weight, a drink's
+          volume, a roll's length) and convert it using a rate.
+        </p>
+        <div class="grid3">
           <div>
-            <div class="skill">Percent Discount · 6.RP.3c</div>
-            <h2>Which Store's Deal Is Cheaper?</h2>
+            <label class="fld" for="conv-val">Value from the label</label>
+            <input
+              type="number"
+              id="conv-val"
+              data-save
+              step="0.01"
+              min="0.01"
+              placeholder="example: 5"
+              oninput="calcConvert()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="conv-from">From unit</label>
+            <select id="conv-from" data-save onchange="calcConvert()">
+              <option value="feet">feet</option>
+              <option value="yards">yards</option>
+              <option value="inches">inches</option>
+              <option value="miles">miles</option>
+              <option class="pk-lvl2" value="pounds">pounds</option>
+              <option class="pk-lvl2" value="ounces">ounces</option>
+              <option class="pk-lvl2" value="cups">cups</option>
+              <option class="pk-lvl2" value="pints">pints</option>
+              <option class="pk-lvl2" value="quarts">quarts</option>
+              <option class="pk-lvl2" value="gallons">gallons</option>
+            </select>
+          </div>
+          <div>
+            <label class="fld" for="conv-to">To unit</label>
+            <select id="conv-to" data-save onchange="calcConvert()">
+              <option value="inches">inches</option>
+              <option value="feet">feet</option>
+              <option value="yards">yards</option>
+              <option value="miles">miles</option>
+              <option class="pk-lvl2" value="ounces">ounces</option>
+              <option class="pk-lvl2" value="pounds">pounds</option>
+              <option class="pk-lvl2" value="pints">pints</option>
+              <option class="pk-lvl2" value="cups">cups</option>
+              <option class="pk-lvl2" value="gallons">gallons</option>
+              <option class="pk-lvl2" value="quarts">quarts</option>
+            </select>
           </div>
         </div>
-        <p>Two stores are selling the same item. Each store offers a <strong>percent discount</strong>. Calculate the final price at each store after the discount to find which one is cheaper.</p>
-        <div class="task">
-          <strong>Formula:</strong> Sale price = Original price × (1 − Discount % ÷ 100).
-        </div>
-        <div style="margin-top:16px;">
-          <strong>Store 1</strong>
-          <div class="grid2" style="margin-top:8px;">
-            <div>
-              <label class="fld" for="s1-price">Original price ($)</label>
-              <input type="number" id="s1-price" value="80.00" step="0.01" min="0.01" />
-            </div>
-            <div>
-              <label class="fld" for="s1-disc">Discount (%)</label>
-              <input type="number" id="s1-disc" value="25" step="1" min="0" max="100" />
-            </div>
-          </div>
-        </div>
-        <div style="margin-top:12px;">
-          <strong>Store 2</strong>
-          <div class="grid2" style="margin-top:8px;">
-            <div>
-              <label class="fld" for="s2-price">Original price ($)</label>
-              <input type="number" id="s2-price" value="75.00" step="0.01" min="0.01" />
-            </div>
-            <div>
-              <label class="fld" for="s2-disc">Discount (%)</label>
-              <input type="number" id="s2-disc" value="15" step="1" min="0" max="100" />
-            </div>
-          </div>
-        </div>
-        <button class="btn alt" onclick="calcStoreDeals()">Compare store deals</button>
-        <div class="readout" id="store-out"></div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1: stick to length units (feet, yards, inches, miles).
+        </p>
+        <button class="btn alt" type="button" onclick="calcConvert()">
+          Convert using rate reasoning
+        </button>
+        <div class="readout" id="conv-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>Store 1: $80 × (1 − 0.25) = $80 × 0.75 = $60.00.
-          Store 2: $75 × (1 − 0.15) = $75 × 0.85 = $63.75.
-          Store 1 ends up cheaper ($60 vs $63.75) even though it started at a higher price!</p>
+          <p>
+            Multiply by the conversion factor written as a fraction. 5 feet ×
+            (12 inches / 1 foot) = 60 inches. The "feet" units cancel, leaving
+            inches — that is rate reasoning.
+          </p>
         </details>
+
+        <!-- Level 2 extension: stacked deal + percent decrease -->
+        <div class="pk-lvl2" style="margin-top: 20px">
+          <div class="task">
+            <strong>Level 2 — promo stacking &amp; percent decrease:</strong>
+            Package B is on sale for a percent off. Apply the discount THEN
+            recompute its unit price to see if the sale changes the better buy.
+          </div>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="b-sale">Package B discount (% off)</label>
+              <input
+                type="number"
+                id="b-sale"
+                data-save
+                step="1"
+                min="0"
+                max="100"
+                placeholder="example: 15"
+                oninput="calcStacked()"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="calcStacked()">
+            Apply sale &amp; recompute unit price
+          </button>
+          <div class="readout" id="stacked-out"></div>
+        </div>
       </section>
 
-      <!-- PHASE 3 -->
-      <section class="phase" data-phase>
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
         <div class="phase-head">
-          <div class="phase-num">3</div>
+          <div class="phase-num" style="background: var(--blue)">2</div>
           <div>
-            <div class="skill">Tip Percent &amp; Measurement Conversion · 6.RP.3c · 6.RP.3d</div>
-            <h2>Tip the Server &amp; Convert Units</h2>
+            <span class="arc-banner">Part 2 · Peer — swap products</span>
+            <div class="skill">Compare &amp; reason · 6.RP.2 · 6.RP.3b</div>
+            <h2>Whose Pick Is the Better Buy?</h2>
           </div>
         </div>
-        <p>After shopping you grab a bite to eat. Calculate the <strong>tip</strong> for the server, then use <strong>rate reasoning</strong> to convert a measurement unit — a skill smart shoppers use to compare products labeled in different units.</p>
-        <div class="task">
-          <strong>Tip formula:</strong> Tip amount = Bill total × (Tip % ÷ 100).<br />
-          <strong>Conversion:</strong> Use the rate (conversion factor) as a fraction and multiply.
+        <p>
+          Swap with a partner. Ask their <strong>product</strong>, its
+          <strong>price</strong>, and its <strong>size</strong> so the tool can
+          compute their unit price and compare to yours.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>"What product did you compare, and what is its price and size?"</p>
+          <p>"What unit price did you get?"</p>
+          <p>"Whose buy is the better deal per unit, and why?"</p>
+          <p class="pk-es">
+            "¿Qué producto comparaste y cuál es su precio y tamaño?"
+          </p>
         </div>
         <div class="grid2">
           <div>
-            <label class="fld" for="bill">Restaurant bill ($)</label>
-            <input type="number" id="bill" value="20.00" step="0.01" min="0.01" />
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
           </div>
           <div>
-            <label class="fld" for="tip-pct">Tip (%)</label>
-            <input type="number" id="tip-pct" value="15" step="1" min="0" max="100" />
+            <label class="fld" for="p-product">Partner's product</label>
+            <input
+              type="text"
+              id="p-product"
+              data-save
+              placeholder="example: juice boxes"
+            />
           </div>
-        </div>
-        <button class="btn" onclick="calcTip()">Calculate tip and total</button>
-        <div class="readout" id="tip-out"></div>
-
-        <div style="margin-top:20px;">
-          <p style="font-weight:700; margin:0 0 6px; color:var(--ink);">Measurement Conversion (rate reasoning)</p>
-          <div class="grid3">
-            <div>
-              <label class="fld" for="conv-val">Value to convert</label>
-              <input type="number" id="conv-val" value="5" step="0.01" min="0.01" />
-            </div>
-            <div>
-              <label class="fld" for="conv-from">From unit</label>
-              <select id="conv-from">
-                <option value="feet">feet</option>
-                <option value="yards">yards</option>
-                <option value="inches">inches</option>
-                <option value="miles">miles</option>
-                <option value="pounds">pounds</option>
-                <option value="ounces">ounces</option>
-                <option value="cups">cups</option>
-                <option value="pints">pints</option>
-                <option value="quarts">quarts</option>
-                <option value="gallons">gallons</option>
-              </select>
-            </div>
-            <div>
-              <label class="fld" for="conv-to">To unit</label>
-              <select id="conv-to">
-                <option value="inches">inches</option>
-                <option value="feet">feet</option>
-                <option value="yards">yards</option>
-                <option value="miles">miles</option>
-                <option value="ounces">ounces</option>
-                <option value="pounds">pounds</option>
-                <option value="pints">pints</option>
-                <option value="cups">cups</option>
-                <option value="gallons">gallons</option>
-                <option value="quarts">quarts</option>
-              </select>
-            </div>
-          </div>
-          <button class="btn alt" onclick="calcConvert()" style="margin-top:10px;">Convert using rate reasoning</button>
-          <div class="readout" id="conv-out"></div>
-        </div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>Tip: 15% of $20 = $20 × (15 ÷ 100) = $20 × 0.15 = $3.00 tip. Total = $20 + $3 = $23.<br />
-          Conversion: To convert feet to inches, multiply by the rate (12 inches / 1 foot).
-          5 feet × (12 inches / 1 foot) = 60 inches. The feet units cancel, leaving inches!</p>
-        </details>
-      </section>
-
-      <!-- PHASE 4 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">4</div>
           <div>
-            <div class="skill">Decision &amp; Quick Check · 6.RP.2 · 6.RP.3b</div>
-            <h2>Shopping Verdict + Quick Check</h2>
+            <label class="fld" for="p-price">Partner's price ($)</label>
+            <input
+              type="number"
+              id="p-price"
+              data-save
+              step="0.01"
+              min="0"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-units">Partner's number of units</label>
+            <input
+              type="number"
+              id="p-units"
+              data-save
+              step="0.01"
+              min="0"
+              oninput="comparePeer()"
+            />
           </div>
         </div>
-        <p>Review your findings and pick the smarter shopping choice, then confirm your unit-rate skills with a quick known-answer problem.</p>
-        <div class="task">
-          <strong>Review:</strong> Based on your Phase 1 and Phase 2 results, which package and which store gave you the best value?
-          Enter your verdict summary below, then check the quick-check problem.
-        </div>
-
-        <div class="task" style="margin-top:18px;">
-          <strong>Quick check:</strong> A store sells 4 granola bars for $12.00. What is the unit price (price per bar)?
-        </div>
-        <label class="fld" for="check-unit">Your answer ($ per bar)</label>
-        <input type="number" id="check-unit" placeholder="Type a number" step="0.01" />
-        <button class="btn" onclick="checkUnit()">Check answer</button>
-        <div class="feedback" id="unit-fb"></div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare our buys
+        </button>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <label class="fld" for="peerReflect"
+          >Who is the smarter shopper / better buy, and how do you know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My unit price is $___ and my partner's is $___, so the better buy is ___ because ___."
+        ></textarea>
       </section>
 
-      <!-- DELIVERABLE -->
+      <!-- ===================== PART 3 — WORLD ===================== -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--green);">★</div>
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner"
+              >Part 3 · World — national prices &amp; tips</span
+            >
+            <div class="skill">Compare to real data · 6.RP.2 · 6.RP.3c</div>
+            <h2>Compare to National Averages</h2>
+          </div>
+        </div>
+        <p>
+          These are realistic average U.S. grocery unit prices. Pick a product
+          to see how your unit price compares.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldProduct">Compare against</label>
+            <select id="worldProduct" data-save onchange="worldGo()"></select>
+            <label class="fld" for="myWorld">My unit price ($ per unit)</label>
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.0001"
+              oninput="worldGo()"
+              placeholder="type your unit price"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: use your better-buy unit price from Part 1.
+            </p>
+            <div id="worldMeter"></div>
+            <div class="readout" id="world-out"></div>
+          </div>
+          <div>
+            <h3>U.S. Grocery Unit-Price Sample 🇺🇸</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>Product</th>
+                  <th>Avg unit price</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+            <h3 style="margin-top: 16px">Tip Norms 🍽️</h3>
+            <p style="font-size: 14px; color: var(--muted); margin: 0">
+              Typical U.S. restaurant tips: 15% (okay), 18% (good), 20% (great).
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Add a 3rd package and watch which buy wins on unit price.
+          </p>
+          <div class="grid3">
+            <div>
+              <label class="fld" for="c-price">Package C price ($)</label>
+              <input
+                type="number"
+                id="c-price"
+                step="0.01"
+                min="0.01"
+                placeholder="example: 7.00"
+              />
+            </div>
+            <div>
+              <label class="fld" for="c-units">Package C units</label>
+              <input
+                type="number"
+                id="c-units"
+                step="0.01"
+                min="0.01"
+                placeholder="example: 30"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter Package C to test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is the cheapest unit price always the best choice? Why or why
+          not?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="Cheapest per unit saves money, but ___. The cheapest is not always best because ___ (quality, waste, need)."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2: A $20 bill with an 18% tip — what is the total, and what
+            percent of the total is the tip? Show your thinking.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="Tip = $___; total = $___; tip ÷ total × 100 = ___% because ___"
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
           <div>
             <div class="skill">Final Deliverable</div>
             <h2>Write Your Shopping Verdict</h2>
           </div>
         </div>
-        <p>Write a 3–5 sentence shopping verdict that explains your best choices to a friend. Use real numbers from each phase to support your recommendations.</p>
-        <textarea id="pitch" placeholder="Based on my unit price research, Package ___ is the better buy at $___ per unit vs $___ per unit. For the item I compared, Store ___ is cheaper at $___ after a ___% discount. At the restaurant I tipped ___% which came to $___, for a total of $___. I also converted ___ ___ to ___ using rate reasoning. Overall, my shopping strategy saves me money by ___!"></textarea>
+        <p>
+          Write a 3–5 sentence shopping verdict using your real numbers from
+          above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="For ___, Package ___ is the better buy at $___ per unit vs $___ per unit. I converted ___ ___ to ___ ___ using a rate. Compared to the national average of $___ per unit, my buy is ___. The cheapest choice is/isn't always best because ___."
+        ></textarea>
 
-        <h3 style="margin:22px 0 6px;">Smart Shopper Checklist</h3>
+        <h3 style="margin: 22px 0 6px">Smart Shopper Checklist</h3>
         <ul class="checklist" id="checklist">
-          <li><input type="checkbox" /> I calculated the unit price for both packages and identified the better buy.</li>
-          <li><input type="checkbox" /> I applied percent discounts to both stores and found the cheaper price.</li>
-          <li><input type="checkbox" /> I calculated a tip percent correctly and found the total bill.</li>
-          <li><input type="checkbox" /> I converted a measurement unit using rate reasoning.</li>
-          <li><input type="checkbox" /> I answered the unit-price quick check correctly.</li>
-          <li><input type="checkbox" /> My shopping verdict uses real numbers and explains my reasoning.</li>
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I used two real
+            packages with real prices and sizes.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I found each unit price
+            and identified the better buy.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I converted a real
+            label measurement using a rate.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I compared a buy with a
+            partner.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I compared my unit
+            price to a national average.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> My verdict uses real
+            numbers and explains my reasoning.
+          </li>
         </ul>
-        <button class="btn printbtn" onclick="window.print()">🖨️ Print my shopping verdict</button>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="
+                PK.downloadText('smart-shopper-verdict.txt', 'reportBox')
+              "
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your verdict summary.
+        </div>
       </section>
 
       <!-- RUBRIC -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div class="phase-num" style="background: var(--navy)">✓</div>
           <div>
             <div class="skill">How You Are Scored</div>
             <h2>Project Rubric</h2>
           </div>
         </div>
         <table class="rubric">
-          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
-          <tr><td>Unit Price (6.RP.2/3b)</td><td>Both unit prices correct; better buy identified with explanation</td><td>Both unit prices correct</td><td>One unit price correct or minor division error</td></tr>
-          <tr><td>Percent Discounts (6.RP.3c)</td><td>Both store prices correct after discount; cheaper store identified</td><td>Both prices correct</td><td>One price correct or minor percent error</td></tr>
-          <tr><td>Tip &amp; Conversion (6.RP.3c/3d)</td><td>Tip and total correct; conversion uses rate reasoning correctly</td><td>Tip and conversion both correct</td><td>Tip correct but conversion has an error, or vice versa</td></tr>
-          <tr><td>Communication</td><td>Verdict uses all real numbers and justifies every choice clearly</td><td>Verdict uses most numbers</td><td>Verdict is unclear or missing key numbers</td></tr>
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Unit Price (6.RP.2/3b)</td>
+            <td>Both unit prices correct; better buy explained</td>
+            <td>Both unit prices correct</td>
+            <td>One correct or minor division error</td>
+          </tr>
+          <tr>
+            <td>Conversion (6.RP.3d)</td>
+            <td>Converts using a unit fraction; units cancel</td>
+            <td>Correct result</td>
+            <td>Attempted; setup unclear</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Compares buys and national data with reasoning</td>
+            <td>Comparisons mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Verdict justifies every number used</td>
+            <td>Verdict uses most numbers</td>
+            <td>Verdict unclear or missing numbers</td>
+          </tr>
         </table>
       </section>
 
-      <p class="footer">Neft Teacher · Unit 4 Culminating Project · Version B · <span id="yr"></span></p>
+      <p class="footer">
+        Neft Teacher · Unit 4 Culminating Project · Version B ·
+        <span id="yr"></span>
+      </p>
     </div>
 
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
 
-      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+      function hide(id) {
+        const el = $(id);
+        if (el) el.classList.remove("show");
+      }
 
-      // Conversion table: [fromUnit][toUnit] = factor (multiply "from" by factor to get "to")
-      const CONV = {
-        feet:    { inches: 12,       yards: 1/3,        feet: 1,    miles: 1/5280 },
-        yards:   { inches: 36,       feet: 3,           yards: 1,   miles: 1/1760 },
-        inches:  { feet: 1/12,       yards: 1/36,       inches: 1,  miles: 1/63360 },
-        miles:   { feet: 5280,       yards: 1760,       inches: 63360, miles: 1 },
-        pounds:  { ounces: 16,       pounds: 1 },
-        ounces:  { pounds: 1/16,     ounces: 1 },
-        cups:    { pints: 0.5,       quarts: 0.25,      gallons: 0.0625, cups: 1 },
-        pints:   { cups: 2,          quarts: 0.5,       gallons: 0.125,  pints: 1 },
-        quarts:  { cups: 4,          pints: 2,          gallons: 0.25,   quarts: 1 },
-        gallons: { cups: 16,         pints: 8,          quarts: 4,       gallons: 1 }
-      };
+      const proj = { upA: null, upB: null, better: null, betterUp: null };
 
       function calcUnitPrice() {
-        const ap = +document.getElementById("a-price").value;
-        const au = +document.getElementById("a-units").value;
-        const bp = +document.getElementById("b-price").value;
-        const bu = +document.getElementById("b-units").value;
-        if (isNaN(ap) || ap <= 0 || isNaN(au) || au <= 0 || isNaN(bp) || bp <= 0 || isNaN(bu) || bu <= 0) { show("unit-out", "<p>⚠️ Please enter valid positive prices and unit counts for both packages.</p>"); return; }
-        const upA = ap / au;
-        const upB = bp / bu;
-        let verdict;
-        if (upA < upB)       verdict = "Package A is the better buy — lower price per unit!";
-        else if (upB < upA)  verdict = "Package B is the better buy — lower price per unit!";
-        else                 verdict = "Both packages cost the same per unit — it's a tie!";
-        show("unit-out",
-          '<div class="big">' + (upA <= upB ? 'Package A' : 'Package B') + ' wins</div>' +
-          '<strong>Package A:</strong> $' + ap.toFixed(2) + ' ÷ ' + au + ' units = <strong>$' + upA.toFixed(4) + ' per unit</strong><br>' +
-          '<strong>Package B:</strong> $' + bp.toFixed(2) + ' ÷ ' + bu + ' units = <strong>$' + upB.toFixed(4) + ' per unit</strong><br>' +
-          verdict);
-      }
-
-      function calcStoreDeals() {
-        const p1 = +document.getElementById("s1-price").value;
-        const d1 = +document.getElementById("s1-disc").value;
-        const p2 = +document.getElementById("s2-price").value;
-        const d2 = +document.getElementById("s2-disc").value;
-        if (isNaN(p1) || p1 <= 0 || isNaN(d1) || d1 < 0 || isNaN(p2) || p2 <= 0 || isNaN(d2) || d2 < 0) { show("store-out", "<p>⚠️ Please enter valid positive prices and discount percentages (0 or more) for both stores.</p>"); return; }
-        const sale1 = p1 * (1 - d1 / 100);
-        const sale2 = p2 * (1 - d2 / 100);
-        let verdict;
-        if (sale1 < sale2)      verdict = "Store 1 is cheaper after the discount!";
-        else if (sale2 < sale1) verdict = "Store 2 is cheaper after the discount!";
-        else                    verdict = "Both stores end up at the same price — it's a tie!";
-        show("store-out",
-          '<div class="big">' + (sale1 <= sale2 ? 'Store 1' : 'Store 2') + ' is cheaper</div>' +
-          '<strong>Store 1:</strong> $' + p1.toFixed(2) + ' − ' + d1 + '% = <strong>$' + sale1.toFixed(2) + '</strong><br>' +
-          '<strong>Store 2:</strong> $' + p2.toFixed(2) + ' − ' + d2 + '% = <strong>$' + sale2.toFixed(2) + '</strong><br>' +
-          verdict + ' You save $' + Math.abs(sale1 - sale2).toFixed(2) + ' by choosing the better store.');
-      }
-
-      function calcTip() {
-        const bill = +document.getElementById("bill").value;
-        const tipP = +document.getElementById("tip-pct").value;
-        if (isNaN(bill) || bill <= 0 || isNaN(tipP) || tipP < 0) { show("tip-out", "<p>⚠️ Please enter a valid positive bill amount and a tip percentage of 0 or more.</p>"); return; }
-        const tipAmt = bill * (tipP / 100);
-        const total  = bill + tipAmt;
-        show("tip-out",
-          '<div class="big">$' + tipAmt.toFixed(2) + ' tip</div>' +
-          tipP + '% of $' + bill.toFixed(2) + ' = <strong>$' + tipAmt.toFixed(2) + '</strong> tip.<br>' +
-          'Total bill with tip: $' + bill.toFixed(2) + ' + $' + tipAmt.toFixed(2) + ' = <strong>$' + total.toFixed(2) + '</strong>.');
-      }
-
-      function calcConvert() {
-        const val  = +document.getElementById("conv-val").value;
-        const from = document.getElementById("conv-from").value;
-        const to   = document.getElementById("conv-to").value;
-        if (isNaN(val) || val <= 0) { show("conv-out", "<p>⚠️ Please enter a valid positive value to convert.</p>"); return; }
-        if (from === to) { show("conv-out", '<div class="big">' + val + ' ' + to + '</div>Same unit — no conversion needed!'); return; }
-        const row = CONV[from];
-        if (!row || row[to] === undefined) {
-          show("conv-out", '<div class="big">Cannot convert</div>Those two units are not in the same measurement category (length, weight, or volume). Choose compatible units.');
+        const ap = num("a-price"),
+          au = num("a-units"),
+          bp = num("b-price"),
+          bu = num("b-units");
+        if (
+          isNaN(ap) ||
+          ap <= 0 ||
+          isNaN(au) ||
+          au <= 0 ||
+          isNaN(bp) ||
+          bp <= 0 ||
+          isNaN(bu) ||
+          bu <= 0
+        ) {
+          hide("unit-out");
+          proj.upA = null;
+          proj.upB = null;
+          proj.better = null;
+          proj.betterUp = null;
           return;
         }
-        const factor = row[to];
-        const result = val * factor;
-        const factorStr = Number.isInteger(factor) ? factor : (factor < 1 ? '1/' + Math.round(1/factor) : factor.toFixed(4));
-        show("conv-out",
-          '<div class="big">' + result.toFixed(4).replace(/\.?0+$/, '') + ' ' + to + '</div>' +
-          val + ' ' + from + ' × (' + factorStr + ' ' + to + ' / 1 ' + from + ') = <strong>' +
-          result.toFixed(4).replace(/\.?0+$/, '') + ' ' + to + '</strong>.<br>' +
-          'The "' + from + '" units cancel, leaving <strong>' + to + '</strong>. That\'s rate reasoning!');
+        const upA = ap / au,
+          upB = bp / bu;
+        proj.upA = upA;
+        proj.upB = upB;
+        let verdict;
+        if (upA < upB) {
+          verdict = "Package A is the better buy — lower price per unit!";
+          proj.better = "Package A";
+          proj.betterUp = upA;
+        } else if (upB < upA) {
+          verdict = "Package B is the better buy — lower price per unit!";
+          proj.better = "Package B";
+          proj.betterUp = upB;
+        } else {
+          verdict = "Both packages cost the same per unit — it's a tie!";
+          proj.better = "Tie";
+          proj.betterUp = upA;
+        }
+        show(
+          "unit-out",
+          '<div class="big">' +
+            (upA <= upB ? "Package A" : "Package B") +
+            " wins</div>" +
+            "<strong>Package A:</strong> $" +
+            ap.toFixed(2) +
+            " ÷ " +
+            au +
+            " = <strong>$" +
+            upA.toFixed(4) +
+            " per unit</strong><br>" +
+            "<strong>Package B:</strong> $" +
+            bp.toFixed(2) +
+            " ÷ " +
+            bu +
+            " = <strong>$" +
+            upB.toFixed(4) +
+            " per unit</strong><br>" +
+            verdict,
+        );
       }
 
-      function checkUnit() {
-        const v  = +document.getElementById("check-unit").value;
-        const fb = document.getElementById("unit-fb");
-        if (isNaN(v) || document.getElementById("check-unit").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
-        if (v === 3) {
-          fb.textContent = "✅ Correct! $12.00 ÷ 4 bars = $3.00 per bar.";
-          fb.className = "feedback ok";
-        } else {
-          fb.textContent = "❌ Not yet. Unit price = total price ÷ number of units. Try $12.00 ÷ 4.";
-          fb.className = "feedback no";
+      function checkUnitA() {
+        if (proj.upA == null) {
+          $("check-unitAFb").innerHTML =
+            '<span class="pk-bad">Enter Package A price and units first.</span>';
+          return;
         }
+        const ok = PK.checkWork(
+          "check-unitA",
+          Math.round(proj.upA * 10000) / 10000,
+          0.01,
+        );
+        updateProgress();
+        return ok;
+      }
+
+      // Conversion table (factor multiplies "from" to get "to")
+      const CONV = {
+        feet: { inches: 12, yards: 1 / 3, feet: 1, miles: 1 / 5280 },
+        yards: { inches: 36, feet: 3, yards: 1, miles: 1 / 1760 },
+        inches: { feet: 1 / 12, yards: 1 / 36, inches: 1, miles: 1 / 63360 },
+        miles: { feet: 5280, yards: 1760, inches: 63360, miles: 1 },
+        pounds: { ounces: 16, pounds: 1 },
+        ounces: { pounds: 1 / 16, ounces: 1 },
+        cups: { pints: 0.5, quarts: 0.25, gallons: 0.0625, cups: 1 },
+        pints: { cups: 2, quarts: 0.5, gallons: 0.125, pints: 1 },
+        quarts: { cups: 4, pints: 2, gallons: 0.25, quarts: 1 },
+        gallons: { cups: 16, pints: 8, quarts: 4, gallons: 1 },
+      };
+      function calcConvert() {
+        const val = num("conv-val"),
+          from = $("conv-from").value,
+          to = $("conv-to").value;
+        if (isNaN(val) || val <= 0) {
+          hide("conv-out");
+          return;
+        }
+        if (from === to) {
+          show(
+            "conv-out",
+            '<div class="big">' +
+              val +
+              " " +
+              to +
+              "</div>Same unit — no conversion needed!",
+          );
+          return;
+        }
+        const row = CONV[from];
+        if (!row || row[to] === undefined) {
+          show(
+            "conv-out",
+            '<div class="big">Cannot convert</div>Those units are not the same measurement type (length, weight, or volume). Choose compatible units.',
+          );
+          return;
+        }
+        const factor = row[to],
+          result = val * factor;
+        const factorStr = Number.isInteger(factor)
+          ? factor
+          : factor < 1
+            ? "1/" + Math.round(1 / factor)
+            : factor.toFixed(4);
+        const resStr = result.toFixed(4).replace(/\.?0+$/, "");
+        show(
+          "conv-out",
+          '<div class="big">' +
+            resStr +
+            " " +
+            to +
+            "</div>" +
+            val +
+            " " +
+            from +
+            " × (" +
+            factorStr +
+            " " +
+            to +
+            " / 1 " +
+            from +
+            ") = <strong>" +
+            resStr +
+            " " +
+            to +
+            "</strong>. " +
+            'The "' +
+            from +
+            '" units cancel, leaving <strong>' +
+            to +
+            "</strong>. That is rate reasoning!",
+        );
+      }
+
+      function calcStacked() {
+        const bp = num("b-price"),
+          bu = num("b-units"),
+          disc = num("b-sale");
+        if (
+          isNaN(bp) ||
+          bp <= 0 ||
+          isNaN(bu) ||
+          bu <= 0 ||
+          isNaN(disc) ||
+          disc < 0
+        ) {
+          show(
+            "stacked-out",
+            "<p>Enter Package B price, units, and a discount first.</p>",
+          );
+          return;
+        }
+        const salePrice = bp * (1 - disc / 100),
+          newUp = salePrice / bu;
+        const apUp = proj.upA;
+        let cmp = "";
+        if (apUp != null) {
+          cmp =
+            newUp < apUp
+              ? "On sale, Package B ($" +
+                newUp.toFixed(4) +
+                "/unit) beats Package A ($" +
+                apUp.toFixed(4) +
+                "/unit)."
+              : "Even on sale, Package B ($" +
+                newUp.toFixed(4) +
+                "/unit) is not cheaper than Package A ($" +
+                apUp.toFixed(4) +
+                "/unit).";
+        }
+        const dec = ((bp / bu - newUp) / (bp / bu)) * 100;
+        show(
+          "stacked-out",
+          '<div class="big">$' +
+            newUp.toFixed(4) +
+            " per unit on sale</div>" +
+            "Sale price = $" +
+            bp.toFixed(2) +
+            " × (1 − " +
+            disc +
+            "%) = $" +
+            salePrice.toFixed(2) +
+            ". " +
+            "New unit price = $" +
+            salePrice.toFixed(2) +
+            " ÷ " +
+            bu +
+            " = <strong>$" +
+            newUp.toFixed(4) +
+            "</strong>. " +
+            "Unit price dropped <strong>" +
+            dec.toFixed(1) +
+            "%</strong>. " +
+            cmp,
+        );
+      }
+
+      /* ---- Part 2: peer compare ---- */
+      function comparePeer() {
+        const myUp = proj.betterUp != null ? proj.betterUp : proj.upA;
+        const pp = num("p-price"),
+          pu = num("p-units");
+        if (myUp == null || isNaN(pp) || pp <= 0 || isNaN(pu) || pu <= 0) {
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish Part 1 and enter partner price and units to compare.</p>';
+          return;
+        }
+        const pUp = pp / pu;
+        PK.peerCompare("peerBox", [
+          {
+            label: "Unit price $",
+            me: myUp,
+            partner: pUp,
+            fmt: (x) => Number(x).toFixed(4),
+          },
+        ]);
+        const better =
+          myUp < pUp
+            ? "Your buy"
+            : pUp < myUp
+              ? "Your partner's buy"
+              : "Both (tie)";
+        $("peerBox").innerHTML +=
+          '<div class="pk-stat" style="grid-column:1/-1;background:var(--green-light)"><small>Better buy per unit</small><b>' +
+          better +
+          "</b></div>";
         updateProgress();
       }
 
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length;
-        const qOk      = document.getElementById("unit-fb").classList.contains("ok") ? 1 : 0;
-        const checks   = document.querySelectorAll('#checklist input:checked').length;
-        const pitch    = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
-        // max: 4 readouts + 1 quick check + 6 checklist + 1 pitch = 12
-        const total = readouts + qOk + checks + pitch;
-        const pct   = Math.min(100, Math.round((total / 12) * 100));
-        document.getElementById("pfill").style.width = pct + "%";
-        document.getElementById("pct").textContent = pct;
+      /* ---- Part 3: world dataset (avg U.S. grocery unit prices) ---- */
+      const world = [
+        ["Milk ($/gallon)", 4.1],
+        ["Eggs ($/dozen)", 3.2],
+        ["Bread ($/loaf)", 2.9],
+        ["Bananas ($/lb)", 0.62],
+        ["Chicken breast ($/lb)", 4.3],
+        ["Rice ($/lb)", 1.05],
+        ["Bottled water ($/16oz)", 0.55],
+        ["Granola bar ($/bar)", 0.65],
+        ["Apples ($/lb)", 1.55],
+        ["Cheese ($/lb)", 5.4],
+      ];
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              "<tr><td>" + r[0] + "</td><td>$" + r[1].toFixed(2) + "</td></tr>",
+          )
+          .join("");
+        $("worldProduct").innerHTML = world
+          .map((r, i) => '<option value="' + i + '">' + r[0] + "</option>")
+          .join("");
       }
-      document.getElementById("checklist").addEventListener("change", updateProgress);
-      document.getElementById("pitch").addEventListener("input", updateProgress);
+      function worldSample() {
+        return world.map((r) => r[1]);
+      }
+      function worldGo() {
+        const my = num("myWorld");
+        const i = parseInt($("worldProduct").value, 10) || 0;
+        const avg = world[i][1];
+        PK.worldMeter("worldMeter", worldSample(), my, {
+          mean: "Sample avg $",
+          me: "My $/unit",
+        });
+        if (!isNaN(my) && my > 0) {
+          const rel =
+            my < avg
+              ? "cheaper than"
+              : my > avg
+                ? "pricier than"
+                : "the same as";
+          show(
+            "world-out",
+            '<div class="big">$' +
+              my.toFixed(4) +
+              " / unit</div>" +
+              "Your unit price is <strong>" +
+              rel +
+              "</strong> the " +
+              world[i][0] +
+              " average of $" +
+              avg.toFixed(2) +
+              ".",
+          );
+        } else {
+          hide("world-out");
+        }
+        updateProgress();
+      }
+      function runWhatIf() {
+        const cp = parseFloat($("c-price").value),
+          cu = parseFloat($("c-units").value);
+        if (proj.upA == null || proj.upB == null) {
+          $("whatIfBox").textContent =
+            "Finish Packages A and B in Part 1 first.";
+          return;
+        }
+        if (isNaN(cp) || cp <= 0 || isNaN(cu) || cu <= 0) {
+          $("whatIfBox").textContent = "Enter Package C price and units first.";
+          return;
+        }
+        const upC = cp / cu;
+        const all = [
+          ["A", proj.upA],
+          ["B", proj.upB],
+          ["C", upC],
+        ];
+        all.sort((x, y) => x[1] - y[1]);
+        PK.whatIf(
+          "whatIfBox",
+          {
+            "best of A,B":
+              "$" + Math.min(proj.upA, proj.upB).toFixed(4) + "/unit",
+          },
+          {
+            "best of A,B,C":
+              "$" + all[0][1].toFixed(4) + "/unit (Package " + all[0][0] + ")",
+          },
+          "Adding Package C at $" + upC.toFixed(4) + " per unit:",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          product: "granola bars",
+          "a-price": 3.6,
+          "a-units": 12,
+          "b-price": 5.25,
+          "b-units": 20,
+          "conv-val": 5,
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        $("conv-from").value = "feet";
+        $("conv-to").value = "inches";
+        recalcAll();
+      }
+
+      function recalcAll() {
+        calcUnitPrice();
+        calcConvert();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f4 = (x) => (x == null ? "(not finished)" : Number(x).toFixed(4));
+        return (
+          "SMART SHOPPER SHOWDOWN — MY REPORT\n" +
+          "==================================\n\n" +
+          "PART 1: MY CART (SELF)\n" +
+          "Product: " +
+          ($("product").value || "(none)") +
+          "\n" +
+          "Package A: $" +
+          ($("a-price").value || "-") +
+          " for " +
+          ($("a-units").value || "-") +
+          " units → $" +
+          f4(proj.upA) +
+          "/unit\n" +
+          "Package B: $" +
+          ($("b-price").value || "-") +
+          " for " +
+          ($("b-units").value || "-") +
+          " units → $" +
+          f4(proj.upB) +
+          "/unit\n" +
+          "Better buy: " +
+          (proj.better || "(not finished)") +
+          "\n" +
+          "Label conversion: " +
+          ($("conv-val").value || "-") +
+          " " +
+          $("conv-from").value +
+          " → " +
+          $("conv-to").value +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "  |  Product: " +
+          ($("p-product").value || "-") +
+          "\n" +
+          "Partner: $" +
+          ($("p-price").value || "-") +
+          " for " +
+          ($("p-units").value || "-") +
+          " units\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "Cheapest-is-best reflection: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n\n" +
+          "SHOPPING VERDICT:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["product", $("product").value],
+          ["a_price", $("a-price").value],
+          ["a_units", $("a-units").value],
+          ["a_unit_price", proj.upA],
+          ["b_price", $("b-price").value],
+          ["b_units", $("b-units").value],
+          ["b_unit_price", proj.upB],
+          ["better_buy", proj.better],
+          ["partner", $("partnerName").value],
+          ["partner_price", $("p-price").value],
+          ["partner_units", $("p-units").value],
+        ];
+        PK.downloadCsv("smart-shopper-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // up to 5
+        const unitOk = $("check-unitAFb").querySelector(".pk-ok") ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // up to 6
+        const peer = $("p-price").value || $("p-units").value ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + unitOk + checks + peer + wrld + pitch; // max 5+1+6+1+1+1 = 15
+        const pct = Math.min(100, Math.round((total / 15) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          const empty = !$("a-price").value && !$("b-price").value;
+          if (empty) {
+            $("a-price").value = 3.6;
+            $("a-units").value = 12;
+            $("b-price").value = 5.25;
+            $("b-units").value = 20;
+            $("conv-val").value = 5;
+            recalcAll();
+          }
+        }
+      };
+
+      /* ---- init ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u4ProjectB", default: "level-1" });
+        PK.load("u4ProjectB", { after: recalcAll });
+        updateProgress();
+      });
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

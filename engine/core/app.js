@@ -59,6 +59,33 @@ function upsertLinkRel(rel, href) {
   el.setAttribute("href", href);
 }
 
+// Per-lesson Google Forms card (opt-in via config.googleForms). Shows the three
+// student forms (Notes / Practice / Quiz) and, collapsed, a teacher link to the
+// editable forms in Google Drive. Editing is gated by Google auth, so the
+// teacher link is safe to ship on the public lesson page.
+function formsCardHtml(config) {
+  const gf = config.googleForms;
+  if (!gf || !gf.student) return "";
+  const s = gf.student;
+  const link = (href, label, emoji) =>
+    href
+      ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:700;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
+      : "";
+  const teacher = gf.teacherEditFolder
+    ? `<details style="margin-top:10px;"><summary style="cursor:pointer; font-weight:600; color:var(--blue,#1a6fb5);">For teachers</summary><a href="${gf.teacherEditFolder}" target="_blank" rel="noopener" style="display:inline-block; margin-top:6px; color:var(--blue,#1a6fb5); font-weight:700; text-decoration:none;">✏️ Edit these forms in Google Drive &rarr;</a></details>`
+    : "";
+  return `
+      <div class="identity-forms" style="background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
+        <div style="font-weight:800; margin-bottom:8px;">📋 Lesson Forms</div>
+        <div style="display:flex; gap:8px;">
+          ${link(s.notes, "Notes", "📝")}
+          ${link(s.practice, "Practice", "✏️")}
+          ${link(s.quiz, "Quiz", "✅")}
+        </div>
+        ${teacher}
+      </div>`;
+}
+
 function showIdentityScreen(root, config) {
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
@@ -78,6 +105,7 @@ function showIdentityScreen(root, config) {
             </a>`
           : ""
       }
+      ${formsCardHtml(config)}
       <div class="identity-form">
         <label for="id-name">Your Name</label>
         <input id="id-name" type="text" placeholder="First name Last initial" autocomplete="off" />

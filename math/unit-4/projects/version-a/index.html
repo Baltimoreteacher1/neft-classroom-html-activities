@@ -6,9 +6,11 @@
     <title>Pop-Up Shop Owner — Unit 4 Culminating Project</title>
     <meta
       name="description"
-      content="Unit 4 Rates, Percents, and Unit Rates culminating project. Design and run a pop-up shop using markup, discounts, sales tax, and percent conversions."
+      content="Unit 4 Rates &amp; Percents culminating project. Price YOUR real product with markup, discount, and sales tax, compare with a partner, then test your prices against real U.S. state tax rates."
     />
     <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
+    <script src="/shared/projects/projects-kit.js" defer></script>
     <style>
       :root {
         --navy: #1a1150;
@@ -31,7 +33,9 @@
         --shadow: 0 4px 18px rgba(26, 17, 80, 0.1);
         --font: "Segoe UI", system-ui, -apple-system, sans-serif;
       }
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         font-family: var(--font);
@@ -39,7 +43,11 @@
         background: var(--bg);
         line-height: 1.55;
       }
-      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
 
       .phero {
         background: linear-gradient(135deg, #1a1150 0%, #4f46e5 100%);
@@ -49,426 +57,1704 @@
         position: relative;
         overflow: hidden;
       }
-      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero .deco {
+        font-size: 56px;
+        line-height: 1;
+      }
       .phero h1 {
         font-size: clamp(26px, 5vw, 40px);
         margin: 10px 0 8px;
         letter-spacing: -0.02em;
       }
-      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
-      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-      .tag {
-        background: rgba(255,255,255,.14);
-        border: 1px solid rgba(255,255,255,.25);
-        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      .phero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 17px;
       }
-      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .tags {
+        margin-top: 16px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #2a1c00;
+      }
 
-      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
-      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .toolbar button {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .toolbar button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
 
       .intro-card {
-        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
-        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--gold);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin: 26px 0;
+        box-shadow: var(--shadow);
       }
-      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
-      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+      .intro-card h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .intro-card .scenario {
+        font-size: 16px;
+        color: var(--ink);
+      }
 
       .phase {
-        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 22px 0;
+        box-shadow: var(--shadow);
       }
-      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
       .phase-num {
-        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
-        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
-        display: flex; align-items: center; justify-content: center;
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
-      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
-      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
-      .phase h2 { margin: 0; font-size: 21px; }
-      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-      .phase > p { color: var(--muted); }
+      .phase h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+      .phase .skill {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .phase > p {
+        color: var(--muted);
+      }
+      .arc-banner {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-light);
+        border-radius: 50px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
 
       .task {
-        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+        background: var(--blue-light);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 16px 0;
       }
-      .task strong { color: var(--navy); }
+      .task strong {
+        color: var(--navy);
+      }
 
-      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
-      input[type="number"], input[type="text"], select, textarea {
-        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
-        font-family: inherit; font-size: 15px; background: #fff;
+      label.fld {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 14px 0 6px;
       }
-      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
-      textarea { resize: vertical; min-height: 80px; }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2,
+        .grid3 {
+          grid-template-columns: 1fr;
+        }
+      }
 
       .btn {
-        background: var(--blue); color: #fff; border: none; border-radius: 10px;
-        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        font-family: inherit;
         margin-top: 14px;
       }
-      .btn:hover { filter: brightness(1.08); }
-      .btn.alt { background: var(--teal); }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.alt {
+        background: var(--teal);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--blue);
+        border: 2px solid var(--line);
+      }
 
       .readout {
-        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
-        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+        margin-top: 16px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: var(--teal-light);
+        border: 1px solid #bfe6e0;
+        display: none;
       }
-      .readout.show { display: block; }
-      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
-      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
-      .feedback.ok { color: var(--green); }
-      .feedback.no { color: var(--coral); }
+      .readout.show {
+        display: block;
+      }
+      .readout .big {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .feedback {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 22px;
+      }
 
-      .hintbox { margin-top: 12px; }
-      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
-      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .hintbox {
+        margin-top: 12px;
+      }
+      .hintbox summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 14px;
+      }
+      .hintbox p,
+      .hintbox div {
+        background: var(--gold-light);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 8px 0 0;
+        font-size: 14px;
+      }
 
-      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
-      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
-      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
-      .rubric td:first-child { font-weight: 700; width: 30%; }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+      }
+      .rubric td:first-child {
+        font-weight: 700;
+        width: 30%;
+      }
 
-      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
-      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
-      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .checklist input {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        flex: 0 0 auto;
+      }
 
-      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
-      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
-      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--teal)); transition: width .4s; }
-      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        padding: 12px 0;
+      }
+      .progress-track {
+        height: 12px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
 
-      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
-      .printbtn { background: var(--navy); }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      .printbtn {
+        background: var(--navy);
+      }
+      h3 {
+        font-size: 17px;
+      }
+
       @media print {
-        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
-        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
-        body { background: #fff; }
+        .phero .deco,
+        .progress-wrap,
+        .btn,
+        .breadcrumb,
+        .hintbox,
+        .toolbar,
+        .pk-no-print {
+          display: none !important;
+        }
+        .phase,
+        .intro-card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
-  <body>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body class="pk">
     <header class="phero">
       <div class="deco">🛍️</div>
       <h1>Pop-Up Shop Owner</h1>
-      <p>You are launching your own pop-up shop! Set prices, apply markups, run a sale, add tax, and decide which promo brings in the most value — all with percent math.</p>
+      <p>
+        You are launching <strong>your own</strong> pop-up shop. Price a
+        <em>real product you would actually sell</em> using markup, a sale
+        discount, and sales tax — then compare with a partner and test your
+        prices against real U.S. state tax rates.
+      </p>
       <div class="tags">
         <span class="tag gold">Unit 4 · Percents &amp; Rates</span>
         <span class="tag">6.RP.3c</span>
         <span class="tag">6.RP.3d</span>
         <span class="tag">Version A · Design &amp; Build</span>
       </div>
+      <div class="toolbar pk-no-print">
+        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
+        <span class="pk-level-toggle">
+          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
+          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
+        </span>
+        <button onclick="PK.save('u4ProjectA')">💾 Save</button>
+        <button
+          onclick="PK.load('u4ProjectA', { show: true, after: recalcAll })"
+        >
+          📂 Load
+        </button>
+      </div>
     </header>
 
     <div class="wrap">
-
       <div class="progress-wrap">
-        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
-        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+        <div class="progress-label">
+          Project progress: <span id="pct">0</span>% complete
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
       </div>
 
       <div class="intro-card">
         <h2>🏪 Your Mission</h2>
         <p class="scenario">
-          You are the owner of a brand-new pop-up shop. You bought items at a <strong>cost price</strong>
-          and need to mark them up to make a profit. Then you will run a weekend sale (discount!),
-          add sales tax at checkout, and figure out your best promotional offer. Work through four
-          phases, hit <em>Calculate</em> on each, fill in the checklist, and write your storefront sign
-          reflection at the end.
+          Open a real pop-up shop in three steps.
+          <strong>Part 1 (Self):</strong> pick a real item, enter the real cost
+          you would pay, and choose your own markup, sale, and tax.
+          <strong>Part 2 (Peer):</strong> swap items with a partner and decide
+          who is the smarter shopper. <strong>Part 3 (World):</strong> compare
+          your final price using real U.S. state sales-tax rates. Finish with a
+          storefront sign and report.
         </p>
       </div>
 
-      <!-- PHASE 1 -->
-      <section class="phase" data-phase>
+      <!-- ===================== VISUAL MATH NOTES ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            📒
+          </div>
+          <div>
+            <div class="skill">Before you start · Vocabulary</div>
+            <h2>Visual Math Notes</h2>
+          </div>
+        </div>
+        <p>
+          Learn these words first. Tap <strong>EN / ES help</strong> at the top
+          for Spanish.
+        </p>
+        <div class="pk-vocab">
+          <div class="pk-term">
+            <span class="pk-icon">💲</span><b>Percent of a Number</b>
+            <p>A part out of 100. Find it with: number × (percent ÷ 100).</p>
+            <p class="pk-es">
+              Porcentaje de un número: una parte de 100. Multiplica número ×
+              (porcentaje ÷ 100).
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">📈</span><b>Markup</b>
+            <p>The amount you ADD to your cost to make a profit.</p>
+            <p class="pk-es">
+              Margen / recargo: la cantidad que SUMAS al costo para ganar
+              dinero.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🏷️</span><b>Discount</b>
+            <p>The amount you SUBTRACT from a price during a sale.</p>
+            <p class="pk-es">
+              Descuento: la cantidad que RESTAS del precio en una oferta.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🧾</span><b>Sales Tax</b>
+            <p>Extra money the state adds at checkout, as a percent.</p>
+            <p class="pk-es">
+              Impuesto de venta: dinero extra que el estado agrega al pagar,
+              como porcentaje.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">🔁</span><b>Conversion Factor</b>
+            <p>A rate written as a fraction used to change units.</p>
+            <p class="pk-es">
+              Factor de conversión: una tasa escrita como fracción para cambiar
+              unidades.
+            </p>
+          </div>
+          <div class="pk-term">
+            <span class="pk-icon">⚖️</span><b>Unit Rate</b>
+            <p>A rate for ONE — like miles per 1 hour or dollars per 1 item.</p>
+            <p class="pk-es">
+              Tasa unitaria: una tasa para UNO — millas por 1 hora o dólares por
+              1 artículo.
+            </p>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top: 18px">
+          <div class="pk-callout">
+            <h3>Formula Bank</h3>
+            <p><b>Percent of a number:</b> n × (p ÷ 100)</p>
+            <p>
+              <b>Markup amount:</b> cost × (markup% ÷ 100) ·
+              <b>Selling price:</b> cost + markup
+            </p>
+            <p>
+              <b>Discount amount:</b> price × (disc% ÷ 100) ·
+              <b>Sale price:</b> price − discount
+            </p>
+            <p>
+              <b>Sales tax:</b> price × (tax% ÷ 100) · <b>Total:</b> price + tax
+            </p>
+            <p class="pk-lvl2">
+              <b>Stacked promo:</b> ((price × (1 − disc%)) × (1 + tax%))
+            </p>
+            <p class="pk-lvl2">
+              <b>Break-even markup %:</b> at sale, sale price = cost
+            </p>
+          </div>
+          <div class="pk-callout">
+            <h3>Sentence Frames</h3>
+            <p>
+              "My cost is $___, and a ___% markup gives a selling price of
+              $___."
+            </p>
+            <p>"A ___% discount saves $___, so the sale price is $___."</p>
+            <p>"After ___% sales tax the customer pays $___."</p>
+            <p>"My final price is higher / lower than ___ because ___."</p>
+            <p class="pk-es">
+              "Mi costo es $___ y un margen de ___% da un precio de venta de
+              $___."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PART 1 — SELF ===================== -->
+      <section class="phase">
         <div class="phase-head">
           <div class="phase-num">1</div>
           <div>
-            <div class="skill">Percent of a Number · 6.RP.3c</div>
-            <h2>Set Your Selling Price (Markup)</h2>
+            <span class="arc-banner">Part 1 · Self — your real shop</span>
+            <div class="skill">
+              Markup · Discount · Sales Tax · Conversion · 6.RP.3c–d
+            </div>
+            <h2>Price YOUR Product</h2>
           </div>
         </div>
-        <p>You bought an item at a <strong>cost price</strong>. Add a markup percent to find what you will charge customers — your <strong>selling price</strong>.</p>
-        <div class="task">
-          <strong>Formula:</strong> Markup amount = Cost price × (Markup % ÷ 100).
-          Then: Selling price = Cost price + Markup amount.
-        </div>
+        <p>
+          Enter your <strong>own</strong> real numbers below. Not sure yet?
+          Click <em>Use example numbers</em> to model the math, then change them
+          to fit your shop.
+        </p>
+        <p class="pk-no-print">
+          <button class="btn ghost" type="button" onclick="useExamples()">
+            ✨ Use example numbers
+          </button>
+        </p>
+
         <div class="grid2">
           <div>
-            <label class="fld" for="cost">Cost price ($)</label>
-            <input type="number" id="cost" value="40.00" step="0.01" min="0.01" />
+            <label class="fld" for="item">A real item you would sell</label>
+            <input
+              type="text"
+              id="item"
+              data-save
+              placeholder="example: hand-poured candle"
+              oninput="updateProgress()"
+            />
           </div>
           <div>
-            <label class="fld" for="markup">Markup (%)</label>
-            <input type="number" id="markup" value="25" step="1" min="1" max="500" />
+            <label class="fld" for="cost">Real cost you would pay ($)</label>
+            <input
+              type="number"
+              id="cost"
+              data-save
+              step="0.01"
+              min="0.01"
+              placeholder="example: 40.00"
+              oninput="calcMarkup()"
+            />
           </div>
         </div>
-        <button class="btn" onclick="calcMarkup()">Calculate selling price</button>
+
+        <!-- 1a Markup -->
+        <h3 style="margin-top: 18px">📈 Set your selling price (markup)</h3>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: a friendly markup is 25%. Markup amount = cost × 0.25.
+        </p>
+        <label class="fld" for="markup">Your markup (%)</label>
+        <input
+          type="number"
+          id="markup"
+          data-save
+          step="1"
+          min="1"
+          max="500"
+          placeholder="example: 25"
+          oninput="calcMarkup()"
+        />
+        <button class="btn" type="button" onclick="calcMarkup()">
+          Calculate selling price
+        </button>
         <div class="readout" id="markup-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>Step 1: Markup amount = $40.00 × (25 ÷ 100) = $40.00 × 0.25 = $10.00.
-          Step 2: Selling price = $40.00 + $10.00 = $50.00. A 25% markup on $40 gives a $50 selling price.</p>
+          <p>
+            Markup amount = cost × (markup ÷ 100). Example: $40.00 × (25 ÷ 100)
+            = $10.00. Selling price = $40.00 + $10.00 = $50.00.
+          </p>
         </details>
-      </section>
 
-      <!-- PHASE 2 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">2</div>
-          <div>
-            <div class="skill">Percent Discount · 6.RP.3c</div>
-            <h2>Run a Weekend Sale (Discount)</h2>
-          </div>
+        <!-- 1a-check -->
+        <div class="task" style="margin-top: 18px">
+          <strong>Self-check:</strong> Type the selling price your numbers give.
+          The tool checks it against the math.
         </div>
-        <p>You are putting your item on sale this weekend! Apply a <strong>discount percent</strong> to your selling price to find the <strong>sale price</strong> and how much shoppers save.</p>
-        <div class="task">
-          <strong>Formula:</strong> Discount amount = Selling price × (Discount % ÷ 100).
-          Sale price = Selling price − Discount amount.
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="sell-price">Selling price ($)</label>
-            <input type="number" id="sell-price" value="50.00" step="0.01" min="0.01" />
-          </div>
-          <div>
-            <label class="fld" for="discount">Discount (%)</label>
-            <input type="number" id="discount" value="20" step="1" min="1" max="100" />
-          </div>
-        </div>
-        <button class="btn alt" onclick="calcDiscount()">Calculate sale price</button>
+        <label class="fld" for="check-sell"
+          >Selling price you computed ($)</label
+        >
+        <input
+          type="number"
+          id="check-sell"
+          data-save
+          step="0.01"
+          placeholder="Type your answer"
+        />
+        <button class="btn alt" type="button" onclick="checkSell()">
+          Check my answer
+        </button>
+        <div class="pk-fb feedback" id="check-sellFb"></div>
+
+        <!-- 1b Discount -->
+        <h3 style="margin-top: 24px">🏷️ Run a weekend sale (discount)</h3>
+        <label class="fld" for="discount">Your sale discount (%)</label>
+        <input
+          type="number"
+          id="discount"
+          data-save
+          step="1"
+          min="1"
+          max="100"
+          placeholder="example: 20"
+          oninput="calcDiscount()"
+        />
+        <button class="btn alt" type="button" onclick="calcDiscount()">
+          Calculate sale price
+        </button>
         <div class="readout" id="discount-out"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
-          <p>Discount amount = $50.00 × (20 ÷ 100) = $50.00 × 0.20 = $10.00.
-          Sale price = $50.00 − $10.00 = $40.00. Shoppers save $10.00!</p>
+          <p>
+            Discount amount = selling price × (discount ÷ 100). Sale price =
+            selling price − discount amount. Example: $50 × 0.20 = $10 off → $40
+            sale price.
+          </p>
         </details>
-      </section>
 
-      <!-- PHASE 3 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">3</div>
+        <!-- 1c Tax -->
+        <h3 style="margin-top: 24px">🧾 Add sales tax (final total)</h3>
+        <label class="fld" for="tax-rate">Your state sales tax (%)</label>
+        <input
+          type="number"
+          id="tax-rate"
+          data-save
+          step="0.1"
+          min="0"
+          max="20"
+          placeholder="example: 8"
+          oninput="calcTax()"
+        />
+        <button class="btn" type="button" onclick="calcTax()">
+          Calculate total with tax
+        </button>
+        <div class="readout" id="tax-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Tax amount = sale price × (tax ÷ 100). Final total = sale price +
+            tax. Example: $40 × 0.08 = $3.20 → total $43.20.
+          </p>
+        </details>
+
+        <!-- 1c-check -->
+        <div class="task" style="margin-top: 18px">
+          <strong>Self-check:</strong> Type the final total a customer pays
+          after tax. The tool checks it.
+        </div>
+        <label class="fld" for="check-total">Final total after tax ($)</label>
+        <input
+          type="number"
+          id="check-total"
+          data-save
+          step="0.01"
+          placeholder="Type your answer"
+        />
+        <button class="btn alt" type="button" onclick="checkTotal()">
+          Check my answer
+        </button>
+        <div class="pk-fb feedback" id="check-totalFb"></div>
+
+        <!-- 1d Conversion from a real label -->
+        <h3 style="margin-top: 24px">
+          🔁 Convert a real product-label measurement
+        </h3>
+        <p style="font-size: 14px; color: var(--muted)">
+          Read a measurement off a real product you would sell (a candle's
+          weight, a drink's volume, a ribbon's length) and convert it using a
+          rate.
+        </p>
+        <div class="grid3">
           <div>
-            <div class="skill">Sales Tax &amp; Conversions · 6.RP.3c · 6.RP.3d</div>
-            <h2>Add Tax &amp; Convert the Value</h2>
+            <label class="fld" for="conv-val">Value from the label</label>
+            <input
+              type="number"
+              id="conv-val"
+              data-save
+              step="0.01"
+              min="0.01"
+              placeholder="example: 5"
+              oninput="calcConvert()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="conv-from">From unit</label>
+            <select id="conv-from" data-save onchange="calcConvert()">
+              <option value="feet">feet</option>
+              <option value="yards">yards</option>
+              <option value="inches">inches</option>
+              <option value="miles">miles</option>
+              <option class="pk-lvl2" value="pounds">pounds</option>
+              <option class="pk-lvl2" value="ounces">ounces</option>
+              <option class="pk-lvl2" value="cups">cups</option>
+              <option class="pk-lvl2" value="pints">pints</option>
+              <option class="pk-lvl2" value="quarts">quarts</option>
+              <option class="pk-lvl2" value="gallons">gallons</option>
+            </select>
+          </div>
+          <div>
+            <label class="fld" for="conv-to">To unit</label>
+            <select id="conv-to" data-save onchange="calcConvert()">
+              <option value="inches">inches</option>
+              <option value="feet">feet</option>
+              <option value="yards">yards</option>
+              <option value="miles">miles</option>
+              <option class="pk-lvl2" value="ounces">ounces</option>
+              <option class="pk-lvl2" value="pounds">pounds</option>
+              <option class="pk-lvl2" value="pints">pints</option>
+              <option class="pk-lvl2" value="cups">cups</option>
+              <option class="pk-lvl2" value="gallons">gallons</option>
+              <option class="pk-lvl2" value="quarts">quarts</option>
+            </select>
           </div>
         </div>
-        <p>At checkout, your state adds <strong>sales tax</strong> to the sale price. Also practice converting a percent to a fraction and a decimal — skills you need every day in business!</p>
-        <div class="task">
-          <strong>Tax formula:</strong> Tax amount = Sale price × (Tax % ÷ 100). Final total = Sale price + Tax amount.<br />
-          <strong>Conversion:</strong> Enter any percent to see its fraction and decimal forms.
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1: stick to length units (feet, yards, inches, miles).
+        </p>
+        <button class="btn alt" type="button" onclick="calcConvert()">
+          Convert using rate reasoning
+        </button>
+        <div class="readout" id="conv-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>
+            Multiply by the conversion factor written as a fraction. 5 feet ×
+            (12 inches / 1 foot) = 60 inches. The "feet" units cancel, leaving
+            inches — that is rate reasoning.
+          </p>
+        </details>
+
+        <!-- Level 2 extension: stacked promo + break-even -->
+        <div class="pk-lvl2" style="margin-top: 20px">
+          <div class="task">
+            <strong
+              >Level 2 extension — stacked promo (discount THEN tax) &amp;
+              break-even:</strong
+            >
+            Your shop applies the discount first, then tax. Use the readout
+            below, then think about the markup % that would make your sale price
+            equal your cost (break-even).
+          </div>
+          <button class="btn" type="button" onclick="calcStacked()">
+            Show stacked promo &amp; break-even
+          </button>
+          <div class="readout" id="stacked-out"></div>
+          <label class="fld" for="breakeven"
+            >Break-even idea: at your discount, what markup % makes sale price =
+            cost?</label
+          >
+          <input
+            type="text"
+            id="breakeven"
+            data-save
+            placeholder="example: a 25% markup with 20% off lands back at cost"
+          />
+        </div>
+      </section>
+
+      <!-- ===================== PART 2 — PEER ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--teal)">2</div>
+          <div>
+            <span class="arc-banner">Part 2 · Peer — swap shops</span>
+            <div class="skill">Compare &amp; reason · 6.RP.3c</div>
+            <h2>Who Is the Smarter Shopper?</h2>
+          </div>
+        </div>
+        <p>
+          Swap with a partner. Ask their <strong>item</strong>, their
+          <strong>cost</strong>, and the <strong>final price</strong> they would
+          charge. Type it in to auto-compare who runs the better shop.
+        </p>
+        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
+          <h3>Interview Sentence Frames</h3>
+          <p>"What is your item and your cost? What markup did you choose?"</p>
+          <p>"What is your final price after discount and tax?"</p>
+          <p>"Whose customer gets the better deal, and why?"</p>
+          <p class="pk-es">
+            "¿Cuál es tu artículo y tu costo? ¿Qué margen elegiste?"
+          </p>
         </div>
         <div class="grid2">
           <div>
-            <label class="fld" for="sale-price-tax">Sale price ($)</label>
-            <input type="number" id="sale-price-tax" value="40.00" step="0.01" min="0.01" />
+            <label class="fld" for="partnerName"
+              >Partner name or initials</label
+            >
+            <input
+              type="text"
+              id="partnerName"
+              data-save
+              placeholder="example: A.J."
+            />
           </div>
           <div>
-            <label class="fld" for="tax-rate">Sales tax (%)</label>
-            <input type="number" id="tax-rate" value="8" step="0.1" min="0" max="20" />
+            <label class="fld" for="p-item">Partner's item</label>
+            <input
+              type="text"
+              id="p-item"
+              data-save
+              placeholder="example: phone case"
+            />
           </div>
-        </div>
-        <button class="btn" onclick="calcTax()">Calculate total with tax</button>
-        <div class="readout" id="tax-out"></div>
-
-        <div style="margin-top:20px;">
-          <label class="fld" for="conv-pct">Convert this percent:</label>
-          <input type="number" id="conv-pct" value="35" step="1" min="1" max="1000" />
-          <button class="btn alt" onclick="calcConvert()" style="margin-top:10px;">Show fraction &amp; decimal</button>
-          <div class="readout" id="conv-out"></div>
-        </div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>Tax: $40.00 × 0.08 = $3.20. Total = $40.00 + $3.20 = $43.20.<br />
-          Conversions: 35% = 35/100 = 7/20 (simplified) = 0.35. Percent ÷ 100 always gives the decimal form.</p>
-        </details>
-      </section>
-
-      <!-- PHASE 4 -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">4</div>
           <div>
-            <div class="skill">Decision &amp; Quick Check · 6.RP.3c</div>
-            <h2>Best Promo Decision + Quick Check</h2>
+            <label class="fld" for="p-cost">Partner's cost ($)</label>
+            <input
+              type="number"
+              id="p-cost"
+              data-save
+              step="0.01"
+              min="0"
+              oninput="comparePeer()"
+            />
+          </div>
+          <div>
+            <label class="fld" for="p-final"
+              >Partner's final price after tax ($)</label
+            >
+            <input
+              type="number"
+              id="p-final"
+              data-save
+              step="0.01"
+              min="0"
+              oninput="comparePeer()"
+            />
           </div>
         </div>
-        <p>Compare two promo ideas and decide which gives customers a better deal (lower final price). Then check a known-answer problem to confirm your percent skills.</p>
-        <div class="task">
-          <strong>Promo A:</strong> 30% off a $60 item.<br />
-          <strong>Promo B:</strong> $15 off a $60 item.<br />
-          Calculate both final prices and decide which is the better deal for the customer.
-        </div>
-        <button class="btn" onclick="calcPromo()">Compare promos</button>
-        <div class="readout" id="promo-out"></div>
-
-        <div class="task" style="margin-top:18px;">
-          <strong>Quick check:</strong> What is 25% of 80? (Enter your answer below.)
-        </div>
-        <label class="fld" for="check-pct">Your answer</label>
-        <input type="number" id="check-pct" placeholder="Type a number" />
-        <button class="btn alt" onclick="checkPct()">Check answer</button>
-        <div class="feedback" id="pct-fb"></div>
+        <button class="btn alt" type="button" onclick="comparePeer()">
+          Compare our shops
+        </button>
+        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
+        <label class="fld" for="peerReflect"
+          >Who is the smarter shopper / better buy, and how do you know?</label
+        >
+        <textarea
+          id="peerReflect"
+          data-save
+          placeholder="My final price is ___ while my partner's is ___, so the better buy for a customer is ___ because ___."
+        ></textarea>
       </section>
 
-      <!-- DELIVERABLE -->
+      <!-- ===================== PART 3 — WORLD ===================== -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--green);">★</div>
+          <div
+            class="phase-num"
+            style="background: var(--gold); color: #2a1c00"
+          >
+            3
+          </div>
+          <div>
+            <span class="arc-banner"
+              >Part 3 · World — real state tax rates</span
+            >
+            <div class="skill">Compare to real data · 6.RP.3c</div>
+            <h2>Test Against Real State Sales Tax</h2>
+          </div>
+        </div>
+        <p>
+          These are realistic average combined sales-tax rates for U.S. states.
+          Pick a state to see what your customer would really pay there, and how
+          your rate compares.
+        </p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="worldState"
+              >Charge tax like this state</label
+            >
+            <select id="worldState" data-save onchange="worldGo()"></select>
+            <label class="fld" for="myWorld"
+              >My sale price before tax ($)</label
+            >
+            <input
+              type="number"
+              id="myWorld"
+              data-save
+              step="0.01"
+              oninput="worldGo()"
+              placeholder="type your sale price"
+            />
+            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
+              Tip: use your sale price from Part 1 here.
+            </p>
+            <div id="worldMeter"></div>
+            <div class="readout" id="world-out"></div>
+          </div>
+          <div>
+            <h3>U.S. State Sales-Tax Sample 🇺🇸</h3>
+            <div
+              style="
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <table class="rubric" style="margin-top: 0">
+                <tr>
+                  <th>State</th>
+                  <th>Avg combined tax</th>
+                </tr>
+                <tbody id="worldRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="phase"
+          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
+        >
+          <h3>🔬 What-If Lab</h3>
+          <p style="color: var(--muted); font-size: 14px">
+            Add a coupon (extra % off your sale price) and watch the final price
+            change.
+          </p>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="whatIfCoupon"
+                >Extra coupon (% off the sale price)</label
+              >
+              <input
+                type="number"
+                id="whatIfCoupon"
+                step="1"
+                min="0"
+                max="100"
+                placeholder="example: 10"
+              />
+            </div>
+          </div>
+          <button class="btn" type="button" onclick="runWhatIf()">
+            Run test
+          </button>
+          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
+            Enter a coupon percent to test.
+          </div>
+        </div>
+
+        <label class="fld" for="worldReflect"
+          >Is the cheapest price always best for your shop? Why or why
+          not?</label
+        >
+        <textarea
+          id="worldReflect"
+          data-save
+          placeholder="A lower price brings more customers, but ___. Cheapest is not always best because ___."
+        ></textarea>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2: If your sale price is $40 and a state charges 9.5% tax,
+            what is the percent increase from sale price to total? Show your
+            thinking.</label
+          >
+          <textarea
+            id="worldHard"
+            data-save
+            placeholder="Tax is $___; percent increase = tax ÷ sale price × 100 = ___% because ___"
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- ===================== DELIVERABLE ===================== -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background: var(--green)">★</div>
           <div>
             <div class="skill">Final Deliverable</div>
             <h2>Write Your Storefront Sign</h2>
           </div>
         </div>
-        <p>Write a short storefront sign (3–5 sentences) explaining your prices to shoppers. Use your real numbers — cost, markup, discount, tax — to justify your pricing decisions.</p>
-        <textarea id="pitch" placeholder="Welcome to my pop-up shop! I bought my item for $___ and marked it up ___% to sell it for $___. This weekend it's on sale for ___% off, so you pay only $___. After ___% sales tax, your total is $___. My best promo deal is ___ because ___!"></textarea>
+        <p>
+          Write a short storefront sign (3–5 sentences) using your real numbers
+          from above.
+        </p>
+        <textarea
+          id="pitch"
+          data-save
+          placeholder="Welcome to my pop-up shop! I sell ___, which cost me $___. I marked it up ___% to sell for $___. This weekend it is ___% off, so you pay $___, and after ___% tax your total is $___."
+        ></textarea>
 
-        <h3 style="margin:22px 0 6px;">Shop Owner Checklist</h3>
+        <h3 style="margin: 22px 0 6px">Shop Owner Checklist</h3>
         <ul class="checklist" id="checklist">
-          <li><input type="checkbox" /> I calculated the markup to find the correct selling price.</li>
-          <li><input type="checkbox" /> I calculated the discount and the sale price correctly.</li>
-          <li><input type="checkbox" /> I added sales tax to get the final total.</li>
-          <li><input type="checkbox" /> I converted a percent to both fraction and decimal form.</li>
-          <li><input type="checkbox" /> I compared the two promos and chose the better deal with a reason.</li>
-          <li><input type="checkbox" /> My storefront sign uses real numbers and makes sense.</li>
+          <li>
+            <input type="checkbox" data-save id="ck1" /> I picked a real item
+            and used a real cost.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck2" /> I used a markup to find
+            a correct selling price.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck3" /> I applied a discount to
+            find the sale price.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck4" /> I added sales tax to
+            get the final total.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck5" /> I converted a real
+            label measurement using a rate.
+          </li>
+          <li>
+            <input type="checkbox" data-save id="ck6" /> I compared shops with a
+            partner and against a real state tax rate.
+          </li>
         </ul>
-        <button class="btn printbtn" onclick="window.print()">🖨️ Print my storefront plan</button>
+
+        <div class="grid2" style="margin-top: 18px">
+          <div>
+            <button class="btn" type="button" onclick="buildReport()">
+              📝 Generate report
+            </button>
+          </div>
+          <div class="pk-no-print">
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.copyReport('reportBox')"
+            >
+              Copy report
+            </button>
+            <button
+              class="btn ghost"
+              type="button"
+              onclick="PK.downloadText('pop-up-shop-plan.txt', 'reportBox')"
+            >
+              Download .txt
+            </button>
+            <button class="btn ghost" type="button" onclick="downloadCsv()">
+              Download .csv
+            </button>
+            <button class="btn printbtn" type="button" onclick="window.print()">
+              🖨️ Print
+            </button>
+          </div>
+        </div>
+        <div class="pk-report" id="reportBox" style="margin-top: 16px">
+          Click "Generate report" to build your shop summary.
+        </div>
       </section>
 
       <!-- RUBRIC -->
       <section class="phase">
         <div class="phase-head">
-          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div class="phase-num" style="background: var(--navy)">✓</div>
           <div>
             <div class="skill">How You Are Scored</div>
             <h2>Project Rubric</h2>
           </div>
         </div>
         <table class="rubric">
-          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
-          <tr><td>Percent of a Number (Markup)</td><td>Markup and selling price both correct; reasoning shown</td><td>Selling price correct</td><td>Partial work or minor computation error</td></tr>
-          <tr><td>Discounts</td><td>Discount amount and sale price both correct</td><td>Sale price correct</td><td>Attempted; minor arithmetic error</td></tr>
-          <tr><td>Tax &amp; Conversions</td><td>Final total correct; fraction and decimal forms both accurate</td><td>Final total correct</td><td>Tax or conversion has one error</td></tr>
-          <tr><td>Communication</td><td>Storefront sign uses all real numbers and justifies every choice</td><td>Sign uses most numbers</td><td>Sign is unclear or missing key numbers</td></tr>
+          <tr>
+            <th>Category</th>
+            <th>4 — Expert</th>
+            <th>3 — Proficient</th>
+            <th>2 — Developing</th>
+          </tr>
+          <tr>
+            <td>Percent of a Number (Markup)</td>
+            <td>Markup and selling price both correct with reasoning</td>
+            <td>Selling price correct</td>
+            <td>Partial work or minor error</td>
+          </tr>
+          <tr>
+            <td>Discount &amp; Tax</td>
+            <td>Sale price and final total both correct</td>
+            <td>One of the two correct</td>
+            <td>Attempted with a computation error</td>
+          </tr>
+          <tr>
+            <td>Conversion (rate reasoning)</td>
+            <td>Converts using a unit fraction; units cancel</td>
+            <td>Correct result</td>
+            <td>Attempted; setup unclear</td>
+          </tr>
+          <tr>
+            <td>Comparison (Peer &amp; World)</td>
+            <td>Compares shops and state tax with clear reasoning</td>
+            <td>Comparisons mostly correct</td>
+            <td>Comparison attempted</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Sign justifies every number used</td>
+            <td>Sign uses most numbers</td>
+            <td>Sign unclear or missing numbers</td>
+          </tr>
         </table>
       </section>
 
-      <p class="footer">Neft Teacher · Unit 4 Culminating Project · Version A · <span id="yr"></span></p>
+      <p class="footer">
+        Neft Teacher · Unit 4 Culminating Project · Version A ·
+        <span id="yr"></span>
+      </p>
     </div>
 
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value);
 
-      function gcd(a, b) { a = Math.abs(Math.round(a)); b = Math.abs(Math.round(b)); while (b) { [a, b] = [b, a % b]; } return a || 1; }
-      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
+      function show(id, html) {
+        const el = $(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+      function hide(id) {
+        const el = $(id);
+        if (el) el.classList.remove("show");
+      }
+
+      // Running state used by report, checks, peer, world.
+      const proj = {
+        cost: null,
+        markup: null,
+        sell: null,
+        disc: null,
+        sale: null,
+        tax: null,
+        total: null,
+      };
 
       function calcMarkup() {
-        const cost = +document.getElementById("cost").value;
-        const pct  = +document.getElementById("markup").value;
-        if (isNaN(cost) || cost <= 0 || isNaN(pct) || pct <= 0) { show("markup-out", "<p>⚠️ Please enter a valid positive cost price and markup percentage.</p>"); return; }
-        const amount = cost * (pct / 100);
-        const sell   = cost + amount;
-        show("markup-out",
-          '<div class="big">$' + sell.toFixed(2) + ' selling price</div>' +
-          'Cost: $' + cost.toFixed(2) + ' + Markup: $' + amount.toFixed(2) +
-          ' (' + pct + '% of $' + cost.toFixed(2) + ') = <strong>$' + sell.toFixed(2) + '</strong>. ' +
-          'You make $' + amount.toFixed(2) + ' profit on each item sold at full price.');
+        const cost = num("cost"),
+          pct = num("markup");
+        if (isNaN(cost) || cost <= 0 || isNaN(pct) || pct <= 0) {
+          hide("markup-out");
+          proj.cost = null;
+          proj.sell = null;
+          calcDiscount();
+          return;
+        }
+        const amount = cost * (pct / 100),
+          sell = cost + amount;
+        proj.cost = cost;
+        proj.markup = pct;
+        proj.sell = sell;
+        show(
+          "markup-out",
+          '<div class="big">$' +
+            sell.toFixed(2) +
+            " selling price</div>" +
+            "Cost $" +
+            cost.toFixed(2) +
+            " + markup $" +
+            amount.toFixed(2) +
+            " (" +
+            pct +
+            "% of $" +
+            cost.toFixed(2) +
+            ") = <strong>$" +
+            sell.toFixed(2) +
+            "</strong>. " +
+            "You make $" +
+            amount.toFixed(2) +
+            " profit per item at full price.",
+        );
+        calcDiscount();
       }
 
       function calcDiscount() {
-        const sell = +document.getElementById("sell-price").value;
-        const pct  = +document.getElementById("discount").value;
-        if (isNaN(sell) || sell <= 0 || isNaN(pct) || pct <= 0) { show("discount-out", "<p>⚠️ Please enter a valid positive selling price and discount percentage.</p>"); return; }
-        const savings  = sell * (pct / 100);
-        const salePrice = sell - savings;
-        show("discount-out",
-          '<div class="big">$' + salePrice.toFixed(2) + ' sale price</div>' +
-          'Discount: $' + sell.toFixed(2) + ' × ' + pct + '% = <strong>$' + savings.toFixed(2) + ' off</strong>. ' +
-          'Sale price: $' + sell.toFixed(2) + ' − $' + savings.toFixed(2) + ' = <strong>$' + salePrice.toFixed(2) + '</strong>. Shoppers save $' + savings.toFixed(2) + '!');
+        const sell = proj.sell,
+          pct = num("discount");
+        if (sell == null || isNaN(pct) || pct <= 0) {
+          hide("discount-out");
+          proj.disc = null;
+          proj.sale = null;
+          calcTax();
+          return;
+        }
+        const savings = sell * (pct / 100),
+          sale = sell - savings;
+        proj.disc = pct;
+        proj.sale = sale;
+        show(
+          "discount-out",
+          '<div class="big">$' +
+            sale.toFixed(2) +
+            " sale price</div>" +
+            "Discount $" +
+            sell.toFixed(2) +
+            " × " +
+            pct +
+            "% = <strong>$" +
+            savings.toFixed(2) +
+            " off</strong>. " +
+            "Sale price = $" +
+            sell.toFixed(2) +
+            " − $" +
+            savings.toFixed(2) +
+            " = <strong>$" +
+            sale.toFixed(2) +
+            "</strong>.",
+        );
+        calcTax();
       }
 
       function calcTax() {
-        const saleP = +document.getElementById("sale-price-tax").value;
-        const taxR  = +document.getElementById("tax-rate").value;
-        if (isNaN(saleP) || saleP <= 0 || isNaN(taxR) || taxR < 0) { show("tax-out", "<p>⚠️ Please enter a valid positive sale price and a tax rate of 0 or more.</p>"); return; }
-        const taxAmt = saleP * (taxR / 100);
-        const total  = saleP + taxAmt;
-        show("tax-out",
-          '<div class="big">$' + total.toFixed(2) + ' final total</div>' +
-          'Sale price: $' + saleP.toFixed(2) + ' + Tax: $' + taxAmt.toFixed(2) +
-          ' (' + taxR + '% of $' + saleP.toFixed(2) + ') = <strong>$' + total.toFixed(2) + '</strong> at checkout.');
+        const sale = proj.sale,
+          taxR = num("tax-rate");
+        if (sale == null || isNaN(taxR) || taxR < 0) {
+          hide("tax-out");
+          proj.tax = null;
+          proj.total = null;
+          return;
+        }
+        const taxAmt = sale * (taxR / 100),
+          total = sale + taxAmt;
+        proj.tax = taxR;
+        proj.total = total;
+        show(
+          "tax-out",
+          '<div class="big">$' +
+            total.toFixed(2) +
+            " final total</div>" +
+            "Sale $" +
+            sale.toFixed(2) +
+            " + tax $" +
+            taxAmt.toFixed(2) +
+            " (" +
+            taxR +
+            "% of $" +
+            sale.toFixed(2) +
+            ") = <strong>$" +
+            total.toFixed(2) +
+            "</strong> at checkout.",
+        );
       }
 
+      function checkSell() {
+        if (proj.sell == null) {
+          $("check-sellFb").innerHTML =
+            '<span class="pk-bad">Enter your cost and markup first.</span>';
+          return;
+        }
+        const ok = PK.checkWork(
+          "check-sell",
+          Math.round(proj.sell * 100) / 100,
+          0.01,
+        );
+        updateProgress();
+        return ok;
+      }
+      function checkTotal() {
+        if (proj.total == null) {
+          $("check-totalFb").innerHTML =
+            '<span class="pk-bad">Finish markup, discount, and tax first.</span>';
+          return;
+        }
+        const ok = PK.checkWork(
+          "check-total",
+          Math.round(proj.total * 100) / 100,
+          0.01,
+        );
+        updateProgress();
+        return ok;
+      }
+
+      // Conversion table (factor multiplies "from" to get "to")
+      const CONV = {
+        feet: { inches: 12, yards: 1 / 3, feet: 1, miles: 1 / 5280 },
+        yards: { inches: 36, feet: 3, yards: 1, miles: 1 / 1760 },
+        inches: { feet: 1 / 12, yards: 1 / 36, inches: 1, miles: 1 / 63360 },
+        miles: { feet: 5280, yards: 1760, inches: 63360, miles: 1 },
+        pounds: { ounces: 16, pounds: 1 },
+        ounces: { pounds: 1 / 16, ounces: 1 },
+        cups: { pints: 0.5, quarts: 0.25, gallons: 0.0625, cups: 1 },
+        pints: { cups: 2, quarts: 0.5, gallons: 0.125, pints: 1 },
+        quarts: { cups: 4, pints: 2, gallons: 0.25, quarts: 1 },
+        gallons: { cups: 16, pints: 8, quarts: 4, gallons: 1 },
+      };
       function calcConvert() {
-        const p = +document.getElementById("conv-pct").value;
-        if (isNaN(p) || p <= 0) { show("conv-out", "<p>⚠️ Please enter a valid positive percentage to convert.</p>"); return; }
-        const dec = p / 100;
-        const g   = gcd(p, 100);
-        const num = p / g;
-        const den = 100 / g;
-        const fracStr = den === 1 ? num : num + '/' + den;
-        show("conv-out",
-          '<div class="big">' + p + '%</div>' +
-          p + '% as a <strong>decimal</strong>: <strong>' + dec + '</strong><br>' +
-          p + '% as a <strong>fraction</strong>: ' + p + '/100' +
-          (g > 1 ? ' = <strong>' + fracStr + '</strong> (simplified by dividing by GCF ' + g + ')' : ' (already in simplest form)'));
+        const val = num("conv-val"),
+          from = $("conv-from").value,
+          to = $("conv-to").value;
+        if (isNaN(val) || val <= 0) {
+          hide("conv-out");
+          return;
+        }
+        if (from === to) {
+          show(
+            "conv-out",
+            '<div class="big">' +
+              val +
+              " " +
+              to +
+              "</div>Same unit — no conversion needed!",
+          );
+          return;
+        }
+        const row = CONV[from];
+        if (!row || row[to] === undefined) {
+          show(
+            "conv-out",
+            '<div class="big">Cannot convert</div>Those units are not the same measurement type (length, weight, or volume). Choose compatible units.',
+          );
+          return;
+        }
+        const factor = row[to],
+          result = val * factor;
+        const factorStr = Number.isInteger(factor)
+          ? factor
+          : factor < 1
+            ? "1/" + Math.round(1 / factor)
+            : factor.toFixed(4);
+        const resStr = result.toFixed(4).replace(/\.?0+$/, "");
+        show(
+          "conv-out",
+          '<div class="big">' +
+            resStr +
+            " " +
+            to +
+            "</div>" +
+            val +
+            " " +
+            from +
+            " × (" +
+            factorStr +
+            " " +
+            to +
+            " / 1 " +
+            from +
+            ") = <strong>" +
+            resStr +
+            " " +
+            to +
+            "</strong>. " +
+            'The "' +
+            from +
+            '" units cancel, leaving <strong>' +
+            to +
+            "</strong>. That is rate reasoning!",
+        );
       }
 
-      function calcPromo() {
-        const base = 60;
-        const promoA = base - base * 0.30;   // 30% off $60
-        const promoB = base - 15;            // $15 off $60
-        const better = promoA < promoB ? 'A' : (promoB < promoA ? 'B' : 'a tie');
-        show("promo-out",
-          '<div class="big">Best deal: Promo ' + better + '</div>' +
-          '<strong>Promo A (30% off $60):</strong> $60 × 30% = $18 off → <strong>$' + promoA.toFixed(2) + '</strong><br>' +
-          '<strong>Promo B ($15 off $60):</strong> $60 − $15 = <strong>$' + promoB.toFixed(2) + '</strong><br>' +
-          (promoA === promoB
-            ? 'Both promos give exactly the same price — it\'s a tie!'
-            : 'Promo ' + better + ' saves the customer more. 30% of $60 = $18 off, while flat $15 off saves less.'));
+      function calcStacked() {
+        if (proj.sale == null || proj.tax == null) {
+          show(
+            "stacked-out",
+            "<p>Finish markup, discount, and tax above first.</p>",
+          );
+          return;
+        }
+        const sale = proj.sale,
+          total = proj.total;
+        const inc = ((total - sale) / sale) * 100;
+        show(
+          "stacked-out",
+          '<div class="big">$' +
+            total.toFixed(2) +
+            " stacked total</div>" +
+            "Discount first → sale price $" +
+            sale.toFixed(2) +
+            ". Then tax → $" +
+            total.toFixed(2) +
+            ".<br>" +
+            "Percent increase from sale price to total = $" +
+            (total - sale).toFixed(2) +
+            " ÷ $" +
+            sale.toFixed(2) +
+            " × 100 = <strong>" +
+            inc.toFixed(1) +
+            "%</strong>. " +
+            (proj.cost != null
+              ? proj.sale <= proj.cost
+                ? "Heads up: your sale price is at or below your $" +
+                  proj.cost.toFixed(2) +
+                  " cost — you break even or lose money on sale items."
+                : "Your sale price stays above your $" +
+                  proj.cost.toFixed(2) +
+                  " cost, so you still profit on sale."
+              : ""),
+        );
       }
 
-      function checkPct() {
-        const v  = +document.getElementById("check-pct").value;
-        const fb = document.getElementById("pct-fb");
-        if (isNaN(v) || document.getElementById("check-pct").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
-        if (v === 20) {
-          fb.textContent = "✅ Correct! 25% of 80 = 80 × 0.25 = 20.";
-          fb.className = "feedback ok";
-        } else {
-          fb.textContent = "❌ Not yet. Remember: 25% of 80 = 80 × (25 ÷ 100) = 80 × 0.25. Try again!";
-          fb.className = "feedback no";
+      /* ---- Part 2: peer compare ---- */
+      function comparePeer() {
+        const myCost = proj.cost,
+          myFinal = proj.total;
+        const pCost = num("p-cost"),
+          pFinal = num("p-final");
+        const rows = [];
+        if (myCost != null && !isNaN(pCost))
+          rows.push({
+            label: "Cost $",
+            me: myCost,
+            partner: pCost,
+            fmt: (x) => Number(x).toFixed(2),
+          });
+        if (myFinal != null && !isNaN(pFinal))
+          rows.push({
+            label: "Final price $",
+            me: myFinal,
+            partner: pFinal,
+            fmt: (x) => Number(x).toFixed(2),
+          });
+        if (!rows.length) {
+          $("peerBox").innerHTML =
+            '<p class="pk-fb">Finish Part 1 and enter partner numbers to compare.</p>';
+          return;
+        }
+        PK.peerCompare("peerBox", rows);
+        if (myFinal != null && !isNaN(pFinal)) {
+          const better =
+            myFinal < pFinal
+              ? "Your shop"
+              : pFinal < myFinal
+                ? "Your partner's shop"
+                : "Both shops (tie)";
+          $("peerBox").innerHTML +=
+            '<div class="pk-stat" style="grid-column:1/-1;background:var(--green-light)"><small>Better buy for a customer</small><b>' +
+            better +
+            "</b></div>";
         }
         updateProgress();
       }
 
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length;
-        const qOk      = document.getElementById("pct-fb").classList.contains("ok") ? 1 : 0;
-        const checks   = document.querySelectorAll('#checklist input:checked').length;
-        const pitch    = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
-        // max: 5 readouts + 1 quick check + 6 checklist + 1 pitch = 13
-        const total = readouts + qOk + checks + pitch;
-        const pct   = Math.min(100, Math.round((total / 13) * 100));
-        document.getElementById("pfill").style.width = pct + "%";
-        document.getElementById("pct").textContent = pct;
+      /* ---- Part 3: world dataset (avg combined state sales tax %) ---- */
+      const world = [
+        ["California", 8.85],
+        ["Texas", 8.2],
+        ["New York", 8.53],
+        ["Florida", 7.0],
+        ["Illinois", 8.86],
+        ["Washington", 9.4],
+        ["Tennessee", 9.55],
+        ["Colorado", 7.81],
+        ["Oregon", 0.0],
+        ["Georgia", 7.4],
+      ];
+      function renderWorld() {
+        $("worldRows").innerHTML = world
+          .map(
+            (r) =>
+              "<tr><td>" + r[0] + "</td><td>" + r[1].toFixed(2) + "%</td></tr>",
+          )
+          .join("");
+        $("worldState").innerHTML = world
+          .map(
+            (r, i) =>
+              '<option value="' +
+              i +
+              '">' +
+              r[0] +
+              " (" +
+              r[1].toFixed(2) +
+              "%)</option>",
+          )
+          .join("");
       }
-      document.getElementById("checklist").addEventListener("change", updateProgress);
-      document.getElementById("pitch").addEventListener("input", updateProgress);
+      function worldSample() {
+        return world.map((r) => r[1]);
+      }
+      function worldGo() {
+        const sale = num("myWorld");
+        const i = parseInt($("worldState").value, 10) || 0;
+        const rate = world[i][1];
+        PK.worldMeter("worldMeter", worldSample(), rate, {
+          mean: "U.S. avg %",
+          me: world[i][0] + " %",
+        });
+        if (!isNaN(sale) && sale > 0) {
+          const taxAmt = sale * (rate / 100),
+            total = sale + taxAmt;
+          show(
+            "world-out",
+            '<div class="big">$' +
+              total.toFixed(2) +
+              " in " +
+              world[i][0] +
+              "</div>" +
+              "A $" +
+              sale.toFixed(2) +
+              " sale price at " +
+              world[i][0] +
+              "’s " +
+              rate.toFixed(2) +
+              "% tax = $" +
+              taxAmt.toFixed(2) +
+              " tax → <strong>$" +
+              total.toFixed(2) +
+              "</strong> total.",
+          );
+        } else {
+          hide("world-out");
+        }
+        updateProgress();
+      }
+      function runWhatIf() {
+        const c = parseFloat($("whatIfCoupon").value);
+        if (proj.sale == null) {
+          $("whatIfBox").textContent =
+            "Finish your sale price in Part 1 first.";
+          return;
+        }
+        if (isNaN(c) || c < 0) {
+          $("whatIfBox").textContent = "Enter a coupon percent first.";
+          return;
+        }
+        const after = proj.sale * (1 - c / 100);
+        PK.whatIf(
+          "whatIfBox",
+          { "sale price": "$" + proj.sale.toFixed(2) },
+          { "with coupon": "$" + after.toFixed(2) },
+          "Applying an extra " + c + "% coupon to your sale price:",
+        );
+      }
+
+      /* ---- Use example numbers ---- */
+      function useExamples() {
+        const ex = {
+          item: "hand-poured candle",
+          cost: 40.0,
+          markup: 25,
+          discount: 20,
+          "tax-rate": 8,
+          "conv-val": 5,
+        };
+        Object.entries(ex).forEach(([k, v]) => {
+          if ($(k)) $(k).value = v;
+        });
+        $("conv-from").value = "feet";
+        $("conv-to").value = "inches";
+        recalcAll();
+      }
+
+      function recalcAll() {
+        calcMarkup();
+        calcConvert();
+        comparePeer();
+        renderWorld();
+        worldGo();
+        updateProgress();
+      }
+
+      /* ---- Report ---- */
+      function reportText() {
+        const f = (x) => (x == null ? "(not finished)" : Number(x).toFixed(2));
+        return (
+          "POP-UP SHOP OWNER — MY REPORT\n" +
+          "=============================\n\n" +
+          "PART 1: MY SHOP (SELF)\n" +
+          "Item: " +
+          ($("item").value || "(none)") +
+          "\n" +
+          "Cost: $" +
+          f(proj.cost) +
+          "  |  Markup: " +
+          (proj.markup == null ? "-" : proj.markup + "%") +
+          "\n" +
+          "Selling price: $" +
+          f(proj.sell) +
+          "\n" +
+          "Discount: " +
+          (proj.disc == null ? "-" : proj.disc + "%") +
+          "  |  Sale price: $" +
+          f(proj.sale) +
+          "\n" +
+          "Sales tax: " +
+          (proj.tax == null ? "-" : proj.tax + "%") +
+          "  |  Final total: $" +
+          f(proj.total) +
+          "\n" +
+          "Label conversion: " +
+          ($("conv-val").value || "-") +
+          " " +
+          $("conv-from").value +
+          " → " +
+          $("conv-to").value +
+          "\n\n" +
+          "PART 2: PEER COMPARISON\n" +
+          "Partner: " +
+          ($("partnerName").value || "(none)") +
+          "  |  Item: " +
+          ($("p-item").value || "-") +
+          "\n" +
+          "Partner cost: $" +
+          ($("p-cost").value || "-") +
+          "  |  Partner final: $" +
+          ($("p-final").value || "-") +
+          "\n" +
+          "Reflection: " +
+          ($("peerReflect").value || "(not written)") +
+          "\n\n" +
+          "PART 3: WORLD COMPARISON\n" +
+          "Cheapest-is-best reflection: " +
+          ($("worldReflect").value || "(not written)") +
+          "\n\n" +
+          "STOREFRONT SIGN:\n" +
+          ($("pitch").value || "(not written)")
+        );
+      }
+      function buildReport() {
+        recalcAll();
+        PK.generateReport("reportBox", reportText());
+      }
+      function downloadCsv() {
+        const rows = [
+          ["field", "value"],
+          ["item", $("item").value],
+          ["cost", proj.cost],
+          ["markup_pct", proj.markup],
+          ["selling_price", proj.sell],
+          ["discount_pct", proj.disc],
+          ["sale_price", proj.sale],
+          ["tax_pct", proj.tax],
+          ["final_total", proj.total],
+          ["partner", $("partnerName").value],
+          ["partner_cost", $("p-cost").value],
+          ["partner_final", $("p-final").value],
+        ];
+        PK.downloadCsv("pop-up-shop-data.csv", rows);
+      }
+
+      /* ---- Progress ---- */
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // up to 6
+        const sellOk = $("check-sellFb").querySelector(".pk-ok") ? 1 : 0;
+        const totalOk = $("check-totalFb").querySelector(".pk-ok") ? 1 : 0;
+        const checks = document.querySelectorAll(
+          "#checklist input:checked",
+        ).length; // up to 6
+        const peer = $("p-cost").value || $("p-final").value ? 1 : 0;
+        const wrld = $("myWorld").value ? 1 : 0;
+        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
+        const total =
+          readouts + sellOk + totalOk + checks + peer + wrld + pitch; // max 6+1+1+6+1+1+1 = 17
+        const pct = Math.min(100, Math.round((total / 17) * 100));
+        $("pfill").style.width = pct + "%";
+        $("pct").textContent = pct;
+      }
+      document
+        .getElementById("checklist")
+        .addEventListener("change", updateProgress);
+      document
+        .getElementById("pitch")
+        .addEventListener("input", updateProgress);
+
+      /* ---- Level hook: Level 1 pre-fills friendly numbers if empty ---- */
+      window.onLevelChange = function (level) {
+        if (level === "level-1") {
+          const empty = !$("cost").value && !$("markup").value;
+          if (empty) {
+            $("cost").value = 40;
+            $("markup").value = 25;
+            $("discount").value = 20;
+            $("tax-rate").value = 8;
+            $("conv-val").value = 5;
+            recalcAll();
+          }
+        }
+      };
+
+      /* ---- init ---- */
+      document.addEventListener("DOMContentLoaded", function () {
+        renderWorld();
+        PK.initLevel({ storageKey: "u4ProjectA", default: "level-1" });
+        PK.load("u4ProjectA", { after: recalcAll });
+        updateProgress();
+      });
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>
