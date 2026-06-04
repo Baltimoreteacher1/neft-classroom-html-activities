@@ -111,8 +111,8 @@ function makeLevel(level) {
           ask: "range",
         },
         {
-          target: [1, 2, 2, 3, 3, 3, 4],
-          prompt: "Make: 1, 2, 2, 3, 3, 3, 4.",
+          target: [1, 2, 2, 2, 8],
+          prompt: "Make: 1, 2, 2, 2, 8.",
           ask: "mean",
         },
       ],
@@ -232,12 +232,12 @@ function buildQuestion(data, ask) {
   }
   // outlier reasoning
   return {
-    q: "One number is far from the rest. Which center fits best?",
+    q: "9 is an outlier. Which measure of center is least affected by it?",
     correct: "median",
-    choices: ["mean", "median", "range"],
-    labels: { mean: "Mean", median: "Median", range: "Range" },
+    choices: ["mean", "median", "mode"],
+    labels: { mean: "Mean", median: "Median", mode: "Mode" },
     explain:
-      "The far number pulls the mean up. Median fits best. Answer: Median.",
+      "The outlier pulls the mean up, but the median barely moves. Median is least affected. Answer: Median.",
   };
 }
 
@@ -1092,7 +1092,7 @@ export default {
           objectiveEn:
             "Stack blocks to build each data set, then pick the right measure — mean, median, mode, range, or MAD.",
           objectiveEs:
-            "Apila bloques para armar cada conjunto de datos y elige la medida correcta: media, mediana, moda o rango.",
+            "Apila bloques para armar cada conjunto de datos y elige la medida correcta: media, mediana, moda, rango o la DAM (desviación absoluta media).",
           standard: "6.SP.A–B · Statistics: Center & Spread",
           controls: [
             {
@@ -1110,8 +1110,10 @@ export default {
             },
             {
               key: "↓",
-              actionEn: "Remove the top block from the current column",
-              actionEs: "Quita el bloque de arriba de la columna actual",
+              actionEn:
+                "Remove the top block from the current column (Build phase only)",
+              actionEs:
+                "Quita el bloque de arriba de la columna actual (solo en la fase de Construir)",
             },
             {
               key: "Tap",
@@ -1126,9 +1128,9 @@ export default {
             },
           ],
           howToWinEn:
-            "First build the exact data set with blocks. Then read the dot plot and tap the pad with the correct measure. Finish every round to win.",
+            "First build the exact data set with blocks. Then read the dot plot and tap the pad with the correct measure. Finish every round to win. Controls change between Build (stack blocks) and Answer (pick a pad).",
           howToWinEs:
-            "Primero arma el conjunto de datos con bloques. Luego lee la gráfica y toca la medida correcta. Completa todas las rondas para ganar.",
+            "Primero arma el conjunto de datos con bloques. Luego lee la gráfica y toca la medida correcta. Completa todas las rondas para ganar. Los controles cambian entre Construir (apilar bloques) y Responder (elegir un botón).",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });

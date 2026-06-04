@@ -45,11 +45,13 @@ function makeLevel(level) {
     hints: false,
     rounds: [
       // frac = sub-cubes per unit along each axis (denominator). frac 2 ⇒
-      // half-unit cubes, each 1/8 of a whole cubic unit.
-      { kind: "fill", l: 2.5, w: 2, h: 1, frac: 2 },
-      { kind: "fill", l: 1.5, w: 1.5, h: 2, frac: 2 },
+      // half-unit cubes, each 1/8 of a whole cubic unit. Keep the half-unit
+      // edge so the 1/8-cube idea stays, but keep the sub-cube count small
+      // (≤ ~16) so packing isn't tedious.
+      { kind: "fill", l: 1.5, w: 1, h: 1, frac: 2 }, // 3×2×2 = 12 cubes, V = 1.5
+      { kind: "fill", l: 1, w: 1.5, h: 1, frac: 2 }, // 2×3×2 = 12 cubes, V = 1.5
       { kind: "missing", l: 3, w: 2, volume: 9, frac: 2, max: 4 },
-      { kind: "fill", l: 2.5, w: 2, h: 1.5, frac: 2 },
+      { kind: "fill", l: 1, w: 1, h: 1.5, frac: 2 }, // 2×2×3 = 12 cubes, V = 1.5
       { kind: "missing", l: 2.5, w: 2, volume: 7.5, frac: 2, max: 4 },
       {
         kind: "compare",
@@ -369,9 +371,15 @@ export default {
     function updateFillObjective() {
       // Don't reveal the volume here — show progress only so the student has to
       // pack the box to discover it.
-      const text =
+      let text =
         `Fill the box, then read off its volume.  ` +
         `Cubes: ${placedCount} / ${targetCount}`;
+      // On half-unit (fractional) rounds, surface the unit-fraction reasoning so
+      // the student watches the 1/8 cubes add up as they pack.
+      if (frac > 1) {
+        const den = frac * frac * frac; // each sub-cube is 1/den of a unit cube
+        text += `  ·  = ${placedCount} × 1/${den} = ${fracLabel(placedVolume())}`;
+      }
       hud.setObjective(text);
       if (clarity) {
         clarity.setObjective(text);
@@ -516,7 +524,6 @@ export default {
     function startMissingRound() {
       frac = round.frac || 1;
       guessStep = 1 / frac;
-      round._answer = round.volume / prismVolume(round.l, round.w, 1);
       guess = guessStep;
 
       // Glowing base footprint.
@@ -662,7 +669,9 @@ export default {
         labels.push(lbl);
       });
       compareChoice = 0;
-      setProblemCard("Which box is BIGGER?  Find l × w × h for each.");
+      setProblemCard(
+        "Which box has the BIGGER volume? (They could be equal.)  Find l × w × h for each.",
+      );
       hud.setObjective(
         "Use left / right to pick the bigger box. Then tap to check.",
       );
@@ -675,7 +684,7 @@ export default {
       announce(
         `Round ${roundIndex + 1}. Two boxes. ` +
           `Find the volume of each one. ` +
-          `Pick the box with the bigger volume. Use left and right, then tap to check.`,
+          `Pick the box with the bigger volume — they could be equal. Use left and right, then tap to check.`,
       );
       feel.sfx("select");
       updateCompareCursor();
@@ -746,13 +755,24 @@ export default {
       feel.sfx("correct");
       feel.shake(0.28);
       feel.burst({ x: 0, y: 2, z: 0 }, { color: COLORS.vaultGlow, count: 34 });
+      const tie = correct === -1;
       markCorrect(
-        `Correct! A = ${fracLabel(va)}, B = ${fracLabel(vb)} cubic units. +${pts}`,
+        tie
+          ? `They're equal! A = ${fracLabel(va)} = B = ${fracLabel(
+              vb,
+            )} cubic units. +${pts}`
+          : `Correct! A = ${fracLabel(va)}, B = ${fracLabel(
+              vb,
+            )} cubic units. +${pts}`,
       );
       announce(
-        `Correct. Vault A is ${fracLabel(va)} and vault B is ${fracLabel(
-          vb,
-        )} cubic units. You earned ${pts} points.`,
+        tie
+          ? `They're equal. Both vaults are ${fracLabel(
+              va,
+            )} cubic units. You earned ${pts} points.`
+          : `Correct. Vault A is ${fracLabel(va)} and vault B is ${fracLabel(
+              vb,
+            )} cubic units. You earned ${pts} points.`,
       );
       nextRoundSoon();
     }
@@ -1007,7 +1027,7 @@ export default {
             {
               key: "← / → / ↑ / ↓",
               actionEn:
-                "Move the glowing cube cursor (fill); pick box A or B (compare); raise/lower the height (missing edge)",
+                "Move the glowing cube cursor (fill); pick box A or B (compare); raise/lower the height (missing height)",
               actionEs:
                 "Mueve el cursor; elige caja A o B; sube o baja la altura",
             },
@@ -1018,10 +1038,11 @@ export default {
               actionEs: "Coloca un cubo, o revisa tu respuesta",
             },
             {
-              key: "Enter",
+              key: "Enter / ✓",
               actionEn:
-                "Move the cursor up or down a layer while filling (or show a hint on missing-edge rounds)",
-              actionEs: "Cambia de capa al llenar (o muestra una pista)",
+                "The cursor auto-fills the next empty cell — just keep dropping cubes. (Optional: Enter/✓ jumps to the next layer, or shows a hint on missing-height rounds.)",
+              actionEs:
+                "El cursor salta solo a la siguiente celda vacía — solo sigue colocando cubos. (Opcional: Enter/✓ salta de capa o muestra una pista.)",
             },
             {
               key: "?",

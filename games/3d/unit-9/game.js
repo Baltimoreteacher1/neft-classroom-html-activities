@@ -333,7 +333,7 @@ export default {
     let solvedCount = 0;
     // Forgiving stakes: a pool of attempts; a wrong confirm costs one. Run out
     // and the quest fails (lose screen). Level 1 gets more cushion than Level 2.
-    const START_LIVES = level === 2 ? 4 : 6;
+    const START_LIVES = level === 2 ? 8 : 6;
     let lives = START_LIVES;
     let gameOver = false;
     const cursor = { x: 0, y: 0 };
@@ -384,13 +384,13 @@ export default {
       if (task.kind === "plot")
         return `Move the beacon to (${task.x}, ${task.y}). Then place it.`;
       if (task.kind === "identify")
-        return "Move to the gold ring. Then place it.";
+        return "Read the ordered pair at the gold ring, then move the beacon there and place it.";
       if (task.kind === "reflect") {
         const want = reflectTarget(task);
         return `Flip (${task.x}, ${task.y}) over the ${task.axis}-axis. Move to (${want.x}, ${want.y}) and place it.`;
       }
       if (task.kind === "distance")
-        return `Move the beacon to (${task.b.x}, ${task.b.y}) to measure the distance.`;
+        return `These two points share a row or column. Count the units between them, then move the beacon to (${task.b.x}, ${task.b.y}) to check.`;
       return "";
     }
 
@@ -663,10 +663,11 @@ export default {
           lbl.position.set(w.x, 1.1, w.z);
           scene.add(lbl);
           persistentMarkers.push(lbl);
+          const fmtOperand = (n) => (n < 0 ? `(−${Math.abs(n)})` : `${n}`);
           const expr =
             task.a.y === task.b.y
-              ? `|${task.b.x} − (${task.a.x})| = ${dist}`
-              : `|${task.b.y} − (${task.a.y})| = ${dist}`;
+              ? `|${fmtOperand(task.b.x)} − ${fmtOperand(task.a.x)}| = ${dist}`
+              : `|${fmtOperand(task.b.y)} − ${fmtOperand(task.a.y)}| = ${dist}`;
           win(
             25,
             `Distance = ${dist}. ${expr}`,

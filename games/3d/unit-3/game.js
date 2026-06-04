@@ -45,7 +45,8 @@ function makeLevel(level) {
         // 12 miles in 3 hours -> 12 ÷ 3 = 4 mph.
         {
           type: "unitrate",
-          prompt: "12 miles in 3 hours. Speed for 1 hour? Set mph.",
+          prompt:
+            "A car goes 12 miles in 3 hours. How many miles in 1 hour? Set the speed (mph).",
           table: [
             ["miles", "hours"],
             ["12", "3"],
@@ -55,11 +56,12 @@ function makeLevel(level) {
           unit: "mph",
           min: 0,
           max: 12,
+          coarse: 5,
         },
         // $10 for 2 cars -> 10 ÷ 2 = $5 each.
         {
           type: "unitrate",
-          prompt: "$10 for 2 cars. Price for 1 car? Set dollars.",
+          prompt: "2 cars cost $10. How much for 1 car? Set the price.",
           table: [
             ["dollars", "cars"],
             ["10", "2"],
@@ -69,11 +71,13 @@ function makeLevel(level) {
           unit: "$/car",
           min: 0,
           max: 12,
+          coarse: 5,
         },
         // Equivalent ratio 4:1 -> 4 × 5 = 20 miles in 5 hours.
         {
           type: "equiv",
-          prompt: "4 miles each hour. How far in 5 hours? Set miles.",
+          prompt:
+            "A car drives 4 miles each hour. How far does it go in 5 hours? Set the miles.",
           table: [
             ["miles", "hours"],
             ["4", "1"],
@@ -84,11 +88,13 @@ function makeLevel(level) {
           unit: "miles",
           min: 0,
           max: 28,
+          coarse: 5,
         },
         // Equivalent ratio 3:2 -> for 6 laps, fuel = 3 × 3 = 9.
         {
           type: "equiv",
-          prompt: "3 liters every 2 laps. How much for 6 laps? Set liters.",
+          prompt:
+            "A car uses 3 liters of fuel every 2 laps. How much fuel for 6 laps? Set the liters.",
           table: [
             ["liters", "laps"],
             ["3", "2"],
@@ -99,11 +105,12 @@ function makeLevel(level) {
           unit: "L",
           min: 0,
           max: 16,
+          coarse: 5,
         },
         // Conversion: 2 min = 120 s. 2 × 60.
         {
           type: "conversion",
-          prompt: "2 minutes is how many seconds? Set seconds.",
+          prompt: "How many seconds are in 2 minutes? Set the seconds.",
           table: [
             ["minutes", "seconds"],
             ["1", "60"],
@@ -112,7 +119,7 @@ function makeLevel(level) {
           help: "1 minute = 60 seconds. Multiply the minutes by 60: 2 × 60 = ?",
           answer: 120,
           unit: "sec",
-          min: 60,
+          min: 0,
           max: 200,
           coarse: 10,
         },
@@ -137,7 +144,8 @@ function makeLevel(level) {
       // 150 miles in 3 hours -> 50 mph; then 50 × 4 = 200 miles.
       {
         type: "multistep",
-        prompt: "150 miles in 3 hours. How far in 4 hours? Set miles.",
+        prompt:
+          "A car goes 150 miles in 3 hours at a steady speed. How far does it go in 4 hours? Set the miles.",
         help: "First find the speed: 150 ÷ 3. Then multiply that by 4 hours.",
         answer: 200,
         unit: "miles",
@@ -148,43 +156,47 @@ function makeLevel(level) {
       // Percent: 20% of 40 = 8.
       {
         type: "percent",
-        prompt: "What is 20% of 40 mph? Set the boost.",
+        prompt: "What is 20% of 40 mph? Set the speed boost.",
         help: "20% = 0.20. Multiply 0.20 × 40 to find the boost.",
         answer: 8,
         unit: "mph",
         min: 0,
         max: 24,
+        coarse: 5,
       },
       // Percent: 15% of 80 = 12.
       {
         type: "percent",
-        prompt: "What is 15% of 80 liters? Set liters.",
+        prompt: "What is 15% of 80 liters? Set the liters.",
         help: "15% = 0.15. Multiply 0.15 × 80 to find the liters.",
         answer: 12,
         unit: "L",
         min: 0,
         max: 32,
+        coarse: 5,
       },
       // Equivalent ratio 7:2 scaled: 35 miles in 10 hours -> miles for? Actually
       // give 7 mi per 2 h; for 10 h, 10 ÷ 2 = 5, 7 × 5 = 35.
       {
         type: "multistep",
-        prompt: "7 miles every 2 hours. How far in 10 hours? Set miles.",
+        prompt:
+          "A car drives 7 miles every 2 hours at a steady pace. How far does it go in 10 hours? Set the miles.",
         help: "How many groups of 2 hours are in 10? Multiply 7 by that many groups.",
         answer: 35,
         unit: "miles",
         min: 0,
         max: 60,
-        coarse: 1,
+        coarse: 5,
       },
       // Conversion: 3 minutes 30 s = 210 s. 3×60 + 30.
       {
         type: "conversion",
-        prompt: "3 min 30 s is how many seconds? Set seconds.",
+        prompt:
+          "How many seconds are in 3 minutes and 30 seconds? Set the seconds.",
         help: "1 minute = 60 seconds. Multiply the minutes by 60, then add the extra 30 seconds.",
         answer: 210,
         unit: "sec",
-        min: 120,
+        min: 0,
         max: 300,
         coarse: 10,
       },
@@ -208,6 +220,7 @@ function makeLevel(level) {
         unit: "$",
         min: 0,
         max: 40,
+        coarse: 5,
       },
     ],
   };
@@ -522,12 +535,19 @@ export default {
     }
 
     function updateHud() {
-      const tableHint =
-        problem.table && cfg.hints
-          ? "  (table: " +
-            problem.table.map((r) => r.join(":")).join("  ") +
-            ")"
-          : "";
+      // Plain-language "Given:" hint built from the rate table: use the header
+      // row for unit names and the first complete data row for the numbers,
+      // e.g. ["miles","hours"] + ["12","3"] -> "Given: 12 miles in 3 hours".
+      let tableHint = "";
+      if (problem.table && cfg.hints) {
+        const [units, ...rows] = problem.table;
+        const given = rows.find((r) =>
+          r.every((c) => !String(c).includes("?")),
+        );
+        if (given && units.length >= 2) {
+          tableHint = `  Given: ${given[0]} ${units[0]} in ${given[1]} ${units[1]}`;
+        }
+      }
       const objText = isCompare()
         ? `${problem.prompt} ▶ ${readout()}`
         : `${problem.prompt} ▶ You: ${readout()}${tableHint}`;
@@ -801,17 +821,31 @@ export default {
     }
 
     // ---- Tap: pick a lane (compare) or lock in (numeric) --------------------
+    // On compare rounds a tap only SELECTS a lane; committing requires a second
+    // tap on the already-selected lane (or the Space/action button). This keeps
+    // a stray tap from costing a life. Numeric rounds commit on tap as before.
     function handleTap() {
       if (locked) return;
       if (isCompare()) {
         const hits = input.raycast(camera, laneTags, false);
         if (hits.length && hits[0].object.userData.lane != null) {
-          laneSel = hits[0].object.userData.lane;
-          refreshCompareTags();
-          updateHud();
-          feel.sfx("select");
+          const tappedLane = hits[0].object.userData.lane;
+          if (tappedLane === laneSel) {
+            // Second tap on the chosen lane confirms it.
+            commit();
+          } else {
+            // First tap just moves the selection — no commit yet.
+            laneSel = tappedLane;
+            refreshCompareTags();
+            updateHud();
+            feel.sfx("select");
+            hud.message("Tap this lane again (or press Space) to lock it in.", {
+              tone: "info",
+              duration: 2200,
+            });
+          }
         }
-        commit();
+        // Taps that miss every lane do nothing on compare rounds.
       } else {
         commit();
       }
@@ -894,15 +928,15 @@ export default {
           controls: [
             {
               key: "↑ / ↓",
-              actionEn: "Raise or lower your number by 1",
-              actionEs: "Sube o baja tu número de 1 en 1",
+              actionEn: "Set your number one at a time",
+              actionEs: "Ajusta tu número de uno en uno",
             },
             {
               key: "→ / ←",
               actionEn:
-                "Jump by bigger steps (and pick a lane on 'cheapest fuel' rounds)",
+                "Jump faster on big-number rounds (and pick a lane on 'cheapest fuel' rounds)",
               actionEs:
-                "Salta de a pasos grandes (y elige carril en rondas de comparar)",
+                "Avanza más rápido en rondas de números grandes (y elige carril en rondas de comparar)",
             },
             {
               key: "Space",
@@ -916,8 +950,10 @@ export default {
             },
             {
               key: "Tap / Click",
-              actionEn: "Lock in your number, or tap a lane to pick it",
-              actionEs: "Confirma tu número, o toca un carril para elegirlo",
+              actionEn:
+                "Lock in your number. On 'cheapest fuel' rounds, tap a lane to pick it, then tap it again to lock it in",
+              actionEs:
+                "Confirma tu número. En rondas de comparar, toca un carril para elegirlo y tócalo otra vez para confirmarlo",
             },
             {
               key: "?",
