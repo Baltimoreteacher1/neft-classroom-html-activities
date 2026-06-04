@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/assets/shared.css">
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<script async src="/assets/vendor/es-module-shims-1.10.0.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/assets/neft-theme.css"/>
+<script src="/assets/neft-theme.js" defer></script>
+<script async src="https://ga.jspm.io/npm:es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 <script type="importmap">
 {
   "imports": {
-    "three": "/assets/vendor/three-0.160.0/build/three.module.js",
-    "three/addons/": "/assets/vendor/three-0.160.0/examples/jsm/"
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
   }
 }
 </script>
@@ -17,6 +21,7 @@
 <title>Interactive Student Notebook — Nets of Three-Dimensional Figures</title>
 <meta name="description" content="English math notebook: nets, faces, edges, vertices, and interactive 3-D models. Clear prompts for multilingual learners. Work saves on this device only."/>
 <meta name="theme-color" content="#12355b"/>
+<meta name="ewl-notebook-build" content="v12-2026-05-12"/>
 <style>
 :root{
   --navy:#12355b; --navy2:#18466f; --blue:#2f80d1; --teal:#2e8b8b; --green:#0fa958;
@@ -24,6 +29,179 @@
   --terracotta:#d9795d; --ink:#21313f; --muted:#5f6f80; --line:#d7e2ed; --card:#fff;
   --good:#0f7c4a; --bad:#b64e2f; --hint:#875f00; --shadow:0 18px 38px rgba(18,53,91,.13);
   --radius:22px; --radius2:15px;
+}
+:root[data-theme="dark"]{
+  --navy:#8ab4f8; --navy2:#3c4043; --blue:#8ab4f8; --teal:#80cbc4; --green:#81c995;
+  --sage:#2a2b2e; --sage2:#3c4043; --cream:#131314; --blush:#f28b82; --mustard:#fdd663;
+  --terracotta:#ff8a65; --ink:#e3e3e3; --muted:#9e9e9e; --line:rgba(255, 255, 255, 0.08); --card:#1e1f20;
+  --good:#81c995; --bad:#f28b82; --hint:#fdd663; --shadow:0 12px 32px rgba(0,0,0,0.45);
+}
+/* Overrides for Premium Google Dark Mode */
+:root[data-theme="dark"] body {
+  background: var(--cream);
+}
+:root[data-theme="dark"] .sidebar {
+  background: var(--card);
+  border-right-color: var(--line);
+}
+:root[data-theme="dark"] .tab-btn.active {
+  background: var(--navy);
+  color: #131314;
+  border-color: var(--navy);
+}
+:root[data-theme="dark"] .tab-btn.active .tab-num {
+  background: var(--green);
+  color: #131314;
+}
+:root[data-theme="dark"] .student input {
+  background: #2a2b2e;
+  color: #e3e3e3;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+:root[data-theme="dark"] .hero {
+  background: linear-gradient(145deg, #1e1f20 0%, #131314 100%);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .obj {
+  background: #1e1f20;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .card {
+  background: var(--card);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .panel {
+  background: #131314;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .panel.notice {
+  border-color: #34a853;
+  background: rgba(52, 168, 83, 0.08);
+}
+:root[data-theme="dark"] .panel.wonder {
+  border-color: #fbbc05;
+  background: rgba(251, 188, 5, 0.08);
+}
+:root[data-theme="dark"] .writebox {
+  border-color: var(--line);
+  background: #2a2b2e;
+  color: var(--ink);
+}
+:root[data-theme="dark"] .text-input {
+  border-color: var(--line);
+  background: #2a2b2e;
+  color: var(--ink);
+}
+:root[data-theme="dark"] .select {
+  border-color: var(--line);
+  background: #2a2b2e;
+  color: var(--ink);
+}
+:root[data-theme="dark"] .vocab-row {
+  background: var(--card);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .vocab-img {
+  background: #2a2b2e;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .match-card {
+  background: var(--card);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .match-card img {
+  background: #2a2b2e;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .option-card {
+  background: var(--card);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .option-card.selected {
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(129, 201, 149, 0.18);
+}
+:root[data-theme="dark"] .mini-cell {
+  background: #2a2b2e;
+  border-color: #5f6f80;
+  color: #9e9e9e;
+}
+:root[data-theme="dark"] .mini-cell.on {
+  background: #f28b82;
+  border-color: #1e1f20;
+  color: #1e1f20;
+}
+:root[data-theme="dark"] .builder {
+  background: #131314;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .build-cell {
+  background: #2a2b2e;
+  border-color: #5f6f80;
+  color: #9e9e9e;
+}
+:root[data-theme="dark"] .build-cell.on {
+  background: #f28b82;
+  border-color: #1e1f20;
+  color: #1e1f20;
+}
+:root[data-theme="dark"] .help-card {
+  background: rgba(251, 188, 5, 0.08);
+  border-color: #fbbc05;
+  color: var(--ink);
+}
+:root[data-theme="dark"] .help-card h4 {
+  color: var(--mustard);
+}
+:root[data-theme="dark"] .helper-mini {
+  background: #1e1f20;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .solid-model {
+  background: linear-gradient(135deg, #1e1f20, #131314);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .try-create-panel {
+  background: var(--card);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .reference-card {
+  background: var(--card);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .rating label {
+  background: var(--card);
+  border-color: var(--line);
+  color: var(--navy);
+}
+:root[data-theme="dark"] .check.light {
+  background: #2a2b2e;
+  color: var(--navy);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .info-box.gold {
+  background: rgba(251, 188, 5, 0.08);
+}
+:root[data-theme="dark"] .info-box.green {
+  background: rgba(52, 168, 83, 0.08);
+}
+:root[data-theme="dark"] .info-box {
+  background: rgba(138, 180, 248, 0.08);
+}
+:root[data-theme="dark"] .feedback.hint {
+  background: rgba(251, 188, 5, 0.1);
+  border-color: rgba(251, 188, 5, 0.25);
+  color: var(--hint);
+}
+:root[data-theme="dark"] .feedback.good {
+  background: rgba(52, 168, 83, 0.1);
+  border-color: rgba(52, 168, 83, 0.25);
+  color: var(--good);
+}
+:root[data-theme="dark"] .feedback.bad {
+  background: rgba(242, 139, 130, 0.1);
+  border-color: rgba(242, 139, 130, 0.25);
+  color: var(--bad);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -51,6 +229,7 @@ button{cursor:pointer}
 .util{border:0;border-radius:13px;background:rgba(255,255,255,.17);color:white;font-weight:900;padding:10px 12px}
 .util:hover{background:rgba(255,255,255,.25)}
 .save-note{font-size:.78rem;color:rgba(255,255,255,.72);line-height:1.25}
+.notebook-build{font-size:.62rem;color:rgba(255,255,255,.48);margin:10px 0 0;line-height:1.25;letter-spacing:.02em}
 .main{padding:28px;max-width:1440px;width:100%}
 .hero{position:relative;overflow:hidden;background:white;border:1px solid rgba(18,53,91,.08);border-radius:28px;padding:24px 26px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;margin-bottom:20px}
 .hero:after{content:"";position:absolute;right:-70px;top:-82px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(47,128,209,.18) 1px,transparent 2px);background-size:15px 15px}
@@ -121,6 +300,17 @@ h2{margin:0;font-size:clamp(2rem,3vw,3.2rem);line-height:.98;color:var(--navy);l
 .mini-cell{border:2px dashed #8293a8;border-radius:9px;background:#fff;display:grid;place-items:center;font-weight:900;color:#6e7d8f}
 .mini-cell.on{background:#f8dfec;border-color:#27313d;color:#27313d;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08)}
 .builder{display:grid;grid-template-columns:repeat(7,52px);grid-auto-rows:52px;gap:6px;justify-content:center;padding:15px;background:#f8fbff;border:1px solid var(--line);border-radius:18px}
+.fold-preview-row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;margin-top:12px}
+.fold-canvas{width:100%;max-width:320px;height:200px;min-width:280px;min-height:200px;display:block;border:1px solid var(--line);border-radius:14px;background:#0b1220;box-shadow:0 8px 24px rgba(18,53,91,.12)}
+.fold-status{font-size:.88rem;font-weight:700;color:#12355b;margin:6px 0 0;min-height:1.3em}
+.warm-grid{display:grid;gap:12px;margin-top:10px}
+.warm-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfdff}
+.warm-row svg{flex:0 0 150px;width:150px;height:auto;max-width:46%}
+.warm-row .select{min-width:200px}
+.fold-preview-meta{flex:1;min-width:180px}
+.fold-preview-meta .subtle{margin-top:6px}
+.practice-block{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.prism-solid-svg{background:#fbfdff;border-radius:14px;border:1px solid var(--line);padding:8px}
 .build-cell{border:2px dashed #b8c6d4;border-radius:10px;background:white;color:#9aabba;font-weight:900;display:grid;place-items:center}
 .build-cell.on{background:#f8dfec;border-color:#27313d;color:#27313d;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08)}
 .help-stack{display:grid;gap:12px;position:sticky;top:16px}
@@ -261,6 +451,7 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
   .gl-cube-canvas,.gl-cube-hint,.gl-cube-overlay,.gl-fallback-note{display:none!important}
   .gl-cube-fallback{display:block!important;width:100%;height:auto}
   .gl-cube-wrap{background:#fff;box-shadow:none;border:1px solid #ccc}
+  .fold-preview-row{display:none!important}
 }
 
 .gl-fallback-note{display:none;font-size:.72rem;color:var(--muted);text-align:center;padding:8px 12px;margin:0;background:#fff9f0;border-top:1px solid rgba(217,121,93,.2)}
@@ -308,11 +499,12 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
       <button type="button" class="util" id="resetBtn" title="Clear saved answers on this device">Reset Notebook</button>
     </div>
     <p class="save-note">Your work saves automatically on <strong>this device only</strong>. It does not move to another phone or computer. Use <strong>Download My Responses</strong> before you clear browsing data or cookies.</p>
+    <p class="notebook-build" title="Use this label to confirm the live site loaded the latest file">Notebook build v12 · May 12, 2026</p>
   </aside>
   <main class="main" id="main-content" tabindex="-1">
     <section class="hero">
       <div>
-        <p class="eyebrow">Neft Teacher Student Notebook</p>
+        <p class="eyebrow">EduWonderLab Student Notebook</p>
         <h2>Represent 3-D Figures in 2-D</h2>
         <p class="hero-lede">Learn how a flat pattern called a <strong>net</strong> can fold into a solid shape. You will look at faces, edges, and vertices—and explain your ideas in clear, careful sentences.</p>
         <p class="subtle" style="margin-top:.55rem">Then you will use structure (how faces connect and fold) to decide which flat patterns can become real 3-D solids.</p>
@@ -656,6 +848,15 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
               <button class="check light" onclick="loadTryItStarter()">Need a Starter?</button>
               <button class="check light" onclick="clearGrid('tryit')">Clear Grid</button>
             </div>
+            <div class="fold-preview-row">
+              <canvas id="tryitFoldCanvas" class="fold-canvas" width="300" height="200" aria-label="3-D preview: your net pattern next to a unit cube"></canvas>
+              <div class="fold-preview-meta">
+                <button type="button" class="check light" id="tryitFoldPreviewBtn">Update 3-D preview</button>
+                <button type="button" class="check light" id="tryitFoldLiftBtn">Lift net (fold hint)</button>
+                <p class="subtle">Pink squares show your grid as a flat net in space. The translucent box is a unit cube—compare whether your faces could wrap it without crossing.</p>
+                <p class="fold-status" id="tryitFoldStatus" role="status"></p>
+              </div>
+            </div>
             <div class="feedback" id="guidedFeedback"></div>
           </div>
           <aside class="help-stack">
@@ -687,6 +888,32 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
 
     <section class="section" data-section="practice" id="panel-practice" role="tabpanel" aria-labelledby="tab-practice">
       <h2 class="print-title">Practice: Which Net Works?</h2>
+
+      <div class="card" style="margin-bottom:18px;border:2px solid #2f80d1">
+        <h3>Quick practice: Which solid does each net fold into?</h3>
+        <p class="subtle">Four different nets — choose the solid for each. (Scroll down for Problems 1–3 with full explanations.)</p>
+        <div class="warm-grid">
+          <div class="warm-row">
+            <svg viewBox="0 0 120 100" aria-hidden="true"><g transform="translate(10,8)"><rect fill="#fff0f7" stroke="#27313d" stroke-width="1.5" width="22" height="22" x="44" y="0"/><rect fill="#fff0f7" stroke="#27313d" stroke-width="1.5" width="22" height="22" x="0" y="22"/><rect fill="#fff0f7" stroke="#27313d" stroke-width="1.5" width="22" height="22" x="22" y="22"/><rect fill="#fff0f7" stroke="#27313d" stroke-width="1.5" width="22" height="22" x="44" y="22"/><rect fill="#fff0f7" stroke="#27313d" stroke-width="1.5" width="22" height="22" x="66" y="22"/><rect fill="#fff0f7" stroke="#27313d" stroke-width="1.5" width="22" height="22" x="44" y="44"/></g></svg>
+            <label class="subtle"><strong>Net 1</strong><select id="warm1" data-save="warm1" class="select"><option value="">Choose…</option><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option><option value="triangular_prism">Triangular prism</option><option value="square_pyramid">Square pyramid</option></select></label>
+          </div>
+          <div class="warm-row">
+            <svg viewBox="0 0 120 100" aria-hidden="true"><g transform="translate(8,10)"><polygon points="52,4 92,28 12,28" fill="#e9d5ff" stroke="#27313d" stroke-width="1.5"/><rect x="12" y="28" width="40" height="26" fill="#dbeafe" stroke="#27313d" stroke-width="1.5"/><rect x="52" y="28" width="40" height="26" fill="#dbeafe" stroke="#27313d" stroke-width="1.5"/><rect x="92" y="28" width="16" height="26" fill="#dbeafe" stroke="#27313d" stroke-width="1.5"/><polygon points="52,54 92,78 12,78" fill="#e9d5ff" stroke="#27313d" stroke-width="1.5"/></g></svg>
+            <label class="subtle"><strong>Net 2</strong><select id="warm2" data-save="warm2" class="select"><option value="">Choose…</option><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option><option value="triangular_prism">Triangular prism</option><option value="square_pyramid">Square pyramid</option></select></label>
+          </div>
+          <div class="warm-row">
+            <svg viewBox="0 0 120 100" aria-hidden="true"><g transform="translate(28,12)"><rect x="0" y="22" width="28" height="28" fill="#fef9c3" stroke="#27313d" stroke-width="1.5"/><polygon points="14,0 42,22 0,22" fill="#fca5a5" stroke="#27313d" stroke-width="1.5"/><polygon points="14,50 42,28 0,28" fill="#fca5a5" stroke="#27313d" stroke-width="1.5"/><polygon points="42,22 70,0 70,50" fill="#fca5a5" stroke="#27313d" stroke-width="1.5"/><polygon points="0,22 -28,0 -28,50" fill="#fca5a5" stroke="#27313d" stroke-width="1.5"/></g></svg>
+            <label class="subtle"><strong>Net 3</strong><select id="warm3" data-save="warm3" class="select"><option value="">Choose…</option><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option><option value="triangular_prism">Triangular prism</option><option value="square_pyramid">Square pyramid</option></select></label>
+          </div>
+          <div class="warm-row">
+            <svg viewBox="0 0 120 100" aria-hidden="true"><g transform="translate(6,18)"><rect fill="#dbeafe" stroke="#27313d" stroke-width="1.5" x="40" y="0" width="36" height="22"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="1.5" x="0" y="22" width="36" height="22"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="1.5" x="40" y="22" width="36" height="22"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="1.5" x="76" y="22" width="36" height="22"/><rect fill="#e9d5ff" stroke="#27313d" stroke-width="1.5" x="40" y="44" width="36" height="22"/></g></svg>
+            <label class="subtle"><strong>Net 4</strong><select id="warm4" data-save="warm4" class="select"><option value="">Choose…</option><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option><option value="triangular_prism">Triangular prism</option><option value="square_pyramid">Square pyramid</option></select></label>
+          </div>
+        </div>
+        <div class="check-row"><button class="check" onclick="checkWarmNets()">Check quick practice</button></div>
+        <div class="feedback" id="warmFeedback"></div>
+      </div>
+
       <div class="card">
         <h3>Practice: Match the 3-D Cube to the Correct Net</h3>
         <div class="preview-pair">
@@ -727,7 +954,69 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
         <textarea id="netExplain" data-save="netExplain" class="writebox short" placeholder="I know because..."></textarea>
         <div class="check-row"><button class="check" onclick="checkCubeChoice()">Check Choice</button></div><div class="feedback" id="cubeFeedback"></div>
       </div>
-    </section>
+
+      <div class="card practice-block">
+        <h3>Problem 2: Match the Rectangular Prism to the Correct Net</h3>
+        <div class="preview-pair">
+          <div class="prism-solid-svg" role="img" aria-label="Rectangular prism solid">
+            <svg viewBox="0 0 200 160" width="100%" height="auto">
+              <defs>
+                <linearGradient id="prPFront" x1="0" x2="1"><stop offset="0" stop-color="#dbeafe"/><stop offset="1" stop-color="#93c5fd"/></linearGradient>
+                <linearGradient id="prPTop" x1="0" x2="1"><stop offset="0" stop-color="#fef9c3"/><stop offset="1" stop-color="#fde047"/></linearGradient>
+                <linearGradient id="prPSide" x1="0" x2="1"><stop offset="0" stop-color="#e9d5ff"/><stop offset="1" stop-color="#c084fc"/></linearGradient>
+              </defs>
+              <polygon points="40,30 120,30 150,55 70,55" fill="url(#prPTop)" stroke="#27313d" stroke-width="2.5"/>
+              <polygon points="70,55 150,55 150,120 70,120" fill="url(#prPSide)" stroke="#27313d" stroke-width="2.5"/>
+              <polygon points="10,55 70,55 70,120 10,120" fill="url(#prPFront)" stroke="#27313d" stroke-width="2.5"/>
+              <line x1="40" y1="30" x2="10" y2="55" stroke="#27313d" stroke-width="2.5"/>
+              <line x1="120" y1="30" x2="150" y2="55" stroke="#27313d" stroke-width="2.5"/>
+              <text x="22" y="150" font-size="14" font-weight="800" fill="#12355b">Target: rectangular prism</text>
+            </svg>
+          </div>
+          <div>
+            <p class="subtle"><strong>Count rectangles, not squares.</strong> A rectangular prism net has 6 rectangular faces (often in pairs). Which net could fold into the prism above?</p>
+          </div>
+        </div>
+        <div class="net-options" id="prismNetOptions">
+          <div class="option-card" data-choice="D"><label><input type="radio" name="prismChoice" value="D" data-save="prismChoice"> D</label>
+            <svg class="net-svg" viewBox="0 0 180 150"><g transform="translate(25,35)"><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="0" y="0" width="50" height="30"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="50" y="0" width="50" height="30"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="100" y="0" width="50" height="30"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="50" y="30" width="50" height="30"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="50" y="60" width="50" height="30"/></g></svg>
+            <p class="subtle">Only 5 faces — missing one.</p></div>
+          <div class="option-card" data-choice="E"><label><input type="radio" name="prismChoice" value="E" data-save="prismChoice"> E</label>
+            <svg class="net-svg" viewBox="0 0 180 150"><g transform="translate(20,25)"><rect fill="#fef9c3" stroke="#27313d" stroke-width="2" x="50" y="0" width="45" height="28"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="0" y="28" width="45" height="28"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="50" y="28" width="45" height="28"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="95" y="28" width="45" height="28"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="140" y="28" width="45" height="28"/><rect fill="#e9d5ff" stroke="#27313d" stroke-width="2" x="50" y="56" width="45" height="28"/></g></svg>
+            <p class="subtle">Six rectangles in a foldable strip + flaps.</p></div>
+          <div class="option-card" data-choice="F"><label><input type="radio" name="prismChoice" value="F" data-save="prismChoice"> F</label>
+            <svg class="net-svg" viewBox="0 0 180 150"><g transform="translate(30,20)"><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="0" y="0" width="40" height="40"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="40" y="0" width="40" height="40"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="80" y="0" width="40" height="40"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="120" y="0" width="40" height="40"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="40" y="40" width="40" height="40"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="80" y="40" width="40" height="40"/><rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="120" y="40" width="40" height="40"/></g></svg>
+            <p class="subtle">Seven rectangles — too many.</p></div>
+        </div>
+        <label class="subtle"><strong>Explain:</strong> How did you use face pairs or the prism structure?</label>
+        <textarea id="prismNetExplain" data-save="prismNetExplain" class="writebox short" placeholder="I chose ___ because..."></textarea>
+        <div class="check-row"><button class="check" onclick="checkPrismChoice()">Check Problem 2</button></div>
+        <div class="feedback" id="prismFeedback"></div>
+      </div>
+
+      <div class="card practice-block">
+        <h3>Problem 3: Which Solid Does This Net Form?</h3>
+        <p class="subtle">Study the net. It has two triangles and three rectangles, all connected. Which 3-D solid does it fold into?</p>
+        <div style="max-width:360px;margin:10px auto">
+          <svg viewBox="0 0 220 140" width="100%" height="auto" role="img" aria-label="Net with two triangles and three rectangles">
+            <rect fill="#fef9c3" stroke="#27313d" stroke-width="2" x="70" y="40" width="80" height="36"/>
+            <rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="10" y="40" width="56" height="36"/>
+            <rect fill="#dbeafe" stroke="#27313d" stroke-width="2" x="154" y="40" width="56" height="36"/>
+            <polygon points="70,40 110,8 150,40" fill="#e9d5ff" stroke="#27313d" stroke-width="2"/>
+            <polygon points="70,76 110,108 150,76" fill="#e9d5ff" stroke="#27313d" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="net-options" id="solidNetOptions" style="grid-template-columns:repeat(2,1fr);max-width:520px;margin:0 auto">
+          <div class="option-card" data-solid-choice="triangular_prism"><label><input type="radio" name="solidFromNet" value="triangular_prism" data-save="solidFromNet"> Triangular prism</label></div>
+          <div class="option-card" data-solid-choice="rectangular_prism"><label><input type="radio" name="solidFromNet" value="rectangular_prism" data-save="solidFromNet"> Rectangular prism</label></div>
+          <div class="option-card" data-solid-choice="cube"><label><input type="radio" name="solidFromNet" value="cube" data-save="solidFromNet"> Cube</label></div>
+          <div class="option-card" data-solid-choice="square_pyramid"><label><input type="radio" name="solidFromNet" value="square_pyramid" data-save="solidFromNet"> Square pyramid</label></div>
+        </div>
+        <label class="subtle"><strong>Evidence:</strong> Name the face shapes and how they meet.</label>
+        <textarea id="solidNetExplain" data-save="solidNetExplain" class="writebox short" placeholder="This net folds into a ___ because..."></textarea>
+        <div class="check-row"><button class="check" onclick="checkSolidFromNet()">Check Problem 3</button></div>
+        <div class="feedback" id="solidNetFeedback"></div>
+      </div>
 
     <section class="section" data-section="pyramid" id="panel-pyramid" role="tabpanel" aria-labelledby="tab-pyramid">
       <h2 class="print-title">Partner Practice: Paper Cubes</h2>
@@ -793,6 +1082,15 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
             <label class="subtle" for="builderSolid"><strong>Solid:</strong></label>
             <select id="builderSolid" data-save="builderSolid" class="select"><option value="rectangular_prism">Rectangular prism</option><option value="cube">Cube</option></select>
             <div class="builder" id="builderGrid" aria-label="Clickable net builder grid"></div>
+            <div class="fold-preview-row">
+              <canvas id="builderFoldCanvas" class="fold-canvas" width="300" height="200" aria-label="3-D preview of your builder net"></canvas>
+              <div class="fold-preview-meta">
+                <button type="button" class="check light" id="builderFoldPreviewBtn">Update 3-D preview</button>
+                <button type="button" class="check light" id="builderFoldLiftBtn">Lift net (fold hint)</button>
+                <p class="subtle">Compare your flat layout (pink) to the translucent target solid. Orbit to see if face counts and overall footprint match.</p>
+                <p class="fold-status" id="builderFoldStatus" role="status"></p>
+              </div>
+            </div>
             <textarea id="builderExplain" data-save="builderExplain" class="writebox short" placeholder="I changed / kept ___ because ___."></textarea>
             <div class="check-row"><button class="check" onclick="checkBuilder()">Check My Net</button><button class="check light" onclick="clearGrid('builder')">Clear Grid</button></div><div class="feedback" id="builderFeedback"></div>
           </div>
@@ -841,17 +1139,26 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
     </section>
 
     <section class="section" data-section="create" id="panel-create" role="tabpanel" aria-labelledby="tab-create">
-      <h2 class="print-title">Net Builder Challenge</h2>
+      <h2 class="print-title">Independent Practice: Create a Net</h2>
       <div class="card">
-        <h3>Net Builder Challenge</h3>
+        <h3>Independent Practice: Create a Net</h3>
         <div class="grid-main-side">
           <div>
             <label class="subtle" for="createSolid"><strong>Choose a solid to design:</strong></label>
-            <select id="createSolid" data-save="createSolid" class="select"><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option></select>
-            <p class="subtle">Win condition: build one connected net with exactly 6 faces, then explain how it folds. Every face must touch another by a full edge. Avoid isolated squares and 2-by-2 blocks that would overlap.</p>
+            <select id="createSolid" data-save="createSolid" class="select"><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option><option value="square_pyramid">Square pyramid</option></select>
+            <p class="subtle">Click the grid to build your net. For a square pyramid, use one square as the base and describe where the triangular faces attach.</p>
             <div class="builder" id="createGrid" aria-label="Clickable design a net grid"></div>
-            <textarea id="createExplain" data-save="createExplain" class="writebox short" placeholder="My net has 6 faces. It folds into a ___ because ___. I checked that ___."></textarea>
-            <div class="check-row"><button class="check" onclick="checkCreate()">Check My Net</button><button class="check light" onclick="clearGrid('create')">Clear Grid</button></div><div class="feedback" id="createFeedback"></div>
+            <div class="fold-preview-row">
+              <canvas id="createFoldCanvas" class="fold-canvas" width="300" height="200" aria-label="3-D preview of your design net"></canvas>
+              <div class="fold-preview-meta">
+                <button type="button" class="check light" id="createFoldPreviewBtn">Update 3-D preview</button>
+                <button type="button" class="check light" id="createFoldLiftBtn">Lift net (fold hint)</button>
+                <p class="subtle">Preview uses your chosen solid as the ghost shape (cube, prism, or square pyramid). Your grid still shows as flat faces in pink.</p>
+                <p class="fold-status" id="createFoldStatus" role="status"></p>
+              </div>
+            </div>
+            <textarea id="createExplain" data-save="createExplain" class="writebox short" placeholder="My solid is a ___ because ___. One thing I checked was ___."></textarea>
+            <div class="check-row"><button class="check" onclick="checkCreate()">Check My Creation</button><button class="check light" onclick="clearGrid('create')">Clear Grid</button></div><div class="feedback" id="createFeedback"></div>
           </div>
           <div class="help-stack">
             <div class="help-card"><h4>Hints / Help</h4><ul id="dynamicHints"><li>Choose a solid first.</li><li>Count how many faces your solid needs.</li><li>Keep every face attached by a full edge.</li></ul></div>
@@ -889,6 +1196,7 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
 <script type="module">
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 function showRasterFallback(wrap, reason) {
   wrap.classList.add("gl-fallback-active");
@@ -931,6 +1239,9 @@ function initCube(wrap) {
   renderer.toneMappingExposure = 1.08;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.035).texture;
 
   const materials = [
     new THREE.MeshPhysicalMaterial({
@@ -1063,6 +1374,280 @@ function initCube(wrap) {
   tick();
 }
 
+// --- Flat net vs target solid preview (Try It / Net Builder / Design) ---
+const netFoldPreviews = new Map();
+
+function gridCellsToCoords(set) {
+  return [...set].map((k) => k.split(",").map(Number));
+}
+
+function makeTargetMesh(solidKey) {
+  if (solidKey === "rectangular_prism") {
+    const g = new THREE.BoxGeometry(1.35, 0.85, 1.05);
+    const m = new THREE.MeshPhysicalMaterial({
+      color: 0x93c5fd,
+      transparent: true,
+      opacity: 0.35,
+      roughness: 0.45,
+      metalness: 0.05,
+      depthWrite: false,
+      emissive: 0x1e3a5f,
+      emissiveIntensity: 0.45,
+    });
+    const mesh = new THREE.Mesh(g, m);
+    mesh.add(
+      new THREE.LineSegments(
+        new THREE.EdgesGeometry(g),
+        new THREE.LineBasicMaterial({ color: 0x12355b, transparent: true, opacity: 0.55 }),
+      ),
+    );
+    return mesh;
+  }
+  if (solidKey === "square_pyramid") {
+    const g = new THREE.CylinderGeometry(0.02, 0.95, 0.95, 4, 1, false);
+    const m = new THREE.MeshPhysicalMaterial({
+      color: 0xfca5a5,
+      transparent: true,
+      opacity: 0.38,
+      roughness: 0.4,
+      metalness: 0.04,
+      depthWrite: false,
+      emissive: 0x5c1f1f,
+      emissiveIntensity: 0.35,
+    });
+    const mesh = new THREE.Mesh(g, m);
+    mesh.rotation.y = Math.PI / 4;
+    mesh.add(
+      new THREE.LineSegments(
+        new THREE.EdgesGeometry(g),
+        new THREE.LineBasicMaterial({ color: 0x12355b, transparent: true, opacity: 0.5 }),
+      ),
+    );
+    return mesh;
+  }
+  const g = new THREE.BoxGeometry(1, 1, 1);
+  const m = new THREE.MeshPhysicalMaterial({
+    color: 0x6ee7b7,
+    transparent: true,
+    opacity: 0.35,
+    roughness: 0.45,
+    metalness: 0.05,
+    depthWrite: false,
+    emissive: 0x134e4a,
+    emissiveIntensity: 0.4,
+  });
+  const mesh = new THREE.Mesh(g, m);
+  mesh.add(
+    new THREE.LineSegments(
+      new THREE.EdgesGeometry(g),
+      new THREE.LineBasicMaterial({ color: 0x12355b, transparent: true, opacity: 0.55 }),
+    ),
+  );
+  return mesh;
+}
+
+function ensureNetFoldPreview(canvasId, getGridSet, getSolidKey) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || netFoldPreviews.has(canvasId)) return netFoldPreviews.get(canvasId);
+
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  } catch (e) {
+    const st = document.getElementById(canvasId.replace("FoldCanvas", "FoldStatus"));
+    if (st) st.textContent = "WebGL preview unavailable in this browser. Your grid still works — use Check buttons.";
+    return null;
+  }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(canvas.width, canvas.height, false);
+  renderer.setClearColor(0x0b1220, 1);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(42, canvas.width / canvas.height, 0.08, 80);
+  camera.position.set(2.85, 2.15, 3.55);
+
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.target.set(0.15, 0, 0);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.95));
+  const dir = new THREE.DirectionalLight(0xffffff, 0.5);
+  dir.position.set(3.2, 5.2, 4.2);
+  scene.add(dir);
+
+  const netGroup = new THREE.Group();
+  scene.add(netGroup);
+  const targetGroup = new THREE.Group();
+  scene.add(targetGroup);
+
+  const state = {
+    canvasId,
+    getGridSet,
+    getSolidKey,
+    renderer,
+    scene,
+    camera,
+    controls,
+    netGroup,
+    targetGroup,
+    raf: 0,
+  };
+
+  function resize() {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    let w = el.clientWidth || 0;
+    let h = el.clientHeight || 0;
+    if (w < 64 || h < 64) {
+      w = Number(el.getAttribute("width")) || 300;
+      h = Number(el.getAttribute("height")) || 200;
+    }
+    renderer.setSize(w, h, false);
+    camera.aspect = w / Math.max(h, 1);
+    camera.updateProjectionMatrix();
+  }
+  state.doResize = resize;
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  function tick() {
+    state.raf = requestAnimationFrame(tick);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  state.raf = requestAnimationFrame(tick);
+
+  netFoldPreviews.set(canvasId, state);
+  return state;
+}
+
+function refreshNetFoldPreview(canvasId) {
+  const state = netFoldPreviews.get(canvasId);
+  if (!state) return;
+  const set = state.getGridSet?.();
+  const solid = state.getSolidKey?.() || "cube";
+
+  while (state.netGroup.children.length) {
+    const ch = state.netGroup.children[0];
+    state.netGroup.remove(ch);
+    ch.traverse((o) => {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) {
+        if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+        else o.material.dispose();
+      }
+    });
+  }
+  while (state.targetGroup.children.length) {
+    const ch = state.targetGroup.children[0];
+    state.targetGroup.remove(ch);
+    ch.traverse((o) => {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) {
+        if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+        else o.material.dispose();
+      }
+    });
+  }
+
+  if (set && set.size) {
+    const coords = gridCellsToCoords(set);
+    let minR = Infinity;
+    let maxR = -Infinity;
+    let minC = Infinity;
+    let maxC = -Infinity;
+    coords.forEach(([r, c]) => {
+      minR = Math.min(minR, r);
+      maxR = Math.max(maxR, r);
+      minC = Math.min(minC, c);
+      maxC = Math.max(maxC, c);
+    });
+    const midR = (minR + maxR) / 2;
+    const midC = (minC + maxC) / 2;
+    coords.forEach(([r, c]) => {
+      const g = new THREE.PlaneGeometry(0.92, 0.92);
+      const mat = new THREE.MeshBasicMaterial({
+        color: 0xff9ecf,
+        side: THREE.DoubleSide,
+      });
+      const m = new THREE.Mesh(g, mat);
+      m.position.set((c - midC) * 0.98, -(r - midR) * 0.98, 0);
+      m.add(
+        new THREE.LineSegments(
+          new THREE.EdgesGeometry(g),
+          new THREE.LineBasicMaterial({ color: 0x27313d }),
+        ),
+      );
+      state.netGroup.add(m);
+    });
+  }
+
+  const tm = makeTargetMesh(solid);
+  tm.position.set(3.05, 0.02, 0);
+  state.targetGroup.add(tm);
+
+  const statusEl = document.getElementById(canvasId.replace("FoldCanvas", "FoldStatus"));
+  if (statusEl) {
+    if (!set || !set.size) {
+      statusEl.textContent =
+        "No squares on the grid yet — click cells to build your net, then Update 3-D preview. If the canvas stayed empty, switch to another tab and back.";
+    } else {
+      statusEl.textContent =
+        set.size +
+        " grid cell(s) shown as flat faces. Drag on the canvas to orbit. Ghost = target solid for comparison.";
+    }
+  }
+  if (typeof state.doResize === "function") state.doResize();
+}
+
+function liftNetPreview(canvasId) {
+  const s = netFoldPreviews.get(canvasId);
+  if (!s) return;
+  const cur = s.netGroup.rotation.x;
+  s.netGroup.rotation.x = cur > 0.15 ? 0 : Math.PI / 3.4;
+}
+
+window.__EWL_NET_PREVIEW_REFRESH = (name) => {
+  if (name === "tryit") refreshNetFoldPreview("tryitFoldCanvas");
+  if (name === "builder") refreshNetFoldPreview("builderFoldCanvas");
+  if (name === "create") refreshNetFoldPreview("createFoldCanvas");
+};
+
+window.__EWL_NET_PREVIEW_INIT = () => {
+  if (window.__EWL_NET_PREVIEW_WIRED) return;
+  window.__EWL_NET_PREVIEW_WIRED = true;
+  const G = () => window.__EWL_GRIDS || {};
+  ensureNetFoldPreview("tryitFoldCanvas", () => G().tryit, () => "cube");
+  ensureNetFoldPreview("builderFoldCanvas", () => G().builder, () => document.getElementById("builderSolid")?.value || "cube");
+  ensureNetFoldPreview("createFoldCanvas", () => G().create, () => document.getElementById("createSolid")?.value || "cube");
+
+  document.getElementById("tryitFoldPreviewBtn")?.addEventListener("click", () => refreshNetFoldPreview("tryitFoldCanvas"));
+  document.getElementById("tryitFoldLiftBtn")?.addEventListener("click", () => liftNetPreview("tryitFoldCanvas"));
+  document.getElementById("builderFoldPreviewBtn")?.addEventListener("click", () => refreshNetFoldPreview("builderFoldCanvas"));
+  document.getElementById("builderFoldLiftBtn")?.addEventListener("click", () => liftNetPreview("builderFoldCanvas"));
+  document.getElementById("createFoldPreviewBtn")?.addEventListener("click", () => refreshNetFoldPreview("createFoldCanvas"));
+  document.getElementById("createFoldLiftBtn")?.addEventListener("click", () => liftNetPreview("createFoldCanvas"));
+
+  document.getElementById("builderSolid")?.addEventListener("change", () => refreshNetFoldPreview("builderFoldCanvas"));
+  document.getElementById("createSolid")?.addEventListener("change", () => refreshNetFoldPreview("createFoldCanvas"));
+
+  refreshNetFoldPreview("tryitFoldCanvas");
+  refreshNetFoldPreview("builderFoldCanvas");
+  refreshNetFoldPreview("createFoldCanvas");
+};
+
+window.__EWL_NET_PREVIEW_RESIZE_ALL = () => {
+  netFoldPreviews.forEach((st) => {
+    if (typeof st.doResize === "function") st.doResize();
+  });
+};
+window.__EWL_NET_PREVIEW_ON_TAB = (sectionId) => {
+  window.__EWL_NET_PREVIEW_RESIZE_ALL?.();
+  if (sectionId === "guided") refreshNetFoldPreview("tryitFoldCanvas");
+  if (sectionId === "builder") refreshNetFoldPreview("builderFoldCanvas");
+  if (sectionId === "create") refreshNetFoldPreview("createFoldCanvas");
+};
+
 function bootGlCubes() {
   document.querySelectorAll("[data-gl-cube]").forEach(initCube);
 }
@@ -1074,7 +1659,7 @@ if (document.readyState === "loading") {
 </script>
 <script>
 const SECTION_DATA = [
-  ['start','Start','Goals + big question'], ['notice','Notice / Wonder','Editable response boxes'], ['vocab','Vocabulary','Labeled images + match'], ['reference','Cheat Sheet','3D figures + volume'], ['mini','Mini-Lesson','From solid to net'], ['guided','Try It','Guided explanation'], ['practice','Practice','Which net works?'], ['pyramid','Partner Cube','Cube net + folds'], ['builder','Net Builder','Create and check'], ['error','Find Error','Fix the net'], ['discuss','Discuss','2-D back to 3-D'], ['create','Design a Net','Make your own'], ['exit','Exit Ticket','Reflect + self-check']
+  ['start','Start','Goals + big question'], ['notice','Notice / Wonder','Editable response boxes'], ['vocab','Vocabulary','Labeled images + match'], ['reference','Cheat Sheet','3D figures + volume'], ['mini','Mini-Lesson','From solid to net'], ['guided','Try It','Guided explanation'], ['practice','Practice','Warm-up + nets ↔ solids'], ['pyramid','Partner Cube','Cube net + folds'], ['builder','Net Builder','Create and check'], ['error','Find Error','Fix the net'], ['discuss','Discuss','2-D back to 3-D'], ['create','Design a Net','Make your own'], ['exit','Exit Ticket','Reflect + self-check']
 ];
 const STORAGE_KEY = 'ewl_nets_interactive_v4';
 let store = {};
@@ -1098,6 +1683,7 @@ function showSection(id){
   document.querySelectorAll('.section').forEach(s=>{ const on=s.dataset.section===id; s.classList.toggle('active',on); s.setAttribute('aria-hidden', on?'false':'true'); });
   document.querySelectorAll('.tab-btn').forEach(b=>{ const on=b.dataset.target===id; b.classList.toggle('active',on); b.setAttribute('aria-selected', on); });
   window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  requestAnimationFrame(() => { if (window.__EWL_NET_PREVIEW_ON_TAB) window.__EWL_NET_PREVIEW_ON_TAB(id); });
 }
 function loadStore(){ try{ store = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }catch(e){store={}} }
 function saveStore(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
@@ -1115,7 +1701,14 @@ function wireSave(){
   document.addEventListener('input', e=>{ const el=e.target; if(!el.matches('[data-save]')) return; const k=el.dataset.save; if(el.type==='radio'){ if(el.checked) store[k]=el.value; } else if(el.type==='checkbox') store[k]=el.checked; else store[k]=el.value; saveStore(); updateOptionCards(); updateHints(); });
   document.addEventListener('change', e=>{ const el=e.target; if(!el.matches('[data-save]')) return; const k=el.dataset.save; if(el.type==='radio'){ if(el.checked) store[k]=el.value; } else if(el.type==='checkbox') store[k]=el.checked; else store[k]=el.value; saveStore(); updateOptionCards(); updateHints(); });
 }
-function updateOptionCards(){ const val = document.querySelector('input[name="cubeChoice"]:checked')?.value; document.querySelectorAll('.option-card').forEach(c=>c.classList.toggle('selected', c.dataset.choice===val)); }
+function updateOptionCards(){
+  const val = document.querySelector('input[name="cubeChoice"]:checked')?.value;
+  document.querySelectorAll('#netOptions .option-card').forEach(c=>c.classList.toggle('selected', c.dataset.choice===val));
+  const pv = document.querySelector('input[name="prismChoice"]:checked')?.value;
+  document.querySelectorAll('#prismNetOptions .option-card').forEach(c=>c.classList.toggle('selected', c.dataset.choice===pv));
+  const sv = document.querySelector('input[name="solidFromNet"]:checked')?.value;
+  document.querySelectorAll('#solidNetOptions .option-card').forEach(c=>c.classList.toggle('selected', c.dataset.solidChoice===sv));
+}
 function insertAtCursor(el, insertion){ const start=el.selectionStart||0, end=el.selectionEnd||0; const before=el.value.slice(0,start), after=el.value.slice(end); const spacer=before && !before.endsWith('\n')?'\n':''; el.value = before + spacer + insertion + after; el.focus(); el.selectionStart=el.selectionEnd=(before+spacer+insertion).length; el.dispatchEvent(new Event('input',{bubbles:true})); }
 function wireKernels(){ document.querySelectorAll('.kernel').forEach(btn=>btn.addEventListener('click',()=>{ const target=$(btn.dataset.insert); if(target) insertAtCursor(target, btn.textContent.trim()); })); }
 
@@ -1128,7 +1721,7 @@ function buildGrid(name, rows=5, cols=7){
   }
   renderGrid(name);
 }
-function renderGrid(name){ const el=$(name+'Grid'); if(!el) return; el.querySelectorAll('.build-cell').forEach(cell=>{ const on=grids[name].has(cell.dataset.key); cell.classList.toggle('on',on); cell.textContent=on?'■':'+'; }); }
+function renderGrid(name){ const el=$(name+'Grid'); if(!el) return; el.querySelectorAll('.build-cell').forEach(cell=>{ const on=grids[name].has(cell.dataset.key); cell.classList.toggle('on',on); cell.textContent=on?'■':'+'; }); if(window.__EWL_NET_PREVIEW_REFRESH) window.__EWL_NET_PREVIEW_REFRESH(name); }
 function clearGrid(name){ grids[name].clear(); store[name+'Grid']=[]; saveStore(); renderGrid(name); const feedbackId = name==='builder'?'builderFeedback':(name==='tryit'?'guidedFeedback':'createFeedback'); setFeedback(feedbackId,'hint','Grid cleared. Start by placing one face, then attach new faces along full edges.'); }
 function coords(set){ return [...set].map(k=>k.split(',').map(Number)); }
 function connected(set){ const arr=coords(set); if(arr.length===0) return false; const s=new Set([...set]); const seen=new Set([arr[0].join(',')]); const q=[arr[0]]; const dirs=[[1,0],[-1,0],[0,1],[0,-1]]; while(q.length){ const [r,c]=q.shift(); for(const [dr,dc] of dirs){ const k=`${r+dr},${c+dc}`; if(s.has(k)&&!seen.has(k)){seen.add(k);q.push([r+dr,c+dc]);} } } return seen.size===set.size; }
@@ -1155,15 +1748,35 @@ function loadTryItStarter(){
   grids.tryit = new Set(['2,1','2,2','2,3','2,4','1,2','3,2']);
   store.tryitGrid=[...grids.tryit]; saveStore(); renderGrid('tryit');
   setFeedback('guidedFeedback','hint','Starter loaded. Now explain why this connected pattern can fold. You can also move a flap to make a different correct net.');
+  if(window.__EWL_NET_PREVIEW_REFRESH) window.__EWL_NET_PREVIEW_REFRESH('tryit');
 }
 function checkCubeChoice(){ const choice=document.querySelector('input[name="cubeChoice"]:checked')?.value; const ex=text('netExplain'); if(!choice) return setFeedback('cubeFeedback','hint','Hint: Choose A, B, or C first. Then explain why it can fold into a cube.'); if(choice!=='B') return setFeedback('cubeFeedback','hint','Hint: Count the squares and picture the folds. A cube needs exactly 6 square faces, and the arrangement must fold without faces overlapping.'); if(ex.trim().length<15 || !hasAny(ex,['six','6','face','fold','cube','net','edge'])) return setFeedback('cubeFeedback','hint','Your choice is on the right track. Add a math explanation using faces, fold, cube, or edges.'); setFeedback('cubeFeedback','good','Correct choice with a clear reason. This net has the right number of square faces and a structure that can fold into a cube.'); }
+function checkWarmNets(){
+  const a=$('warm1')?.value,b=$('warm2')?.value,c=$('warm3')?.value,d=$('warm4')?.value;
+  if(!a||!b||!c||!d) return setFeedback('warmFeedback','hint','Choose a solid for all four nets (Net 1–Net 4), then check again.');
+  let ok=0;
+  if(a==='cube') ok++;
+  if(b==='triangular_prism') ok++;
+  if(c==='square_pyramid') ok++;
+  if(d==='rectangular_prism') ok++;
+  if(ok===4) return setFeedback('warmFeedback','good','All four correct. Net 1 → cube; Net 2 → triangular prism; Net 3 → square pyramid; Net 4 → rectangular prism.');
+  const miss=[];
+  if(a!=='cube') miss.push('Net 1');
+  if(b!=='triangular_prism') miss.push('Net 2');
+  if(c!=='square_pyramid') miss.push('Net 3');
+  if(d!=='rectangular_prism') miss.push('Net 4');
+  setFeedback('warmFeedback','hint','Recheck: '+miss.join(', ')+'. Count face shapes (squares vs rectangles vs triangles) and think about which solid uses those faces.');
+}
+function checkPrismChoice(){ const choice=document.querySelector('input[name="prismChoice"]:checked')?.value; const ex=text('prismNetExplain'); if(!choice) return setFeedback('prismFeedback','hint','Choose D, E, or F first.'); if(choice!=='E') return setFeedback('prismFeedback','hint','Hint: A rectangular prism needs six rectangular faces in one connected net. Count rectangles and look for a missing or extra face.'); if(ex.trim().length<12 || !hasAny(ex,['rectangle','rectangles','face','faces','fold','six','6','prism','edge','net'])) return setFeedback('prismFeedback','hint','Add evidence: talk about rectangles, how faces connect, or what happens when the net folds.'); setFeedback('prismFeedback','good','Correct. Option E shows six connected rectangles that can fold into a rectangular prism.'); }
+function checkSolidFromNet(){ const choice=document.querySelector('input[name="solidFromNet"]:checked')?.value; const ex=text('solidNetExplain'); if(!choice) return setFeedback('solidNetFeedback','hint','Pick the solid that matches this net.'); if(choice!=='triangular_prism') return setFeedback('solidNetFeedback','hint','Hint: Look at the two congruent triangles and the three rectangles between them.'); if(ex.trim().length<14 || !hasAny(ex,['triangle','triangles','rectangle','rectangular','prism','lateral','base'])) return setFeedback('solidNetFeedback','hint','Use the bases (triangles) and the lateral faces (rectangles) in your evidence.'); setFeedback('solidNetFeedback','good','Correct. Two triangular bases with three rectangular faces is the net of a triangular prism.'); }
 function checkPyramid(){ const u=text('pyramidUse'), b=text('pyramidBase'), f=text('pyramidFaces'); if(!hasAny(u,['net'])) return setFeedback('pyramidFeedback','hint','Hint: She needs a flat pattern that can be cut, folded, and taped into the 3-D cube. What is that called?'); if(!hasAny(b,['square','squares'])) return setFeedback('pyramidFeedback','hint','Hint: Look at one face of the cube. Every face has the same shape. Name that shape.'); if(!hasAny(f,['6','six'])) return setFeedback('pyramidFeedback','hint','Hint: Count the squares in the cube net. A cube has one square face on each side.'); setFeedback('pyramidFeedback','good','Correct. A cube net is made from 6 square faces connected along full edges so it can fold into a cube.'); }
 function checkBuilder(){ const solid=$('builderSolid').value; const n=count(grids.builder); if(n===0) return setFeedback('builderFeedback','hint','Hint: Click squares to build the flat net first.'); if(n<6) return setFeedback('builderFeedback','hint','Hint: A cube or rectangular prism needs 6 faces. Add more connected faces.'); if(n>6) return setFeedback('builderFeedback','hint','Hint: This solid needs 6 faces. Remove extra faces before checking the fold structure.'); if(!connected(grids.builder)) return setFeedback('builderFeedback','hint','Hint: All faces in a net should be connected along edges. Move any separate pieces so they touch by a full edge.'); if(solid==='cube' && has2x2(grids.builder)) return setFeedback('builderFeedback','hint','Hint: A cube net usually should not contain a 2-by-2 block because faces can overlap when folded. Try a strip with side faces and flaps.'); const exp=text('builderExplain'); if(exp.trim().length<15) return setFeedback('builderFeedback','hint','Your face count and connection look promising. Add an explanation: which faces touch when it folds?'); setFeedback('builderFeedback','good','Your net has the core structure: 6 connected faces and a written explanation. Nice work checking the fold structure.'); }
 function checkError(){ const a=text('errorWrong')+' '+text('errorFix'); if(a.trim().length<20) return setFeedback('errorFeedback','hint','Hint: Explain what would happen when the faces fold. Look for overlap or a connected arrangement that cannot become a cube.'); if(hasAny(a,['overlap','2 by 3','2x3','block','not fold','cannot fold','wrong places']) && hasAny(a,['move','flap','cross','strip','fix','connect','edge'])) return setFeedback('errorFeedback','good','Strong error analysis. You identified a structural problem and described how to fix the arrangement.'); setFeedback('errorFeedback','hint','Hint: Use structure language. Tell whether faces would overlap or connect in the wrong places, then describe moving one or more faces.'); }
 function checkDiscuss(){ const a=text('discussAnswer'); if(a.trim().length<15) return setFeedback('discussFeedback','hint','Hint: Use the frame: This net makes a ___ because ___.'); if(hasAny(a,['rectangular prism','prism']) && hasAny(a,['face','faces','rectangle','fold','6','six'])) return setFeedback('discussFeedback','good','Good reasoning. You used evidence from the faces and fold structure to name the solid.'); setFeedback('discussFeedback','hint','Hint: Count the faces and name their shapes. Then decide what solid has those faces.'); }
-function checkCreate(){ const solid=$('createSolid').value; const n=count(grids.create); const exp=text('createExplain'); if(n<6) return setFeedback('createFeedback','hint','Hint: This solid needs 6 faces. Add connected faces until your net has every face.'); if(n>6) return setFeedback('createFeedback','hint','Hint: This solid needs exactly 6 faces. Remove extra faces.'); if(!connected(grids.create)) return setFeedback('createFeedback','hint','Hint: A net should be one connected flat pattern. Move any separated face so it shares a full edge.'); if(solid==='cube' && has2x2(grids.create)) return setFeedback('createFeedback','hint','Hint: For a cube net, avoid a 2-by-2 block. Try a strip of squares with flaps attached.'); if(exp.trim().length<15 || !hasAny(exp,['face','fold','edge','net','solid'])) return setFeedback('createFeedback','hint','Your design is close. Add an explanation using net, face, edge, or fold.'); setFeedback('createFeedback','good','Challenge complete. Your net has 6 connected faces and an explanation that uses face, edge, or fold reasoning.'); }
+function checkCreate(){ const solid=$('createSolid').value; const n=count(grids.create); const exp=text('createExplain'); if(solid==='square_pyramid'){ if(n<1) return setFeedback('createFeedback','hint','Hint: Start by placing the square base on the grid. Then describe where the triangular faces attach.'); if(!hasAny(exp,['triangle','triangular','4','four','base','fold'])) return setFeedback('createFeedback','hint','Hint: For a square pyramid, your explanation should include the base and four triangular faces attached around it.'); return setFeedback('createFeedback','good','Good square-pyramid design explanation. You identified a base and explained how triangular faces attach and fold.'); }
+ if(n<6) return setFeedback('createFeedback','hint','Hint: This solid needs 6 faces. Add connected faces until your net has every face.'); if(n>6) return setFeedback('createFeedback','hint','Hint: This solid needs exactly 6 faces. Remove extra faces.'); if(!connected(grids.create)) return setFeedback('createFeedback','hint','Hint: A net should be one connected flat pattern. Move any separated face so it shares a full edge.'); if(solid==='cube' && has2x2(grids.create)) return setFeedback('createFeedback','hint','Hint: For a cube net, avoid a 2-by-2 block. Try a strip of squares with flaps attached.'); if(exp.trim().length<15 || !hasAny(exp,['face','fold','edge','net','solid'])) return setFeedback('createFeedback','hint','Your design is close. Add an explanation using net, face, edge, or fold.'); setFeedback('createFeedback','good','Your creation has the main requirements: correct face count, connected faces, and an explanation of the fold structure.'); }
 function checkExit(){ const a=text('exitAnswer')+' '+text('exitVocab'); if(a.trim().length<20) return setFeedback('exitFeedback','hint','Hint: Name the solid and explain using the six rectangular faces.'); if(hasAny(a,['rectangular prism','prism']) && hasAny(a,['rectangle','rectangles','6','six','faces','net'])) return setFeedback('exitFeedback','good','Correct. Your answer connects the six rectangular faces to a rectangular prism.'); setFeedback('exitFeedback','hint','Hint: The faces are rectangles: long rectangles, short rectangles, and matching end rectangles. What prism is made from rectangular faces?'); }
-function updateHints(){ const solid=$('createSolid')?.value; const box=$('dynamicHints'); if(!box) return; let items; if(solid==='cube') items=['A cube needs 6 square faces.','Keep the squares connected by full edges.','Avoid a 2-by-2 block because faces may overlap.','Try a strip of 4 squares with 2 flaps.']; else items=['A rectangular prism needs 6 faces.','Think in pairs: top/bottom, front/back, left/right.','Use a strip for side faces, then attach matching ends.','Explain which faces touch when folded.']; box.innerHTML=items.map(i=>`<li>${i}</li>`).join(''); }
+function updateHints(){ const solid=$('createSolid')?.value; const box=$('dynamicHints'); if(!box) return; let items; if(solid==='cube') items=['A cube needs 6 square faces.','Keep the squares connected by full edges.','Avoid a 2-by-2 block because faces may overlap.','Try a strip of 4 squares with 2 flaps.']; else if(solid==='rectangular_prism') items=['A rectangular prism needs 6 faces.','Think in pairs: top/bottom, front/back, left/right.','Use a strip for side faces, then attach matching ends.','Explain which faces touch when folded.']; else items=['A square pyramid has 1 square base.','It also has 4 triangular faces.','Attach triangles around the base.','Use your explanation box to describe the triangles.']; box.innerHTML=items.map(i=>`<li>${i}</li>`).join(''); }
 function downloadResponses(){
   const values={}; document.querySelectorAll('[data-save]').forEach(el=>{ const k=el.dataset.save; if(el.type==='radio'){ if(el.checked) values[k]=el.value; } else if(el.type==='checkbox') values[k]=el.checked; else values[k]=el.value; });
   values.tryitGrid=[...grids.tryit]; values.builderGrid=[...grids.builder]; values.createGrid=[...grids.create];
@@ -1172,12 +1785,12 @@ function downloadResponses(){
   const blob=new Blob([lines.join('\n')],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='nets_notebook_responses.txt'; a.click(); URL.revokeObjectURL(a.href);
 }
 function resetNotebook(){ if(!confirm('Clear all saved student work from this notebook on this device?')) return; localStorage.removeItem(STORAGE_KEY); location.reload(); }
-function init(){ buildTabs(); loadStore(); applyStore(); wireSave(); wireKernels(); buildGrid('tryit',5,8); buildGrid('builder'); buildGrid('create'); updateOptionCards(); updateHints(); $('downloadBtn').addEventListener('click', downloadResponses); $('resetBtn').addEventListener('click', resetNotebook); }
+function init(){ buildTabs(); loadStore(); applyStore(); wireSave(); wireKernels(); window.__EWL_GRIDS = grids; if(window.__EWL_NET_PREVIEW_INIT) window.__EWL_NET_PREVIEW_INIT(); buildGrid('tryit',5,8); buildGrid('builder'); buildGrid('create'); updateOptionCards(); updateHints(); $('downloadBtn').addEventListener('click', downloadResponses); $('resetBtn').addEventListener('click', resetNotebook); }
 document.addEventListener('DOMContentLoaded', init);
 </script>
-<!-- v9: Editorial design system; MeshPhysical + RoomEnvironment PMREM; soft shadows; a11y tabs/skip link; WebGL fallbacks. Three.js r160 (orbit + subtle idle spin); Outfit / Source Serif 4; print SVG fallbacks. v7 QA: cube visuals redrawn with accurate SVG geometry; slide 7 changed to cube-based partner practice; cheat sheet cube net corrected to 6-square valid net. -->
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+<!-- v12: v11 features + deploy stamp (meta ewl-notebook-build + sidebar “Notebook build v12”) for cache/Pages verification. -->
+<script src="/assets/nt-page-enhance.js" defer></script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
 </body>
