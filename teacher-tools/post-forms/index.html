@@ -325,6 +325,77 @@
           { key: "practice", label: "Practice" },
           { key: "quiz", label: "Quiz" },
         ];
+        // Lesson topic names (flagship variants share the base lesson's title;
+        // a "Flagship" badge already marks them).
+        var TITLES = {
+          "1-1": "Prime Factorization",
+          "1-2": "Greatest Common Factor",
+          "1-3": "Least Common Multiple",
+          "1-4": "Divide Multi-Digit Numbers",
+          "1-5": "Add and Subtract Decimals",
+          "1-6": "Multiply Decimals",
+          "1-7": "Divide Decimals",
+          "2-1": "Interpret Division of Fractions",
+          "2-2": "Divide Whole Numbers by Fractions",
+          "2-3": "Divide Fractions",
+          "2-4": "Divide Mixed Numbers",
+          "2-5": "Fraction Division Problem Solving",
+          "3-1": "Understand Ratios",
+          "3-2": "Ratio Tables",
+          "3-3": "Graph Ratio Tables",
+          "3-4": "Equivalent Ratios",
+          "3-5": "Compare Ratios",
+          "3-6": "Use Ratio Reasoning",
+          "3-7": "Ratio and Rate Problem Solving",
+          "4-1": "Rates and Unit Rates",
+          "4-2": "Relate Fractions, Decimals, and Percents",
+          "4-3": "Percents Greater Than 100% and Less Than 1%",
+          "4-4": "Find the Percent of a Number",
+          "4-5": "Use Percent to Solve Problems",
+          "4-6": "Convert Measurement Units",
+          "4-7": "Solve Problems with Unit Rates",
+          "5-1": "Area of Parallelograms",
+          "5-2": "Area of Trapezoids",
+          "5-3": "Area of Triangles",
+          "5-4": "Area of Regular Polygons",
+          "5-5": "Area of Composite Figures",
+          "6-1": "Powers and Exponents",
+          "6-2": "Evaluate Expressions",
+          "6-3": "Write Algebraic Expressions",
+          "6-4": "Properties of Operations",
+          "6-5": "The Distributive Property",
+          "6-6": "Equivalent Expressions",
+          "6-7": "Simplify Algebraic Expressions",
+          "7-1": "Write Equations",
+          "7-2": "Solve One-Step Addition and Subtraction Equations",
+          "7-3": "Solve Multiplication and Division Equations",
+          "7-4": "Write Inequalities",
+          "7-5": "Graph Inequalities",
+          "7-6": "Solve and Graph Inequalities",
+          "7-7": "Equations and Inequalities Problem Solving",
+          "8-1": "Statistical Questions and Data",
+          "8-2": "Mean, Median, and Mode",
+          "8-3": "Mean Absolute Deviation",
+          "8-4": "Appropriate Measures",
+          "8-5": "Display Data: Box Plots",
+          "8-6": "Display Data: Histograms",
+          "8-7": "Shape of Data Distributions",
+          "9-1": "Graph on the Coordinate Plane",
+          "9-2": "Integers and Absolute Value",
+          "9-3": "Compare and Order Integers",
+          "9-4": "Rational Numbers on the Number Line",
+          "9-5": "Ordered Pairs in All Four Quadrants",
+          "9-6": "Distance on the Coordinate Plane",
+          "9-7": "Reflect Points Across Axes",
+          "10-1": "Volume with Whole Number Edges",
+          "10-2": "Volume of Rectangular Prisms",
+          "10-3": "Surface Area Using Nets",
+          "10-4": "Surface Area of Prisms",
+          "10-5": "Surface Area of Pyramids",
+        };
+        function titleOf(id) {
+          return TITLES[String(id).replace(/-flagship$/i, "")] || "";
+        }
         var listEl = document.getElementById("list");
         var emptyEl = document.getElementById("empty");
         var countEl = document.getElementById("count");
@@ -384,7 +455,11 @@
           var shown = 0;
           var curUnit = null;
           ids.forEach(function (id) {
-            if (filter && id.toLowerCase().indexOf(filter) === -1) return;
+            if (
+              filter &&
+              (id + " " + titleOf(id)).toLowerCase().indexOf(filter) === -1
+            )
+              return;
             shown++;
             var u = unitOf(id);
             if (u !== curUnit) {
@@ -398,7 +473,9 @@
             card.className = "lesson";
             var head = document.createElement("div");
             head.className = "lesson-id";
-            head.textContent = "Lesson " + id.replace(/-flagship$/i, "");
+            var t = titleOf(id);
+            head.textContent =
+              "Lesson " + id.replace(/-flagship$/i, "") + (t ? " — " + t : "");
             if (isFlag(id)) {
               var f = document.createElement("span");
               f.className = "flag";
