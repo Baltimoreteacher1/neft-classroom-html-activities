@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Post Forms — Classroom / Canvas | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Teacher tool: open, post to Google Classroom, or copy the link (for Canvas) for every Grade 6 math Notes / Practice / Quiz Google Form."
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --paper: #ffffff;
+        --ink: #102033;
+        --muted: #64748b;
+        --line: #dbe5ef;
+        --navy: #17283a;
+        --teal: #0f766e;
+        --teal-soft: #e8f7f4;
+        --blue: #2563eb;
+        --blue-soft: #eff6ff;
+        --green: #15803d;
+        --green-soft: #ecfdf3;
+        --amber-soft: #fff7e6;
+        --gold: #b7791f;
+        --shadow:
+          0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 30px rgba(15, 23, 42, 0.07);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(
+          180deg,
+          #f8fbff 0%,
+          var(--bg) 46%,
+          #eef4f8 100%
+        );
+        color: var(--ink);
+        font-family:
+          "DM Sans",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 32px 18px 80px;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        font-size: 0.74rem;
+        font-weight: 800;
+        color: var(--teal);
+        margin: 0 0 6px;
+      }
+      h1 {
+        font-family: "DM Serif Display", Georgia, serif;
+        font-weight: 400;
+        font-size: 2.4rem;
+        letter-spacing: -0.01em;
+        margin: 0 0 8px;
+        color: var(--navy);
+      }
+      .lede {
+        color: var(--muted);
+        margin: 0 0 22px;
+        max-width: 64ch;
+      }
+      .home-link {
+        display: inline-block;
+        margin-bottom: 18px;
+        color: var(--teal);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .home-link:hover {
+        text-decoration: underline;
+      }
+      .toolbar {
+        position: sticky;
+        top: 0;
+        background: rgba(248, 251, 255, 0.92);
+        backdrop-filter: blur(10px);
+        padding: 12px 0;
+        z-index: 5;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .search {
+        flex: 1;
+        min-width: 220px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0 14px;
+        min-height: 46px;
+        box-shadow: var(--shadow);
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        flex: 1;
+        font: inherit;
+        background: transparent;
+        color: var(--ink);
+        min-height: 46px;
+      }
+      .count {
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .unit-h {
+        font-family: "DM Serif Display", Georgia, serif;
+        font-size: 1.5rem;
+        color: var(--navy);
+        margin: 28px 0 10px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--line);
+      }
+      .lesson {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px 16px;
+        margin: 0 0 12px;
+      }
+      .lesson-id {
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+      .lesson-id .flag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--gold);
+        background: var(--amber-soft);
+        border: 1px solid #f1d9a8;
+        border-radius: 999px;
+        padding: 1px 8px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 92px 1fr;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 0;
+        border-top: 1px solid var(--line);
+      }
+      .form-row:first-of-type {
+        border-top: 0;
+      }
+      .ftype {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        display: inline-block;
+      }
+      .t-notes .dot {
+        background: var(--blue);
+      }
+      .t-practice .dot {
+        background: var(--teal);
+      }
+      .t-quiz .dot {
+        background: var(--green);
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--ink);
+        border-radius: 10px;
+        padding: 7px 13px;
+        font: inherit;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        min-height: 38px;
+        transition: 0.15s ease;
+      }
+      .btn:hover {
+        border-color: #b9cee2;
+        background: #f7fafd;
+      }
+      .btn-classroom {
+        background: var(--green-soft);
+        border-color: #bfe6cc;
+        color: var(--green);
+      }
+      .btn-classroom:hover {
+        background: #ddf6e6;
+      }
+      .btn-open {
+        background: var(--blue-soft);
+        border-color: #c7ddfb;
+        color: var(--blue);
+      }
+      .btn-open:hover {
+        background: #d8e8fd;
+      }
+      .empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 40px;
+      }
+      .help {
+        background: var(--teal-soft);
+        border: 1px solid #bfe3dc;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin: 0 0 22px;
+        font-size: 0.9rem;
+        color: #14564f;
+      }
+      .help b {
+        color: var(--teal);
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: 28px;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.2s ease;
+        z-index: 50;
+      }
+      #toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="home-link" href="/">&larr; Neft Hub</a>
+      <p class="eyebrow">Teacher Tools</p>
+      <h1>Post Forms to Classroom / Canvas</h1>
+      <p class="lede">
+        Every Grade&nbsp;6 math <b>Notes</b>, <b>Practice</b>, and <b>Quiz</b>
+        Google Form. Open it, post it to a Google Classroom class in one click,
+        or copy the link to paste into Canvas.
+      </p>
+      <div class="help">
+        <b>Google Classroom:</b> "Share to Classroom" opens Google's posting
+        window — pick a class and post as an assignment or material. &nbsp;
+        <b>Canvas:</b> "Copy link," then paste it into a Canvas assignment,
+        module item (External URL), or page.
+      </div>
+
+      <div class="toolbar">
+        <label class="search">
+          <span aria-hidden="true">🔎</span>
+          <input
+            id="q"
+            type="search"
+            placeholder="Filter by lesson (e.g. 7-1, ratios, flagship)…"
+            aria-label="Filter lessons"
+          />
+        </label>
+        <span class="count" id="count"></span>
+      </div>
+
+      <div id="list" aria-live="polite"></div>
+      <p class="empty" id="empty" hidden>No lessons match your search.</p>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      (function () {
+        "use strict";
+        var TYPES = [
+          { key: "notes", label: "Notes" },
+          { key: "practice", label: "Practice" },
+          { key: "quiz", label: "Quiz" },
+        ];
+        // Lesson topic names (flagship variants share the base lesson's title;
+        // a "Flagship" badge already marks them).
+        var TITLES = {
+          "1-1": "Prime Factorization",
+          "1-2": "Greatest Common Factor",
+          "1-3": "Least Common Multiple",
+          "1-4": "Divide Multi-Digit Numbers",
+          "1-5": "Add and Subtract Decimals",
+          "1-6": "Multiply Decimals",
+          "1-7": "Divide Decimals",
+          "2-1": "Interpret Division of Fractions",
+          "2-2": "Divide Whole Numbers by Fractions",
+          "2-3": "Divide Fractions",
+          "2-4": "Divide Mixed Numbers",
+          "2-5": "Fraction Division Problem Solving",
+          "3-1": "Understand Ratios",
+          "3-2": "Ratio Tables",
+          "3-3": "Graph Ratio Tables",
+          "3-4": "Equivalent Ratios",
+          "3-5": "Compare Ratios",
+          "3-6": "Use Ratio Reasoning",
+          "3-7": "Ratio and Rate Problem Solving",
+          "4-1": "Rates and Unit Rates",
+          "4-2": "Relate Fractions, Decimals, and Percents",
+          "4-3": "Percents Greater Than 100% and Less Than 1%",
+          "4-4": "Find the Percent of a Number",
+          "4-5": "Use Percent to Solve Problems",
+          "4-6": "Convert Measurement Units",
+          "4-7": "Solve Problems with Unit Rates",
+          "5-1": "Area of Parallelograms",
+          "5-2": "Area of Trapezoids",
+          "5-3": "Area of Triangles",
+          "5-4": "Area of Regular Polygons",
+          "5-5": "Area of Composite Figures",
+          "6-1": "Powers and Exponents",
+          "6-2": "Evaluate Expressions",
+          "6-3": "Write Algebraic Expressions",
+          "6-4": "Properties of Operations",
+          "6-5": "The Distributive Property",
+          "6-6": "Equivalent Expressions",
+          "6-7": "Simplify Algebraic Expressions",
+          "7-1": "Write Equations",
+          "7-2": "Solve One-Step Addition and Subtraction Equations",
+          "7-3": "Solve Multiplication and Division Equations",
+          "7-4": "Write Inequalities",
+          "7-5": "Graph Inequalities",
+          "7-6": "Solve and Graph Inequalities",
+          "7-7": "Equations and Inequalities Problem Solving",
+          "8-1": "Statistical Questions and Data",
+          "8-2": "Mean, Median, and Mode",
+          "8-3": "Mean Absolute Deviation",
+          "8-4": "Appropriate Measures",
+          "8-5": "Display Data: Box Plots",
+          "8-6": "Display Data: Histograms",
+          "8-7": "Shape of Data Distributions",
+          "9-1": "Graph on the Coordinate Plane",
+          "9-2": "Integers and Absolute Value",
+          "9-3": "Compare and Order Integers",
+          "9-4": "Rational Numbers on the Number Line",
+          "9-5": "Ordered Pairs in All Four Quadrants",
+          "9-6": "Distance on the Coordinate Plane",
+          "9-7": "Reflect Points Across Axes",
+          "10-1": "Volume with Whole Number Edges",
+          "10-2": "Volume of Rectangular Prisms",
+          "10-3": "Surface Area Using Nets",
+          "10-4": "Surface Area of Prisms",
+          "10-5": "Surface Area of Pyramids",
+        };
+        function titleOf(id) {
+          return TITLES[String(id).replace(/-flagship$/i, "")] || "";
+        }
+        var listEl = document.getElementById("list");
+        var emptyEl = document.getElementById("empty");
+        var countEl = document.getElementById("count");
+        var qEl = document.getElementById("q");
+        var DATA = {};
+
+        function unitOf(id) {
+          var m = String(id).match(/^(\d+)/);
+          return m ? parseInt(m[1], 10) : 0;
+        }
+        function lessonNum(id) {
+          var m = String(id).match(/^\d+-(\d+)/);
+          return m ? parseInt(m[1], 10) : 0;
+        }
+        function isFlag(id) {
+          return /flagship/i.test(id);
+        }
+        function classroomShare(url) {
+          return (
+            "https://classroom.google.com/share?url=" + encodeURIComponent(url)
+          );
+        }
+        function toast(msg) {
+          var t = document.getElementById("toast");
+          t.textContent = msg;
+          t.classList.add("show");
+          clearTimeout(t._timer);
+          t._timer = setTimeout(function () {
+            t.classList.remove("show");
+          }, 2200);
+        }
+        function copy(url) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(
+              function () {
+                toast("Link copied — paste into Canvas");
+              },
+              function () {
+                prompt("Copy this link:", url);
+              },
+            );
+          } else {
+            prompt("Copy this link:", url);
+          }
+        }
+
+        function render(filter) {
+          filter = (filter || "").trim().toLowerCase();
+          listEl.innerHTML = "";
+          var ids = Object.keys(DATA).sort(function (a, b) {
+            return (
+              unitOf(a) - unitOf(b) ||
+              lessonNum(a) - lessonNum(b) ||
+              (isFlag(a) ? 1 : 0) - (isFlag(b) ? 1 : 0)
+            );
+          });
+          var shown = 0;
+          var curUnit = null;
+          ids.forEach(function (id) {
+            if (
+              filter &&
+              (id + " " + titleOf(id)).toLowerCase().indexOf(filter) === -1
+            )
+              return;
+            shown++;
+            var u = unitOf(id);
+            if (u !== curUnit) {
+              curUnit = u;
+              var h = document.createElement("h2");
+              h.className = "unit-h";
+              h.textContent = "Unit " + u;
+              listEl.appendChild(h);
+            }
+            var card = document.createElement("div");
+            card.className = "lesson";
+            var head = document.createElement("div");
+            head.className = "lesson-id";
+            var t = titleOf(id);
+            head.textContent =
+              "Lesson " + id.replace(/-flagship$/i, "") + (t ? " — " + t : "");
+            if (isFlag(id)) {
+              var f = document.createElement("span");
+              f.className = "flag";
+              f.textContent = "Flagship";
+              head.appendChild(f);
+            }
+            card.appendChild(head);
+
+            TYPES.forEach(function (t) {
+              var url = DATA[id][t.key];
+              if (!url) return;
+              var row = document.createElement("div");
+              row.className = "form-row";
+              var type = document.createElement("span");
+              type.className = "ftype t-" + t.key;
+              type.innerHTML = '<span class="dot"></span>' + t.label;
+              var actions = document.createElement("div");
+              actions.className = "actions";
+
+              var open = document.createElement("a");
+              open.className = "btn btn-open";
+              open.href = url;
+              open.target = "_blank";
+              open.rel = "noopener";
+              open.textContent = "Open";
+
+              var share = document.createElement("a");
+              share.className = "btn btn-classroom";
+              share.href = classroomShare(url);
+              share.target = "_blank";
+              share.rel = "noopener";
+              share.textContent = "Share to Classroom";
+
+              var cp = document.createElement("button");
+              cp.type = "button";
+              cp.className = "btn";
+              cp.textContent = "Copy link";
+              cp.addEventListener("click", function () {
+                copy(url);
+              });
+
+              actions.appendChild(open);
+              actions.appendChild(share);
+              actions.appendChild(cp);
+              row.appendChild(type);
+              row.appendChild(actions);
+              card.appendChild(row);
+            });
+            listEl.appendChild(card);
+          });
+          emptyEl.hidden = shown !== 0;
+          countEl.textContent = shown + " lesson" + (shown === 1 ? "" : "s");
+        }
+
+        qEl.addEventListener("input", function () {
+          render(qEl.value);
+        });
+
+        fetch("./forms-index.json")
+          .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then(function (json) {
+            DATA = json;
+            render("");
+          })
+          .catch(function (e) {
+            listEl.innerHTML =
+              '<p class="empty">Could not load the form list (' +
+              (e && e.message) +
+              "). Please refresh.</p>";
+          });
+      })();
+    </script>
+  </body>
+</html>

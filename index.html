@@ -12,10 +12,10 @@
       rel="stylesheet"
     />
     <script>
-      (function() {
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/assets/neft-theme.css';
+      (function () {
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "/assets/neft-theme.css";
         document.head.appendChild(link);
       })();
     </script>
@@ -33,7 +33,7 @@
         --sidebar-w: 260px;
         --card-bg: #ffffff;
         --card-border: var(--line);
-        --card-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
         --sidebar-bg: var(--navy);
         --sidebar-border: rgba(255, 255, 255, 0.1);
         --sidebar-text: rgba(255, 255, 255, 0.75);
@@ -482,9 +482,9 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <button
       class="mobile-toggle"
@@ -612,7 +612,7 @@
           <div class="sb-items">
             <a class="sb-item" data-panel="tools"
               ><span class="sb-emoji" aria-hidden="true">📊</span> Teacher Tools
-              <span class="sb-count">7</span></a
+              <span class="sb-count">10</span></a
             >
           </div>
         </div>
@@ -3608,6 +3608,43 @@
             <p>Professional hub, data dashboards, and teacher utilities</p>
           </div>
           <div class="cards">
+            <a
+              href="https://docs.google.com/document/d/1gcEe-NFvhKC56K4iz7lWQ6yVaMkEfN32N4p-qpTDuqM/edit"
+              target="_blank"
+              rel="noopener"
+              class="card"
+              ><div class="icon" style="background: #0f766e">📋</div>
+              <div>
+                <div class="title">Google Forms — Editable (Teacher)</div>
+                <div class="meta">
+                  Direct edit links to every Notes / Practice / Quiz form, by
+                  unit &amp; lesson. Editing updates the live student form.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-tools/post-forms/" class="card"
+              ><div class="icon" style="background: #2563eb">🔗</div>
+              <div>
+                <div class="title">Post Forms — Classroom / Canvas</div>
+                <div class="meta">
+                  One-click "Share to Google Classroom" or copy-link (for
+                  Canvas) for every Notes / Practice / Quiz form.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./neft-school-hub/" class="card"
+              ><div class="icon" style="background: #7c3aed">🏫</div>
+              <div>
+                <div class="title">Neft School Hub</div>
+                <div class="meta">
+                  Staff operations dashboard — announcements, tasks, meetings,
+                  messages.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
             <a href="./teacher-tools/" class="card"
               ><div class="icon" style="background: #e11d48">🏠</div>
               <div>
@@ -3964,9 +4001,113 @@
       })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script>
+      document.querySelectorAll('a[target="_blank"]').forEach(function (a) {
+        if (a.dataset.extCued) return;
+        a.dataset.extCued = "1";
+        var n = document.createElement("span");
+        n.textContent = " (opens in new tab)";
+        n.style.cssText =
+          "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0";
+        a.appendChild(n);
+      });
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- ════ Calm/professional skin (append-only; overrides by source order) ════
+       Tames the saturated unit-tile rainbow into soft-tinted tiles, adds serif
+       section headings, and gives the dense list more breathing room. No :root
+       token changes (those clashed with hardcoded tile colors). -->
+    <style id="ds-skin">
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display&display=swap");
+
+      body {
+        font-family:
+          "DM Sans",
+          "Outfit",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      /* Elegant serif for the big section titles (card titles are .title — untouched). */
+      .content-header h2,
+      .teach-today h2 {
+        font-family: "DM Serif Display", Georgia, serif;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        font-size: 1.7rem;
+      }
+
+      /* Unit tiles: soft tint + same-hue glyph instead of loud solid fills. */
+      .card .icon {
+        color: #243;
+        box-shadow: none;
+      }
+      .card .icon.u1 {
+        background: #e9eef6;
+        color: #1f3a5f;
+      }
+      .card .icon.u2 {
+        background: #e6f6f3;
+        color: #0f766e;
+      }
+      .card .icon.u3 {
+        background: #fdeee8;
+        color: #b4541f;
+      }
+      .card .icon.u4 {
+        background: #fdf3df;
+        color: #92660f !important;
+      }
+      .card .icon.u5 {
+        background: #e8f7ee;
+        color: #15803d;
+      }
+      .card .icon.u6 {
+        background: #eaf2fd;
+        color: #1f5fbf;
+      }
+      .card .icon.u7 {
+        background: #f1edff;
+        color: #6d28d9;
+      }
+      .card .icon.u8 {
+        background: #fdf0e6;
+        color: #c2410c;
+      }
+      .card .icon.u9 {
+        background: #fdebef;
+        color: #be123c;
+      }
+      .card .icon.u10 {
+        background: #e7f6ef;
+        color: #047857;
+      }
+
+      /* Calmer cards: softer border, gentle hover lift, a touch more air. */
+      .card {
+        border: 1px solid #e7edf4;
+        border-radius: 14px;
+        box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04);
+        transition:
+          box-shadow 0.16s ease,
+          transform 0.16s ease,
+          border-color 0.16s ease;
+      }
+      .card:hover {
+        box-shadow: 0 6px 22px rgba(16, 32, 51, 0.08);
+        border-color: #d7e2ef;
+        transform: translateY(-1px);
+      }
+      .cards {
+        gap: 10px;
+      }
+      .unit-group {
+        margin-bottom: 22px;
+      }
+    </style>
+  </body>
 </html>

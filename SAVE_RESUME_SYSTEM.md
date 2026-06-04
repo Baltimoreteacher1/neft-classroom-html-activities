@@ -183,6 +183,54 @@ window.NeftSaveResumeConfig = {
 
 ---
 
+## How to turn on the central record (one switch for EVERY activity)
+
+Use this when you want a teacher backup of **every student's code, organized per
+class**, so you can recover a lost code for any student. It builds on the Apps
+Script backend above.
+
+1. Deploy the Apps Script Web App once (see the section above) and copy the
+   `/exec` URL.
+2. Open `shared/save-resume/save-resume-engine.js`, find the `CENTRAL_RECORD`
+   block near the top, and paste your URL into `endpoint`:
+
+   ```js
+   var CENTRAL_RECORD = {
+     backend: "googleAppsScript",
+     endpoint: "https://script.google.com/macros/s/XXXX/exec",
+   };
+   ```
+
+3. Rebuild + deploy (`npm run build`, then the maintainer's `wrangler pages
+deploy dist`). That's it — every one of the ~975 activities that loads the
+   engine now mirrors each save into your Sheet. No per-file edits.
+
+What you get in the Sheet:
+
+- A **`Student Progress`** master tab — one row per code: `save_code`,
+  `activity_id`, `activity_title`, `student_name`, `section` (class),
+  `progress_percent`, timestamps.
+- One **`Class · <name>`** tab per class, auto-created from what students type,
+  so the roster is already split by class — find the student, read their code.
+
+How students are identified (built in): on the first activity they enter their
+**full name + class once**; the engine remembers it on that device and auto-fills
+every later activity, so every save lands in the right class. On a shared
+Chromebook, **"Not you? Switch student"** in the panel clears it for the next kid.
+
+Notes / limits:
+
+- If `endpoint` is left blank, behavior is unchanged: work saves to the
+  student's own browser only (offline-first). The central record is purely
+  additive and fails soft — a network blip never blocks a student.
+- Free-text class labels are lightly normalized (trimmed, spacing collapsed) but
+  not spell-corrected: "Period 3" and "period3" make two tabs. Keep a consistent
+  label on the board. The master tab always holds every record regardless.
+- If a student changes their class later, the master tab updates in place; the
+  old `Class ·` tab may keep a stale copy. Treat the master tab as truth.
+
+---
+
 ## Troubleshooting
 
 | Symptom                                      | Cause / fix                                                                                                                      |
