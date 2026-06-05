@@ -1,0 +1,65 @@
+name: master-copy-guard
+
+# Protects the hand-maintained "master copy" of the curriculum hub.
+# The live curriculum/index.html (dropdown + Teacher Tools + Google Slides links +
+# /teacher-tools/post-forms Forms links) is the SOURCE OF TRUTH. A `generate-curriculum
+# --force` regen has repeatedly STRIPPED it back to a ~999-line no-dropdown page and
+# re-introduced the retired Vercel Forms launcher. This job turns either regression
+# into a red build so the master copy can only be ADDED to, never clobbered.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  master-copy-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard the curriculum master copy
+        run: |
+          f=curriculum/index.html
+          fail=0
+
+          # 1) Retired Vercel Google-Forms launcher must never come back.
+          if grep -q "eduwonderlab.vercel.app/google-forms" "$f"; then
+            echo "::error file=$f::Links to the retired Vercel Google-Forms launcher. Use /teacher-tools/post-forms/?lesson=ID."
+            fail=1
+          fi
+
+          # 2) The activity dropdown must be present (generator --force strips it).
+          if ! grep -q "select-control" "$f"; then
+            echo "::error file=$f::Missing the activity dropdown (select-control) — a generator regen likely stripped the hand-maintained hub."
+            fail=1
+          fi
+
+          # 3) The Teacher Tools panel must be present.
+          if ! grep -qi "Teacher Tools" "$f"; then
+            echo "::error file=$f::Missing the Teacher Tools panel."
+            fail=1
+          fi
+
+          # 4) Google Slides links must be present (added 2026-06-05).
+          slides=$(grep -c ">Google Slides</a" "$f" || true)
+          if [ "${slides:-0}" -lt 1 ]; then
+            echo "::error file=$f::No Google Slides links found — the slides wiring was lost."
+            fail=1
+          fi
+
+          # 5) Size tripwire: stripped version is ~999 lines; healthy master is ~4600.
+          lines=$(wc -l < "$f")
+          if [ "$lines" -lt 3000 ]; then
+            echo "::error file=$f::Only $lines lines — this looks like the stripped no-dropdown version (healthy master is ~4600)."
+            fail=1
+          fi
+
+          if [ "$fail" -eq 1 ]; then
+            echo ""
+            echo "Master-copy guard FAILED. The curriculum hub is hand-maintained: ADD to it, do not"
+            echo "regenerate it. Never run 'npm run generate-curriculum -- --force'. See MASTER_COPY.md."
+            exit 1
+          fi
+          echo "Master-copy guard passed: $lines lines, $slides slides, dropdown + Teacher Tools present, no Vercel Forms."
