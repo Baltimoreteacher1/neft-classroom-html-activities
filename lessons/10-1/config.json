@@ -49,7 +49,13 @@
           "es": "El largo y el ancho solos solo dan el ___, no el volumen."
         }
       ],
-      "wordBank": ["volume", "length", "width", "height", "rectangular prism"],
+      "wordBank": [
+        "volume",
+        "length",
+        "width",
+        "height",
+        "rectangular prism"
+      ],
       "listenFor": "Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.",
       "extend": "Could two time capsules have the same volume but different shapes? Justify with an example.",
       "extendStems": [
@@ -262,10 +268,34 @@
       "Volume (in³)"
     ],
     "rows": [
-      ["Container A", "6", "4", "3", ""],
-      ["Container B", "5", "5", "2", ""],
-      ["Container C", "8", "3", "4", ""],
-      ["Container D", "10", "2", "3", ""]
+      [
+        "Container A",
+        "6",
+        "4",
+        "3",
+        ""
+      ],
+      [
+        "Container B",
+        "5",
+        "5",
+        "2",
+        ""
+      ],
+      [
+        "Container C",
+        "8",
+        "3",
+        "4",
+        ""
+      ],
+      [
+        "Container D",
+        "10",
+        "2",
+        "3",
+        ""
+      ]
     ],
     "editableCells": [
       {
@@ -310,55 +340,142 @@
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "A box is 4 units long, 3 wide, and 2 tall. What is its volume?",
+        "stem": "A time capsule box is 5 units long, 3 units wide, and 2 units tall. How many unit cubes fill it?",
+        "choices": [
+          "30 cubic units",
+          "10 cubic units",
+          "15 cubic units",
+          "25 cubic units"
+        ],
+        "correctIndex": 0,
+        "explanation": "V = length × width × height = 5 × 3 × 2 = 30 cubic units."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "You stack unit cubes in a capsule: each layer has 6 cubes, and there are 4 layers. What is the volume?",
         "choices": [
           "24 cubic units",
-          "9 cubic units",
-          "18 cubic units",
-          "12 cubic units"
-        ],
-        "correctIndex": 0,
-        "explanation": "V = l × w × h = 4 × 3 × 2 = 24 cubic units."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "How many unit cubes fill a box that is 5 by 2 by 3?",
-        "choices": ["30", "10", "25", "15"],
-        "correctIndex": 0,
-        "explanation": "5 × 2 × 3 = 30 unit cubes."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A cube has edges of 4 units. What is its volume?",
-        "choices": [
-          "64 cubic units",
-          "16 cubic units",
+          "10 cubic units",
           "12 cubic units",
-          "48 cubic units"
+          "18 cubic units"
         ],
         "correctIndex": 0,
-        "explanation": "V = 4 × 4 × 4 = 64 cubic units."
+        "explanation": "Each layer has 6 cubes and there are 4 layers, so 6 × 4 = 24 cubic units. This is the same as length × width × height with one factor being the number of layers."
       },
       {
-        "type": "multiple-choice",
-        "stem": "A box has volume 36 cubic units. Its base is 6 by 2. What is its height?",
-        "choices": ["3 units", "12 units", "6 units", "2 units"],
-        "correctIndex": 0,
-        "explanation": "Base area = 12; height = 36 ÷ 12 = 3 units."
+        "type": "matching-game",
+        "label": "Match each capsule's dimensions to its volume. Use V = length × width × height.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "7 × 2 × 3",
+            "match": "42 cubic units"
+          },
+          {
+            "term": "6 × 5 × 2",
+            "match": "60 cubic units"
+          },
+          {
+            "term": "9 × 4 × 2",
+            "match": "72 cubic units"
+          },
+          {
+            "term": "5 × 3 × 2",
+            "match": "30 cubic units"
+          }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "A capsule is filled with unit cubes. Sort each statement by whether it describes COUNTING cubes by layers or finding volume with the FORMULA.",
+        "items": [
+          {
+            "text": "Count 4 layers of 6 cubes each",
+            "category": "layers"
+          },
+          {
+            "text": "Add up the cubes in every layer",
+            "category": "layers"
+          },
+          {
+            "text": "Stack layers until the box is full, then count",
+            "category": "layers"
+          },
+          {
+            "text": "Use V = length × width × height",
+            "category": "formula"
+          },
+          {
+            "text": "Multiply the three edge lengths together",
+            "category": "formula"
+          },
+          {
+            "text": "Compute 6 × 5 × 2 = 60 cubic units",
+            "category": "formula"
+          }
+        ],
+        "categories": [
+          {
+            "id": "layers",
+            "label": "Counting Cubes by Layers"
+          },
+          {
+            "id": "formula",
+            "label": "Using the Volume Formula"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Cube Stack Mistake",
+        "workedExample": [
+          {
+            "label": "Dimensions",
+            "work": "A capsule is 5 long, 3 wide, and 4 tall"
+          },
+          {
+            "label": "Formula",
+            "work": "V = length × width × height"
+          },
+          {
+            "label": "Calculate",
+            "work": "V = 5 + 3 + 4 = 12 cubic units"
+          },
+          {
+            "label": "Answer",
+            "work": "Volume = 12 cubic units"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "The student added the edges instead of multiplying. Volume = 5 × 3 × 4 = 60 cubic units. Adding the edges (5 + 3 + 4 = 12) does not count the cubes that fill the box.",
+        "hints": [
+          "Look at the Calculate step. Should the three edges be added or multiplied?",
+          "Volume multiplies the edges: 5 × 3 × 4 = 60 cubic units, not 5 + 3 + 4 = 12."
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
         "stem": "What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?",
-        "choices": ["84 in³", "14 in³", "84 in²", "42 in³"],
+        "choices": [
+          "84 in³",
+          "14 in³",
+          "84 in²",
+          "42 in³"
+        ],
         "correctIndex": 0,
         "explanation": "V = l × w × h = 7 × 3 × 4 = 84 cubic inches."
       },
       {
         "type": "multiple-choice",
         "stem": "A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?",
-        "choices": ["3 cm", "6 cm", "4 cm", "12 cm"],
+        "choices": [
+          "3 cm",
+          "6 cm",
+          "4 cm",
+          "12 cm"
+        ],
         "correctIndex": 0,
         "explanation": "V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm."
       },
@@ -377,11 +494,31 @@
       {
         "type": "fill-table",
         "instructions": "Find the volume of each rectangular prism.",
-        "headers": ["Length", "Width", "Height", "Volume"],
+        "headers": [
+          "Length",
+          "Width",
+          "Height",
+          "Volume"
+        ],
         "rows": [
-          ["5 in", "3 in", "4 in", ""],
-          ["6 cm", "6 cm", "2 cm", ""],
-          ["9 ft", "2 ft", "5 ft", ""]
+          [
+            "5 in",
+            "3 in",
+            "4 in",
+            ""
+          ],
+          [
+            "6 cm",
+            "6 cm",
+            "2 cm",
+            ""
+          ],
+          [
+            "9 ft",
+            "2 ft",
+            "5 ft",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -424,11 +561,35 @@
       {
         "type": "fill-table",
         "instructions": "Complete the table. Find the missing dimension or volume for each time capsule.",
-        "headers": ["Capsule", "Length", "Width", "Height", "Volume"],
+        "headers": [
+          "Capsule",
+          "Length",
+          "Width",
+          "Height",
+          "Volume"
+        ],
         "rows": [
-          ["Capsule X", "9 in", "5 in", "2 in", ""],
-          ["Capsule Y", "6 ft", "4 ft", "", "168 ft³"],
-          ["Capsule Z", "12 cm", "", "5 cm", "360 cm³"]
+          [
+            "Capsule X",
+            "9 in",
+            "5 in",
+            "2 in",
+            ""
+          ],
+          [
+            "Capsule Y",
+            "6 ft",
+            "4 ft",
+            "",
+            "168 ft³"
+          ],
+          [
+            "Capsule Z",
+            "12 cm",
+            "",
+            "5 cm",
+            "360 cm³"
+          ]
         ],
         "editableCells": [
           {
@@ -555,9 +716,24 @@
           "How did it change?"
         ],
         "rows": [
-          ["Double the length", "6 × 4 × 5", "", ""],
-          ["Double the width", "3 × 8 × 5", "", ""],
-          ["Double the height", "3 × 4 × 10", "", ""]
+          [
+            "Double the length",
+            "6 × 4 × 5",
+            "",
+            ""
+          ],
+          [
+            "Double the width",
+            "3 × 8 × 5",
+            "",
+            ""
+          ],
+          [
+            "Double the height",
+            "3 × 4 × 10",
+            "",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -592,7 +768,13 @@
           }
         ]
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "Cube Stack Volume Build",
+      "emoji": "📦",
+      "intro": "Pack each time capsule by stacking unit cubes layer by layer to find its volume.",
+      "stepLabel": "Stack"
+    }
   },
   "connect": {
     "scenario": "A moving company uses rectangular boxes. A large box is 24 inches long, 18 inches wide, and 18 inches tall. A medium box is 18 inches long, 14 inches wide, and 12 inches tall.",
@@ -613,7 +795,12 @@
   "reflect": {
     "exitTicket": {
       "stem": "A rectangular prism has l = 11 in, w = 5 in, h = 4 in. What is the volume?",
-      "choices": ["220 in³", "55 in³", "220 in²", "200 in³"],
+      "choices": [
+        "220 in³",
+        "55 in³",
+        "220 in²",
+        "200 in³"
+      ],
       "correctIndex": 0,
       "explanation": "V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³)."
     }

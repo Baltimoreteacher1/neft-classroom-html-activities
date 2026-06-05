@@ -295,57 +295,154 @@
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "What is the distance between (2, 3) and (2, 9)?",
-        "choices": ["6", "12", "3", "11"],
-        "correctIndex": 0,
-        "explanation": "Same x, so subtract y-values: 9 − 3 = 6 units."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "What is the distance between (-4, 1) and (5, 1)?",
-        "choices": ["9", "1", "-9", "4"],
-        "correctIndex": 0,
-        "explanation": "Same y; distance = |5 − (-4)| = 9 units."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A point is at (-3, 2) and another at (-3, -5). How far apart are they?",
-        "choices": ["7", "3", "2", "8"],
-        "correctIndex": 0,
-        "explanation": "Same x; distance = |2 − (-5)| = 7 units."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "Why can you find the distance between (1, 4) and (6, 4) by subtracting x-values?",
+        "stem": "The Bank is at (2, 3) and the Library is at (2, 9). How many blocks apart are they?",
         "choices": [
-          "They have the same y-coordinate, so the segment is horizontal",
-          "All points are the same",
-          "Distance is always the larger number",
-          "You must always add the coordinates"
+          "6 blocks",
+          "12 blocks",
+          "3 blocks",
+          "11 blocks"
         ],
         "correctIndex": 0,
-        "explanation": "Equal y-values mean a horizontal segment, so distance = |6 − 1| = 5."
+        "explanation": "Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Park is at (-4, 5) and City Hall is at (3, 5). How many blocks apart are they?",
+        "choices": [
+          "1 block",
+          "7 blocks",
+          "12 blocks",
+          "5 blocks"
+        ],
+        "correctIndex": 1,
+        "explanation": "Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Café is at (-2, 1) and the Gym is at (-2, -4). How many blocks apart are they?",
+        "choices": [
+          "3 blocks",
+          "5 blocks",
+          "6 blocks",
+          "2 blocks"
+        ],
+        "correctIndex": 1,
+        "explanation": "Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks."
+      },
+      {
+        "type": "matching-game",
+        "label": "Match each pair of city landmarks to the number of blocks between them.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "Subway (1, 6) to Tower (8, 6)",
+            "match": "7 blocks"
+          },
+          {
+            "term": "Market (-3, -1) to Stadium (-3, 7)",
+            "match": "8 blocks"
+          },
+          {
+            "term": "Bank (2, 3) to Library (2, 9)",
+            "match": "6 blocks"
+          },
+          {
+            "term": "Café (-2, 1) to Gym (-2, -4)",
+            "match": "5 blocks"
+          }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each block-distance problem by whether you SUBTRACT (same side of zero) or ADD absolute values (opposite sides of zero).",
+        "categories": [
+          {
+            "id": "subtract",
+            "label": "Same side of zero — subtract"
+          },
+          {
+            "id": "add",
+            "label": "Opposite sides of zero — add absolute values"
+          }
+        ],
+        "items": [
+          {
+            "text": "School (2, 3) to Library (2, 9)",
+            "category": "subtract"
+          },
+          {
+            "text": "Subway (1, 6) to Tower (8, 6)",
+            "category": "subtract"
+          },
+          {
+            "text": "Park (-4, 5) to City Hall (3, 5)",
+            "category": "add"
+          },
+          {
+            "text": "Café (-2, 1) to Gym (-2, -4)",
+            "category": "add"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — City Block Distance Mistake",
+        "workedExample": [
+          {
+            "label": "Problem",
+            "work": "Find the blocks between the Park (-4, 5) and City Hall (3, 5)."
+          },
+          {
+            "label": "Student thinking",
+            "work": "Both have y = 5, so subtract the x-values: 4 - 3 = 1."
+          },
+          {
+            "label": "Student answer",
+            "work": "The distance is 1 block."
+          }
+        ],
+        "errorStep": 1,
+        "correctWork": "The student dropped the negative sign and used 4 instead of -4. Because the Park is at x = -4 and City Hall is at x = 3, the points sit on opposite sides of zero. Add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks. (You can also write it as |3 - (-4)| = |3 + 4| = 7.) The correct distance is 7 blocks, not 1.",
+        "hints": [
+          "The Park's x-coordinate is -4, not 4. Did the student use the negative sign?",
+          "Count along the grid from -4 to 3. How many blocks is that across zero?"
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
         "stem": "What is the distance between (-4, 3) and (2, 3)?",
-        "choices": ["2 units", "4 units", "6 units", "8 units"],
+        "choices": [
+          "2 units",
+          "4 units",
+          "6 units",
+          "8 units"
+        ],
         "correctIndex": 2,
         "explanation": "Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units."
       },
       {
         "type": "multiple-choice",
         "stem": "What is the distance between (5, -2) and (5, 4)?",
-        "choices": ["2 units", "4 units", "6 units", "10 units"],
+        "choices": [
+          "2 units",
+          "4 units",
+          "6 units",
+          "10 units"
+        ],
         "correctIndex": 2,
         "explanation": "Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units."
       },
       {
         "type": "multiple-choice",
         "stem": "A rectangle has vertices at (1, 1), (5, 1), (5, 4), (1, 4). What is its perimeter?",
-        "choices": ["14 units", "12 units", "20 units", "8 units"],
+        "choices": [
+          "14 units",
+          "12 units",
+          "20 units",
+          "8 units"
+        ],
         "correctIndex": 0,
         "explanation": "Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14."
       },
@@ -353,12 +450,37 @@
         "type": "fill-table",
         "label": "Find the distance between each pair of points.",
         "instructions": "Both points in each row share a coordinate. Find the distance.",
-        "headers": ["Point 1", "Point 2", "Shared Coordinate", "Distance"],
+        "headers": [
+          "Point 1",
+          "Point 2",
+          "Shared Coordinate",
+          "Distance"
+        ],
         "rows": [
-          ["(-5, 1)", "(3, 1)", "y = 1", ""],
-          ["(2, -4)", "(2, 6)", "x = 2", ""],
-          ["(-3, -2)", "(-3, 4)", "x = -3", ""],
-          ["(-1, 5)", "(4, 5)", "y = 5", ""]
+          [
+            "(-5, 1)",
+            "(3, 1)",
+            "y = 1",
+            ""
+          ],
+          [
+            "(2, -4)",
+            "(2, 6)",
+            "x = 2",
+            ""
+          ],
+          [
+            "(-3, -2)",
+            "(-3, 4)",
+            "x = -3",
+            ""
+          ],
+          [
+            "(-1, 5)",
+            "(4, 5)",
+            "y = 5",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -440,10 +562,28 @@
       {
         "type": "fill-table",
         "instructions": "Find the perimeter of each rectangle using its vertex coordinates.",
-        "headers": ["Rectangle", "Vertices", "Width", "Height", "Perimeter"],
+        "headers": [
+          "Rectangle",
+          "Vertices",
+          "Width",
+          "Height",
+          "Perimeter"
+        ],
         "rows": [
-          ["Rect 1", "(-3, 1), (4, 1), (4, 5), (-3, 5)", "", "", ""],
-          ["Rect 2", "(-2, -4), (6, -4), (6, 2), (-2, 2)", "", "", ""]
+          [
+            "Rect 1",
+            "(-3, 1), (4, 1), (4, 5), (-3, 5)",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Rect 2",
+            "(-2, -4), (6, -4), (6, 2), (-2, 2)",
+            "",
+            "",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -500,7 +640,12 @@
       {
         "type": "multiple-choice",
         "stem": "Two points are at (-3, -7) and (-3, 5). What is the distance between them?",
-        "choices": ["12 units", "2 units", "7 units", "8 units"],
+        "choices": [
+          "12 units",
+          "2 units",
+          "7 units",
+          "8 units"
+        ],
         "correctIndex": 0,
         "explanation": "Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units."
       }
@@ -581,7 +726,13 @@
           }
         ]
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "City Blocks Distance Challenge",
+      "emoji": "🏙️",
+      "intro": "Help the city planner measure how many blocks apart each landmark sits on the downtown grid.",
+      "stepLabel": "Block"
+    }
   },
   "connect": {
     "scenario": "A drone starts at position (-4, 0) on a grid and needs to deliver a package to (3, 0), then fly to another delivery at (3, -5). It can only fly horizontally or vertically.",
@@ -601,7 +752,12 @@
   "reflect": {
     "exitTicket": {
       "stem": "What is the distance between the points (3, -2) and (3, 5)?",
-      "choices": ["3 units", "5 units", "7 units", "9 units"],
+      "choices": [
+        "3 units",
+        "5 units",
+        "7 units",
+        "9 units"
+      ],
       "correctIndex": 2,
       "explanation": "Both points share x = 3, so this is a vertical distance. |5 - (-2)| = |5 + 2| = 7 units."
     }

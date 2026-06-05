@@ -304,21 +304,31 @@
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "Reflect (3, 5) across the x-axis. What is the image?",
-        "choices": ["(3, -5)", "(-3, 5)", "(-3, -5)", "(5, 3)"],
+        "stem": "Captain Vega folds the map along the x-axis. A marker at (7, 2) lands on its mirror image. What are the new coordinates?",
+        "choices": [
+          "(7, -2)",
+          "(-7, 2)",
+          "(-7, -2)",
+          "(2, 7)"
+        ],
         "correctIndex": 0,
-        "explanation": "Reflecting across the x-axis changes the sign of the y-coordinate: (3, -5)."
+        "explanation": "Folding along (reflecting across) the x-axis flips the sign of the y-coordinate only. (7, 2) becomes (7, -2)."
       },
       {
         "type": "multiple-choice",
-        "stem": "Reflect (-2, 4) across the y-axis. What is the image?",
-        "choices": ["(2, 4)", "(-2, -4)", "(2, -4)", "(4, -2)"],
+        "stem": "A buried chest is marked at (-5, 3). Vega folds the map along the y-axis to find its mirror twin. Where is the twin?",
+        "choices": [
+          "(5, 3)",
+          "(-5, -3)",
+          "(5, -3)",
+          "(3, -5)"
+        ],
         "correctIndex": 0,
-        "explanation": "Reflecting across the y-axis changes the sign of the x-coordinate: (2, 4)."
+        "explanation": "Reflecting across the y-axis flips the sign of the x-coordinate only. (-5, 3) becomes (5, 3)."
       },
       {
         "type": "multiple-choice",
-        "stem": "A point (6, -1) is reflected across the x-axis. Which coordinate changes sign?",
+        "stem": "Vega reflects a palm-tree marker at (8, -6) across the x-axis. Which coordinate changes its sign?",
         "choices": [
           "The y-coordinate",
           "The x-coordinate",
@@ -326,35 +336,134 @@
           "Neither coordinate"
         ],
         "correctIndex": 0,
-        "explanation": "Reflecting across the x-axis flips the sign of y only, giving (6, 1)."
+        "explanation": "Across the x-axis the rule is (x, y) -> (x, -y), so only the y-coordinate flips sign. (8, -6) becomes (8, 6)."
       },
       {
-        "type": "multiple-choice",
-        "stem": "Reflect (-4, -7) across the y-axis. What is the image?",
-        "choices": ["(4, -7)", "(-4, 7)", "(4, 7)", "(-7, -4)"],
-        "correctIndex": 0,
-        "explanation": "Reflecting across the y-axis changes the sign of x: (4, -7)."
+        "type": "matching-game",
+        "pairs": [
+          {
+            "term": "(1, 7) folded over x-axis",
+            "match": "(1, -7)"
+          },
+          {
+            "term": "(-8, 2) folded over y-axis",
+            "match": "(8, 2)"
+          },
+          {
+            "term": "(9, -3) folded over x-axis",
+            "match": "(9, 3)"
+          },
+          {
+            "term": "(-1, -6) folded over y-axis",
+            "match": "(1, -6)"
+          }
+        ],
+        "columns": 4,
+        "label": "Match each map marker and fold line to its mirror image."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each fold by which coordinate rule it follows on Vega's map.",
+        "items": [
+          {
+            "text": "(4, 9) fold over x-axis",
+            "category": "xaxis"
+          },
+          {
+            "text": "(-2, 5) fold over x-axis",
+            "category": "xaxis"
+          },
+          {
+            "text": "(6, -1) fold over x-axis",
+            "category": "xaxis"
+          },
+          {
+            "text": "(3, 8) fold over y-axis",
+            "category": "yaxis"
+          },
+          {
+            "text": "(-7, 4) fold over y-axis",
+            "category": "yaxis"
+          },
+          {
+            "text": "(2, -9) fold over y-axis",
+            "category": "yaxis"
+          }
+        ],
+        "categories": [
+          {
+            "id": "xaxis",
+            "label": "Over x-axis: keep x, flip y (x, -y)"
+          },
+          {
+            "id": "yaxis",
+            "label": "Over y-axis: flip x, keep y (-x, y)"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Vega's Fold Mix-Up",
+        "workedExample": [
+          {
+            "label": "Problem",
+            "work": "Reflect the marker (6, 4) across the x-axis."
+          },
+          {
+            "label": "Step 1",
+            "work": "The x-axis is the fold line, so flip the sign of the x-coordinate."
+          },
+          {
+            "label": "Step 2",
+            "work": "Change 6 to -6 and keep y as 4."
+          },
+          {
+            "label": "Answer",
+            "work": "(-6, 4)"
+          }
+        ],
+        "errorStep": 1,
+        "correctWork": "Reflecting across the x-axis follows the rule (x, y) -> (x, -y): keep the x-coordinate and flip the y-coordinate. Vega flipped the x instead of the y. The correct mirror image of (6, 4) is (6, -4).",
+        "hints": [
+          "The axis you fold over is the one that stays put. Folding over the x-axis means the x-value should NOT change.",
+          "Across the x-axis: keep x, flip y -> (x, -y). So (6, 4) should become (6, -4), not (-6, 4)."
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
         "stem": "What is the reflection of (4, -3) over the x-axis?",
-        "choices": ["(-4, -3)", "(4, 3)", "(-4, 3)", "(3, -4)"],
+        "choices": [
+          "(-4, -3)",
+          "(4, 3)",
+          "(-4, 3)",
+          "(3, -4)"
+        ],
         "correctIndex": 1,
         "explanation": "Reflecting over the x-axis changes the sign of the y-coordinate. The x stays the same (4), and the y changes from -3 to 3. The answer is (4, 3)."
       },
       {
         "type": "multiple-choice",
         "stem": "What is the reflection of (-2, 6) over the y-axis?",
-        "choices": ["(2, 6)", "(-2, -6)", "(2, -6)", "(6, -2)"],
+        "choices": [
+          "(2, 6)",
+          "(-2, -6)",
+          "(2, -6)",
+          "(6, -2)"
+        ],
         "correctIndex": 0,
         "explanation": "Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -2 to 2, and y stays 6. The answer is (2, 6)."
       },
       {
         "type": "multiple-choice",
         "stem": "Which point is on the y-axis?",
-        "choices": ["(0, 5)", "(5, 0)", "(3, 3)", "(-2, 4)"],
+        "choices": [
+          "(0, 5)",
+          "(5, 0)",
+          "(3, 3)",
+          "(-2, 4)"
+        ],
         "correctIndex": 0,
         "explanation": "Points on the y-axis have x-coordinate = 0. (0, 5) is on the y-axis."
       },
@@ -447,14 +556,42 @@
       {
         "type": "fill-table",
         "instructions": "Find the reflection of each point over the given axis.",
-        "headers": ["Original Point", "Axis", "Reflected Point"],
+        "headers": [
+          "Original Point",
+          "Axis",
+          "Reflected Point"
+        ],
         "rows": [
-          ["(3, -7)", "x-axis", ""],
-          ["(-5, 2)", "y-axis", ""],
-          ["(8, -1)", "x-axis", ""],
-          ["(-4, -6)", "y-axis", ""],
-          ["(0, 9)", "x-axis", ""],
-          ["(-3, 0)", "y-axis", ""]
+          [
+            "(3, -7)",
+            "x-axis",
+            ""
+          ],
+          [
+            "(-5, 2)",
+            "y-axis",
+            ""
+          ],
+          [
+            "(8, -1)",
+            "x-axis",
+            ""
+          ],
+          [
+            "(-4, -6)",
+            "y-axis",
+            ""
+          ],
+          [
+            "(0, 9)",
+            "x-axis",
+            ""
+          ],
+          [
+            "(-3, 0)",
+            "y-axis",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -523,7 +660,12 @@
       {
         "type": "multiple-choice",
         "stem": "Point A is at (-3, 5). It is reflected over the x-axis to A', then A' is reflected over the y-axis to A''. What are the coordinates of A''?",
-        "choices": ["(3, -5)", "(-3, -5)", "(3, 5)", "(-3, 5)"],
+        "choices": [
+          "(3, -5)",
+          "(-3, -5)",
+          "(3, 5)",
+          "(-3, 5)"
+        ],
         "correctIndex": 0,
         "explanation": "Over x-axis: (-3, 5) → (-3, -5). Then over y-axis: (-3, -5) → (3, -5). Both coordinates changed sign."
       }
@@ -604,7 +746,13 @@
           }
         ]
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "Mirror Map Reflection Lab",
+      "emoji": "🗺️",
+      "intro": "Fold Captain Vega's treasure map along an axis and find each marker's mirror image to unlock the next clue.",
+      "stepLabel": "Reflection"
+    }
   },
   "connect": {
     "scenario": "A game designer creates a spaceship at (3, 2) and wants to place enemy ships as reflections to make the level symmetric. One enemy is reflected over the y-axis, and another is reflected over the x-axis.",
@@ -625,7 +773,12 @@
   "reflect": {
     "exitTicket": {
       "stem": "What is the reflection of (-5, 2) over the y-axis?",
-      "choices": ["(-5, -2)", "(5, -2)", "(5, 2)", "(2, -5)"],
+      "choices": [
+        "(-5, -2)",
+        "(5, -2)",
+        "(5, 2)",
+        "(2, -5)"
+      ],
       "correctIndex": 2,
       "explanation": "Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -5 to 5, and y stays 2. The reflection is (5, 2)."
     }

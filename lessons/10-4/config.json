@@ -258,7 +258,13 @@
   "explore": {
     "type": "fill-table",
     "instructions": "Calculate the surface area of each time capsule shape. For rectangular prisms, use SA = 2lw + 2lh + 2wh. For triangular prisms, find the area of each face and add them up.",
-    "headers": ["Capsule", "Shape", "Dimensions", "Face Areas", "Total SA"],
+    "headers": [
+      "Capsule",
+      "Shape",
+      "Dimensions",
+      "Face Areas",
+      "Total SA"
+    ],
     "rows": [
       [
         "Capsule A",
@@ -332,57 +338,154 @@
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "A rectangular prism is 5 by 3 by 2. What is its surface area?",
-        "choices": ["62 sq units", "30 sq units", "31 sq units", "60 sq units"],
-        "correctIndex": 0,
-        "explanation": "SA = 2(lw + lh + wh) = 2(15 + 10 + 6) = 2 × 31 = 62 sq units."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A cube has surface area 96 cm². What is the area of one face?",
-        "choices": ["16 cm²", "96 cm²", "6 cm²", "48 cm²"],
-        "correctIndex": 0,
-        "explanation": "A cube has 6 equal faces: 96 ÷ 6 = 16 cm² per face."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "To wrap a gift box 4 by 4 by 4 cm, how much paper covers the surface (no overlap)?",
-        "choices": ["96 cm²", "64 cm²", "16 cm²", "48 cm²"],
-        "correctIndex": 0,
-        "explanation": "Each face is 16; 6 × 16 = 96 cm²."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A prism is 10 by 2 by 3. What is its surface area?",
+        "stem": "A rectangular time capsule box measures 3 in by 4 in by 5 in. How much wrapping paper covers its surface (no overlap)?",
         "choices": [
-          "112 sq units",
-          "60 sq units",
-          "56 sq units",
-          "100 sq units"
+          "94 in²",
+          "60 in²",
+          "47 in²",
+          "94 in³"
         ],
         "correctIndex": 0,
-        "explanation": "2(20 + 30 + 6) = 2 × 56 = 112 sq units."
+        "explanation": "SA = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in²."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A rectangular capsule crate is 6 cm long, 5 cm wide, and 4 cm tall. How much cardboard is needed to cover all its faces?",
+        "choices": [
+          "148 cm²",
+          "120 cm²",
+          "74 cm²",
+          "148 cm³"
+        ],
+        "correctIndex": 0,
+        "explanation": "SA = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm²."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A wedge-shaped (triangular prism) capsule has triangle ends with base 8 in and height 6 in. The prism is 10 in long, and the triangle's three sides are 8 in, 6 in, and 10 in. How much wrapping paper covers it?",
+        "choices": [
+          "288 in²",
+          "240 in²",
+          "48 in²",
+          "288 in³"
+        ],
+        "correctIndex": 0,
+        "explanation": "Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in²."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "A capsule crew sorts wrapping jobs by how much paper each prism needs. Order these from LEAST surface area to GREATEST.",
+        "items": [
+          {
+            "text": "Cube capsule 4×4×4: SA = 96 in²",
+            "category": "step1"
+          },
+          {
+            "text": "Rect capsule 3×4×5: SA = 94 in²",
+            "category": "step1"
+          },
+          {
+            "text": "Rect capsule 6×5×4: SA = 148 in²",
+            "category": "step1"
+          },
+          {
+            "text": "Tri capsule (ends 8×6, length 10): SA = 288 in²",
+            "category": "step1"
+          }
+        ],
+        "categories": [
+          {
+            "id": "step1",
+            "label": "Least → Greatest wrapping paper"
+          }
+        ]
+      },
+      {
+        "type": "matching-game",
+        "label": "Match each rectangular capsule's dimensions to how much cardboard wraps its surface.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "7 in × 3 in × 2 in",
+            "match": "82 in²"
+          },
+          {
+            "term": "6 in × 4 in × 2 in",
+            "match": "88 in²"
+          },
+          {
+            "term": "9 in × 2 in × 2 in",
+            "match": "80 in²"
+          },
+          {
+            "term": "6 in × 5 in × 3 in",
+            "match": "126 in²"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Wrapping Paper Mix-Up",
+        "workedExample": [
+          {
+            "label": "Dimensions",
+            "work": "Rectangular capsule: l = 4 in, w = 3 in, h = 2 in. Find the wrapping paper (surface area)."
+          },
+          {
+            "label": "Formula",
+            "work": "Surface area means adding the area of all 6 faces: SA = 2lw + 2lh + 2wh."
+          },
+          {
+            "label": "Calculate",
+            "work": "The student multiplied the three dimensions: 4 × 3 × 2 = 24, so they wrote SA = 24 in²."
+          },
+          {
+            "label": "Answer",
+            "work": "Wrapping paper needed = 24 in²"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "Multiplying l × w × h gives the VOLUME (24 in³), not the surface area. To wrap the box you must add all six faces: SA = 2(4×3) + 2(4×2) + 2(3×2) = 24 + 16 + 12 = 52 in².",
+        "hints": [
+          "Wrapping paper covers the outside faces — that is surface area, not how much fits inside.",
+          "Multiplying l × w × h gives volume in cubic units. Surface area adds 6 faces: 2(4×3) + 2(4×2) + 2(3×2) = 52 in²."
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
         "stem": "What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?",
-        "choices": ["94 cm²", "60 cm²", "94 cm³", "47 cm²"],
+        "choices": [
+          "94 cm²",
+          "60 cm²",
+          "94 cm³",
+          "47 cm²"
+        ],
         "correctIndex": 0,
         "explanation": "SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm²."
       },
       {
         "type": "multiple-choice",
         "stem": "How many faces does a triangular prism have?",
-        "choices": ["5", "4", "6", "3"],
+        "choices": [
+          "5",
+          "4",
+          "6",
+          "3"
+        ],
         "correctIndex": 0,
         "explanation": "A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces."
       },
       {
         "type": "multiple-choice",
         "stem": "A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?",
-        "choices": ["134 cm²", "110 cm²", "122 cm²", "134 cm³"],
+        "choices": [
+          "134 cm²",
+          "110 cm²",
+          "122 cm²",
+          "134 cm³"
+        ],
         "correctIndex": 0,
         "explanation": "SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm²."
       },
@@ -440,11 +543,35 @@
       {
         "type": "fill-table",
         "instructions": "Calculate the surface area of each rectangular prism time capsule.",
-        "headers": ["Capsule", "Length", "Width", "Height", "Surface Area"],
+        "headers": [
+          "Capsule",
+          "Length",
+          "Width",
+          "Height",
+          "Surface Area"
+        ],
         "rows": [
-          ["Capsule E", "12 in", "8 in", "5 in", ""],
-          ["Capsule F", "9 cm", "6 cm", "6 cm", ""],
-          ["Capsule G", "15 ft", "4 ft", "3 ft", ""]
+          [
+            "Capsule E",
+            "12 in",
+            "8 in",
+            "5 in",
+            ""
+          ],
+          [
+            "Capsule F",
+            "9 cm",
+            "6 cm",
+            "6 cm",
+            ""
+          ],
+          [
+            "Capsule G",
+            "15 ft",
+            "4 ft",
+            "3 ft",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -467,7 +594,12 @@
       {
         "type": "multiple-choice",
         "stem": "A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?",
-        "choices": ["184 in²", "160 in²", "124 in²", "184 in³"],
+        "choices": [
+          "184 in²",
+          "160 in²",
+          "124 in²",
+          "184 in³"
+        ],
         "correctIndex": 0,
         "explanation": "Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in²."
       },
@@ -561,10 +693,25 @@
       {
         "type": "fill-table",
         "instructions": "A rectangular prism and a triangular prism have similar dimensions. Compare their surface areas and volumes.",
-        "headers": ["Shape", "Faces", "Surface Area", "Volume"],
+        "headers": [
+          "Shape",
+          "Faces",
+          "Surface Area",
+          "Volume"
+        ],
         "rows": [
-          ["Rect prism: 6×4×3", "6", "", ""],
-          ["Tri prism: base=6, h=4, length=3, sides=5", "5", "", ""]
+          [
+            "Rect prism: 6×4×3",
+            "6",
+            "",
+            ""
+          ],
+          [
+            "Tri prism: base=6, h=4, length=3, sides=5",
+            "5",
+            "",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -589,18 +736,39 @@
           }
         ]
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "Prism Packaging Challenge",
+      "emoji": "📦",
+      "intro": "The time capsule crew needs wrapping paper and cardboard, so package each prism by finding its surface area.",
+      "stepLabel": "Package"
+    }
   },
   "connect": {
     "scenario": "A carpenter builds wooden storage chests. A rectangular chest is 3 feet long, 2 feet wide, and 2 feet tall. Wood stain covers 50 square feet per can.",
     "promptQuestion": "How much surface area needs staining, and how many cans of stain are needed?",
     "prompt": "The chest's SA is ___ ft² because SA = 2(___×___) + 2(___×___) + 2(___×___) = ___ + ___ + ___ = ___. You need ___ can(s) because ___ ÷ 50 = ___.",
-    "keywords": ["32", "3", "2", "12", "12", "8", "1", "stain", "surface area"]
+    "keywords": [
+      "32",
+      "3",
+      "2",
+      "12",
+      "12",
+      "8",
+      "1",
+      "stain",
+      "surface area"
+    ]
   },
   "reflect": {
     "exitTicket": {
       "stem": "A rectangular prism has l = 8 ft, w = 6 ft, h = 3 ft. What is the surface area?",
-      "choices": ["180 ft²", "144 ft²", "180 ft³", "90 ft²"],
+      "choices": [
+        "180 ft²",
+        "144 ft²",
+        "180 ft³",
+        "90 ft²"
+      ],
       "correctIndex": 0,
       "explanation": "SA = 2(8×6) + 2(8×3) + 2(6×3) = 96 + 48 + 36 = 180 ft². Surface area uses square units (ft²)."
     }
