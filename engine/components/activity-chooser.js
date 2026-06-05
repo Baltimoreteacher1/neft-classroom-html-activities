@@ -145,10 +145,14 @@ export function renderActivityChooser(container, { config, renderComponent }) {
   }
 
   if (hasOptional) {
+    // Use the named TPT-style activity (config.practice.optionalActivity) when
+    // present so the menu tile shows its real title instead of the generic
+    // "Extra Practice". Falls back to the generic label when absent.
+    const act = config.practice?.optionalActivity;
     tiles.push({
-      icon: "✏️",
-      title: "Extra Practice",
-      desc: "Bonus problems for extra reps.",
+      icon: (act && act.emoji) || "✏️",
+      title: (act && act.name) || "Extra Practice",
+      desc: (act && act.intro) || "Bonus problems for extra reps.",
       run: (host, done) =>
         runComponentList(host, optional, renderComponent, done),
     });
