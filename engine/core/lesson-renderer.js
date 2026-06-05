@@ -773,7 +773,7 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total) {
   ctx.navigateTo(phaseIdx + 1);
 }
 
-function renderComponent(container, problemDef, onAnswer) {
+export function renderComponent(container, problemDef, onAnswer) {
   switch (problemDef.type) {
     case "multiple-choice":
       renderMultipleChoice(container, { ...problemDef, onAnswer });

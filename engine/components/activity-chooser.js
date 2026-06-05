@@ -230,7 +230,7 @@ export function renderActivityChooser(container, { config, renderComponent }) {
 // Run a list of standard problem objects through the shared renderComponent,
 // advancing on each answer (ungraded — we ignore correctness). Calls done()
 // when the list is exhausted.
-function runComponentList(host, items, renderComponent, done) {
+export function runComponentList(host, items, renderComponent, done) {
   let idx = 0;
   function step() {
     if (idx >= items.length) {

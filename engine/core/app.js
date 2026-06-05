@@ -2,6 +2,8 @@ import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
 import { reportScore } from "./score-reporter.js";
+import { runComponentList } from "../components/activity-chooser.js";
+import { renderComponent } from "./lesson-renderer.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 
@@ -27,57 +29,75 @@ export function createApp(config) {
   // Global sound hooks
   window.AudioSynth = {
     ctx: null,
-    init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
-    playTone(freq, type, duration, vol=0.1) {
+    init() {
+      if (!this.ctx)
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    },
+    playTone(freq, type, duration, vol = 0.1) {
       if (!this.ctx) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = type;
       osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
       gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+      gain.gain.exponentialRampToValueAtTime(
+        0.01,
+        this.ctx.currentTime + duration,
+      );
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
       osc.stop(this.ctx.currentTime + duration);
     },
-    click() { this.init(); this.playTone(600, 'sine', 0.05, 0.05); },
-    success() { this.init(); this.playTone(800, 'sine', 0.1, 0.1); setTimeout(()=>this.playTone(1200, 'sine', 0.2, 0.1), 100); },
-    error() { this.init(); this.playTone(200, 'sawtooth', 0.2, 0.1); },
-    tada() { 
-      this.init(); 
-      this.playTone(523.25, 'sine', 0.1, 0.1);
-      setTimeout(()=>this.playTone(659.25, 'sine', 0.1, 0.1), 100);
-      setTimeout(()=>this.playTone(783.99, 'sine', 0.4, 0.15), 200);
-    }
+    click() {
+      this.init();
+      this.playTone(600, "sine", 0.05, 0.05);
+    },
+    success() {
+      this.init();
+      this.playTone(800, "sine", 0.1, 0.1);
+      setTimeout(() => this.playTone(1200, "sine", 0.2, 0.1), 100);
+    },
+    error() {
+      this.init();
+      this.playTone(200, "sawtooth", 0.2, 0.1);
+    },
+    tada() {
+      this.init();
+      this.playTone(523.25, "sine", 0.1, 0.1);
+      setTimeout(() => this.playTone(659.25, "sine", 0.1, 0.1), 100);
+      setTimeout(() => this.playTone(783.99, "sine", 0.4, 0.15), 200);
+    },
   };
 
-  window.fireConfetti = function() {
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'fixed';
+  window.fireConfetti = function () {
+    const canvas = document.createElement("canvas");
+    canvas.style.position = "fixed";
     canvas.style.inset = 0;
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    canvas.style.pointerEvents = 'none';
+    canvas.style.width = "100vw";
+    canvas.style.height = "100vh";
+    canvas.style.pointerEvents = "none";
     canvas.style.zIndex = 9999;
     document.body.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const pieces = Array.from({length: 120}).map(() => ({
+    const pieces = Array.from({ length: 120 }).map(() => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height - canvas.height,
       vx: (Math.random() - 0.5) * 10,
       vy: Math.random() * 5 + 5,
-      color: ['#F2A93B','#387F84','#C85A3A','#4A7C6F'][Math.floor(Math.random()*4)],
+      color: ["#F2A93B", "#387F84", "#C85A3A", "#4A7C6F"][
+        Math.floor(Math.random() * 4)
+      ],
       size: Math.random() * 8 + 4,
       rot: Math.random() * Math.PI * 2,
-      rotSpeed: (Math.random() - 0.5) * 0.2
+      rotSpeed: (Math.random() - 0.5) * 0.2,
     }));
     function loop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       let active = false;
-      pieces.forEach(p => {
+      pieces.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
         p.vy += 0.1;
@@ -87,7 +107,7 @@ export function createApp(config) {
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rot);
         ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
         ctx.restore();
       });
       if (active) requestAnimationFrame(loop);
@@ -96,9 +116,13 @@ export function createApp(config) {
     loop();
   };
 
-  document.addEventListener('click', e => { 
-    if(e.target.closest('button, a, select, input[type="radio"], input[type="checkbox"], .phase-btn')) {
-      if(window.AudioSynth) window.AudioSynth.click();
+  document.addEventListener("click", (e) => {
+    if (
+      e.target.closest(
+        'button, a, select, input[type="radio"], input[type="checkbox"], .phase-btn',
+      )
+    ) {
+      if (window.AudioSynth) window.AudioSynth.click();
     }
   });
 }
@@ -290,18 +314,21 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   const minimapHUD = document.createElement("div");
   minimapHUD.className = "minimap-hud";
-  minimapHUD.style.cssText = "position:fixed; bottom:24px; right:24px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
+  minimapHUD.style.cssText =
+    "position:fixed; bottom:24px; right:24px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
   document.body.append(minimapHUD);
 
   function updateMinimap() {
     const s = state.get();
-    minimapHUD.innerHTML = s.phases.map((p, i) => {
-      const isCurrent = i === s.currentPhase;
-      const done = p.status === 'completed';
-      const bg = isCurrent ? '#387F84' : (done ? '#F2A93B' : 'rgba(0,0,0,0.1)');
-      const scale = isCurrent ? 'scale(1.2)' : 'scale(1)';
-      return `<div style="width:12px;height:12px;border-radius:50%;background:${bg}; transform:${scale}; transition:0.3s; cursor:pointer;" title="Phase ${i+1}" onclick="document.dispatchEvent(new CustomEvent('rma:navigate', {detail:{phase:${i}}}))"></div>`;
-    }).join('');
+    minimapHUD.innerHTML = s.phases
+      .map((p, i) => {
+        const isCurrent = i === s.currentPhase;
+        const done = p.status === "completed";
+        const bg = isCurrent ? "#387F84" : done ? "#F2A93B" : "rgba(0,0,0,0.1)";
+        const scale = isCurrent ? "scale(1.2)" : "scale(1)";
+        return `<div style="width:12px;height:12px;border-radius:50%;background:${bg}; transform:${scale}; transition:0.3s; cursor:pointer;" title="Phase ${i + 1}" onclick="document.dispatchEvent(new CustomEvent('rma:navigate', {detail:{phase:${i}}}))"></div>`;
+      })
+      .join("");
   }
 
   state.subscribe(() => {
@@ -315,8 +342,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     const phases = state.get().phases;
     if (phases.length && phases.every((p) => p.status === "completed")) {
       scoreReported = true;
-      if(window.AudioSynth) window.AudioSynth.tada();
-      if(window.fireConfetti) window.fireConfetti();
+      if (window.AudioSynth) window.AudioSynth.tada();
+      if (window.fireConfetti) window.fireConfetti();
       reportScore(state, config);
     }
   });
@@ -368,6 +395,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // the student's place in the graded flow is preserved underneath.
     openExtra(kind) {
       if (kind === "projects") return this.openProjects();
+      if (kind === "activity") return this.openActivity();
       const id = encodeURIComponent(config.lessonId);
       const meta =
         kind === "readiness"
@@ -420,6 +448,47 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           }
         });
       }
+      el.scrollIntoView({ block: "start" });
+    },
+
+    // Bonus Activity: the lesson's named TPT-style activity
+    // (config.practice.optionalActivity + config.practice.optional). Opens
+    // inline from the lesson menu so students can launch it directly instead of
+    // only at the end of Practice. Non-graded: never touches phase state, XP, or
+    // stars. No-op when the lesson has no optional activity.
+    openActivity() {
+      const act = config.practice && config.practice.optionalActivity;
+      const items =
+        config.practice && Array.isArray(config.practice.optional)
+          ? config.practice.optional
+          : [];
+      if (!act || !items.length) return;
+
+      this.setExtraActive("activity");
+      phaseContainer.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = "phase active extra-panel";
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", act.name || "Bonus Activity");
+      el.innerHTML = `
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
+          <div>
+            <div class="section-title" style="font-size:1.6rem;">${escHtml((act.emoji ? act.emoji + " " : "") + (act.name || "Bonus Activity"))}</div>
+            <div class="section-desc">${escHtml(act.intro || "A bonus challenge activity — not graded.")}</div>
+          </div>
+          <div><span class="badge badge-teal">Bonus · Ungraded</span></div>
+        </div>
+        <div class="activity-run"></div>`;
+      phaseContainer.append(el);
+
+      const host = el.querySelector(".activity-run");
+      runComponentList(host, items, renderComponent, () => {
+        const done = document.createElement("div");
+        done.className = "feedback feedback-success visible";
+        done.style.cssText = "margin-top:var(--sp-3, 12px);";
+        done.innerHTML = `<span class="feedback-icon">✓</span><span>Activity complete — nice work!</span>`;
+        host.append(done);
+      });
       el.scrollIntoView({ block: "start" });
     },
 
@@ -561,6 +630,8 @@ function buildSidebar(config, state, phaseConfigs) {
 
     <div class="phase-nav" data-bind="phases"></div>
 
+    ${bonusNavHtml(config)}
+
     ${projectsNavHtml(config)}
 
     <div style="margin-top:auto; opacity:0.5; font-size:0.7rem; text-align:center;">
@@ -596,6 +667,27 @@ function preLessonNavHtml(config) {
     <div class="prelesson-nav" data-bind="prelesson">
       <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Before the lesson</div>
       ${items.join("\n      ")}
+    </div>`;
+}
+
+// "Bonus" group: a non-graded menu item for the lesson's named TPT-style
+// activity (config.practice.optionalActivity). Shown only when the lesson has
+// one. Opens inline via app.openActivity(); the tile shows the activity's real
+// title + emoji so students can launch it straight from the lesson menu.
+function bonusNavHtml(config) {
+  const act = config.practice && config.practice.optionalActivity;
+  const hasItems =
+    config.practice &&
+    Array.isArray(config.practice.optional) &&
+    config.practice.optional.length > 0;
+  if (!act || !hasItems) return "";
+  return `
+    <div class="bonus-nav" data-bind="bonus">
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Bonus</div>
+      <button class="phase-btn extra-btn" data-extra="activity">
+        <span class="phase-num">${escHtml(act.emoji || "🎯")}</span>
+        <span>${escHtml(act.name || "Bonus Activity")}</span>
+      </button>
     </div>`;
 }
 

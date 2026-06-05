@@ -22,8 +22,8 @@
 // ═══════════════════════════════════════════════════════════════════
 var CONFIG = {
   PAGES_DEV_BASE_URL: "https://neft-classroom-html-activities.pages.dev",
-  FONT_FAMILY: "Calibri",
-  TITLE_FONT_FAMILY: "Calibri",
+  FONT_FAMILY: "Lexend",
+  TITLE_FONT_FAMILY: "Lexend",
   COLOR_BG: "#F7F4EC",
   COLOR_NAVY: "#17324D",
   COLOR_TEAL: "#1FA6A2",
@@ -108,8 +108,12 @@ var Service = {
   applySlideTheme: function(slide, headerTitle, footerText) {
     slide.getBackground().setSolidFill(CONFIG.COLOR_BG);
     
+    var pres = slide.getParent();
+    var width = pres.getPageWidth();
+    var height = pres.getPageHeight();
+    
     // Header Bar
-    var header = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 0, 0, 720, 50);
+    var header = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 0, 0, width, 55);
     header.getFill().setSolidFill(CONFIG.COLOR_NAVY);
     header.getBorder().setTransparent();
     
@@ -121,8 +125,13 @@ var Service = {
     headerText.getTextStyle().setForegroundColor(CONFIG.COLOR_AMBER);
     headerText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
     
+    // TPT Accent Line under Header Bar
+    var headerLine = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 0, 55, width, 4);
+    headerLine.getFill().setSolidFill(CONFIG.COLOR_AMBER);
+    headerLine.getBorder().setTransparent();
+    
     // Footer Bar
-    var footer = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 0, 375, 720, 30);
+    var footer = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 0, height - 35, width, 35);
     footer.getFill().setSolidFill(CONFIG.COLOR_NAVY);
     footer.getBorder().setTransparent();
     
@@ -134,59 +143,190 @@ var Service = {
     footerTextObj.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
   },
 
+  /** Helper to insert a beautiful drop-shadow card. */
+  insertCardWithShadow: function(slide, x, y, w, h, bgColor, borderColor, borderWidth) {
+    // Drop shadow
+    var shadow = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x + 4, y + 4, w, h);
+    shadow.getFill().setSolidFill("#D5D1C7");
+    shadow.getBorder().setTransparent();
+    
+    // Main card
+    var card = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, w, h);
+    card.getFill().setSolidFill(bgColor || CONFIG.COLOR_WHITE);
+    if (borderColor) {
+      card.getBorder().getLineFill().setSolidFill(borderColor);
+      card.getBorder().setWeight(borderWidth || 1.5);
+    } else {
+      card.getBorder().setTransparent();
+    }
+    
+    return card;
+  },
+
+  /** Helper to insert a tilted sticky note. */
+  insertStickyNote: function(slide, x, y, w, h, bgColor, rotationAngle) {
+    var shadow = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x + 3, y + 3, w, h);
+    shadow.getFill().setSolidFill("#D5D1C7");
+    shadow.getBorder().setTransparent();
+    shadow.setRotation(rotationAngle);
+    
+    var note = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, w, h);
+    note.getFill().setSolidFill(bgColor);
+    note.getBorder().setTransparent();
+    note.setRotation(rotationAngle);
+    
+    return note;
+  },
+
+  /** Helper to insert a realistic wooden clipboard with white paper sheet. */
+  insertClipboard: function(slide, x, y, w, h) {
+    // Clipboard wood backing
+    var back = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, w, h);
+    back.getFill().setSolidFill("#8C6B45");
+    back.getBorder().setTransparent();
+    
+    // Clipboard shadow
+    var shadow = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x + 4, y + 4, w, h);
+    shadow.getFill().setSolidFill("#2A1E11");
+    shadow.getFill().setAlpha(0.2);
+    shadow.getBorder().setTransparent();
+    
+    // Silver metal clip
+    var clipW = Math.min(w * 0.4, 120);
+    var clipX = x + (w - clipW) / 2;
+    var clip = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, clipX, y - 8, clipW, 22);
+    clip.getFill().setSolidFill("#A1A5A8");
+    clip.getBorder().getLineFill().setSolidFill("#7B7E80");
+    clip.getBorder().setWeight(1);
+    
+    // Left & Right screws on the clip
+    var screwL = slide.insertShape(SlidesApp.ShapeType.OVAL, clipX + 8, y - 2, 6, 6);
+    screwL.getFill().setSolidFill("#5B5E60");
+    screwL.getBorder().setTransparent();
+    
+    var screwR = slide.insertShape(SlidesApp.ShapeType.OVAL, clipX + clipW - 14, y - 2, 6, 6);
+    screwR.getFill().setSolidFill("#5B5E60");
+    screwR.getBorder().setTransparent();
+    
+    // Clipboard white paper sheet
+    var paperMargin = 15;
+    var paper = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, x + paperMargin, y + 25, w - (paperMargin * 2), h - 35);
+    paper.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    paper.getBorder().setTransparent();
+    
+    return paper;
+  },
+
+  /** Helper to insert a binder index card with notebook lines & holes. */
+  insertNotebookCard: function(slide, x, y, w, h) {
+    // Shadow
+    var shadow = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x + 4, y + 4, w, h);
+    shadow.getFill().setSolidFill("#D5D1C7");
+    shadow.getBorder().setTransparent();
+    
+    // Card face
+    var card = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x, y, w, h);
+    card.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    card.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_GRAY);
+    card.getBorder().setWeight(1);
+    
+    // Red margin line
+    var redLine = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, x + 40, y + 4, 1.5, h - 8);
+    redLine.getFill().setSolidFill("#FFC2C2");
+    redLine.getBorder().setTransparent();
+    
+    // Holes and spirals
+    for (var hy = y + 25; hy < y + h - 25; hy += 45) {
+      var hole = slide.insertShape(SlidesApp.ShapeType.OVAL, x + 15, hy, 8, 8);
+      hole.getFill().setSolidFill(CONFIG.COLOR_BG);
+      hole.getBorder().setTransparent();
+      
+      var ring = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, x - 4, hy + 2, 23, 4);
+      ring.getFill().setSolidFill("#B2B6B9");
+      ring.getBorder().setTransparent();
+    }
+    
+    return card;
+  },
+
+  /** Helper to place a cute push pin on top of cards. */
+  insertPushPin: function(slide, cx, cy) {
+    // Shadow
+    var sh = slide.insertShape(SlidesApp.ShapeType.OVAL, cx + 2, cy + 2, 14, 14);
+    sh.getFill().setSolidFill("#000000");
+    sh.getFill().setAlpha(0.15);
+    sh.getBorder().setTransparent();
+    
+    // Head (Red)
+    var pin = slide.insertShape(SlidesApp.ShapeType.OVAL, cx, cy, 14, 14);
+    pin.getFill().setSolidFill("#FF4C4C");
+    pin.getBorder().setTransparent();
+    
+    // Inner glare for 3D look
+    var glare = slide.insertShape(SlidesApp.ShapeType.OVAL, cx + 3, cy + 3, 5, 5);
+    glare.getFill().setSolidFill("#FFB3B3");
+    glare.getBorder().setTransparent();
+  },
+
   /** SLIDE 1: Objectives & Session Map */
   buildSlide1_Objectives: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
-    this.applySlideTheme(slide, "LESSON " + lessonId + " · OBJECTIVES", "Grade 6 Math · Unit " + (data.unit || ""));
+    var width = presentation.getPageWidth();
+    var height = presentation.getPageHeight();
+    this.applySlideTheme(slide, "LESSON " + lessonId + " · OBJECTIVES & AGENDA", "Grade 6 Math · Unit " + (data.unit || ""));
     
-    // Objective Card
-    var card = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 640, 200);
-    card.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-    card.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
-    card.getBorder().setWeight(2);
+    // Split into Content and Language Objective cards side-by-side
+    var contentCard = this.insertCardWithShadow(slide, 50, 85, 410, 240, CONFIG.COLOR_WHITE, CONFIG.COLOR_TEAL, 2);
+    var ct = contentCard.getText();
+    ct.setText("🎯 Content Objective:\n\n" + (data.contentObjective || "I can explain the mathematical relationships in this lesson."));
+    ct.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(14).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    ct.getRange(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
     
-    var textRange = card.getText();
-    textRange.setText(
-      "🎯 Content Objective:\n" + (data.contentObjective || "I can explain the mathematical relationships in this lesson.") + "\n\n" +
-      "🗣️ Language Objective:\n" + (data.languageObjective || "I can discuss my reasoning using vocabulary terms.")
-    );
-    textRange.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    textRange.getTextStyle().setFontSize(16);
-    textRange.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    var langCard = this.insertCardWithShadow(slide, 500, 85, 410, 240, CONFIG.COLOR_WHITE, CONFIG.COLOR_AMBER, 2);
+    var lt = langCard.getText();
+    lt.setText("🗣️ Language Objective:\n\n" + (data.languageObjective || "I can discuss my reasoning using vocabulary terms."));
+    lt.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(14).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    lt.getRange(0, 21).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
     
-    // Format headers in bold
-    var contentIdx = textRange.asString().indexOf("🎯 Content Objective:");
-    if (contentIdx !== -1) {
-      textRange.getRange(contentIdx, contentIdx + 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+    // Chevron-style Learning Path Agenda Map
+    var steps = ["1. Launch", "2. Explore", "3. Vocab", "4. Guided", "5. Practice", "6. Exit"];
+    for (var s = 0; s < steps.length; s++) {
+      var badgeX = 50 + (s * 150);
+      var badge = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, badgeX, 350, 115, 45);
+      badge.getFill().setSolidFill(s === 0 ? CONFIG.COLOR_TEAL : CONFIG.COLOR_TEAL_LIGHT);
+      badge.getBorder().setTransparent();
+      var bText = badge.getText();
+      bText.setText(steps[s]);
+      bText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setBold(true)
+           .setForegroundColor(s === 0 ? CONFIG.COLOR_WHITE : CONFIG.COLOR_NAVY);
+      bText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+      
+      // Draw arrow indicator except for last step
+      if (s < steps.length - 1) {
+        var arrow = slide.insertShape(SlidesApp.ShapeType.RIGHT_ARROW, badgeX + 120, 362, 25, 20);
+        arrow.getFill().setSolidFill(CONFIG.COLOR_AMBER);
+        arrow.getBorder().setTransparent();
+      }
     }
-    var langIdx = textRange.asString().indexOf("🗣️ Language Objective:");
-    if (langIdx !== -1) {
-      textRange.getRange(langIdx, langIdx + 21).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
-    }
     
-    // Learning Path Map
-    var pathBox = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 40, 300, 640, 50);
-    pathBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
-    pathBox.getBorder().setTransparent();
-    var pathText = pathBox.getText();
-    pathText.setText("🗺️ Learning Path: 1. Launch ➔ 2. Explore ➔ 3. Vocabulary ➔ 4. Guided ➔ 5. Practice ➔ 6. Reflect");
-    pathText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    pathText.getTextStyle().setFontSize(12);
-    pathText.getTextStyle().setBold(true);
-    pathText.getTextStyle().setForegroundColor(CONFIG.COLOR_NAVY);
-    pathText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    // Draggable Progress Stars in a progress container on the right
+    var progressLabel = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 660, 422, 200, 20);
+    progressLabel.getFill().setTransparent();
+    progressLabel.getBorder().setTransparent();
+    progressLabel.getText().setText("⭐ Drag star to track your progress:").getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(9).setBold(true).setForegroundColor(CONFIG.COLOR_GRAY);
+    
+    var progressStar = slide.insertShape(SlidesApp.ShapeType.STAR_5, 875, 418, 24, 24);
+    progressStar.getFill().setSolidFill(CONFIG.COLOR_AMBER);
+    progressStar.getBorder().setTransparent();
   },
 
   /** SLIDE 2: Be Curious (Notice & Wonder) */
   buildSlide2_BeCurious: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
-    this.applySlideTheme(slide, "BE CURIOUS · LAUNCH", "Observe the scenario. What do you Notice and Wonder?");
+    this.applySlideTheme(slide, "BE CURIOUS · LAUNCH PROBLEM", "Observe the scenario. What do you Notice and Wonder?");
     
-    // Left: Scenario Card
-    var leftCard = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
-    leftCard.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-    leftCard.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
-    leftCard.getBorder().setWeight(1.5);
+    // Left: Realistic Wood Clipboard
+    var clipPaper = this.insertClipboard(slide, 50, 85, 410, 320);
     
     var scenarioText = "";
     if (data.turnAndTalk && data.turnAndTalk.length > 0) {
@@ -195,18 +335,13 @@ var Service = {
       scenarioText = "Discuss the math concepts presented in this lesson with your partner.";
     }
     
-    var leftText = leftCard.getText();
+    var leftText = clipPaper.getText();
     leftText.setText("📋 Launch Problem:\n\n" + scenarioText);
-    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    leftText.getTextStyle().setFontSize(14);
-    leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    leftText.getRange(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
+    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(13).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    leftText.getRange(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
     
-    // Right Top: Notice Panel
-    var rightTop = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 125);
-    rightTop.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
-    rightTop.getBorder().setTransparent();
-    
+    // Right Top: Notice Sticky Note
+    var noticeBox = this.insertStickyNote(slide, 500, 85, 410, 145, "#FFF5C3", -1.5);
     var noticeStems = "";
     if (data.turnAndTalk && data.turnAndTalk.length > 0 && data.turnAndTalk[0].stems) {
       var stems = data.turnAndTalk[0].stems;
@@ -215,18 +350,13 @@ var Service = {
       noticeStems = "✍️ I notice that...\n✍️ Another observation is...";
     }
     
-    var rightTopText = rightTop.getText();
-    rightTopText.setText("👀 Things I Notice:\n" + noticeStems);
-    rightTopText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    rightTopText.getTextStyle().setFontSize(12);
-    rightTopText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightTopText.getRange(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
+    var noticeText = noticeBox.getText();
+    noticeText.setText("👀 Things I Notice:\n" + noticeStems + "\n\n[Double-click to type observations here...]");
+    noticeText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    noticeText.getRange(0, 18).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
     
-    // Right Bottom: Wonder Panel
-    var rightBottom = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 225, 310, 125);
-    rightBottom.getFill().setSolidFill(CONFIG.COLOR_CORAL);
-    rightBottom.getBorder().setTransparent();
-    
+    // Right Bottom: Wonder Sticky Note
+    var wonderBox = this.insertStickyNote(slide, 500, 260, 410, 145, "#FCDCD4", 1.5);
     var wonderStems = "";
     if (data.turnAndTalk && data.turnAndTalk.length > 0 && data.turnAndTalk[0].extendStems) {
       var extStems = data.turnAndTalk[0].extendStems;
@@ -237,20 +367,17 @@ var Service = {
       wonderStems = "❓ I wonder what would happen if...\n❓ How relates to...";
     }
     
-    var rightBottomText = rightBottom.getText();
-    rightBottomText.setText("💭 Things I Wonder:\n" + wonderStems);
-    rightBottomText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    rightBottomText.getTextStyle().setFontSize(12);
-    rightBottomText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightBottomText.getRange(0, 19).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
+    var wonderText = wonderBox.getText();
+    wonderText.setText("💭 Things I Wonder:\n" + wonderStems + "\n\n[Double-click to type questions here...]");
+    wonderText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    wonderText.getRange(0, 19).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
   },
 
   /** SLIDE 3: Vocabulary & Reference */
   buildSlide3_Vocabulary: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
-    this.applySlideTheme(slide, "KEY VOCABULARY & FLOW", "Master these key terms to support your math talk.");
+    this.applySlideTheme(slide, "KEY VOCABULARY & FLASHCARDS", "Master these key terms to support your math talk.");
     
-    // Show Vocabulary terms from turnAndTalk word bank or placeholders
     var vocabTerms = [];
     if (data.turnAndTalk && data.turnAndTalk.length > 0 && data.turnAndTalk[0].wordBank) {
       vocabTerms = data.turnAndTalk[0].wordBank;
@@ -258,125 +385,175 @@ var Service = {
       vocabTerms = ["ratio", "relationship", "value", "quantity"];
     }
     
-    // We will place 4 vocab blocks in a 2x2 grid
     var positions = [
-      { x: 40, y: 80 }, { x: 370, y: 80 },
-      { x: 40, y: 200 }, { x: 370, y: 200 }
+      { x: 50, y: 85 }, { x: 500, y: 85 },
+      { x: 50, y: 240 }, { x: 500, y: 240 }
     ];
     
     for (var i = 0; i < 4; i++) {
       var term = vocabTerms[i] || "Math Term";
       var pos = positions[i];
       
-      var vocabBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, pos.x, pos.y, 310, 100);
-      vocabBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-      vocabBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_GRAY);
-      vocabBox.getBorder().setWeight(1);
+      // Flashcard
+      var card = this.insertCardWithShadow(slide, pos.x, pos.y, 410, 140, CONFIG.COLOR_WHITE, CONFIG.COLOR_GRAY, 1);
       
-      var vocabText = vocabBox.getText();
-      // Provide simple, standard student-friendly helper definitions
+      // Flashcard color tab
+      var tab = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, pos.x, pos.y, 120, 15);
+      tab.getFill().setSolidFill(CONFIG.COLOR_TEAL);
+      tab.getBorder().setTransparent();
+      
+      // Push pin at the top center of card
+      this.insertPushPin(slide, pos.x + 205 - 7, pos.y - 7);
+      
       var def = "Verbalize this concept using lesson examples.";
       if (term.toLowerCase().indexOf("prime") > -1) def = "A number greater than 1 that only has factors 1 and itself.";
       if (term.toLowerCase().indexOf("composite") > -1) def = "A number that has factors other than 1 and itself.";
       if (term.toLowerCase().indexOf("factor") > -1) def = "A number multiplied by another number to get a product.";
       if (term.toLowerCase().indexOf("ratio") > -1) def = "A comparison of two quantities by division.";
       
-      vocabText.setText("📝 " + term.toUpperCase() + "\n" + def);
-      vocabText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-      vocabText.getTextStyle().setFontSize(11);
-      vocabText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+      var cardText = card.getText();
+      cardText.setText("\n📝 " + term.toUpperCase() + "\n" + def);
+      cardText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
       
-      var termLength = term.length + 3;
-      vocabText.getRange(0, termLength).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_TEAL).setFontSize(13);
+      var termLength = term.length + 4;
+      cardText.getRange(0, termLength).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
     }
     
-    // Reference Flow Diagram
-    var flowBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 315, 640, 45);
+    // Core Reference Flow Diagram at the bottom
+    var flowBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 50, 395, 860, 40);
     flowBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
     flowBox.getBorder().setTransparent();
     var flowText = flowBox.getText();
     flowText.setText("💡 Core Flow: INPUT (Independent Variable) ➔ PROCESS (Equation/Rule) ➔ OUTPUT (Dependent Variable)");
-    flowText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    flowText.getTextStyle().setFontSize(11);
-    flowText.getTextStyle().setBold(true);
-    flowText.getTextStyle().setForegroundColor(CONFIG.COLOR_NAVY);
+    flowText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
     flowText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    
+    // Draggable Progress Checkmark
+    var checkLabel = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 50, 440, 220, 20);
+    checkLabel.getFill().setTransparent();
+    checkLabel.getBorder().setTransparent();
+    checkLabel.getText().setText("✏️ Drag checks to mark mastered terms:").getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(9).setBold(true).setForegroundColor(CONFIG.COLOR_GRAY);
+    
+    for (var c = 0; c < 4; c++) {
+      var check = slide.insertShape(SlidesApp.ShapeType.OVAL, 300 + (c * 40), 438, 22, 22);
+      check.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
+      check.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
+      check.getBorder().setWeight(1.5);
+      var ckText = check.getText();
+      ckText.setText("✔️");
+      ckText.getTextStyle().setFontSize(11).setBold(true).setForegroundColor(CONFIG.COLOR_TEAL);
+      ckText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    }
   },
 
-  /** SLIDE 4: Visual Model (Using Programmatic SVG insert) */
+  /** SLIDE 4: Visual Model (Using Programmatic SVG insert & Draggable Tray) */
   buildSlide4_VisualModel: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
     this.applySlideTheme(slide, "VISUAL MODELING WORKSPACE", "Draw, label, or build a mathematical representation.");
     
-    // Workspace Board
-    var board = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 40, 80, 640, 270);
-    board.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-    board.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
-    board.getBorder().setWeight(2);
-    
+    // Workspace Whiteboard
+    var board = this.insertCardWithShadow(slide, 50, 85, 600, 320, CONFIG.COLOR_WHITE, CONFIG.COLOR_NAVY, 4);
     var boardText = board.getText();
     boardText.setText("📐 Visual Model Workspace:\n");
-    boardText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    boardText.getTextStyle().setFontSize(14);
-    boardText.getTextStyle().setBold(true);
-    boardText.getTextStyle().setForegroundColor(CONFIG.COLOR_NAVY);
+    boardText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(14).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
     
     // Programmatic Visual Math SVG creation
     var svgString = this.generateMathVisualSvg(lessonId, data);
     
     try {
       var blob = Utilities.newBlob(svgString, "image/svg+xml", "visual-model.svg");
-      // Insert visual math into presentation slide
       var insertedImg = slide.insertImage(blob);
-      // Position and size nicely on the whiteboard area
-      insertedImg.setLeft(210);
-      insertedImg.setTop(110);
-      insertedImg.setWidth(300);
-      insertedImg.setHeight(200);
-      Logger.log("Successfully inserted programmatic visual math SVG.");
+      insertedImg.setLeft(100);
+      insertedImg.setTop(120);
+      insertedImg.setWidth(500);
+      insertedImg.setHeight(270);
+      Logger.log("Successfully inserted widescreen visual math SVG.");
     } catch (err) {
       Logger.log("Failed to insert programmatic SVG: " + err.message + ". Fallback to text diagram.");
-      // Fallback label
-      var fallbackLabel = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 210, 110, 300, 200);
+      var fallbackLabel = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 150, 120, 400, 250);
       fallbackLabel.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
       fallbackLabel.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
       var fallbackText = fallbackLabel.getText();
       fallbackText.setText("[Visual Math Model Grid]\n\n" + (data.contentObjective || "Math Diagram Workspace"));
-      fallbackText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-      fallbackText.getTextStyle().setFontSize(14);
+      fallbackText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(14).setForegroundColor(CONFIG.COLOR_NAVY);
       fallbackText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    }
+    
+    // Manipulatives Tray on the right
+    var tray = this.insertCardWithShadow(slide, 680, 85, 230, 320, CONFIG.COLOR_TEAL_LIGHT, CONFIG.COLOR_TEAL, 2);
+    var trayText = tray.getText();
+    trayText.setText("🛠️ MANIPULATIVES TRAY\n");
+    trayText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(12).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+    trayText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    
+    // Add row labels
+    var redLabel = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 690, 115, 210, 16);
+    redLabel.getFill().setTransparent(); redLabel.getBorder().setTransparent();
+    redLabel.getText().setText("🔴 Counters (Red)").getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(9).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+    
+    var blueLabel = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 690, 180, 210, 16);
+    blueLabel.getFill().setTransparent(); blueLabel.getBorder().setTransparent();
+    blueLabel.getText().setText("🔵 Counters (Blue)").getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(9).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+    
+    var blockLabel = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 690, 245, 210, 16);
+    blockLabel.getFill().setTransparent(); blockLabel.getBorder().setTransparent();
+    blockLabel.getText().setText("🟨 Unit Blocks").getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(9).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+    
+    // Generate counters inside the tray in offset stacks
+    for (var r = 0; r < 6; r++) {
+      var red = slide.insertShape(SlidesApp.ShapeType.OVAL, 700 + (r * 22), 140, 24, 24);
+      red.getFill().setSolidFill("#D9795D"); // Coral Red
+      red.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
+      red.getBorder().setWeight(1);
+      
+      var blue = slide.insertShape(SlidesApp.ShapeType.OVAL, 700 + (r * 22), 205, 24, 24);
+      blue.getFill().setSolidFill(CONFIG.COLOR_TEAL); // Teal
+      blue.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
+      blue.getBorder().setWeight(1);
+      
+      var block = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 700 + (r * 22), 270, 24, 24);
+      block.getFill().setSolidFill(CONFIG.COLOR_AMBER); // Amber
+      block.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
+      block.getBorder().setWeight(1);
+      var bText = block.getText();
+      bText.setText("1");
+      bText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(10).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+      bText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
     }
   },
 
-  /** SLIDE 5: Guided Practice (TWR Sentinel Frames) */
+  /** SLIDE 5: Guided Practice (TWR Lined Notebook Page) */
   buildSlide5_GuidedPractice: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
-    this.applySlideTheme(slide, "GUIDED PRACTICE", "Work together to solve this problem and justify your answer.");
+    this.applySlideTheme(slide, "GUIDED PRACTICE & WRITING", "Work together to solve this challenge and explain your steps.");
     
-    // Left: Guided Problem
-    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
-    leftBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-    leftBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
-    leftBox.getBorder().setWeight(1.5);
+    // Left: Structured Notebook Card
+    var leftBox = this.insertCardWithShadow(slide, 50, 85, 410, 320, CONFIG.COLOR_WHITE, CONFIG.COLOR_NAVY, 1.5);
     
-    var leftText = leftBox.getText();
+    // Paper Clip icon representation
+    var clip = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 70, 75, 20, 30);
+    clip.getFill().setSolidFill(CONFIG.COLOR_GRAY);
+    clip.getBorder().setTransparent();
+    
     var stem = "Verify your mathematical calculations with your teacher and partner.";
     if (data.turnAndTalk && data.turnAndTalk.length > 1) {
       stem = data.turnAndTalk[1].question || stem;
     }
     
-    leftText.setText("📖 Guided Challenge:\n\n" + stem);
-    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    leftText.getTextStyle().setFontSize(13);
-    leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    var leftText = leftBox.getText();
+    leftText.setText("\n📖 Guided Challenge:\n\n" + stem);
+    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(13).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
     leftText.getRange(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
     
-    // Right: Write About It (TWR Frames)
-    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
-    rightBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
-    rightBox.getBorder().setTransparent();
+    // Right: Ruled Notebook Spiral Card for Writing Stems
+    var rightBox = this.insertNotebookCard(slide, 500, 85, 410, 320);
     
-    var rightText = rightBox.getText();
+    // Lined rules inside the notebook sheet (shifted to not overlap spirals)
+    for (var lineY = 145; lineY < 390; lineY += 24) {
+      var line = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 550, lineY, 340, 1);
+      line.getFill().setSolidFill("#E1EAEF");
+      line.getBorder().setTransparent();
+    }
     
     var stemsText = "";
     if (data.turnAndTalk && data.turnAndTalk.length > 1 && data.turnAndTalk[1].stems) {
@@ -386,152 +563,228 @@ var Service = {
       stemsText = "🔹 First, I know that... because...\n\n🔹 This means that... so I can conclude...";
     }
     
-    rightText.setText("✍️ TWR Sentence Expansion:\n\n" + stemsText);
-    rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    rightText.getTextStyle().setFontSize(12);
-    rightText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    var rightText = rightBox.getText();
+    rightText.setText("✍️ TWR Sentence Expansion:\n\n" + stemsText + "\n\nWorkspace: [Double-click to type response here...]");
+    rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
     rightText.getRange(0, 26).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
+    
+    // Draggable semi-transparent highlighting strip
+    var highlighter = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 50, 415, 150, 24);
+    highlighter.getFill().setSolidFill("#F2C15B");
+    highlighter.getFill().setAlpha(0.4);
+    highlighter.getBorder().setTransparent();
+    var hlText = highlighter.getText();
+    hlText.setText("🖍️ Drag to highlight text");
+    hlText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(8).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+    hlText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
   },
 
-  /** SLIDE 6: Interactive Activity A (e.g. Partner Dialogue) */
+  /** SLIDE 6: Interactive Activity A (Partner Speech Bubbles & Reactions) */
   buildSlide6_ActivityA: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
     this.applySlideTheme(slide, "INTERACTIVE WORKSHOP A", "Collaborate and communicate to solve the partner challenge.");
     
-    // Partner A Panel
-    var aBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
-    aBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    // Partner A Speech Bubble Callout
+    var aBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE_CALLOUT, 50, 85, 410, 240);
+    aBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
     aBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
-    aBox.getBorder().setWeight(1.5);
+    aBox.getBorder().setWeight(2);
     var aText = aBox.getText();
-    aText.setText("👥 Partner A:\n\nExplain how you can approach solving this problem. What steps will you perform first, and what tools will you use?");
-    aText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    aText.getTextStyle().setFontSize(14);
-    aText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    aText.getRange(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_TEAL).setFontSize(16);
+    aText.setText("👥 Partner A:\n\nExplain how you can approach solving this problem. What steps will you perform first, and what tools will you use?\n\nPartner A Workspace: [Double-click to type here]");
+    aText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(13).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    aText.getRange(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
     
-    // Partner B Panel
-    var bBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
+    // Partner B Speech Bubble Callout
+    var bBox = slide.insertShape(SlidesApp.ShapeType.ROUNDED_RECTANGLE_CALLOUT, 500, 85, 410, 240);
     bBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
     bBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
-    bBox.getBorder().setWeight(1.5);
+    bBox.getBorder().setWeight(2);
     var bText = bBox.getText();
-    bText.setText("👥 Partner B:\n\nRespond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?");
-    bText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    bText.getTextStyle().setFontSize(14);
-    bText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    bText.getRange(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
+    bText.setText("👥 Partner B:\n\nRespond to your partner's explanation. Do you agree with their approach? How would you verify their final calculations?\n\nPartner B Workspace: [Double-click to type here]");
+    bText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(13).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    bText.getRange(0, 13).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    
+    // Feedback Reaction Emojis
+    var feedbackLabel = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 50, 345, 250, 20);
+    feedbackLabel.getFill().setTransparent();
+    feedbackLabel.getBorder().setTransparent();
+    feedbackLabel.getText().setText("💬 Drag emojis below to give feedback:").getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(9).setBold(true).setItalic(true).setForegroundColor(CONFIG.COLOR_GRAY);
+    
+    var emojis = ["👍", "🤔", "❤️", "⭐"];
+    for (var eIdx = 0; eIdx < emojis.length; eIdx++) {
+      var emojiShape = slide.insertShape(SlidesApp.ShapeType.OVAL, 50 + (eIdx * 45), 370, 32, 32);
+      emojiShape.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+      emojiShape.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_GRAY);
+      emojiShape.getBorder().setWeight(1);
+      var emText = emojiShape.getText();
+      emText.setText(emojis[eIdx]);
+      emText.getTextStyle().setFontSize(14);
+      emText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    }
   },
 
-  /** SLIDE 7: Interactive Activity B (e.g. Error Analysis) */
+  /** SLIDE 7: Interactive Activity B (Error Analysis Diagnostic Clipboard) */
   buildSlide7_ActivityB: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
     this.applySlideTheme(slide, "INTERACTIVE WORKSHOP B · ERROR ANALYSIS", "Analyze the math mistake. Find it, explain it, and fix it.");
     
-    // Left: The Misconception
-    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
-    leftBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-    leftBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_AMBER);
-    leftBox.getBorder().setWeight(1.5);
-    
+    // Left: Tilted struggling student's paper block
+    var leftBox = this.insertStickyNote(slide, 50, 85, 410, 320, "#FFF9E6", -1.5);
     var leftText = leftBox.getText();
-    leftText.setText("⚠️ Incorrect Mathematical Claim:\n\nA student claims that when solving this problem, they should add the values instead of multiplying.\n\nWhy is this reasoning incorrect?");
-    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    leftText.getTextStyle().setFontSize(13);
-    leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    leftText.getRange(0, 31).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_AMBER).setFontSize(15);
+    leftText.setText("⚠️ Incorrect Student Work:\n\n" +
+                      "A student claims that when solving this problem, they should add the values instead of multiplying.\n\n" +
+                      "For example: 'To evaluate the lesson values, I just combine the base parts.'\n\n" +
+                      "Why is this reasoning incorrect?");
+    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(12).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    leftText.getRange(0, 26).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
     
-    // Right: Explaining and Fixing
-    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
-    rightBox.getFill().setSolidFill(CONFIG.COLOR_CORAL);
-    rightBox.getBorder().setTransparent();
-    var rightText = rightBox.getText();
-    rightText.setText("🛠️ Fix & Justify:\n\n" +
-                  "1. What is the actual math mistake?\n" +
-                  "___________________________________\n\n" +
-                  "2. Show the correct steps below:\n" +
-                  "___________________________________");
-    rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    rightText.getTextStyle().setFontSize(13);
-    rightText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightText.getRange(0, 17).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    // Right: Math Doctor's Diagnostic Report clipboard
+    var clipPaper = this.insertClipboard(slide, 500, 85, 410, 320);
+    
+    var rightText = clipPaper.getText();
+    rightText.setText("📋 Diagnostic Report:\n\n" +
+                    "1. What is the actual math mistake?\n" +
+                    "[Double-click to type diagnostic here...]\n\n" +
+                    "2. Show the correct mathematical steps:\n" +
+                    "[Double-click to type correct work here...]");
+    rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(12).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    rightText.getRange(0, 22).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
+    
+    // Draggable rubber stamps
+    var stampsLabel = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 50, 415, 120, 20);
+    stampsLabel.getFill().setTransparent();
+    stampsLabel.getBorder().setTransparent();
+    stampsLabel.getText().setText("🏷️ Stamp your labels:").getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(9).setBold(true).setForegroundColor(CONFIG.COLOR_GRAY);
+    
+    var stamp1 = this.insertRubberStamp(slide, 200, 412, "❌ ERROR", "#D9795D", -8);
+    var stamp2 = this.insertRubberStamp(slide, 290, 412, "✅ FIXED", CONFIG.COLOR_TEAL, 6);
   },
 
-  /** SLIDE 8: Real-World Connection */
+  /** SLIDE 8: Real-World Connection (Field Journal Magazine Style) */
   buildSlide8_RealWorld: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
-    this.applySlideTheme(slide, "REAL-WORLD CONNECTION · MATH IN THE WILD", "How is this math useful outside of the classroom?");
+    this.applySlideTheme(slide, "REAL-WORLD CONNECTION · MATH IN ACTION", "How is this math useful outside of the classroom?");
     
-    // Context text
     var connText = "Math is used by engineers, designers, and scientists daily to model systems and solve problems.";
     if (data.projects && data.projects.length > 0) {
       var proj = data.projects[0];
       connText = (proj.title || "Real-world project") + ": " + (proj.desc || connText);
     }
     
-    // Big Connection Box
-    var connectionBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 640, 130);
-    connectionBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-    connectionBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY);
-    connectionBox.getBorder().setWeight(1.5);
-    var boxText = connectionBox.getText();
-    boxText.setText("🌍 Context Scenario:\n\n" + connText);
-    boxText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    boxText.getTextStyle().setFontSize(14);
-    boxText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    boxText.getRange(0, 21).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(16);
+    // Left: Polaroid Photograph frame
+    var photoFrame = this.insertCardWithShadow(slide, 50, 85, 320, 320, CONFIG.COLOR_WHITE, CONFIG.COLOR_GRAY, 1.5);
     
-    // Application prompt
-    var writeBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 230, 640, 120);
-    writeBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
-    writeBox.getBorder().setTransparent();
-    var writeText = writeBox.getText();
-    writeText.setText("✍️ Connection Reasoning:\n\n" +
-                     "• This math applies to this scenario because...\n" +
-                     "• Understanding this concept helps me solve real-world problems like...");
-    writeText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    writeText.getTextStyle().setFontSize(14);
-    writeText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    writeText.getRange(0, 25).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    // Sticky masking tape shape at the top center of polaroid
+    var tape = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 150, 75, 110, 20);
+    tape.getFill().setSolidFill(CONFIG.COLOR_AMBER);
+    tape.getFill().setAlpha(0.6); // semi-transparent masking tape look
+    tape.getBorder().setTransparent();
+    tape.setRotation(-4);
+    
+    // Insert SVG inside the photo frame
+    var svgString = this.generateMathVisualSvg(lessonId, data);
+    try {
+      var blob = Utilities.newBlob(svgString, "image/svg+xml", "wild-photo.svg");
+      var img = slide.insertImage(blob);
+      img.setLeft(70);
+      img.setTop(105);
+      img.setWidth(280);
+      img.setHeight(210);
+    } catch (e) {
+      var placeholder = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 70, 105, 280, 210);
+      placeholder.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
+      placeholder.getBorder().setTransparent();
+    }
+    
+    var caption = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 50, 325, 320, 35);
+    caption.getFill().setTransparent();
+    caption.getBorder().setTransparent();
+    var capText = caption.getText();
+    capText.setText("📸 Field Photo Model");
+    capText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(12).setBold(true).setItalic(true).setForegroundColor(CONFIG.COLOR_GRAY);
+    capText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    
+    // Right: Field Journal Notebook Card
+    var journal = this.insertNotebookCard(slide, 400, 85, 510, 320);
+    
+    // Rules inside field journal
+    for (var lineY = 145; lineY < 390; lineY += 24) {
+      var line = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 450, lineY, 440, 1);
+      line.getFill().setSolidFill("#E1EAEF");
+      line.getBorder().setTransparent();
+    }
+    
+    var jText = journal.getText();
+    jText.setText("\n   🌍 Context Scenario:\n   " + connText + "\n\n   ✍️ Field Journal Reflection:\n" +
+                  "   • This math applies to this scenario because...\n" +
+                  "   • Understanding this concept helps me solve real-world problems like...\n\n" +
+                  "   [Double-click to type journal entry here...]");
+    jText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(12).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    jText.getRange(0, 24).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
+    var reflectionIdx = jText.asString().indexOf("✍️ Field Journal Reflection:");
+    if (reflectionIdx !== -1) {
+      jText.getRange(reflectionIdx, reflectionIdx + 29).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
+    }
   },
 
-  /** SLIDE 9: Reflection + Exit Ticket */
+  /** SLIDE 9: Reflection + Exit Ticket Tablet Screen */
   buildSlide9_Reflection: function(presentation, lessonId, data) {
     var slide = presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
     this.applySlideTheme(slide, "REFLECTION & EXIT TICKET", "Summarize what you learned and complete the exit problem.");
     
-    // Left: Reflection Checklist
-    var leftBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 40, 80, 310, 270);
-    leftBox.getFill().setSolidFill(CONFIG.COLOR_WHITE);
-    leftBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
-    leftBox.getBorder().setWeight(1.5);
-    
+    // Left: Mint Checklist Sticky Note
+    var leftBox = this.insertStickyNote(slide, 50, 85, 410, 320, "#E6F5F2", -1);
     var leftText = leftBox.getText();
     leftText.setText("🤔 3-2-1 Reflection:\n\n" +
-                  "📝 3 Things I learned today:\n" +
-                  "   1. ______________ 2. ______________ 3. ______________\n\n" +
-                  "💡 2 Connections I made:\n" +
-                  "   1. ______________ 2. ______________\n\n" +
-                  "❓ 1 Question I still have:\n" +
-                  "   1. ______________");
-    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    leftText.getTextStyle().setFontSize(11);
-    leftText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    leftText.getRange(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+                  "✔️ 3 Things I learned today:\n" +
+                  "   1. [Type here] 2. [Type here] 3. [Type here]\n\n" +
+                  "✔️ 2 Connections I made:\n" +
+                  "   1. [Type here] 2. [Type here]\n\n" +
+                  "✔️ 1 Question I still have:\n" +
+                  "   1. [Type here]");
+    leftText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    leftText.getRange(0, 20).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(14);
     
-    // Right: Exit Ticket
-    var rightBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 370, 80, 310, 270);
-    rightBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
-    rightBox.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_TEAL);
-    rightBox.getBorder().setWeight(1);
+    // Right: Exit Ticket inside a Tablet Outline
+    var tabletBorder = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 500, 85, 410, 240);
+    tabletBorder.getFill().setSolidFill("#1C1A17"); // black tablet frame
+    tabletBorder.getBorder().setTransparent();
     
-    var rightText = rightBox.getText();
-    rightText.setText("📝 Exit Ticket:\n\nApply your learning to solve this final question independently:\n\n" +
-                     "Evaluate the prime parts or relationship of the lesson values.");
-    rightText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY);
-    rightText.getTextStyle().setFontSize(13);
-    rightText.getTextStyle().setForegroundColor(CONFIG.COLOR_BODY_TEXT);
-    rightText.getRange(0, 15).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(15);
+    var tabletScreen = slide.insertShape(SlidesApp.ShapeType.RECTANGLE, 512, 95, 386, 220);
+    tabletScreen.getFill().setSolidFill(CONFIG.COLOR_WHITE);
+    tabletScreen.getBorder().setTransparent();
+    
+    var exitText = tabletScreen.getText();
+    exitText.setText("📱 DIGITAL EXIT TICKET\n\nApply your learning to solve this final question:\n\nEvaluate the prime parts or relationship of the lesson values.\n\nWorkspace: [Double-click to type response here]");
+    exitText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(11).setForegroundColor(CONFIG.COLOR_BODY_TEXT);
+    exitText.getRange(0, 22).getTextStyle().setBold(true).setForegroundColor(CONFIG.COLOR_NAVY).setFontSize(13);
+    
+    // Self-Assessment Scale under tablet
+    var scaleBox = slide.insertShape(SlidesApp.ShapeType.ROUND_RECTANGLE, 500, 335, 410, 70);
+    scaleBox.getFill().setSolidFill(CONFIG.COLOR_TEAL_LIGHT);
+    scaleBox.getBorder().setTransparent();
+    var scaleText = scaleBox.getText();
+    scaleText.setText("🚦 Self-Assessment: Rate your learning level:\n              🔴 Struggling      🟡 Getting There      🟢 Mastered");
+    scaleText.getTextStyle().setFontFamily(CONFIG.FONT_FAMILY).setFontSize(10).setBold(true).setForegroundColor(CONFIG.COLOR_NAVY);
+    
+    // Self-assessment color dot indicators
+    var redDot = slide.insertShape(SlidesApp.ShapeType.OVAL, 530, 370, 20, 20);
+    redDot.getFill().setSolidFill("#FF4D4D");
+    redDot.getBorder().setTransparent();
+    
+    var yellowDot = slide.insertShape(SlidesApp.ShapeType.OVAL, 665, 370, 20, 20);
+    yellowDot.getFill().setSolidFill("#FFD700");
+    yellowDot.getBorder().setTransparent();
+    
+    var greenDot = slide.insertShape(SlidesApp.ShapeType.OVAL, 805, 370, 20, 20);
+    greenDot.getFill().setSolidFill("#4CAF50");
+    greenDot.getBorder().setTransparent();
+    
+    // Draggable Highlight Ring (placed to the side)
+    var ring = slide.insertShape(SlidesApp.ShapeType.OVAL, 875, 355, 26, 26);
+    ring.getFill().setTransparent();
+    ring.getBorder().getLineFill().setSolidFill(CONFIG.COLOR_NAVY); // Navy highlight ring
+    ring.getBorder().setWeight(3);
   },
 
   /** Programmatic Visual Math SVG Generator.
@@ -564,10 +817,10 @@ var Service = {
       svg += '<polygon points="50,150 150,50 250,150" fill="' + CONFIG.COLOR_TEAL_LIGHT + '" stroke="' + CONFIG.COLOR_NAVY + '" stroke-width="2"/>';
       // Base label line
       svg += '<line x1="50" y1="165" x2="250" y2="165" stroke="' + CONFIG.COLOR_NAVY + '" stroke-width="1.5" stroke-dasharray="3,3"/>';
-      svg += '<text x="140" y="180" font-family="Calibri" font-size="12" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Base (b)</text>';
+      svg += '<text x="140" y="180" font-family="Lexend, Calibri, sans-serif" font-size="12" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Base (b)</text>';
       // Height dashed line
       svg += '<line x1="150" y1="50" x2="150" y2="150" stroke="' + CONFIG.COLOR_AMBER + '" stroke-width="1.5" stroke-dasharray="4,4"/>';
-      svg += '<text x="160" y="100" font-family="Calibri" font-size="12" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Height (h)</text>';
+      svg += '<text x="160" y="100" font-family="Lexend, Calibri, sans-serif" font-size="12" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Height (h)</text>';
     } else if (isProportional) {
       // Coordinate grid quadrant representation
       svg += '<line x1="40" y1="160" x2="260" y2="160" stroke="' + CONFIG.COLOR_NAVY + '" stroke-width="2"/>'; // X axis
@@ -578,8 +831,8 @@ var Service = {
       svg += '<line x1="50" y1="30" x2="45" y2="35" stroke="' + CONFIG.COLOR_NAVY + '" stroke-width="2"/>';
       svg += '<line x1="50" y1="30" x2="55" y2="35" stroke="' + CONFIG.COLOR_NAVY + '" stroke-width="2"/>';
       // Axis labels
-      svg += '<text x="240" y="180" font-family="Calibri" font-size="11" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Input (x)</text>';
-      svg += '<text x="15" y="45" font-family="Calibri" font-size="11" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Output (y)</text>';
+      svg += '<text x="240" y="180" font-family="Lexend, Calibri, sans-serif" font-size="11" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Input (x)</text>';
+      svg += '<text x="15" y="45" font-family="Lexend, Calibri, sans-serif" font-size="11" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">Output (y)</text>';
       // Linear plot line
       svg += '<line x1="50" y1="160" x2="220" y2="60" stroke="' + CONFIG.COLOR_AMBER + '" stroke-width="3"/>';
       svg += '<circle cx="135" cy="110" r="4" fill="' + CONFIG.COLOR_TEAL + '"/>';
@@ -597,7 +850,7 @@ var Service = {
       var labels = ["-2", "-1", "0", "1", "2"];
       for (var t = 0; t < ticks.length; t++) {
         svg += '<line x1="' + ticks[t] + '" y1="92" x2="' + ticks[t] + '" y2="108" stroke="' + CONFIG.COLOR_NAVY + '" stroke-width="1.5"/>';
-        svg += '<text x="' + (ticks[t] - 4) + '" y="' + (125) + '" font-family="Calibri" font-size="11" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">' + labels[t] + '</text>';
+        svg += '<text x="' + (ticks[t] - 4) + '" y="' + (125) + '" font-family="Lexend, Calibri, sans-serif" font-size="11" fill="' + CONFIG.COLOR_NAVY + '" font-weight="bold">' + labels[t] + '</text>';
       }
       // Highlight dot
       svg += '<circle cx="180" cy="100" r="5" fill="' + CONFIG.COLOR_TEAL + '" stroke="' + CONFIG.COLOR_NAVY + '" stroke-width="1"/>';
