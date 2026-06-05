@@ -7,6 +7,16 @@ const root = join(__dirname, "..");
 const lessonsDir = join(root, "lessons");
 const outDir = join(root, "curriculum");
 
+const urlsPath = join(root, "data", "google-slides-urls.json");
+let googleSlidesUrls = {};
+try {
+  if (existsSync(urlsPath)) {
+    googleSlidesUrls = JSON.parse(readFileSync(urlsPath, "utf8"));
+  }
+} catch (e) {
+  console.error("Failed to load google-slides-urls.json:", e);
+}
+
 const esc = (s) =>
   String(s ?? "")
     .replace(/&/g, "&amp;")
@@ -154,10 +164,11 @@ function lessonResources(id) {
 
   if (has("lessons", id, "index.html")) {
     pills.push(resLink("Interactive Lesson", `/lessons/${id}/`, true));
+    const slidesUrl = googleSlidesUrls[id] || `/lessons/${id}/slides.html`;
     pills.push(
       resLink(
         "Google Slides",
-        `/lessons/${id}/slides.html`,
+        slidesUrl,
         true
       )
     );

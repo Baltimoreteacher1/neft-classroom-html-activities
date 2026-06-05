@@ -639,7 +639,7 @@ function doGet(e) {
         return renderHtmlOutput_("🧪 Self Test Results", "<h3>Self-Test Executed Successfully</h3><pre>" + result + "</pre>");
         
       case "DEBUG_SELF_TEST":
-        var result = debugSelfTest();
+        var result = debugSelfTest(p);
         return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.TEXT);
         
       case "GET_URLS":
@@ -828,8 +828,8 @@ function generateAllSlides() {
 }
 
 /** Debug routine to read presentation structure and return as text. */
-function debugSelfTest() {
-  var id = "1mSTqPzSc8RQFmthoKzNAKiPX51Azk1AcwCE3f9v7Hw4";
+function debugSelfTest(p) {
+  var id = (p && p.id) || "1yuz3Ks6dhFXWFjfXusDmMak4ffZemdPhMycwMDPaqUU";
   try {
     var pres = SlidesApp.openById(id);
     var slides = pres.getSlides();
