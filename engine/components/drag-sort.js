@@ -243,13 +243,13 @@ function createDragItem(item) {
 
   el.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("text/plain", item.text);
-    el.style.opacity = "0.5";
-    setTimeout(() => el.classList.add("dragging"), 0);
+    e.dataTransfer.effectAllowed = "move";
+    el.classList.add("dragging");
+    requestAnimationFrame(() => el.classList.add("drag-ghost"));
   });
 
   el.addEventListener("dragend", () => {
-    el.style.opacity = "1";
-    el.classList.remove("dragging");
+    el.classList.remove("dragging", "drag-ghost");
   });
 
   // Touch support for Chromebooks
@@ -349,6 +349,12 @@ function setupDragDrop(zones) {
       if (dragEl) {
         dragEl.classList.remove("correct", "incorrect");
         zone.append(dragEl);
+        zone.classList.add("drop-snap");
+        zone.addEventListener(
+          "animationend",
+          () => zone.classList.remove("drop-snap"),
+          { once: true },
+        );
       }
     });
   });

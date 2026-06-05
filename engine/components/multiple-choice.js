@@ -1,125 +1,160 @@
+const LETTERS = ["A", "B", "C", "D", "E", "F"];
+
+function esc(s) {
+  const d = document.createElement("div");
+  d.textContent = s ?? "";
+  return d.innerHTML;
+}
+
 export function renderMultipleChoice(
   container,
-  { stem, choices, correctIndex, explanation, onAnswer },
+  { stem, choices, correctIndex, explanation, onAnswer, hideStem },
 ) {
   const id = `mc-${Math.random().toString(36).slice(2, 8)}`;
   const wrapper = document.createElement("div");
-  wrapper.className = "card";
+  wrapper.className = "mc-problem";
 
-  const stemEl = document.createElement("p");
-  stemEl.className = "mc-stem";
-  stemEl.style.cssText =
-    "font-size:1.05rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
-  stemEl.textContent = stem;
-  wrapper.append(stemEl);
+  if (stem && !hideStem) {
+    const stemEl = document.createElement("p");
+    stemEl.className = "problem-stem";
+    stemEl.textContent = stem;
+    wrapper.append(stemEl);
+  }
 
   const optionsWrap = document.createElement("div");
-  optionsWrap.style.cssText =
-    "display:flex; flex-direction:column; gap:var(--sp-2);";
+  optionsWrap.className = "mc-options";
+  optionsWrap.setAttribute("role", "radiogroup");
+  optionsWrap.setAttribute("aria-label", "Answer choices");
 
-  const letters = ["A", "B", "C", "D"];
   let selected = null;
   let answered = false;
 
   choices.forEach((choice, i) => {
-    const btn = document.createElement("button");
-    btn.className = "mc-option";
-    btn.setAttribute("role", "radio");
-    btn.setAttribute("aria-checked", "false");
-    btn.setAttribute("aria-label", `Option ${letters[i]}: ${choice}`);
-    btn.style.cssText = `
-      display:grid; grid-template-columns:36px 1fr; gap:var(--sp-3); align-items:center;
-      text-align:left; padding:12px 16px; border:2px solid var(--line); border-radius:var(--radius-md);
-      background:white; font-size:0.95rem; transition:all var(--duration-fast) ease;
-      min-height:48px;
-    `;
+    const label = document.createElement("label");
+    label.className = "mc-option-label";
+    label.id = `label_${id}_${i}`;
+    label.setAttribute("for", `${id}_${i}`);
+
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = id;
+    input.id = `${id}_${i}`;
+    input.value = String(i);
+    input.setAttribute("aria-label", `Option ${LETTERS[i]}: ${choice}`);
+
+    const radio = document.createElement("span");
+    radio.className = "custom-radio";
+    radio.setAttribute("aria-hidden", "true");
 
     const letter = document.createElement("span");
-    letter.style.cssText = `
-      width:36px; height:36px; border-radius:10px; display:grid; place-items:center;
-      font-weight:900; font-size:0.85rem; background:var(--cream); color:var(--navy);
-      transition:all var(--duration-fast) ease;
-    `;
-    letter.textContent = letters[i];
+    letter.className = "mc-letter-badge";
+    letter.textContent = LETTERS[i];
 
     const text = document.createElement("span");
+    text.className = "choice-text";
     text.textContent = choice;
 
-    btn.append(letter, text);
+    label.append(input, radio, letter, text);
 
-    btn.addEventListener("click", () => {
+    input.addEventListener("change", () => {
       if (answered) return;
       selected = i;
-      optionsWrap.querySelectorAll(".mc-option").forEach((opt, oi) => {
-        const isSelected = oi === i;
-        opt.style.borderColor = isSelected ? "var(--teal)" : "var(--line)";
-        opt.style.background = isSelected ? "var(--teal-light)" : "white";
-        opt.setAttribute("aria-checked", isSelected ? "true" : "false");
-        opt.querySelector("span:first-child").style.background = isSelected
-          ? "var(--teal)"
-          : "var(--cream)";
-        opt.querySelector("span:first-child").style.color = isSelected
-          ? "white"
-          : "var(--navy)";
+      optionsWrap.querySelectorAll(".mc-option-label").forEach((l) => {
+        l.classList.remove("is-selected");
       });
+      label.classList.add("is-selected");
     });
 
-    optionsWrap.append(btn);
+    label.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        input.checked = true;
+        input.dispatchEvent(new Event("change"));
+      }
+    });
+
+    optionsWrap.append(label);
   });
 
   wrapper.append(optionsWrap);
 
   const feedbackSlot = document.createElement("div");
-  feedbackSlot.className = "mt-4";
+  feedbackSlot.className = "problem-check-result";
   wrapper.append(feedbackSlot);
 
+  const checkRow = document.createElement("div");
+  checkRow.className = "problem-check-row";
+
   const checkBtn = document.createElement("button");
-  checkBtn.className = "btn btn-primary mt-4";
+  checkBtn.type = "button";
+  checkBtn.className = "btn btn-primary btn-check-one";
   checkBtn.textContent = "Check Answer";
+
+  const tryAgainBtn = document.createElement("button");
+  tryAgainBtn.type = "button";
+  tryAgainBtn.className = "btn btn-secondary btn-try-again";
+  tryAgainBtn.textContent = "Try Again";
+  tryAgainBtn.style.display = "none";
+
   checkBtn.addEventListener("click", () => {
     if (selected === null || answered) return;
     answered = true;
 
     const isCorrect = selected === correctIndex;
-    const options = optionsWrap.querySelectorAll(".mc-option");
+    const labels = optionsWrap.querySelectorAll(".mc-option-label");
 
-    options[correctIndex].style.borderColor = "var(--success)";
-    options[correctIndex].style.background = "var(--success-bg)";
-    options[correctIndex].querySelector("span:first-child").style.background =
-      "var(--success)";
-    options[correctIndex].querySelector("span:first-child").style.color =
-      "white";
+    labels.forEach((l) =>
+      l.classList.remove("is-correct", "is-incorrect", "is-selected"),
+    );
+    labels[correctIndex].classList.add("is-correct");
 
     if (!isCorrect) {
-      options[selected].style.borderColor = "var(--error)";
-      options[selected].style.background = "var(--error-bg)";
-      options[selected].querySelector("span:first-child").style.background =
-        "var(--error)";
-      options[selected].querySelector("span:first-child").style.color = "white";
-      options[selected].classList.add("incorrect");
+      labels[selected].classList.add("is-incorrect");
+      wrapper.classList.add("shake-once");
+      wrapper.addEventListener(
+        "animationend",
+        () => wrapper.classList.remove("shake-once"),
+        { once: true },
+      );
+    } else {
+      wrapper.classList.add("success-glow");
+      if (window.fireConfetti) window.fireConfetti();
     }
 
-    const fbType = isCorrect ? "success" : "hint";
     const fbMsg = isCorrect
       ? explanation || "Correct! Great work."
-      : `Not quite. The answer is ${letters[correctIndex]}. ${explanation || ""}`;
+      : `Not quite. The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`;
 
-    const fb = document.createElement("div");
-    fb.className = `feedback feedback-${fbType} visible`;
-    fb.setAttribute("role", "alert");
-    fb.innerHTML = `
-      <span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span>
-      <span>${fbMsg}</span>
-    `;
-    feedbackSlot.innerHTML = "";
-    feedbackSlot.append(fb);
+    feedbackSlot.className = `problem-check-result visible ${isCorrect ? "is-correct" : "is-incorrect"}`;
+    feedbackSlot.setAttribute("role", "alert");
+    feedbackSlot.innerHTML = `<span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${esc(fbMsg)}</span>`;
 
     checkBtn.style.display = "none";
+    if (!isCorrect) {
+      tryAgainBtn.style.display = "inline-flex";
+    }
 
     if (onAnswer) onAnswer(isCorrect);
   });
 
-  wrapper.append(checkBtn);
+  tryAgainBtn.addEventListener("click", () => {
+    answered = false;
+    selected = null;
+    wrapper.classList.remove("success-glow", "shake-once");
+    optionsWrap.querySelectorAll(".mc-option-label").forEach((l) => {
+      l.classList.remove("is-correct", "is-incorrect", "is-selected");
+      const inp = l.querySelector('input[type="radio"]');
+      if (inp) inp.checked = false;
+    });
+    feedbackSlot.className = "problem-check-result";
+    feedbackSlot.innerHTML = "";
+    checkBtn.style.display = "inline-flex";
+    tryAgainBtn.style.display = "none";
+    checkBtn.focus();
+  });
+
+  checkRow.append(checkBtn, tryAgainBtn);
+  wrapper.append(checkRow);
   container.append(wrapper);
 
   return {

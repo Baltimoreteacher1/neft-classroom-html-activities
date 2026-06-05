@@ -29,6 +29,12 @@ import {
   renderOptionalPracticeOptIn,
 } from "../components/activity-chooser.js";
 import { buildGradeCard } from "./grade.js";
+import {
+  createProblemCard,
+  problemTypeLabel,
+} from "./problem-shell.js";
+import { renderThemeIllustration } from "./theme-illustrations.js";
+import { deriveWorkedSteps } from "./worked-steps.js";
 
 export function bootLesson(config) {
   createApp({
@@ -643,10 +649,8 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
   const alreadyDone = state.getResponse(phaseId, respKey) === "done";
 
   const card = document.createElement("section");
-  card.className = "card card-coral turn-talk";
+  card.className = "card card-coral turn-talk speech-bubble-card";
   card.setAttribute("aria-labelledby", `${uid}-title`);
-  card.style.cssText =
-    "border:2px dashed var(--coral); background:rgba(217,121,93,0.06); margin-top:var(--sp-6);";
 
   const stemsHtml = prompt.stems
     .map(
@@ -781,100 +785,124 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total) {
   ctx.navigateTo(phaseIdx + 1);
 }
 
-export function renderComponent(container, problemDef, onAnswer) {
+export function renderComponent(container, problemDef, onAnswer, shellOpts) {
+  const useShell = shellOpts && shellOpts.number != null;
+  let body = container;
+  let setResult = () => {};
+
+  if (useShell) {
+    const shell = createProblemCard({
+      number: shellOpts.number,
+      total: shellOpts.total,
+      tier: shellOpts.tier,
+      typeLabel: problemTypeLabel(problemDef),
+      stem: problemDef.stem || problemDef.prompt || problemDef.label,
+    });
+    container.append(shell.card);
+    body = shell.body;
+    setResult = shell.setResult;
+    // Hide duplicate stem inside child components when shell shows it
+    if (problemDef.stem || problemDef.prompt) {
+      problemDef = { ...problemDef, hideStem: true };
+    }
+  }
+
+  const wrappedOnAnswer = (isCorrect) => {
+    if (useShell) setResult(isCorrect ? "correct" : "incorrect");
+    onAnswer?.(isCorrect);
+  };
+
   switch (problemDef.type) {
     case "multiple-choice":
-      renderMultipleChoice(container, { ...problemDef, onAnswer });
+      renderMultipleChoice(body, { ...problemDef, onAnswer: wrappedOnAnswer });
       break;
     case "drag-sort":
       if (problemDef.instructions) {
         const p = document.createElement("p");
         p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
         p.textContent = problemDef.instructions;
-        container.append(p);
+        body.append(p);
       }
-      renderDragSort(container, {
+      renderDragSort(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "error-analysis":
-      renderErrorAnalysis(container, {
+      renderErrorAnalysis(body, {
         ...problemDef,
-        onAnswer: (ok) => onAnswer?.(ok),
+        onAnswer: (ok) => wrappedOnAnswer(ok),
       });
       break;
     case "fill-table":
-      renderFillTable(container, {
+      renderFillTable(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "number-line":
-      renderNumberLine(container, {
+      renderNumberLine(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "coordinate-grid":
-      renderCoordinateGrid(container, {
+      renderCoordinateGrid(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "matching-game":
-      renderMatchingGame(container, {
+      renderMatchingGame(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "bar-model":
-      renderBarModel(container, {
+      renderBarModel(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "balance-scale":
-      renderBalanceScale(container, {
+      renderBalanceScale(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "algebra-tiles":
-      renderAlgebraTiles(container, {
+      renderAlgebraTiles(body, {
         ...problemDef,
-        onComplete: (c) => onAnswer?.(c > 0),
+        onComplete: (c) => wrappedOnAnswer(c > 0),
       });
       break;
     case "fraction-bars":
-      renderFractionBars(container, {
+      renderFractionBars(body, {
         ...problemDef,
-        onComplete: (c) => onAnswer?.(c > 0),
+        onComplete: (c) => wrappedOnAnswer(c > 0),
       });
       break;
     case "net-folder":
-      renderNetFolder(container, {
+      renderNetFolder(body, {
         ...problemDef,
-        onComplete: (c) => onAnswer?.(c > 0),
+        onComplete: (c) => wrappedOnAnswer(c > 0),
       });
       break;
     case "coordinate-plane":
-      renderCoordinatePlane(container, {
+      renderCoordinatePlane(body, {
         ...problemDef,
-        onComplete: (c, t) => onAnswer?.(true),
+        onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
     case "open-response":
-      renderOpenResponse(container, {
+      renderOpenResponse(body, {
         ...problemDef,
-        onSubmit: (text, ok) => onAnswer?.(ok),
+        onSubmit: (text, ok) => wrappedOnAnswer(ok),
       });
       break;
     default:
-      renderUnknownComponentFallback(container, problemDef);
-      // Keep phase completion/scoring intact: an unhandled type must still let
-      // the phase advance rather than stall waiting on a callback.
-      onAnswer?.(true);
+      renderUnknownComponentFallback(body, problemDef);
+      wrappedOnAnswer(true);
   }
 }
 
@@ -1049,12 +1077,17 @@ function renderLaunchPhase(el, state, ctx, config) {
   );
 
   const scenario = document.createElement("div");
-  scenario.className = "card";
+  scenario.className = "card launch-scenario-card";
   scenario.innerHTML = `
     <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-    <p style="font-size:1.1rem; line-height:1.65; margin:0;">${esc(cfg.narrative)}</p>
-    ${cfg.contextImage ? `<div style="margin-top:var(--sp-4); padding:var(--sp-4); background:var(--cream); border-radius:var(--radius-md); text-align:center; color:var(--muted); font-style:italic;">🎨 ${esc(cfg.contextImage)}</div>` : ""}
-  `;
+    <p class="launch-narrative">${esc(cfg.narrative)}</p>`;
+  if (cfg.contextImage || config.theme) {
+    renderThemeIllustration(
+      scenario,
+      config.theme,
+      cfg.contextImage || null,
+    );
+  }
   el.append(scenario);
 
   // Opt-in concrete data visual so "I notice / I wonder" has something to see.
@@ -1096,6 +1129,12 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   // After eliciting notice/wonder, teach the concept directly (opt-in).
   renderConceptIntro(el, cfg.conceptIntro);
+
+  // Launch Turn & Talk — speech-bubble discussion moment (non-graded).
+  const launchTT = resolveTurnTalk("launch", config);
+  if (launchTT) {
+    renderTurnAndTalk(el, launchTT, state, 0);
+  }
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
@@ -1313,6 +1352,57 @@ const TIER_LABELS = {
   level2: { name: "Level 2", badge: "badge-navy" },
 };
 
+function renderWorkedExamplePanel(host, config) {
+  const worked = deriveWorkedSteps(config);
+  if (!worked.iDo) return;
+
+  const panel = document.createElement("details");
+  panel.className = "worked-example-panel";
+  panel.open = true;
+
+  const steps = (worked.iDo.steps || [])
+    .map(
+      (s, i) =>
+        `<li class="worked-step"><span class="worked-step-num">${i + 1}</span><span>${esc(s)}</span></li>`,
+    )
+    .join("");
+
+  panel.innerHTML = `
+    <summary class="worked-example-summary">
+      <span class="worked-example-icon" aria-hidden="true">📝</span>
+      <span><strong>Worked Example</strong> — watch how it's done before you practice</span>
+    </summary>
+    <div class="worked-example-body">
+      <p class="worked-example-problem">${esc(worked.iDo.problem)}</p>
+      <ol class="worked-example-steps">${steps}</ol>
+      ${worked.iDo.answer ? `<div class="worked-example-answer"><strong>Answer:</strong> ${esc(worked.iDo.answer)}</div>` : ""}
+    </div>`;
+  host.append(panel);
+}
+
+function renderCommonMistakeCallout(host, config) {
+  const mistake =
+    config.practice?.commonMistake ||
+    config.commonMistake ||
+    null;
+  if (!mistake) return;
+  const text =
+    typeof mistake === "string"
+      ? mistake
+      : mistake.text || mistake.message || "";
+  if (!text) return;
+
+  const box = document.createElement("div");
+  box.className = "common-mistake-callout";
+  box.innerHTML = `
+    <span class="common-mistake-icon" aria-hidden="true">⚠️</span>
+    <div>
+      <strong>Watch out!</strong>
+      <p>${esc(text)}</p>
+    </div>`;
+  host.append(box);
+}
+
 function renderPracticePhase(el, state, ctx, config) {
   phaseHeader(
     el,
@@ -1328,10 +1418,22 @@ function renderPracticePhase(el, state, ctx, config) {
     "<strong>Adaptive practice:</strong> Pick <strong>Level 1</strong> for step-by-step hints, <strong>Level 2</strong> for a stretch challenge, or <strong>Adaptive</strong> to let the activity adjust. Wrong answers teach — read the feedback and try again.",
   );
 
+  renderWorkedExamplePanel(el, config);
+  renderCommonMistakeCallout(el, config);
+
   // Non-stigmatizing Level 1 / Level 2 / Adaptive selector.
   const selectorSlot = document.createElement("div");
   el.append(selectorSlot);
   mountLevelSelector(selectorSlot, state);
+
+  // Sticky practice score bar
+  const scoreBar = document.createElement("div");
+  scoreBar.className = "practice-score-bar";
+  scoreBar.innerHTML = `
+    <span class="practice-score-coins" aria-live="polite">🪙 <span class="coin-count">0</span></span>
+    <span class="practice-score-streak" aria-live="polite"></span>
+    <span class="practice-score-accuracy" aria-live="polite"></span>`;
+  el.append(scoreBar);
 
   const tierBadge = document.createElement("div");
   tierBadge.className = "badge badge-amber mb-4";
@@ -1343,7 +1445,24 @@ function renderPracticePhase(el, state, ctx, config) {
   const seq = createAdaptiveSequence(config, state);
   let totalCorrect = 0,
     totalAttempts = 0,
-    shown = 0;
+    shown = 0,
+    coins = 0;
+
+  function updateScoreBar() {
+    const coinEl = scoreBar.querySelector(".coin-count");
+    const accEl = scoreBar.querySelector(".practice-score-accuracy");
+    const streakEl = scoreBar.querySelector(".practice-score-streak");
+    if (coinEl) coinEl.textContent = String(coins);
+    if (accEl && totalAttempts > 0) {
+      accEl.textContent = `${Math.round((totalCorrect / totalAttempts) * 100)}% correct`;
+    }
+    const s = state.get();
+    if (streakEl && s.streak >= 2) {
+      streakEl.textContent = `🔥 ${s.streak} streak`;
+    } else if (streakEl) {
+      streakEl.textContent = "";
+    }
+  }
 
   function finishPractice() {
     area.innerHTML = "";
@@ -1404,11 +1523,6 @@ function renderPracticePhase(el, state, ctx, config) {
     tierBadge.textContent = tl.name;
 
     area.innerHTML = "";
-    const counter = document.createElement("div");
-    counter.style.cssText =
-      "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
-    counter.textContent = `Problem ${shown} of ${seq.total}`;
-    area.append(counter);
 
     // Level 1 items get an always-visible scaffold hint. Uses an authored
     // scaffold/hint when present, otherwise derives a short, type-aware,
@@ -1424,21 +1538,27 @@ function renderPracticePhase(el, state, ctx, config) {
       }
     }
 
-    renderComponent(area, prob, (isCorrect) => {
+    renderComponent(
+      area,
+      prob,
+      (isCorrect) => {
       totalAttempts++;
       if (isCorrect) {
         totalCorrect++;
+        coins++;
         const result = ctx.engagement.recordCorrect(null);
         if (result.streakMessage) {
           const toast = document.createElement("div");
-          toast.className = "feedback feedback-success visible";
+          toast.className = "feedback feedback-success visible practice-toast";
           toast.style.animation = "feedbackIn 0.3s var(--ease-spring)";
           toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
           area.append(toast);
         }
+        updateScoreBar();
         setTimeout(() => next(), 1500);
       } else {
         ctx.engagement.recordIncorrect(null);
+        updateScoreBar();
         // Run the scaffolded remediation sequence (hint -> worked example ->
         // guided steps -> easier retry) before advancing. The flow also biases
         // the adaptive tier toward Level 1 on repeated misses via state hooks.
@@ -1454,7 +1574,9 @@ function renderPracticePhase(el, state, ctx, config) {
           },
         });
       }
-    });
+    },
+      { number: shown, total: seq.total, tier: prob.tier },
+    );
   }
   next();
 }
@@ -1775,9 +1897,9 @@ function showFinalSummary(el, state, config) {
         : pct >= 0.5
           ? "👍 Good Effort!"
           : "💪 Keep Practicing!";
-  const streakLine =
+  const streakText =
     s.bestStreak >= 3
-      ? `<div style="margin-top:var(--sp-3); font-size:0.95rem; color:var(--coral); font-weight:700;">🔥 Best streak: ${s.bestStreak} in a row</div>`
+      ? `🔥 Best streak: ${s.bestStreak} in a row`
       : "";
   const accuracy =
     s.totalAttempts > 0
@@ -1791,26 +1913,40 @@ function showFinalSummary(el, state, config) {
         : "";
 
   const summary = document.createElement("div");
-  summary.className = "card text-center";
+  summary.className = "completion-certificate";
   summary.style.animation = "phaseIn 0.5s var(--ease-out)";
   summary.innerHTML = `
-    <div class="badge badge-amber" style="font-size:0.9rem; padding:8px 20px; margin-bottom:var(--sp-5);">🎉 Activity Complete!</div>
-    <h2 style="margin-bottom:var(--sp-2);">${esc(config.title)}</h2>
-    <p style="color:var(--muted); margin-bottom:var(--sp-2);">${grade}</p>
-    <p style="color:var(--muted); margin-bottom:var(--sp-5); font-size:0.92rem;">Great work, ${esc(s.studentName || "mathematician")}!</p>
-    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-4); max-width:560px; margin:0 auto var(--sp-6);">
-      <div><div class="xp-counter" style="font-size:2rem; font-weight:900; color:var(--amber);">0</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Total XP</div></div>
-      <div><div style="font-size:2rem; font-weight:900; color:var(--amber);">${totalStars}/18</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Stars</div></div>
-      <div><div style="font-size:2rem; font-weight:900; color:var(--teal);">${accuracy}%</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Accuracy</div></div>
-      <div><div style="font-size:2rem; font-weight:900; color:var(--success);">6/6</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Phases</div></div>
+    <div class="certificate-ribbon" aria-hidden="true">🏆</div>
+    <div class="certificate-header">
+      <div class="certificate-badge">Lesson Complete</div>
+      <h2 class="certificate-title">${esc(config.title)}</h2>
+      <p class="certificate-subtitle">${grade}</p>
     </div>
-    ${streakLine}
-    ${paceBadge ? `<div style="margin-top:var(--sp-2); font-size:0.88rem; color:var(--teal); font-weight:700;">${paceBadge}</div>` : ""}
-    <div style="display:flex; flex-direction:column; gap:var(--sp-2); max-width:400px; margin:var(--sp-5) auto 0;">
-      ${s.phases.map((p) => `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--cream); border-radius:var(--radius-sm);"><span style="font-weight:700; font-size:0.9rem;">${esc(p.name)}</span><span style="color:var(--amber);">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}</span></div>`).join("")}
+    <div class="certificate-student">
+      <span class="certificate-label">Awarded to</span>
+      <span class="certificate-name">${esc(s.studentName || "Mathematician")}</span>
+      ${s.studentPeriod ? `<span class="certificate-period">Period ${esc(s.studentPeriod)}</span>` : ""}
     </div>
-    <p style="margin-top:var(--sp-6); color:var(--muted); font-size:0.85rem;">Neft Teacher · ${esc(config.standard)} · ${new Date().toLocaleDateString()}</p>`;
+    <div class="certificate-stats">
+      <div class="cert-stat"><div class="cert-stat-value xp-counter">0</div><div class="cert-stat-label">XP Earned</div></div>
+      <div class="cert-stat"><div class="cert-stat-value cert-stars">${totalStars}<span class="cert-stat-denom">/18</span></div><div class="cert-stat-label">Stars</div></div>
+      <div class="cert-stat"><div class="cert-stat-value">${accuracy}%</div><div class="cert-stat-label">Accuracy</div></div>
+      <div class="cert-stat"><div class="cert-stat-value">6/6</div><div class="cert-stat-label">Phases</div></div>
+    </div>
+    ${streakText ? `<div class="certificate-streak">${esc(streakText)}</div>` : ""}
+    ${paceBadge ? `<div class="certificate-pace">${paceBadge}</div>` : ""}
+    <div class="certificate-phases">
+      ${s.phases.map((p) => `<div class="cert-phase-row"><span class="cert-phase-name">${esc(p.name)}</span><span class="cert-phase-stars" aria-label="${p.stars} of 3 stars">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}</span></div>`).join("")}
+    </div>
+    <div class="certificate-footer">
+      <span class="certificate-standard badge badge-teal">${esc(config.standard)}</span>
+      <span class="certificate-date">${new Date().toLocaleDateString()}</span>
+      <span class="certificate-brand">Neft Teacher</span>
+    </div>
+    <button type="button" class="btn btn-secondary certificate-print-btn" onclick="window.print()">🖨️ Print Certificate</button>`;
   el.append(summary);
+
+  if (window.fireConfetti) window.fireConfetti();
 
   // "Did I get it?" objective self-review. Re-shows the same Content + Language
   // objectives from the launch header, each with a checkbox the student ticks
