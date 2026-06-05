@@ -1722,7 +1722,7 @@ header.homework-header h1 {
       <div class="problem-body">
         <p class="problem-stem">A pool is 12 ft × 8 ft × 5 ft. Sort the statements from FALSE to TRUE.</p>
         <p class="family-problem-tip">👪 Family tip: Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</p>
-        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;FALSE: The pool volume is 96 ft³&quot;,&quot;FALSE: The pool holds 400 ft³&quot;,&quot;TRUE: V = 12 × 8 × 5&quot;,&quot;TRUE: The pool volume is 480 ft³&quot;]' data-initial-order='[&quot;TRUE: The pool volume is 480 ft³&quot;,&quot;FALSE: The pool volume is 96 ft³&quot;,&quot;FALSE: The pool holds 400 ft³&quot;,&quot;TRUE: V = 12 × 8 × 5&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;FALSE: The pool volume is 96 ft³&quot;,&quot;FALSE: The pool holds 400 ft³&quot;,&quot;TRUE: V = 12 × 8 × 5&quot;,&quot;TRUE: The pool volume is 480 ft³&quot;]' data-initial-order='[&quot;TRUE: The pool volume is 480 ft³&quot;,&quot;TRUE: V = 12 × 8 × 5&quot;,&quot;FALSE: The pool volume is 96 ft³&quot;,&quot;FALSE: The pool holds 400 ft³&quot;]'>
           <div class="drag-order-list" id="orderlist_4">
             
               <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="TRUE: The pool volume is 480 ft³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
@@ -1734,28 +1734,28 @@ header.homework-header h1 {
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_4_1" data-step-text="FALSE: The pool volume is 96 ft³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_1" data-step-text="TRUE: V = 12 × 8 × 5" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">2</span>
+                <span class="drag-order-text">TRUE: V = 12 × 8 × 5</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="FALSE: The pool volume is 96 ft³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
                 <span class="drag-order-text">FALSE: The pool volume is 96 ft³</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="FALSE: The pool holds 400 ft³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">FALSE: The pool holds 400 ft³</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="TRUE: V = 12 × 8 × 5" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="FALSE: The pool holds 400 ft³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">4</span>
-                <span class="drag-order-text">TRUE: V = 12 × 8 × 5</span>
+                <span class="drag-order-text">FALSE: The pool holds 400 ft³</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
@@ -2575,14 +2575,14 @@ function normalizeMath(val) {
   return String(val || "")
     .toLowerCase()
     .trim()
-    .replace(/s+/g, "")          // remove all whitespace
-    .replace(/*/g, "×")          // asterisk to multiplication
+    .replace(/\s+/g, "")          // remove all whitespace
+    .replace(/\*/g, "×")          // asterisk to multiplication
     .replace(/x/g, "×")          // letter x to multiplication
-    .replace(/^2/g, "²")
-    .replace(/^3/g, "³")
-    .replace(/^4/g, "⁴")
-    .replace(/^5/g, "⁵")
-    .replace(/^6/g, "⁶");
+    .replace(/\^2/g, "²")
+    .replace(/\^3/g, "³")
+    .replace(/\^4/g, "⁴")
+    .replace(/\^5/g, "⁵")
+    .replace(/\^6/g, "⁶");
 }
 
 function updateProgress() {
