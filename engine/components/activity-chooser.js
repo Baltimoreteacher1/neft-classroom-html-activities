@@ -11,19 +11,51 @@ import {
 // config.practice.optional has items. Non-blocking, ungraded.
 //   onSkip()  → caller proceeds exactly as today (completePhase)
 //   onTry()   → caller runs the optional items, then proceeds
-export function renderOptionalPracticeOptIn(container, { onTry, onSkip }) {
+//   activity  → optional {name, emoji, intro} metadata
+//               (config.practice.optionalActivity). When present, the card
+//               surfaces the named TPT-style activity instead of the generic
+//               "Extra Practice" copy. Omitted → identical to prior behavior.
+const escHtml = (s) =>
+  String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c],
+  );
+
+export function renderOptionalPracticeOptIn(
+  container,
+  { onTry, onSkip, activity } = {},
+) {
   const card = document.createElement("div");
   card.className = "card card-teal";
   card.style.cssText =
     "animation: phaseIn 0.4s var(--ease-out); text-align:center; margin-top:var(--sp-4);";
+
+  const hasActivity = activity && activity.name;
+  const heading = hasActivity
+    ? `${activity.emoji ? activity.emoji + " " : ""}${escHtml(activity.name)}`
+    : "Want more? Try optional Extra Practice";
+  const blurb = hasActivity
+    ? activity.intro
+      ? escHtml(activity.intro)
+      : "A bonus challenge activity — it won't change your score or stars."
+    : "These bonus problems won't change your score or stars — they're just for extra reps.";
+  const tryLabel = hasActivity ? "Start the activity" : "Try it";
+
   card.innerHTML = `
-    <div class="badge badge-teal mb-4">Optional · Ungraded</div>
-    <h4 style="margin-bottom:var(--sp-2);">Want more? Try optional Extra Practice</h4>
+    <div class="badge badge-teal mb-4">Bonus Activity · Ungraded</div>
+    <h4 style="margin-bottom:var(--sp-2);">${heading}</h4>
     <p style="color:var(--muted); margin-bottom:var(--sp-4); font-size:0.92rem;">
-      These bonus problems won't change your score or stars — they're just for extra reps.
+      ${blurb}
     </p>
     <div style="display:flex; gap:var(--sp-3); justify-content:center; flex-wrap:wrap;">
-      <button class="btn btn-teal btn-lg" data-act="try">Try it</button>
+      <button class="btn btn-teal btn-lg" data-act="try">${tryLabel}</button>
       <button class="btn btn-secondary btn-lg" data-act="skip">Skip</button>
     </div>`;
   card.querySelector('[data-act="try"]').addEventListener("click", () => {

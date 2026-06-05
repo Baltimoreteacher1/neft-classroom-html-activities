@@ -187,7 +187,10 @@
   "explore": {
     "type": "drag-sort",
     "label": "Sort each question into the correct category: Statistical Question or Not a Statistical Question.",
-    "categories": ["Statistical Question", "Not a Statistical Question"],
+    "categories": [
+      "Statistical Question",
+      "Not a Statistical Question"
+    ],
     "cards": [
       {
         "text": "How many points does each player on the team score per game?",
@@ -337,7 +340,11 @@
       },
       {
         "type": "fill-table",
-        "columns": ["Question", "Statistical?", "Why?"],
+        "columns": [
+          "Question",
+          "Statistical?",
+          "Why?"
+        ],
         "rows": [
           {
             "question": "How many push-ups can each student do in one minute?",
@@ -462,6 +469,133 @@
           }
         ],
         "label": "Rewrite each non-statistical question to make it statistical and explain the variability."
+      }
+    ],
+    "optionalActivity": {
+      "name": "Sports Data Investigation Launch",
+      "emoji": "🏀",
+      "intro": "The front office hands you a fresh stack of scouting questions — decide which ones anticipate variability and are worth investigating with data.",
+      "stepLabel": "Case"
+    },
+    "optional": [
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each scouting question into Statistical or Not Statistical. A statistical question anticipates that the answers will vary.",
+        "categories": [
+          {
+            "id": "stat",
+            "label": "Statistical"
+          },
+          {
+            "id": "not",
+            "label": "Not Statistical"
+          }
+        ],
+        "items": [
+          {
+            "text": "How many steals does each player record per game?",
+            "category": "stat"
+          },
+          {
+            "text": "How old is the head coach?",
+            "category": "not"
+          },
+          {
+            "text": "How many ounces of water does each player drink during practice?",
+            "category": "stat"
+          },
+          {
+            "text": "What city does the team play its home games in?",
+            "category": "not"
+          },
+          {
+            "text": "How many hours of sleep did each player get before the game?",
+            "category": "stat"
+          },
+          {
+            "text": "How many points is a successful field goal worth?",
+            "category": "not"
+          },
+          {
+            "text": "How fast does each player run the length of the court?",
+            "category": "stat"
+          },
+          {
+            "text": "What number is on the team captain's jersey?",
+            "category": "not"
+          }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The front office wants ONE more question that will give varied data to analyze. Which question is statistical?",
+        "choices": [
+          "How many rebounds does each player grab per game?",
+          "How many players start the game on the court?",
+          "What is the name of the team's arena?",
+          "How long is one quarter of the game in minutes?"
+        ],
+        "correctIndex": 0,
+        "explanation": "\"How many rebounds does each player grab per game?\" is statistical because different players grab different numbers of rebounds — the data anticipates variability. The other three each have one fixed answer."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Why does \"How many minutes does each player spend warming up?\" anticipate variability?",
+        "choices": [
+          "Because different players warm up for different amounts of time",
+          "Because warming up happens before every game",
+          "Because minutes are always a number",
+          "Because every player warms up for exactly 10 minutes"
+        ],
+        "correctIndex": 0,
+        "explanation": "A statistical question anticipates variability. Different players spend different amounts of time warming up, so the collected data will vary from player to player."
+      },
+      {
+        "type": "matching-game",
+        "label": "Each weak question on the left has one fixed answer. Match it to the improved version that anticipates variability.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "How many players are on the roster?",
+            "match": "How many points does each player on the roster average?"
+          },
+          {
+            "term": "What is the score of the championship game?",
+            "match": "How many points does each team score across the season's games?"
+          },
+          {
+            "term": "What time does the game tip off?",
+            "match": "What time does each fan arrive at the arena?"
+          },
+          {
+            "term": "How long is a regulation court?",
+            "match": "How far from the basket does each player make most of their shots?"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension: Catch the Analyst's Mistake",
+        "workedExample": [
+          {
+            "label": "Question",
+            "work": "How many free throws did each player make during the tournament?"
+          },
+          {
+            "label": "Analyst says",
+            "work": "This is NOT a statistical question."
+          },
+          {
+            "label": "Analyst's reason",
+            "work": "It asks about free throws, and a free throw is always worth 1 point, so the answer never changes."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "The value of one free throw is fixed, but the question asks how many free throws EACH player MADE during the tournament. Different players make different numbers of free throws, so the data varies from player to player. This IS a statistical question because it anticipates variability.",
+        "hints": [
+          "Look at what the question is actually counting: it is counting how many free throws each player made, not the point value of one free throw.",
+          "Ask yourself: will every player make the same number of free throws? If the answers vary, the question is statistical."
+        ]
       }
     ]
   },

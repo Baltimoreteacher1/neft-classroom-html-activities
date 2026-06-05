@@ -1328,7 +1328,9 @@ function renderPracticePhase(el, state, ctx, config) {
       const label = document.createElement("div");
       label.style.cssText =
         "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
-      label.textContent = `Extra Practice ${i + 1} of ${items.length} · optional`;
+      const stepWord =
+        config.practice?.optionalActivity?.stepLabel || "Extra Practice";
+      label.textContent = `${stepWord} ${i + 1} of ${items.length}`;
       host.append(label);
       const slot = document.createElement("div");
       host.append(slot);
@@ -1352,6 +1354,7 @@ function renderPracticePhase(el, state, ctx, config) {
         tierBadge.textContent = "";
         tierBadge.className = "";
         renderOptionalPracticeOptIn(area, {
+          activity: config.practice?.optionalActivity,
           onSkip: finishPractice,
           onTry: () => runOptionalPractice(area, optional, finishPractice),
         });
