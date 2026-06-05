@@ -97,6 +97,14 @@ function phaseHeader(el, icon, iconClass, title, desc) {
   el.append(h);
 }
 
+function instructionCallout(el, icon, html) {
+  const box = document.createElement("div");
+  box.className = "instruction-callout";
+  box.innerHTML = `<span class="instruction-callout-icon" aria-hidden="true">${icon}</span><span>${html}</span>`;
+  el.append(box);
+  return box;
+}
+
 // ── Inline data visuals (opt-in via config) ─────────────────────────────────
 // Draw a real, accessible SVG histogram from authored interval/frequency data.
 // Opt-in only: a lesson supplies `{ bars:[{label,value}], xLabel, yLabel,
@@ -926,7 +934,7 @@ function renderUnknownComponentFallback(container, def = {}) {
 
 // ── Phase 1: Launch ──
 // Resolve the "I can ..." Content Objective with graceful fallbacks.
-function resolveContentObjective(config) {
+export function resolveContentObjective(config) {
   if (config.contentObjective) return esc(config.contentObjective);
   // Fallbacks to any pre-existing objective field, prefixed with "I can ".
   const legacy =
@@ -940,7 +948,7 @@ function resolveContentObjective(config) {
 }
 
 // Resolve the "I can ..." Language Objective with a friendly placeholder.
-function resolveLanguageObjective(config) {
+export function resolveLanguageObjective(config) {
   if (config.languageObjective) return esc(config.languageObjective);
   return `I can talk and write about ${esc(
     config.title || "this topic",
@@ -1032,6 +1040,12 @@ function renderLaunchPhase(el, state, ctx, config) {
     "section-icon-amber",
     "Launch",
     "Read the scenario. What do you notice? What do you wonder?",
+  );
+
+  instructionCallout(
+    el,
+    "👀",
+    "<strong>Your job:</strong> Read the story below. Write one thing you <strong>notice</strong> (a fact or pattern) and one thing you <strong>wonder</strong> (a question). Short answers are fine!",
   );
 
   const scenario = document.createElement("div");
@@ -1132,6 +1146,21 @@ function renderVocabPhase(el, state, ctx, config) {
 
     const activity = activities[actIdx];
     el.innerHTML = "";
+
+    if (actIdx === 0) {
+      phaseHeader(
+        el,
+        "📖",
+        "section-icon-amber",
+        "Vocab Builder",
+        "Study the words, then show what you know.",
+      );
+      instructionCallout(
+        el,
+        "📚",
+        "<strong>EL tip:</strong> Say each word out loud. Match the <strong>term</strong> to its <strong>definition</strong> before you move on. Pictures and Spanish labels are there to help.",
+      );
+    }
 
     const stepLabel = document.createElement("div");
     stepLabel.style.cssText =
@@ -1293,6 +1322,12 @@ function renderPracticePhase(el, state, ctx, config) {
     "Problems adapt to how you're doing — keep going!",
   );
 
+  instructionCallout(
+    el,
+    "🎯",
+    "<strong>Adaptive practice:</strong> Pick <strong>Level 1</strong> for step-by-step hints, <strong>Level 2</strong> for a stretch challenge, or <strong>Adaptive</strong> to let the activity adjust. Wrong answers teach — read the feedback and try again.",
+  );
+
   // Non-stigmatizing Level 1 / Level 2 / Adaptive selector.
   const selectorSlot = document.createElement("div");
   el.append(selectorSlot);
@@ -1381,9 +1416,10 @@ function renderPracticePhase(el, state, ctx, config) {
     if (prob.tier === "level1") {
       const scaffoldText = deriveScaffold(prob);
       if (scaffoldText) {
-        const hint = document.createElement("div");
-        hint.className = "feedback feedback-hint visible";
-        hint.innerHTML = `<span class="feedback-icon">💡</span><span>${esc(scaffoldText)}</span>`;
+        const hint = document.createElement("details");
+        hint.className = "scaffold-panel";
+        hint.open = true;
+        hint.innerHTML = `<summary>💡 Hint — read this first</summary><p style="margin:var(--sp-2) 0 0;">${esc(scaffoldText)}</p>`;
         area.append(hint);
       }
     }
@@ -1432,6 +1468,12 @@ function renderConnectPhase(el, state, ctx, config) {
     "section-icon-teal",
     "Real-World Connection",
     "Where does this math live in the wild?",
+  );
+
+  instructionCallout(
+    el,
+    "🌍",
+    "<strong>Real-world math:</strong> Read the scenario. Talk with a partner using Turn & Talk, then write how this connects to today's lesson using math vocabulary.",
   );
 
   const card = document.createElement("div");

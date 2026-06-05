@@ -239,6 +239,9 @@
   function isActivityPage() {
     if (window.NT_ACTIVITY === true) return true;
     if (window.NT_ACTIVITY === false) return false;
+    // Vite lesson engine pages (#app) ship their own export toolbar + identity UX.
+    if (document.getElementById("app")) return false;
+    if (document.querySelector(".identity-screen")) return false;
     if (document.querySelector("form, textarea")) return true;
     var fields = document.querySelectorAll(
       "input[type='text'],input[type='number'],input:not([type]),input[type='radio'],input[type='checkbox']",

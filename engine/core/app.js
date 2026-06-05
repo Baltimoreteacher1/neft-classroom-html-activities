@@ -3,7 +3,11 @@ import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
 import { reportScore } from "./score-reporter.js";
 import { runComponentList } from "../components/activity-chooser.js";
-import { renderComponent } from "./lesson-renderer.js";
+import {
+  renderComponent,
+  resolveContentObjective,
+  resolveLanguageObjective,
+} from "./lesson-renderer.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 
@@ -184,34 +188,70 @@ function formsCardHtml(config) {
       </div>`;
 }
 
+function lessonTimeEstimate(config) {
+  if (config.timeEstimate) return String(config.timeEstimate);
+  if (String(config.lessonId || "").includes("flagship")) return "~50 min";
+  return "~45 min";
+}
+
+function objectivesBlockHtml(config) {
+  return `
+    <div class="identity-objectives">
+      <div class="identity-objective-row">
+        <span class="identity-objective-badge">Target</span>
+        <span>${resolveContentObjective(config)}</span>
+      </div>
+      <div class="identity-objective-row">
+        <span class="identity-objective-badge">Discuss</span>
+        <span>${resolveLanguageObjective(config)}</span>
+      </div>
+    </div>`;
+}
+
 function showIdentityScreen(root, config) {
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
+  const homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
 
   const screen = document.createElement("div");
   screen.className = "identity-screen";
   screen.innerHTML = `
     <div class="identity-card">
-      <div class="identity-emoji">${themeEmoji}</div>
-      <h1 class="identity-title">${escHtml(config.title)}</h1>
-      <p class="identity-sub">${escHtml(config.standard)} · Unit ${config.unit}</p>
-      ${
-        config.readiness
-          ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
-              <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
-              <span><strong>New to this topic?</strong> Take the quick 10-minute Get Ready check first — it finds what you're missing. <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">Start &rarr;</span></span>
-            </a>`
-          : ""
-      }
-      ${formsCardHtml(config)}
-      <div class="identity-form">
-        <label for="id-name">Your Name</label>
-        <input id="id-name" type="text" placeholder="First name Last initial" autocomplete="off" />
-        <label for="id-period">Period</label>
-        <input id="id-period" type="text" placeholder="e.g. 3" autocomplete="off" />
-        <button id="id-start" class="identity-btn" disabled>Start Activity</button>
+      <div class="identity-hero">
+        <p class="identity-meta">Grade 6 Reveal Math · Unit ${config.unit} · Lesson ${config.lesson ?? ""}</p>
+        <div class="identity-emoji" aria-hidden="true">${themeEmoji}</div>
+        <h1 class="identity-title">${escHtml(config.title)}</h1>
+        <p class="identity-sub">${escHtml(config.standard)}</p>
+        <div class="identity-time" aria-label="Estimated time">⏱️ ${escHtml(lessonTimeEstimate(config))}</div>
+        ${objectivesBlockHtml(config)}
       </div>
-      ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
+      <div class="identity-body">
+        ${
+          config.readiness
+            ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
+                <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
+                <span><strong>New to this topic?</strong> Take the quick Get Ready check first — it finds what you're missing. <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">Start &rarr;</span></span>
+              </a>`
+            : ""
+        }
+        <p class="instruction-callout" style="margin-bottom:var(--sp-4); font-size:0.88rem;">
+          <span class="instruction-callout-icon" aria-hidden="true">👋</span>
+          <span>Enter your name to start. Your progress saves on <strong>this device</strong>. Ask your teacher before switching Chromebooks.</span>
+        </p>
+        ${formsCardHtml(config)}
+        <div class="identity-form">
+          <label for="id-name">Your Name</label>
+          <input id="id-name" type="text" placeholder="First name Last initial" autocomplete="off" />
+          <label for="id-period">Period</label>
+          <input id="id-period" type="text" placeholder="e.g. 3" autocomplete="off" />
+          <button id="id-start" class="identity-btn" disabled>Start Activity →</button>
+        </div>
+        <p style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
+          <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 Family homework</a>
+          · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 Guided notes</a>
+        </p>
+        ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
+      </div>
     </div>
   `;
   root.append(screen);
@@ -303,6 +343,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   root.append(sidebar, main);
 
+  const lessonHero = buildLessonHero(config, state, phaseConfigs);
+  main.append(lessonHero);
+
   const phaseContainer = document.createElement("div");
   phaseContainer.className = "phase-container";
   main.append(phaseContainer);
@@ -333,6 +376,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   state.subscribe(() => {
     updateSidebar(sidebar, state, phaseConfigs);
+    updateLessonHero(lessonHero, state, phaseConfigs);
     updateMinimap();
   });
 
@@ -349,6 +393,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   });
 
   updateSidebar(sidebar, state, phaseConfigs);
+  updateLessonHero(lessonHero, state, phaseConfigs);
   updateMinimap();
 
   const app = {
@@ -635,6 +680,16 @@ function buildSidebar(config, state, phaseConfigs) {
       </div>
     </div>
 
+    <div class="sidebar-progress" data-bind="sidebar-progress">
+      <div class="sidebar-progress-label">
+        <span>Progress</span>
+        <span data-bind="phase-count">0 / 6</span>
+      </div>
+      <div class="xp-bar-track">
+        <div class="xp-bar-fill" data-bind="phase-bar"></div>
+      </div>
+    </div>
+
     ${preLessonNavHtml(config)}
 
     <div class="phase-nav" data-bind="phases"></div>
@@ -733,6 +788,64 @@ function projectsNavHtml(_config) {
     </div>`;
 }
 
+function buildLessonHero(config, state, phaseConfigs) {
+  const hero = document.createElement("header");
+  hero.className = "lesson-hero";
+  hero.setAttribute("aria-label", "Lesson overview");
+  hero.innerHTML = `
+    <div class="lesson-hero-top">
+      <div>
+        <h2 class="lesson-hero-title">${escHtml(config.title)}</h2>
+        <div class="lesson-hero-meta">${escHtml(config.standard)} · Unit ${config.unit} · ${escHtml(lessonTimeEstimate(config))}</div>
+      </div>
+      <div class="lesson-hero-badges">
+        <span class="lesson-hero-badge" data-bind="hero-phase">Phase 1</span>
+        <span class="lesson-hero-badge">⭐ <span data-bind="hero-stars">0</span>/18</span>
+      </div>
+    </div>
+    <div class="phase-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" data-bind="hero-progressbar">
+      <div class="phase-progress-fill" data-bind="hero-progress" style="width:0%"></div>
+    </div>
+    <div class="phase-progress-label">
+      <span data-bind="hero-phase-name">${escHtml(phaseConfigs[0]?.name || "Launch")}</span>
+      <span data-bind="hero-phase-count">0 of 6 complete</span>
+    </div>`;
+  return hero;
+}
+
+function updateLessonHero(hero, state, phaseConfigs) {
+  if (!hero) return;
+  const s = state.get();
+  const completed = s.phases.filter((p) => p.status === "completed").length;
+  const total = s.phases.length || 6;
+  const pct = total ? Math.round((completed / total) * 100) : 0;
+  const current = phaseConfigs[s.currentPhase] || phaseConfigs[0];
+
+  const phaseBadge = hero.querySelector('[data-bind="hero-phase"]');
+  if (phaseBadge)
+    phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
+
+  const stars = hero.querySelector('[data-bind="hero-stars"]');
+  if (stars)
+    stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
+
+  const fill = hero.querySelector('[data-bind="hero-progress"]');
+  if (fill) fill.style.width = `${pct}%`;
+
+  const bar = hero.querySelector('[data-bind="hero-progressbar"]');
+  if (bar) {
+    bar.setAttribute("aria-valuenow", String(completed));
+    bar.setAttribute("aria-valuemax", String(total));
+  }
+
+  const phaseName = hero.querySelector('[data-bind="hero-phase-name"]');
+  if (phaseName) phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
+
+  const phaseCount = hero.querySelector('[data-bind="hero-phase-count"]');
+  if (phaseCount)
+    phaseCount.textContent = `${completed} of ${total} complete`;
+}
+
 function updateSidebar(sidebar, state, phaseConfigs) {
   const s = state.get();
 
@@ -741,6 +854,14 @@ function updateSidebar(sidebar, state, phaseConfigs) {
 
   const xpBar = sidebar.querySelector('[data-bind="xp-bar"]');
   if (xpBar) xpBar.style.width = `${Math.min(100, (s.xp / s.maxXp) * 100)}%`;
+
+  const completed = s.phases.filter((p) => p.status === "completed").length;
+  const total = s.phases.length || 6;
+  const phaseCount = sidebar.querySelector('[data-bind="phase-count"]');
+  if (phaseCount) phaseCount.textContent = `${completed} / ${total}`;
+  const phaseBar = sidebar.querySelector('[data-bind="phase-bar"]');
+  if (phaseBar)
+    phaseBar.style.width = `${total ? Math.round((completed / total) * 100) : 0}%`;
 
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
