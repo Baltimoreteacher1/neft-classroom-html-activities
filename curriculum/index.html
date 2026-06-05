@@ -8,6 +8,12 @@
       content="Neft Teacher Grade 6 math curriculum hub — every lesson, notes packet, graphic novel, 3D game, and test organized by unit."
     />
     <title>Curriculum Hub — Neft Teacher Grade 6 Math</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600&family=Frank+Ruhl+Libre:wght@500&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --navy: #fbbf24; /* Clean amber-gold */
@@ -100,6 +106,59 @@
         font-size: 16px;
         max-width: 65ch;
         line-height: 1.6;
+      }
+      nav.hub-breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 18px;
+        font-size: 0.88rem;
+        color: var(--muted);
+      }
+      nav.hub-breadcrumb a {
+        color: var(--teal);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      nav.hub-breadcrumb a:hover,
+      nav.hub-breadcrumb a:focus-visible {
+        color: var(--amber);
+        outline: none;
+      }
+      nav.hub-breadcrumb .sep {
+        opacity: 0.45;
+      }
+      .hub-siblings {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 18px;
+      }
+      .hub-sibling {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.82rem;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 12px;
+        min-height: 36px;
+        transition:
+          color 0.2s,
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .hub-sibling:hover,
+      .hub-sibling:focus-visible {
+        color: var(--ink);
+        border-color: var(--teal);
+        background: rgba(45, 212, 191, 0.08);
+        outline: none;
       }
       .controls {
         display: flex;
@@ -993,6 +1052,10 @@
   </head>
   <body class="light-theme">
     <div class="wrap">
+      <nav class="hub-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Neft Home</a><span class="sep">/</span
+        ><span aria-current="page">Curriculum Hub</span>
+      </nav>
       <header class="hub">
         <p class="eyebrow">Neft Teacher · Grade 6 Math</p>
         <h1>Curriculum Hub</h1>
@@ -1004,8 +1067,16 @@
         </p>
       </header>
 
+      <div class="hub-siblings" aria-label="Related hubs">
+        <a class="hub-sibling" href="/mcap-review/">MCAP Review</a>
+        <a class="hub-sibling" href="/spiral-review/">Spiral Review</a>
+        <a class="hub-sibling" href="/esol/">Reading &amp; Language</a>
+        <a class="hub-sibling" href="/directory/">Games Directory</a>
+        <a class="hub-sibling" href="/summer-bridge/">Summer Bridge</a>
+      </div>
+
       <style>
-        .teacher-tools {
+        .hub-panel {
           background: #ffffff;
           border: 1px solid #dbe5ef;
           border-radius: 14px;
@@ -1013,7 +1084,7 @@
           margin: 0 0 18px;
           overflow: hidden;
         }
-        .teacher-tools > summary {
+        .hub-panel > summary {
           list-style: none;
           cursor: pointer;
           padding: 13px 16px;
@@ -1023,30 +1094,35 @@
           align-items: center;
           gap: 8px;
         }
-        .teacher-tools > summary::-webkit-details-marker {
+        .hub-panel > summary::-webkit-details-marker {
           display: none;
         }
-        .teacher-tools > summary::after {
+        .hub-panel > summary::after {
           content: "▸";
           margin-left: auto;
-          color: #0f766e;
           transition: transform 0.15s;
         }
-        .teacher-tools[open] > summary::after {
+        .hub-panel[open] > summary::after {
           transform: rotate(90deg);
         }
-        .teacher-tools .tt-sub {
+        .teacher-tools > summary::after {
+          color: #0f766e;
+        }
+        .family-corner > summary::after {
+          color: #b45309;
+        }
+        .hub-panel .panel-sub {
           font-weight: 600;
           font-size: 0.8rem;
           color: #64748b;
         }
-        .tt-links {
+        .panel-links {
           display: flex;
           flex-wrap: wrap;
           gap: 8px;
           padding: 0 14px 14px;
         }
-        .tt-link {
+        .panel-link {
           display: inline-flex;
           align-items: center;
           gap: 7px;
@@ -1060,34 +1136,96 @@
           padding: 8px 14px;
           min-height: 40px;
         }
-        .tt-link:hover,
-        .tt-link:focus-visible {
+        .teacher-tools .panel-link:hover,
+        .teacher-tools .panel-link:focus-visible {
           background: #e8f7f4;
           border-color: #0f766e;
           color: #0f766e;
           outline: none;
         }
+        .family-corner .panel-link:hover,
+        .family-corner .panel-link:focus-visible {
+          background: #fff7ed;
+          border-color: #b45309;
+          color: #b45309;
+          outline: none;
+        }
+        .panel-group-label {
+          flex: 1 0 100%;
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #64748b;
+          margin: 4px 0 0;
+          padding: 0 2px;
+        }
+        .panel-group-label:not(:first-child) {
+          margin-top: 10px;
+        }
       </style>
-      <details class="teacher-tools">
+      <details class="hub-panel teacher-tools">
         <summary>
-          🧰 Teacher Tools <span class="tt-sub">(for Mr. Neft)</span>
+          🧰 Teacher Tools <span class="panel-sub">(for Mr. Neft)</span>
         </summary>
-        <div class="tt-links">
-          <a class="tt-link" href="/teacher-tools/post-forms/"
+        <div class="panel-links">
+          <a class="panel-link" href="/teacher-tools/post-forms/"
             >📋 Post Forms → Classroom / Canvas</a
           >
           <a
-            class="tt-link"
+            class="panel-link"
             href="https://docs.google.com/document/d/1gcEe-NFvhKC56K4iz7lWQ6yVaMkEfN32N4p-qpTDuqM/edit"
             target="_blank"
             rel="noopener"
             >✏️ Edit Google Forms</a
           >
-          <a class="tt-link" href="/neft-school-hub/">🏫 School Hub</a>
-          <a class="tt-link" href="/teacher-tools/class-dashboard/"
+          <a class="panel-link" href="/neft-school-hub/">🏫 School Hub</a>
+          <a class="panel-link" href="/teacher-tools/class-dashboard/"
             >📊 Class Dashboard</a
           >
-          <a class="tt-link" href="/teacher-tools/">🛠️ All Teacher Tools</a>
+          <a class="panel-link" href="/teacher-tools/">🛠️ All Teacher Tools</a>
+        </div>
+      </details>
+
+      <details class="hub-panel family-corner">
+        <summary>
+          🏠 Family &amp; Personal <span class="panel-sub">(Noam · Hebrew · home)</span>
+        </summary>
+        <div class="panel-links">
+          <span class="panel-group-label">School &amp; Planner</span>
+          <a class="panel-link" href="/noam-school-v10/"
+            >📅 Focus &amp; Plan</a
+          >
+          <a class="panel-link" href="/noam-school-v10/?view=home"
+            >🏠 Daily Home</a
+          >
+          <a class="panel-link" href="/ecology-noam/">🌿 Ecology Review</a>
+          <span class="panel-group-label">Bar Mitzvah &amp; Hebrew</span>
+          <a class="panel-link" href="/noam-bar-mitzvah/">📖 Study Hub</a>
+          <a class="panel-link" href="/noam-bar-mitzvah/parsha.html"
+            >🎵 Chant Arcade</a
+          >
+          <a class="panel-link" href="/noam-bar-mitzvah/haftarah.html"
+            >📜 Haftarah</a
+          >
+          <a class="panel-link" href="/esol-reading-writing/noamhebrewreview/"
+            >✡️ Hebrew Review</a
+          >
+          <a class="panel-link" href="/practice/hebrew-reading/"
+            >📚 Reading Practice</a
+          >
+          <a class="panel-link" href="/practice/hebrew-prayers/"
+            >🕍 Prayer Practice</a
+          >
+          <span class="panel-group-label">Fun &amp; Reading</span>
+          <a class="panel-link" href="/unit-5/noamunit5quizbaseball/"
+            >⚾ Equation All-Stars</a
+          >
+          <a class="panel-link" href="/refugee/">📕 Refugee</a>
+          <a class="panel-link" href="/blood-on-the-river/">🚣 Blood on the River</a>
+          <span class="panel-group-label">More</span>
+          <a class="panel-link" href="/personal/">📌 All Personal Projects</a>
+          <a class="panel-link" href="/">↩ Neft Home (Personal tab)</a>
         </div>
       </details>
 
