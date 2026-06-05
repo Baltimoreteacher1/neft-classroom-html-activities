@@ -281,71 +281,197 @@
     "discourse": {
       "prompt": "The IQR is Q3 − Q1 = 22 − 8 = 14. What does this tell you about the middle 50% of scorers?",
       "sentenceFrame": "The middle 50% of players scored between ___ and ___ points. The IQR of ___ means the middle half of the data is spread across ___ points. This tells me ___.",
-      "keywords": ["8", "22", "14", "spread", "middle", "quartile", "range"]
+      "keywords": [
+        "8",
+        "22",
+        "14",
+        "spread",
+        "middle",
+        "quartile",
+        "range"
+      ]
     }
   },
   "practice": {
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "In a box plot, the line inside the box represents the...",
-        "choices": ["Median", "Mean", "Maximum", "Range"],
-        "correctIndex": 0,
-        "explanation": "The middle line of a box plot marks the median."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A box plot has Q1 = 20 and Q3 = 35. What is the interquartile range (IQR)?",
-        "choices": ["15", "55", "27.5", "20"],
-        "correctIndex": 0,
-        "explanation": "IQR = Q3 − Q1 = 35 − 20 = 15."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "What does the box (between Q1 and Q3) of a box plot represent?",
+        "stem": "The Hawks' points per quarter are 2, 4, 5, 7, 8, 10, 12. Resting on the scoreboard, what are the minimum, median, and maximum?",
         "choices": [
-          "The middle 50% of the data",
-          "All of the data",
-          "The mean",
-          "Only the largest values"
+          "Minimum 2, median 7, maximum 12",
+          "Minimum 2, median 5, maximum 12",
+          "Minimum 0, median 7, maximum 12",
+          "Minimum 2, median 8, maximum 10"
         ],
         "correctIndex": 0,
-        "explanation": "The box spans Q1 to Q3, holding the middle half of the data."
+        "explanation": "The data is already in order. The smallest value is 2 and the largest is 12. There are 7 values, so the median is the 4th value, which is 7."
       },
       {
         "type": "multiple-choice",
-        "stem": "A data set has minimum 5 and maximum 45. What is the range?",
-        "choices": ["40", "50", "25", "9"],
+        "stem": "The Comets scored 6, 10, 14, 18, 22, 26, 30, 34 across 8 games. After ordering, what are Q1 and Q3?",
+        "choices": [
+          "Q1 = 12, Q3 = 28",
+          "Q1 = 10, Q3 = 30",
+          "Q1 = 14, Q3 = 26",
+          "Q1 = 20, Q3 = 34"
+        ],
         "correctIndex": 0,
-        "explanation": "Range = maximum − minimum = 45 − 5 = 40."
+        "explanation": "With 8 values the median splits the data into a lower half (6, 10, 14, 18) and an upper half (22, 26, 30, 34). Q1 is the median of the lower half: (10 + 14) ÷ 2 = 12. Q3 is the median of the upper half: (26 + 30) ÷ 2 = 28."
+      },
+      {
+        "type": "matching-game",
+        "label": "Match each team's ordered scores to its five-number summary (min, Q1, median, Q3, max).",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "Hawks: 5, 8, 11, 15, 18, 21, 27",
+            "match": "Min 5, Q1 8, Median 15, Q3 21, Max 27"
+          },
+          {
+            "term": "Comets: 10, 13, 16, 20, 24, 28, 33",
+            "match": "Min 10, Q1 13, Median 20, Q3 28, Max 33"
+          },
+          {
+            "term": "Jets: 2, 6, 9, 14, 19, 23, 30",
+            "match": "Min 2, Q1 6, Median 14, Q3 23, Max 30"
+          },
+          {
+            "term": "Suns: 4, 7, 10, 16, 22, 25, 31",
+            "match": "Min 4, Q1 7, Median 16, Q3 25, Max 31"
+          }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Each card describes a part of the stadium box plot. Sort each card under the matching box plot part.",
+        "categories": [
+          {
+            "id": "fivenum",
+            "label": "Part of the five-number summary"
+          },
+          {
+            "id": "spread",
+            "label": "Measure of spread"
+          }
+        ],
+        "items": [
+          {
+            "text": "The minimum — the lowest score",
+            "category": "fivenum"
+          },
+          {
+            "text": "Q1 — the median of the lower half",
+            "category": "fivenum"
+          },
+          {
+            "text": "The median — the middle score",
+            "category": "fivenum"
+          },
+          {
+            "text": "Q3 — the median of the upper half",
+            "category": "fivenum"
+          },
+          {
+            "text": "The maximum — the highest score",
+            "category": "fivenum"
+          },
+          {
+            "text": "IQR — Q3 minus Q1",
+            "category": "spread"
+          },
+          {
+            "text": "Range — maximum minus minimum",
+            "category": "spread"
+          }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot for the Rockets shows Min = 8, Q1 = 15, Median = 22, Q3 = 30, Max = 38. The middle 50% of their scores falls between which two values?",
+        "choices": [
+          "Between 15 and 30",
+          "Between 8 and 38",
+          "Between 8 and 22",
+          "Between 22 and 38"
+        ],
+        "correctIndex": 0,
+        "explanation": "The box of a box plot stretches from Q1 to Q3, and that box always holds the middle 50% of the data. Here the box goes from Q1 = 15 to Q3 = 30."
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — The Skipped Ordering Mistake",
+        "workedExample": [
+          {
+            "label": "Data (as recorded)",
+            "work": "Falcons' scores: 17, 5, 21, 9, 29, 13, 25"
+          },
+          {
+            "label": "Minimum and maximum",
+            "work": "Min = 5, Max = 29 ✓"
+          },
+          {
+            "label": "Median",
+            "work": "The middle value of the list is 9, so Median = 9"
+          },
+          {
+            "label": "Q1 and Q3",
+            "work": "Lower half = 17, 5, 21 → Q1 = 5. Upper half = 13, 25 → Q3 = 25"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "The data must be ordered from least to greatest FIRST: 5, 9, 13, 17, 21, 25, 29. There are 7 values, so the median is the 4th value, which is 17 (not 9). The lower half is 5, 9, 13, so Q1 = 9, and the upper half is 21, 25, 29, so Q3 = 25. The student found the 'middle of the list' without ordering the data first, which gave the wrong median and quartiles.",
+        "hints": [
+          "You can never find the median or quartiles until the data is in order from least to greatest.",
+          "After ordering (5, 9, 13, 17, 21, 25, 29), the true middle value is 17, not the number that happened to sit in the middle of the unsorted list."
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
         "stem": "A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?",
-        "choices": ["13", "25", "10", "20"],
+        "choices": [
+          "13",
+          "25",
+          "10",
+          "20"
+        ],
         "correctIndex": 0,
         "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13."
       },
       {
         "type": "multiple-choice",
         "stem": "On a box plot, what does the line inside the box represent?",
-        "choices": ["The median", "The mean", "The mode", "The range"],
+        "choices": [
+          "The median",
+          "The mean",
+          "The mode",
+          "The range"
+        ],
         "correctIndex": 0,
         "explanation": "The line inside the box of a box plot always represents the median."
       },
       {
         "type": "multiple-choice",
         "stem": "What percentage of data falls between Q1 and Q3 on a box plot?",
-        "choices": ["50%", "25%", "75%", "100%"],
+        "choices": [
+          "50%",
+          "25%",
+          "75%",
+          "100%"
+        ],
         "correctIndex": 0,
         "explanation": "The box in a box plot contains the middle 50% of the data (from Q1 to Q3)."
       },
       {
         "type": "multiple-choice",
         "stem": "Find the range of: 14, 22, 8, 31, 17",
-        "choices": ["23", "31", "8", "18"],
+        "choices": [
+          "23",
+          "31",
+          "8",
+          "18"
+        ],
         "correctIndex": 0,
         "explanation": "Range = max − min = 31 − 8 = 23."
       },
@@ -374,15 +500,39 @@
     "onLevel": [
       {
         "type": "fill-table",
-        "headers": ["Measure", "Value"],
+        "headers": [
+          "Measure",
+          "Value"
+        ],
         "rows": [
-          ["Data: 5, 8, 12, 15, 18, 20, 25, 30, 35", ""],
-          ["Minimum", ""],
-          ["Q1 (median of lower half: 5, 8, 12, 15)", ""],
-          ["Median", ""],
-          ["Q3 (median of upper half: 20, 25, 30, 35)", ""],
-          ["Maximum", ""],
-          ["IQR (Q3 − Q1)", ""]
+          [
+            "Data: 5, 8, 12, 15, 18, 20, 25, 30, 35",
+            ""
+          ],
+          [
+            "Minimum",
+            ""
+          ],
+          [
+            "Q1 (median of lower half: 5, 8, 12, 15)",
+            ""
+          ],
+          [
+            "Median",
+            ""
+          ],
+          [
+            "Q3 (median of upper half: 20, 25, 30, 35)",
+            ""
+          ],
+          [
+            "Maximum",
+            ""
+          ],
+          [
+            "IQR (Q3 − Q1)",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -562,7 +712,13 @@
           }
         ]
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "Box Plot Stadium Bridge",
+      "emoji": "🏀",
+      "intro": "Step onto the court and turn each team's scores into a five-number summary to power the stadium's box plot scoreboard!",
+      "stepLabel": "Step"
+    }
   },
   "connect": {
     "scenario": "Two basketball teams' scoring data are displayed as box plots. Team A: Min=40, Q1=52, Median=60, Q3=68, Max=75. Team B: Min=35, Q1=55, Median=61, Q3=65, Max=80. A fan says Team B is better because they scored 80 points once.",

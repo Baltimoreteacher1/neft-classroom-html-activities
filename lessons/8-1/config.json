@@ -219,7 +219,15 @@
     "visual": {
       "kind": "dot-plot",
       "title": "Sample data for: “How many points per game?”",
-      "values": [8, 12, 12, 15, 18, 20, 22],
+      "values": [
+        8,
+        12,
+        12,
+        15,
+        18,
+        20,
+        22
+      ],
       "xLabel": "Points per game",
       "caption": "A statistical question produces data that VARIES (many different answers). A non-statistical question has one fixed answer."
     },
@@ -256,7 +264,10 @@
   "explore": {
     "type": "drag-sort",
     "label": "Sort each question into the correct category: Statistical Question or Not a Statistical Question.",
-    "categories": ["Statistical Question", "Not a Statistical Question"],
+    "categories": [
+      "Statistical Question",
+      "Not a Statistical Question"
+    ],
     "cards": [
       {
         "text": "How many points does each player on the team score per game?",
@@ -308,52 +319,119 @@
   "practice": {
     "optional": [
       {
-        "type": "multiple-choice",
-        "stem": "Which is a statistical question?",
-        "choices": [
-          "How tall are the students in our class?",
-          "How tall is the teacher?",
-          "What is my height?",
-          "Is the door open?"
+        "type": "drag-sort",
+        "instructions": "Drag each scouting question into the right bin. A statistical question expects answers that VARY from player to player; a non-statistical question has one fixed answer.",
+        "items": [
+          {
+            "text": "How many push-ups can each player on the team do in one minute?",
+            "category": "statistical"
+          },
+          {
+            "text": "How many points does each starter average per game?",
+            "category": "statistical"
+          },
+          {
+            "text": "How many seconds does each player take to sprint the court?",
+            "category": "statistical"
+          },
+          {
+            "text": "How many free throws did each teammate make in practice?",
+            "category": "statistical"
+          },
+          {
+            "text": "How many players are allowed on the court at once?",
+            "category": "not"
+          },
+          {
+            "text": "What is the diameter of an official basketball hoop?",
+            "category": "not"
+          },
+          {
+            "text": "How many quarters are played in one game?",
+            "category": "not"
+          }
         ],
-        "correctIndex": 0,
-        "explanation": "A statistical question anticipates variability — heights vary across students."
+        "categories": [
+          {
+            "id": "statistical",
+            "label": "Statistical"
+          },
+          {
+            "id": "not",
+            "label": "Not Statistical"
+          }
+        ]
       },
       {
         "type": "multiple-choice",
-        "stem": "Which question is NOT statistical?",
+        "stem": "The team analyst writes four questions for the scouting report. Which one is a statistical question?",
         "choices": [
-          "What time did the bus arrive today?",
-          "How many minutes do students sleep each night?",
-          "How long do people wait at the store?",
-          "What ages are the players on the team?"
+          "How many rebounds does each player grab per game?",
+          "How many points is a single free throw worth?",
+          "What is the height of the basketball rim?",
+          "How many timeouts does each team get per half?"
         ],
         "correctIndex": 0,
-        "explanation": "A single bus arrival time has one answer, so it is not statistical."
+        "explanation": "\"How many rebounds does each player grab per game?\" anticipates variability — different players grab different numbers of rebounds, so you must collect data. The other three each have one fixed answer."
       },
       {
         "type": "multiple-choice",
-        "stem": "Why do statistical questions expect different answers?",
+        "stem": "Why does the question \"How many minutes did each athlete warm up before the game?\" count as a statistical question?",
         "choices": [
-          "Because the data values vary from one case to another",
-          "Because they are always about numbers",
-          "Because they cannot be answered",
-          "Because they only have one answer"
+          "Because the warm-up times will vary from one athlete to another",
+          "Because the answer is measured in minutes",
+          "Because every athlete warmed up for exactly the same time",
+          "Because it is about a sports team"
         ],
         "correctIndex": 0,
-        "explanation": "Statistical questions anticipate variability in the data."
+        "explanation": "A statistical question anticipates variability. Different athletes warm up for different amounts of time, so the data you collect will vary."
       },
       {
-        "type": "multiple-choice",
-        "stem": "Which rewrite makes 'How old am I?' a statistical question?",
-        "choices": [
-          "How old are the students in this school?",
-          "How old is my best friend?",
-          "When is my birthday?",
-          "Am I older than 12?"
+        "type": "matching-game",
+        "label": "Match each weak (non-statistical) scouting question to a stronger version that becomes statistical by adding variability.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "How many players are on the roster?",
+            "match": "How many minutes does each player on the roster play per game?"
+          },
+          {
+            "term": "What time does the game start?",
+            "match": "What time does each fan arrive at the arena?"
+          },
+          {
+            "term": "How long is the basketball court?",
+            "match": "How far from the hoop does each player shoot most often?"
+          },
+          {
+            "term": "How many points did the team score in total?",
+            "match": "How many points did each player score in the game?"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — A Misclassified Scouting Question",
+        "workedExample": [
+          {
+            "label": "Question",
+            "work": "How many goals did the league's top scorer net this season?"
+          },
+          {
+            "label": "Student decision",
+            "work": "This is NOT a statistical question."
+          },
+          {
+            "label": "Student reason",
+            "work": "It names only one player, so there can be no variability in the answers."
+          }
         ],
-        "correctIndex": 0,
-        "explanation": "Asking about many students produces data that varies."
+        "errorStep": 2,
+        "correctWork": "The reason is wrong. \"This season\" covers many games, and the player scores a different number of goals in each game. Because the data varies from game to game, the question DOES anticipate variability — so it IS a statistical question.",
+        "hints": [
+          "Ask whether the data would have different values across the many games in a season.",
+          "Variability can come from many games for one player, not just from many players."
+        ]
       }
     ],
     "approaching": [
@@ -456,7 +534,11 @@
       },
       {
         "type": "fill-table",
-        "columns": ["Question", "Statistical?", "Why?"],
+        "columns": [
+          "Question",
+          "Statistical?",
+          "Why?"
+        ],
         "rows": [
           {
             "question": "How many push-ups can each student do in one minute?",
@@ -582,7 +664,13 @@
         ],
         "label": "Rewrite each non-statistical question to make it statistical and explain the variability."
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "Statistical or Not? Sports Sort",
+      "emoji": "🏀",
+      "intro": "Step into the team's data room and decide which scouting questions are worth collecting data for.",
+      "stepLabel": "Sort"
+    }
   },
   "connect": {
     "scenario": "The school newspaper wants to write a story about the girls' soccer team. A reporter suggests asking: \"How many goals has the team scored total?\" The editor says they should ask: \"How many goals did each player score this season?\"",

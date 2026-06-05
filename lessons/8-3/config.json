@@ -221,7 +221,13 @@
     "visual": {
       "kind": "dot-plot",
       "title": "Player A — points in 5 games (mean = 20)",
-      "values": [18, 22, 20, 24, 16],
+      "values": [
+        18,
+        22,
+        20,
+        24,
+        16
+      ],
       "min": 8,
       "max": 30,
       "xLabel": "Points",
@@ -260,13 +266,37 @@
   "explore": {
     "type": "fill-table",
     "label": "Calculate the Mean Absolute Deviation (MAD) for Player A's scores: 18, 22, 20, 24, 16. Follow each step.",
-    "headers": ["Score", "Deviation (Score − Mean)", "Absolute Deviation"],
+    "headers": [
+      "Score",
+      "Deviation (Score − Mean)",
+      "Absolute Deviation"
+    ],
     "rows": [
-      ["18", "", ""],
-      ["22", "", ""],
-      ["20", "", ""],
-      ["24", "", ""],
-      ["16", "", ""]
+      [
+        "18",
+        "",
+        ""
+      ],
+      [
+        "22",
+        "",
+        ""
+      ],
+      [
+        "20",
+        "",
+        ""
+      ],
+      [
+        "24",
+        "",
+        ""
+      ],
+      [
+        "16",
+        "",
+        ""
+      ]
     ],
     "editableCells": [
       {
@@ -342,57 +372,142 @@
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "The data 5, 7, 9 has mean 7. What is the mean absolute deviation (MAD)?",
-        "choices": ["1.33", "2", "7", "21"],
-        "correctIndex": 0,
-        "explanation": "Distances from 7 are 2, 0, 2; mean = 4 ÷ 3 ≈ 1.33."
+        "stem": "A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?",
+        "choices": [
+          "1",
+          "2",
+          "5",
+          "8"
+        ],
+        "correctIndex": 1,
+        "explanation": "Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points."
       },
       {
         "type": "multiple-choice",
-        "stem": "What does a larger MAD tell you about a data set?",
+        "stem": "Two shooters average 11 points a game. Shooter A's MAD is 2 points and Shooter B's MAD is 6 points. Which shooter is MORE consistent?",
         "choices": [
-          "The values are more spread out from the mean",
-          "The mean is larger",
-          "There are more values",
-          "The data has no mode"
+          "Shooter A, because a smaller MAD means scores stay closer to the average",
+          "Shooter B, because a bigger MAD means a bigger average",
+          "They are equally consistent because they have the same mean",
+          "You cannot tell consistency from MAD"
         ],
         "correctIndex": 0,
-        "explanation": "MAD measures average distance from the mean; larger MAD means more spread."
+        "explanation": "A smaller MAD means the scores hug the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent."
       },
       {
-        "type": "multiple-choice",
-        "stem": "The data 10, 10, 10, 10 has what MAD?",
-        "choices": ["0", "10", "2.5", "40"],
-        "correctIndex": 0,
-        "explanation": "Every value equals the mean, so each distance is 0 and MAD = 0."
+        "type": "matching-game",
+        "pairs": [
+          {
+            "term": "Bench: 8, 10, 12, 14",
+            "match": "MAD = 2 points"
+          },
+          {
+            "term": "Rookie: 4, 4, 4, 4",
+            "match": "MAD = 0 points"
+          },
+          {
+            "term": "Starter: 5, 15, 5, 15",
+            "match": "MAD = 5 points"
+          }
+        ],
+        "columns": 2,
+        "label": "Each player's points are listed. Match each player's data set to its correct MAD. (Hint: find the mean first, then average the distances.)"
       },
       {
-        "type": "multiple-choice",
-        "stem": "For the data 2, 4, 6 (mean 4), what is the MAD?",
-        "choices": ["1.33", "2", "4", "12"],
-        "correctIndex": 0,
-        "explanation": "Distances are 2, 0, 2; mean = 4 ÷ 3 ≈ 1.33."
+        "type": "drag-sort",
+        "instructions": "Coach is sorting players by consistency. Drag each player's MAD into the bucket that describes their scoring.",
+        "items": [
+          {
+            "text": "Player with MAD = 1 point",
+            "category": "consistent"
+          },
+          {
+            "text": "Player with MAD = 0 points",
+            "category": "consistent"
+          },
+          {
+            "text": "Player with MAD = 9 points",
+            "category": "spread"
+          },
+          {
+            "text": "Player with MAD = 12 points",
+            "category": "spread"
+          }
+        ],
+        "categories": [
+          {
+            "id": "consistent",
+            "label": "More consistent (small MAD)"
+          },
+          {
+            "id": "spread",
+            "label": "Less consistent (large MAD)"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — The Deviations That Vanished",
+        "workedExample": [
+          {
+            "label": "Data set",
+            "work": "A center's rebounds: 3, 7, 11, 15, 19"
+          },
+          {
+            "label": "Find the mean",
+            "work": "Sum = 55, Count = 5, Mean = 55 ÷ 5 = 11"
+          },
+          {
+            "label": "Find each deviation (value − mean)",
+            "work": "−8, −4, 0, 4, 8"
+          },
+          {
+            "label": "Find the MAD",
+            "work": "MAD = (−8 + −4 + 0 + 4 + 8) ÷ 5 = 0 ÷ 5 = 0"
+          }
+        ],
+        "errorStep": 3,
+        "correctWork": "MAD uses the ABSOLUTE value (the distance) of each deviation, so the positives and negatives can't cancel out. |−8| = 8, |−4| = 4, |0| = 0, |4| = 4, |8| = 8. MAD = (8 + 4 + 0 + 4 + 8) ÷ 5 = 24 ÷ 5 = 4.8 rebounds.",
+        "hints": [
+          "Deviations above and below the mean always add up to 0 — that's why a MAD of 0 should look suspicious here.",
+          "The 'A' in MAD stands for ABSOLUTE. Take the absolute value of each deviation before you add them."
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
         "stem": "The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?",
-        "choices": ["4", "−4", "26", "11"],
+        "choices": [
+          "4",
+          "−4",
+          "26",
+          "11"
+        ],
         "correctIndex": 0,
         "explanation": "Deviation = 11 − 15 = −4. Absolute deviation = |−4| = 4."
       },
       {
         "type": "multiple-choice",
         "stem": "A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?",
-        "choices": ["3", "5", "15", "1"],
+        "choices": [
+          "3",
+          "5",
+          "15",
+          "1"
+        ],
         "correctIndex": 0,
         "explanation": "Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3."
       },
       {
         "type": "multiple-choice",
         "stem": "The mean of a data set is 20. A value is 26. What is the absolute deviation?",
-        "choices": ["6", "−6", "46", "26"],
+        "choices": [
+          "6",
+          "−6",
+          "46",
+          "26"
+        ],
         "correctIndex": 0,
         "explanation": "Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6."
       },
@@ -438,13 +553,37 @@
     "onLevel": [
       {
         "type": "fill-table",
-        "headers": ["Score", "Deviation (Score − Mean)", "Absolute Deviation"],
+        "headers": [
+          "Score",
+          "Deviation (Score − Mean)",
+          "Absolute Deviation"
+        ],
         "rows": [
-          ["12", "", ""],
-          ["8", "", ""],
-          ["10", "", ""],
-          ["14", "", ""],
-          ["6", "", ""]
+          [
+            "12",
+            "",
+            ""
+          ],
+          [
+            "8",
+            "",
+            ""
+          ],
+          [
+            "10",
+            "",
+            ""
+          ],
+          [
+            "14",
+            "",
+            ""
+          ],
+          [
+            "6",
+            "",
+            ""
+          ]
         ],
         "editableCells": [
           {
@@ -626,7 +765,13 @@
         ],
         "label": "Sort each scenario by whether low or high variability is desirable."
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "Consistency Coach MAD Lab",
+      "emoji": "🏀",
+      "intro": "Step into the coach's office and use mean absolute deviation (MAD) to scout which players keep their stats closest to their average.",
+      "stepLabel": "Step"
+    }
   },
   "connect": {
     "scenario": "Two soccer goalkeepers track goals allowed per game over 6 games. Keeper A: 1, 2, 1, 3, 2, 1 (mean = 1.67, MAD ≈ 0.56). Keeper B: 0, 4, 1, 3, 0, 2 (mean = 1.67, MAD ≈ 1.22). The coach needs to pick a starter for the championship game.",
@@ -646,7 +791,12 @@
   "reflect": {
     "exitTicket": {
       "stem": "Data set: 4, 8, 6, 10, 2. The mean is 6. What is the MAD?",
-      "choices": ["2.4", "6", "0", "12"],
+      "choices": [
+        "2.4",
+        "6",
+        "0",
+        "12"
+      ],
       "correctIndex": 0,
       "explanation": "Deviations: −2, 2, 0, 4, −4. Absolute deviations: 2, 2, 0, 4, 4. Sum = 12. MAD = 12 ÷ 5 = 2.4."
     }
