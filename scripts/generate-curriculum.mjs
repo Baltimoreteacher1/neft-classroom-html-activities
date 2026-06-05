@@ -195,7 +195,7 @@ function lessonResources(id) {
   pills.push(
     resLink(
       "Google Forms",
-      `https://eduwonderlab.vercel.app/google-forms/?lesson=${encodeURIComponent(id)}`,
+      `/teacher-tools/post-forms/?lesson=${encodeURIComponent(id)}`,
       true
     )
   );
