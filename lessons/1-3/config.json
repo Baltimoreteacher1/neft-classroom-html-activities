@@ -370,57 +370,158 @@
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "What is the LCM of 6 and 8?",
-        "choices": ["24", "48", "12", "16"],
-        "correctIndex": 0,
-        "explanation": "6 = 2 × 3, 8 = 2³. LCM = 2³ × 3 = 24."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "What is the LCM of 4 and 10?",
-        "choices": ["20", "40", "30", "12"],
-        "correctIndex": 0,
-        "explanation": "4 = 2², 10 = 2 × 5. LCM = 2² × 5 = 20."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "One bus leaves every 12 minutes and another every 15 minutes. They leave together at 9:00. When do they next leave together?",
+        "stem": "Stop 1 — Oxygen Bay: The oxygen scrubber cycles every 4 minutes and the air filter cycles every 6 minutes. They both just ran together. After how many minutes do they next run together?",
         "choices": [
-          "After 60 minutes",
-          "After 30 minutes",
-          "After 45 minutes",
-          "After 27 minutes"
+          "12",
+          "10",
+          "24",
+          "6"
         ],
         "correctIndex": 0,
-        "explanation": "LCM of 12 and 15 is 60, so they leave together again 60 minutes later."
+        "explanation": "Skip count: multiples of 4 are 4, 8, 12; multiples of 6 are 6, 12. The first shared multiple is LCM(4, 6) = 12 minutes."
       },
       {
         "type": "multiple-choice",
-        "stem": "What is the LCM of 9 and 12?",
-        "choices": ["36", "72", "18", "108"],
+        "stem": "Stop 2 — Docking Ring: A supply pod arrives every 8 minutes and a cargo shuttle arrives every 12 minutes. They just docked together. After how many minutes do they next dock together?",
+        "choices": [
+          "24",
+          "20",
+          "48",
+          "16"
+        ],
         "correctIndex": 0,
-        "explanation": "9 = 3², 12 = 2² × 3. LCM = 2² × 3² = 36."
+        "explanation": "LCM(8, 12) = 24. Multiples of 8: 8, 16, 24; multiples of 12: 12, 24. The first shared multiple is 24 minutes."
+      },
+      {
+        "type": "matching-game",
+        "pairs": [
+          {
+            "term": "Solar panels (LCM 6 & 10 min)",
+            "match": "30"
+          },
+          {
+            "term": "Coolant pumps (LCM 5 & 8 min)",
+            "match": "40"
+          },
+          {
+            "term": "Comms relay (LCM 3 & 9 min)",
+            "match": "9"
+          },
+          {
+            "term": "Lab fans (LCM 4 & 6 min)",
+            "match": "12"
+          }
+        ],
+        "columns": 4,
+        "label": "Stop 3 — Engineering Deck: Match each pair of station systems to the LCM of their cycle times (when they next sync)."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Stop 4 — Mission Control: Each clue points to your next stop. Sort each crew schedule by whether the two systems sync again in UNDER 25 minutes or 25 MINUTES OR MORE. Skip count to find each LCM.",
+        "items": [
+          {
+            "text": "Reactor checks: every 4 and 6 min",
+            "category": "under-25"
+          },
+          {
+            "text": "Window shutters: every 8 and 12 min",
+            "category": "under-25"
+          },
+          {
+            "text": "Galley ovens: every 2 and 7 min",
+            "category": "under-25"
+          },
+          {
+            "text": "Solar arrays: every 6 and 10 min",
+            "category": "25-or-more"
+          },
+          {
+            "text": "Coolant pumps: every 5 and 8 min",
+            "category": "25-or-more"
+          },
+          {
+            "text": "Antenna sweeps: every 4 and 9 min",
+            "category": "25-or-more"
+          }
+        ],
+        "categories": [
+          {
+            "id": "under-25",
+            "label": "Sync again in under 25 minutes"
+          },
+          {
+            "id": "25-or-more",
+            "label": "Sync again in 25 minutes or more"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Crew Member's Schedule Sync Mistake",
+        "workedExample": [
+          {
+            "label": "Problem",
+            "work": "The water recycler cycles every 8 minutes and the heat exchanger cycles every 12 minutes. They just ran together. When do they next sync?"
+          },
+          {
+            "label": "List multiples of 8",
+            "work": "8, 16, 24, 32"
+          },
+          {
+            "label": "List multiples of 12",
+            "work": "12, 24, 36"
+          },
+          {
+            "label": "Pick the number to use",
+            "work": "The greatest factor that 8 and 12 share is 4."
+          },
+          {
+            "label": "Answer",
+            "work": "They next sync in 4 minutes."
+          }
+        ],
+        "errorStep": 3,
+        "correctWork": "Step 4 should find the LEAST COMMON MULTIPLE, not the greatest common FACTOR. 'When do repeating events line up?' calls for the LCM. The first multiple in both lists is 24, so they next sync in 24 minutes.",
+        "hints": [
+          "A scavenger-hunt schedule asks WHEN two repeating events meet again — that is an LCM problem, not a GCF problem.",
+          "GCF (4) splits things into equal groups; LCM lines up repeating cycles. Look at both multiple lists and find the smallest number that appears in both: 24."
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
         "stem": "What is the LCM of 3 and 5?",
-        "choices": ["15", "3", "5", "30"],
+        "choices": [
+          "15",
+          "3",
+          "5",
+          "30"
+        ],
         "correctIndex": 0,
         "explanation": "Multiples of 3: 3, 6, 9, 12, 15, ... Multiples of 5: 5, 10, 15, ... The smallest common multiple is 15."
       },
       {
         "type": "multiple-choice",
         "stem": "What is the LCM of 6 and 8?",
-        "choices": ["24", "48", "14", "6"],
+        "choices": [
+          "24",
+          "48",
+          "14",
+          "6"
+        ],
         "correctIndex": 0,
         "explanation": "Multiples of 6: 6, 12, 18, 24, ... Multiples of 8: 8, 16, 24, ... The smallest common multiple is 24."
       },
       {
         "type": "multiple-choice",
         "stem": "What is the LCM of 4 and 10?",
-        "choices": ["20", "40", "10", "2"],
+        "choices": [
+          "20",
+          "40",
+          "10",
+          "2"
+        ],
         "correctIndex": 0,
         "explanation": "Multiples of 4: 4, 8, 12, 16, 20, ... Multiples of 10: 10, 20, ... The smallest common multiple is 20."
       },
@@ -477,7 +578,12 @@
       {
         "type": "multiple-choice",
         "stem": "What is the LCM of 2 and 7?",
-        "choices": ["14", "7", "2", "9"],
+        "choices": [
+          "14",
+          "7",
+          "2",
+          "9"
+        ],
         "correctIndex": 0,
         "explanation": "Since 2 and 7 share no common factors (they are relatively prime), LCM = 2 × 7 = 14."
       }
@@ -649,7 +755,12 @@
       {
         "type": "fill-table",
         "label": "Use prime factorization to find the LCM. Take the highest power of each prime factor.",
-        "columns": ["Numbers", "Prime Factorizations", "Highest Powers", "LCM"],
+        "columns": [
+          "Numbers",
+          "Prime Factorizations",
+          "Highest Powers",
+          "LCM"
+        ],
         "rows": [
           {
             "given": "12 and 18",
@@ -671,7 +782,13 @@
           }
         ]
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "LCM Schedule Sync Scavenger Hunt",
+      "emoji": "🔔",
+      "intro": "Move around the station finding when two crew systems sync up again by skip counting to the least common multiple.",
+      "stepLabel": "Stop"
+    }
   },
   "connect": {
     "scenario": "Hot dogs come in packs of 8 and buns come in packs of 6. You want to buy the exact same number of hot dogs and buns with none left over.",
@@ -691,7 +808,12 @@
   "reflect": {
     "exitTicket": {
       "stem": "What is the LCM of 9 and 12?",
-      "choices": ["36", "108", "3", "72"],
+      "choices": [
+        "36",
+        "108",
+        "3",
+        "72"
+      ],
       "correctIndex": 0,
       "explanation": "Multiples of 9: 9, 18, 27, 36, ... Multiples of 12: 12, 24, 36, ... The smallest common multiple is 36."
     }
