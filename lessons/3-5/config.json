@@ -237,31 +237,126 @@
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "Store A sells 3 pens for $6. Store B sells 5 pens for $9. Which is the better buy?",
-        "choices": ["Store B", "Store A", "They are equal", "Cannot tell"],
+        "stem": "Chef Academy's snack bar sells 3 mini quiches for $6 or 5 mini quiches for $8. Which is the better deal per quiche?",
+        "choices": [
+          "5 quiches for $8",
+          "3 quiches for $6",
+          "They cost the same",
+          "Cannot determine"
+        ],
         "correctIndex": 0,
-        "explanation": "Store A is $2 per pen; Store B is $1.80 per pen. Store B is cheaper."
+        "explanation": "3 for $6 is $6 / 3 = $2.00 per quiche. 5 for $8 is $8 / 5 = $1.60 per quiche. $1.60 < $2.00, so 5 quiches for $8 is the better deal."
       },
       {
         "type": "multiple-choice",
-        "stem": "Which ratio is greater: 4:5 or 7:10?",
-        "choices": ["4:5", "7:10", "They are equal", "Cannot compare"],
+        "stem": "Two soup recipes use salt. Recipe A uses 4 tsp salt for 10 cups of broth. Recipe B uses 3 tsp salt for 8 cups of broth. Which soup is saltier per cup?",
+        "choices": [
+          "Recipe B",
+          "Recipe A",
+          "They are equally salty",
+          "Cannot determine"
+        ],
         "correctIndex": 0,
-        "explanation": "4:5 = 8:10, which is greater than 7:10."
+        "explanation": "Recipe A: 4 / 10 = 0.4 tsp per cup. Recipe B: 3 / 8 = 0.375 tsp per cup. Since 0.4 > 0.375, Recipe A is saltier per cup."
       },
       {
         "type": "multiple-choice",
-        "stem": "Recipe X uses 2 cups sugar per 8 cookies. Recipe Y uses 3 cups per 10 cookies. Which is sweeter per cookie?",
-        "choices": ["Recipe Y", "Recipe X", "Same sweetness", "Cannot tell"],
+        "stem": "Chef Mara's lemon glaze uses 6 oz of lemon juice for 9 cupcakes. Chef Devi's uses 4 oz for 7 cupcakes. Whose glaze has more lemon per cupcake?",
+        "choices": [
+          "Chef Mara",
+          "Chef Devi",
+          "Same amount",
+          "Cannot determine"
+        ],
         "correctIndex": 0,
-        "explanation": "X = 0.25 cup/cookie; Y = 0.30 cup/cookie. Y has more sugar per cookie."
+        "explanation": "Chef Mara: 6 / 9 = 0.666... oz per cupcake. Chef Devi: 4 / 7 = 0.571... oz per cupcake. Since 0.67 > 0.57, Chef Mara's glaze has more lemon per cupcake."
       },
       {
-        "type": "multiple-choice",
-        "stem": "Team A won 6 of 10 games. Team B won 9 of 15 games. Which team has the better win ratio?",
-        "choices": ["They are equal", "Team A", "Team B", "Cannot tell"],
-        "correctIndex": 0,
-        "explanation": "6:10 = 3:5 and 9:15 = 3:5, so the win ratios are equal."
+        "type": "matching-game",
+        "label": "Match each Chef Academy ratio comparison to the correct winner.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "Smoothie A: 2 cups fruit for 6 cups water  vs.  Smoothie B: 3 cups fruit for 8 cups water — more fruity?",
+            "match": "Smoothie B (0.375 > 0.333 fruit per cup)"
+          },
+          {
+            "term": "Bagels: 4 for $5  vs.  6 for $9 — better price per bagel?",
+            "match": "4 for $5 ($1.25 < $1.50 per bagel)"
+          },
+          {
+            "term": "Trail mix: 6 oz nuts to 10 oz oats  vs.  9 oz nuts to 15 oz oats — more nutty?",
+            "match": "Equal (both simplify to 3:5)"
+          },
+          {
+            "term": "Dressing: 3 tbsp oil to 4 tbsp vinegar  vs.  5 tbsp oil to 8 tbsp vinegar — more oily?",
+            "match": "3:4 (equals 6:8, greater than 5:8)"
+          }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Each chef compared two recipes. Sort their conclusions into Correct or Incorrect.",
+        "items": [
+          {
+            "text": "Sauce 5:6 vs. 7:9 — chef says 5:6 is thicker (more tomato)",
+            "category": "correct"
+          },
+          {
+            "text": "Punch 2 cups juice for 5 cups water vs. 3 for 8 — chef says the 2:5 punch is more juicy",
+            "category": "correct"
+          },
+          {
+            "text": "Frosting 3:4 sugar-to-butter vs. 5:8 — chef says 3:4 is sweeter",
+            "category": "correct"
+          },
+          {
+            "text": "Cocoa 3:7 vs. 2:5 — chef says 3:7 is weaker (less cocoa per oz)",
+            "category": "incorrect"
+          },
+          {
+            "text": "Tea 4:5 leaves-to-water vs. 5:7 — chef says 5:7 is stronger",
+            "category": "incorrect"
+          }
+        ],
+        "categories": [
+          {
+            "id": "correct",
+            "label": "Correct Comparison"
+          },
+          {
+            "id": "incorrect",
+            "label": "Incorrect Comparison"
+          }
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Chef Omar's Glaze Comparison",
+        "workedExample": [
+          {
+            "label": "Read the problem",
+            "work": "Chef Omar compares two glazes: 3 oz syrup for 8 oz water and 5 oz syrup for 12 oz water. Which is sweeter per ounce of water?"
+          },
+          {
+            "label": "Look at the syrup",
+            "work": "Glaze 1 has 3 oz syrup. Glaze 2 has 5 oz syrup."
+          },
+          {
+            "label": "Compare the syrup amounts",
+            "work": "Since 5 > 3, Glaze 2 must have more syrup per ounce of water."
+          },
+          {
+            "label": "Conclusion",
+            "work": "Glaze 2 is sweeter per ounce of water."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "You cannot just compare the syrup amounts because the water amounts are different (8 oz vs 12 oz). Find the unit rate: Glaze 1 = 3 / 8 = 0.375 oz syrup per oz water; Glaze 2 = 5 / 12 = 0.416... oz syrup per oz water. Since 0.417 > 0.375, Glaze 2 is sweeter per ounce — but this must be proven with unit rates, not by comparing 5 > 3 alone.",
+        "hints": [
+          "Look at Step 3. Chef Omar compared only the syrup (numerators) without making the water (the other term) equal.",
+          "Find the syrup per 1 oz of water for each glaze, then compare those unit rates."
+        ]
       }
     ],
     "approaching": [
@@ -500,7 +595,13 @@
         "whole": 25,
         "label": "Chef A: 2:3 → with 15 tbsp vinegar, oil = 10 tbsp. Chef B: 3:5 → with 15 tbsp vinegar, oil = 9 tbsp. Chef A uses more oil."
       }
-    ]
+    ],
+    "optionalActivity": {
+      "name": "Best Deal Taste Test",
+      "emoji": "😋",
+      "intro": "Step up to the Chef Academy tasting counter and judge which recipe or deal wins by comparing ratios fairly!",
+      "stepLabel": "Test"
+    }
   },
   "connect": {
     "scenario": "Two pizza shops are running deals. Mario's Pizza sells 2 large pizzas for $18. Sal's Pizza sells 3 large pizzas for $25. A school needs to buy pizza for a class party and wants to get the best deal per pizza.",
