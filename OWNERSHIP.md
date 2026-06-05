@@ -8,7 +8,7 @@ auto-commit here — contribute via a branch + PR for the owner to integrate.
 ## Ownership map (recommended)
 | Repo                            | Owner        | Others |
 |---------------------------------|--------------|--------|
-| neft-classroom-html-activities  | Claude Code  | branch/PR only — do NOT commit to main |
+| neft-classroom-html-activities  | Antigravity  | branch/PR only — do NOT commit to main |
 | neft-hub                        | Claude Code  | branch/PR only |
 | neft-practice-engine            | Claude Code  | branch/PR only |
 | neft-teacher-pipeline           | Claude Code  | branch/PR only |
